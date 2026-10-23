@@ -1,5 +1,56 @@
 # Agent handoff — WarsBots for CryMP (multi-bot, updated 2026-10-23 18:20 MSK)
 
+## Current checkpoint: weapon goals and routing retry cache (2026-10-23)
+
+Working branch `warsbots/feature/weapon-goals`, based on GitHub checkpoint `b7c95e12`.
+Built/tested game code `eea973f0`; `warsbots/main` and `warsbots/feature/multibot` unchanged.
+Actual checkout/build: `C:\Users\Magic8\WarsBotsBuild\crymp-multibot` (outside OneDrive).
+
+Fixed native pickup eligibility revalidation while approaching an item; bots stop chasing
+hidden/taken/unpickable weapons. Failed A* paths now honor their two-second retry deadline
+instead of retrying after 0.75 s. Local steering fallback stays available for sparse graph gaps.
+Failed route logs record real start/goal coordinates. No channel, Player, GameRules,
+ShotValidator, suit energy, damage or serialization changes in this increment. OFF remains default.
+
+MSVC x64 Release client+server BUILD PASS. New isolated server QA: 6 bots/240 s and
+15 bots/300 s, no clients, no crash markers. Revised vs j13 baseline:
+- 6 bots: weapon-state share 40.34 -> 13.73%, blocked 2.72 -> 1.64%, pickups 17 -> 17,
+  kills 16 -> 12. Revised worst AI frame 2.79 ms.
+- 15 bots: weapon-state share 30.87 -> 28.05%, blocked 2.80 -> 0.89%, pickups 38 -> 52,
+  kills 87 -> 121. Revised worst AI frame 1.32 ms; 13 unavailable goals cancelled.
+These are sample shares, one run each, with evolving map memory; not a causal or general
+AI-superiority claim. Strict route-rejection experiment `20bf32bf` was tested and removed
+because of pickup/blocked regressions. Full evidence and limitations: [AI_TRAINING](AI_TRAINING.md)
+and [JSON results](Experiments/weapon-goals-2026-10-23.json).
+
+Added [FPS AI research](FPS_AI_RESEARCH.md), [Steelmill notes](STEELMILL_AI.md),
+`Tools/wb_ai_metrics.py`. Exporter checked against known real-log counts and sample totals.
+No combat policy training or bandit adaptation implemented yet. OFF not rebuilt for this delta;
+client visuals, simultaneous clients, leak checks and controlled repeat batches NOT RUN.
+
+Next: owner visual test of this exact build; then distinguish failed graph projection from
+disconnected routes at logged coordinates, measure actual route progress, and add bounded
+per-bot combat episode data before policy learning. No unverified Strength roof links.
+
+
+### Owner visual check / exact artifacts
+
+Use `build/multibot-on/CryMP-{Server,Client}64.exe`, manifest source SHA `eea973f0`.
+Server SHA256 `3AD475D184EEBE0DA5674028F8D57885631B1C7820F1DAFE82F273835DD50CB5`;
+client `881C82BADEEA275EC62A8CE21D118697FDCE9E09D05C8C1B7215B5CCC5AE6986`.
+Local launcher files remain in the old checkout's `ClaudeQA/Play-Server.bat` and
+`Play-Client.bat`; they reference this outside-OneDrive build, port 64130, original Crysis.
+Server does not automatically spawn bots: enter `wb_maxbots 15`, then `wb_add 15` manually.
+Observe stale-weapon pursuit, AFK/stuck spots, sprint/jump naturalness and rooftop routes;
+check Tab and real combat as well. Do not run the old default build job to test this feature:
+it fetches `warsbots/feature/multibot` and would replace these EXEs with that older branch.
+
+All QA processes started in this increment have ended. No user game was interrupted.
+Do not claim the owner visually tested this code yet. Source/build SHA stays `eea973f0`
+when the later commit only changes Markdown, JSON evidence and the offline metrics script.
+
+## Previous handoff (historical; current checkpoint above takes precedence)
+
 ## 0. Current state in one screen (updated 2026-10-23 19:25 MSK — read this first)
 
 Branch `warsbots/feature/multibot`, HEAD `df3ceb8e` (pushed). `warsbots/main` = `caf1a815` untouched.

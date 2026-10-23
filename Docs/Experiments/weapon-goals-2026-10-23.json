@@ -1,0 +1,371 @@
+{
+  "schema": 1,
+  "runs": [
+    {
+      "log": "WarsBots-Claude-m15b-192557.bots.log",
+      "log_sha256": "3e21b1dc80e3e68101db292fe411b0474e6273b720cd1410d4c1a7c39dd3552f",
+      "observed_seconds": 237.84,
+      "telemetry_samples": 1785,
+      "state_samples": {
+        "SEEKING_WEAPON": 32,
+        "CHASING_ENEMY": 459,
+        "MOVING_TO_WEAPON": 551,
+        "ATTACKING": 325,
+        "SEARCHING_ENEMY": 204,
+        "DEAD": 214
+      },
+      "state_percent": {
+        "SEEKING_WEAPON": 1.79,
+        "CHASING_ENEMY": 25.71,
+        "MOVING_TO_WEAPON": 30.87,
+        "ATTACKING": 18.21,
+        "SEARCHING_ENEMY": 11.43,
+        "DEAD": 11.99
+      },
+      "moving_samples": 1538,
+      "blocked_percent": 2.8,
+      "pickups_acquired": 38,
+      "weapon_timeouts": 115,
+      "route_fallback_queries": 0,
+      "frequent_fallback_goals": [],
+      "weapon_cancel_unavailable": 0,
+      "weapon_cancel_no_route": 0,
+      "strength_takeoffs": 22,
+      "strength_landings": 22,
+      "jump_clearance_refusals": 24,
+      "kills": 87,
+      "deaths": 87,
+      "revives_alive": 85,
+      "max_reported_avg_ms": 1.11,
+      "worst_reported_frame_ms": 50.62,
+      "crash_marker": false,
+      "variant": "baseline",
+      "source_sha": "df3ceb8ef73d42596f6ec4ce369ade01577fd89b",
+      "server_sha256": "1EC9EBF1DEA64661DC7972B7ADC45EB1927B4C6F7F42B842E8214B96B9DE01D4",
+      "client_sha256": "ABD001AFC6FE9298898B89490B2D3BE4FC5FB5A34EB15A04CE9DC34DECACDE37",
+      "bots": 15,
+      "planned_seconds": 300,
+      "initial_memory_sha256": null
+    },
+    {
+      "log": "WarsBots-Claude-m4g-192156.bots.log",
+      "log_sha256": "141fe5c153b73a23dda60b7a23610d0b2a5304028e6ced5dba6a76b105d49d9b",
+      "observed_seconds": 238.0,
+      "telemetry_samples": 714,
+      "state_samples": {
+        "SEEKING_WEAPON": 12,
+        "MOVING_TO_WEAPON": 288,
+        "CHASING_ENEMY": 90,
+        "SEARCHING_ENEMY": 235,
+        "ATTACKING": 49,
+        "DEAD": 40
+      },
+      "state_percent": {
+        "SEEKING_WEAPON": 1.68,
+        "MOVING_TO_WEAPON": 40.34,
+        "CHASING_ENEMY": 12.61,
+        "SEARCHING_ENEMY": 32.91,
+        "ATTACKING": 6.86,
+        "DEAD": 5.6
+      },
+      "moving_samples": 662,
+      "blocked_percent": 2.72,
+      "pickups_acquired": 17,
+      "weapon_timeouts": 54,
+      "route_fallback_queries": 0,
+      "frequent_fallback_goals": [],
+      "weapon_cancel_unavailable": 0,
+      "weapon_cancel_no_route": 0,
+      "strength_takeoffs": 15,
+      "strength_landings": 15,
+      "jump_clearance_refusals": 9,
+      "kills": 16,
+      "deaths": 16,
+      "revives_alive": 16,
+      "max_reported_avg_ms": 0.28,
+      "worst_reported_frame_ms": 0.88,
+      "crash_marker": false,
+      "variant": "baseline",
+      "source_sha": "df3ceb8ef73d42596f6ec4ce369ade01577fd89b",
+      "server_sha256": "1EC9EBF1DEA64661DC7972B7ADC45EB1927B4C6F7F42B842E8214B96B9DE01D4",
+      "client_sha256": "ABD001AFC6FE9298898B89490B2D3BE4FC5FB5A34EB15A04CE9DC34DECACDE37",
+      "bots": 15,
+      "planned_seconds": 300,
+      "initial_memory_sha256": null
+    },
+    {
+      "log": "WarsBots-Claude-wg15-194357.bots.log",
+      "log_sha256": "f553746d53e56638f6300ccd78bd8d31f69afd5f2e876e5ee953d97f1e1971ed",
+      "observed_seconds": 299.08,
+      "telemetry_samples": 2235,
+      "state_samples": {
+        "SEEKING_WEAPON": 34,
+        "CHASING_ENEMY": 661,
+        "MOVING_TO_WEAPON": 353,
+        "ATTACKING": 476,
+        "SEARCHING_ENEMY": 419,
+        "DEAD": 292
+      },
+      "state_percent": {
+        "SEEKING_WEAPON": 1.52,
+        "CHASING_ENEMY": 29.57,
+        "MOVING_TO_WEAPON": 15.79,
+        "ATTACKING": 21.3,
+        "SEARCHING_ENEMY": 18.75,
+        "DEAD": 13.06
+      },
+      "moving_samples": 1882,
+      "blocked_percent": 1.01,
+      "pickups_acquired": 23,
+      "weapon_timeouts": 65,
+      "route_fallback_queries": 0,
+      "frequent_fallback_goals": [],
+      "weapon_cancel_unavailable": 4,
+      "weapon_cancel_no_route": 355,
+      "strength_takeoffs": 37,
+      "strength_landings": 37,
+      "jump_clearance_refusals": 25,
+      "kills": 121,
+      "deaths": 121,
+      "revives_alive": 117,
+      "max_reported_avg_ms": 1.41,
+      "worst_reported_frame_ms": 2.36,
+      "crash_marker": false,
+      "variant": "strict",
+      "source_sha": "20bf32bf09b9b014444d990b2923b2b3e3eafd78",
+      "server_sha256": "485DD682BFD2EB1164DA99732CC4B304DD42209D4848F08BF5A3A49F31DCE264",
+      "client_sha256": "7876CF6C2C8038323B16D80EDCA451CF3086C008B01E4F43FE49BDA985998962",
+      "bots": 15,
+      "planned_seconds": 300,
+      "initial_memory_sha256": null
+    },
+    {
+      "log": "WarsBots-Claude-wg6-193957.bots.log",
+      "log_sha256": "9991a79b6a90240ad765fa87dc800788e5be02cc9cba5f9b4799d08c08c1885a",
+      "observed_seconds": 237.39,
+      "telemetry_samples": 714,
+      "state_samples": {
+        "SEEKING_WEAPON": 13,
+        "MOVING_TO_WEAPON": 125,
+        "CHASING_ENEMY": 127,
+        "SEARCHING_ENEMY": 373,
+        "ATTACKING": 49,
+        "DEAD": 27
+      },
+      "state_percent": {
+        "SEEKING_WEAPON": 1.82,
+        "MOVING_TO_WEAPON": 17.51,
+        "CHASING_ENEMY": 17.79,
+        "SEARCHING_ENEMY": 52.24,
+        "ATTACKING": 6.86,
+        "DEAD": 3.78
+      },
+      "moving_samples": 658,
+      "blocked_percent": 11.55,
+      "pickups_acquired": 7,
+      "weapon_timeouts": 17,
+      "route_fallback_queries": 0,
+      "frequent_fallback_goals": [],
+      "weapon_cancel_unavailable": 1,
+      "weapon_cancel_no_route": 178,
+      "strength_takeoffs": 18,
+      "strength_landings": 17,
+      "jump_clearance_refusals": 17,
+      "kills": 11,
+      "deaths": 11,
+      "revives_alive": 11,
+      "max_reported_avg_ms": 0.35,
+      "worst_reported_frame_ms": 3.07,
+      "crash_marker": false,
+      "variant": "strict",
+      "source_sha": "20bf32bf09b9b014444d990b2923b2b3e3eafd78",
+      "server_sha256": "485DD682BFD2EB1164DA99732CC4B304DD42209D4848F08BF5A3A49F31DCE264",
+      "client_sha256": "7876CF6C2C8038323B16D80EDCA451CF3086C008B01E4F43FE49BDA985998962",
+      "bots": 6,
+      "planned_seconds": 240,
+      "initial_memory_sha256": null
+    },
+    {
+      "log": "WarsBots-Claude-wgfix15-195435.bots.log",
+      "log_sha256": "f929c99dbf1ea0ddc5be77a7997553612621fdbb5fe31dc9369ad8d3499a5d6d",
+      "observed_seconds": 298.64,
+      "telemetry_samples": 2235,
+      "state_samples": {
+        "SEEKING_WEAPON": 33,
+        "CHASING_ENEMY": 594,
+        "MOVING_TO_WEAPON": 627,
+        "ATTACKING": 411,
+        "SEARCHING_ENEMY": 273,
+        "DEAD": 297
+      },
+      "state_percent": {
+        "SEEKING_WEAPON": 1.48,
+        "CHASING_ENEMY": 26.58,
+        "MOVING_TO_WEAPON": 28.05,
+        "ATTACKING": 18.39,
+        "SEARCHING_ENEMY": 12.21,
+        "DEAD": 13.29
+      },
+      "moving_samples": 1902,
+      "blocked_percent": 0.89,
+      "pickups_acquired": 52,
+      "weapon_timeouts": 128,
+      "route_fallback_queries": 797,
+      "frequent_fallback_goals": [
+        {
+          "position": [
+            1203.51,
+            1330.38,
+            137.2
+          ],
+          "queries": 67
+        },
+        {
+          "position": [
+            1171.16,
+            1330.62,
+            137.15
+          ],
+          "queries": 40
+        },
+        {
+          "position": [
+            1213.39,
+            1352.3,
+            144.94
+          ],
+          "queries": 37
+        },
+        {
+          "position": [
+            1268.98,
+            1289.35,
+            143.42
+          ],
+          "queries": 35
+        },
+        {
+          "position": [
+            1225.44,
+            1331.8,
+            149.15
+          ],
+          "queries": 33
+        }
+      ],
+      "weapon_cancel_unavailable": 13,
+      "weapon_cancel_no_route": 0,
+      "strength_takeoffs": 38,
+      "strength_landings": 35,
+      "jump_clearance_refusals": 20,
+      "kills": 121,
+      "deaths": 121,
+      "revives_alive": 117,
+      "max_reported_avg_ms": 1.14,
+      "worst_reported_frame_ms": 1.32,
+      "crash_marker": false,
+      "variant": "revised",
+      "source_sha": "eea973f0da19792ef18ceb3296ce170ed540432a",
+      "server_sha256": "3AD475D184EEBE0DA5674028F8D57885631B1C7820F1DAFE82F273835DD50CB5",
+      "client_sha256": "881C82BADEEA275EC62A8CE21D118697FDCE9E09D05C8C1B7215B5CCC5AE6986",
+      "bots": 15,
+      "planned_seconds": 300,
+      "initial_memory_sha256": null
+    },
+    {
+      "log": "WarsBots-Claude-wgfix6-195034.bots.log",
+      "log_sha256": "20f246c5712425f14dad6bd8fc5c6a712a5db3ac59d87eb4b1f3bd39fe00b76b",
+      "observed_seconds": 238.27,
+      "telemetry_samples": 714,
+      "state_samples": {
+        "SEEKING_WEAPON": 12,
+        "MOVING_TO_WEAPON": 98,
+        "CHASING_ENEMY": 100,
+        "SEARCHING_ENEMY": 440,
+        "ATTACKING": 35,
+        "DEAD": 29
+      },
+      "state_percent": {
+        "SEEKING_WEAPON": 1.68,
+        "MOVING_TO_WEAPON": 13.73,
+        "CHASING_ENEMY": 14.01,
+        "SEARCHING_ENEMY": 61.62,
+        "ATTACKING": 4.9,
+        "DEAD": 4.06
+      },
+      "moving_samples": 672,
+      "blocked_percent": 1.64,
+      "pickups_acquired": 17,
+      "weapon_timeouts": 12,
+      "route_fallback_queries": 369,
+      "frequent_fallback_goals": [
+        {
+          "position": [
+            1333.38,
+            1346.12,
+            150.12
+          ],
+          "queries": 29
+        },
+        {
+          "position": [
+            1292.86,
+            1364.8,
+            136.15
+          ],
+          "queries": 28
+        },
+        {
+          "position": [
+            1258.25,
+            1289.12,
+            142.25
+          ],
+          "queries": 19
+        },
+        {
+          "position": [
+            1368.15,
+            1335.17,
+            147.29
+          ],
+          "queries": 15
+        },
+        {
+          "position": [
+            1206.57,
+            1331.78,
+            136.25
+          ],
+          "queries": 15
+        }
+      ],
+      "weapon_cancel_unavailable": 0,
+      "weapon_cancel_no_route": 0,
+      "strength_takeoffs": 11,
+      "strength_landings": 11,
+      "jump_clearance_refusals": 11,
+      "kills": 12,
+      "deaths": 12,
+      "revives_alive": 12,
+      "max_reported_avg_ms": 0.39,
+      "worst_reported_frame_ms": 2.79,
+      "crash_marker": false,
+      "variant": "revised",
+      "source_sha": "eea973f0da19792ef18ceb3296ce170ed540432a",
+      "server_sha256": "3AD475D184EEBE0DA5674028F8D57885631B1C7820F1DAFE82F273835DD50CB5",
+      "client_sha256": "881C82BADEEA275EC62A8CE21D118697FDCE9E09D05C8C1B7215B5CCC5AE6986",
+      "bots": 6,
+      "planned_seconds": 240,
+      "initial_memory_sha256": null
+    }
+  ],
+  "limitations": [
+    "One run per variant and bot count; no statistical superiority claim.",
+    "Evolving shared map memory; initial state was not controlled across runs.",
+    "State shares are telemetry sample shares, not exact durations.",
+    "Headless server evidence only; client visuals, two clients and leaks untested.",
+    "Takeoff/landing counters cannot be paired reliably without actor/life IDs.",
+    "Source SHA describes the compiled game code; later documentation/exporter commits do not alter that code."
+  ]
+}

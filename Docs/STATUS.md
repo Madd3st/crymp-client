@@ -1,7 +1,41 @@
 # WarsBots for CryMP: status, 2026-10-23
 
+## Current checkpoint: weapon goals and routing retry cache (2026-10-23)
+
+Working branch `warsbots/feature/weapon-goals`, based on GitHub checkpoint `b7c95e12`.
+Built/tested game code `eea973f0`; `warsbots/main` and `warsbots/feature/multibot` unchanged.
+Actual checkout/build: `C:\Users\Magic8\WarsBotsBuild\crymp-multibot` (outside OneDrive).
+
+Fixed native pickup eligibility revalidation while approaching an item; bots stop chasing
+hidden/taken/unpickable weapons. Failed A* paths now honor their two-second retry deadline
+instead of retrying after 0.75 s. Local steering fallback stays available for sparse graph gaps.
+Failed route logs record real start/goal coordinates. No channel, Player, GameRules,
+ShotValidator, suit energy, damage or serialization changes in this increment. OFF remains default.
+
+MSVC x64 Release client+server BUILD PASS. New isolated server QA: 6 bots/240 s and
+15 bots/300 s, no clients, no crash markers. Revised vs j13 baseline:
+- 6 bots: weapon-state share 40.34 -> 13.73%, blocked 2.72 -> 1.64%, pickups 17 -> 17,
+  kills 16 -> 12. Revised worst AI frame 2.79 ms.
+- 15 bots: weapon-state share 30.87 -> 28.05%, blocked 2.80 -> 0.89%, pickups 38 -> 52,
+  kills 87 -> 121. Revised worst AI frame 1.32 ms; 13 unavailable goals cancelled.
+These are sample shares, one run each, with evolving map memory; not a causal or general
+AI-superiority claim. Strict route-rejection experiment `20bf32bf` was tested and removed
+because of pickup/blocked regressions. Full evidence and limitations: [AI_TRAINING](AI_TRAINING.md)
+and [JSON results](Experiments/weapon-goals-2026-10-23.json).
+
+Added [FPS AI research](FPS_AI_RESEARCH.md), [Steelmill notes](STEELMILL_AI.md),
+`Tools/wb_ai_metrics.py`. Exporter checked against known real-log counts and sample totals.
+No combat policy training or bandit adaptation implemented yet. OFF not rebuilt for this delta;
+client visuals, simultaneous clients, leak checks and controlled repeat batches NOT RUN.
+
+Next: owner visual test of this exact build; then distinguish failed graph projection from
+disconnected routes at logged coordinates, measure actual route progress, and add bounded
+per-bot combat episode data before policy learning. No unverified Strength roof links.
+
+## Historical checkpoints below (superseded by current checkpoint)
+
 Repository: https://github.com/Madd3st/crymp-client.
-Integration `warsbots/main`; working baseline `caf1a815` on `warsbots/main`; current WIP `warsbots/feature/ia-participants`.
+Integration `warsbots/main` stays at `caf1a815`; see current feature checkpoint above.
 Local checkout: `<checkout>`.
 See [port provenance](WARSBOTS_PORT.md), [tests](AI_TESTS.md), [handoff](AGENT_HANDOFF.md).
 
