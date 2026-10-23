@@ -11,6 +11,8 @@ int main()
         for (int tier=0;tier<int(BotSkill::Count);++tier)
         {
             auto p=BotProfile::Make(BotStyle(style),BotSkill(tier));
+            assert(p.NextTargetBurst(10.0f,1.0f)==10.0f);
+            assert(p.NextTargetBurst(0.0f,1.0f)>=1.0f+p.reaction);
             assert(p.reaction>=0.2f && p.reaction<=lastReaction); lastReaction=p.reaction;
             assert(p.aimErrorMax>0 && p.aimErrorPerMetre>0);
             assert(!p.CanSwitchTarget(p.targetHold-0.01f,1.0f,10.0f));

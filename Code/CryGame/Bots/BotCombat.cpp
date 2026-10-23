@@ -159,7 +159,7 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 	if (best->GetEntityId()!=previous)
 	{
 		StopFire(); m_target=best->GetEntityId(); m_selectedAt=now;
-		m_nextBurst=now+m_profile.reaction; m_shotBlocked=false;
+		m_nextBurst=m_profile.NextTargetBurst(m_nextBurst,now); m_shotBlocked=false;
 		WB_LOG(2,"[WarsBots] TARGET CHOICE actor=%u old=%u target=%u skill=%s style=%s score=%.3f visible=%d health=%d ammo=%d.",
 			actor.GetEntityId(),previous,m_target,BotProfile::SkillName(m_profile.skill),BotProfile::StyleName(m_profile.style),
 			bestScore,m_visibleEnemies,actor.GetHealth(),hasAmmo?1:0);

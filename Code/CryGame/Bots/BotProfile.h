@@ -60,6 +60,9 @@ struct BotProfile
 		return skill==BotSkill::Beginner ? result*((salt&1u)?1.25f:0.8f) : result;
 	}
 
+	float NextTargetBurst(float existingDeadline, float now) const
+	{ return existingDeadline>now+reaction?existingDeadline:now+reaction; }
+
 	bool CanSwitchTarget(float heldSeconds, float currentScore, float newScore) const
 	{ return heldSeconds>=targetHold && newScore>=currentScore+targetSwitchMargin; }
 
