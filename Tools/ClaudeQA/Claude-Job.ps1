@@ -13,14 +13,14 @@ try { $spec = Get-Content -LiteralPath $JobFile -Raw | ConvertFrom-Json } catch 
 $id = if ($spec -and $spec.id) { [string]$spec.id } else { 'bad-json' }
 if ($id -notmatch '^[A-Za-z0-9_-]{1,40}$') { $id = 'bad-id' }
 $res = [ordered]@{ id = $id; started = (Get-Date).ToString('s'); steps = @() }
-function Step($name, $result) { $script:res.steps += [ordered]@{ step = $name; result = [string]$result }; Write-Host "   $name -> $result" }
+function Step($name, $result) { $script:res.steps += [ordered]@{ step = $name; result = [string]$result }; $line = "$(Get-Date -Format T)    $name -> $result"; Write-Host $line -ForegroundColor Cyan; Add-Content -LiteralPath (Join-Path $here 'runner-console.log') -Value $line }
 if ($spec) {
     $build = [string]$spec.build
     if ($build -in @('on','both')) {
         $psArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $here 'Claude-Build-Multibot.ps1'))
         if ($build -eq 'on') { $psArgs += '-OnOnly' }
         if ($spec.expect) { $psArgs += @('-Expect', [string]$spec.expect) }
-        & powershell @psArgs | Out-Null
+        & powershell @psArgs
         $done = Get-Content -LiteralPath (Join-Path $repo 'build\claude-multibot-build.done') -ErrorAction SilentlyContinue
         Step "build-$build" $done
         if ($done -ne 'PASS') { $spec.qa = @(); $spec.push = @() }
@@ -30,7 +30,7 @@ if ($spec) {
         $bots = [Math]::Min(16, [Math]::Max(1, [int]$q.bots))
         $secs = [Math]::Min(900, [Math]::Max(30, [int]$q.seconds))
         $tag = [string]$q.tag; if ($tag -notmatch '^[A-Za-z0-9_-]{1,20}$') { $tag = 'qa' }
-        & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $here 'Claude-QA-Bots.ps1') -Bots $bots -Seconds $secs -Tag $tag | Out-Null
+        & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $here 'Claude-QA-Bots.ps1') -Bots $bots -Seconds $secs -Tag $tag
         Step "qa-$tag-$bots" (Get-Content -LiteralPath (Join-Path $repo "build\claude-qa\$tag.done") -ErrorAction SilentlyContinue)
     }
     foreach ($p in @($spec.push)) {

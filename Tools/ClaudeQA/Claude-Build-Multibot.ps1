@@ -43,11 +43,11 @@ try {
     $build = Join-Path $wt 'Tools\Build-WarsBots.ps1'
     Write-Host '=== BUILD ON ==='
     # Compiler output goes to its own file: a transcript loses native output when stdout is redirected.
-    & $build -Experimental -Jobs $jobs -BuildDirectory 'build/multibot-on' *>&1 | ForEach-Object { "$_" } | Out-File -LiteralPath $compileLog -Append -Encoding utf8
+    & $build -Experimental -Jobs $jobs -BuildDirectory 'build/multibot-on' *>&1 | ForEach-Object { $l = "$_"; Write-Host $l; Add-Content -LiteralPath $compileLog -Value $l }
     Write-Host 'BUILD ON: PASS'
     if (-not $OnOnly) {
     Write-Host '=== BUILD OFF ==='
-    & $build -Jobs $jobs -BuildDirectory 'build/multibot-off' *>&1 | ForEach-Object { "$_" } | Out-File -LiteralPath $compileLog -Append -Encoding utf8
+    & $build -Jobs $jobs -BuildDirectory 'build/multibot-off' *>&1 | ForEach-Object { $l = "$_"; Write-Host $l; Add-Content -LiteralPath $compileLog -Value $l }
     Write-Host 'BUILD OFF: PASS'
     }
     Get-ChildItem -Path (Join-Path $wt 'build') -Recurse -Filter 'CryMP-*64.exe' | ForEach-Object { Write-Host "EXE $($_.FullName) $((Get-FileHash $_.FullName).Hash)" }

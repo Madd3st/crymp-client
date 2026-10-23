@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
+#include "CryCommon/CrySystem/ILog.h"
 #include <cstdarg>
 #include <cstdio>
 
