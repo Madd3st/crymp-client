@@ -52,6 +52,20 @@ class ReportTests(unittest.TestCase):
                 self.assertEqual(result['progress_windows'],1)
                 self.assertEqual(result[key],1)
 
+    def test_recovery_excludes_native_revive_teleport(self):
+        text="""0.0 [WarsBots] #1 created EntityId=11 name=WarsBot_01 profile=assault/elite.
+4.0 [WarsBots] PROGRESS ESCAPE actor=11 kind=combat goal=22 pos=(0,0,0) age=4.
+5.0 [WarsBots] #1 death observed EntityId=11 health=0.
+10.0 [WarsBots] #1 revive result EntityId=11 sameEntity=1 alive=1 health=100.
+11.0 [WarsBots] AI telemetry EntityId=11 state=SEARCHING_ENEMY pos=(100.0, 0.0, 1.0) health=100 weapon=55 ammo=20 target=0.
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'run.log'; path.write_text(text)
+            result=parse(path,lambda ep:None)['elite']
+            self.assertEqual(result['progress_escapes'],1)
+            self.assertEqual(result['progress_horizontal_recoveries_8s'],0)
+            self.assertEqual(result['progress_recovery_interrupted'],1)
+
     def test_dataset_limit(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); (root/'run.log').write_text(LOG+LOG.replace('11','44').replace('22','55'))

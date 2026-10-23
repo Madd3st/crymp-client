@@ -21,6 +21,7 @@ def parse(path, emit):
     context = None
     positions = {}
     windows = {}
+    recovery = collections.defaultdict(list)
     end = 0.0
 
     def info(actor):
@@ -67,6 +68,15 @@ def parse(path, emit):
         m = re.search(r'ENTITY_EVENT_DONE EntityId=(\d+)', line)
         if m:
             actor=int(m[1]); finish(actor,'entity_done'); close_life(actor)
+            if actor in actors: skills[actors[actor][2]]['progress_recovery_interrupted']+=len(recovery.pop(actor,[]))
+        m = re.search(r'PROGRESS ESCAPE actor=(\d+) kind=(\w+) goal=(\d+) pos=\(([^)]+)\)',line)
+        if m and int(m[1]) in actors:
+            actor,kind,goal=int(m[1]),m[2],int(m[3])
+            c=skills[actors[actor][2]]; c['progress_escapes']+=1; c['progress_escape_'+kind]+=1
+            xyz=[float(v) for v in m[4].split(',')]
+            recovery[actor].append((end,xyz[0],xyz[1]))
+            if kind=='combat' and actor in episodes and episodes[actor]['target']==goal:
+                finish(actor,'no_progress')
         m = re.search(r'AI telemetry EntityId=(\d+) state=(\w+).*health=(-?\d+) weapon=(\d+) ammo=(-?\d+) target=(\d+)',line)
         if m:
             context=int(m[1]); target=int(m[6]); health=int(m[3])
@@ -74,7 +84,16 @@ def parse(path, emit):
                 c=skills[actors[context][2]]
                 c['samples']+=1; c['state_'+m[2]]+=1
                 pos=re.search(r'pos=\(([-\d.]+), ([-\d.]+), ([-\d.]+)\)',line)
-                if pos: positions[context]=(end,float(pos[1]),float(pos[2]),m[2],target,health)
+                if pos: positions[context]=(end,float(pos[1]),float(pos[2]),m[2],target,health,float(pos[3]))
+                if health<=0:
+                    c['progress_recovery_interrupted']+=len(recovery.pop(context,[]))
+                elif pos:
+                    keep=[]
+                    for at,x,y in recovery[context]:
+                        if end-at>8: c['progress_no_horizontal_recovery_8s']+=1
+                        elif (float(pos[1])-x)**2+(float(pos[2])-y)**2>=4: c['progress_horizontal_recoveries_8s']+=1
+                        else: keep.append((at,x,y))
+                    recovery[context]=keep
                 if health>0: c['live_samples']+=1
                 if context in episodes and (target==0 or health<=0): finish(context,'dead' if health<=0 else 'lost_target')
         m = re.search(r'ABILITY PHYSICS: .*sprint=(\d) mode=(\d+).*clients=',line)
@@ -84,13 +103,13 @@ def parse(path, emit):
         if m and context in actors and float(m[1])>0:
             c=skills[actors[context][2]]; c['moving_samples']+=1; c['blocked_samples']+=int(m[2])
             point=positions.get(context)
-            if point and point[5]>0 and point[3] in ('SEARCHING_ENEMY','CHASING_ENEMY','MOVING_TO_WEAPON'):
+            if point and point[5]>0:
                 window=windows.setdefault(context,[])
-                if window and (window[-1][3:5]!=point[3:5] or point[0]-window[-1][0]>3): window.clear()
+                if window and point[0]-window[-1][0]>3: window.clear()
                 window.append(point)
                 if len(window)>=4 and point[0]-window[0][0]>=6:
-                    walked=sum(((b[1]-a[1])**2+(b[2]-a[2])**2)**0.5 for a,b in zip(window,window[1:]))
-                    net=((point[1]-window[0][1])**2+(point[2]-window[0][2])**2)**0.5
+                    walked=sum(((b[1]-a[1])**2+(b[2]-a[2])**2+(b[6]-a[6])**2)**0.5 for a,b in zip(window,window[1:]))
+                    net=((point[1]-window[0][1])**2+(point[2]-window[0][2])**2+(point[6]-window[0][6])**2)**0.5
                     c['progress_windows']+=1
                     c['stationary_windows']+=int(walked<0.8)
                     c['loop_suspect_windows']+=int(walked>=3 and net<1.5)
@@ -138,19 +157,27 @@ def parse(path, emit):
         m = re.search(r'death observed EntityId=(\d+)',line)
         if m and int(m[1]) in actors:
             actor=int(m[1]); c=skills[actors[actor][2]]; c['deaths']+=1
+            c['progress_recovery_interrupted']+=len(recovery.pop(actor,[]))
             if actor in slots and slots[actor]['alive'] is not None:
                 life=end-slots[actor]['alive']; c['completed_life_seconds']+=life; c['completed_lives']+=1
                 c['alive_seconds']+=life; slots[actor]['alive']=None
             finish(actor,'death')
         m = re.search(r'revive result EntityId=(\d+).*sameEntity=1 alive=1',line)
-        if m and int(m[1]) in slots: slots[int(m[1])]['alive']=end
+        if m and int(m[1]) in slots:
+            actor=int(m[1]); slots[actor]['alive']=end
+            skills[actors[actor][2]]['progress_recovery_interrupted']+=len(recovery.pop(actor,[]))
+            windows.pop(actor,None)
     for actor in list(episodes): finish(actor,'log_end')
     for actor in list(slots): close_life(actor)
+    for actor,events in recovery.items():
+        if actor in actors: skills[actors[actor][2]]['progress_recovery_censored']+=len(events)
     result={}
     for skill,c in skills.items():
         v=dict(c)
         for key in ('kills','deaths','damage_dealt_hp','damage_taken_hp','acquisitions','accepted_hit_events',
-                    'withdraw_events','switch_events','progress_windows','stationary_windows','loop_suspect_windows'):
+                    'withdraw_events','switch_events','progress_windows','stationary_windows','loop_suspect_windows',
+                    'progress_escapes','progress_horizontal_recoveries_8s','progress_no_horizontal_recovery_8s',
+                    'progress_recovery_interrupted','progress_recovery_censored'):
             v.setdefault(key,0)
         exposure=c['entity_seconds']/60
         v['kills_per_bot_minute']=round(c['kills']/exposure,3) if exposure else None
@@ -181,7 +208,7 @@ def main():
             path=args.runs.parent/run['log']
             def emit(ep):
                 nonlocal rows,written,truncated
-                ep.update(run=run['tag'],source_sha=run['source_sha'])
+                ep.update(schema=2,run=run['tag'],source_sha=run['source_sha'])
                 blob=(json.dumps(ep,separators=(',',':'))+'\n').encode()
                 if rows>=args.max_episodes or written+len(blob)>args.max_bytes:
                     truncated=True; return
@@ -205,7 +232,7 @@ def main():
                 spawns.setdefault(int(n),dict(number=int(n),actor=int(actor),position=[float(x),float(y),float(z)]))
             metrics['initial_spawns']=[spawns[n] for n in sorted(spawns)]
             result.append(dict(metadata=run,metrics=metrics,skills=parse(path,emit)))
-    args.output.write_text(json.dumps(dict(schema=1,runs=result,episode_rows=rows,
+    args.output.write_text(json.dumps(dict(schema=2,runs=result,episode_rows=rows,
         episode_bytes=written,episode_limit_reached=truncated),indent=2)+'\n',encoding='utf-8')
     print(f'{len(result)} runs; {rows} episodes; {written} bytes; capped={truncated}')
 
