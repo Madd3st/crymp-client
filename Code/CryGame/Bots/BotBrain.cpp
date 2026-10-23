@@ -357,6 +357,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			}
 			else { const Vec3 step=Steer(feet,item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
 			ExecuteIntent(actor,decisionTime);
+			if (bot.GetActor()!=&actor) return;
 			if (m_upgradeTarget && NoProgress(actor,"weapon",m_upgradeTarget))
 			{ MarkBadItem(m_upgradeTarget); m_upgradeTarget=0; m_nextRepath=0; }
 			return;
@@ -405,6 +406,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		{ const Vec3 step=Steer(feet,m_patrolGoal); m_intent.MoveTo(step,step+Vec3(0,0,1.3f)); }
 		TravelGait((m_patrolGoal-feet).GetLength());
 		ExecuteIntent(actor,decisionTime);
+		if (bot.GetActor()!=&actor) return;
 		if (NoProgress(actor,"search",0))
 		{
 			g_pGame->GetBotManager().Nav().ReportStuck(feet);
@@ -534,6 +536,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 
 	}
 	ExecuteIntent(actor,decisionTime);
+	if (bot.GetActor()!=&actor) return;
 	IWeapon* activeWeapon=BotWeapons::Current(actor);
 	const bool protect=m_now-m_combat.LastBurstRequest()<4.0f ||
 		m_now-m_combat.SelectedAt()<0.75f || (activeWeapon && activeWeapon->IsReloading());
