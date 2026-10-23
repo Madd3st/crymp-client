@@ -22,15 +22,15 @@ bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady,
             bind?bind->GetString():"<missing>", lan?lan->GetIVal():-1, mode?mode->GetString():"<missing>");
     return allowed;
 }
-IActor* CryMPEngineAdapter::CreateServerActor(IGameFramework& framework, const Vec3& position)
+IActor* CryMPEngineAdapter::CreateServerActor(IGameFramework& framework, const Vec3& position, const char* name)
 {
-    if (!gEnv || !gEnv->bServer || !gEnv->bMultiplayer || !std::isfinite(position.x) ||
+    if (!gEnv || !gEnv->bServer || !gEnv->bMultiplayer || !name || !*name || !std::isfinite(position.x) ||
         !std::isfinite(position.y) || !std::isfinite(position.z)) return nullptr;
     // ActorSystem::CreateActor safely tolerates GetChannel(0)==nullptr.
     // CActor::Init returns false if BindToNetwork fails: never bind twice.
-    IActor* actor = framework.GetIActorSystem()->CreateActor(0,"WarsBot_01","Player",position,Quat(IDENTITY),Vec3(1,1,1));
-    CryLogAlways("[WarsBots/CryMP] CreateActor EntityId=%u BindToNetwork=%s (CActor::Init prerequisite).",
-        actor?actor->GetEntityId():0, actor?"true":"not confirmed");
+    IActor* actor = framework.GetIActorSystem()->CreateActor(0,name,"Player",position,Quat(IDENTITY),Vec3(1,1,1));
+    CryLogAlways("[WarsBots/CryMP] CreateActor name=%s EntityId=%u BindToNetwork=%s (CActor::Init prerequisite).",
+        name, actor?actor->GetEntityId():0, actor?"true":"not confirmed");
     return actor;
 }
 }

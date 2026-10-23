@@ -294,11 +294,11 @@ void CGameRules::ProcessServerHit(HitInfo& hitInfo)
 	{
 		CreateScriptHitInfo(m_scriptHitInfo, hitInfo);
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
-        g_pGame->GetBotManager().GetSpawner().TraceHit("before-Lua", hitInfo);
+        g_pGame->GetBotManager().TraceHit("before-Lua", hitInfo);
 #endif
 		CallScript(m_serverStateScript, "OnHit", m_scriptHitInfo);
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
-        g_pGame->GetBotManager().GetSpawner().TraceHit("after-Lua", hitInfo);
+        g_pGame->GetBotManager().TraceHit("after-Lua", hitInfo);
         WarsBots::BotMatch::LogScores(hitInfo.targetId,hitInfo.shooterId);
 #endif
 

@@ -1236,11 +1236,8 @@ void CGameRules::KillPlayer(CActor* pActor, bool dropItem, bool ragdoll, EntityI
 			m_pGameplayRecorder->Event(pShooter->GetEntity(), GameplayEvent(eGE_Kill, 0, 0, extra));
 		}
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
-	if (g_pGame->GetBotManager().GetSpawner().Owns(pActor->GetEntityId()))
-		g_pGame->GetBotManager().GetSpawner().TraceKill(shooterId,
-			shooterId && shooterId != pActor->GetEntityId() && m_pActorSystem->GetActor(shooterId));
-	if (g_pGame->GetBotManager().GetSpawner().Owns(shooterId))
-		CryLogAlways("[WarsBots] Combat kill event shooter=%u target=%u via stock GameRules::KillPlayer.", shooterId, pActor->GetEntityId());
+	g_pGame->GetBotManager().TraceKill(pActor->GetEntityId(), shooterId,
+		shooterId && shooterId != pActor->GetEntityId() && m_pActorSystem->GetActor(shooterId));
 #endif
 
 }

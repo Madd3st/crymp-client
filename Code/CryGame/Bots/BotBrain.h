@@ -2,23 +2,29 @@
 #include "CryGame/Bots/BotLocomotion.h"
 #include "CryGame/Bots/BotSuit.h"
 #include "CryGame/Bots/BotCombat.h"
+#include "CryGame/Bots/BotProfile.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 namespace WarsBots
 {
-class BotSpawner;
+class BotInstance;
 class BotBrain
 {
 public:
 	enum class State { SPAWNING, SEEKING_WEAPON, MOVING_TO_WEAPON, SEARCHING_ENEMY,
 		CHASING_ENEMY, ATTACKING, DEAD, RESPAWNING };
-	bool Start(BotSpawner& spawner, const Vec3* requestedPosition);
-	void Stop(BotSpawner& spawner);
-	void Update(BotSpawner& spawner, float dt);
+	// Per-instance tuning and de-synchronisation phase; call once before Start.
+	void Configure(const BotProfile& profile, int number);
+	// Requires an existing owned actor; BotManager creates actors.
+	bool Start(BotInstance& bot);
+	void Stop(BotInstance& bot);
+	void Update(BotInstance& bot, float dt);
 	void Status() const;
-	void AbilityCommand(IConsoleCmdArgs* args);
+	void AbilityCommand(BotInstance& bot, IConsoleCmdArgs* args);
 	bool Running() const { return m_running; }
 	void SetVerbose(bool enabled) { m_verbose = enabled; }
+	const char* StateName() const;
+	EntityId Target() const { return m_combat.Target(); }
 private:
 	void Change(State state);
 	void ResetLife();
@@ -44,6 +50,9 @@ private:
 	float m_patrolUntil = 0;
 	unsigned m_life = 0, m_patrolStep = 0;
 	IEntityClass* m_previousWeaponClass = nullptr;
+	BotProfile m_profile;
+	int m_number = 0;
+	float m_phase = 0;
 	BotLocomotion m_locomotion;
 	BotCombat m_combat;
 };

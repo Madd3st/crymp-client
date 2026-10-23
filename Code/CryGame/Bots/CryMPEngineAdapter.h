@@ -7,6 +7,6 @@ namespace WarsBots {
 class CryMPEngineAdapter {
 public:
     static bool LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic);
-    static IActor* CreateServerActor(IGameFramework& framework, const Vec3& position);
+    static IActor* CreateServerActor(IGameFramework& framework, const Vec3& position, const char* name);
 };
 }

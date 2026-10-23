@@ -235,7 +235,7 @@ bool CShotValidator::CanHit(const HitInfo &hit) const
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 	// A server-created bullet has no client shot queue. Accept only the owned probe's
 	// actual non-remote projectile and weapon; never fabricate a channel or trust client RMIs.
-	if (gEnv->bServer && g_pGame && g_pGame->GetBotManager().GetSpawner().IsOwnedProjectileHit(hit))
+	if (gEnv->bServer && g_pGame && g_pGame->GetBotManager().IsOwnedProjectileHit(hit))
 		return true;
 #endif
 

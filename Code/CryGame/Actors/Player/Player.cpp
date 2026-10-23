@@ -240,8 +240,7 @@ CPlayer::~CPlayer()
 bool CPlayer::Init(IGameObject * pGameObject)
 {
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
-	if (gEnv->bServer) m_warsBotActor = g_pGame->GetBotManager().GetSpawner().IsCreatingActor() &&
-		!strcmp(pGameObject->GetEntity()->GetName(),"WarsBot_01");
+	if (gEnv->bServer) m_warsBotActor = g_pGame->GetBotManager().IsCreatingActor(pGameObject->GetEntity()->GetName());
 #endif
 
 	if (!CActor::Init(pGameObject))
@@ -4940,8 +4939,8 @@ void CPlayer::EnsureWarsBotSuit()
 }
 void CPlayer::SetWarsBotActions(bool sprint, bool moving, EStance stance)
 {
-	if (!gEnv->bServer || !g_pGame->GetBotManager().GetSpawner().Owns(GetEntityId())) return;
-	if (!g_pGame->GetBotManager().GetSpawner().AIEnabled()) m_pMovementController->Reset();
+	if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
+	if (!g_pGame->GetBotManager().AIEnabled(GetEntityId())) m_pMovementController->Reset();
 	sprint=sprint && moving && GetHealth()>0 && !WarsBotWeaponFiring() && m_pNanoSuit && m_pNanoSuit->IsActive();
 	if (sprint!=m_warsBotSprint) CryLogAlways("[WarsBots] BOT ACTION: SPRINT %s.",sprint?"START":"STOP");
 	m_warsBotSprint=sprint; m_warsBotStance=stance;
@@ -4951,13 +4950,13 @@ void CPlayer::SetWarsBotActions(bool sprint, bool moving, EStance stance)
 }
 void CPlayer::PublishWarsBotJump(bool strength)
 {
-	if (!gEnv->bServer || !g_pGame->GetBotManager().GetSpawner().Owns(GetEntityId())) return;
+	if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
 	++m_warsBotJumpSerial; m_warsBotStrengthJump=strength; m_warsBotAirborne=true;
 	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
 }
 void CPlayer::SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& aim, bool strafe)
 {
-	if (!gEnv->bServer || !g_pGame || !g_pGame->GetBotManager().GetSpawner().Owns(GetEntityId())) return;
+	if (!gEnv->bServer || !g_pGame || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
 	m_warsBotPose = true;
 	m_warsBotStrafe = strafe && speed>0.01f;
 	m_warsBotDirection = Vec3(direction.x,direction.y,0).GetNormalizedSafe(m_baseQuat.GetColumn1());
@@ -4968,7 +4967,7 @@ void CPlayer::SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& a
 void CPlayer::UpdateWarsBotMotion(float dt)
 {
 	if (!m_warsBotPose || GetChannelId()!=0 || GetHealth()<=0 || m_stats.isRagDoll || IsFrozen()) return;
-	if (gEnv->bServer && !g_pGame->GetBotManager().GetSpawner().Owns(GetEntityId())) return;
+	if (gEnv->bServer && !g_pGame->GetBotManager().Owns(GetEntityId())) return;
 	Vec3 forward = m_baseQuat.GetColumn1();
     Vec3 facing = m_warsBotStrafe ? m_warsBotAim-GetEntity()->GetWorldPos() : m_warsBotDirection;
     facing.z=0; facing.NormalizeSafe(forward);
@@ -5195,7 +5194,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 	if (aspect == eEA_GameServerDynamic)
 	{
-		bool bot = gEnv->bServer ? g_pGame->GetBotManager().GetSpawner().Owns(GetEntityId()) && m_warsBotPose : m_warsBotPose;
+		bool bot = gEnv->bServer ? g_pGame->GetBotManager().Owns(GetEntityId()) && m_warsBotPose : m_warsBotPose;
 		// CryNetwork caches aspect layouts: conditional payload must be an optional group.
         bot = ser.BeginOptionalGroup("WarsBotMotion",bot);
         if (bot)

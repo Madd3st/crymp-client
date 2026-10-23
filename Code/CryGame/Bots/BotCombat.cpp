@@ -1,6 +1,7 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotWeapons.h"
+#include "CryGame/Bots/BotTargeting.h"
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Game.h"
 #include "CryCommon/CryAction/IActorSystem.h"
@@ -12,15 +13,18 @@ namespace WarsBots
 {
 namespace
 {
-bool Enemy(IActor* target, EntityId self)
+unsigned g_rayCount = 0;
+unsigned g_scanCount = 0;
+// Hostility comes from the shared participant model: humans with a live channel AND
+// channel-0 bots from our registry are both valid targets; teams decide alliances.
+bool Enemy(IActor* target, CActor& self)
 {
-	return target && target->GetEntityId() != self && target->GetChannelId() != 0 &&
-		target->GetHealth() > 0 && !strcmp(target->GetEntity()->GetClass()->GetName(), "Player") &&
-		static_cast<CActor*>(target)->GetSpectatorMode() == 0 &&
-		!target->GetEntity()->IsHidden() && !target->GetLinkedVehicle() &&
-		g_pGame->GetIGameFramework()->GetNetChannel(target->GetChannelId()) != nullptr;
+	return BotTargeting::IsEnemy(self, target);
 }
 }
+
+unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
+unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
 void BotCombat::Reset() { StopFire(); m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
 
@@ -42,6 +46,7 @@ IPhysicalEntity* HeldPhysics(IActor& actor)
 bool ClearRay(CActor& actor, IActor& target, const Vec3& origin, const Vec3& end, EntityId& obstruction)
 {
 	ray_hit hit;
+	++g_rayCount;
 	int count = gEnv->pPhysicalWorld->RayWorldIntersection(origin, end-origin,
 		ent_all, rwi_stop_at_pierceable | rwi_colltype_any, &hit, 1,
 		actor.GetEntity()->GetPhysics(), HeldPhysics(actor));
@@ -101,7 +106,7 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 {
 	auto* actors = g_pGame->GetIGameFramework()->GetIActorSystem();
 	IActor* old = actors->GetActor(m_target);
-	if (Enemy(old, actor.GetEntityId()) &&
+	if (Enemy(old, actor) &&
 		(old->GetEntity()->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared() < 6400)
 	{
 		Observe(actor, *old, now, verbose);
@@ -111,10 +116,11 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 	m_target = 0;
 	m_visible = false;
 	float best = 6400;
+	++g_scanCount;
 	IActorIteratorPtr iterator = actors->CreateActorIterator();
 	while (IActor* candidate = iterator->Next())
 	{
-		if (!Enemy(candidate, actor.GetEntityId())) continue;
+		if (!Enemy(candidate, actor)) continue;
 		float distance = (candidate->GetEntity()->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared();
 		if (distance < best && Observe(actor, *candidate, now, verbose))
 		{
@@ -127,7 +133,8 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 		m_lastSeen = now;
 		IActor* found = actors->GetActor(m_target);
 		Observe(actor, *found, now, false);
-		CryLogAlways("[WarsBots] Enemy acquired id=%u name=%s.", m_target, found->GetEntity()->GetName());
+		CryLogAlways("[WarsBots] Bot %u acquired enemy id=%u name=%s kind=%s.", actor.GetEntityId(), m_target,
+			found->GetEntity()->GetName(), BotTargeting::Name(BotTargeting::Kind(found)));
 		return found;
 	}
 	return nullptr;
@@ -136,7 +143,7 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 {
 	IWeapon* weapon = BotWeapons::Current(actor);
-	if (!weapon || !Enemy(&target, actor.GetEntityId()) || !CanSee(actor, target)) { StopFire(); return false; }
+	if (!weapon || !Enemy(&target, actor) || !CanSee(actor, target)) { StopFire(); return false; }
 	// Detection can use eyes; shooting must also have a clear muzzle-to-chest ray.
 	SMovementState muzzleState;
 	actor.GetMovementController()->GetMovementState(muzzleState);
@@ -155,8 +162,8 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 	if (!m_firingWeapon && now >= m_nextBurst && weapon->CanFire())
 	{
 		m_firingWeapon = actor.GetCurrentItem()->GetEntityId();
-		m_burstEnd = now + 0.2f;
-		m_nextBurst = now + 0.65f;
+		m_burstEnd = now + m_burst;
+		m_nextBurst = now + m_burstGap;
 		weapon->StartFire();
 		if (verbose) CryLogAlways("[WarsBots] Stock weapon burst requested weapon=%u target=%u.", m_firingWeapon, target.GetEntityId());
 	}

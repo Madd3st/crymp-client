@@ -1,6 +1,7 @@
 #pragma once
 #include "CryCommon/CryMath/Cry_Math.h"
 #include "CryCommon/CryEntitySystem/IEntity.h"
+#include "CryGame/Bots/BotProfile.h"
 class CActor;
 struct IActor;
 namespace WarsBots
@@ -8,6 +9,7 @@ namespace WarsBots
 class BotCombat
 {
 public:
+	void Configure(const BotProfile& profile) { m_burst = profile.burst; m_burstGap = profile.burstGap; }
 	void Reset();
 	void StopFire();
 	IActor* FindEnemy(CActor& actor, float now, bool verbose = false);
@@ -19,6 +21,9 @@ public:
 	const Vec3& LastPosition() const { return m_lastPosition; }
 	const Vec3& LastAim() const { return m_lastAim; }
 	float SampleTime() const { return m_sampleTime; }
+	// Profiling counters across all bots (main thread only), reset on read.
+	static unsigned TakeRayCount();
+	static unsigned TakeScanCount();
 private:
 	bool Observe(CActor& actor, IActor& target, float now, bool verbose);
 	bool m_visible = false;
@@ -29,5 +34,6 @@ private:
 	float m_lastSeen = 0;
 	float m_nextBurst = 0;
 	float m_burstEnd = 0;
+	float m_burst = 0.2f, m_burstGap = 0.65f;
 };
 }

@@ -3,6 +3,7 @@
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Player/Player.h"
+#include "CryGame/Bots/BotManager.h"
 #include "CryCommon/CryScriptSystem/IScriptSystem.h"
 #include <algorithm>
 #include <cstring>
@@ -13,7 +14,7 @@ bool BotMatch::IsBot(const CGameRules& rules, EntityId id)
     IActor* actor=g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(id);
     if (!actor || strcmp(actor->GetEntity()->GetClass()->GetName(),"Player") ||
         !static_cast<CPlayer*>(actor)->IsWarsBotActor()) return false;
-    return !gEnv->bServer || g_pGame->GetBotManager().GetSpawner().Owns(id);
+    return !gEnv->bServer || g_pGame->GetBotManager().Owns(id);
 }
 void BotMatch::Collect(const CGameRules& rules, std::vector<EntityId>& bots)
 {
