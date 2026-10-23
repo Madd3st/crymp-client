@@ -1,78 +1,143 @@
-# Handoff: CryMP migration
+# Agent handoff — WarsBots for CryMP (multi-bot checkpoint, 2026-10-23)
 
-Read STATUS and WARSBOTS_PORT first. Source WarsBots snapshot `2da4bf1` is clean and
-preserved in its original repository; the new primary development repo is this fork.
-Master matches upstream `eb13a69`; warsbots/main starts there. Work is on
-`warsbots/feature/locomotion` after `1fe4be11` MVP; only the integrator edited shared files.
+Branch under review: `warsbots/feature/multibot` (fork `Madd3st/crymp-client`).
+Base: `warsbots/feature/ia-participants` WIP `6718af16` → `6a8c241c` (C2660 fix) → multi-bot series.
+`warsbots/main` (`caf1a815`) is untouched; nothing here is merged. Upstream is never pushed.
 
-Two read-only agents audited engine integration and movement/CryAI respectively;
-no competing file edits or additional worktrees. Main integrator ported, compiled
-and ran tests. PR360 is merged upstream: AI.RegisterWithAI is already enabled;
-this does not establish navigation data or working CryAI behavior on IA maps.
+Read with this file: [STATUS](STATUS.md) (evidence log), [AI_TESTS](AI_TESTS.md) (how to run),
+[MULTIBOT_DESIGN](MULTIBOT_DESIGN.md), [ARCHITECTURE_REVIEW](ARCHITECTURE_REVIEW.md),
+[COMBAT_REFERENCE](COMBAT_REFERENCE.md), [AI_LEARNING_FEASIBILITY](AI_LEARNING_FEASIBILITY.md).
 
-Important integration lessons:
+## 1. Verification vocabulary (what PASS means here)
 
-1. `Base` compiles CryMP Server/Client code that allocates CGame. Experimental
-   class-layout defines MUST propagate from Base PUBLIC to CryGame and launchers.
-   CryGame-only PUBLIC caused a map-load crash in CryAction offset0x2db517.
-   /MAP resolved the caller to GameFramework::StartGameContext; fixed build runs.
-2. Never access GameObject/GetChannelId from early SerializeSpawnInfo. Preserve
-   native teamId; initialize suit after Init/Revive. Match both experimental EXEs.
-3. No new address patches; native ActorSystem channel0/BindToNetwork is retained.
-   CryMP channel0 IsChannelOnHold is already safe; do not reintroduce the Wars fix.
-4. OFF is a real upstream protocol build, ON changes bot spawn/motion serialization.
-   The `build/baseline` cache was reused and now holds ON; use the build script flags.
+| Level | Meaning |
+|---|---|
+| BUILD PASS | MSVC 19.44 x64 Release, Ninja, `Tools/Build-WarsBots.ps1` on the owner's PC, zero errors |
+| SERVER-LOG PASS | headless loopback IA server (port 64120, **no client**) log shows the event chain; parsed by `Tools/wb_log_report.py` |
+| CLIENT/VISUAL | a real client watched it — **none yet for this branch** |
+| USER | owner confirmed in play — **none yet for this branch** |
 
-The user is testing the launched CryMP client and server; do not terminate their
-session or replace locked EXEs without agreement. Process IDs are local build/*.txt,
-but verify actual process identity and whether the player is still connected.
-The first client user confirmation covered visibility/movement/shooting. Server
-confirmed death/respawn of the same actor and genuine weapon damage in both directions.
+A SERVER-LOG PASS proves server simulation, native damage/kill/score paths and lifecycle.
+It does not prove replication to clients, animation, or "plays well".
 
-Strafe intent/body-look replication and native Speed selection are implemented;
-read STATUS for measured repeat trials and unproven chase/client cases.
-Latest user steering prioritizes proper IA participants and the scoreboard.
-Keep Strength clearance and native energy mechanics.
-Investigate headshot AI-vs-player damage parity separately; no health/multiplier change
-has been made. Do not claim the entire long-term request complete.
+## 2. Milestones
 
-## Передача в основной чат: сохранение по лимиту
+| | What | Status | Evidence |
+|---|---|---|---|
+| M1 | build ON + OFF | **BUILD PASS** at `ce36de5b`; ON re-built at `8e26fb32`, `49f2bae2`, `7572a4f5` | runner `build-on: PASS` |
+| M2 | one bot = old behaviour | not re-run in isolation; covered by M3 (same code path, Universal/Normal = caf1a815 constants) | — |
+| M3 | 2 bots, no human, fight | **SERVER-LOG PASS** twice (`49f2bae2`, `7572a4f5`) | see §5 |
+| M4 | 6 bots | **SERVER-LOG PASS** (`7572a4f5`, partial 240/300 s read) | STATUS "M3b and M4" |
+| M5 | remove/re-add/map change | partial: native IA reset → remove → restore PASS; `wb_remove`/`wb_remove_all` mid-match NOT RUN | — |
+| M6 | human + bots, 2 clients | NOT RUN on this branch | needs owner |
 
-Основной проект теперь Madd3st/crymp-client, локально local/crymp-client внутри
-старого WarsBots checkout. Рабочая main: caf1a815 (Combat MVP + locomotion),
-сохранённая WIP-ветка: warsbots/feature/ia-participants. Старый WarsBots не удалён.
+## 3. Architecture after this series
 
-Успели: чистая MSVC x64 Release сборка CryMP; порт актуального Wars AI; реальный
-сервер и клиент; видимый бот, стрельба/урон/убийство и native respawn того же EntityId.
-Пользователь подтвердил движение и бой, затем левый/правый стрейф. В открытой точке
-физически: strafe left2/2 right2/2, sprint2/2 (5.46м/с, расход энергии), Strength2/2
-(vz9.60, подъём3.62/3.63, штатное приземление), normal1/1. Стартовый закрытый spawn
-не прошёл правый стрейф: local avoidance отвёл движение. Late одиночный клиент
-получил replica; два одновременных клиента НЕ подтверждены.
+```
+CGame::m_botManager : WarsBots::BotManager          (only when WARSBOTS_EXPERIMENTAL_SPAWNER)
+  ILevelSystemListener / IEntitySystemSink / IGameFrameworkListener, console cmds + cvars
+  unordered_map<EntityId, unique_ptr<BotInstance>> m_bots
+  BotInstance                      one bot: identity, number 1..16, name WarsBot_NN, BotProfile,
+    Spawn/Remove/Revive/OnEntityDone, per-bot profiling, owned-projectile check
+    BotBrain                       FSM (SEEKING_WEAPON → SEARCHING_ENEMY → CHASING → ATTACKING → DEAD/RESPAWNING)
+      BotBlackboard, BotIntent, BotCombat, BotLocomotion(BotMovement), BotSuit
+BotTargeting   Kind(actor) {Human, Bot, None}; Classify(self, other) {Enemy, Ally, Dead, Spectator, ...}
+BotProfile     6 styles × 4 skills, plain parameters
+BotMatch       IA participant registration (Lua wrapper Pak/Scripts/WarsBots/InstantAction.lua)
+CryMPEngineAdapter  loopback-IA gate, ActorSystem::CreateActor(channel 0, name)
+```
 
-Последняя просьба пользователя — показывать бота в таблице и считать участником IA.
-Подготовлены BotMatch/participant API, HUD и Lua wrappers, но сборка WIP упала на
-BotMatch.cpp41/46 (Script::Call C2660). Эта версия не установлена/не запущена.
-Продолжить с исправления реального script call API, затем собрать и проверить IA.
-Не менять глобальный IsPlayer/каналы/античит. Не объявлять scoreboard готовым.
+### BotManager (replaces BotSpawner, deleted)
+- `Owns(id)` / `Find(id)` / `AIEnabled(id)` are the only questions engine hooks ask.
+- During `BotInstance::Spawn` the instance is exposed through `m_spawning` so `BotMatch::Register`
+  and `CPlayer::Init` (`IsCreatingActor(name)`) recognise it before it is in the map.
+- `OnPostUpdate`: restore pending roster → update every bot in number order → `Sweep()` expired.
+- `ENTITY_EVENT_DONE` never erases (it can fire inside our own `RemoveEntity`). If the entity was
+  **not** removed by us (`BotInstance::Removing()==false`) and the level is live, the bot is added
+  to a roster and re-created next frame with the same number/profile — see §6 "IA restart".
+- `eAE_resetBegin` also snapshots the roster; level end / disconnect clear everything.
+- `ChooseSpawnLocation(self, avoid)`: native `IsSpawnLocationSafe` (other Player bodies, bots
+  included) + `TestSpawnLocationWithEnvironment`, per-bot salted start index.
+- Commands: `wb_add [n] [skill] [style]`, `wb_remove <number>`, `wb_remove_all`, `wb_list`,
+  `wb_status`, `wb_debug 0|1`, `wb_select <number>`; cvars `wb_maxbots` (6, hard 16), `wb_skill`,
+  `wb_probe_local_test` (gate, 0), `wb_bot_cloak_experimental` (0). Legacy `wb_bot_*`/`wb_probe_*`
+  act on the selected bot.
 
-Остановились по просьбе пользователя из-за лимита. Рабочий клиент/сервер оставлены
-пользователю (последние PID31740/14960, проверить перед любыми действиями).
-Запуск из build/baseline с -dir оригинальной игры; root EXE могли остаться старее.
-Не убивать игру и не заменять EXE без нового согласования. Никаких новых тестов
-после команды сохранить не проводилось. Полные native логи локальны и не в Git.
+### BotInstance
+Holds EntityId + `const IEntity*` identity guard (compared, never dereferenced). `Revive` uses the
+shared spawn chooser and native `CGameRules::RevivePlayer`. Profiling: wall ms per Update.
 
-## Cloud session 2026-10-23: multi-bot (UNCOMPILED)
+### Targeting (BotTargeting)
+Old `Enemy()` required `GetChannelId()!=0` + live `INetChannel` → bots could never target bots.
+Now: Human = Player with a live server channel; Bot = owned by the registry; then self / spectator /
+dead / hidden-or-in-vehicle are excluded; same non-zero `CGameRules::GetTeam` → Ally; else Enemy.
+IA has team 0 → free-for-all. Perception unchanged: 80 m, LOS rays eyes→chest and eyes→eyes, muzzle
+ray before firing; no wallhack.
 
-GitHub push was unavailable (account not linked); work was delivered as a git bundle.
-Branches: `warsbots/feature/ia-participants` + `6a8c241c` (C2660 fix), and
-`warsbots/feature/multibot` = that + `a8a56583` + docs. Single integrator, no subagents
-(code size ~2k lines; no build tool in the sandbox made parallel agents pointless).
+### Brain changes
+Per-bot `Configure(profile, number)`: golden-ratio phase for aim noise, staggered 10 Hz decision tick,
+strafe side/period offsets, patrol order. Ranges, reaction, aim error, burst/gap from BotProfile.
+`SEARCHING_ENEMY` roams between IA spawn points (public map knowledge) instead of 6–10 m local legs;
+1.5 s blocked → one local detour leg. Falling faster than 3 m/s → Defense (Armor) even in freefall;
+moving Strength jumps also probe the far touchdown (5.5 m, refuse drops > 2.5 m).
 
-First action for the next session: fetch the bundle, build ON (`-Experimental`) and OFF.
-Likely compile hotspots if any: `_snprintf`/`_stricmp` (MSVC-only, intended), `BotManager.h`
-being included from `Game.h` (pulls BotInstance → BotBrain, as BotSpawner.h did before),
-`CTimeValue::GetMilliSecondsAsInt64`. Then run AI_TESTS M1–M6 on a separate QA port, not the
-user's session. Commands: `wb_add`, `wb_list`, `wb_status`, `wb_remove`, `wb_remove_all`,
-`wb_debug`, `wb_select`, cvars `wb_maxbots`, `wb_skill`. Legacy `wb_bot_*`/`wb_probe_*` act on
-the selected bot, so `Tools/Test-WarsBotsServer.ps1` should keep working unchanged.
+### GameRules / ShotValidator / Player / serialization
+Only call-site changes: `GetSpawner().Owns(...)` → `GetBotManager().Owns(...)`, `TraceHit/TraceKill`
+through the manager, `IsOwnedProjectileHit` through the manager. Network serialization
+(`WarsBotMotion`, `WarsBotSuitActive` optional groups, `warsBotActor` spawn info) is **unchanged**;
+`CPlayer::Init` marks a bot by `IsCreatingActor(entityName)` instead of the fixed name `WarsBot_01`.
+GameRules participant APIs from the IA WIP (`IsMatchParticipant`, `GetMatchParticipants`,
+`GetMatchParticipantCount`, `IsPlayerInGame`) are unchanged.
+
+### IA integration (from WIP, fixed)
+`BotMatch::Register`: `Script::CallMethod(hooks, "Attach", rules)` and
+`Script::CallMethod(rules, "ResetScore", id)` (was nonexistent `Script::Call` overload → C2660).
+Flag `warsBotParticipant` is set only after ResetScore succeeds.
+
+## 4. Invariants (do not break)
+No fake INetChannel / OnClientConnect(0); global `IsPlayer()` unchanged; ShotValidator accepts only
+an owned bot's real non-remote projectile of its own weapon; no teleport, no direct HP writes, no
+infinite energy; experimental CMake OFF by default; runtime gate 0; loopback LAN InstantAction only.
+
+## 5. Evidence
+
+M3 `49f2bae2` (`WarsBots-Claude-m3-173247.log`, 240 s): 2 bots; native IA RestartGame removed both,
+2/2 restored (new EntityIds); REAL PICKUP of map weapons after reset; 8 acquisitions `kind=bot`;
+9 bot→bot hits; WarsBot_02 killed WarsBot_01 (4×31) via stock KillPlayer; IA SCORE shooter 1/0,
+victim deaths +1; revives 2/2 same EntityId; avg ≈0.03 ms/frame; no crash. 3 fall self-hits (fixed next).
+M3b `7572a4f5` (`m3b-174130`, 240 s): restored 2/2; 8 bot→bot hits; 1 bot→bot kill, scores 1/0 and 0/1;
+**0 self-damage**; no crash.
+M4 `7572a4f5` (`m4-174530`): 6 bots, 6/6 restored after IA restart, 24 bot→bot acquisitions,
+61 bot→bot hits, 4 kills by three different bots, 4/4 revives, 0.077 ms/frame for all six, no crash.
+
+Performance: per-bot update ≈0.01–0.02 ms average, worst frame ≤1–2 ms (first frames, item spawn);
+≤350 rays per 10 s report for 2 bots. Not yet compared with a bot-free baseline frame time.
+
+## 6. Known bugs / limits
+- **IA restart**: bots count as participants, so PreGame start timer fires and native RestartGame
+  deletes runtime actors via `GameFramework::Reset` without `eAE_resetBegin`. We re-create them
+  (new EntityIds, scores reset by the native restart). Works; but it is detection-by-side-effect.
+  Better: hook the IA `RestartGame`/`OnResetEntities` path explicitly.
+- Each commit changes `version.h` (git describe) → most of CryGame rebuilds (~2–3 min).
+- No pathfinding: straight lines + local avoidance; enclosed spots still block.
+- Headshot: incoming 26 → health −1067 in an old run; hypothesis in ARCHITECTURE_REVIEW, unverified.
+- Not observed on this branch: client view of N bots, Tab rendering, bot vs human, two clients,
+  `wb_remove` mid-match, map change, team modes, Power Struggle.
+- Cloak OFF by default. Test SCAR fallback still used before map pickups exist (pre-reset phase).
+
+## 7. Refactoring recommendations
+1. Replace reset detection with an explicit IA hook (Lua wrapper `RestartGame` → C++ notify).
+2. Split BotBrain (≈420 lines) into decision (FSM) and tactics (range/strafe/suit) modules.
+3. Target scans: O(N²); time-slice when N>8 after a baseline measurement.
+4. Move test-ability commands out of BotBrain into a debug controller.
+5. Navigation provider interface (CryAI if nav data exists on IA maps, else waypoint graph).
+
+## 8. QA automation
+`Tools/ClaudeQA/*` (copy into `<checkout>\ClaudeQA\`, write `game-dir.txt` with the Crysis root):
+runner polls `inbox\*.json` → fresh `Claude-Job.ps1` per job (build on|both, qa runs, push) →
+`outbox\<id>.json` with HEAD. Separate worktree `..\crymp-multibot`; never touches game-root EXEs or
+the owner's port-64110 session. `Tools/wb_log_report.py <log>` → summary + M3 verdict.
+
+## 9. Next task
+Tactical combat quality on 6 bots (target switching, damage reaction, cover/height, suit use) with
+M4 as the regression gate; then owner playtest against bots (instructions in AI_TESTS "Owner test").

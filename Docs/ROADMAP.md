@@ -16,3 +16,8 @@ Crysis Wars is preserved as source/history, not the primary implementation targe
 
 Текущий приоритет пользователя: IA scoreboard/participant identity в отдельной
 ветке, до дальнейшего развития AI. WIP build blocker указан в STATUS.
+
+## 2026-10-23 multi-bot checkpoint
+Phase 5 started early: BotManager registry, independent BotInstance, bot-vs-bot targeting, profiles.
+M3 (2 bots) and M4 (6 bots) SERVER-LOG PASS without humans. Next: tactical quality on 6 bots,
+owner playtest, navigation provider, then team modes and Power Struggle objectives.

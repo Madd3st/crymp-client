@@ -6,3 +6,5 @@ out/
 
 CMakeSettings.json
 Build/
+# Local Claude QA runner workspace (see Tools/ClaudeQA)
+/ClaudeQA/

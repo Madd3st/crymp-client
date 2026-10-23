@@ -43,7 +43,7 @@ Automated physical checks on an isolated QA server: `Tools/Test-WarsBotsServer.p
 It stops only its own no-client QA process after physical evidence or a bounded
 failed test; the user's server on64110 is separate. Results are under build/server-qa.
 
-## Multi-bot (warsbots/feature/multibot) — NOT RUN yet
+## Multi-bot (warsbots/feature/multibot) — M1, M3, M4 SERVER-LOG PASS; M2/M5/M6 open
 
 Same server line. After `wb_probe_local_test 1`:
 ```text
@@ -78,3 +78,11 @@ builds incrementally (`build/multibot-on|off`), runs headless loopback servers o
 Only these fixed job types exist; it never touches game-root EXEs or the user's port-64110 session.
 `python3 Tools/wb_log_report.py <log>` prints created/resets/acquisitions/hits/kills/revives/profile
 and an M3 verdict. GUI is reserved for client visuals and two-client tests.
+
+## Owner test (needs a human; Claude cannot judge visuals)
+
+Build: `<checkout>\..\crymp-multibot\build\multibot-on\CryMP-{Server,Client}64.exe` (check `wb_status` HEAD in
+`ClaudeQA\outbox\*.json`). Server on a free port (not your 64110 session), then in its console:
+`wb_probe_local_test 1`, `wb_add 4`, `wb_debug 1`. Join with the matching ON client, play 10 minutes.
+Report: (1) do bots look like they strafe/jump/sprint naturally, (2) do they chase you when you run,
+(3) Tab shows bots with correct kills/deaths/headshots, (4) any frozen/sliding/T-pose bots, (5) server log.

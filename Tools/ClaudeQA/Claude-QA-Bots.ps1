@@ -4,11 +4,13 @@ param([int]$Bots = 2, [int]$Seconds = 120, [string]$Tag = 'm3')
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot -Parent
 $wt = Join-Path (Split-Path $repo -Parent) 'crymp-multibot'
-$game = 'E:\Steam\steamapps\common\Crysis'
 $out = Join-Path $repo 'build\claude-qa'
 New-Item -ItemType Directory -Force $out | Out-Null
 $done = Join-Path $out "$Tag.done"
 Remove-Item -LiteralPath $done -ErrorAction SilentlyContinue
+$gameFile = Join-Path $PSScriptRoot 'game-dir.txt'
+if (-not (Test-Path $gameFile)) { Set-Content $done 'NO_GAME_DIR (ClaudeQA\game-dir.txt)'; exit 1 }
+$game = (Get-Content -LiteralPath $gameFile -Raw).Trim()
 $exe = Get-ChildItem -Path (Join-Path $wt 'build\multibot-on') -Recurse -Filter 'CryMP-Server64.exe' | Select-Object -First 1
 if (-not $exe) { Set-Content $done 'NO_SERVER_EXE'; exit 1 }
 $name = "WarsBots-Claude-$Tag-$([DateTime]::Now.ToString('HHmmss')).log"

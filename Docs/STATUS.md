@@ -2,7 +2,7 @@
 
 Repository: https://github.com/Madd3st/crymp-client.
 Integration `warsbots/main`; working baseline `caf1a815` on `warsbots/main`; current WIP `warsbots/feature/ia-participants`.
-Local checkout: `C:\Users\Magic8\OneDrive\Документы\ChatGPT\Crysis wars bot\local\crymp-client`.
+Local checkout: `<checkout>`.
 See [port provenance](WARSBOTS_PORT.md), [tests](AI_TESTS.md), [handoff](AGENT_HANDOFF.md).
 
 ## Implemented
@@ -37,12 +37,12 @@ User confirmed visible left/right combat strafe in the new build.
   after Lua. Damage multipliers/health were not changed; IA parity needs investigation.
 
 Experimental artifacts in `build/baseline/` and installed in original Crysis root:
-`E:\Steam\steamapps\common\Crysis` (CrySystem 6156). The build directory name is
+`<CrysisRoot>` (CrySystem 6156). The build directory name is
 historical: CMake cache there is currently experimental ON, not the original baseline.
 SHA256 client `B29621EF5565480630D0BE66F371EE1EBF1AB375647EDFF0EE1BE59885D10640`;
 server `2C71B62D567D045D7FD7575B2403C0EF71B8B7FEE46556F73D7B1EE4E513F6F3`.
 
-Logs are under `C:\Users\Magic8\OneDrive\Документы\My Games\Crysis`, not game root:
+Logs are under `<Documents>\My Games\Crysis`, not game root:
 `WarsBots-CryMP-Port-Fixed.log`, `WarsBots-CryMP-Port-Client.log`.
 Local build logs: `build/baseline-build.log` (first RC failure),
 `baseline-retry.log` (clean PASS), `default-off-build.log`, `port-abi-build.log`.
@@ -60,7 +60,7 @@ Do not replace these CryMP results with older Crysis Wars validation or vice ver
 ## Locomotion follow-up
 
 Base Combat MVP saved as `1fe4be11` and integrated in warsbots/main. New runtime is
-launched from build/baseline EXEs with `-dir "E:\Steam\steamapps\common\Crysis"`.
+launched from build/baseline EXEs with `-dir "<CrysisRoot>"`.
 Game-root EXEs stayed file-locked after process exit; do not assume they were updated.
 Active test server/client IDs are in build/locomotion-*-pid.txt; never stop user gameplay
 without agreement. Current build hashes (different from MVP above):
@@ -153,3 +153,15 @@ kills=1, victim deaths+1; 2/2 revives of the same EntityId; ≈0.03 ms/frame for
 Defect: 3 self-damage (fall) hits after obstacle Strength jumps off ledges, 1 death (suicide −1 kill,
 native IA rule). Fixed in `7572a4f5` (Armor while falling, far-landing probe) — retest pending.
 Not yet observed: headshot scoring, Tab rendering on a client, bot vs human after this refactor.
+
+### M3b and M4: SERVER-LOG PASS (`7572a4f5`, QA 64120, no human)
+
+- M3b `m3b-174130`, 2 bots, 240 s: restored 2/2 after IA restart, 8 bot→bot hits, 1 kill, IA scores
+  1/0 and 0/1, **0 self-damage** (fall fix effective in this sample), no crash.
+- M4 `m4-174530`, 6 bots (universal, assault, marksman, flanker, defender, hunter), first ~240 s of 300:
+  6 distinct initial spawns (min separation 30.3 m); IA restart → 6/6 restored; 24 acquisitions all
+  `kind=bot`; 61 bot→bot hits, 1351 damage; 4 kills by bots #2 (2), #3, #6; 4 deaths; 4/4 revives same
+  EntityId; 1 self-hit (1 hp); PROFILE max 0.077 ms/frame for all 6 bots, worst frame 1.37 ms,
+  ≤2868 rays per 10 s report; no crash.
+Meaning: the server simulates 6 independent bots that find, shoot, kill and respawn each other through
+native systems. Not proven: client view, animations, tactics quality, bot vs human on this branch.
