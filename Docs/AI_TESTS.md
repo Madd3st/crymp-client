@@ -35,3 +35,10 @@ Default OFF and runtime gate closed must leave ordinary players unaffected.
 
 Distinguish decision, executor acceptance, physical result and client display.
 Current outcomes and startup errors are in STATUS; unexecuted cases are NOT RUN.
+
+`wb_bot_strafe left|right|auto` performs a six-second aimed lateral test.
+Automated physical checks on an isolated QA server: `Tools/Test-WarsBotsServer.ps1
+-GameDirectory <CrysisRoot> -ServerExe <builtServer> -Case left -Trial 1
+-SpawnPosition 1242,1351,136`. Also supports right, run, sprint, normal, strength.
+It stops only its own no-client QA process after physical evidence or a bounded
+failed test; the user's server on64110 is separate. Results are under build/server-qa.

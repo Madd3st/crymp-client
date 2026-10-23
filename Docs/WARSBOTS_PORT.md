@@ -45,6 +45,7 @@ Keep WarsBots decisions/combat and native CryMP execution now; add CryAI as an o
 route provider only after a comparative map test. Full CryAI replacement is deferred.
 No general navigation, multiple-bot registry, scoreboard or Power Struggle migration yet.
 
-Strafing and improved Speed chase are a later change after basic port gameplay passes;
-the port currently preserves the old movement behavior. Strength uses native mechanics
-but no CryMP repeatability result is claimed from old Wars measurements.
+Strafing now has separate world movement, aim-facing and a replicated strafe flag;
+combat alternates lateral movement with distance correction. Speed chase uses native
+sprint with distance/energy hysteresis. See STATUS for physical tests and limits.
+Strength remains native; current CryMP measurements are separate from older Wars tests.

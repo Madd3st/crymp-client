@@ -48,6 +48,7 @@ void BotBrain::ResetLife()
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
 	++m_life;
+	m_testStrafe=0; m_strafeSide=(m_life&1)?1:-1; m_nextStrafe=0;
 	m_fallbackGiven = false;
 	m_retreating = false;
 	m_weaponSearchStarted = m_now;
@@ -98,6 +99,7 @@ void BotBrain::Stop(BotSpawner& spawner)
 			m_suit.Apply(static_cast<CPlayer&>(*actor),NANOMODE_DEFENSE,m_blackboard,m_now);
 		m_locomotion.Stop(static_cast<CPlayer&>(*actor));
 		m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
+		m_testStrafe=0;
 		actor->GetGameObject()->EnablePrePhysicsUpdate(ePPU_WhenAIActivated);
 	}
 	m_intent=BotIntent(); m_blackboard.nextJump=m_blackboard.nextSuitChange=0; m_suit.Reset();
@@ -140,7 +142,12 @@ void BotBrain::Update(BotSpawner& spawner, float dt)
 		CryLogAlways("[WarsBots] ABILITY PHYSICS: speed=%.2f vz=%.2f grounded=%d sprint=%d mode=%d energy=%.1f active=%d clients=%d.",
 			m_blackboard.velocity.GetLength2D(),m_blackboard.velocity.z,m_blackboard.grounded?1:0,
 			static_cast<const SPlayerStats*>(actor.GetActorStats())->bSprinting?1:0,int(m_blackboard.mode),m_blackboard.energy,m_blackboard.suitActive?1:0,clients);
-		m_nextTelemetry = m_now + 2.0f;
+		Vec3 sight=m_intent.aim-position; sight.z=0; sight.NormalizeSafe(FORWARD_DIRECTION);
+        const Vec3 right(sight.y,-sight.x,0);
+        CryLogAlways("[WarsBots] MOTION INTENT: gait=%d strafe=%d requestedBase=%.2f actual=%.2f lateral=%.2f facingDot=%.2f blocked=%d.",
+            int(m_intent.gait),m_intent.strafe?1:0,m_intent.move?(m_intent.gait==BotGait::Walk?1.3f:2.5f):0.0f,
+            m_blackboard.velocity.GetLength2D(),m_blackboard.velocity.Dot(right),heading.Dot(sight),m_blackboard.blocked?1:0);
+        m_nextTelemetry = m_now + 2.0f;
 	}
 	if (actor.GetHealth() <= 0)
 	{
@@ -176,7 +183,7 @@ void BotBrain::Update(BotSpawner& spawner, float dt)
 	m_intent.aim=actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f);
 	if (m_now<m_testUntil)
 	{
-		if (m_testGait>=0) { m_intent.MoveTo(m_testGoal,m_testGoal+Vec3(0,0,1.4f)); m_intent.gait=static_cast<BotGait>(m_testGait); }
+		if (m_testGait>=0) { m_intent.MoveTo(m_testGoal,m_testStrafe ? m_testLook : m_testGoal+Vec3(0,0,1.4f)); m_intent.gait=static_cast<BotGait>(m_testGait); m_intent.strafe=m_testStrafe!=0; }
 		m_intent.jump=m_now>=m_testJumpAt?m_testJump:BotJump::None;
 		if (m_testJump!=BotJump::None) m_intent.suitMode=m_testJump==BotJump::Strength?NANOMODE_STRENGTH:NANOMODE_DEFENSE;
 		else if (m_testGait==int(BotGait::Sprint)) m_intent.suitMode=NANOMODE_SPEED;
@@ -255,8 +262,24 @@ void BotBrain::Update(BotSpawner& spawner, float dt)
 			Vec3 away = (actor.GetEntity()->GetWorldPos()-destination).GetNormalizedSafe(FORWARD_DIRECTION);
 			m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+away*3.0f,aim);
 			m_intent.combat=BotCombatIntent::Aim;
+			m_intent.strafe=true;
 		}
-		else { m_retreating = false; m_intent.move=false; m_intent.AimAt(aim); }
+		else
+        {
+            m_retreating=false;
+            if (m_now>=m_nextStrafe)
+            {
+                m_strafeSide=-m_strafeSide;
+                m_nextStrafe=m_now+1.8f+0.2f*float(m_life%3);
+            }
+            Vec3 toward=destination-actor.GetEntity()->GetWorldPos(); toward.z=0;
+            toward.NormalizeSafe(FORWARD_DIRECTION);
+            Vec3 lateral(-toward.y,toward.x,0);
+            Vec3 travel=lateral*float(m_strafeSide)+toward*clamp_tpl((distance-12.0f)*0.1f,-0.5f,0.5f);
+            travel.NormalizeSafe(lateral);
+            m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+travel*4.0f,aim);
+            m_intent.strafe=true;
+        }
 		Change(State::ATTACKING);
 		m_intent.combat=m_now-m_stateTime>=0.3f?BotCombatIntent::Fire:BotCombatIntent::Aim;
 	}
@@ -265,7 +288,7 @@ void BotBrain::Update(BotSpawner& spawner, float dt)
 		m_combat.StopFire();
 		Change(State::CHASING_ENEMY);
 		m_intent.MoveTo(destination,aim);
-		m_intent.gait=distance>24.0f && m_now-m_stateTime>1.5f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run;
+		m_intent.gait=distance>(m_blackboard.mode==NANOMODE_SPEED?18.0f:20.0f) && m_now-m_stateTime>0.4f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run;
 		if (m_intent.gait==BotGait::Sprint) m_intent.suitMode=NANOMODE_SPEED;
 		if (!visible && distance>12.0f && distance<30.0f && BotSuit::CloakEnabled() && m_blackboard.energy>120.0f)
 		{ m_intent.suitMode=NANOMODE_CLOAK; m_intent.gait=BotGait::Walk; }
@@ -330,11 +353,24 @@ void BotBrain::AbilityCommand(IConsoleCmdArgs* args)
 			{ CryLogAlways("[WarsBots] ACTION REFUSED: jump delay must be 0..30 seconds."); return; }
 		}
 		m_testJump=!strcmp(value,"strength")?BotJump::Strength:BotJump::Normal;
-		m_testJumpAt=m_now+delay; m_testGait=-1; m_testUntil=m_testJumpAt+6.0f;
+		m_testJumpAt=m_now+delay; m_testGait=-1; m_testStrafe=0; m_testUntil=m_testJumpAt+6.0f;
 		return;
 	}
-	if (!strcmp(command,"wb_bot_gait"))
+	if (!strcmp(command,"wb_bot_strafe"))
+    {
+        if (!strcmp(value,"auto")) { m_testStrafe=0; m_testUntil=0; m_testGait=-1; return; }
+        if (!strcmp(value,"left")) m_testStrafe=-1;
+        else if (!strcmp(value,"right")) m_testStrafe=1;
+        else { CryLogAlways("[WarsBots] Usage: wb_bot_strafe left|right|auto."); return; }
+        m_testGait=int(BotGait::Run);
+        m_testJump=BotJump::None;
+        m_testGoal=actor->GetEntity()->GetWorldPos()+actor->GetBaseQuat().GetColumn0()*float(m_testStrafe)*12.0f;
+        m_testLook=actor->GetEntity()->GetWorldPos()+actor->GetBaseQuat().GetColumn1()*20.0f+Vec3(0,0,1.4f);
+        m_testUntil=m_now+6.0f; return;
+    }
+    if (!strcmp(command,"wb_bot_gait"))
 	{
+		m_testStrafe=0; m_testJump=BotJump::None;
 		if (!strcmp(value,"auto")) { m_testUntil=0; m_testGait=-1; return; }
 		if (!strcmp(value,"walk")) m_testGait=int(BotGait::Walk);
 		else if (!strcmp(value,"run")) m_testGait=int(BotGait::Run);

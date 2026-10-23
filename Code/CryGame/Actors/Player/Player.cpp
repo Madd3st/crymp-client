@@ -4955,10 +4955,11 @@ void CPlayer::PublishWarsBotJump(bool strength)
 	++m_warsBotJumpSerial; m_warsBotStrengthJump=strength; m_warsBotAirborne=true;
 	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
 }
-void CPlayer::SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& aim)
+void CPlayer::SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& aim, bool strafe)
 {
 	if (!gEnv->bServer || !g_pGame || !g_pGame->GetBotManager().GetSpawner().Owns(GetEntityId())) return;
 	m_warsBotPose = true;
+	m_warsBotStrafe = strafe && speed>0.01f;
 	m_warsBotDirection = Vec3(direction.x,direction.y,0).GetNormalizedSafe(m_baseQuat.GetColumn1());
 	m_warsBotSpeed = clamp_tpl(speed,0.0f,2.5f);
 	m_warsBotAim = aim;
@@ -4969,8 +4970,9 @@ void CPlayer::UpdateWarsBotMotion(float dt)
 	if (!m_warsBotPose || GetChannelId()!=0 || GetHealth()<=0 || m_stats.isRagDoll || IsFrozen()) return;
 	if (gEnv->bServer && !g_pGame->GetBotManager().GetSpawner().Owns(GetEntityId())) return;
 	Vec3 forward = m_baseQuat.GetColumn1();
-	float turn = atan2f(forward.x*m_warsBotDirection.y-forward.y*m_warsBotDirection.x,
-		forward.x*m_warsBotDirection.x+forward.y*m_warsBotDirection.y);
+    Vec3 facing = m_warsBotStrafe ? m_warsBotAim-GetEntity()->GetWorldPos() : m_warsBotDirection;
+    facing.z=0; facing.NormalizeSafe(forward);
+    float turn = atan2f(forward.x*facing.y-forward.y*facing.x,forward.x*facing.x+forward.y*facing.y);
 	const float yaw = atan2f(-forward.x,forward.y) + clamp_tpl(turn,-3.0f*dt,3.0f*dt);
 	m_baseQuat = Quat::CreateRotationZ(yaw);
 	m_viewQuat = m_viewQuatFinal = m_baseQuat;
@@ -5006,8 +5008,8 @@ void CPlayer::UpdateWarsBotMotion(float dt)
 		request.SetLookTarget(m_warsBotAim);
 		request.SetAimTarget(m_warsBotAim);
 		request.SetFireTarget(m_warsBotAim);
-		request.SetBodyTarget(GetEntity()->GetWorldPos()+m_warsBotDirection*4.0f);
-		request.SetAllowStrafing(false);
+		request.SetBodyTarget(m_warsBotStrafe ? m_warsBotAim : GetEntity()->GetWorldPos()+m_warsBotDirection*4.0f);
+		request.SetAllowStrafing(m_warsBotStrafe);
 		m_pMovementController->RequestMovement(request);
 	}
 }
@@ -5201,6 +5203,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 			ser.Value("warsBotDirection",m_warsBotDirection,'dir0');
 			ser.Value("warsBotSpeed",m_warsBotSpeed);
 			ser.Value("warsBotAim",m_warsBotAim,'wrld');
+			ser.Value("strafe",m_warsBotStrafe,'bool');
 			ser.Value("sprint",m_warsBotSprint,'bool');
 			ser.Value("stance",m_warsBotStance,'stnc');
 			ser.Value("airborne",m_warsBotAirborne,'bool');

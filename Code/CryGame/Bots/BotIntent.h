@@ -15,6 +15,7 @@ enum class BotCombatIntent { None, Aim, Fire };
 struct BotIntent
 {
 	bool move = false;
+	bool strafe = false; // Face aim independently of world-space movement.
 	Vec3 destination = Vec3(0,0,0), aim = Vec3(0,0,0);
 	BotGait gait = BotGait::Run;
 	BotJump jump = BotJump::None;

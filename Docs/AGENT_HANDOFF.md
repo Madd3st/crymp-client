@@ -3,7 +3,7 @@
 Read STATUS and WARSBOTS_PORT first. Source WarsBots snapshot `2da4bf1` is clean and
 preserved in its original repository; the new primary development repo is this fork.
 Master matches upstream `eb13a69`; warsbots/main starts there. Work is on
-`warsbots/feature/combat-port`; only the integrator edited shared files.
+`warsbots/feature/locomotion` after `1fe4be11` MVP; only the integrator edited shared files.
 
 Two read-only agents audited engine integration and movement/CryAI respectively;
 no competing file edits or additional worktrees. Main integrator ported, compiled
@@ -29,7 +29,9 @@ but verify actual process identity and whether the player is still connected.
 The first client user confirmation covered visibility/movement/shooting. Server
 confirmed death/respawn of the same actor and genuine weapon damage in both directions.
 
-Next: finish lifecycle/late-client checks, then strafe intent + independent body/look
-replication and native Speed chase. Keep Strength clearance and native energy mechanics.
+Strafe intent/body-look replication and native Speed selection are implemented;
+read STATUS for measured repeat trials and unproven chase/client cases.
+Latest user steering prioritizes proper IA participants and the scoreboard.
+Keep Strength clearance and native energy mechanics.
 Investigate headshot AI-vs-player damage parity separately; no health/multiplier change
 has been made. Do not claim the entire long-term request complete.

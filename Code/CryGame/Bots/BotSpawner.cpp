@@ -47,6 +47,7 @@ void BotSpawner::Initialize(IGameFramework* framework)
 	gEnv->pConsole->AddCommand("wb_probe_revive", ReviveCommand, 0, "Local IA only: revive the owned dead probe at its original spawn position");
 	gEnv->pConsole->Register("wb_bot_cloak_experimental", &m_cloakExperimental, 0, 0, "Local IA ability gate: experimental cloak, defaults OFF");
 	gEnv->pConsole->AddCommand("wb_bot_jump", BotJumpCommand, 0, "Local IA: wb_bot_jump [normal|strength], one request");
+	gEnv->pConsole->AddCommand("wb_bot_strafe", BotStrafeCommand, 0, "Local IA: wb_bot_strafe left|right|auto (6-second aimed lateral test)");
 	gEnv->pConsole->AddCommand("wb_bot_gait", BotGaitCommand, 0, "Local IA: wb_bot_gait walk|run|sprint|auto (6-second forward test)");
 	gEnv->pConsole->AddCommand("wb_bot_suit", BotSuitCommand, 0, "Local IA: wb_bot_suit defense|speed|strength|cloak|auto");
 	gEnv->pConsole->AddCommand("wb_bot_abilities", BotAbilitiesCommand, 0, "Local IA: status of abilities and physical state");
@@ -71,6 +72,7 @@ void BotSpawner::Shutdown()
 	gEnv->pConsole->RemoveCommand("wb_bot_verbose");
 	gEnv->pConsole->RemoveCommand("wb_bot_jump");
 	gEnv->pConsole->RemoveCommand("wb_bot_gait");
+	gEnv->pConsole->RemoveCommand("wb_bot_strafe");
 	gEnv->pConsole->RemoveCommand("wb_bot_suit");
 	gEnv->pConsole->RemoveCommand("wb_bot_abilities");
 	gEnv->pConsole->UnregisterVariable("wb_bot_cloak_experimental", true);
@@ -423,6 +425,7 @@ void BotSpawner::BotAbilityCommand(IConsoleCmdArgs* args)
 	spawner.m_brain.AbilityCommand(args);
 }
 void BotSpawner::BotJumpCommand(IConsoleCmdArgs* args) { BotAbilityCommand(args); }
+void BotSpawner::BotStrafeCommand(IConsoleCmdArgs* args) { BotAbilityCommand(args); }
 void BotSpawner::BotGaitCommand(IConsoleCmdArgs* args) { BotAbilityCommand(args); }
 void BotSpawner::BotSuitCommand(IConsoleCmdArgs* args) { BotAbilityCommand(args); }
 void BotSpawner::BotAbilitiesCommand(IConsoleCmdArgs* args) { BotAbilityCommand(args); }

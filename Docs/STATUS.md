@@ -1,7 +1,7 @@
 # WarsBots for CryMP: status, 2026-10-23
 
 Repository: https://github.com/Madd3st/crymp-client.
-Integration `warsbots/main`; implementation `warsbots/feature/combat-port`.
+Integration `warsbots/main`; implementation `warsbots/feature/locomotion`.
 Local checkout: `C:\Users\Magic8\OneDrive\Документы\ChatGPT\Crysis wars bot\local\crymp-client`.
 See [port provenance](WARSBOTS_PORT.md), [tests](AI_TESTS.md), [handoff](AGENT_HANDOFF.md).
 
@@ -11,7 +11,8 @@ Latest Wars abilities/Combat MVP migrated into CryGame/Bots, with scoped CryMP
 Player/suit/network/GameRules/validator integration and a local engine adapter.
 Default OFF; explicit loopback IA opt-in; one owned actor, no fabricated channel.
 Native CryMP code is preserved outside bot scopes. No new binary patches/CryAI controller.
-Strafe/combat-movement improvements and improved Speed chase remain pending.
+Independent move/look strafe, moving combat and native Speed chase selection are implemented.
+User confirmed visible left/right combat strafe in the new build.
 
 ## Actually checked on CryMP
 
@@ -51,7 +52,36 @@ Full machine logs and game binaries are deliberately not committed.
 
 Manual remove/recreate/map cleanup, two simultaneous clients/reconnect, visual
 respawn/jump animation and repeatable normal/Strength/Speed tests remain open.
-No genuine strafe yet; current movement still follows facing. Channel0/IsPlayer=false
+Strafe now passes physical/visual checks; chase against a fleeing player still needs a specific trial. Channel0/IsPlayer=false
 does not make a match participant, IA score/headshot parity is unverified, PS untouched.
 No full navigation, multiple bots or server-only stock-client compatibility claim.
 Do not replace these CryMP results with older Crysis Wars validation or vice versa.
+
+## Locomotion follow-up
+
+Base Combat MVP saved as `1fe4be11` and integrated in warsbots/main. New runtime is
+launched from build/baseline EXEs with `-dir "E:\Steam\steamapps\common\Crysis"`.
+Game-root EXEs stayed file-locked after process exit; do not assume they were updated.
+Active test server/client IDs are in build/locomotion-*-pid.txt; never stop user gameplay
+without agreement. Current build hashes (different from MVP above):
+client `6037CC4747884698984B0E0FFC6A89BD30EC17736D9018BAC4030A0DBC5AD3CD`;
+server `F93293507298B76A4CA01F9EC0E43E7B500C07471660F9571989067F72BC260F`.
+
+Separate QA servers (64120), known open point (1242,1351,136), no clients:
+left strafe 2/2; right strafe 2/2; sprint 2/2; normal jump 1/1; Strength 2/2.
+Strafe measured actual 2.50, lateral about +/-2.45, facingDot=1.00.
+Sprint actual5.46, sprint=1, mode0, energy132.1/132.2. Strength vz9.60,
+rise3.62/3.63, takeoff energy130.4/130.3, landing displacementZ=0.
+A preceding right-strafe test at the map's enclosed default spawn failed (0/1):
+local avoidance redirected movement forward. The first QA attempt was a harness
+file-sharing error, not a gameplay result. Preserve these limitations.
+Logs: build/server-qa; helper Tools/Test-WarsBotsServer.ps1. These physical trials
+are not a complete route/chase or client-animation success rate.
+
+One second client process joined late and received a replica; first had System:Quit
+and was no longer running. TWO SIMULTANEOUS CLIENTS remain unconfirmed.
+User reported losing sight after a kill: native respawn moved the actor to another
+map spawn; server/client logs continue alive movement. No full pathfinder exists.
+
+Latest user priority: include the bot in the IA player table and match participation,
+using EntityId and scoped game-mode handling, never a fake network channel.

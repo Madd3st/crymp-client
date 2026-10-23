@@ -29,7 +29,9 @@ private:
 	BotJump m_testJump = BotJump::None;
 	int m_testGait = -1, m_testMode = -1;
 	float m_testUntil = 0, m_testModeUntil = 0, m_testJumpAt = 0;
-	Vec3 m_testGoal = Vec3(0,0,0);
+	Vec3 m_testGoal = Vec3(0,0,0), m_testLook = Vec3(0,0,0);
+	int m_testStrafe = 0, m_strafeSide = 1;
+	float m_nextStrafe = 0;
 	bool m_running = false;
 	bool m_verbose = false;
 	bool m_fallbackGiven = false;

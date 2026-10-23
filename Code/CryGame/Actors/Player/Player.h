@@ -621,7 +621,7 @@ public:
 	virtual void SetAngles(const Ang3& angles);
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 	// Server-owned pose, replicated without a client channel. No authority transfer.
-	void SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& aim);
+	void SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& aim, bool strafe=false);
 	bool IsWarsBotActor() const { return m_warsBotActor && GetChannelId()==0; }
 	void EnsureWarsBotSuit();
 	void SetWarsBotActions(bool sprint, bool moving, EStance stance);
@@ -636,6 +636,7 @@ public:
 	uint8 m_warsBotStance = STANCE_STAND;
 	float m_warsBotNextNetworkLog = 0;
 	bool m_warsBotPose = false;
+	bool m_warsBotStrafe = false;
 	Vec3 m_warsBotDirection = Vec3(0,1,0), m_warsBotAim = Vec3(0,0,0);
 	float m_warsBotSpeed = 0;
 #endif

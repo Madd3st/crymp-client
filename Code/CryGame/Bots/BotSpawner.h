@@ -61,6 +61,7 @@ private:
 	static void BotAbilityCommand(IConsoleCmdArgs* args);
 	static void BotJumpCommand(IConsoleCmdArgs* args);
 	static void BotGaitCommand(IConsoleCmdArgs* args);
+	static void BotStrafeCommand(IConsoleCmdArgs* args);
 	static void BotSuitCommand(IConsoleCmdArgs* args);
 	static void BotAbilitiesCommand(IConsoleCmdArgs* args);
 	void EndLevel();

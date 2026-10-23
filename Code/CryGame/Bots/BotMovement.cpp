@@ -60,7 +60,7 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe) co
 		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
 }
 
-bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse)
+bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe)
 {
 	auto* controller = actor.GetMovementController();
 	if (!controller) return false;
@@ -96,7 +96,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 		}
 	}
 	if (!safe) { Stop(actor); Aim(actor, lookAt); return false; }
-	static_cast<CPlayer&>(actor).SetWarsBotMotion(direction,speed,lookAt);
+	static_cast<CPlayer&>(actor).SetWarsBotMotion(direction,speed,lookAt,strafe);
 	CMovementRequest request;
 	request.SetMoveTarget(feet + direction * 2.0f);
 	request.SetDesiredSpeed(speed);
@@ -105,8 +105,8 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 	request.SetLookTarget(lookAt);
 	request.SetAimTarget(lookAt);
 	request.SetFireTarget(lookAt);
-	request.SetBodyTarget(feet + direction * 4.0f);
-	request.SetAllowStrafing(false);
+	request.SetBodyTarget(strafe ? lookAt : feet + direction * 4.0f);
+	request.SetAllowStrafing(strafe);
 	return controller->RequestMovement(request);
 }
 }
