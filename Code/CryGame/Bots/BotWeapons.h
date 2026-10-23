@@ -15,7 +15,8 @@ struct BotWeapons
 	// Rifles/shotgun/SMG etc. with ammunition, i.e. anything better than the spawn pistol.
 	static bool HasPrimary(CActor& actor);
 	static bool IsPrimary(IItem* item);
-	static EntityId FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly = false);
+	static EntityId FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly = false,
+		const EntityId* skip = nullptr, int skipCount = 0);
 	static bool PickUp(CActor& actor, EntityId item);
 	static bool GiveTestSCAR(CActor& actor);
 	static bool HasAmmunition(CActor& actor, IWeapon& weapon);

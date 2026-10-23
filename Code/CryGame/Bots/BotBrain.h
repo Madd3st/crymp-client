@@ -62,6 +62,12 @@ private:
 	bool m_speedTravel = false;
 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
 	EntityId m_upgradeTarget = 0;
+	float m_upgradeSince = 0;
+	// Items that could not be reached/picked recently: skipped for a while.
+	struct BadItem { EntityId id; float until; };
+	BadItem m_badItems[8] = {};
+	bool IsBadItem(EntityId id) const;
+	void MarkBadItem(EntityId id);
 	bool m_stuckReported = false;
 	bool m_detour = false;
 	unsigned m_life = 0, m_patrolStep = 0;

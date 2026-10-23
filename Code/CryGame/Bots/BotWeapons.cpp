@@ -72,7 +72,8 @@ bool BotWeapons::SelectAvailable(CActor& actor)
 	return current && HasAmmunition(actor, *current);
 }
 
-EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly)
+EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly,
+	const EntityId* skip, int skipCount)
 {
 	EntityId result = 0;
 	float best = 1e10f;
@@ -86,6 +87,9 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 		IEntity* entity = query.pEntities[q];
 		if (!entity) continue;
 		if (entity->IsHidden()) continue;
+		bool skipped = false;
+		for (int k = 0; k < skipCount && !skipped; ++k) skipped = skip[k] == entity->GetId();
+		if (skipped) continue;
 		float distance = (entity->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared();
 		if (distance > radius*radius) continue;
 		IItem* item = Items()->GetItem(entity->GetId());
@@ -105,7 +109,9 @@ bool BotWeapons::PickUp(CActor& actor, EntityId id)
 {
 	IItem* item = Items()->GetItem(id);
 	if (!Suitable(item) || item->GetOwnerId() || !static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId())) return false;
-	if ((item->GetEntity()->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared() > 6.25f) return false;
+	// Items lie on crates/shelves: reach is 2 m horizontally and up to 2.2 m vertically.
+	const Vec3 delta = item->GetEntity()->GetWorldPos() - actor.GetEntity()->GetWorldPos();
+	if (delta.GetLengthSquared2D() > 4.0f || fabs_tpl(delta.z) > 2.2f) return false;
 	item->PickUp(actor.GetEntityId(), false, true, false);
 	item = Items()->GetItem(id);
 	const bool acquired = item && item->GetOwnerId() == actor.GetEntityId() && actor.GetInventory() &&

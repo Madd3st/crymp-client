@@ -43,6 +43,19 @@ void BotBrain::Change(State state)
 
 const char* BotBrain::StateName() const { return NameOf(m_state); }
 
+bool BotBrain::IsBadItem(EntityId id) const
+{
+	for (const BadItem& b : m_badItems) if (b.id == id && m_now < b.until) return true;
+	return false;
+}
+
+void BotBrain::MarkBadItem(EntityId id)
+{
+	BadItem* slot = &m_badItems[0];
+	for (BadItem& b : m_badItems) if (b.until < slot->until) slot = &b;
+	slot->id = id; slot->until = m_now + 90.0f;
+}
+
 float BotBrain::Rand01()
 {
 	m_rng = m_rng * 1664525u + 1013904223u;
@@ -58,11 +71,12 @@ void BotBrain::TravelGait(float distance)
 	m_intent.gait = m_speedTravel ? BotGait::Sprint : BotGait::Run;
 	if (!m_speedTravel) return;
 	m_intent.suitMode = NANOMODE_SPEED;
-	if (distance > 20.0f && m_blackboard.grounded && m_blackboard.energy > 160.0f &&
-		m_blackboard.mode == NANOMODE_SPEED && m_now >= m_blackboard.nextSuitChange && m_now >= m_nextTravelJump)
+	// Speed drains energy fast, so a ">160" threshold was almost never met: jump at >130 instead.
+	if (distance > 15.0f && m_blackboard.grounded && m_blackboard.energy > 130.0f &&
+		m_now >= m_blackboard.nextSuitChange && m_now >= m_nextTravelJump)
 	{
-		m_nextTravelJump = m_now + 6.0f + Rand01() * 6.0f;
-		if (Rand01() < 0.6f) { m_intent.jump = BotJump::Strength; m_intent.suitMode = NANOMODE_STRENGTH; }
+		m_nextTravelJump = m_now + 5.0f + Rand01() * 5.0f;
+		if (Rand01() < 0.7f) { m_intent.jump = BotJump::Strength; m_intent.suitMode = NANOMODE_STRENGTH; }
 	}
 }
 
@@ -114,7 +128,7 @@ void BotBrain::ResetLife()
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
 	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
-	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false;
+	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	++m_life;
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
@@ -262,7 +276,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		if (item && m_now - m_weaponSearchStarted < 6.0f)
 		{
 			Change(State::MOVING_TO_WEAPON);
-			if ((item->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared() <= 6.25f)
+			if ((item->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared2D() <= 4.0f && fabs_tpl(item->GetWorldPos().z - actor.GetEntity()->GetWorldPos().z) <= 2.2f)
 			{
 				m_intent.move=false;
 				if (BotWeapons::PickUp(actor, m_weaponTarget)) { m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass(); m_weaponTarget = 0; Change(State::SEARCHING_ENEMY); }
@@ -285,21 +299,32 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
 	if ((!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))
 	{
-		if (m_now >= m_nextUpgradeSearch)
+		if (m_now >= m_nextUpgradeSearch && !m_upgradeTarget)
 		{
-			m_upgradeTarget = BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true);
+			EntityId skip[8]; int skipCount = 0;
+			for (const BadItem& b : m_badItems) if (b.id && m_now < b.until) skip[skipCount++] = b.id;
+			m_upgradeTarget = BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true, skip, skipCount);
+			m_upgradeSince = m_now;
 			m_nextUpgradeSearch = m_now + 3.0f;
+		}
+		// Unreachable (on a ledge, behind glass, taken): give up after 10 s and skip it for 90 s.
+		if (m_upgradeTarget && m_now - m_upgradeSince > 10.0f)
+		{
+			WB_LOG(2, "[WarsBots] #%d weapon %u unreachable; skipping it.", m_number, m_upgradeTarget);
+			MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
 		}
 		IEntity* item = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
 		if (item)
 		{
 			Change(State::MOVING_TO_WEAPON);
 			const Vec3 feet = actor.GetEntity()->GetWorldPos();
-			const float d = (item->GetWorldPos() - feet).GetLength();
-			if (d <= 2.5f)
+			const Vec3 delta = item->GetWorldPos() - feet;
+			const float d = delta.GetLength();
+			if (delta.GetLengthSquared2D() <= 4.0f && fabs_tpl(delta.z) <= 2.2f)
 			{
 				m_intent.move=false;
 				if (BotWeapons::PickUp(actor, m_upgradeTarget)) m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass();
+				else MarkBadItem(m_upgradeTarget);
 				m_upgradeTarget = 0;
 			}
 			else { const Vec3 step=Steer(feet,item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
