@@ -5,7 +5,8 @@
 # - -Expect <sha prefix> refuses to build anything else.
 # - Reuse: if build\multibot-on\claude-build.json records the same commit and configuration and the
 #   EXEs still match their recorded SHA256, nothing is compiled ("REUSE").
-# - Ninja runs with -d explain so the compile log says why each target was rebuilt.
+# - Before each build a ninja dry run with -d explain records why targets would rebuild
+#   (build\claude-multibot-explain-<on|off>.log).
 param([switch]$OnOnly, [string]$Expect = '', [switch]$Force)
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot -Parent
@@ -47,6 +48,10 @@ try {
 
     $configs = @(@{ name = 'on'; dir = 'build/multibot-on'; args = @('-Experimental') })
     if (-not $OnOnly) { $configs += @{ name = 'off'; dir = 'build/multibot-off'; args = @() } }
+    if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
+        $vs = & (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe') -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+        if ($vs) { & (Join-Path $vs 'Common7/Tools/Launch-VsDevShell.ps1') -Arch amd64 -HostArch amd64 -SkipAutomaticLocation | Out-Null }
+    }
     $jobs = [Math]::Max(2, [int]$env:NUMBER_OF_PROCESSORS)
     $build = Join-Path $wt 'Tools\Build-WarsBots.ps1'
     foreach ($c in $configs) {
@@ -62,11 +67,20 @@ try {
             }
         }
         Write-Host "=== BUILD $($c.name.ToUpper()) ==="
-        $buildArgs = @{ Jobs = $jobs; BuildDirectory = $c.dir; NinjaArgs = @('-d', 'explain') }
+        # Why will ninja rebuild? Dry run with -d explain BEFORE building (needs the VS environment,
+        # which Build-WarsBots.ps1 sets up in this session; ninja writes explain to stderr, so cmd
+        # redirects it to a file instead of PowerShell turning it into a terminating error).
+        $explainLog = Join-Path $repo "build\claude-multibot-explain-$($c.name).log"
+        if ((Test-Path (Join-Path $dir 'build.ninja')) -and (Get-Command ninja -ErrorAction SilentlyContinue)) {
+            cmd /c "ninja -C `"$dir`" -n -d explain > `"$explainLog`" 2>&1"
+            $reasons = Select-String -LiteralPath $explainLog -Pattern 'ninja explain:' | Select-Object -First 6
+            $count = (Select-String -LiteralPath $explainLog -Pattern '^\[\d+/(\d+)\]' | Select-Object -Last 1)
+            Write-Host "Planned: $(if ($count) { $count.Line } else { 'nothing' })"
+            $reasons | ForEach-Object { Write-Host "  $($_.Line)" }
+        }
+        $buildArgs = @{ Jobs = $jobs; BuildDirectory = $c.dir }
         if ($c.args -contains '-Experimental') { $buildArgs.Experimental = $true }
-        & $build @buildArgs *>&1 | ForEach-Object { $l = "$_"; if ($l -notmatch '^ninja explain:') { Write-Host $l }; Add-Content -LiteralPath $compileLog -Value $l }
-        $explain = Select-String -LiteralPath $compileLog -Pattern '^ninja explain:' | Select-Object -First 8
-        if ($explain) { Write-Host 'First rebuild reasons:'; $explain | ForEach-Object { Write-Host "  $($_.Line)" } }
+        & $build @buildArgs *>&1 | ForEach-Object { $l = "$_"; Write-Host $l; Add-Content -LiteralPath $compileLog -Value $l }
         [ordered]@{ sha = $head; config = $config; server = (Hash $exes[0]); client = (Hash $exes[1]); built = (Get-Date).ToString('s') } |
             ConvertTo-Json | Set-Content -LiteralPath $manifestPath -Encoding UTF8
         Write-Host "BUILD $($c.name.ToUpper()): PASS $head"
