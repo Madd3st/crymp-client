@@ -89,8 +89,8 @@
       "source_sha": "df3ceb8ef73d42596f6ec4ce369ade01577fd89b",
       "server_sha256": "1EC9EBF1DEA64661DC7972B7ADC45EB1927B4C6F7F42B842E8214B96B9DE01D4",
       "client_sha256": "ABD001AFC6FE9298898B89490B2D3BE4FC5FB5A34EB15A04CE9DC34DECACDE37",
-      "bots": 15,
-      "planned_seconds": 300,
+      "bots": 6,
+      "planned_seconds": 240,
       "initial_memory_sha256": null
     },
     {
