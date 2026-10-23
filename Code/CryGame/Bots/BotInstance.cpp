@@ -149,8 +149,13 @@ bool BotInstance::IsOwnedProjectileHit(const HitInfo& hit) const
 
 void BotInstance::TraceHit(const char* phase, const HitInfo& hit)
 {
-	if (strcmp(phase, "before-Lua") == 0 && Owns(hit.targetId))
-		m_lastHitShooter = hit.shooterId;
+	if (!Owns(hit.targetId)) return;
+	CActor* actor=GetActor();
+	if (!actor) return;
+	if (strcmp(phase,"before-Lua")==0)
+	{ m_lastHitShooter=hit.shooterId; m_beforeHitHealth=actor->GetHealth(); }
+	else if (strcmp(phase,"after-Lua")==0 && actor->GetHealth()<m_beforeHitHealth)
+		m_brain.NotifyDamage(hit.shooterId);
 }
 
 void BotInstance::TraceKill(EntityId shooterId, bool killerEventEmitted)

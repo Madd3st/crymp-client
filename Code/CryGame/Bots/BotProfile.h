@@ -1,5 +1,5 @@
 // WarsBots: per-bot behaviour parameters. One AI core, different tunings.
-// Skill changes reaction, aim error and fire discipline only: never health or damage.
+// Skill changes decisions and execution timing, never perception rules, health or damage.
 #pragma once
 
 namespace WarsBots
@@ -32,6 +32,48 @@ struct BotProfile
 	float aimErrorMax = 0.25f;
 	// Chance to Strength-jump right after being hit in a fight (dodge), per hit event.
 	float dodgeChance = 0.3f;
+	// Tactical competence is separate from style. All inputs must be own state or visible cues.
+	float rangeAdapt = 0.35f;
+	float retreatHealth = 22.0f;
+	float targetJudgement = 0.35f;
+	float targetSwitchMargin = 0.35f;
+	float targetHold = 2.0f;
+	float blockedChasePatience = 2.0f;
+	bool useSpeed = true;
+
+	float WeaponRange(const char* weapon, unsigned salt) const
+	{
+		float range = preferredRange;
+		if (weapon)
+		{
+			if (!strcmp(weapon,"SOCOM")) range=10.0f;
+			else if (!strcmp(weapon,"Shotgun")) range=6.0f;
+			else if (!strcmp(weapon,"SMG")) range=12.0f;
+			else if (!strcmp(weapon,"SCAR") || !strcmp(weapon,"FY71")) range=18.0f;
+			else if (!strcmp(weapon,"DSG1") || !strcmp(weapon,"GaussRifle")) range=35.0f;
+			else if (!strcmp(weapon,"Hurricane")) range=20.0f;
+		}
+		const float styleScale = style==BotStyle::Assault ? 0.7f : style==BotStyle::Marksman ? 1.2f :
+			(style==BotStyle::Flanker || style==BotStyle::Hunter) ? 0.8f : 1.0f;
+		const float result = preferredRange + (range*styleScale-preferredRange)*rangeAdapt*0.65f;
+		// Stable within an encounter/life: beginners sometimes choose an imperfect distance.
+		return skill==BotSkill::Beginner ? result*((salt&1u)?1.25f:0.8f) : result;
+	}
+
+	bool CanSwitchTarget(float heldSeconds, float currentScore, float newScore) const
+	{ return heldSeconds>=targetHold && newScore>=currentScore+targetSwitchMargin; }
+
+	float TargetUtility(float distance, float desiredRange, bool clearMuzzle, bool facingUs,
+		bool retaliator, float ownHealth, bool hasAmmo) const
+	{
+		auto bound=[](float x) { return x<0.0f?0.0f:x>1.0f?1.0f:x; };
+		const float difference=distance>desiredRange?distance-desiredRange:desiredRange-distance;
+		const float fit=1.0f-bound(difference/(desiredRange>8.0f?desiredRange:8.0f));
+		const float threat=facingUs?(ownHealth<40.0f?-0.35f:0.25f):0.0f;
+		return 1.0f-bound(distance/80.0f)+targetJudgement*(0.7f*fit+
+			(clearMuzzle&&hasAmmo?0.35f:0.0f)+threat+(retaliator?0.8f:0.0f));
+	}
+
 	// Fire discipline.
 	float burst = 0.2f;
 	float burstGap = 0.65f;
@@ -70,10 +112,20 @@ struct BotProfile
 		default: break;
 		}
 		static const float dodge[] = { 0.0f, 0.3f, 0.45f, 0.6f };
-		static const float reaction[] = { 0.65f, 0.3f, 0.2f, 0.12f };
+		static const float reaction[] = { 0.75f, 0.35f, 0.25f, 0.22f };
 		static const float aim[] = { 2.0f, 1.0f, 0.7f, 0.45f };
 		static const float gap[] = { 1.35f, 1.0f, 0.9f, 0.85f };
 		const int s = int(skill) >= 0 && int(skill) < int(BotSkill::Count) ? int(skill) : 1;
+		static const float adaptation[] = {0.0f,0.35f,0.75f,1.0f};
+		static const float retreat[] = {0.0f,22.0f,35.0f,45.0f};
+		static const float judgement[] = {0.0f,0.35f,0.75f,1.0f};
+		static const float margin[] = {0.45f,0.35f,0.28f,0.25f};
+		static const float hold[] = {3.0f,2.0f,1.6f,1.3f};
+		static const float rhythm[] = {1.6f,1.0f,0.9f,0.8f};
+		p.rangeAdapt=adaptation[s]; p.retreatHealth=retreat[s]; p.targetJudgement=judgement[s];
+		p.blockedChasePatience=s==0?4.0f:s==1?2.0f:s==2?1.5f:1.2f;
+		p.targetSwitchMargin=margin[s]; p.targetHold=hold[s]; p.useSpeed=s>0;
+		p.strafePeriod*=rhythm[s];
 		p.reaction = reaction[s];
 		p.dodgeChance = dodge[s] + ((style == BotStyle::Assault || style == BotStyle::Flanker) && s > 0 ? 0.15f : 0.0f);
 		p.aimErrorPerMetre *= aim[s];

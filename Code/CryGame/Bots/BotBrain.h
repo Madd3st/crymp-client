@@ -21,6 +21,7 @@ public:
 	void Stop(BotInstance& bot);
 	void Update(BotInstance& bot, float dt);
 	void Status() const;
+	void NotifyDamage(EntityId shooter) { m_combat.NotifyDamage(shooter,m_now); }
 	void AbilityCommand(BotInstance& bot, IConsoleCmdArgs* args);
 	bool Running() const { return m_running; }
 	void SetVerbose(bool enabled) { m_verbose = enabled; }
@@ -60,6 +61,7 @@ private:
 	float Rand01();
 	unsigned m_rng = 1;
 	bool m_speedTravel = false;
+	float m_withdrawUntil=0, m_nextWithdraw=0;
 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
 	EntityId m_upgradeTarget = 0;
 	float m_upgradeSince = 0;

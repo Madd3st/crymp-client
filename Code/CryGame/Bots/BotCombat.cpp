@@ -27,7 +27,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
+void BotCombat::Reset() { StopFire(); m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
 
 void BotCombat::StopFire()
 {
@@ -110,38 +110,64 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 {
 	auto* actors = g_pGame->GetIGameFramework()->GetIActorSystem();
 	IActor* old = actors->GetActor(m_target);
-	if (Enemy(old, actor) &&
-		(old->GetEntity()->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared() < 6400)
-	{
-		Observe(actor, *old, now, verbose);
-		if (now - m_lastSeen <= 3.0f) return old;
-	}
-	StopFire();
-	m_target = 0;
-	m_visible = false;
-	float best = 6400;
+	const Vec3 origin=actor.GetEntity()->GetWorldPos();
+	const bool oldValid = Enemy(old, actor);
+	if (oldValid && (old->GetEntity()->GetWorldPos()-origin).GetLengthSquared()<6400.0f)
+		Observe(actor,*old,now,verbose);
+	else m_visible=false;
+	const bool remembered=oldValid && now-m_lastSeen<=3.0f && (m_lastPosition-origin).GetLengthSquared()<6400.0f;
+	// Same scan cadence/range and LOS rules at every skill. Hidden targets only use cached memory.
+	if (remembered && now<m_nextScan) return old;
+	m_nextScan=now+0.6f;
 	++g_scanCount;
-	IActorIteratorPtr iterator = actors->CreateActorIterator();
-	while (IActor* candidate = iterator->Next())
+	IItem* held=actor.GetCurrentItem();
+	IWeapon* weapon=BotWeapons::Current(actor);
+	const bool hasAmmo=weapon && BotWeapons::HasAmmunition(actor,*weapon);
+	const float desired=m_profile.WeaponRange(held?held->GetEntity()->GetClass()->GetName():nullptr,actor.GetEntityId());
+	SMovementState movement;
+	actor.GetMovementController()->GetMovementState(movement);
+	IActor* best=nullptr;
+	float bestScore=-1e9f, oldScore=-1e9f;
+	m_visibleEnemies=0;
+	IActorIteratorPtr iterator=actors->CreateActorIterator();
+	while (IActor* candidate=iterator->Next())
 	{
-		if (!Enemy(candidate, actor)) continue;
-		float distance = (candidate->GetEntity()->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared();
-		if (distance < best && Observe(actor, *candidate, now, verbose))
-		{
-			best = distance;
-			m_target = candidate->GetEntityId();
-		}
+		if (!Enemy(candidate,actor)) continue;
+		const Vec3 delta=candidate->GetEntity()->GetWorldPos()-origin;
+		const float distance=delta.GetLength();
+		if (distance>=80.0f) continue;
+		EntityId obstruction=0;
+		// Unlike Observe, this does not overwrite selected-target memory while scanning.
+		if (!Sight(actor,*candidate,obstruction)) continue;
+		++m_visibleEnemies;
+		const bool muzzle=movement.weaponPosition.IsValid() &&
+			(ClearRay(actor,*candidate,movement.weaponPosition,AimPoint(*candidate),obstruction) ||
+			 ClearRay(actor,*candidate,movement.weaponPosition,Eyes(*candidate),obstruction));
+		const Vec3 forward=candidate->GetEntity()->GetWorldTM().GetColumn1().GetNormalizedSafe(FORWARD_DIRECTION);
+		const bool facing=forward.Dot((-delta).GetNormalizedSafe(FORWARD_DIRECTION))>0.5f;
+		const float score=m_profile.TargetUtility(distance,desired,muzzle,facing,
+			candidate->GetEntityId()==m_retaliator && now<m_retaliatorUntil,float(actor.GetHealth()),hasAmmo);
+		if (candidate==old) oldScore=score;
+		if (score>bestScore || (score==bestScore && best && candidate->GetEntityId()<best->GetEntityId()))
+		{ best=candidate; bestScore=score; }
 	}
-	if (m_target)
+	if (remembered && m_visible && best && best!=old &&
+		!m_profile.CanSwitchTarget(now-m_selectedAt,oldScore,bestScore)) best=old;
+	if (!best && remembered) return old;
+	if (!best) { StopFire(); m_target=0; m_visible=false; return nullptr; }
+	const EntityId previous=m_target;
+	if (best->GetEntityId()!=previous)
 	{
-		m_lastSeen = now;
-		IActor* found = actors->GetActor(m_target);
-		Observe(actor, *found, now, false);
-		WB_LOG(2, "[WarsBots] Bot %u acquired enemy id=%u name=%s kind=%s.", actor.GetEntityId(), m_target,
-			found->GetEntity()->GetName(), BotTargeting::Name(BotTargeting::Kind(found)));
-		return found;
+		StopFire(); m_target=best->GetEntityId(); m_selectedAt=now;
+		m_nextBurst=now+m_profile.reaction; m_shotBlocked=false;
+		WB_LOG(2,"[WarsBots] TARGET CHOICE actor=%u old=%u target=%u skill=%s style=%s score=%.3f visible=%d health=%d ammo=%d.",
+			actor.GetEntityId(),previous,m_target,BotProfile::SkillName(m_profile.skill),BotProfile::StyleName(m_profile.style),
+			bestScore,m_visibleEnemies,actor.GetHealth(),hasAmmo?1:0);
+		WB_LOG(2,"[WarsBots] Bot %u acquired enemy id=%u name=%s kind=%s.",actor.GetEntityId(),m_target,
+			best->GetEntity()->GetName(),BotTargeting::Name(BotTargeting::Kind(best)));
 	}
-	return nullptr;
+	Observe(actor,*best,now,false);
+	return best;
 }
 
 bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)

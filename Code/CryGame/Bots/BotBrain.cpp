@@ -66,6 +66,7 @@ float BotBrain::Rand01()
 // occasionally a forward Strength jump once Speed has been held long enough to switch modes.
 void BotBrain::TravelGait(float distance)
 {
+	if (!m_profile.useSpeed) { m_intent.gait=BotGait::Run; return; }
 	if (m_speedTravel) { if (m_blackboard.energy < 55.0f || distance < 8.0f) m_speedTravel = false; }
 	else if (m_blackboard.energy > 120.0f && distance > 15.0f) m_speedTravel = true;
 	m_intent.gait = m_speedTravel ? BotGait::Sprint : BotGait::Run;
@@ -133,6 +134,7 @@ void BotBrain::ResetLife()
 	m_patrolUntil = 0;
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
 	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0;
+	m_withdrawUntil=m_nextWithdraw=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	++m_life;
@@ -207,6 +209,10 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		WB_LOG(2, "[WarsBots] AI telemetry EntityId=%u state=%s pos=(%.2f, %.2f, %.2f) health=%d weapon=%u ammo=%d target=%u.",
 			actor.GetEntityId(), NameOf(m_state), position.x, position.y, position.z, actor.GetHealth(),
 			actor.GetCurrentItem() ? actor.GetCurrentItem()->GetEntityId() : 0, mode ? mode->GetAmmoCount() : -1, m_combat.Target());
+		WB_LOG(2,"[WarsBots] TACTIC SAMPLE actor=%u skill=%s style=%s weapon=%s suit=%d distance=%.2f action=%s target=%u visible=%d.",
+			actor.GetEntityId(),BotProfile::SkillName(m_profile.skill),BotProfile::StyleName(m_profile.style),
+			actor.GetCurrentItem()?actor.GetCurrentItem()->GetEntity()->GetClass()->GetName():"none",int(m_blackboard.mode),
+			m_blackboard.distance,m_now<m_withdrawUntil?"withdraw":NameOf(m_state),m_combat.Target(),m_combat.Visible()?1:0);
 		WB_LOG(2, "[WarsBots] AI decision target=%u visible=%d sample=%.2f age=%.2f (cached decision; muzzle checked separately).",
 			m_combat.Target(), m_combat.Visible()?1:0, m_combat.SampleTime(), m_now-m_combat.SampleTime());
 		const Vec3 heading = actor.GetEntity()->GetWorldRotation().GetColumn1();
@@ -414,6 +420,27 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	const float error = min(m_profile.aimErrorMax, distance * m_profile.aimErrorPerMetre);
 	const float t = m_now + m_phase;
 	aim += Vec3(sinf(t * 2.7f), cosf(t * 1.9f), sinf(t * 1.3f) * 0.3f) * error;
+	IItem* held=actor.GetCurrentItem();
+	const float desiredRange=m_profile.WeaponRange(held?held->GetEntity()->GetClass()->GetName():nullptr,m_life+unsigned(m_number));
+	const bool disadvantage=m_profile.retreatHealth>0 && (m_blackboard.health<=m_profile.retreatHealth ||
+		(m_profile.skill==BotSkill::Elite && m_combat.VisibleEnemies()>=2 && m_blackboard.health<60));
+	if (disadvantage && m_now>=m_nextWithdraw)
+	{
+		m_withdrawUntil=m_now+2.5f; m_nextWithdraw=m_now+5.0f;
+		WB_LOG(2,"[WarsBots] TACTIC actor=%u skill=%s style=%s action=withdraw health=%d energy=%.1f distance=%.1f visible=%d.",
+			actor.GetEntityId(),BotProfile::SkillName(m_profile.skill),BotProfile::StyleName(m_profile.style),
+			m_blackboard.health,m_blackboard.energy,distance,visible?1:0);
+	}
+	if (m_now<m_withdrawUntil)
+	{
+		const Vec3 away=(actor.GetEntity()->GetWorldPos()-destination).GetNormalizedSafe(FORWARD_DIRECTION);
+		m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+away*4.0f,aim);
+		m_intent.strafe=visible; m_intent.combat=BotCombatIntent::Aim;
+		m_intent.suitMode=NANOMODE_DEFENSE;
+		if (!visible && m_profile.useSpeed && m_blackboard.energy>120 && m_now>=m_blackboard.damagedUntil)
+		{ m_intent.gait=BotGait::Sprint; m_intent.suitMode=NANOMODE_SPEED; m_intent.combat=BotCombatIntent::None; }
+		ExecuteIntent(actor,decisionTime); return;
+	}
 	if (visible && distance <= (m_state == State::ATTACKING ? m_profile.holdRange : m_profile.engageRange))
 	{
 		// Retreat locally when crowded; obstruction checks still forbid unsafe steps.
@@ -436,7 +463,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
             Vec3 toward=destination-actor.GetEntity()->GetWorldPos(); toward.z=0;
             toward.NormalizeSafe(FORWARD_DIRECTION);
             Vec3 lateral(-toward.y,toward.x,0);
-            Vec3 travel=lateral*float(m_strafeSide)+toward*clamp_tpl((distance-m_profile.preferredRange)*0.1f,-0.5f,0.5f);
+            Vec3 travel=lateral*float(m_strafeSide)+toward*clamp_tpl((distance-desiredRange)*0.1f,-0.5f,0.5f);
             travel.NormalizeSafe(lateral);
             // Eyes see the target but the barrel is blocked by cover: step out (forward and to
             // the current strafe side) instead of standing and staring; flip side if it persists.
@@ -454,7 +481,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
             m_intent.strafe=true;
         }
 		Change(State::ATTACKING);
-		m_intent.combat=m_now-m_stateTime>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
+		m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
 		// Just got hit: sometimes a Strength jump to break the enemy's aim (native jump, energy cost).
 		const bool freshHit = m_blackboard.damagedUntil - m_now > 2.4f && m_blackboard.damagedUntil != m_lastHitSeen;
 		if (freshHit)
@@ -473,13 +500,13 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		if (visible && distance <= m_profile.fireRange)
 		{
 			m_intent.strafe=true;
-			m_intent.combat=m_now-m_stateTime>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
+			m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
 		}
 		else m_combat.StopFire();
 		// Running into geometry toward a target we cannot see: give it up and roam instead.
 		if (!visible && m_blackboard.blocked) { if (m_chaseBlockedSince<=0) m_chaseBlockedSince=m_now; }
 		else m_chaseBlockedSince=0;
-		if (m_chaseBlockedSince>0 && m_now-m_chaseBlockedSince>2.0f)
+		if (m_chaseBlockedSince>0 && m_now-m_chaseBlockedSince>m_profile.blockedChasePatience)
 		{
 			if (m_verbose) WB_LOG(1, "[WarsBots] #%d chase abandoned target=%u (blocked, not visible).", m_number, m_combat.Target());
 			g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos());
@@ -488,7 +515,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		if (!visible) TravelGait(distance); // hunting a hidden target: Speed travel like a player
 		else
 		{
-			m_intent.gait=distance>(m_blackboard.mode==NANOMODE_SPEED?m_profile.sprintChaseRange-2.0f:m_profile.sprintChaseRange) && m_now-m_stateTime>0.4f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run;
+			m_intent.gait=m_profile.useSpeed && distance>(m_blackboard.mode==NANOMODE_SPEED?m_profile.sprintChaseRange-2.0f:m_profile.sprintChaseRange) && m_now-m_stateTime>0.4f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run;
 			if (m_intent.gait==BotGait::Sprint) m_intent.suitMode=NANOMODE_SPEED;
 		}
 		if (!visible && distance>12.0f && distance<30.0f && BotSuit::CloakEnabled() && m_blackboard.energy>120.0f)

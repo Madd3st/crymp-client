@@ -9,9 +9,12 @@ namespace WarsBots
 class BotCombat
 {
 public:
-	void Configure(const BotProfile& profile) { m_burst = profile.burst; m_burstGap = profile.burstGap; }
+	void Configure(const BotProfile& profile) { m_profile = profile; m_burst = profile.burst; m_burstGap = profile.burstGap; }
 	void Reset();
 	void StopFire();
+	void NotifyDamage(EntityId shooter, float now) { m_retaliator=shooter; m_retaliatorUntil=now+3.0f; }
+	float SelectedAt() const { return m_selectedAt; }
+	int VisibleEnemies() const { return m_visibleEnemies; }
 	IActor* FindEnemy(CActor& actor, float now, bool verbose = false);
 	static Vec3 AimPoint(IActor& target);
 	static bool CanSee(CActor& actor, IActor& target);
@@ -27,6 +30,10 @@ public:
 	static unsigned TakeRayCount();
 	static unsigned TakeScanCount();
 private:
+	BotProfile m_profile;
+	EntityId m_retaliator=0;
+	float m_retaliatorUntil=0, m_selectedAt=0, m_nextScan=0;
+	int m_visibleEnemies=0;
 	bool Observe(CActor& actor, IActor& target, float now, bool verbose);
 	bool m_visible = false;
 	bool m_shotBlocked = false;

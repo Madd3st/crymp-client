@@ -66,6 +66,7 @@ private:
 	const IEntity* m_identity = nullptr;
 	Vec3 m_spawnPosition = Vec3(0,0,0);
 	int m_lastHealth = 0;
+	int m_beforeHitHealth = 0;
 	EntityId m_lastHitShooter = 0;
 	EntityId m_lastSpawnLocation = 0;
 	bool m_killPlayerObserved = false;
