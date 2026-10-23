@@ -1,5 +1,15 @@
 # WarsBots for CryMP: status, 2026-10-23
 
+## Power Struggle planning, 2026-10-24
+
+[PS design](POWER_STRUGGLE_DESIGN.md) records source evidence, proposed IBotGameMode /
+PSCommander, channel-0 blockers and staged native-rule validation. Documentation only:
+no PS gate opened, runtime code or playable source changed. Steelmill core remains
+priority. Owner playtest launched with 11 Elite on source `5e8daa65`; client loaded
+Steelmill and server observed clients=1. Feedback/results pending; server left running.
+Previous 6-Normal logs archived locally in `build/owner-playtests/normal6-20261023/`.
+Counts differ (6 Normal vs 11 Elite), so this is not a controlled skill comparison.
+
 ## Current checkpoint: tactical profiles and target utility (2026-10-23)
 
 Branch [`warsbots/feature/weapon-goals`](https://github.com/Madd3st/crymp-client/tree/warsbots/feature/weapon-goals).
