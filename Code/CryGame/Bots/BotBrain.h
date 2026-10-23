@@ -4,6 +4,7 @@
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotProfile.h"
 #include <vector>
+#include "CryGame/Bots/BotProgress.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 namespace WarsBots
@@ -31,6 +32,9 @@ private:
 	void Change(State state);
 	void ResetLife();
 	void ExecuteIntent(CPlayer& actor, float dt);
+	bool NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect=false);
+	BotProgress m_progress;
+	float m_escapeUntil=0;
 	BotBlackboard m_blackboard;
 	BotIntent m_intent;
 	BotSuit m_suit;

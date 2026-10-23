@@ -13,6 +13,9 @@ public:
 	void Reset();
 	void StopFire();
 	void NotifyDamage(EntityId shooter, float now) { m_retaliator=shooter; m_retaliatorUntil=now+3.0f; }
+	void AvoidCurrent(float now, float seconds)
+	{ StopFire(); m_avoid=m_target; m_avoidUntil=now+seconds; m_target=0; m_visible=false; }
+	float LastBurstRequest() const { return m_lastBurstRequest; }
 	float SelectedAt() const { return m_selectedAt; }
 	int VisibleEnemies() const { return m_visibleEnemies; }
 	IActor* FindEnemy(CActor& actor, float now, bool verbose = false);
@@ -31,7 +34,8 @@ public:
 	static unsigned TakeScanCount();
 private:
 	BotProfile m_profile;
-	EntityId m_retaliator=0;
+	EntityId m_retaliator=0, m_avoid=0;
+	float m_avoidUntil=0, m_lastBurstRequest=-100.0f;
 	float m_retaliatorUntil=0, m_selectedAt=0, m_nextScan=0;
 	int m_visibleEnemies=0;
 	bool Observe(CActor& actor, IActor& target, float now, bool verbose);

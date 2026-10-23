@@ -192,11 +192,18 @@ def main():
                 expected={(int(p['number']),p['skill']) for p in run['roster']}
                 if {(n,skill) for n,style,skill in observed}!=expected:
                     raise ValueError('Observed profiles disagree with QA roster: '+run['tag'])
+                style_expected={(int(p['number']),p['style'],p['skill']) for p in run['roster'] if p.get('style','auto')!='auto'}
+                if style_expected and not style_expected.issubset(observed):
+                    raise ValueError('Observed styles disagree with QA roster: '+run['tag'])
             metrics=measure(path)
             cpu=[float(v) for v in re.findall(r'PROFILE bots=\d+ avgSum=([\d.]+)ms/frame',raw)]
             metrics['median_reported_window_ms']=statistics.median(cpu) if cpu else None
             metrics['profile_windows']=len(cpu)
             metrics['observed_profiles']=[dict(number=n,style=style,skill=skill) for n,style,skill in sorted(observed)]
+            spawns={}
+            for n,actor,x,y,z in re.findall(r'#(\d+) created EntityId=(\d+).*position=\(([-\d.]+), ([-\d.]+), ([-\d.]+)\)',raw):
+                spawns.setdefault(int(n),dict(number=int(n),actor=int(actor),position=[float(x),float(y),float(z)]))
+            metrics['initial_spawns']=[spawns[n] for n in sorted(spawns)]
             result.append(dict(metadata=run,metrics=metrics,skills=parse(path,emit)))
     args.output.write_text(json.dumps(dict(schema=1,runs=result,episode_rows=rows,
         episode_bytes=written,episode_limit_reached=truncated),indent=2)+'\n',encoding='utf-8')

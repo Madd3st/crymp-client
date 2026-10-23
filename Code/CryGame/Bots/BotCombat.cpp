@@ -27,7 +27,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
+void BotCombat::Reset() { StopFire(); m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
 
 void BotCombat::StopFire()
 {
@@ -142,7 +142,7 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 	IActorIteratorPtr iterator=actors->CreateActorIterator();
 	while (IActor* candidate=iterator->Next())
 	{
-		if (!Enemy(candidate,actor)) continue;
+		if (!Enemy(candidate,actor) || (candidate->GetEntityId()==m_avoid && now<m_avoidUntil)) continue;
 		const Vec3 delta=candidate->GetEntity()->GetWorldPos()-origin;
 		const float distance=delta.GetLength();
 		if (!(distance<80.0f)) continue; // Also reject non-finite candidate positions.
@@ -213,6 +213,7 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 		m_firingWeapon = actor.GetCurrentItem()->GetEntityId();
 		m_burstEnd = now + m_burst;
 		m_nextBurst = now + m_burstGap;
+		m_lastBurstRequest=now;
 		weapon->StartFire();
 		if (verbose) WB_LOG(2, "[WarsBots] Stock weapon burst requested weapon=%u target=%u.", m_firingWeapon, target.GetEntityId());
 	}

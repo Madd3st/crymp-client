@@ -36,6 +36,7 @@ const char* NameOf(BotBrain::State state)
 void BotBrain::Change(State state)
 {
 	if (m_state == state) return;
+	m_progress.Reset();
 	m_state = state;
 	m_stateTime = m_now;
 	WB_LOG(2, "[WarsBots] #%d AI state=%s.", m_number, NameOf(state));
@@ -126,6 +127,7 @@ void BotBrain::Configure(const BotProfile& profile, int number)
 
 void BotBrain::ResetLife()
 {
+	m_progress.Reset(); m_escapeUntil=0;
 	m_locomotion.Reset();
 	m_suit.Reset(); m_blackboard=BotBlackboard(); m_intent=BotIntent();
 	m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
@@ -212,7 +214,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		WB_LOG(2,"[WarsBots] TACTIC SAMPLE actor=%u skill=%s style=%s weapon=%s suit=%d distance=%.2f action=%s target=%u visible=%d.",
 			actor.GetEntityId(),BotProfile::SkillName(m_profile.skill),BotProfile::StyleName(m_profile.style),
 			actor.GetCurrentItem()?actor.GetCurrentItem()->GetEntity()->GetClass()->GetName():"none",int(m_blackboard.mode),
-			m_blackboard.distance,m_now<m_withdrawUntil?"withdraw":NameOf(m_state),m_combat.Target(),m_combat.Visible()?1:0);
+			(m_combat.Target()?(m_combat.LastPosition()-position).GetLength():0.0f),m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":NameOf(m_state),m_combat.Target(),m_combat.Visible()?1:0);
 		WB_LOG(2, "[WarsBots] AI decision target=%u visible=%d sample=%.2f age=%.2f (cached decision; muzzle checked separately).",
 			m_combat.Target(), m_combat.Visible()?1:0, m_combat.SampleTime(), m_now-m_combat.SampleTime());
 		const Vec3 heading = actor.GetEntity()->GetWorldRotation().GetColumn1();
@@ -313,6 +315,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	}
 
 	IActor* enemy = m_combat.FindEnemy(actor, m_now, m_verbose);
+	if (m_now<m_escapeUntil) enemy=nullptr; // A short, sensed-but-not-pursued local escape leg.
 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
 	if ((!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))
 	{
@@ -322,6 +325,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			for (const BadItem& b : m_badItems) if (b.id && m_now < b.until) skip[skipCount++] = b.id;
 			m_upgradeTarget = BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true, skip, skipCount);
 			m_upgradeSince = m_now;
+			if (m_upgradeTarget) m_progress.Reset();
 			m_nextUpgradeSearch = m_now + 3.0f;
 		}
 		// Unreachable (on a ledge, behind glass, taken): give up after 10 s and skip it for 90 s.
@@ -353,6 +357,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			}
 			else { const Vec3 step=Steer(feet,item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
 			ExecuteIntent(actor,decisionTime);
+			if (m_upgradeTarget && NoProgress(actor,"weapon",m_upgradeTarget))
+			{ MarkBadItem(m_upgradeTarget); m_upgradeTarget=0; m_nextRepath=0; }
 			return;
 		}
 	}
@@ -399,7 +405,12 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		{ const Vec3 step=Steer(feet,m_patrolGoal); m_intent.MoveTo(step,step+Vec3(0,0,1.3f)); }
 		TravelGait((m_patrolGoal-feet).GetLength());
 		ExecuteIntent(actor,decisionTime);
-		if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0)
+		if (NoProgress(actor,"search",0))
+		{
+			g_pGame->GetBotManager().Nav().ReportStuck(feet);
+			m_detour=true; m_patrolUntil=0; m_nextRepath=0; m_blockedSince=0;
+		}
+		else if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0)
 		{
 			g_pGame->GetBotManager().Nav().ReportStuck(feet); // learned: route around this spot next time
 			m_detour=true; m_patrolUntil=m_now; m_blockedSince=0; m_nextRepath=0;
@@ -523,7 +534,28 @@ void BotBrain::Update(BotInstance& bot, float dt)
 
 	}
 	ExecuteIntent(actor,decisionTime);
+	IWeapon* activeWeapon=BotWeapons::Current(actor);
+	const bool protect=m_now-m_combat.LastBurstRequest()<4.0f ||
+		m_now-m_combat.SelectedAt()<0.75f || (activeWeapon && activeWeapon->IsReloading());
+	if (m_intent.move && NoProgress(actor,"combat",m_combat.Target(),protect))
+	{
+		g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos());
+		m_combat.AvoidCurrent(m_now,8.0f); m_escapeUntil=m_now+1.5f;
+		m_detour=true; m_patrolUntil=0; m_nextRepath=0;
+	}
 }
+bool BotBrain::NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect)
+{
+	if (!m_blackboard.canMove) { m_progress.Reset(); return false; }
+	const Vec3 p=actor.GetEntity()->GetWorldPos();
+	const float timeout=6.0f-2.0f*m_profile.targetJudgement;
+	if (!m_progress.Stalled(p.x,p.y,p.z,m_now,timeout) || protect) return false;
+	WB_LOG(2,"[WarsBots] PROGRESS ESCAPE actor=%u kind=%s goal=%u pos=(%.2f,%.2f,%.2f) age=%.2f.",
+		actor.GetEntityId(),kind,goal,p.x,p.y,p.z,m_progress.Age(m_now));
+	m_progress.Reset();
+	return true;
+}
+
 void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 {
 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)

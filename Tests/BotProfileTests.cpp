@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cmath>
 #include "CryGame/Bots/BotProfile.h"
+#include "CryGame/Bots/BotProgress.h"
 using namespace WarsBots;
 int main()
 {
@@ -22,6 +23,16 @@ int main()
             assert(p.WeaponRange("Shotgun",1)>0 && p.WeaponRange("DSG1",1)>0);
         }
     }
+    BotProgress progress;
+    assert(!progress.Stalled(0,0,0,0,4));
+    assert(!progress.Stalled(0,0,0,3.9f,4));
+    assert(progress.Stalled(0,0,0,4.0f,4));
+    progress.Reset();
+    assert(!progress.Stalled(0,0,0,10,4));
+    assert(!progress.Stalled(-2,0,0,13,4)); // Moving away on a valid detour is still progress.
+    assert(!progress.Stalled(-2,0,0,16,4));
+    assert(!progress.Stalled(-2,0,2,17,4)); // Vertical movement counts too.
+    assert(!progress.Stalled(-2,0,2,1,4)); // A level clock reset starts a new window.
     auto b=BotProfile::Make(BotStyle::Universal,BotSkill::Beginner);
     auto e=BotProfile::Make(BotStyle::Universal,BotSkill::Elite);
     assert(!b.useSpeed && e.useSpeed && b.retreatHealth<e.retreatHealth);
@@ -29,6 +40,7 @@ int main()
     assert(e.TargetUtility(20,20,true,false,true,100,true)>e.TargetUtility(20,20,true,false,false,100,true));
     assert(e.TargetUtility(20,20,true,false,false,100,true)>e.TargetUtility(20,20,false,false,false,100,true));
     assert(e.TargetUtility(20,20,true,true,false,20,true)<e.TargetUtility(20,20,true,false,false,20,true));
+    assert(e.TargetUtility(20,20,true,false,false,100,true)>e.TargetUtility(2,20,true,false,false,100,true));
     assert(e.WeaponRange("Shotgun",1)<e.WeaponRange("DSG1",1));
     auto assault=BotProfile::Make(BotStyle::Assault,BotSkill::Elite);
     auto marksman=BotProfile::Make(BotStyle::Marksman,BotSkill::Elite);
