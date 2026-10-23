@@ -15,7 +15,7 @@ $exe = Get-ChildItem -Path (Join-Path $wt 'build\multibot-on') -Recurse -Filter 
 if (-not $exe) { Set-Content $done 'NO_SERVER_EXE'; exit 1 }
 $name = "WarsBots-Claude-$Tag-$([DateTime]::Now.ToString('HHmmss')).log"
 $gameLog = Join-Path ([Environment]::GetFolderPath('MyDocuments')) "My Games\Crysis\$name"
-$qaArgs = "-dir `"$game`" -headless -logfile $name +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port 64120 +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_debug 1 +wb_add $Bots +wb_list"
+$qaArgs = "-dir `"$game`" -headless -logfile $name +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port 64120 +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_debug 1 +wb_maxbots $Bots +wb_add $Bots +wb_list +wb_nav"
 $p = Start-Process -FilePath $exe.FullName -ArgumentList $qaArgs -WorkingDirectory $game -WindowStyle Hidden -PassThru
 $deadline = [DateTime]::UtcNow.AddSeconds($Seconds)
 $text = ''

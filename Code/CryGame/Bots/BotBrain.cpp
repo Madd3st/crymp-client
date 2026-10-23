@@ -1,6 +1,7 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotBrain.h"
 #include "CryGame/Bots/BotInstance.h"
+#include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
@@ -41,6 +42,31 @@ void BotBrain::Change(State state)
 
 const char* BotBrain::StateName() const { return NameOf(m_state); }
 
+Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
+{
+	const BotNav& nav = g_pGame->GetBotManager().Nav();
+	if (!nav.Ready()) return goal; // fallback: straight line + local avoidance
+	// Moving targets would otherwise repath every decision tick: at most ~1.3 queries/s per bot.
+	if ((m_path.empty() || (goal - m_pathGoal).GetLengthSquared() > 16.0f || m_now >= m_nextRepath) && m_now >= m_minRepath)
+	{
+		m_minRepath = m_now + 0.75f;
+		const bool found = nav.FindPath(feet, goal, m_path);
+		m_pathIndex = 0;
+		m_pathGoal = goal;
+		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
+		if (!found) m_path.clear();
+	}
+	if (m_path.empty()) return goal;
+	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
+	while (m_pathIndex + 1 < m_path.size())
+	{
+		const Vec3& p = m_path[m_pathIndex];
+		if ((p - feet).GetLengthSquared2D() < 2.25f && fabs_tpl(p.z - feet.z) < 2.0f) ++m_pathIndex;
+		else break;
+	}
+	return m_path[m_pathIndex];
+}
+
 void BotBrain::Configure(const BotProfile& profile, int number)
 {
 	m_profile = profile;
@@ -60,7 +86,8 @@ void BotBrain::ResetLife()
 	m_combat.Reset();
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
-	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0;
+	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
+	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0;
 	++m_life;
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
@@ -214,7 +241,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 				if (BotWeapons::PickUp(actor, m_weaponTarget)) { m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass(); m_weaponTarget = 0; Change(State::SEARCHING_ENEMY); }
 				else m_weaponTarget = 0;
 			}
-			else m_intent.MoveTo(item->GetWorldPos(),item->GetWorldPos()+Vec3(0,0,1.2f));
+			else { const Vec3 step=Steer(actor.GetEntity()->GetWorldPos(),item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); }
 		}
 		else if (!m_fallbackGiven && (!item || m_now - m_weaponSearchStarted >= 6.0f))
 		{
@@ -260,10 +287,10 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			}
 			m_detour = false;
 		}
-		m_intent.MoveTo(m_patrolGoal,m_patrolGoal+Vec3(0,0,1.3f));
+		{ const Vec3 step=Steer(feet,m_patrolGoal); m_intent.MoveTo(step,step+Vec3(0,0,1.3f)); }
 		m_intent.gait=BotGait::Run;
 		ExecuteIntent(actor,decisionTime);
-		if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0) { m_detour=true; m_patrolUntil=m_now; m_blockedSince=0; }
+		if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0) { m_detour=true; m_patrolUntil=m_now; m_blockedSince=0; m_nextRepath=0; }
 		else if (m_blackboard.blocked && m_blockedSince <= 0) m_blockedSince=m_now;
 		else if (!m_blackboard.blocked) m_blockedSince=0;
 
@@ -304,6 +331,18 @@ void BotBrain::Update(BotInstance& bot, float dt)
             Vec3 lateral(-toward.y,toward.x,0);
             Vec3 travel=lateral*float(m_strafeSide)+toward*clamp_tpl((distance-m_profile.preferredRange)*0.1f,-0.5f,0.5f);
             travel.NormalizeSafe(lateral);
+            // Eyes see the target but the barrel is blocked by cover: step out (forward and to
+            // the current strafe side) instead of standing and staring; flip side if it persists.
+            if (m_combat.ShotBlocked())
+            {
+                if (m_shotBlockedSince<=0) m_shotBlockedSince=m_now;
+                if (m_now-m_shotBlockedSince>0.4f)
+                {
+                    travel=(toward*0.8f+lateral*float(m_strafeSide)*0.6f).GetNormalizedSafe(toward);
+                    if (m_now-m_shotBlockedSince>2.5f) { m_strafeSide=-m_strafeSide; m_shotBlockedSince=m_now; }
+                }
+            }
+            else m_shotBlockedSince=0;
             m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+travel*4.0f,aim);
             m_intent.strafe=true;
         }
@@ -313,7 +352,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	else
 	{
 		Change(State::CHASING_ENEMY);
-		m_intent.MoveTo(destination,aim);
+		m_intent.MoveTo(Steer(actor.GetEntity()->GetWorldPos(),destination),aim);
 		// A visible target beyond engage range is still shot at while closing in, like a player
 		// with a rifle would; outside fireRange or without LOS the bot only moves.
 		if (visible && distance <= m_profile.fireRange)

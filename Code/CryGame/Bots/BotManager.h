@@ -7,6 +7,7 @@ struct IGameFramework;
 #include "CryCommon/CryAction/ILevelSystem.h"
 #include "CryCommon/CryEntitySystem/IEntitySystem.h"
 #include "CryGame/Bots/BotInstance.h"
+#include "CryGame/Bots/BotNav.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -42,6 +43,7 @@ public:
 
 	bool CanRunLocalIA() const;
 	IGameFramework* Framework() const { return m_framework; }
+	const BotNav& Nav() const { return m_nav; }
 	int Count() const { return int(m_bots.size()); }
 	int MaxBots() const;
 
@@ -99,6 +101,8 @@ private:
 	static void StatusCommand(IConsoleCmdArgs* args);
 	static void DebugCommand(IConsoleCmdArgs* args);
 	static void SelectCommand(IConsoleCmdArgs* args);
+	static void NavCommand(IConsoleCmdArgs* args);
+	void ResetNav() { m_nav.Reset(); }
 	// Legacy single-bot test commands, now addressed to the selected bot.
 	static void ProbeSpawnCommand(IConsoleCmdArgs* args);
 	static void ProbeRemoveCommand(IConsoleCmdArgs* args);
@@ -129,6 +133,7 @@ private:
 	std::unordered_map<EntityId, std::unique_ptr<BotInstance>> m_bots;
 	float m_nextProfileLog = 0;
 	float m_clock = 0;
+	BotNav m_nav;
 };
 #endif
 }

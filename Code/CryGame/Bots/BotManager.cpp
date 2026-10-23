@@ -42,7 +42,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
 const char* kCommands[] = {
-	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select",
+	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
@@ -79,6 +79,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_list", ListCommand, 0, "List bots: number, EntityId, profile, state");
 	console->AddCommand("wb_status", StatusCommand, 0, "Detailed status and per-bot update cost");
 	console->AddCommand("wb_debug", DebugCommand, 0, "wb_debug 0|1: verbose telemetry for all bots");
+	console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
 	console->AddCommand("wb_select", SelectCommand, 0, "wb_select <botNumber>: target of the legacy wb_bot_*/wb_probe_* commands");
 	console->AddCommand("wb_probe_spawn", ProbeSpawnCommand, 0, "wb_probe_spawn x y z: add one bot without AI");
 	console->AddCommand("wb_probe_remove", ProbeRemoveCommand, 0, "Remove the selected bot");
@@ -105,6 +106,7 @@ void BotManager::Shutdown()
 	for (const char* name : kCommands) gEnv->pConsole->RemoveCommand(name);
 	for (const char* name : kVariables) gEnv->pConsole->UnregisterVariable(name, true);
 	EndLevel();
+	m_nav.Reset();
 	gEnv->pEntitySystem->RemoveSink(this);
 	m_framework->GetILevelSystem()->RemoveListener(this);
 	m_framework->UnregisterListener(this);
@@ -330,6 +332,9 @@ void BotManager::OnPostUpdate(float dt)
 	// Restore outside the action-event callback, once the reset level is usable again.
 	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
 	if (m_bots.empty()) return;
+	// Navigation graph is built lazily once bots exist, a few ms per frame; geometry survives
+	// IA game resets, so only level changes discard it.
+	if (m_levelReady && CanRunLocalIA()) { m_nav.Begin(); m_nav.Step(2.0f); }
 	m_clock += dt;
 	// Stable order by display number; vector copy keeps iteration valid if a callback sweeps.
 	for (BotInstance* bot : Ordered()) bot->Update(dt);
@@ -341,12 +346,12 @@ void BotManager::OnPostUpdate(float dt)
 	}
 }
 
-void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); EndLevel(); }
-void BotManager::OnLoadingStart(ILevelInfo*) { m_restorePending = false; m_roster.clear(); EndLevel(); }
+void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
+void BotManager::OnLoadingStart(ILevelInfo*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
 void BotManager::OnLoadingComplete(ILevel*) { m_levelReady = true; }
-void BotManager::OnLoadingError(ILevelInfo*, const char*) { EndLevel(); }
-void BotManager::OnLoadGame(ILoadGame*) { EndLevel(); }
-void BotManager::OnLevelEnd(const char*) { EndLevel(); }
+void BotManager::OnLoadingError(ILevelInfo*, const char*) { EndLevel(); m_nav.Reset(); }
+void BotManager::OnLoadGame(ILoadGame*) { EndLevel(); m_nav.Reset(); }
+void BotManager::OnLevelEnd(const char*) { EndLevel(); m_nav.Reset(); }
 
 void BotManager::OnActionEvent(const SActionEvent& event)
 {
@@ -363,6 +368,7 @@ void BotManager::OnActionEvent(const SActionEvent& event)
 	}
 	else if (event.m_event == eAE_disconnected)
 	{
+		m_nav.Reset();
 		m_roster.clear();
 		m_restorePending = false;
 		EndLevel();
@@ -458,6 +464,7 @@ void BotManager::StatusCommand(IConsoleCmdArgs*)
 	CryLogAlways("[WarsBots] gate=%d levelReady=%d bots=%d/%d defaultVerbose=%d.",
 		self->CanRunLocalIA() ? 1 : 0, self->m_levelReady ? 1 : 0, self->Count(), self->MaxBots(), self->m_defaultVerbose ? 1 : 0);
 	for (BotInstance* bot : self->Ordered()) { bot->Brain().Status(); bot->Status(); }
+	self->m_nav.Status();
 	self->StatusReport();
 }
 
@@ -468,6 +475,11 @@ void BotManager::DebugCommand(IConsoleCmdArgs* args)
 	{ CryLogAlways("[WarsBots] Usage: wb_debug 0|1."); return; }
 	self->m_defaultVerbose = !strcmp(args->GetArg(1), "1");
 	for (BotInstance* bot : self->Ordered()) bot->Brain().SetVerbose(self->m_defaultVerbose);
+}
+
+void BotManager::NavCommand(IConsoleCmdArgs*)
+{
+	if (BotManager* self = Self()) self->m_nav.Status();
 }
 
 void BotManager::SelectCommand(IConsoleCmdArgs* args)

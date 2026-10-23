@@ -50,6 +50,17 @@ def report(path):
     print(f'self-damage hits (fall etc.): {len(selfhits)} sum {sum(float(h[2]) for h in selfhits):.0f}')
     for n in sorted(per, key=lambda k: int(k) if k.isdigit() else 99):
         print(f'  bot #{n}: ' + ' '.join(f'{k}={v}' for k, v in sorted(per[n].items())))
+    # Behaviour quality: share of telemetry samples per state and share of blocked movement.
+    states = collections.Counter(re.findall(r'AI telemetry EntityId=\d+ state=(\w+)', text))
+    blocked = re.findall(r'MOTION INTENT: .*?requestedBase=([\d.]+).*?blocked=(\d)', text)
+    moving = [b for r, b in blocked if float(r) > 0]
+    if states:
+        tot = sum(states.values())
+        print('state share: ' + ', '.join(f'{k}={100*v/tot:.0f}%' for k, v in states.most_common()))
+    if moving:
+        print(f'blocked while trying to move: {100*sum(int(b) for b in moving)/len(moving):.0f}% of {len(moving)} samples')
+    nav = re.findall(r'NAV ready: (\d+) nodes, (\d+) edges, build ([\d.]+) ms', text)
+    if nav: print(f'nav: {nav[-1][0]} nodes, {nav[-1][1]} edges, {nav[-1][2]} ms build')
     verdict = 'PASS' if (len(created) >= 2 and bb and kills and not crash) else 'INCOMPLETE'
     print(f'M3 bot-vs-bot verdict: {verdict}')
 

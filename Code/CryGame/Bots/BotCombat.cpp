@@ -26,7 +26,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
+void BotCombat::Reset() { StopFire(); m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
 
 void BotCombat::StopFire()
 {
@@ -85,12 +85,15 @@ bool BotCombat::Observe(CActor& actor, IActor& target, float now, bool verbose)
 {
 	EntityId obstruction = 0;
 	m_sampleTime = now;
-	m_visible = Sight(actor, target, obstruction);
+	// Chest first; if only the head shows over cover, aim there (what a player does).
+	const bool chest = gEnv->pPhysicalWorld && ClearRay(actor, target, Eyes(actor), AimPoint(target), obstruction);
+	const bool head = !chest && gEnv->pPhysicalWorld && ClearRay(actor, target, Eyes(actor), Eyes(target), obstruction);
+	m_visible = chest || head;
 	if (m_visible)
 	{
 		m_lastSeen = now;
 		m_lastPosition = target.GetEntity()->GetWorldPos();
-		m_lastAim = AimPoint(target);
+		m_lastAim = chest ? AimPoint(target) : Eyes(target) - Vec3(0,0,0.08f);
 	}
 	else if (verbose && now >= m_nextDiagnostic)
 	{
@@ -148,14 +151,23 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 	SMovementState muzzleState;
 	actor.GetMovementController()->GetMovementState(muzzleState);
 	EntityId obstruction = 0;
-	if (!muzzleState.weaponPosition.IsValid() ||
-		!ClearRay(actor, target, muzzleState.weaponPosition, AimPoint(target), obstruction))
-	{ StopFire(); return false; }
+	// Muzzle ray to the chest, else to the head: the weapon sits lower/side of the eyes, so cover
+	// that the eyes clear can still block the barrel. Report it so the brain can reposition.
+	Vec3 shotPoint = AimPoint(target);
+	bool clear = muzzleState.weaponPosition.IsValid() &&
+		ClearRay(actor, target, muzzleState.weaponPosition, shotPoint, obstruction);
+	if (!clear && muzzleState.weaponPosition.IsValid())
+	{
+		shotPoint = Eyes(target) - Vec3(0,0,0.08f);
+		clear = ClearRay(actor, target, muzzleState.weaponPosition, shotPoint, obstruction);
+	}
+	m_shotBlocked = !clear;
+	if (!clear) { StopFire(); return false; }
 	if (BotWeapons::ReloadIfNeeded(actor, *weapon) || !BotWeapons::HasAmmunition(actor, *weapon))
 	{ StopFire(); return false; }
 	SMovementState state;
 	actor.GetMovementController()->GetMovementState(state);
-	Vec3 direction = (AimPoint(target) - state.weaponPosition).GetNormalizedSafe(FORWARD_DIRECTION);
+	Vec3 direction = (shotPoint - state.weaponPosition).GetNormalizedSafe(FORWARD_DIRECTION);
 	if (direction.Dot(state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)) < 0.96f)
 	{ StopFire(); return false; }
 	if (m_firingWeapon && now >= m_burstEnd) StopFire();
