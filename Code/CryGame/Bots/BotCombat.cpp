@@ -93,8 +93,15 @@ bool BotCombat::Observe(CActor& actor, IActor& target, float now, bool verbose)
 	m_visible = chest || head;
 	if (m_visible)
 	{
-		// Reacquiring a remembered target still needs human-scale reaction time.
-		if (!wasVisible && target.GetEntityId()==m_target) m_selectedAt=now;
+		// A meaningful visual loss needs a fresh reaction, but brief cover flicker can be
+		// anticipated. Do not restart the independent target-hold clock on reacquisition.
+		if (!wasVisible && target.GetEntityId()==m_target && now-m_lastSeen>0.5f)
+		{
+			StopFire();
+			m_nextBurst=m_profile.NextTargetBurst(m_nextBurst,now);
+			WB_LOG(2,"[WarsBots] TARGET REACQUIRE actor=%u target=%u delay=%.2f.",
+				actor.GetEntityId(),m_target,m_profile.reaction);
+		}
 		m_lastSeen = now;
 		m_lastPosition = target.GetEntity()->GetWorldPos();
 		m_lastAim = chest ? AimPoint(target) : Eyes(target) - Vec3(0,0,0.08f);
