@@ -130,3 +130,15 @@ Authored in a Linux sandbox without MSVC; nothing below is BUILD PASS or tested 
 
 Verification level: implemented → **not compiled** → not tested. Do not merge into warsbots/main
 before Build-WarsBots ON and OFF pass and AI_TESTS sections M1–M6 are run.
+
+### Same day, on the user's PC (driven by Claude via ClaudeQA/*.bat, separate worktree `..\crymp-multibot`)
+
+- **BUILD PASS** MSVC 19.44 x64 Release: ON (`build/multibot-on`) and OFF (`build/multibot-off`) at `ce36de5b`;
+  ON again at `8e26fb32`. The C2660 blocker is gone. ON server SHA256 at ce36de5b `FE542682…BBBA33`.
+- **Server log, QA port 64120, no client, Steelmill:** `wb_add 2` → WarsBot_01 (65501, universal) and
+  WarsBot_02 (65500, assault) on different spawn points ~100 m apart; both `IA participant registered`
+  (matchCount 1→2), armed (test SCAR fallback), patrolling. PROFILE ≈0.02 ms/frame for 2 bots.
+- Found: bots count as IA participants, so PreGame start timer fired → `RestartGame` → `ResetEntities`
+  → our reset handler removed bots permanently (clean ENTITY_EVENT_DONE, no crash). Fixed in `8e26fb32`
+  (roster restore). Bots never met with 10 m local patrol → spawn-point roaming in `8e26fb32`.
+- A bot-only IA match therefore DOES start without humans (native timer, no fake connection).
