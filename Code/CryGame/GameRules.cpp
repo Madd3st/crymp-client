@@ -13,6 +13,9 @@
 #include "CryCommon/CrySystem/ISystem.h"
 #include "ScriptBind_GameRules.h"
 #include "GameRules.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "Bots/BotMatch.h"
+#endif
 #include "Game.h"
 #include "GameCVars.h"
 #include "Actors/Actor.h"
@@ -1374,8 +1377,31 @@ void CGameRules::GetPlayers(TPlayers &players) const
 }
 
 //------------------------------------------------------------------------
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+bool CGameRules::IsMatchParticipant(EntityId id) const
+{
+    IActor* actor=m_pActorSystem->GetActor(id);
+    return actor && (actor->IsPlayer() || WarsBots::BotMatch::IsBot(*this,id));
+}
+void CGameRules::GetMatchParticipants(TPlayers& players) const
+{
+    GetPlayers(players); // Real channel enumeration stays unchanged for networking/voting.
+    TPlayers bots;
+    WarsBots::BotMatch::Collect(*this,bots);
+    for (EntityId id : bots) if (std::find(players.begin(),players.end(),id)==players.end()) players.push_back(id);
+}
+int CGameRules::GetMatchParticipantCount(bool inGame) const
+{
+    TPlayers bots;
+    WarsBots::BotMatch::Collect(*this,bots);
+    return GetPlayerCount(inGame)+int(bots.size());
+}
+#endif
 bool CGameRules::IsPlayerInGame(EntityId playerId) const
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    if (WarsBots::BotMatch::IsBot(*this,playerId)) return true;
+#endif
 	INetChannel* pNetChannel = m_pGameFramework->GetNetChannel(GetChannelId(playerId));
 	if (pNetChannel && pNetChannel->GetContextViewState() >= eCVS_InGame)
 		return true;
@@ -2681,7 +2707,11 @@ float CGameRules::GetClosestPlayerDistSqr(const EntityId spawnLocationId, const 
 
 	const Vec3& pos(pSpawn->GetWorldPos());
 	CGameRules::TPlayers players;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    GetMatchParticipants(players);
+#else
 	GetPlayers(players);
+#endif
 	if (players.empty() ||
 		players[0] == skipId && players.size() == 1)
 		return closestDist;

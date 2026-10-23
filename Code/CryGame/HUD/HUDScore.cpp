@@ -248,7 +248,11 @@ void CHUDScore::Render()
 	while (IActor* pActor = actorIt->Next())
 	{
 		//CryMP: For MisterSD :s
-		if (!pActor->IsPlayer())
+		if (!pActor->IsPlayer()
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+            && !pGameRules->IsMatchParticipant(pActor->GetEntityId())
+#endif
+        )
 			continue;
 
 		const EntityId playerId = pActor->GetEntityId();

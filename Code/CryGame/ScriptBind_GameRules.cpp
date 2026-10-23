@@ -474,6 +474,11 @@ int CScriptBind_GameRules::GetPlayerCount(IFunctionHandler* pH)
 	if (pH->GetParamCount() > 0)
 		pH->GetParam(1, inGame);
 
+	#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    bool connectionsOnly=false;
+    if (IScriptTable* table=pGameRules->GetEntity()->GetScriptTable()) table->GetValue("warsBotsConnectionOnly",connectionsOnly);
+    if (!connectionsOnly) return pH->EndFunction(pGameRules->GetMatchParticipantCount(inGame));
+#endif
 	return pH->EndFunction(pGameRules->GetPlayerCount(inGame));
 }
 
@@ -500,7 +505,15 @@ int CScriptBind_GameRules::GetPlayers(IFunctionHandler* pH)
 	if (!pGameRules)
 		return pH->EndFunction();
 
+	#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    CGameRules::TPlayers participants;
+    bool connectionsOnly=false;
+    if (IScriptTable* table=pGameRules->GetEntity()->GetScriptTable()) table->GetValue("warsBotsConnectionOnly",connectionsOnly);
+    if (connectionsOnly) pGameRules->GetPlayers(participants); else pGameRules->GetMatchParticipants(participants);
+    int count=int(participants.size());
+#else
 	int count = pGameRules->GetPlayerCount();
+#endif
 	if (!count)
 		return pH->EndFunction();
 
@@ -510,7 +523,11 @@ int CScriptBind_GameRules::GetPlayers(IFunctionHandler* pH)
 	int k = 0;
 	while (i < count)
 	{
+		#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+        IEntity* pEntity=gEnv->pEntitySystem->GetEntity(participants[i]);
+#else
 		IEntity* pEntity = gEnv->pEntitySystem->GetEntity(pGameRules->GetPlayer(i));
+#endif
 		if (pEntity)
 		{
 			IScriptTable* pEntityScript = pEntity->GetScriptTable();

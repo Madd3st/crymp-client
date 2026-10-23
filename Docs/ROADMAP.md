@@ -13,3 +13,6 @@
    Power Struggle and broader scaling follow separately.
 
 Crysis Wars is preserved as source/history, not the primary implementation target.
+
+Текущий приоритет пользователя: IA scoreboard/participant identity в отдельной
+ветке, до дальнейшего развития AI. WIP build blocker указан в STATUS.

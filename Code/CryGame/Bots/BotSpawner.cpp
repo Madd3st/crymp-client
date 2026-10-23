@@ -1,4 +1,5 @@
 #include "CryMPEngineAdapter.h"
+#include "BotMatch.h"
 // WarsBots experiment. See LICENSE.txt. Uses the existing actor network binding.
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotSpawner.h"
@@ -120,6 +121,11 @@ bool BotSpawner::Spawn(const Vec3& position)
 	}
 	m_entityId = actor->GetEntityId();
 	m_identity = actor->GetEntity();
+    if (!BotMatch::Register(*g_pGame->GetGameRules(),*actor))
+    {
+        CryLogAlways("[WarsBots] IA registration failed; removing only the new owned probe.");
+        Remove(); return false;
+    }
 	const Vec3 actualPosition = actor->GetEntity()->GetWorldPos();
 	m_lastSpawnLocation = 0;
 	if (CGameRules* rules = g_pGame->GetGameRules())
@@ -153,6 +159,7 @@ void BotSpawner::Remove()
 		return;
 	}
 	// Only the entity created by this instance; never delete by name or channel.
+	BotMatch::Unregister(id);
 	gEnv->pEntitySystem->RemoveEntity(id, true);
 	if (!gEnv->pEntitySystem->GetEntity(id))
 	{
@@ -172,10 +179,11 @@ void BotSpawner::Status() const
 		CryLogAlways("[WarsBots] No live owned probe.");
 		return;
 	}
-	CryLogAlways("[WarsBots] EntityId=%u channelId=%u IsPlayer=%d health=%d inventory=%d physics=%d movement=%d; match participant=NO.",
+	CryLogAlways("[WarsBots] EntityId=%u channelId=%u IsPlayer=%d health=%d inventory=%d physics=%d movement=%d; match participant=%s (IA EntityId registry).",
 		m_entityId, static_cast<unsigned>(actor->GetChannelId()), actor->IsPlayer() ? 1 : 0,
 		actor->GetHealth(), actor->GetInventory() ? 1 : 0, actor->GetEntity()->GetPhysics() ? 1 : 0,
-		actor->GetMovementController() ? 1 : 0);
+		actor->GetMovementController() ? 1 : 0,
+        g_pGame->GetGameRules()->IsMatchParticipant(m_entityId)?"YES":"NO");
 	CryLogAlways("[WarsBots] Lifecycle health=%d physicsProfile=%u lastHitShooter=%u KillPlayerObserved=%d.",
 		actor->GetHealth(), static_cast<unsigned>(actor->GetGameObject()->GetAspectProfile(eEA_Physics)),
 		m_lastHitShooter, m_killPlayerObserved ? 1 : 0);
@@ -319,6 +327,7 @@ void BotSpawner::OnEvent(IEntity* entity, SEntityEvent& event)
 	if (event.event == ENTITY_EVENT_DONE && entity && entity->GetId() == m_entityId && entity == m_identity)
 	{
 		m_brain.Stop(*this);
+		BotMatch::Unregister(m_entityId);
 		CryLogAlways("[WarsBots] Probe ENTITY_EVENT_DONE EntityId=%u.", m_entityId);
 		m_entityId = 0;
 		m_identity = nullptr;

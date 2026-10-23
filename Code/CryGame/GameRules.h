@@ -284,6 +284,11 @@ public:
 	virtual int GetSpectatorCount(bool inGame=false) const;
 	virtual EntityId GetPlayer(int idx);
 	void GetPlayers(TPlayers& players) const;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    bool IsMatchParticipant(EntityId id) const;
+    void GetMatchParticipants(TPlayers& players) const;
+    int GetMatchParticipantCount(bool inGame=false) const;
+#endif
 	virtual bool IsPlayerInGame(EntityId playerId) const;
 	virtual bool IsPlayerActivelyPlaying(EntityId playerId, bool mustBeAlive = false) const;	// [playing / dead / waiting to respawn (inc spectating while dead): true] [not yet joined game / selected Spectate: false]
 	virtual bool IsChannelInGame(int channelId) const;

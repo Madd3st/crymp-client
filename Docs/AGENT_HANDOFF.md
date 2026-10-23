@@ -35,3 +35,29 @@ Latest user steering prioritizes proper IA participants and the scoreboard.
 Keep Strength clearance and native energy mechanics.
 Investigate headshot AI-vs-player damage parity separately; no health/multiplier change
 has been made. Do not claim the entire long-term request complete.
+
+## Передача в основной чат: сохранение по лимиту
+
+Основной проект теперь Madd3st/crymp-client, локально local/crymp-client внутри
+старого WarsBots checkout. Рабочая main: caf1a815 (Combat MVP + locomotion),
+сохранённая WIP-ветка: warsbots/feature/ia-participants. Старый WarsBots не удалён.
+
+Успели: чистая MSVC x64 Release сборка CryMP; порт актуального Wars AI; реальный
+сервер и клиент; видимый бот, стрельба/урон/убийство и native respawn того же EntityId.
+Пользователь подтвердил движение и бой, затем левый/правый стрейф. В открытой точке
+физически: strafe left2/2 right2/2, sprint2/2 (5.46м/с, расход энергии), Strength2/2
+(vz9.60, подъём3.62/3.63, штатное приземление), normal1/1. Стартовый закрытый spawn
+не прошёл правый стрейф: local avoidance отвёл движение. Late одиночный клиент
+получил replica; два одновременных клиента НЕ подтверждены.
+
+Последняя просьба пользователя — показывать бота в таблице и считать участником IA.
+Подготовлены BotMatch/participant API, HUD и Lua wrappers, но сборка WIP упала на
+BotMatch.cpp41/46 (Script::Call C2660). Эта версия не установлена/не запущена.
+Продолжить с исправления реального script call API, затем собрать и проверить IA.
+Не менять глобальный IsPlayer/каналы/античит. Не объявлять scoreboard готовым.
+
+Остановились по просьбе пользователя из-за лимита. Рабочий клиент/сервер оставлены
+пользователю (последние PID31740/14960, проверить перед любыми действиями).
+Запуск из build/baseline с -dir оригинальной игры; root EXE могли остаться старее.
+Не убивать игру и не заменять EXE без нового согласования. Никаких новых тестов
+после команды сохранить не проводилось. Полные native логи локальны и не в Git.

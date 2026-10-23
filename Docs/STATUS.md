@@ -1,7 +1,7 @@
 # WarsBots for CryMP: status, 2026-10-23
 
 Repository: https://github.com/Madd3st/crymp-client.
-Integration `warsbots/main`; implementation `warsbots/feature/locomotion`.
+Integration `warsbots/main`; working baseline `caf1a815` on `warsbots/main`; current WIP `warsbots/feature/ia-participants`.
 Local checkout: `C:\Users\Magic8\OneDrive\Документы\ChatGPT\Crysis wars bot\local\crymp-client`.
 See [port provenance](WARSBOTS_PORT.md), [tests](AI_TESTS.md), [handoff](AGENT_HANDOFF.md).
 
@@ -85,3 +85,31 @@ map spawn; server/client logs continue alive movement. No full pathfinder exists
 
 Latest user priority: include the bot in the IA player table and match participation,
 using EntityId and scoped game-mode handling, never a fake network channel.
+
+## SAVE CHECKPOINT: IA participants WIP — BUILD FAIL, NOT DEPLOYED
+
+Stopped on the user's explicit request to save remaining quota (2026-10-23).
+Do not continue gameplay/rebuilds merely because the earlier long task is incomplete.
+Working main remains caf1a815; do NOT merge this WIP into main yet.
+
+Prepared: separate EntityId-based match participant APIs, HUD inclusion, Lua match
+count/list binding, owned bot score reset/cleanup, instance-local IA damage/scoring
+wrappers, connection-only enumeration during native ReviveAllPlayers. Native IsPlayer,
+real channel list, voting denominator and ShotValidator were not globally changed.
+New files BotMatch.h/.cpp and Pak/Scripts/WarsBots/InstantAction.lua; changes also in
+CMake, BotSpawner, GameRules, GameRulesClientServer, ScriptBind_GameRules and HUDScore.
+
+Compilation attempted, failed: BotMatch.cpp lines41/46, C2660 Script::Call has no
+four-argument overload for table/method/argument. Fix using the actual CryMP script
+call API; preserve Lua colon Attach(self,rules) argument semantics. No fix or repeat
+build after the save request. Log build/ia-build.log. CMake runtime output was redirected
+to build/ia-bin to avoid locked working EXEs; no IA participant EXEs were produced.
+Lua runtime/HUD/scores/cleanup and ordinary-player regression are NOT RUN for this WIP.
+The user still runs the proven locomotion build: scoreboard omission and old AI damage
+table selection are expected until a corrected participant version is built/tested.
+
+Next steps: fix two script-call compilation errors; build ON and OFF; test isolated IA
+registration/remove/recreate, then obtain permission before replacing/restarting the
+user's session. Verify Tab row, count, kills/deaths/headshots without double human credit,
+normal-vs-head damage parity, death/respawn, round transitions, late join and cleanup.
+Spawn groups are explicitly unsupported/refused by participant registration; PS untouched.

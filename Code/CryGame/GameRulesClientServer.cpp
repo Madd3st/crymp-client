@@ -15,6 +15,9 @@ History:
 #include "CryCommon/CrySystem/ISystem.h"
 #include "ScriptBind_GameRules.h"
 #include "GameRules.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "Bots/BotMatch.h"
+#endif
 #include "Game.h"
 #include "GameCVars.h"
 #include "Actors/Actor.h"
@@ -296,6 +299,7 @@ void CGameRules::ProcessServerHit(HitInfo& hitInfo)
 		CallScript(m_serverStateScript, "OnHit", m_scriptHitInfo);
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
         g_pGame->GetBotManager().GetSpawner().TraceHit("after-Lua", hitInfo);
+        WarsBots::BotMatch::LogScores(hitInfo.targetId,hitInfo.shooterId);
 #endif
 
 		// call hit listeners if any
