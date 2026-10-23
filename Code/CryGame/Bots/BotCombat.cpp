@@ -95,7 +95,7 @@ bool BotCombat::Observe(CActor& actor, IActor& target, float now, bool verbose)
 	{
 		// A meaningful visual loss needs a fresh reaction, but brief cover flicker can be
 		// anticipated. Do not restart the independent target-hold clock on reacquisition.
-		if (!wasVisible && target.GetEntityId()==m_target && now-m_lastSeen>0.5f)
+		if (!wasVisible && target.GetEntityId()==m_target && now>m_selectedAt && now-m_lastSeen>0.5f)
 		{
 			StopFire();
 			m_nextBurst=m_profile.NextTargetBurst(m_nextBurst,now);
