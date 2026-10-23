@@ -91,7 +91,9 @@ void BotInstance::Remove()
 	}
 	// Only the entity created by this instance; never delete by name or channel.
 	BotMatch::Unregister(id);
+	m_removing = true;
 	gEnv->pEntitySystem->RemoveEntity(id, true);
+	m_removing = false;
 	if (!gEnv->pEntitySystem->GetEntity(id))
 	{
 		m_entityId = 0;

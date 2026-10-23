@@ -35,6 +35,8 @@ public:
 	bool CanRunLocalIA() const;
 	bool AIEnabled() const { return m_brain.Running(); }
 	bool Expired() const { return m_entityId == 0; }
+	// True only while our own Remove() is deleting the entity.
+	bool Removing() const { return m_removing; }
 	EntityId GetEntityId() const { return m_entityId; }
 	int Number() const { return m_number; }
 	const char* Name() const { return m_name; }
@@ -67,6 +69,7 @@ private:
 	EntityId m_lastHitShooter = 0;
 	EntityId m_lastSpawnLocation = 0;
 	bool m_killPlayerObserved = false;
+	bool m_removing = false;
 	float m_lastUpdateMs = 0, m_maxUpdateMs = 0, m_totalUpdateMs = 0;
 	unsigned m_updateCount = 0;
 	BotBrain m_brain;

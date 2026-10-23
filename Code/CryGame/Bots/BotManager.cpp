@@ -312,13 +312,23 @@ void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)
 {
 	if (event.event != ENTITY_EVENT_DONE || !entity) return;
 	// Do not erase here: this can arrive from inside RemoveEntity called by our own Remove().
-	if (BotInstance* bot = Find(entity->GetId())) bot->OnEntityDone();
+	BotInstance* bot = Find(entity->GetId());
+	if (!bot) return;
+	// Removed by someone else while the level lives: native IA RestartGame -> GameFramework::Reset
+	// deletes runtime-spawned actors without eAE_resetBegin. Re-create the same bot next frame.
+	if (!bot->Removing() && m_levelReady)
+	{
+		m_roster.push_back({ bot->Number(), bot->Profile(), bot->AIEnabled() });
+		m_restorePending = true;
+		CryLogAlways("[WarsBots] #%d removed externally (game reset?); will re-create.", bot->Number());
+	}
+	bot->OnEntityDone();
 }
 
 void BotManager::OnPostUpdate(float dt)
 {
 	// Restore outside the action-event callback, once the reset level is usable again.
-	if (m_restorePending && m_levelReady && CanRunLocalIA()) RestoreRoster();
+	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
 	if (m_bots.empty()) return;
 	m_clock += dt;
 	// Stable order by display number; vector copy keeps iteration valid if a callback sweeps.
