@@ -65,3 +65,16 @@ Record each as passes/attempts with log lines:
 - M5 remove/re-add during a match, map change, `wb_remove_all`: no stale EntityId in `wb_list`,
   no crash, scores cleared.
 - M6 human + 6 bots, then a second simultaneous client.
+
+## Automated QA loop (Tools/ClaudeQA, Tools/wb_log_report.py)
+
+`ClaudeQA\Claude-Runner.bat` (started once on the Windows PC) polls `ClaudeQA\inbox\*.json`:
+```json
+{"id":"j01","build":"on|both|none","qa":[{"bots":2,"seconds":240,"tag":"m3"}]}
+```
+It imports `ClaudeQA\warsbots-multibot.bundle` into the separate worktree `..\crymp-multibot`,
+builds incrementally (`build/multibot-on|off`), runs headless loopback servers on port 64120 with
+`wb_add N`, copies logs to `build\claude-qa`, and writes `ClaudeQA\outbox\<id>.json` (with HEAD).
+Only these fixed job types exist; it never touches game-root EXEs or the user's port-64110 session.
+`python3 Tools/wb_log_report.py <log>` prints created/resets/acquisitions/hits/kills/revives/profile
+and an M3 verdict. GUI is reserved for client visuals and two-client tests.
