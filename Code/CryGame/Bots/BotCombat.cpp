@@ -145,7 +145,7 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 		if (!Enemy(candidate,actor)) continue;
 		const Vec3 delta=candidate->GetEntity()->GetWorldPos()-origin;
 		const float distance=delta.GetLength();
-		if (distance>=80.0f) continue;
+		if (!(distance<80.0f)) continue; // Also reject non-finite candidate positions.
 		EntityId obstruction=0;
 		// Unlike Observe, this does not overwrite selected-target memory while scanning.
 		if (!Sight(actor,*candidate,obstruction)) continue;

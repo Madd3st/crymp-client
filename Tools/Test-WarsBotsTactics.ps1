@@ -15,6 +15,7 @@ param(
     [string]$OutputDirectory='build/tactics-qa'
 )
 $ErrorActionPreference='Stop'
+if($CandidateOnly -and $BaselineOnly){throw 'Choose one comparison side, not both.'}
 $repo=Split-Path $PSScriptRoot -Parent
 $out=[IO.Path]::GetFullPath((Join-Path $repo $OutputDirectory))
 New-Item -ItemType Directory -Force $out | Out-Null
