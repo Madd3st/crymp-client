@@ -86,12 +86,15 @@ bool BotCombat::Observe(CActor& actor, IActor& target, float now, bool verbose)
 {
 	EntityId obstruction = 0;
 	m_sampleTime = now;
+	const bool wasVisible=m_visible;
 	// Chest first; if only the head shows over cover, aim there (what a player does).
 	const bool chest = gEnv->pPhysicalWorld && ClearRay(actor, target, Eyes(actor), AimPoint(target), obstruction);
 	const bool head = !chest && gEnv->pPhysicalWorld && ClearRay(actor, target, Eyes(actor), Eyes(target), obstruction);
 	m_visible = chest || head;
 	if (m_visible)
 	{
+		// Reacquiring a remembered target still needs human-scale reaction time.
+		if (!wasVisible && target.GetEntityId()==m_target) m_selectedAt=now;
 		m_lastSeen = now;
 		m_lastPosition = target.GetEntity()->GetWorldPos();
 		m_lastAim = chest ? AimPoint(target) : Eyes(target) - Vec3(0,0,0.08f);
