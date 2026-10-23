@@ -27,6 +27,15 @@ Next geometry work: log failed start/goal projections and target item positions;
 actual progress and walkable entry/exit connectors. Only then add verified roof transitions.
 Dynamic obstacles and moving items still need runtime local avoidance.
 
+## Actual movement observations (2026-10-23)
+
+[Tactical experiment](Experiments/tactics-2026-10-23.md) records actual stationary/loop
+windows and visible-chase stalls that blocked flags alone missed. Broad search/weapon/
+combat recovery harmed combat and was rejected. Final combat-only
+`wb_progress_experiment=0` remains OFF; two ON smokes triggered no recoveries, so
+its efficacy is unproved. Sparse A* fallback remains; no new jump links or blanket
+missing-path rejection. Diagnose canMove/reload/freefall before further route changes.
+
 ## Native mechanics checked for this increment
 
 `Actors/Player/NanoSuit.cpp::Update/UpdateSprinting` owns recharge and sprint drain;

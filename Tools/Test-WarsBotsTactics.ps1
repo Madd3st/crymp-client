@@ -7,6 +7,9 @@ param(
     [ValidateRange(60,600)][int]$Seconds=120,
     [ValidateRange(1,4)][int]$Repeats=2,
     [ValidateRange(1,4)][int]$FirstRepeat=1,
+    # Four repeats with step=1 place every skill in every slot. Archived October
+    # comparisons used step=2; request that explicitly to reproduce their rosters.
+    [ValidateRange(1,3)][int]$SkillRotationStep=1,
     [int[]]$Counts=@(6,15),
     [switch]$CandidateOnly,
     [switch]$BaselineOnly,
@@ -69,7 +72,7 @@ try {
                 $commands=''
                 $skills=@('beginner','normal','veteran','elite')
                 for($i=0;$i -lt $bots;$i++) {
-                    $skill=$skills[($i+2*$repeat)%4]
+                    $skill=$skills[($i+$SkillRotationStep*$repeat)%4]
                     $roster+=@{number=$i+1;skill=$skill;style=$Style}
                     $commands+=" +wb_add 1 $skill"
                     if($Style -ne "auto"){$commands+=" $Style"}
@@ -100,7 +103,7 @@ try {
                 $text=if(Test-Path -LiteralPath $trace){Get-Content -LiteralPath $trace -Raw}else{''}
                 $numbers=@([regex]::Matches($text,'#(\d+) created EntityId=') | ForEach-Object {$_.Groups[1].Value} | Sort-Object -Unique)
                 $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED'
-                $run=[ordered]@{tag=$tag;session=$sessionTag;progress_requested=$progress;style_mode=$Style;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $run=[ordered]@{tag=$tag;session=$sessionTag;progress_requested=$progress;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"

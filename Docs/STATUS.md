@@ -1,36 +1,45 @@
 # WarsBots for CryMP: status, 2026-10-23
 
-## Current checkpoint: weapon goals and routing retry cache (2026-10-23)
+## Current checkpoint: tactical profiles and target utility (2026-10-23)
 
-Working branch `warsbots/feature/weapon-goals`, based on GitHub checkpoint `b7c95e12`.
-Built/tested game code `eea973f0`; `warsbots/main` and `warsbots/feature/multibot` unchanged.
-Actual checkout/build: `C:\Users\Magic8\WarsBotsBuild\crymp-multibot` (outside OneDrive).
+Branch [`warsbots/feature/weapon-goals`](https://github.com/Madd3st/crymp-client/tree/warsbots/feature/weapon-goals).
+Latest built game source **`5e8daa65`**, MSVC 19.44 x64 Release experimental
+client+server **BUILD PASS**. Baseline `eea973f0` preserved; `warsbots/main` unchanged.
+Actual checkout: `C:\Users\Magic8\WarsBotsBuild\crymp-multibot` (outside OneDrive).
 
-Fixed native pickup eligibility revalidation while approaching an item; bots stop chasing
-hidden/taken/unpickable weapons. Failed A* paths now honor their two-second retry deadline
-instead of retrying after 0.75 s. Local steering fallback stays available for sparse graph gaps.
-Failed route logs record real start/goal coordinates. No channel, Player, GameRules,
-ShotValidator, suit energy, damage or serialization changes in this increment. OFF remains default.
+Expanded existing BotProfile with weapon-aware distance, different position-change
+rhythms, own-health withdrawal and native Armor/Speed decisions. Skill remains
+separate from style. FindEnemy uses visible-target utility, recent actual HP-damage
+shooter, minimum hold and switch margin; hidden positions only use expiring memory.
+Reaction and burst cooldown guards prevent instant retarget shots. No new Player,
+GameRules, ShotValidator, physics, damage, energy or network/channel modifications.
 
-MSVC x64 Release client+server BUILD PASS. New isolated server QA: 6 bots/240 s and
-15 bots/300 s, no clients, no crash markers. Revised vs j13 baseline:
-- 6 bots: weapon-state share 40.34 -> 13.73%, blocked 2.72 -> 1.64%, pickups 17 -> 17,
-  kills 16 -> 12. Revised worst AI frame 2.79 ms.
-- 15 bots: weapon-state share 30.87 -> 28.05%, blocked 2.80 -> 0.89%, pickups 38 -> 52,
-  kills 87 -> 121. Revised worst AI frame 1.32 ms; 13 unavailable goals cancelled.
-These are sample shares, one run each, with evolving map memory; not a causal or general
-AI-superiority claim. Strict route-rejection experiment `20bf32bf` was tested and removed
-because of pickup/blocked regressions. Full evidence and limitations: [AI_TRAINING](AI_TRAINING.md)
-and [JSON results](Experiments/weapon-goals-2026-10-23.json).
+26 completed headless Steelmill runs, each 120 s, 6/15 bots, restored identical map
+memory, verified EXE SHA/roster and paired initial spawn positions. No crash/Lua-error
+markers in completed logs. Core comparison `eea973f0` -> `2714d460`, two repeats:
+- 6 mixed: kills 10 -> 15, effective HP damage 1820 -> 1874.
+- 15 mixed: kills 85 -> 82, HP 10861 -> 10289; median reported native bot-update sum
+  .172-.183 -> .208-.210 ms/frame (not whole-engine CPU).
+- 6 Universal: kills 18 -> 17, HP 2409 -> 2057. No overall superiority/tier ranking proved.
 
-Added [FPS AI research](FPS_AI_RESEARCH.md), [Steelmill notes](STEELMILL_AI.md),
-`Tools/wb_ai_metrics.py`. Exporter checked against known real-log counts and sample totals.
-No combat policy training or bandit adaptation implemented yet. OFF not rebuilt for this delta;
-client visuals, simultaneous clients, leak checks and controlled repeat batches NOT RUN.
+Measured actual movement, including stationary/loop windows. Broad progress recovery
+regressed Universal combat (17 -> 11 kills) despite 21/32 physical recoveries; rejected.
+Final combat-only `wb_progress_experiment` defaults **0**. Latest default 15-bot smoke:
+43 kills, gate 0. Two explicit gate-1 6-bot smokes: 8+8 kills, **zero escape triggers**;
+recovery efficacy remains unproved. No blanket missing-A* rejection restored.
 
-Next: owner visual test of this exact build; then distinguish failed graph projection from
-disconnected routes at logged coordinates, measure actual route progress, and add bounded
-per-bot combat episode data before policy learning. No unverified Strength roof links.
+Standalone MSVC profile/utility/progress assertions and four Python exporter tests pass.
+Bounded schema-2 combat episodes: max 10,000 / 8 MiB, real HP loss (no overkill),
+perceived-distance/missing-context masks. Row and real-log byte limits checked.
+No ML/online adaptation. Default-OFF build not rebuilt; GUI/client visuals, two real
+clients, leak checks and bullet accuracy not checked this increment. Shared inherited
+perception remains omnidirectional LOS, not a FOV/hearing model.
+
+Full evidence, hashes, methods, commands and limitations:
+[experiment](Experiments/tactics-2026-10-23.md), [JSON](Experiments/tactics-2026-10-23.json).
+All owned QA servers ended; map memory restored; no user game interrupted.
+Next: reproducible visible-chase stall, balanced four-rotation same-binary gate 0/1
+comparison; then active weapon-pursuit timeout and route projection diagnostics.
 
 ## Historical checkpoints below (superseded by current checkpoint)
 

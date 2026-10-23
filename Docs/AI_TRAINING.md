@@ -25,9 +25,20 @@ experiment with the same counts/durations. Historical runs share evolving map me
 nondeterministic engine physics: descriptive comparison only, not an isolated causal claim.
 No existing successful baseline is repeated merely to make a nicer report.
 
-## Next training increment
+## Current bounded dataset and evaluation (2026-10-23)
 
-Before selecting a bandit algorithm, instrument bounded per-bot combat episodes with
+Implemented schema-2 bounded episode export and repeated fixed-memory native QA:
+[tactical experiment](Experiments/tactics-2026-10-23.md). Exporter
+`Tools/wb_tactics_report.py` defaults to 10,000 rows / 8 MiB, masks missing baseline
+context and visible-vs-last-seen distance, and records actual HP loss without overkill.
+Armor energy damage is not included. No online policy adaptation or training yet.
+26 completed runs do not establish tier ranking; rejected broad navigation recovery
+is OFF in the final build. Four balanced slot rotations are the next comparison.
+
+## Next training increment (remaining)
+
+
+Before selecting a bandit algorithm, extend the existing bounded per-bot combat episodes with
 life/episode ID, only perceived target state, distance band, weapon, action/profile,
 suit mode and energy, native damage outcomes, disengage reason and stuck duration.
 Current global jump lines lack actor IDs; do not invent per-bot correlations from them.
