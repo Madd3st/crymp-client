@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotLocomotion.h"
 #include "CryGame/Actors/Player/Player.h"
 #include "CryCommon/CryAction/IMovementController.h"
@@ -28,7 +29,7 @@ void BotLocomotion::Stop(CPlayer& actor)
 }
 void BotLocomotion::Refused(const char* reason, float now)
 {
-	if (now >= m_nextLog) { CryLogAlways("[WarsBots] ACTION REFUSED: %s.",reason); m_nextLog=now+2.0f; }
+	if (now >= m_nextLog) { WB_LOG(2, "[WarsBots] ACTION REFUSED: %s.",reason); m_nextLog=now+2.0f; }
 }
 void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 {
@@ -37,7 +38,7 @@ void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 	{
 		m_pending=false; m_airborne=true;
 		actor.PublishWarsBotJump(m_strength);
-		CryLogAlways("[WarsBots] JUMP TAKEOFF: strength=%d vz=%.2f energy=%.1f.",m_strength?1:0,state.velocity.z,state.energy);
+		WB_LOG(2, "[WarsBots] JUMP TAKEOFF: strength=%d vz=%.2f energy=%.1f.",m_strength?1:0,state.velocity.z,state.energy);
 	}
 	if (m_pending && now-m_requested>1.0f) { m_pending=false; Refused("jump_not_accepted_by_native_movement",now); }
 	if (m_airborne)
@@ -45,7 +46,7 @@ void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 		m_apex=max(m_apex,state.position.z);
 		if (state.grounded)
 		{
-			CryLogAlways("[WarsBots] JUMP LANDING: strength=%d rise=%.2f displacementZ=%.2f energy=%.1f.",m_strength?1:0,m_apex-m_startZ,state.position.z-m_startZ,state.energy);
+			WB_LOG(2, "[WarsBots] JUMP LANDING: strength=%d rise=%.2f displacementZ=%.2f energy=%.1f.",m_strength?1:0,m_apex-m_startZ,state.position.z-m_startZ,state.energy);
 			m_airborne=false;
 		}
 	}
@@ -108,7 +109,7 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 		{
 			jump=true; m_pending=true; m_strength=strength; m_requested=now;
 			m_startZ=m_apex=state.position.z; state.nextJump=now+3.0f;
-			CryLogAlways("[WarsBots] BOT ACTION: JUMP strength=%d energy=%.1f.",strength?1:0,state.energy);
+			WB_LOG(2, "[WarsBots] BOT ACTION: JUMP strength=%d energy=%.1f.",strength?1:0,state.energy);
 		}
 	}
 	// Let a validated jump carry forward through the low obstruction; never a position change.

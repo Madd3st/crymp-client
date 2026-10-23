@@ -1,6 +1,7 @@
-﻿# Claude QA helper: imports warsbots-multibot.bundle into a SEPARATE worktree and builds ON + OFF.
+﻿# Claude QA helper: fetches warsbots/feature/multibot from GitHub (bundle only as offline fallback)
+# into a SEPARATE worktree and builds ON (+ OFF). -Expect <sha prefix> refuses to build anything else.
 # Never touches the main checkout's working tree, the game root EXEs or running game processes.
-param([switch]$OnOnly)
+param([switch]$OnOnly, [string]$Expect = '')
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot -Parent
 $wt = Join-Path (Split-Path $repo -Parent) 'crymp-multibot'
@@ -12,11 +13,16 @@ Start-Transcript -LiteralPath $log -Force | Out-Null
 $result = 'FAIL'
 try {
     Push-Location $repo
-    $bundle = Join-Path $PSScriptRoot 'warsbots-multibot.bundle'
-    git bundle verify $bundle
-    if ($LASTEXITCODE -ne 0) { throw 'bundle verify failed' }
-    git fetch $bundle '+refs/heads/warsbots/feature/multibot:refs/remotes/claude/multibot' '+refs/heads/warsbots/feature/ia-participants:refs/remotes/claude/ia-participants'
-    if ($LASTEXITCODE -ne 0) { throw 'fetch failed' }
+    git fetch origin '+refs/heads/warsbots/feature/multibot:refs/remotes/claude/multibot'
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host 'GitHub fetch failed; using the local bundle.'
+        $bundle = Join-Path $PSScriptRoot 'warsbots-multibot.bundle'
+        git fetch $bundle '+refs/heads/warsbots/feature/multibot:refs/remotes/claude/multibot'
+        if ($LASTEXITCODE -ne 0) { throw 'fetch failed (GitHub and bundle)' }
+    }
+    $target = (git rev-parse refs/remotes/claude/multibot).Trim()
+    Write-Host "TARGET: $target"
+    if ($Expect -and -not $target.StartsWith($Expect)) { throw "TARGET $target is not the expected $Expect" }
     if (-not (Test-Path -LiteralPath $wt)) {
         git worktree add -B warsbots/feature/multibot $wt refs/remotes/claude/multibot
         if ($LASTEXITCODE -ne 0) { throw 'worktree add failed' }
@@ -28,7 +34,9 @@ try {
         Pop-Location
     }
     Pop-Location
+    $head = (git -C $wt rev-parse HEAD).Trim()
     Write-Host "HEAD: $(git -C $wt log --oneline -1)"
+    if ($head -ne $target) { throw "worktree HEAD $head != target $target" }
     $jobs = [Math]::Max(2, [int]$env:NUMBER_OF_PROCESSORS)
     $build = Join-Path $wt 'Tools\Build-WarsBots.ps1'
     Write-Host '=== BUILD ON ==='

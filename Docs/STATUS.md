@@ -173,3 +173,12 @@ native systems. Not proven: client view, animations, tactics quality, bot vs hum
   an obstacle they look at him but do nothing. Owner wants 10–15 bots.
 - `ef376469` navigation graph + A*, head-aim over cover, barrel-blocked step-out, 15-bot QA:
   **not built, not run**. Measure against M4 baseline: blocked 60% of movement samples, ATTACKING 2%.
+
+### Owner playtest 18:30 (15 bots) — build was the stale `8f56ede9`
+
+Bots kill well; some stand AFK, move slowly, never sprint, rarely jump, pick up weapons lazily;
+console spam on server and client. Causes found in the log: empty-handed respawns (IA EquipPlayer
+was not called for bots), roaming always at Run, refused moves toward other floors (old build).
+Fixed in the next commit (not built yet): equip like a human, weapon upgrades, Speed travel,
+travel/dodge Strength jumps, per-map memory, `wb_log` levels (telemetry to file only).
+Load: 15 bots ≈1.74 ms/frame average, worst frame 17.8 ms (old entity-iterator weapon search).

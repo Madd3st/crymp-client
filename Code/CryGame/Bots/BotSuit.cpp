@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotSuit.h"
 #include "CryGame/Actors/Player/Player.h"
 
@@ -28,7 +29,7 @@ bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float 
 			suit->SetMode(NANOMODE_DEFENSE);
 			state.mode=suit->GetMode();
 		}
-		if (now >= m_nextLog) { CryLogAlways("[WarsBots] ACTION REFUSED: %s mode=%d energy=%.1f.",reason,int(mode),state.energy); m_nextLog=now+2.0f; }
+		if (now >= m_nextLog) { WB_LOG(2, "[WarsBots] ACTION REFUSED: %s mode=%d energy=%.1f.",reason,int(mode),state.energy); m_nextLog=now+2.0f; }
 		return false;
 	}
 	if (suit->GetMode() == mode) return true;
@@ -37,7 +38,7 @@ bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float 
 	if (!suit->SetMode(mode)) return false;
 	state.nextSuitChange = now + 2.0f;
 	state.mode = suit->GetMode();
-	CryLogAlways("[WarsBots] BOT SUIT: mode=%d energy=%.1f active=%d.",int(state.mode),suit->GetSuitEnergy(),suit->IsActive()?1:0);
+	WB_LOG(2, "[WarsBots] BOT SUIT: mode=%d energy=%.1f active=%d.",int(state.mode),suit->GetSuitEnergy(),suit->IsActive()?1:0);
 	return state.mode == mode;
 }
 }

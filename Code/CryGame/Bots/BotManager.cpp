@@ -1,6 +1,8 @@
 // WarsBots project addition. See LICENSE.txt for SDK usage terms.
 #include "PortIncludes.h"
+#include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotManager.h"
+#include "version.h"
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
 #include "CryGame/Game.h"
@@ -47,7 +49,7 @@ const char* kCommands[] = {
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill" };
+const char* kVariables[] = { "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log" };
 }
 
 BotManager* BotManager::Self()
@@ -70,6 +72,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->Register("wb_probe_local_test", &m_localTestEnabled, 0, 0,
 		"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction.");
 	console->Register("wb_bot_cloak_experimental", &m_cloakExperimental, 0, 0, "Experimental bot cloak, defaults OFF");
+	console->Register("wb_log", &m_logLevel, 1, 0, "WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file.");
 	console->Register("wb_maxbots", &m_maxBots, 6, 0, "Maximum simultaneous WarsBots (1..16, default 6)");
 	console->Register("wb_skill", &m_skill, int(BotSkill::Normal), 0,
 		"Default skill for wb_add: 0 beginner, 1 normal, 2 veteran, 3 elite");
@@ -94,7 +97,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_bot_gait", BotAbilityCommand, 0, "wb_bot_gait walk|run|sprint|auto: selected bot");
 	console->AddCommand("wb_bot_suit", BotAbilityCommand, 0, "wb_bot_suit defense|speed|strength|cloak|auto: selected bot");
 	console->AddCommand("wb_bot_abilities", BotAbilityCommand, 0, "Ability and physical state of the selected bot");
-	CryLogAlways("[WarsBots] BotManager initialized: registry by EntityId, limit wb_maxbots=%d (hard %d); gate wb_probe_local_test=0; no automatic spawn.",
+	WB_LOG(0, "[WarsBots] BotManager initialized (build " CRYMP_VERSION_STRING "): registry by EntityId, limit wb_maxbots=%d (hard %d); gate wb_probe_local_test=0; no automatic spawn.",
 		m_maxBots, kHardLimit);
 }
 
@@ -112,7 +115,7 @@ void BotManager::Shutdown()
 	m_framework->UnregisterListener(this);
 	m_framework = nullptr;
 	if (gEnv && gEnv->pLog)
-		CryLogAlways("[WarsBots] BotManager shut down.");
+		WB_LOG(0, "[WarsBots] BotManager shut down.");
 }
 
 // ---------------------------------------------------------------- registry queries
@@ -153,16 +156,20 @@ void BotManager::TraceHit(const char* phase, const HitInfo& hit)
 	if (target) target->TraceHit(phase, hit);
 	IActor* actor = m_framework->GetIActorSystem()->GetActor(hit.targetId);
 	IEntity* shooterEntity = gEnv->pEntitySystem->GetEntity(hit.shooterId);
-	CryLogAlways("[WarsBots] Hit %s target=%u shooter=%u name=%s weapon=%u damage=%.3f health=%d botTarget=%d botShooter=%d.",
+	WB_LOG(2, "[WarsBots] Hit %s target=%u shooter=%u name=%s weapon=%u damage=%.3f health=%d botTarget=%d botShooter=%d.",
 		phase, hit.targetId, hit.shooterId, shooterEntity ? shooterEntity->GetName() : "<none>", hit.weaponId,
 		hit.damage, actor ? actor->GetHealth() : -1, target ? target->Number() : 0, shooter ? shooter->Number() : 0);
 }
 
 void BotManager::TraceKill(EntityId targetId, EntityId shooterId, bool killerEventEmitted)
 {
+	// Map memory learns from every kill on the server, human ones included.
+	if (IEntity* victim = gEnv->pEntitySystem->GetEntity(targetId)) m_nav.ReportDeath(victim->GetWorldPos());
+	if (shooterId && shooterId != targetId)
+		if (IEntity* killer = gEnv->pEntitySystem->GetEntity(shooterId)) m_nav.ReportKill(killer->GetWorldPos());
 	if (BotInstance* target = Find(targetId)) target->TraceKill(shooterId, killerEventEmitted);
 	if (BotInstance* shooter = Find(shooterId))
-		CryLogAlways("[WarsBots] #%d combat kill shooter=%u target=%u via stock GameRules::KillPlayer.",
+		WB_LOG(1, "[WarsBots] #%d combat kill shooter=%u target=%u via stock GameRules::KillPlayer.",
 			shooter->Number(), shooterId, targetId);
 }
 
@@ -235,14 +242,14 @@ BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyl
 		return nullptr;
 	if (Count() >= MaxBots())
 	{
-		CryLogAlways("[WarsBots] Add refused: %d/%d bots (raise wb_maxbots, hard limit %d).", Count(), MaxBots(), kHardLimit);
+		WB_LOG(0, "[WarsBots] Add refused: %d/%d bots (raise wb_maxbots, hard limit %d).", Count(), MaxBots(), kHardLimit);
 		return nullptr;
 	}
 	const int number = FreeNumber();
 	if (!number) return nullptr;
 	if (!position && !ChooseSpawnLocation(0, 0))
 	{
-		CryLogAlways("[WarsBots] Add deferred: no safe IA spawn point free of other players; try again or pass x y z.");
+		WB_LOG(0, "[WarsBots] Add deferred: no safe IA spawn point free of other players; try again or pass x y z.");
 		return nullptr;
 	}
 	// Default rotation through the six styles so a full roster never moves in lockstep.
@@ -271,7 +278,7 @@ BotInstance* BotManager::AddWith(const Vec3* position, const BotProfile& profile
 	raw->Brain().SetVerbose(m_defaultVerbose);
 	m_bots[raw->GetEntityId()] = std::move(bot);
 	if (startAI && !raw->Brain().Start(*raw))
-		CryLogAlways("[WarsBots] #%d created but AI start refused.", raw->Number());
+		WB_LOG(0, "[WarsBots] #%d created but AI start refused.", raw->Number());
 	return raw;
 }
 
@@ -287,12 +294,12 @@ void BotManager::RemoveInstance(BotInstance& instance)
 void BotManager::RemoveAll(const char* reason)
 {
 	if (m_bots.empty()) return;
-	CryLogAlways("[WarsBots] Removing all %d bots (%s).", Count(), reason);
+	WB_LOG(0, "[WarsBots] Removing all %d bots (%s).", Count(), reason);
 	for (BotInstance* bot : Ordered()) bot->Remove();
 	Sweep();
 	// Anything left is pending engine removal; it can no longer act (brain stopped).
 	if (!m_bots.empty())
-		CryLogAlways("[WarsBots] %d bot slots await ENTITY_EVENT_DONE.", Count());
+		WB_LOG(0, "[WarsBots] %d bot slots await ENTITY_EVENT_DONE.", Count());
 }
 
 void BotManager::Sweep()
@@ -322,7 +329,7 @@ void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)
 	{
 		m_roster.push_back({ bot->Number(), bot->Profile(), bot->AIEnabled() });
 		m_restorePending = true;
-		CryLogAlways("[WarsBots] #%d removed externally (game reset?); will re-create.", bot->Number());
+		WB_LOG(0, "[WarsBots] #%d removed externally (game reset?); will re-create.", bot->Number());
 	}
 	bot->OnEntityDone();
 }
@@ -334,7 +341,7 @@ void BotManager::OnPostUpdate(float dt)
 	if (m_bots.empty()) return;
 	// Navigation graph is built lazily once bots exist, a few ms per frame; geometry survives
 	// IA game resets, so only level changes discard it.
-	if (m_levelReady && CanRunLocalIA()) { m_nav.Begin(); m_nav.Step(2.0f); }
+	if (m_levelReady && CanRunLocalIA()) { m_nav.Begin(); m_nav.Step(2.0f); m_nav.Tick(dt); }
 	m_clock += dt;
 	// Stable order by display number; vector copy keeps iteration valid if a callback sweeps.
 	for (BotInstance* bot : Ordered()) bot->Update(dt);
@@ -362,7 +369,7 @@ void BotManager::OnActionEvent(const SActionEvent& event)
 		for (BotInstance* bot : Ordered())
 			m_roster.push_back({ bot->Number(), bot->Profile(), bot->AIEnabled() });
 		if (!m_roster.empty())
-			CryLogAlways("[WarsBots] Game reset: removing %d bots, will restore after reset.", int(m_roster.size()));
+			WB_LOG(0, "[WarsBots] Game reset: removing %d bots, will restore after reset.", int(m_roster.size()));
 		EndLevel();
 		m_restorePending = !m_roster.empty();
 	}
@@ -383,7 +390,7 @@ void BotManager::RestoreRoster()
 	int restored = 0;
 	for (const RosterEntry& entry : m_roster)
 		if (AddWith(nullptr, entry.profile, entry.number, entry.ai)) ++restored;
-	CryLogAlways("[WarsBots] Game reset: restored %d/%d bots.", restored, int(m_roster.size()));
+	WB_LOG(0, "[WarsBots] Game reset: restored %d/%d bots.", restored, int(m_roster.size()));
 	m_roster.clear();
 }
 
@@ -391,11 +398,11 @@ void BotManager::RestoreRoster()
 
 void BotManager::List() const
 {
-	CryLogAlways("[WarsBots] %d/%d bots (selected #%d):", Count(), MaxBots(), Selected() ? Selected()->Number() : 0);
+	WB_LOG(0, "[WarsBots] %d/%d bots (selected #%d):", Count(), MaxBots(), Selected() ? Selected()->Number() : 0);
 	for (BotInstance* bot : Ordered())
 	{
 		CActor* actor = bot->GetActor();
-		CryLogAlways("[WarsBots]  #%d EntityId=%u %s %s/%s ai=%d state=%s health=%d target=%u.",
+		WB_LOG(0, "[WarsBots]  #%d EntityId=%u %s %s/%s ai=%d state=%s health=%d target=%u.",
 			bot->Number(), bot->GetEntityId(), bot->Name(), BotProfile::StyleName(bot->Profile().style),
 			BotProfile::SkillName(bot->Profile().skill), bot->AIEnabled() ? 1 : 0, bot->Brain().StateName(),
 			actor ? actor->GetHealth() : -1, bot->Brain().Target());
@@ -410,7 +417,7 @@ void BotManager::StatusReport()
 		if (bot->UpdateCount()) total += bot->TotalUpdateMs() / float(bot->UpdateCount());
 		worst = max(worst, bot->MaxUpdateMs());
 	}
-	CryLogAlways("[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u (since last report).",
+	WB_LOG(0, "[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u (since last report).",
 		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount());
 	for (BotInstance* bot : Ordered()) bot->ResetProfile();
 }
@@ -430,13 +437,13 @@ void BotManager::AddCommand(IConsoleCmdArgs* args)
 		(styleGiven && !BotProfile::ParseStyle(args->GetArg(3), style)) ||
 		args->GetArgCount() > 4)
 	{
-		CryLogAlways("[WarsBots] Usage: wb_add [1..%d] [beginner|normal|veteran|elite] [universal|assault|marksman|flanker|defender|hunter].", kHardLimit);
+		WB_LOG(0, "[WarsBots] Usage: wb_add [1..%d] [beginner|normal|veteran|elite] [universal|assault|marksman|flanker|defender|hunter].", kHardLimit);
 		return;
 	}
 	int added = 0;
 	for (int i = 0; i < count; ++i)
 		if (self->Add(nullptr, skill, styleGiven ? &style : nullptr, true)) ++added; else break;
-	CryLogAlways("[WarsBots] wb_add: %d/%d added, now %d/%d.", added, count, self->Count(), self->MaxBots());
+	WB_LOG(0, "[WarsBots] wb_add: %d/%d added, now %d/%d.", added, count, self->Count(), self->MaxBots());
 }
 
 void BotManager::RemoveCommand(IConsoleCmdArgs* args)
@@ -444,9 +451,9 @@ void BotManager::RemoveCommand(IConsoleCmdArgs* args)
 	BotManager* self = Self();
 	int number = 0;
 	if (!self || !args || !gEnv->bServer || args->GetArgCount() != 2 || !ParseInt(args->GetArg(1), number))
-	{ CryLogAlways("[WarsBots] Usage: wb_remove <botNumber> (see wb_list)."); return; }
+	{ WB_LOG(0, "[WarsBots] Usage: wb_remove <botNumber> (see wb_list)."); return; }
 	BotInstance* bot = self->ByNumber(number);
-	if (!bot) { CryLogAlways("[WarsBots] wb_remove: no bot #%d.", number); return; }
+	if (!bot) { WB_LOG(0, "[WarsBots] wb_remove: no bot #%d.", number); return; }
 	self->RemoveInstance(*bot);
 }
 
@@ -461,7 +468,7 @@ void BotManager::StatusCommand(IConsoleCmdArgs*)
 {
 	BotManager* self = Self();
 	if (!self) return;
-	CryLogAlways("[WarsBots] gate=%d levelReady=%d bots=%d/%d defaultVerbose=%d.",
+	WB_LOG(0, "[WarsBots] gate=%d levelReady=%d bots=%d/%d defaultVerbose=%d.",
 		self->CanRunLocalIA() ? 1 : 0, self->m_levelReady ? 1 : 0, self->Count(), self->MaxBots(), self->m_defaultVerbose ? 1 : 0);
 	for (BotInstance* bot : self->Ordered()) { bot->Brain().Status(); bot->Status(); }
 	self->m_nav.Status();
@@ -472,7 +479,7 @@ void BotManager::DebugCommand(IConsoleCmdArgs* args)
 {
 	BotManager* self = Self();
 	if (!self || !args || args->GetArgCount() != 2 || (strcmp(args->GetArg(1), "0") && strcmp(args->GetArg(1), "1")))
-	{ CryLogAlways("[WarsBots] Usage: wb_debug 0|1."); return; }
+	{ WB_LOG(0, "[WarsBots] Usage: wb_debug 0|1."); return; }
 	self->m_defaultVerbose = !strcmp(args->GetArg(1), "1");
 	for (BotInstance* bot : self->Ordered()) bot->Brain().SetVerbose(self->m_defaultVerbose);
 }
@@ -487,9 +494,9 @@ void BotManager::SelectCommand(IConsoleCmdArgs* args)
 	BotManager* self = Self();
 	int number = 0;
 	if (!self || !args || args->GetArgCount() != 2 || !ParseInt(args->GetArg(1), number) || !self->ByNumber(number))
-	{ CryLogAlways("[WarsBots] Usage: wb_select <botNumber> (see wb_list)."); return; }
+	{ WB_LOG(0, "[WarsBots] Usage: wb_select <botNumber> (see wb_list)."); return; }
 	self->m_selected = number;
-	CryLogAlways("[WarsBots] Selected bot #%d.", number);
+	WB_LOG(0, "[WarsBots] Selected bot #%d.", number);
 }
 
 void BotManager::ProbeSpawnCommand(IConsoleCmdArgs* args)
@@ -497,7 +504,7 @@ void BotManager::ProbeSpawnCommand(IConsoleCmdArgs* args)
 	BotManager* self = Self();
 	Vec3 position(0,0,0);
 	if (!self || !args || args->GetArgCount() != 4 || !ParsePosition(args, 1, position))
-	{ CryLogAlways("[WarsBots] Usage: wb_probe_spawn x y z (finite world coordinates)."); return; }
+	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_spawn x y z (finite world coordinates)."); return; }
 	if (BotInstance* bot = self->Add(&position, BotSkill(clamp_tpl(self->m_skill, 0, 3)), nullptr, false))
 		self->m_selected = bot->Number();
 }
@@ -512,7 +519,7 @@ void BotManager::ProbeStatusCommand(IConsoleCmdArgs*)
 {
 	BotManager* self = Self();
 	if (!self) return;
-	if (BotInstance* bot = self->Selected()) bot->Status(); else CryLogAlways("[WarsBots] No live owned bot.");
+	if (BotInstance* bot = self->Selected()) bot->Status(); else WB_LOG(0, "[WarsBots] No live owned bot.");
 }
 
 void BotManager::ProbeReviveCommand(IConsoleCmdArgs*)
@@ -527,7 +534,7 @@ void BotManager::BotStartCommand(IConsoleCmdArgs* args)
 	if (!self || !args) return;
 	Vec3 position(0,0,0);
 	const bool hasPosition = args->GetArgCount() == 4 && ParsePosition(args, 1, position);
-	if (args->GetArgCount() != 1 && !hasPosition) { CryLogAlways("[WarsBots] Usage: wb_bot_start [x y z]."); return; }
+	if (args->GetArgCount() != 1 && !hasPosition) { WB_LOG(0, "[WarsBots] Usage: wb_bot_start [x y z]."); return; }
 	BotInstance* bot = self->Selected();
 	if (!bot)
 	{
@@ -549,14 +556,14 @@ void BotManager::BotStatusCommand(IConsoleCmdArgs*)
 	BotManager* self = Self();
 	if (!self) return;
 	if (BotInstance* bot = self->Selected()) { bot->Brain().Status(); bot->Status(); }
-	else CryLogAlways("[WarsBots] No bot; wb_add or wb_bot_start creates one.");
+	else WB_LOG(0, "[WarsBots] No bot; wb_add or wb_bot_start creates one.");
 }
 
 void BotManager::BotVerboseCommand(IConsoleCmdArgs* args)
 {
 	BotManager* self = Self();
 	if (!self || !args || args->GetArgCount() != 2 || (strcmp(args->GetArg(1), "0") && strcmp(args->GetArg(1), "1")))
-	{ CryLogAlways("[WarsBots] Usage: wb_bot_verbose 0|1."); return; }
+	{ WB_LOG(0, "[WarsBots] Usage: wb_bot_verbose 0|1."); return; }
 	const bool verbose = !strcmp(args->GetArg(1), "1");
 	self->m_defaultVerbose = verbose; // Also applies to bots created later (QA starts with this flag).
 	if (BotInstance* bot = self->Selected()) bot->Brain().SetVerbose(verbose);
@@ -568,7 +575,7 @@ void BotManager::BotAbilityCommand(IConsoleCmdArgs* args)
 	if (!self || !args) return;
 	BotInstance* bot = self->Selected();
 	if (!bot || !self->CanRunLocalIA() || !bot->GetActor() || !bot->AIEnabled())
-	{ CryLogAlways("[WarsBots] ACTION REFUSED: abilities require a running selected bot and open local IA gate."); return; }
+	{ WB_LOG(0, "[WarsBots] ACTION REFUSED: abilities require a running selected bot and open local IA gate."); return; }
 	bot->Brain().AbilityCommand(*bot, args);
 }
 }

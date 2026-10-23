@@ -11,6 +11,7 @@ History:
 
 *************************************************************************/
 #include "CryCommon/CrySystem/ISystem.h"
+#include "CryGame/Bots/BotLog.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameCVars.h"
 #include "CryGame/GameActions.h"
@@ -4934,7 +4935,7 @@ void CPlayer::EnsureWarsBotSuit()
 {
 	if (!IsWarsBotActor() || m_pNanoSuit) return; // Never reset energy or override EMP on an update.
 	ActivateNanosuit(true);
-	CryLogAlways("[WarsBots] NETWORK SUIT REPLICA/INIT EntityId=%u server=%d active=%d energy=%.1f.",
+	WB_LOG(2, "[WarsBots] NETWORK SUIT REPLICA/INIT EntityId=%u server=%d active=%d energy=%.1f.",
 		GetEntityId(),gEnv->bServer?1:0,m_pNanoSuit->IsActive()?1:0,m_pNanoSuit->GetSuitEnergy());
 }
 void CPlayer::SetWarsBotActions(bool sprint, bool moving, EStance stance)
@@ -4942,7 +4943,7 @@ void CPlayer::SetWarsBotActions(bool sprint, bool moving, EStance stance)
 	if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
 	if (!g_pGame->GetBotManager().AIEnabled(GetEntityId())) m_pMovementController->Reset();
 	sprint=sprint && moving && GetHealth()>0 && !WarsBotWeaponFiring() && m_pNanoSuit && m_pNanoSuit->IsActive();
-	if (sprint!=m_warsBotSprint) CryLogAlways("[WarsBots] BOT ACTION: SPRINT %s.",sprint?"START":"STOP");
+	if (sprint!=m_warsBotSprint) WB_LOG(2, "[WarsBots] BOT ACTION: SPRINT %s.",sprint?"START":"STOP");
 	m_warsBotSprint=sprint; m_warsBotStance=stance;
 	if (sprint) m_actions|=ACTION_SPRINT; else m_actions&=~ACTION_SPRINT;
 	if (moving) m_actions|=ACTION_MOVE; else m_actions&=~ACTION_MOVE;
@@ -4994,7 +4995,7 @@ void CPlayer::UpdateWarsBotMotion(float dt)
 			m_warsBotSeenJump=m_warsBotJumpSerial;
 			if (m_warsBotAirborne)
 				GetAnimationGraphState()->SetInput("Action",m_warsBotStrengthJump?"jumpMPStrength":"jumpMP");
-			CryLogAlways("[WarsBots] NETWORK MOTION JUMP REPLICA EntityId=%u serial=%u strength=%d.",GetEntityId(),unsigned(m_warsBotJumpSerial),m_warsBotStrengthJump?1:0);
+			WB_LOG(2, "[WarsBots] NETWORK MOTION JUMP REPLICA EntityId=%u serial=%u strength=%d.",GetEntityId(),unsigned(m_warsBotJumpSerial),m_warsBotStrengthJump?1:0);
 		}
 		if (!m_warsBotAirborne && m_stats.jumped) GetAnimationGraphState()->SetInput("Action","idle");
 		m_stats.jumped=m_warsBotAirborne;
@@ -5213,7 +5214,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 		if (ser.IsReading() && !gEnv->bServer && GetChannelId()==0)
 		{
 			if (bot && !m_warsBotPose)
-				CryLogAlways("[WarsBots] Motion replica activated EntityId=%u (server dynamic aspect, no channel).",GetEntityId());
+				WB_LOG(2, "[WarsBots] Motion replica activated EntityId=%u (server dynamic aspect, no channel).",GetEntityId());
 			m_warsBotPose = bot;
 			if (bot) GetGameObject()->EnablePrePhysicsUpdate(ePPU_Always);
 		}
@@ -5243,7 +5244,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 	if (ser.IsReading() && !gEnv->bServer && IsWarsBotActor() && m_pNanoSuit &&
 		gEnv->pTimer->GetCurrTime()>=m_warsBotNextNetworkLog)
 	{
-		CryLogAlways("[WarsBots] NETWORK MOTION / SUIT REPLICA EntityId=%u speed=%.2f sprint=%d airborne=%d mode=%d energy=%.1f active=%d.",
+		WB_LOG(2, "[WarsBots] NETWORK MOTION / SUIT REPLICA EntityId=%u speed=%.2f sprint=%d airborne=%d mode=%d energy=%.1f active=%d.",
 			GetEntityId(),m_warsBotSpeed,m_warsBotSprint?1:0,m_warsBotAirborne?1:0,
 			int(m_pNanoSuit->GetMode()),m_pNanoSuit->GetSuitEnergy(),m_pNanoSuit->IsActive()?1:0);
 		m_warsBotNextNetworkLog=gEnv->pTimer->GetCurrTime()+2.0f;

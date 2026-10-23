@@ -19,6 +19,7 @@ if ($spec) {
     if ($build -in @('on','both')) {
         $psArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $here 'Claude-Build-Multibot.ps1'))
         if ($build -eq 'on') { $psArgs += '-OnOnly' }
+        if ($spec.expect) { $psArgs += @('-Expect', [string]$spec.expect) }
         & powershell @psArgs | Out-Null
         $done = Get-Content -LiteralPath (Join-Path $repo 'build\claude-multibot-build.done') -ErrorAction SilentlyContinue
         Step "build-$build" $done

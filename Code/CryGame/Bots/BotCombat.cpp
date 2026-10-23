@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Bots/BotTargeting.h"
@@ -98,7 +99,7 @@ bool BotCombat::Observe(CActor& actor, IActor& target, float now, bool verbose)
 	else if (verbose && now >= m_nextDiagnostic)
 	{
 		const Vec3 from = Eyes(actor), to = AimPoint(target);
-		CryLogAlways("[WarsBots] LOS blocked target=%u obstruction=%u eyes=(%.2f,%.2f,%.2f) chest=(%.2f,%.2f,%.2f) sample=%.2f.",
+		WB_LOG(2, "[WarsBots] LOS blocked target=%u obstruction=%u eyes=(%.2f,%.2f,%.2f) chest=(%.2f,%.2f,%.2f) sample=%.2f.",
 			target.GetEntityId(), obstruction, from.x,from.y,from.z,to.x,to.y,to.z,now);
 		m_nextDiagnostic = now + 2.0f;
 	}
@@ -136,7 +137,7 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 		m_lastSeen = now;
 		IActor* found = actors->GetActor(m_target);
 		Observe(actor, *found, now, false);
-		CryLogAlways("[WarsBots] Bot %u acquired enemy id=%u name=%s kind=%s.", actor.GetEntityId(), m_target,
+		WB_LOG(2, "[WarsBots] Bot %u acquired enemy id=%u name=%s kind=%s.", actor.GetEntityId(), m_target,
 			found->GetEntity()->GetName(), BotTargeting::Name(BotTargeting::Kind(found)));
 		return found;
 	}
@@ -177,7 +178,7 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 		m_burstEnd = now + m_burst;
 		m_nextBurst = now + m_burstGap;
 		weapon->StartFire();
-		if (verbose) CryLogAlways("[WarsBots] Stock weapon burst requested weapon=%u target=%u.", m_firingWeapon, target.GetEntityId());
+		if (verbose) WB_LOG(2, "[WarsBots] Stock weapon burst requested weapon=%u target=%u.", m_firingWeapon, target.GetEntityId());
 	}
 	return m_firingWeapon != 0;
 }

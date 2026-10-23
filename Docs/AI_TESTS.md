@@ -86,3 +86,10 @@ Build: `<checkout>\..\crymp-multibot\build\multibot-on\CryMP-{Server,Client}64.e
 `wb_probe_local_test 1`, `wb_add 4`, `wb_debug 1`. Join with the matching ON client, play 10 minutes.
 Report: (1) do bots look like they strafe/jump/sprint naturally, (2) do they chase you when you run,
 (3) Tab shows bots with correct kills/deaths/headshots, (4) any frozen/sliding/T-pose bots, (5) server log.
+
+## Logging
+`wb_log 0|1|2` (server and client, default 1): console shows lifecycle/command output (0), plus kills,
+deaths, revives, map-memory saves (1), plus all telemetry (2). Telemetry is always written to the log
+FILE, so `Tools/wb_log_report.py` keeps working. Map memory: `%USER%/WarsBots/<level>.mem`
+(per-level stuck spots and kill/death hotspots, saved every 2 min and on level end). Delete the file to
+let bots relearn a map.

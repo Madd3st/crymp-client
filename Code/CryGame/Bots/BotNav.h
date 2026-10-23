@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 namespace WarsBots
 {
@@ -26,12 +27,25 @@ public:
 
 	// Path of world points from start to goal (excluding start). False if no route is known.
 	bool FindPath(const Vec3& start, const Vec3& goal, std::vector<Vec3>& path) const;
+	// --- Map memory ("learning the map"): per-node experience accumulated from play and kept on
+	// disk per level (%USER%/WarsBots/<level>.mem). Stuck spots make edges expensive; kill/death
+	// activity guides where bots look for fights. Nothing here observes enemies directly.
+	void ReportStuck(const Vec3& pos);
+	void ReportKill(const Vec3& pos);
+	void ReportDeath(const Vec3& pos);
+	// A roaming goal from experience: a fight hotspot (or a less-visited area to explore);
+	// false if no memory yet. `seed` makes choices differ per bot.
+	bool PickHotspot(unsigned seed, bool preferSafe, Vec3& out) const;
+	void Load(const char* level);
+	void Save() const;
+	void Tick(float dt);
 	int NodeCount() const { return int(m_nodes.size()); }
 	int EdgeCount() const { return int(m_edges.size()); }
 	unsigned Queries() const { return m_queries; }
 
 private:
 	struct Node { Vec3 pos; int column; uint32_t firstEdge; uint16_t edgeCount; };
+	struct Memory { float stuck = 0, kills = 0, deaths = 0; };
 	struct Edge { int to; float cost; };
 	int Nearest(const Vec3& pos) const;
 	bool Walkable(const Vec3& a, const Vec3& b) const;
@@ -49,5 +63,10 @@ private:
 	std::vector<std::vector<Edge>> m_pending; // per-node edges during the Edges phase
 	std::unordered_map<int64_t, std::vector<int>> m_columns;
 	mutable unsigned m_queries = 0;
+	std::vector<Memory> m_memory;
+	std::string m_level;
+	float m_saveTimer = 0;
+	bool m_dirty = false;
+	unsigned m_events = 0;
 };
 }

@@ -55,6 +55,14 @@ private:
 	size_t m_pathIndex = 0;
 	Vec3 m_pathGoal = Vec3(0,0,0);
 	float m_nextRepath = 0, m_minRepath = 0;
+	// Movement abilities and weapon upgrades.
+	void TravelGait(float distance);
+	float Rand01();
+	unsigned m_rng = 1;
+	bool m_speedTravel = false;
+	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
+	EntityId m_upgradeTarget = 0;
+	bool m_stuckReported = false;
 	bool m_detour = false;
 	unsigned m_life = 0, m_patrolStep = 0;
 	IEntityClass* m_previousWeaponClass = nullptr;

@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "CryGame/Bots/BotLog.h"
 #include "CryMPEngineAdapter.h"
 #include "CryCommon/CryAction/ILevelSystem.h"
 #include "CryCommon/CryAction/IGameRulesSystem.h"
@@ -17,7 +18,7 @@ bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady,
         levelReady && loaded && rules && optIn==1 && bind && !strcmp(bind->GetString(),"127.0.0.1") &&
         lan && lan->GetIVal()==1 && mode && !strcmp(mode->GetString(),"InstantAction");
     if (!allowed && diagnostic)
-        CryLogAlways("[WarsBots/CryMP] GATE closed: server=%d multiplayer=%d editor=%d levelReady=%d loaded=%d rules=%d optIn=%d bind=%s lan=%d mode=%s.",
+        WB_LOG(0, "[WarsBots/CryMP] GATE closed: server=%d multiplayer=%d editor=%d levelReady=%d loaded=%d rules=%d optIn=%d bind=%s lan=%d mode=%s.",
             gEnv->bServer, gEnv->bMultiplayer, gEnv->bEditor, levelReady, loaded, rules, optIn,
             bind?bind->GetString():"<missing>", lan?lan->GetIVal():-1, mode?mode->GetString():"<missing>");
     return allowed;
@@ -29,7 +30,7 @@ IActor* CryMPEngineAdapter::CreateServerActor(IGameFramework& framework, const V
     // ActorSystem::CreateActor safely tolerates GetChannel(0)==nullptr.
     // CActor::Init returns false if BindToNetwork fails: never bind twice.
     IActor* actor = framework.GetIActorSystem()->CreateActor(0,name,"Player",position,Quat(IDENTITY),Vec3(1,1,1));
-    CryLogAlways("[WarsBots/CryMP] CreateActor name=%s EntityId=%u BindToNetwork=%s (CActor::Init prerequisite).",
+    WB_LOG(2, "[WarsBots/CryMP] CreateActor name=%s EntityId=%u BindToNetwork=%s (CActor::Init prerequisite).",
         name, actor?actor->GetEntityId():0, actor?"true":"not confirmed");
     return actor;
 }

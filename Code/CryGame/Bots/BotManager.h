@@ -44,6 +44,7 @@ public:
 	bool CanRunLocalIA() const;
 	IGameFramework* Framework() const { return m_framework; }
 	const BotNav& Nav() const { return m_nav; }
+	BotNav& Nav() { return m_nav; }
 	int Count() const { return int(m_bots.size()); }
 	int MaxBots() const;
 
@@ -121,6 +122,7 @@ private:
 	int m_localTestEnabled = 0;
 	int m_cloakExperimental = 0;
 	int m_maxBots = 6;
+	int m_logLevel = 1;
 	int m_skill = int(BotSkill::Normal);
 	int m_selected = 0;
 	std::string m_creatingName;

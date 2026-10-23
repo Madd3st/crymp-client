@@ -12,5 +12,8 @@ public:
     static bool Register(CGameRules& rules, IActor& actor);
     static void Unregister(EntityId id);
     static void LogScores(EntityId target, EntityId shooter);
+    // Same as a human (re)spawn in IA: rules:EquipPlayer (SOCOM, fists, offhand) and the native
+    // spawn invulnerability. Called after Spawn and after a successful Revive.
+    static void EquipLikePlayer(CGameRules& rules, IActor& actor);
 };
 }

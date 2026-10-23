@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Items/Item.h"
@@ -15,7 +16,8 @@ bool Suitable(IItem* item)
 	if (!item || !item->GetIWeapon()) return false;
 	const char* name = item->GetEntity()->GetClass()->GetName();
 	return !strcmp(name,"SCAR") || !strcmp(name,"FY71") || !strcmp(name,"SMG") ||
-		!strcmp(name,"Shotgun") || !strcmp(name,"SOCOM");
+		!strcmp(name,"Shotgun") || !strcmp(name,"SOCOM") || !strcmp(name,"DSG1") ||
+		!strcmp(name,"GaussRifle") || !strcmp(name,"Hurricane");
 }
 IItemSystem* Items() { return g_pGame->GetIGameFramework()->GetIItemSystem(); }
 }
@@ -33,36 +35,61 @@ bool BotWeapons::HasAmmunition(CActor& actor, IWeapon& weapon)
 		(actor.GetInventory() && actor.GetInventory()->GetAmmoCount(mode->GetAmmoType()) > 0));
 }
 
-bool BotWeapons::SelectAvailable(CActor& actor)
+bool BotWeapons::IsPrimary(IItem* item)
 {
-	if (auto* current = Current(actor))
-		if (HasAmmunition(actor, *current)) return true;
+	return Suitable(item) && strcmp(item->GetEntity()->GetClass()->GetName(),"SOCOM") != 0;
+}
+
+bool BotWeapons::HasPrimary(CActor& actor)
+{
 	auto* inventory = actor.GetInventory();
 	if (!inventory) return false;
 	for (int i=0; i<inventory->GetCount(); ++i)
 	{
 		IItem* item = Items()->GetItem(inventory->GetItem(i));
-		if (Suitable(item) && item->CanSelect() && HasAmmunition(actor, *item->GetIWeapon()))
-		{
-			Items()->SetActorItem(&actor, item->GetEntityId(), false);
-			return Current(actor) != nullptr;
-		}
+		if (IsPrimary(item) && HasAmmunition(actor, *item->GetIWeapon())) return true;
 	}
 	return false;
 }
 
-EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life)
+bool BotWeapons::SelectAvailable(CActor& actor)
+{
+	IItem* currentItem = actor.GetCurrentItem();
+	auto* current = Current(actor);
+	if (current && IsPrimary(currentItem) && HasAmmunition(actor, *current)) return true;
+	auto* inventory = actor.GetInventory();
+	if (!inventory) return false;
+	// Prefer a primary weapon with ammunition over the pistol, then anything usable.
+	for (int pass = 0; pass < 2; ++pass)
+		for (int i=0; i<inventory->GetCount(); ++i)
+		{
+			IItem* item = Items()->GetItem(inventory->GetItem(i));
+			if (!Suitable(item) || (pass == 0 && !IsPrimary(item)) || !item->CanSelect() || !HasAmmunition(actor, *item->GetIWeapon()))
+				continue;
+			if (item != currentItem) Items()->SetActorItem(&actor, item->GetEntityId(), false);
+			return Current(actor) != nullptr;
+		}
+	return current && HasAmmunition(actor, *current);
+}
+
+EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly)
 {
 	EntityId result = 0;
 	float best = 1e10f;
-	IEntityItPtr iterator = gEnv->pEntitySystem->GetEntityIterator();
-	while (IEntity* entity = iterator->Next())
+	// Proximity query instead of iterating every entity: matters with 10-16 bots searching.
+	const Vec3 origin = actor.GetEntity()->GetWorldPos();
+	SEntityProximityQuery query;
+	query.box = AABB(origin - Vec3(radius, radius, 12.0f), origin + Vec3(radius, radius, 12.0f));
+	gEnv->pEntitySystem->QueryProximity(query);
+	for (int q = 0; q < query.nCount; ++q)
 	{
+		IEntity* entity = query.pEntities[q];
+		if (!entity) continue;
 		if (entity->IsHidden()) continue;
 		float distance = (entity->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared();
 		if (distance > radius*radius) continue;
 		IItem* item = Items()->GetItem(entity->GetId());
-		if (Suitable(item) && !item->GetOwnerId() && static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId()))
+		if (Suitable(item) && (!primaryOnly || IsPrimary(item)) && !item->GetOwnerId() && static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId()))
 		{
 			// Prefer a different class, but keep travel cost significant. Stable within a life.
 			unsigned hash = entity->GetId()*1664525u + life*1013904223u;
@@ -83,7 +110,8 @@ bool BotWeapons::PickUp(CActor& actor, EntityId id)
 	item = Items()->GetItem(id);
 	const bool acquired = item && item->GetOwnerId() == actor.GetEntityId() && actor.GetInventory() &&
 		actor.GetInventory()->FindItem(id) >= 0;
-	CryLogAlways("[WarsBots] REAL PICKUP actor=%u item=%u acquired=%d.", actor.GetEntityId(), id, acquired ? 1 : 0);
+	WB_LOG(2, "[WarsBots] REAL PICKUP actor=%u item=%u acquired=%d.", actor.GetEntityId(), id, acquired ? 1 : 0);
+	// Switch to what we just picked up (SelectAvailable prefers primaries anyway).
 	return acquired && SelectAvailable(actor);
 }
 
@@ -93,7 +121,7 @@ bool BotWeapons::GiveTestSCAR(CActor& actor)
 	IItem* item = Items()->GetItem(id);
 	if (!item || item->GetOwnerId() != actor.GetEntityId() || !actor.GetInventory())
 	{
-		CryLogAlways("[WarsBots] TEST GRANT SCAR failed actor=%u item=%u.", actor.GetEntityId(), id);
+		WB_LOG(2, "[WarsBots] TEST GRANT SCAR failed actor=%u item=%u.", actor.GetEntityId(), id);
 		return false;
 	}
 	IWeapon* weapon = item->GetIWeapon();
@@ -103,7 +131,7 @@ bool BotWeapons::GiveTestSCAR(CActor& actor)
 	actor.GetInventory()->SetAmmoCount(mode->GetAmmoType(), 180);
 	weapon->SetAmmoCount(mode->GetAmmoType(), mode->GetClipSize());
 	Items()->SetActorItem(&actor, id, false);
-	CryLogAlways("[WarsBots] TEST GRANT SCAR actor=%u item=%u clip=%d reserve=180 (not a map pickup).",
+	WB_LOG(2, "[WarsBots] TEST GRANT SCAR actor=%u item=%u clip=%d reserve=180 (not a map pickup).",
 		actor.GetEntityId(), id, mode->GetAmmoCount());
 	return Current(actor) != nullptr;
 }

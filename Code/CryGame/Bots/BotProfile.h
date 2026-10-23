@@ -30,6 +30,8 @@ struct BotProfile
 	// Additional aim error on top of native weapon spread: min(max, distance*perMetre).
 	float aimErrorPerMetre = 0.006f;
 	float aimErrorMax = 0.25f;
+	// Chance to Strength-jump right after being hit in a fight (dodge), per hit event.
+	float dodgeChance = 0.3f;
 	// Fire discipline.
 	float burst = 0.2f;
 	float burstGap = 0.65f;
@@ -67,11 +69,13 @@ struct BotProfile
 			break;
 		default: break;
 		}
+		static const float dodge[] = { 0.0f, 0.3f, 0.45f, 0.6f };
 		static const float reaction[] = { 0.65f, 0.3f, 0.2f, 0.12f };
 		static const float aim[] = { 2.0f, 1.0f, 0.7f, 0.45f };
 		static const float gap[] = { 1.35f, 1.0f, 0.9f, 0.85f };
 		const int s = int(skill) >= 0 && int(skill) < int(BotSkill::Count) ? int(skill) : 1;
 		p.reaction = reaction[s];
+		p.dodgeChance = dodge[s] + ((style == BotStyle::Assault || style == BotStyle::Flanker) && s > 0 ? 0.15f : 0.0f);
 		p.aimErrorPerMetre *= aim[s];
 		p.aimErrorMax *= aim[s];
 		p.burstGap *= gap[s];
