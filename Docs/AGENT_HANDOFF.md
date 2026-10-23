@@ -1,36 +1,43 @@
 # Agent handoff — WarsBots for CryMP (multi-bot, updated 2026-10-23 18:20 MSK)
 
-## 0. Current state in one screen (read this first)
+## 0. Current state in one screen (updated 2026-10-23 19:25 MSK — read this first)
+
+Branch `warsbots/feature/multibot`, HEAD `df3ceb8e` (pushed). `warsbots/main` = `caf1a815` untouched.
 
 | Commit | What | Verification |
 |---|---|---|
-| `8f56ede9` | multi-bot checkpoint (registry, targeting, profiles, reset restore, fall fix) | BUILD PASS; M3/M4 SERVER-LOG PASS (§5) |
-| `6a30130a` | movement/engagement: no refusal of other floors, wider avoidance fan, 3 m drops, fire while closing (fireRange 32–65 m), abandon blocked chase | BUILD PASS (owner built it); **owner playtest**: bots see and kill well, still sometimes lost/stuck, stare at a player behind cover |
-| `ef376469` | BotNav grid graph + A*, head-aim over cover, step out when barrel blocked, QA for 15 bots | not built yet (owner's playtest ran the stale `8f56ede9`, see below) |
-| `ef074f8c` | trace file | QA 6 bots with full telemetry: **blocked movement 0%** (was 60%/40%), 87 sprint starts / 86 Speed switches, 16/16 respawns equipped, 75 bot→bot hits, 5 kills, 0.11 ms/frame; but **57% of samples MOVING_TO_WEAPON** (bots stood under unreachable items) and only 3 Strength jumps → fixed in the next commit |
-| `c4c9cec2` | first BUILD PASS of the gameplay series below | QA: 6 bots 7 kills/4 min, 0.11 ms/frame; **15 bots 76 kills/5 min, 0.31 ms/frame avg, worst 0.86 ms**, 0 fall deaths, map memory loaded + saved across runs |
-| HEAD (this commit) | equip like a human on spawn/revive (IA EquipPlayer + 5 s invulnerability), weapon upgrades, Speed travel ("Shift"), travel and dodge Strength jumps, map memory (`%USER%/WarsBots/<level>.mem`: stuck spots, kill/death hotspots), console log levels (`wb_log`) | **NOT BUILT, NOT RUN** |
+| `8f56ede9` | multi-bot checkpoint: registry, targeting, profiles, IA-reset restore, fall fix | BUILD PASS; M3/M4 SERVER-LOG PASS |
+| `6a30130a` | movement: other floors, wider avoidance, 3 m drops, fire while closing | BUILD PASS |
+| `ef376469` | BotNav 3 m grid graph + A*, head aim over cover, step out when barrel blocked | built in later commits |
+| `c4c9cec2` | equip like a human on (re)spawn (IA EquipPlayer + 5 s invulnerability), weapon upgrades, Speed travel, travel/dodge Strength jumps, per-map memory, `wb_log` levels | BUILD PASS; QA 6 bots 7 kills/4 min; **15 bots 76 kills/5 min, 0.31 ms/frame, worst 0.86 ms**, 0 fall deaths; map memory loaded+saved across runs |
+| `ef074f8c` | trace file `<log>.bots.log` (engine file-only channel dropped telemetry) | BUILD PASS; QA 6 bots full telemetry: **blocked movement 0%** (was 60%), 87 sprint starts, all respawns armed; but 57% of samples MOVING_TO_WEAPON, only 3 Strength jumps |
+| `48155dfe` | pickup reach 2 m + 2.2 m height, 10 s give-up + 90 s skip list; travel jump at energy >130 | built as part of HEAD |
+| `94d50f43`…`df3ceb8e` | build infra: worktree+build outside OneDrive, manifest + EXE reuse, QA SHA guard, explain dry run | **HEAD BUILD PASS** (first build in `%USERPROFILE%\WarsBotsBuild\crymp-multibot`); QA job `j13` (6 and 15 bots) was running at handoff — **result not read yet** |
 
-**Owner playtest 18:30, 15 bots — it ran `8f56ede9`, not the newer code** (stale bundle on the PC;
-the build script now fetches from GitHub and refuses a wrong SHA). Findings: some bots AFK, slow,
-never sprint, rarely jump, lazy weapon pickup; console spam. Log (`WarsBots-Play-Server.log`):
-15 bots avg 1.74 ms/frame, worst 17.8 ms; 58 bot kills; movement blocked 40% of samples; ~25% of
-samples with no weapon (cause: C++ revive skipped IA `EquipPlayer`, bots respawned empty-handed);
-sprint almost never executed (roaming always requested Run). AFK = chasing a target on another
-floor (refused by the old `Move`, fixed in `6a30130a`).
+Owner playtest (18:30) ran a stale build (`8f56ede9`): AFK bots, slow, no sprint, few jumps, lazy pickups,
+console spam — all addressed after `8f56ede9` but **not yet re-played by the owner**.
 
-Baseline to beat (M4 on `7572a4f5`, `Tools/wb_log_report.py`): movement blocked 60% of samples,
-state shares CHASING 52% / SEARCHING 38% / ATTACKING 2%. Owner wants 10–15 bots next
-(`wb_maxbots 15`, hard limit 16). The owner tests visuals himself; automated QA covers the rest.
+### Next agent: do these first
+1. Read `ClaudeQA\outbox\j13-df3ceb8e.json` and `build\claude-qa\*m4g*.bots.log`, `*m15b*.bots.log` on the
+   owner's PC; run `Tools/wb_log_report.py` on the `.bots.log` files. Check: MOVING_TO_WEAPON share
+   (should drop far below 57%), Strength jumps count, blocked share stays ~0%, frame cost at 15 bots.
+2. Read `build\claude-multibot-explain-on.log` after the next code change: it should show only bot
+   objects rebuilding. If ThirdParty still rebuilds, investigate further (OneDrive hypothesis unproven).
+3. Ask the owner to play the HEAD build (`ClaudeQA\Play-Server.bat` → `wb_maxbots 15`, `wb_add 15`;
+   `ClaudeQA\Play-Client.bat`) and report AFK/sprint/jumps/pickups/stuck spots.
+4. Then: jump links in BotNav (Strength jump to roofs), cover selection, target switching, team modes.
 
-
-Branch under review: `warsbots/feature/multibot` (fork `Madd3st/crymp-client`).
-Base: `warsbots/feature/ia-participants` WIP `6718af16` → `6a8c241c` (C2660 fix) → multi-bot series.
-`warsbots/main` (`caf1a815`) is untouched; nothing here is merged. Upstream is never pushed.
-
-Read with this file: [STATUS](STATUS.md) (evidence log), [AI_TESTS](AI_TESTS.md) (how to run),
-[MULTIBOT_DESIGN](MULTIBOT_DESIGN.md), [ARCHITECTURE_REVIEW](ARCHITECTURE_REVIEW.md),
-[COMBAT_REFERENCE](COMBAT_REFERENCE.md), [AI_LEARNING_FEASIBILITY](AI_LEARNING_FEASIBILITY.md).
+### How the automation works (owner's Windows PC)
+- `ClaudeQA\Claude-Runner.bat` must be running (owner starts it; window shows every step;
+  `ClaudeQA\runner-console.log`). Jobs: write `ClaudeQA\inbox\<id>.json`
+  `{"id":"jNN-<sha8>","build":"on|none","expect":"<sha8>","qa":[{"bots":6,"seconds":240,"tag":"x"}]}`;
+  result in `ClaudeQA\outbox\<id>.json`. Scripts in repo `Tools/ClaudeQA` (copy to `ClaudeQA`).
+- Build fetches from GitHub, worktree is **detached** at the exact SHA, reuse via `claude-build.json`.
+- Logs: engine log + `<name>.bots.log` in `Documents\My Games\Crysis` (QA copies to `build\claude-qa`).
+- Map memory: `Documents\My Games\Crysis\WarsBots\Multiplayer_IA_Steelmill.mem` (delete to relearn).
+- Push from the cloud works (Claude GitHub App installed). Computer use: Explorer/cmd are click-only.
+- Old worktree `local\crymp-multibot` (OneDrive) still exists and holds branch `warsbots/feature/multibot`;
+  safe to delete with the owner's permission.
 
 ## 1. Verification vocabulary (what PASS means here)
 

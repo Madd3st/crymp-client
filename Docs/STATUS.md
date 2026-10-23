@@ -182,3 +182,10 @@ was not called for bots), roaming always at Run, refused moves toward other floo
 Fixed in the next commit (not built yet): equip like a human, weapon upgrades, Speed travel,
 travel/dodge Strength jumps, per-map memory, `wb_log` levels (telemetry to file only).
 Load: 15 bots ≈1.74 ms/frame average, worst frame 17.8 ms (old entity-iterator weapon search).
+
+### 19:25 MSK checkpoint (`df3ceb8e`)
+- 15 bots on `c4c9cec2`: 76 kills / 5 min, avg 0.31 ms/frame, worst 0.86 ms, 0 fall deaths, map memory persisted.
+- 6 bots on `ef074f8c` (full telemetry): blocked movement 0%, Speed sprint used, all respawns armed;
+  issues found and fixed in `48155dfe` (bots stuck under unreachable weapons 57% of samples; few jumps).
+- Build infra moved out of OneDrive with EXE reuse; HEAD BUILD PASS; QA `j13` pending.
+- Not re-verified by the owner since the stale-build playtest.
