@@ -31,6 +31,25 @@ def report(path):
         worst = max(float(p[2]) for p in profile)
         print(f'profile: max avgSum {avg:.3f} ms/frame, worst frame {worst:.3f} ms, rays/report max {max(int(p[3]) for p in profile)}')
     print(f'crash: {crash}')
+    # Per-bot view (by display number): independence of decisions, kills, deaths.
+    num_of = {e: n for n, e, _, _ in created}
+    per = collections.defaultdict(lambda: collections.Counter())
+    for shooter, target, _, _ in acquired: per[num_of.get(shooter, '?')]['acq'] += 1
+    for n, shooter, target in kills:
+        if shooter != target: per[num_of.get(shooter, '?')]['kills'] += 1
+        else: per[num_of.get(shooter, '?')]['suicides'] += 1
+    for n, _ in deaths: per[n]['deaths'] += 1
+    selfhits = [h for h in hits if h[0] == h[1]]
+    pos = re.findall(r'#(\d+) created EntityId=\d+ name=\S+ profile=\S+ position=\(([-\d.]+), ([-\d.]+), ([-\d.]+)\)', text)
+    if pos:
+        first = {}
+        for n, x, y, z in pos: first.setdefault(n, (float(x), float(y)))
+        pts = list(first.values())
+        mind = min(((a[0]-b[0])**2 + (a[1]-b[1])**2) ** 0.5 for i, a in enumerate(pts) for b in pts[i+1:]) if len(pts) > 1 else 0
+        print(f'initial spawns: {len(pts)} distinct bots, min separation {mind:.1f} m')
+    print(f'self-damage hits (fall etc.): {len(selfhits)} sum {sum(float(h[2]) for h in selfhits):.0f}')
+    for n in sorted(per, key=lambda k: int(k) if k.isdigit() else 99):
+        print(f'  bot #{n}: ' + ' '.join(f'{k}={v}' for k, v in sorted(per[n].items())))
     verdict = 'PASS' if (len(created) >= 2 and bb and kills and not crash) else 'INCOMPLETE'
     print(f'M3 bot-vs-bot verdict: {verdict}')
 

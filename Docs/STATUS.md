@@ -142,3 +142,14 @@ before Build-WarsBots ON and OFF pass and AI_TESTS sections M1–M6 are run.
   → our reset handler removed bots permanently (clean ENTITY_EVENT_DONE, no crash). Fixed in `8e26fb32`
   (roster restore). Bots never met with 10 m local patrol → spawn-point roaming in `8e26fb32`.
 - A bot-only IA match therefore DOES start without humans (native timer, no fake connection).
+
+### M3 bot-vs-bot: PASS (server log, `49f2bae2`, QA 64120, no human, 240 s)
+
+`build/claude-qa/WarsBots-Claude-m3-173247.log` via `Tools/wb_log_report.py`:
+2 bots; native IA RestartGame deleted both, both restored 2/2 with new EntityIds; real map weapon
+pickups after reset; 8 mutual acquisitions `kind=bot`; 9 bot→bot hits through native weapons and
+ShotValidator; WarsBot_02 killed WarsBot_01 (4×31 dmg) via stock KillPlayer; IA score shooter
+kills=1, victim deaths+1; 2/2 revives of the same EntityId; ≈0.03 ms/frame for 2 bots; no crash.
+Defect: 3 self-damage (fall) hits after obstacle Strength jumps off ledges, 1 death (suicide −1 kill,
+native IA rule). Fixed in `7572a4f5` (Armor while falling, far-landing probe) — retest pending.
+Not yet observed: headshot scoring, Tab rendering on a client, bot vs human after this refactor.
