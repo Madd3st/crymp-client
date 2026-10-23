@@ -19,5 +19,9 @@ private:
 	float m_sampleTime = 0;
 	float m_avoidTime = 0;
 	float m_side = 1;
+	bool m_turned = false;
+public:
+	// Last Move had to turn more than 90 degrees away from the destination.
+	bool Turned() const { return m_turned; }
 };
 }

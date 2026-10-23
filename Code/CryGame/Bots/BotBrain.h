@@ -47,7 +47,7 @@ private:
 	float m_nextTelemetry = 0;
 	EntityId m_weaponTarget = 0;
 	Vec3 m_patrolGoal = Vec3(0,0,0);
-	float m_patrolUntil = 0, m_blockedSince = 0;
+	float m_patrolUntil = 0, m_blockedSince = 0, m_chaseBlockedSince = 0;
 	bool m_detour = false;
 	unsigned m_life = 0, m_patrolStep = 0;
 	IEntityClass* m_previousWeaponClass = nullptr;

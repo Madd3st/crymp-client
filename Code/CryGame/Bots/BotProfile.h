@@ -19,6 +19,7 @@ struct BotProfile
 	float retreatEnter = 6.0f;    // back off when closer than this
 	float retreatExit = 9.0f;     // stop backing off beyond this
 	float sprintChaseRange = 20.0f; // chase with native Speed sprint beyond this distance
+	float fireRange = 40.0f;      // shoot a visible target while closing in up to this distance
 
 	// Strafe rhythm: period + jitter*(life%3), as in the tested build.
 	float strafePeriod = 1.8f;
@@ -43,13 +44,13 @@ struct BotProfile
 		case BotStyle::Assault:
 			p.engageRange = 20.0f; p.holdRange = 24.0f; p.preferredRange = 8.0f;
 			p.retreatEnter = 3.5f; p.retreatExit = 5.5f; p.sprintChaseRange = 16.0f;
-			p.strafePeriod = 1.4f; p.burst = 0.3f; p.burstGap = 0.55f;
+			p.strafePeriod = 1.4f; p.burst = 0.3f; p.burstGap = 0.55f; p.fireRange = 32.0f;
 			break;
 		case BotStyle::Marksman:
 			p.engageRange = 28.0f; p.holdRange = 34.0f; p.preferredRange = 20.0f;
 			p.retreatEnter = 9.0f; p.retreatExit = 13.0f; p.sprintChaseRange = 30.0f;
 			p.strafePeriod = 2.4f; p.burst = 0.12f; p.burstGap = 0.5f;
-			p.aimErrorPerMetre = 0.0045f;
+			p.aimErrorPerMetre = 0.0045f; p.fireRange = 65.0f;
 			break;
 		case BotStyle::Flanker:
 			p.engageRange = 18.0f; p.holdRange = 22.0f; p.preferredRange = 10.0f;
@@ -58,7 +59,7 @@ struct BotProfile
 		case BotStyle::Defender:
 			p.engageRange = 22.0f; p.holdRange = 26.0f; p.preferredRange = 15.0f;
 			p.retreatEnter = 7.0f; p.retreatExit = 11.0f; p.sprintChaseRange = 1000.0f; // never sprints after targets
-			p.strafePeriod = 2.2f;
+			p.strafePeriod = 2.2f; p.fireRange = 50.0f;
 			break;
 		case BotStyle::Hunter:
 			p.engageRange = 20.0f; p.holdRange = 26.0f; p.preferredRange = 11.0f;

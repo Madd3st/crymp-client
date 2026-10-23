@@ -54,9 +54,9 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe) co
 		if (gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), direction * probe,
 			ent_all, flags, &hit, 1, actor.GetEntity()->GetPhysics(), heldPhysics))
 			return false;
-	// Stop at ledges; this is deliberately not a pathfinder or a jump controller.
+	// Stop at real cliffs only: drops up to ~3 m are taken (Armor absorbs the landing, see BotBrain).
 	return gEnv->pPhysicalWorld->RayWorldIntersection(feet + direction * (probe-0.3f) + Vec3(0,0,0.6f),
-		Vec3(0,0,-1.4f), ent_terrain | ent_static | ent_rigid | ent_sleeping_rigid,
+		Vec3(0,0,-3.6f), ent_terrain | ent_static | ent_rigid | ent_sleeping_rigid,
 		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
 }
 
@@ -67,7 +67,10 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 	const Vec3 feet = actor.GetEntity()->GetWorldPos();
 	Vec3 direction = destination - feet;
 	direction.z = 0;
-	if (direction.GetLengthSquared() < 0.8f * 0.8f || (!jumpTraverse && fabs_tpl(destination.z - feet.z) > 3.0f))
+	// Height differences are not a reason to stop: walking horizontally toward a target on another
+	// level is how ramps and stairs get found without a pathfinder. Only arrival stops here.
+	(void)jumpTraverse;
+	if (direction.GetLengthSquared() < 0.8f * 0.8f)
 	{
 		Stop(actor);
 		Aim(actor, lookAt);
@@ -87,12 +90,14 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 	}
 	m_avoidTime = max(0.0f, m_avoidTime - dt);
 	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe));
+	m_turned = false;
 	if (!safe)
 	{
-		for (float angle : {m_side * 0.8f, -m_side * 0.8f, m_side * 1.57f, -m_side * 1.57f})
+		// Wider fan, including backing out of corners.
+		for (float angle : {m_side * 0.8f, -m_side * 0.8f, m_side * 1.57f, -m_side * 1.57f, m_side * 2.36f, -m_side * 2.36f, 3.14159f})
 		{
 			Vec3 candidate = Quat::CreateRotationZ(angle) * direction;
-			if (SafeStep(actor, candidate, probe)) { direction = candidate; safe = true; break; }
+			if (SafeStep(actor, candidate, probe)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
 		}
 	}
 	if (!safe) { Stop(actor); Aim(actor, lookAt); return false; }

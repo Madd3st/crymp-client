@@ -60,7 +60,7 @@ void BotBrain::ResetLife()
 	m_combat.Reset();
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
-	m_detour = false; m_blockedSince = 0;
+	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0;
 	++m_life;
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
@@ -312,9 +312,24 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	}
 	else
 	{
-		m_combat.StopFire();
 		Change(State::CHASING_ENEMY);
 		m_intent.MoveTo(destination,aim);
+		// A visible target beyond engage range is still shot at while closing in, like a player
+		// with a rifle would; outside fireRange or without LOS the bot only moves.
+		if (visible && distance <= m_profile.fireRange)
+		{
+			m_intent.strafe=true;
+			m_intent.combat=m_now-m_stateTime>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
+		}
+		else m_combat.StopFire();
+		// Running into geometry toward a target we cannot see: give it up and roam instead.
+		if (!visible && m_blackboard.blocked) { if (m_chaseBlockedSince<=0) m_chaseBlockedSince=m_now; }
+		else m_chaseBlockedSince=0;
+		if (m_chaseBlockedSince>0 && m_now-m_chaseBlockedSince>2.0f)
+		{
+			if (m_verbose) CryLogAlways("[WarsBots] #%d chase abandoned target=%u (blocked, not visible).", m_number, m_combat.Target());
+			m_combat.Reset(); m_chaseBlockedSince=0; m_patrolUntil=0; m_detour=true;
+		}
 		m_intent.gait=distance>(m_blackboard.mode==NANOMODE_SPEED?m_profile.sprintChaseRange-2.0f:m_profile.sprintChaseRange) && m_now-m_stateTime>0.4f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run;
 		if (m_intent.gait==BotGait::Sprint) m_intent.suitMode=NANOMODE_SPEED;
 		if (!visible && distance>12.0f && distance<30.0f && BotSuit::CloakEnabled() && m_blackboard.energy>120.0f)
