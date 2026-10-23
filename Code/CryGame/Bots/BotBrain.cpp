@@ -338,7 +338,9 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 			m_intent.suitMode=m_intent.jump==BotJump::Strength?NANOMODE_STRENGTH:NANOMODE_DEFENSE;
 	}
 }
-	if (!m_blackboard.grounded && static_cast<const SPlayerStats*>(actor.GetActorStats())->jumped && m_blackboard.mode==NANOMODE_STRENGTH && m_intent.jump==BotJump::None)
+	if (!m_blackboard.grounded && m_blackboard.velocity.z < -3.0f)
+		m_intent.suitMode=NANOMODE_DEFENSE; // Armor before landing: native suit absorbs fall damage.
+	else if (!m_blackboard.grounded && static_cast<const SPlayerStats*>(actor.GetActorStats())->jumped && m_blackboard.mode==NANOMODE_STRENGTH && m_intent.jump==BotJump::None)
 		m_intent.suitMode=NANOMODE_STRENGTH;
 	if (m_now<m_blackboard.damagedUntil || m_intent.combat!=BotCombatIntent::None || m_blackboard.energy<45.0f)
 	{ m_intent.suitMode=NANOMODE_DEFENSE; if (m_intent.gait==BotGait::Sprint) m_intent.gait=BotGait::Run; }

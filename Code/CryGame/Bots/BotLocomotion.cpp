@@ -72,6 +72,13 @@ bool BotLocomotion::JumpSpace(CPlayer& actor, const Vec3& direction, bool moving
 	landing=hit.pt;
 	if (fabs_tpl(landing.z-feet.z)>(strength?1.5f:0.6f)) return false;
 	if (moving && Ray(actor,feet+Vec3(0,0,strength?2.5f:1.3f),landing-feet,hit)) return false;
+	// A moving Strength jump carries ~5-6 m: the far touchdown must not be a ledge drop either.
+	if (moving && strength)
+	{
+		ray_hit far;
+		const Vec3 farPoint=feet+direction*5.5f;
+		if (!Ray(actor,farPoint+Vec3(0,0,3.0f),Vec3(0,0,-6.0f),far) || far.n.z<0.6f || far.pt.z<feet.z-2.5f) return false;
+	}
 	primitives::sphere body; body.r=0.35f; body.center=landing+Vec3(0,0,0.4f);
 	IPhysicalEntity* skip[2]; int skipCount=0;
 	if (IPhysicalEntity* bodyPhysics=actor.GetEntity()->GetPhysics()) skip[skipCount++]=bodyPhysics;

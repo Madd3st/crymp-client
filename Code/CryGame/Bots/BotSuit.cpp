@@ -13,7 +13,9 @@ bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float 
 {
 	CNanoSuit* suit = actor.GetNanoSuit();
 	const char* reason = nullptr;
-	if (!state.canMove || !suit || !suit->IsActive()) reason = "suit_inactive_or_actor_unavailable";
+	// Armor is allowed in freefall (canMove=false there): it is how a player survives a long drop.
+	const bool armorWhileFalling = mode == NANOMODE_DEFENSE && state.health > 0;
+	if ((!state.canMove && !armorWhileFalling) || !suit || !suit->IsActive()) reason = "suit_inactive_or_actor_unavailable";
 	else if (mode == NANOMODE_CLOAK && !CloakEnabled()) reason = "cloak_experimental_disabled";
 	else if (!suit->IsModeActive(mode)) reason = "mode_unavailable";
 	else if (mode == NANOMODE_STRENGTH && state.energy < 90.0f) reason = "strength_energy";
