@@ -7,6 +7,8 @@ $repo = Split-Path $PSScriptRoot -Parent
 $wt = Join-Path (Split-Path $repo -Parent) 'crymp-multibot'
 $log = Join-Path $repo 'build\claude-multibot-build.log'
 $done = Join-Path $repo 'build\claude-multibot-build.done'
+$compileLog = Join-Path $repo 'build\claude-multibot-compile.log'
+Remove-Item -LiteralPath $compileLog -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force (Split-Path $log) | Out-Null
 Remove-Item -LiteralPath $done -ErrorAction SilentlyContinue
 Start-Transcript -LiteralPath $log -Force | Out-Null
@@ -40,11 +42,12 @@ try {
     $jobs = [Math]::Max(2, [int]$env:NUMBER_OF_PROCESSORS)
     $build = Join-Path $wt 'Tools\Build-WarsBots.ps1'
     Write-Host '=== BUILD ON ==='
-    & $build -Experimental -Jobs $jobs -BuildDirectory 'build/multibot-on'
+    # Compiler output goes to its own file: a transcript loses native output when stdout is redirected.
+    & $build -Experimental -Jobs $jobs -BuildDirectory 'build/multibot-on' *>&1 | ForEach-Object { "$_" } | Out-File -LiteralPath $compileLog -Append -Encoding utf8
     Write-Host 'BUILD ON: PASS'
     if (-not $OnOnly) {
     Write-Host '=== BUILD OFF ==='
-    & $build -Jobs $jobs -BuildDirectory 'build/multibot-off'
+    & $build -Jobs $jobs -BuildDirectory 'build/multibot-off' *>&1 | ForEach-Object { "$_" } | Out-File -LiteralPath $compileLog -Append -Encoding utf8
     Write-Host 'BUILD OFF: PASS'
     }
     Get-ChildItem -Path (Join-Path $wt 'build') -Recurse -Filter 'CryMP-*64.exe' | ForEach-Object { Write-Host "EXE $($_.FullName) $((Get-FileHash $_.FullName).Hash)" }
