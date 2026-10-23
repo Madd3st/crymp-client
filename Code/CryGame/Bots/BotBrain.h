@@ -50,7 +50,7 @@ private:
 	Vec3 m_patrolGoal = Vec3(0,0,0);
 	float m_patrolUntil = 0, m_blockedSince = 0, m_chaseBlockedSince = 0, m_shotBlockedSince = 0;
 	// Path following on the shared BotNav graph.
-	Vec3 Steer(const Vec3& feet, const Vec3& goal);
+	Vec3 Steer(const Vec3& feet, const Vec3& goal, bool* routeAvailable = nullptr);
 	std::vector<Vec3> m_path;
 	size_t m_pathIndex = 0;
 	Vec3 m_pathGoal = Vec3(0,0,0);

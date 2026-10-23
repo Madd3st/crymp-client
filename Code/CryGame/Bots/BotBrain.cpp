@@ -80,8 +80,9 @@ void BotBrain::TravelGait(float distance)
 	}
 }
 
-Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
+Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal, bool* routeAvailable)
 {
+	if (routeAvailable) *routeAvailable = true;
 	const BotNav& nav = g_pGame->GetBotManager().Nav();
 	if (!nav.Ready()) return goal; // fallback: straight line + local avoidance
 	// Moving targets would otherwise repath every decision tick: at most ~1.3 queries/s per bot.
@@ -94,7 +95,11 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
 		if (!found) m_path.clear();
 	}
-	if (m_path.empty()) return goal;
+	if (m_path.empty())
+	{
+		if (routeAvailable) *routeAvailable = false;
+		return goal;
+	}
 	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
 	while (m_pathIndex + 1 < m_path.size())
 	{
@@ -272,6 +277,11 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			m_weaponTarget = BotWeapons::FindNearby(actor, 30.0f, m_previousWeaponClass, m_life);
 			m_nextSearch = m_now + 2.0f;
 		}
+		if (m_weaponTarget && !BotWeapons::AvailableForPickup(actor, m_weaponTarget))
+		{
+			WB_LOG(2, "[WarsBots] #%d weapon goal cancelled item=%u reason=unavailable.", m_number, m_weaponTarget);
+			m_weaponTarget = 0;
+		}
 		IEntity* item = gEnv->pEntitySystem->GetEntity(m_weaponTarget);
 		if (item && m_now - m_weaponSearchStarted < 6.0f)
 		{
@@ -313,6 +323,13 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			WB_LOG(2, "[WarsBots] #%d weapon %u unreachable; skipping it.", m_number, m_upgradeTarget);
 			MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
 		}
+		// A selected item can disappear or gain an owner while we approach it.
+		// Do not chase another player's gun until the ten-second timeout.
+		if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor, m_upgradeTarget))
+		{
+			WB_LOG(2, "[WarsBots] #%d weapon goal cancelled item=%u reason=unavailable.", m_number, m_upgradeTarget);
+			m_upgradeTarget = 0;
+		}
 		IEntity* item = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
 		if (item)
 		{
@@ -327,7 +344,19 @@ void BotBrain::Update(BotInstance& bot, float dt)
 				else MarkBadItem(m_upgradeTarget);
 				m_upgradeTarget = 0;
 			}
-			else { const Vec3 step=Steer(feet,item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
+			else
+			{
+				bool routeAvailable = true;
+				const Vec3 step = Steer(feet, item->GetWorldPos(), &routeAvailable);
+				if (routeAvailable)
+				{ m_intent.MoveTo(step, step + Vec3(0,0,1.2f)); TravelGait(d); }
+				else
+				{
+					WB_LOG(2, "[WarsBots] #%d weapon goal cancelled item=%u reason=no_route.", m_number, m_upgradeTarget);
+					MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
+					m_intent.move = false;
+				}
+			}
 			ExecuteIntent(actor,decisionTime);
 			return;
 		}

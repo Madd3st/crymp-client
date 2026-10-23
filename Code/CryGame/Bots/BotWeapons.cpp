@@ -105,6 +105,13 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 	return result;
 }
 
+bool BotWeapons::AvailableForPickup(CActor& actor, EntityId id)
+{
+	IItem* item = Items()->GetItem(id);
+	return Suitable(item) && !item->GetEntity()->IsHidden() && !item->GetOwnerId() &&
+		static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId());
+}
+
 bool BotWeapons::PickUp(CActor& actor, EntityId id)
 {
 	IItem* item = Items()->GetItem(id);

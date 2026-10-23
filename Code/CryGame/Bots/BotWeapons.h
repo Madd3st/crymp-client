@@ -17,6 +17,7 @@ struct BotWeapons
 	static bool IsPrimary(IItem* item);
 	static EntityId FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly = false,
 		const EntityId* skip = nullptr, int skipCount = 0);
+	static bool AvailableForPickup(CActor& actor, EntityId item);
 	static bool PickUp(CActor& actor, EntityId item);
 	static bool GiveTestSCAR(CActor& actor);
 	static bool HasAmmunition(CActor& actor, IWeapon& weapon);
