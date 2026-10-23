@@ -61,3 +61,18 @@ BotMatch.cpp41/46 (Script::Call C2660). Эта версия не установ�
 Запуск из build/baseline с -dir оригинальной игры; root EXE могли остаться старее.
 Не убивать игру и не заменять EXE без нового согласования. Никаких новых тестов
 после команды сохранить не проводилось. Полные native логи локальны и не в Git.
+
+## Cloud session 2026-10-23: multi-bot (UNCOMPILED)
+
+GitHub push was unavailable (account not linked); work was delivered as a git bundle.
+Branches: `warsbots/feature/ia-participants` + `6a8c241c` (C2660 fix), and
+`warsbots/feature/multibot` = that + `a8a56583` + docs. Single integrator, no subagents
+(code size ~2k lines; no build tool in the sandbox made parallel agents pointless).
+
+First action for the next session: fetch the bundle, build ON (`-Experimental`) and OFF.
+Likely compile hotspots if any: `_snprintf`/`_stricmp` (MSVC-only, intended), `BotManager.h`
+being included from `Game.h` (pulls BotInstance → BotBrain, as BotSpawner.h did before),
+`CTimeValue::GetMilliSecondsAsInt64`. Then run AI_TESTS M1–M6 on a separate QA port, not the
+user's session. Commands: `wb_add`, `wb_list`, `wb_status`, `wb_remove`, `wb_remove_all`,
+`wb_debug`, `wb_select`, cvars `wb_maxbots`, `wb_skill`. Legacy `wb_bot_*`/`wb_probe_*` act on
+the selected bot, so `Tools/Test-WarsBotsServer.ps1` should keep working unchanged.

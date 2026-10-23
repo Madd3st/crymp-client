@@ -113,3 +113,20 @@ registration/remove/recreate, then obtain permission before replacing/restarting
 user's session. Verify Tab row, count, kills/deaths/headshots without double human credit,
 normal-vs-head damage parity, death/respawn, round transitions, late join and cleanup.
 Spawn groups are explicitly unsupported/refused by participant registration; PS untouched.
+
+## 2026-10-23 (cloud session): P0 fix + multi-bot registry — NOT COMPILED
+
+Authored in a Linux sandbox without MSVC; nothing below is BUILD PASS or tested in game.
+
+- `6a8c241c` (on top of WIP `6718af16`): BotMatch uses `Script::CallMethod`, which pushes the
+  table as `self` (`WarsBotsIA:Attach(rules)`, `rules:ResetScore(id)`). Signatures checked in
+  `IScriptSystem.h`; `ResetScore(playerId)` checked in `Pak/CryMP/Scripts/GameRules/InstantAction.lua`.
+  Participant flag is now set only after a successful reset.
+- `a8a56583` branch `warsbots/feature/multibot`: BotSpawner removed. BotManager = EntityId
+  registry + commands; BotInstance = one independent bot; BotTargeting = channel-independent
+  hostility (bots target bots); BotProfile = 6 styles × 4 skills; safe spawn selection for spawn
+  and revive; per-bot profiling. See [design](MULTIBOT_DESIGN.md), [review](ARCHITECTURE_REVIEW.md).
+- Headshot −1067: hypothesis = stock SP AI damage table chosen before the IA wrapper; unverified.
+
+Verification level: implemented → **not compiled** → not tested. Do not merge into warsbots/main
+before Build-WarsBots ON and OFF pass and AI_TESTS sections M1–M6 are run.

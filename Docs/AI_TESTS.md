@@ -42,3 +42,26 @@ Automated physical checks on an isolated QA server: `Tools/Test-WarsBotsServer.p
 -SpawnPosition 1242,1351,136`. Also supports right, run, sprint, normal, strength.
 It stops only its own no-client QA process after physical evidence or a bounded
 failed test; the user's server on64110 is separate. Results are under build/server-qa.
+
+## Multi-bot (warsbots/feature/multibot) — NOT RUN yet
+
+Same server line. After `wb_probe_local_test 1`:
+```text
+wb_add 1            // one autonomous bot, style by slot, skill from wb_skill
+wb_add 5 veteran    // up to wb_maxbots (default 6, hard 16)
+wb_list             // number, EntityId, profile, state, target
+wb_status           // gate, per-bot status, PROFILE line (update ms, rays, scans)
+wb_debug 1          // telemetry for all bots + PROFILE every 10 s
+wb_remove 3         // by display number, NOT EntityId
+wb_remove_all
+wb_select 2         // legacy wb_bot_*/wb_probe_* target
+```
+Record each as passes/attempts with log lines:
+- M1 build ON and OFF; OFF loads IA with no bot commands registered.
+- M2 one bot: same behaviour as caf1a815 (Universal/Normal parameters unchanged).
+- M3 two bots, no human: `Bot <id> acquired enemy ... kind=bot`, hits with `botShooter`/`botTarget`,
+  KillPlayer, revive of the same EntityId, Tab/score: kills+deaths each once.
+- M4 1→2→4→6 bots: distinct spawn points, no lockstep strafing, PROFILE costs recorded.
+- M5 remove/re-add during a match, map change, `wb_remove_all`: no stale EntityId in `wb_list`,
+  no crash, scores cleared.
+- M6 human + 6 bots, then a second simultaneous client.
