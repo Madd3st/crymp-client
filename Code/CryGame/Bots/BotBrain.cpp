@@ -325,7 +325,6 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			for (const BadItem& b : m_badItems) if (b.id && m_now < b.until) skip[skipCount++] = b.id;
 			m_upgradeTarget = BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true, skip, skipCount);
 			m_upgradeSince = m_now;
-			if (m_upgradeTarget) m_progress.Reset();
 			m_nextUpgradeSearch = m_now + 3.0f;
 		}
 		// Unreachable (on a ledge, behind glass, taken): give up after 10 s and skip it for 90 s.
@@ -358,8 +357,6 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			else { const Vec3 step=Steer(feet,item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
 			ExecuteIntent(actor,decisionTime);
 			if (bot.GetActor()!=&actor) return;
-			if (m_upgradeTarget && NoProgress(actor,"weapon",m_upgradeTarget))
-			{ MarkBadItem(m_upgradeTarget); m_upgradeTarget=0; m_nextRepath=0; }
 			return;
 		}
 	}
@@ -407,12 +404,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		TravelGait((m_patrolGoal-feet).GetLength());
 		ExecuteIntent(actor,decisionTime);
 		if (bot.GetActor()!=&actor) return;
-		if (NoProgress(actor,"search",0))
-		{
-			g_pGame->GetBotManager().Nav().ReportStuck(feet);
-			m_detour=true; m_patrolUntil=0; m_nextRepath=0; m_blockedSince=0;
-		}
-		else if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0)
+		if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0)
 		{
 			g_pGame->GetBotManager().Nav().ReportStuck(feet); // learned: route around this spot next time
 			m_detour=true; m_patrolUntil=m_now; m_blockedSince=0; m_nextRepath=0;
@@ -549,6 +541,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
 }
 bool BotBrain::NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect)
 {
+	ICVar* experiment=gEnv->pConsole->GetCVar("wb_progress_experiment");
+	if (!experiment || experiment->GetIVal()!=1) { m_progress.Reset(); return false; }
 	if (!m_blackboard.canMove) { m_progress.Reset(); return false; }
 	const Vec3 p=actor.GetEntity()->GetWorldPos();
 	const float timeout=6.0f-2.0f*m_profile.targetJudgement;

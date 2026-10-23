@@ -18,6 +18,7 @@ namespace WarsBots
 {
 namespace
 {
+int g_progressExperiment=0;
 bool ParseCoordinate(const char* text, float& value)
 {
 	if (!text || !*text)
@@ -49,7 +50,7 @@ const char* kCommands[] = {
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log" };
+const char* kVariables[] = { "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment" };
 }
 
 BotManager* BotManager::Self()
@@ -72,6 +73,8 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->Register("wb_probe_local_test", &m_localTestEnabled, 0, 0,
 		"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction.");
 	console->Register("wb_bot_cloak_experimental", &m_cloakExperimental, 0, 0, "Experimental bot cloak, defaults OFF");
+	console->Register("wb_progress_experiment", &g_progressExperiment, 0, 0,
+		"Experimental stationary-combat recovery: 0 OFF (default), 1 ON; local IA bots only.");
 	console->Register("wb_log", &m_logLevel, 1, 0, "WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file.");
 	console->Register("wb_maxbots", &m_maxBots, 6, 0, "Maximum simultaneous WarsBots (1..16, default 6)");
 	console->Register("wb_skill", &m_skill, int(BotSkill::Normal), 0,
@@ -417,8 +420,8 @@ void BotManager::StatusReport()
 		if (bot->UpdateCount()) total += bot->TotalUpdateMs() / float(bot->UpdateCount());
 		worst = max(worst, bot->MaxUpdateMs());
 	}
-	WB_LOG(0, "[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u (since last report).",
-		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount());
+	WB_LOG(0, "[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u progressExperiment=%d (since last report).",
+		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount(), g_progressExperiment);
 	for (BotInstance* bot : Ordered()) bot->ResetProfile();
 }
 

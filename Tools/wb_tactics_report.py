@@ -45,7 +45,7 @@ def parse(path, emit):
             slot, style, skill = actors[actor]
             episodes[actor] = dict(actor=actor, bot=slot, skill=skill, style=style, target=target,
                 start_seconds=end, outcome='open', damage_dealt_hp=0, damage_taken_hp=0,
-                weapons=set(), suit_modes=set(), actions=collections.Counter(), first_sampled_distance=None,first_sample_seconds=None,
+                weapons=set(), suit_modes=set(), actions=collections.Counter(), first_sampled_distance=None,first_sample_seconds=None,first_sample_visible=None,distance_source=None,
                 damage_kind='native_health_loss_only')
         return episodes[actor]
 
@@ -128,6 +128,8 @@ def parse(path, emit):
                 ep['weapons'].add(m[4]); ep['suit_modes'].add(int(m[5])); ep['actions'][m[7]]+=1
                 if ep['first_sampled_distance'] is None:
                     ep['first_sampled_distance']=float(m[6]); ep['first_sample_seconds']=end
+                    ep['first_sample_visible']=bool(int(m[9]))
+                    ep['distance_source']='visible_target' if ep['first_sample_visible'] else 'last_seen_target'
         m = re.search(r'TACTIC actor=(\d+).*action=withdraw ',line)
         if m and int(m[1]) in actors: skills[actors[int(m[1])][2]]['withdraw_events']+=1
         m = re.search(r'Hit (before-Lua|after-Lua) target=(\d+) shooter=(\d+).*weapon=(\d+).*health=(-?\d+)',line)
@@ -208,7 +210,7 @@ def main():
             path=args.runs.parent/run['log']
             def emit(ep):
                 nonlocal rows,written,truncated
-                ep.update(schema=2,run=run['tag'],source_sha=run['source_sha'])
+                ep.update(schema=2,run=run.get('session',args.runs.parent.name)+':'+run['tag'],source_sha=run['source_sha'],progress_experiment_states=progress_states)
                 blob=(json.dumps(ep,separators=(',',':'))+'\n').encode()
                 if rows>=args.max_episodes or written+len(blob)>args.max_bytes:
                     truncated=True; return
@@ -226,6 +228,9 @@ def main():
             cpu=[float(v) for v in re.findall(r'PROFILE bots=\d+ avgSum=([\d.]+)ms/frame',raw)]
             metrics['median_reported_window_ms']=statistics.median(cpu) if cpu else None
             metrics['profile_windows']=len(cpu)
+            progress_states=sorted({int(v) for v in re.findall(r'progressExperiment=(\d+)',raw)})
+            metrics['progress_experiment_states']=progress_states
+            metrics['max_single_bot_update_ms']=metrics['worst_reported_frame_ms']
             metrics['observed_profiles']=[dict(number=n,style=style,skill=skill) for n,style,skill in sorted(observed)]
             spawns={}
             for n,actor,x,y,z in re.findall(r'#(\d+) created EntityId=(\d+).*position=\(([-\d.]+), ([-\d.]+), ([-\d.]+)\)',raw):

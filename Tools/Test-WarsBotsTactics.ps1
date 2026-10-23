@@ -12,6 +12,8 @@ param(
     [switch]$BaselineOnly,
     [ValidateSet("auto","universal")][string]$Style="auto",
     [string]$ExpectedCandidate="",
+    [ValidateRange(-1,1)][int]$CandidateProgress=-1,
+    [ValidateRange(-1,1)][int]$BaselineProgress=-1,
     [string]$ExpectedBaseline="eea973f0",
     [string]$OutputDirectory='build/tactics-qa'
 )
@@ -72,6 +74,8 @@ try {
                     $commands+=" +wb_add 1 $skill"
                     if($Style -ne "auto"){$commands+=" $Style"}
                 }
+                $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
+                if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
                 $args="-dir `"$game`" -headless -logfile $name +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_debug 1 +wb_maxbots $bots$commands +wb_list"
                 Write-Host "START $tag sha=$($v.manifest.sha) memory=$memoryHash"
                 $p=Start-Process -FilePath $v.exe -ArgumentList $args -WorkingDirectory $game -WindowStyle Hidden -PassThru
@@ -96,7 +100,7 @@ try {
                 $text=if(Test-Path -LiteralPath $trace){Get-Content -LiteralPath $trace -Raw}else{''}
                 $numbers=@([regex]::Matches($text,'#(\d+) created EntityId=') | ForEach-Object {$_.Groups[1].Value} | Sort-Object -Unique)
                 $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED'
-                $run=[ordered]@{tag=$tag;style_mode=$Style;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $run=[ordered]@{tag=$tag;session=$sessionTag;progress_requested=$progress;style_mode=$Style;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"
