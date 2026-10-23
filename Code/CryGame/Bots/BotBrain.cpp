@@ -80,26 +80,27 @@ void BotBrain::TravelGait(float distance)
 	}
 }
 
-Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal, bool* routeAvailable)
+Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 {
-	if (routeAvailable) *routeAvailable = true;
 	const BotNav& nav = g_pGame->GetBotManager().Nav();
 	if (!nav.Ready()) return goal; // fallback: straight line + local avoidance
-	// Moving targets would otherwise repath every decision tick: at most ~1.3 queries/s per bot.
-	if ((m_path.empty() || (goal - m_pathGoal).GetLengthSquared() > 16.0f || m_now >= m_nextRepath) && m_now >= m_minRepath)
+	// Failed paths also respect the two-second retry deadline. An empty failed path is
+	// a cached result, not a reason to repeat A* at the 0.75-second global throttle.
+	if (((goal - m_pathGoal).GetLengthSquared() > 16.0f || m_now >= m_nextRepath) && m_now >= m_minRepath)
 	{
 		m_minRepath = m_now + 0.75f;
 		const bool found = nav.FindPath(feet, goal, m_path);
 		m_pathIndex = 0;
 		m_pathGoal = goal;
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
-		if (!found) m_path.clear();
+		if (!found)
+		{
+			m_path.clear();
+			WB_LOG(2, "[WarsBots] #%d NAV fallback start=(%.2f,%.2f,%.2f) goal=(%.2f,%.2f,%.2f) retry=2.0.",
+				m_number, feet.x, feet.y, feet.z, goal.x, goal.y, goal.z);
+		}
 	}
-	if (m_path.empty())
-	{
-		if (routeAvailable) *routeAvailable = false;
-		return goal;
-	}
+	if (m_path.empty()) return goal; // Sparse graph can miss a physically reachable item.
 	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
 	while (m_pathIndex + 1 < m_path.size())
 	{
@@ -344,19 +345,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 				else MarkBadItem(m_upgradeTarget);
 				m_upgradeTarget = 0;
 			}
-			else
-			{
-				bool routeAvailable = true;
-				const Vec3 step = Steer(feet, item->GetWorldPos(), &routeAvailable);
-				if (routeAvailable)
-				{ m_intent.MoveTo(step, step + Vec3(0,0,1.2f)); TravelGait(d); }
-				else
-				{
-					WB_LOG(2, "[WarsBots] #%d weapon goal cancelled item=%u reason=no_route.", m_number, m_upgradeTarget);
-					MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
-					m_intent.move = false;
-				}
-			}
+			else { const Vec3 step=Steer(feet,item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
 			ExecuteIntent(actor,decisionTime);
 			return;
 		}
