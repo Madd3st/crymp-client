@@ -165,3 +165,11 @@ Not yet observed: headshot scoring, Tab rendering on a client, bot vs human afte
   ≤2868 rays per 10 s report; no crash.
 Meaning: the server simulates 6 independent bots that find, shoot, kill and respawn each other through
 native systems. Not proven: client view, animations, tactics quality, bot vs human on this branch.
+
+### After the checkpoint (2026-10-23 evening)
+
+- `6a30130a` movement/engagement fixes: BUILD PASS on the owner's PC. **Owner playtest**: bots now
+  see and kill well; they sometimes do not know where to go and get stuck; when a player stands behind
+  an obstacle they look at him but do nothing. Owner wants 10–15 bots.
+- `ef376469` navigation graph + A*, head-aim over cover, barrel-blocked step-out, 15-bot QA:
+  **not built, not run**. Measure against M4 baseline: blocked 60% of movement samples, ATTACKING 2%.

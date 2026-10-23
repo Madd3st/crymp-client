@@ -1,4 +1,17 @@
-# Agent handoff — WarsBots for CryMP (multi-bot checkpoint, 2026-10-23)
+# Agent handoff — WarsBots for CryMP (multi-bot, updated 2026-10-23 18:20 MSK)
+
+## 0. Current state in one screen (read this first)
+
+| Commit | What | Verification |
+|---|---|---|
+| `8f56ede9` | multi-bot checkpoint (registry, targeting, profiles, reset restore, fall fix) | BUILD PASS; M3/M4 SERVER-LOG PASS (§5) |
+| `6a30130a` | movement/engagement: no refusal of other floors, wider avoidance fan, 3 m drops, fire while closing (fireRange 32–65 m), abandon blocked chase | BUILD PASS (owner built it); **owner playtest**: bots see and kill well, still sometimes lost/stuck, stare at a player behind cover |
+| `ef376469` (HEAD) | BotNav grid graph + A*, head-aim over cover, step out when barrel blocked, QA for 15 bots | **NOT BUILT, NOT RUN** — queued as runner job `j05` (6 and 15 bots) |
+
+Baseline to beat (M4 on `7572a4f5`, `Tools/wb_log_report.py`): movement blocked 60% of samples,
+state shares CHASING 52% / SEARCHING 38% / ATTACKING 2%. Owner wants 10–15 bots next
+(`wb_maxbots 15`, hard limit 16). The owner tests visuals himself; automated QA covers the rest.
+
 
 Branch under review: `warsbots/feature/multibot` (fork `Madd3st/crymp-client`).
 Base: `warsbots/feature/ia-participants` WIP `6718af16` → `6a8c241c` (C2660 fix) → multi-bot series.
@@ -14,8 +27,8 @@ Read with this file: [STATUS](STATUS.md) (evidence log), [AI_TESTS](AI_TESTS.md)
 |---|---|
 | BUILD PASS | MSVC 19.44 x64 Release, Ninja, `Tools/Build-WarsBots.ps1` on the owner's PC, zero errors |
 | SERVER-LOG PASS | headless loopback IA server (port 64120, **no client**) log shows the event chain; parsed by `Tools/wb_log_report.py` |
-| CLIENT/VISUAL | a real client watched it — **none yet for this branch** |
-| USER | owner confirmed in play — **none yet for this branch** |
+| CLIENT/VISUAL | a real client watched it — owner playtest of `6a30130a` only (see §0) |
+| USER | owner confirmed in play — `6a30130a`: kills well; navigation and cover behaviour insufficient |
 
 A SERVER-LOG PASS proves server simulation, native damage/kill/score paths and lifecycle.
 It does not prove replication to clients, animation, or "plays well".
@@ -24,12 +37,12 @@ It does not prove replication to clients, animation, or "plays well".
 
 | | What | Status | Evidence |
 |---|---|---|---|
-| M1 | build ON + OFF | **BUILD PASS** at `ce36de5b`; ON re-built at `8e26fb32`, `49f2bae2`, `7572a4f5` | runner `build-on: PASS` |
+| M1 | build ON + OFF | **BUILD PASS** at `ce36de5b`; ON re-built at `8e26fb32`, `49f2bae2`, `7572a4f5`, `8f56ede9`, `6a30130a`; `ef376469` pending | runner `build-on: PASS` |
 | M2 | one bot = old behaviour | not re-run in isolation; covered by M3 (same code path, Universal/Normal = caf1a815 constants) | — |
 | M3 | 2 bots, no human, fight | **SERVER-LOG PASS** twice (`49f2bae2`, `7572a4f5`) | see §5 |
 | M4 | 6 bots | **SERVER-LOG PASS** (`7572a4f5`, partial 240/300 s read) | STATUS "M3b and M4" |
 | M5 | remove/re-add/map change | partial: native IA reset → remove → restore PASS; `wb_remove`/`wb_remove_all` mid-match NOT RUN | — |
-| M6 | human + bots, 2 clients | NOT RUN on this branch | needs owner |
+| M6 | human + bots, 2 clients | human + bots: owner played `6a30130a` (qualitative, §0); 2 clients NOT RUN | owner |
 
 ## 3. Architecture after this series
 
@@ -42,7 +55,8 @@ CGame::m_botManager : WarsBots::BotManager          (only when WARSBOTS_EXPERIME
     BotBrain                       FSM (SEEKING_WEAPON → SEARCHING_ENEMY → CHASING → ATTACKING → DEAD/RESPAWNING)
       BotBlackboard, BotIntent, BotCombat, BotLocomotion(BotMovement), BotSuit
 BotTargeting   Kind(actor) {Human, Bot, None}; Classify(self, other) {Enemy, Ally, Dead, Spectator, ...}
-BotProfile     6 styles × 4 skills, plain parameters
+BotProfile     6 styles × 4 skills, plain parameters (incl. fireRange)
+BotNav         shared per-level grid graph (3 m, ≤5 floors/column, ray-verified edges), A*; owned by BotManager
 BotMatch       IA participant registration (Lua wrapper Pak/Scripts/WarsBots/InstantAction.lua)
 CryMPEngineAdapter  loopback-IA gate, ActorSystem::CreateActor(channel 0, name)
 ```
@@ -94,6 +108,21 @@ GameRules participant APIs from the IA WIP (`IsMatchParticipant`, `GetMatchParti
 `Script::CallMethod(rules, "ResetScore", id)` (was nonexistent `Script::Call` overload → C2660).
 Flag `warsBotParticipant` is set only after ResetScore succeeds.
 
+### Navigation (`ef376469`, untested)
+`BotNav` is built lazily once bots exist, 2 ms/frame (`Begin/Step` from `BotManager::OnPostUpdate`),
+over the spawn-point bounding box + 40 m, z −15/+35 m. Nodes: ray down repeatedly per 3 m column,
+floor normal z>0.7, 1.9 m headroom, not under ocean level. Edges to 8 neighbour columns: rise ≤1.9 m,
+drop ≤3.2 m, body rays at 0.5/1.2/1.75 m, ground continuity at 4 samples (≤0.75 m step up).
+Kept across IA resets; reset on level change/disconnect/shutdown. `BotBrain::Steer` follows
+A* paths (repath on goal move >4 m, every 5 s, after 1.5 s blocked; min 0.75 s between queries);
+straight-line fallback before `NAV ready`. Risks: 3 m cell can miss narrow doors; ray-only edges ignore
+dynamic objects; no jump/strength-jump links yet.
+
+### Cover behaviour (`ef376469`, untested)
+`BotCombat::Observe` aims at the head when the chest is hidden from the eyes; `Attack` tries the
+muzzle ray to chest then head and sets `ShotBlocked()`. In ATTACKING the brain then steps
+forward/sideways after 0.4 s and flips side after 2.5 s.
+
 ## 4. Invariants (do not break)
 No fake INetChannel / OnClientConnect(0); global `IsPlayer()` unchanged; ShotValidator accepts only
 an owned bot's real non-remote projectile of its own weapon; no teleport, no direct HP writes, no
@@ -139,5 +168,7 @@ runner polls `inbox\*.json` → fresh `Claude-Job.ps1` per job (build on|both, q
 the owner's port-64110 session. `Tools/wb_log_report.py <log>` → summary + M3 verdict.
 
 ## 9. Next task
-Tactical combat quality on 6 bots (target switching, damage reaction, cover/height, suit use) with
-M4 as the regression gate; then owner playtest against bots (instructions in AI_TESTS "Owner test").
+1. Build `ef376469`, run job `j05` (6 and 15 bots), compare blocked share / ATTACKING share with the
+   baseline in §0, check `NAV ready` node/edge counts and frame cost at 15 bots.
+2. Owner playtest of the same build (navigation, cover, 15-bot load).
+3. Then: jump links in BotNav (Strength jump to roofs), cover selection, target switching, damage reaction.
