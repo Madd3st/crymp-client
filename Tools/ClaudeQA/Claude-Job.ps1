@@ -1,5 +1,5 @@
 ﻿# One Claude job. Fixed job types only (no arbitrary commands):
-#   build: on|both|none      import ClaudeQA\warsbots-multibot.bundle into ..\crymp-multibot, build
+#   build: on|both|none      fetch + build in %USERPROFILE%\WarsBotsBuild\crymp-multibot (reuses EXEs if unchanged)
 #   qa:    [{bots,seconds,tag}]  headless loopback IA server on port 64120, no client
 #   push:  ["multibot","ia-participants"]  plain (non-force) push to the user's fork feature branches
 # Game directory comes from ClaudeQA\game-dir.txt (local, not in Git).
@@ -7,7 +7,8 @@ param([Parameter(Mandatory)][string]$JobFile)
 $ErrorActionPreference = 'Continue'
 $here = $PSScriptRoot
 $repo = Split-Path $here -Parent
-$wt = Join-Path (Split-Path $repo -Parent) 'crymp-multibot'
+$root = if ($env:WARSBOTS_BUILD_ROOT) { $env:WARSBOTS_BUILD_ROOT } else { Join-Path $env:USERPROFILE 'WarsBotsBuild' }
+$wt = Join-Path $root 'crymp-multibot'
 $outbox = Join-Path $here 'outbox'
 try { $spec = Get-Content -LiteralPath $JobFile -Raw | ConvertFrom-Json } catch { $spec = $null }
 $id = if ($spec -and $spec.id) { [string]$spec.id } else { 'bad-json' }
@@ -30,7 +31,9 @@ if ($spec) {
         $bots = [Math]::Min(16, [Math]::Max(1, [int]$q.bots))
         $secs = [Math]::Min(900, [Math]::Max(30, [int]$q.seconds))
         $tag = [string]$q.tag; if ($tag -notmatch '^[A-Za-z0-9_-]{1,20}$') { $tag = 'qa' }
-        & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $here 'Claude-QA-Bots.ps1') -Bots $bots -Seconds $secs -Tag $tag
+        $qaArgs = @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $here 'Claude-QA-Bots.ps1'),'-Bots',$bots,'-Seconds',$secs,'-Tag',$tag)
+        if ($spec.expect) { $qaArgs += @('-Expect', [string]$spec.expect) }
+        & powershell @qaArgs
         Step "qa-$tag-$bots" (Get-Content -LiteralPath (Join-Path $repo "build\claude-qa\$tag.done") -ErrorAction SilentlyContinue)
     }
     foreach ($p in @($spec.push)) {

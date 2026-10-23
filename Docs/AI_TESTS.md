@@ -94,3 +94,20 @@ engine log; run `Tools/wb_log_report.py` on that file. (The engine's file-only c
 below -verbosity, so a separate file is used.) Map memory: `%USER%/WarsBots/<level>.mem`
 (per-level stuck spots and kill/death hotspots, saved every 2 min and on level end). Delete the file to
 let bots relearn a map.
+
+## Build once, test many times (ClaudeQA)
+
+- Worktree and build live OUTSIDE OneDrive: `%USERPROFILE%\WarsBotsBuild\crymp-multibot`
+  (`WARSBOTS_BUILD_ROOT` overrides). Builds inside OneDrive recompiled everything every time — even
+  untouched ThirdParty (libvorbis) with identical command hashes and unchanged sources — consistent with
+  OneDrive sync interfering with `.ninja_deps`/`.obj`. `ninja -d explain` output is kept in
+  `build\claude-multibot-compile.log` to confirm the reason of any rebuild.
+- `build\multibot-on\claude-build.json` = { sha, config, server/client SHA256 }. BUILD skips compiling
+  (`REUSE`) when the commit, configuration and EXE hashes match. QA refuses EXEs whose hash differs from
+  the manifest or whose SHA is not the job's `expect`. Jobs: `{"build":"none","qa":[...]}` = QA only.
+- `version.h` is NOT a mass-rebuild source: it is written with copy_if_different and included by two
+  .cpp files only (Client.cpp, BotManager.cpp). Expected rebuild scope per change: bot .cpp only → those
+  objects + link; `Bots/*.h` reachable from `Game.h` (BotManager.h → BotInstance.h → BotBrain.h…) → the
+  ~130 CryGame files that include Game.h. Possible later improvement: forward-declare BotManager in Game.h.
+- Client and server share Base/CryGame objects; building both costs only two links. Do not ship a
+  server-only rebuild to players: experimental bot serialization requires matching client/server builds.

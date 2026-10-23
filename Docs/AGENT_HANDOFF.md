@@ -7,6 +7,7 @@
 | `8f56ede9` | multi-bot checkpoint (registry, targeting, profiles, reset restore, fall fix) | BUILD PASS; M3/M4 SERVER-LOG PASS (§5) |
 | `6a30130a` | movement/engagement: no refusal of other floors, wider avoidance fan, 3 m drops, fire while closing (fireRange 32–65 m), abandon blocked chase | BUILD PASS (owner built it); **owner playtest**: bots see and kill well, still sometimes lost/stuck, stare at a player behind cover |
 | `ef376469` | BotNav grid graph + A*, head-aim over cover, step out when barrel blocked, QA for 15 bots | not built yet (owner's playtest ran the stale `8f56ede9`, see below) |
+| `c4c9cec2` | first BUILD PASS of the gameplay series below | QA: 6 bots 7 kills/4 min, 0.11 ms/frame; **15 bots 76 kills/5 min, 0.31 ms/frame avg, worst 0.86 ms**, 0 fall deaths, map memory loaded + saved across runs |
 | HEAD (this commit) | equip like a human on spawn/revive (IA EquipPlayer + 5 s invulnerability), weapon upgrades, Speed travel ("Shift"), travel and dodge Strength jumps, map memory (`%USER%/WarsBots/<level>.mem`: stuck spots, kill/death hotspots), console log levels (`wb_log`) | **NOT BUILT, NOT RUN** |
 
 **Owner playtest 18:30, 15 bots — it ran `8f56ede9`, not the newer code** (stale bundle on the PC;
