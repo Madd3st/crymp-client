@@ -12,6 +12,9 @@ History:
 *************************************************************************/
 #include "CryCommon/CrySystem/ISystem.h"
 #include "ShotValidator.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "Game.h"
+#endif
 #include "GameRules.h"
 
 
@@ -96,6 +99,12 @@ bool CShotValidator::ProcessHit(const HitInfo &hitInfo)
 
 	CTimeValue now=gEnv->pTimer->GetFrameStartTime();
 	int channelId=m_pGameRules->GetChannelId(hitInfo.shooterId);
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	// Invalid/untrusted channel-less hits have no pending-client queue to index.
+	if (channelId == 0)
+		return false;
+#endif
+
 
 	TShot shot(hitInfo.seq, hitInfo.weaponId, now, 0);
 	
@@ -223,6 +232,13 @@ void CShotValidator::Update()
 //------------------------------------------------------------------------
 bool CShotValidator::CanHit(const HitInfo &hit) const
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	// A server-created bullet has no client shot queue. Accept only the owned probe's
+	// actual non-remote projectile and weapon; never fabricate a channel or trust client RMIs.
+	if (gEnv->bServer && g_pGame && g_pGame->GetBotManager().GetSpawner().IsOwnedProjectileHit(hit))
+		return true;
+#endif
+
 	if (m_doingHit || (hit.shooterId==hit.targetId) || !hit.weaponId || !hit.shooterId
 		|| !m_pGameRules->GetActorByEntityId(hit.shooterId)
 		|| !m_pItemSystem->GetItem(hit.weaponId)

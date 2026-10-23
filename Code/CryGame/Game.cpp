@@ -126,6 +126,9 @@ CGame::CGame()
 
 CGame::~CGame()
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	m_botManager.Shutdown();
+#endif
 	m_pFramework->EndGameContext();
 	m_pFramework->UnregisterListener(this);
 	ReleaseScriptBinds();
@@ -344,6 +347,9 @@ bool CGame::Init(IGameFramework* pFramework)
 	}
 
 	m_pFramework->RegisterListener(this, "Game", FRAMEWORKLISTENERPRIORITY_GAME);
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	m_botManager.Initialize(m_pFramework);
+#endif
 
 	return true;
 }

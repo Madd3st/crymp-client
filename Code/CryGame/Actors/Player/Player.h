@@ -619,6 +619,26 @@ public:
 	ILINE virtual Matrix34 GetViewMatrix() const { return m_clientViewMatrix; }
 	virtual void AddAngularImpulse(const Ang3& angular, float deceleration, float duration);
 	virtual void SetAngles(const Ang3& angles);
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	// Server-owned pose, replicated without a client channel. No authority transfer.
+	void SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& aim);
+	bool IsWarsBotActor() const { return m_warsBotActor && GetChannelId()==0; }
+	void EnsureWarsBotSuit();
+	void SetWarsBotActions(bool sprint, bool moving, EStance stance);
+	void PublishWarsBotJump(bool strength);
+	bool WarsBotWeaponFiring() const;
+	virtual void SerializeSpawnInfo(TSerialize ser) override;
+	virtual ISerializableInfoPtr GetSpawnInfo() override;
+	void UpdateWarsBotMotion(float dt);
+	bool m_warsBotActor = false;
+	bool m_warsBotSprint = false, m_warsBotAirborne = false, m_warsBotStrengthJump = false;
+	uint8 m_warsBotJumpSerial = 0, m_warsBotSeenJump = 0;
+	uint8 m_warsBotStance = STANCE_STAND;
+	float m_warsBotNextNetworkLog = 0;
+	bool m_warsBotPose = false;
+	Vec3 m_warsBotDirection = Vec3(0,1,0), m_warsBotAim = Vec3(0,0,0);
+	float m_warsBotSpeed = 0;
+#endif
 	virtual Ang3 GetAngles();
 	virtual void PlayAction(const char* action, const char* extension, bool looping = false);
 	virtual void UpdateGrab(float frameTime);

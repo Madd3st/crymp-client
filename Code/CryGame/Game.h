@@ -19,6 +19,9 @@
 #endif
 
 #include <functional>
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "Bots/BotManager.h"
+#endif
 
 #include "CryCommon/CryGame/IGame.h"
 #include "CryCommon/CryAction/IGameFramework.h"
@@ -111,6 +114,11 @@ static const int GLOBAL_SERVER_NAME_KEY					=	1002;
 
 class CGame final : public IGame, public IGameFrameworkListener
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    WarsBots::BotManager m_botManager;
+public:
+    WarsBots::BotManager& GetBotManager() { return m_botManager; }
+#endif
 public:
   typedef bool (*BlockingConditionFunction)();
 public:

@@ -1,0 +1,37 @@
+# CryMP bot validation
+
+Build with MSVC x64: `Tools/Build-WarsBots.ps1 -Experimental`.
+Without that switch the option defaults OFF. Output: `build/warsbots/CryMP-{Client,Server}64.exe`.
+RC uses `/c65001` because the generated config includes an absolute resource path.
+Copy both EXEs into original Crysis 1.2.1 root (next to Game/Bin64).
+Do not use `-mod WarsBots`: CryMP embeds CryGame and rejects DLL mods.
+
+Server, from that game root (no automatic bot command):
+```text
+CryMP-Server64.exe -headless -logfile WarsBots-CryMP-Server.log +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port 64110 +sv_gamerules InstantAction +map multiplayer/ia/steelmill
+```
+For interactive console remove `-headless`. Once map readiness is confirmed, enter:
+```text
+wb_probe_local_test 1
+wb_bot_verbose 1
+wb_bot_start
+wb_bot_status
+```
+Client: `CryMP-Client64.exe -dx9 -logfile WarsBots-CryMP-Client.log +connect 127.0.0.1:64110`.
+Enter the match as a live player. Do not terminate before connection completes.
+`wb_bot_stop` cancels actions/respawn; `wb_probe_remove` removes only the owned actor.
+`wb_probe_spawn x y z` is the stationary probe; `wb_probe_revive` revives a dead one.
+Ability diagnostics: `wb_bot_abilities`, `wb_bot_gait walk|run|sprint|auto`,
+`wb_bot_jump normal|strength [delaySeconds]`, `wb_bot_suit defense|speed|strength|auto`.
+Select one alternative per command. Cloak remains explicitly isolated OFF by default.
+
+Record A create/remove/recreate, B walk/turn/idle, C aimed left/right strafe,
+D shooting while moving, E native Speed chase, F normal jump, G Strength jump with
+energy/landing, H lost/reacquired target, I real damage/death/respawn, J late second client.
+For C/E/G record successful attempts / total, server physical velocity and energy,
+client animation and any rejection. No direct HP changes, teleports or fake channels.
+Repeat cleanup/map-change checks and inspect logs for crashes/invalid actor access.
+Default OFF and runtime gate closed must leave ordinary players unaffected.
+
+Distinguish decision, executor acceptance, physical result and client display.
+Current outcomes and startup errors are in STATUS; unexecuted cases are NOT RUN.

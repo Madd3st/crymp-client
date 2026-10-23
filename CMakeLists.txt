@@ -54,6 +54,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ################################################################################
 
+option(WARSBOTS_EXPERIMENTAL_SPAWNER "Build experimental local IA WarsBots (matching clients required)." OFF)
+
 option(CRYMP_CONSOLE_APP "Enable console window with standard output." OFF)
 
 option(CRYMP_DEBUG_ALLOCATOR_ENABLED "Enable debug allocator to detect memory errors." OFF)
@@ -1219,6 +1221,21 @@ add_library(CryGame OBJECT
 )
 
 target_link_libraries(CryGame PUBLIC Base)
+if(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    target_sources(CryGame PRIVATE
+        Code/CryGame/Bots/CryMPEngineAdapter.cpp
+        Code/CryGame/Bots/BotBlackboard.cpp
+        Code/CryGame/Bots/BotBrain.cpp
+        Code/CryGame/Bots/BotCombat.cpp
+        Code/CryGame/Bots/BotLocomotion.cpp
+        Code/CryGame/Bots/BotManager.cpp
+        Code/CryGame/Bots/BotMovement.cpp
+        Code/CryGame/Bots/BotSpawner.cpp
+        Code/CryGame/Bots/BotSuit.cpp
+        Code/CryGame/Bots/BotWeapons.cpp
+    )
+    target_compile_definitions(Base PUBLIC WARSBOTS_EXPERIMENTAL_SPAWNER)
+endif()
 
 ################################################################################
 
