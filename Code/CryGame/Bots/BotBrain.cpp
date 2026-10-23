@@ -321,18 +321,20 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			++m_patrolStep;
 			IEntity* waypoint = nullptr;
 			// Every other leg, go where experience on this map says fights happen.
-			Vec3 hotspot;
+			Vec3 hotspot(0,0,0);
+			bool picked = false;
 			const bool safe = m_profile.style == BotStyle::Marksman || m_profile.style == BotStyle::Defender;
 			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot) &&
 				(hotspot - feet).GetLengthSquared2D() > 64.0f)
-			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; m_detour = false; }
+			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; picked = true; }
 			else if (count && !m_detour)
 				for (int tries = 0; tries < count && !waypoint; ++tries, ++m_patrolStep)
 				{
 					IEntity* spawn = gEnv->pEntitySystem->GetEntity(rules->GetSpawnLocation(int((m_patrolStep * 7u + unsigned(m_number) * 3u) % unsigned(count))));
 					if (spawn && (spawn->GetWorldPos() - feet).GetLengthSquared2D() > 64.0f) waypoint = spawn;
 				}
-			if (waypoint)
+			if (picked) {}
+			else if (waypoint)
 			{
 				m_patrolGoal = waypoint->GetWorldPos();
 				m_patrolUntil = m_now + 30.0f;
