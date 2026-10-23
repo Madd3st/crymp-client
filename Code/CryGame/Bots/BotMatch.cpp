@@ -37,13 +37,15 @@ bool BotMatch::Register(CGameRules& rules, IActor& actor)
     {
         if (!gEnv->pScriptSystem->ExecuteFile("Scripts/WarsBots/InstantAction.lua")) return false;
         SmartScriptTable hooks;
-        if (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsIA",hooks) ||
-            !Script::Call(gEnv->pScriptSystem,hooks,"Attach",rulesTable)) return false;
+        // CallMethod pushes the table as self: WarsBotsIA:Attach(rules) semantics preserved.
+        if (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsIA",hooks) || !hooks.GetPtr() ||
+            !Script::CallMethod(hooks.GetPtr(),"Attach",rulesTable)) return false;
         rulesTable->GetValue("warsBotsIAAttached",attached);
         if (!attached) return false;
     }
+    // Reset first: a failed call must not leave a half-registered participant flag.
+    if (!Script::CallMethod(rulesTable,"ResetScore",ScriptHandle(actor.GetEntityId()))) return false;
     actorTable->SetValue("warsBotParticipant",true);
-    if (!Script::Call(gEnv->pScriptSystem,rulesTable,"ResetScore",ScriptHandle(actor.GetEntityId()))) return false;
     // Ping is a display field, not evidence of a connection.
     int pingKey=0;
     if (rulesTable->GetValue("SCORE_PING_KEY",pingKey)) rules.SetSynchedEntityValue(actor.GetEntityId(),TSynchedKey(pingKey),0);
