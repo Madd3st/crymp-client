@@ -24,9 +24,10 @@ if ($spec) {
         & powershell @psArgs
         $done = Get-Content -LiteralPath (Join-Path $repo 'build\claude-multibot-build.done') -ErrorAction SilentlyContinue
         Step "build-$build" $done
-        if ($done -ne 'PASS') { $spec.qa = @(); $spec.push = @() }
+        $buildOk = $done -eq 'PASS'
     }
-    foreach ($q in @($spec.qa)) {
+    if ($null -eq $buildOk) { $buildOk = $true }
+    foreach ($q in @($(if ($buildOk) { $spec.qa } else { @() }))) {
         if (-not $q) { continue }
         $bots = [Math]::Min(16, [Math]::Max(1, [int]$q.bots))
         $secs = [Math]::Min(900, [Math]::Max(30, [int]$q.seconds))
@@ -36,7 +37,7 @@ if ($spec) {
         & powershell @qaArgs
         Step "qa-$tag-$bots" (Get-Content -LiteralPath (Join-Path $repo "build\claude-qa\$tag.done") -ErrorAction SilentlyContinue)
     }
-    foreach ($p in @($spec.push)) {
+    foreach ($p in @($(if ($buildOk) { $spec.push } else { @() }))) {
         if ($p -eq 'multibot') {
             $out = git -C $wt push origin 'HEAD:refs/heads/warsbots/feature/multibot' 2>&1 | Out-String
             Step 'push-multibot' "exit=$LASTEXITCODE $($out.Trim())"

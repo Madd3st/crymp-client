@@ -32,11 +32,12 @@ try {
     if ($Expect -and -not $target.StartsWith($Expect)) { throw "TARGET $target is not the expected $Expect" }
     if (-not (Test-Path -LiteralPath (Join-Path $wt '.git'))) {
         git worktree prune
-        git worktree add --force -B warsbots/feature/multibot $wt refs/remotes/claude/multibot
+        # Detached at the exact commit: the branch itself may be checked out by another worktree.
+        git worktree add --detach $wt $target
         if ($LASTEXITCODE -ne 0) { throw 'worktree add failed' }
     } else {
         if (git -C $wt status --porcelain --untracked-files=no) { throw "worktree $wt has local changes; not updating" }
-        git -C $wt checkout -B warsbots/feature/multibot refs/remotes/claude/multibot
+        git -C $wt checkout --detach $target
         if ($LASTEXITCODE -ne 0) { throw 'worktree update failed' }
     }
     Pop-Location
