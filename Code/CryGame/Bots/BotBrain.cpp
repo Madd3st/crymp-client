@@ -60,6 +60,7 @@ void BotBrain::ResetLife()
 	m_combat.Reset();
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
+	m_detour = false; m_blockedSince = 0;
 	++m_life;
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
@@ -232,17 +233,39 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		Change(State::SEARCHING_ENEMY);
 		m_blackboard.enemy=0; m_blackboard.visible=false; m_blackboard.distance=0;
 		const Vec3 feet = actor.GetEntity()->GetWorldPos();
-		if (m_now >= m_patrolUntil || (m_patrolGoal-feet).GetLengthSquared2D() < 2.0f)
+		if (m_now >= m_patrolUntil || (m_patrolGoal-feet).GetLengthSquared2D() < 4.0f)
 		{
-			// Persistent local patrol legs, not map spawn-point cycling. SafeStep gates every move.
-			const float angle = (++m_patrolStep * 2.399963f);
-			m_patrolGoal = feet + Vec3(cosf(angle),sinf(angle),0) * (6.0f + (m_patrolStep%3)*2.0f);
-			m_patrolUntil = m_now + 7.0f;
+			// Roam between the map's IA spawn points (public map knowledge, like a human's),
+			// in a per-bot order. After a blocked leg, one short local detour leg; SafeStep gates every move.
+			CGameRules* rules = g_pGame->GetGameRules();
+			const int count = rules ? rules->GetSpawnLocationCount() : 0;
+			++m_patrolStep;
+			IEntity* waypoint = nullptr;
+			if (count && !m_detour)
+				for (int tries = 0; tries < count && !waypoint; ++tries, ++m_patrolStep)
+				{
+					IEntity* spawn = gEnv->pEntitySystem->GetEntity(rules->GetSpawnLocation(int((m_patrolStep * 7u + unsigned(m_number) * 3u) % unsigned(count))));
+					if (spawn && (spawn->GetWorldPos() - feet).GetLengthSquared2D() > 64.0f) waypoint = spawn;
+				}
+			if (waypoint)
+			{
+				m_patrolGoal = waypoint->GetWorldPos();
+				m_patrolUntil = m_now + 30.0f;
+			}
+			else
+			{
+				const float angle = (m_patrolStep * 2.399963f) + m_phase;
+				m_patrolGoal = feet + Vec3(cosf(angle),sinf(angle),0) * (6.0f + (m_patrolStep%3)*2.0f);
+				m_patrolUntil = m_now + 4.0f;
+			}
+			m_detour = false;
 		}
 		m_intent.MoveTo(m_patrolGoal,m_patrolGoal+Vec3(0,0,1.3f));
 		m_intent.gait=BotGait::Run;
 		ExecuteIntent(actor,decisionTime);
-		if (m_blackboard.blocked) m_patrolUntil=min(m_patrolUntil,m_now+1.0f);
+		if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0) { m_detour=true; m_patrolUntil=m_now; m_blockedSince=0; }
+		else if (m_blackboard.blocked && m_blockedSince <= 0) m_blockedSince=m_now;
+		else if (!m_blackboard.blocked) m_blockedSince=0;
 
 		return;
 	}

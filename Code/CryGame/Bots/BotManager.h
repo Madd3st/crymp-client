@@ -78,6 +78,8 @@ public:
 
 private:
 	BotInstance* Add(const Vec3* position, BotSkill skill, const BotStyle* style, bool startAI);
+	BotInstance* AddWith(const Vec3* position, const BotProfile& profile, int number, bool startAI);
+	void RestoreRoster();
 	void RemoveInstance(BotInstance& instance);
 	void RemoveAll(const char* reason);
 	void Sweep();
@@ -119,6 +121,11 @@ private:
 	int m_selected = 0;
 	std::string m_creatingName;
 	BotInstance* m_spawning = nullptr;
+	// Game-rules restart (PreGame -> InGame) resets entities: bots are re-created with the
+	// same numbers/profiles after eAE_resetEnd instead of silently disappearing.
+	struct RosterEntry { int number; BotProfile profile; bool ai; };
+	std::vector<RosterEntry> m_roster;
+	bool m_restorePending = false;
 	std::unordered_map<EntityId, std::unique_ptr<BotInstance>> m_bots;
 	float m_nextProfileLog = 0;
 	float m_clock = 0;

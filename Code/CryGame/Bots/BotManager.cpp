@@ -238,22 +238,29 @@ BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyl
 	}
 	const int number = FreeNumber();
 	if (!number) return nullptr;
+	if (!position && !ChooseSpawnLocation(0, 0))
+	{
+		CryLogAlways("[WarsBots] Add deferred: no safe IA spawn point free of other players; try again or pass x y z.");
+		return nullptr;
+	}
+	// Default rotation through the six styles so a full roster never moves in lockstep.
+	const BotStyle chosenStyle = style ? *style : BotStyle((number - 1) % int(BotStyle::Count));
+	return AddWith(position, BotProfile::Make(chosenStyle, skill), number, startAI);
+}
+
+BotInstance* BotManager::AddWith(const Vec3* position, const BotProfile& profile, int number, bool startAI)
+{
+	if (!number || ByNumber(number) || Count() >= MaxBots()) return nullptr;
 	Vec3 where(0,0,0);
 	if (position) where = *position;
 	else
 	{
 		const EntityId spawnId = ChooseSpawnLocation(0, 0);
 		IEntity* spawn = spawnId ? gEnv->pEntitySystem->GetEntity(spawnId) : nullptr;
-		if (!spawn)
-		{
-			CryLogAlways("[WarsBots] Add deferred: no safe IA spawn point free of other players; try again or pass x y z.");
-			return nullptr;
-		}
+		if (!spawn) return nullptr;
 		where = spawn->GetWorldPos() + Vec3(0,0,0.2f);
 	}
-	// Default rotation through the six styles so a full roster never moves in lockstep.
-	const BotStyle chosenStyle = style ? *style : BotStyle((number - 1) % int(BotStyle::Count));
-	std::unique_ptr<BotInstance> bot(new BotInstance(*this, number, BotProfile::Make(chosenStyle, skill)));
+	std::unique_ptr<BotInstance> bot(new BotInstance(*this, number, profile));
 	const bool spawned = bot->Spawn(where);
 	m_spawning = nullptr;
 	if (!spawned || bot->Expired())
@@ -310,6 +317,8 @@ void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)
 
 void BotManager::OnPostUpdate(float dt)
 {
+	// Restore outside the action-event callback, once the reset level is usable again.
+	if (m_restorePending && m_levelReady && CanRunLocalIA()) RestoreRoster();
 	if (m_bots.empty()) return;
 	m_clock += dt;
 	// Stable order by display number; vector copy keeps iteration valid if a callback sweeps.
@@ -322,8 +331,8 @@ void BotManager::OnPostUpdate(float dt)
 	}
 }
 
-void BotManager::OnLevelNotFound(const char*) { EndLevel(); }
-void BotManager::OnLoadingStart(ILevelInfo*) { EndLevel(); }
+void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); EndLevel(); }
+void BotManager::OnLoadingStart(ILevelInfo*) { m_restorePending = false; m_roster.clear(); EndLevel(); }
 void BotManager::OnLoadingComplete(ILevel*) { m_levelReady = true; }
 void BotManager::OnLoadingError(ILevelInfo*, const char*) { EndLevel(); }
 void BotManager::OnLoadGame(ILoadGame*) { EndLevel(); }
@@ -331,10 +340,35 @@ void BotManager::OnLevelEnd(const char*) { EndLevel(); }
 
 void BotManager::OnActionEvent(const SActionEvent& event)
 {
-	if (event.m_event == eAE_resetBegin || event.m_event == eAE_disconnected)
+	if (event.m_event == eAE_resetBegin)
+	{
+		// Native IA restart (e.g. PreGame start timer). Remember who existed, then clean up.
+		m_roster.clear();
+		for (BotInstance* bot : Ordered())
+			m_roster.push_back({ bot->Number(), bot->Profile(), bot->AIEnabled() });
+		if (!m_roster.empty())
+			CryLogAlways("[WarsBots] Game reset: removing %d bots, will restore after reset.", int(m_roster.size()));
 		EndLevel();
+		m_restorePending = !m_roster.empty();
+	}
+	else if (event.m_event == eAE_disconnected)
+	{
+		m_roster.clear();
+		m_restorePending = false;
+		EndLevel();
+	}
 	else if (event.m_event == eAE_resetEnd && m_framework)
 		m_levelReady = m_framework->GetILevelSystem()->IsLevelLoaded();
+}
+
+void BotManager::RestoreRoster()
+{
+	m_restorePending = false;
+	int restored = 0;
+	for (const RosterEntry& entry : m_roster)
+		if (AddWith(nullptr, entry.profile, entry.number, entry.ai)) ++restored;
+	CryLogAlways("[WarsBots] Game reset: restored %d/%d bots.", restored, int(m_roster.size()));
+	m_roster.clear();
 }
 
 // ---------------------------------------------------------------- reporting
