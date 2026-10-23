@@ -2,11 +2,17 @@
 
 ## Source status
 
-- **Magumba: NOT FOUND.** Web search (2026-10-23) returned no fragmovie, channel or player page
-  under this name. Nothing below is attributed to Magumba.
-- No other fragmovie was verified in this session either (the search tool does not index YouTube
-  well). Next step: the user supplies links (YouTube/archive), or a session with the browser
-  reviews them. Each entry must get: link, timestamps, techniques, and "game mechanic vs. edit".
+- **Magumba: FOUND (user-supplied link, 2026-10-23).** "CW fragmovie called MAGUMBA",
+  https://www.youtube.com/watch?v=rGGDAkaIjRE , channel Babumbaaaa, published 2011-08-07, 4:16.
+  Description: Crysis Wars fragmovie of two Russian players, **Babumba and Magic8** (Magumba =
+  both nicknames), frags from ESL cups, ladders and gathers. ESL profiles:
+  esl.eu player 4815149 (Babumba), 4450817 (Magic8).
+- **Technique analysis: NOT DONE.** Only a 144p stream was available to the automated browser,
+  and seeking did not refresh frames; suit HUD, weapons and movement are not readable. Nothing
+  below is derived from this video yet.
+- Best data source available: Magic8 is the project owner. A first-hand description of the
+  signature patterns (suit cycles, range bands, strafe/jump timing), and later recorded server
+  logs of his own matches against bots, beat any edited video for both design and imitation data.
 
 Until then this file lists **in-engine mechanics** already confirmed in CryMP logs and how strong
 classic-MP play uses them. These are design targets, not observations from a video.
