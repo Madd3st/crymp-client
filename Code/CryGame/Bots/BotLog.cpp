@@ -1,11 +1,35 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryCommon/CrySystem/ILog.h"
+#include "CryCommon/CrySystem/ICryPak.h"
+#include "CryCommon/CrySystem/ITimer.h"
 #include <cstdarg>
 #include <cstdio>
+#include <filesystem>
+#include <string>
 
 namespace WarsBots
 {
+namespace
+{
+// Our own trace file next to the engine log: "<log name>.bots.log". The engine's file-only
+// channel drops messages below -verbosity, so telemetry would otherwise be lost.
+FILE* g_trace = nullptr;
+bool g_traceTried = false;
+unsigned g_unflushed = 0;
+
+void OpenTrace()
+{
+	g_traceTried = true;
+	const char* user = gEnv->pCryPak ? gEnv->pCryPak->GetAlias("%USER%") : nullptr;
+	const char* logName = gEnv->pLog->GetFileName();
+	std::filesystem::path base = logName && *logName ? std::filesystem::path(logName).stem() : std::filesystem::path("WarsBots");
+	std::filesystem::path dir = user && *user ? std::filesystem::path(user) : std::filesystem::path(".");
+	const std::filesystem::path path = dir / (base.wstring() + L".bots.log");
+	g_trace = _wfopen(path.c_str(), L"w");
+}
+}
+
 void Log(int level, const char* format, ...)
 {
 	if (!gEnv || !gEnv->pLog) return;
@@ -18,8 +42,13 @@ void Log(int level, const char* format, ...)
 	ICVar* cvar = gEnv->pConsole ? gEnv->pConsole->GetCVar("wb_log") : nullptr;
 	const int console = cvar ? cvar->GetIVal() : 1;
 	if (level <= console)
-		CryLogAlways("%s", buffer);      // console + file
-	else
-		gEnv->pLog->LogToFile("%s", buffer); // file only: analysable, no console spam
+		CryLogAlways("%s", buffer); // console + main log
+	if (!g_traceTried) OpenTrace();
+	if (g_trace)
+	{
+		// Full timeline (every level), timestamped, for Tools/wb_log_report.py.
+		fprintf(g_trace, "%.2f %s\n", gEnv->pTimer ? gEnv->pTimer->GetCurrTime() : 0.0f, buffer);
+		if (level <= kLogEvent || ++g_unflushed >= 64) { fflush(g_trace); g_unflushed = 0; }
+	}
 }
 }

@@ -33,4 +33,6 @@ if (-not $p.HasExited) {
     else { Stop-Process -Id $p.Id; Wait-Process -Id $p.Id -Timeout 15 -ErrorAction SilentlyContinue; $state = 'STOPPED BY QA' }
 }
 if (Test-Path -LiteralPath $gameLog) { Copy-Item -LiteralPath $gameLog -Destination (Join-Path $out $name) -Force }
+$botsLog = $gameLog -replace '\.log$', '.bots.log'
+if (Test-Path -LiteralPath $botsLog) { Copy-Item -LiteralPath $botsLog -Destination (Join-Path $out ([IO.Path]::GetFileName($botsLog))) -Force }
 Set-Content -LiteralPath $done -Value "$state log=$name"
