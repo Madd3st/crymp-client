@@ -58,6 +58,21 @@ def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None):
     if zmax is not None:                                       # drop level ceilings / sky colliders
         keep = np.minimum(np.minimum(a[:, 2], b[:, 2]), c[:, 2]) <= zmax
         a, b, c = a[keep], b[keep], c[keep]
+    # split huge triangles (level planes, terrain skirts) and drop pieces outside the bounds before sampling
+    for _ in range(12):
+        e = np.maximum(np.maximum(np.linalg.norm(b - a, axis=1), np.linalg.norm(c - b, axis=1)), np.linalg.norm(a - c, axis=1))
+        big = e > 24.0
+        if not big.any():
+            break
+        A, B, C = a[big], b[big], c[big]
+        ab, bc, ca = (A + B) / 2, (B + C) / 2, (C + A) / 2
+        na = np.concatenate([A, ab, ca, ab]); nb = np.concatenate([ab, B, bc, bc]); nc = np.concatenate([ca, bc, C, ca])
+        if bounds is not None:
+            (x0, y0), (x1, y1) = bounds
+            lo = np.minimum(np.minimum(na, nb), nc); hi = np.maximum(np.maximum(na, nb), nc)
+            k = (hi[:, 0] >= x0) & (lo[:, 0] <= x1) & (hi[:, 1] >= y0) & (lo[:, 1] <= y1)
+            na, nb, nc = na[k], nb[k], nc[k]
+        a = np.concatenate([a[~big], na]); b = np.concatenate([b[~big], nb]); c = np.concatenate([c[~big], nc])
     n = np.cross(b - a, c - a)
     ln = np.linalg.norm(n, axis=1)
     ok = ln > 1e-9
