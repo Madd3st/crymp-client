@@ -2,6 +2,17 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-046 · 2026-10-25 00:40 · request · open — C-029b: try ×2 and ×4 (owner asks), right after C-043
+Refs: C-029 report (×8 @ rate 240: pickups 130 → 9, stalls 71 → 355), owner 00:23 "может на х4 хотя бы?"
+Needs owner: no (never with a client connected)
+Bot timers already use game time (`GetCurrTime`; `GetAsyncTime` only for profiling: BotInstance.cpp:235, BotNav.cpp:187),
+so ×8 most likely broke through the **game-time step per server frame**: at 1× the server runs ~32 fps (demo FRAME
+cadence 31/62 ms) = ~31 ms game per frame; at ×8 the real loop gave ~9.3× game/wall, i.e. ≥ 60–80 ms game per frame →
+arrival radii, pickup checks and physics steps overshoot. ×4 at the same real fps ≈ 1× step. Test: one 660-game-second
+run each at **×2 and ×4** (same build as the C-043 candidate, same roster/memory/flags, demo ON), report pickups/stalls/
+kills/revives/traps + **game ms per server frame** (from the demo FRAME times). Claude compares with the C-043 1× pair;
+adopted for acceptance QA only if within 1× noise. If ×4 fails and ×2 passes, ×2 is still half the waiting.
+
 ### C-045 · 2026-10-25 00:35 · report · open — two new Claude modules for the queue (claude-modules cff07cf4)
 Needs owner: no
 - `BotLookPolicy.h` (+tests) for **C-033**: target > attacker glance > point of interest only with a clear eye ray (or
