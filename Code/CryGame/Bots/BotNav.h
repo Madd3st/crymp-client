@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include "BotReachability.h"
+#include "BotGoalProjection.h"
 
 namespace WarsBots
 {
@@ -44,7 +45,7 @@ public:
     int NodeAt(const Vec3& p) const { return Ready()?Nearest(p):-1; }
     int Component(int node) const { return m_reachability.Component(node); }
     // Unknown projection/cache is kept; only a proven graph disconnection is rejected.
-    bool KnownUnreachable(int from, const Vec3& goal, int& to) const;
+    bool KnownUnreachable(int from, const Vec3& goal, BotGoalProjection& trace) const;
     bool InClosedComponent(const Vec3& p) const { return m_reachability.Closed(NodeAt(p)); }
 	void Load(const char* level);
 	void Save() const;

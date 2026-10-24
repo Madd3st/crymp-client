@@ -406,7 +406,7 @@ bool BotNav::PickHotspot(unsigned seed, bool preferSafe, Vec3& out, const Vec3* 
     const int chosen=BotHotspot::Pick(seed,m_memory.size(),stride,[&](std::size_t i) {
         const Memory& m=m_memory[i];
         const float w=(preferSafe ? m.kills*1.5f-m.deaths*.7f : m.kills+m.deaths)-m.stuck*.5f;
-        if(w>.5f && fromNode>=0 && !m_reachability.Reaches(fromNode,int(i))){++skipped;if(first<0)first=int(i);return 0.f;}
+        if(w>.5f && fromNode>=0 && !m_reachability.Closed(fromNode) && !m_reachability.Reaches(fromNode,int(i))){++skipped;if(first<0)first=int(i);return 0.f;}
         return w;
     });
     if(skipped) WB_LOG(2,"[WarsBots] GOAL SKIP unreachable kind=hotspot actor=%u id=%d fromScc=%d toScc=%d skipped=%u",actor,first,Component(fromNode),Component(first),skipped);
@@ -420,10 +420,22 @@ bool BotNav::GoalFilterEnabled() const
     const ICVar* flag=gEnv->pConsole->GetCVar("wb_reachable_goals");
     return flag && flag->GetIVal()==1 && m_reachability.Ready();
 }
-bool BotNav::KnownUnreachable(int from,const Vec3& goal,int& to) const
+bool BotNav::KnownUnreachable(int from,const Vec3& goal,BotGoalProjection& trace) const
 {
-    to=-1;if(!GoalFilterEnabled() || from<0)return false;
-    to=NodeAt(goal);return to>=0 && !m_reachability.Reaches(from,to);
+    trace=BotGoalProjection();
+    if(!GoalFilterEnabled() || from<0 || m_reachability.Closed(from))return false;
+    const int cx=int((goal.x-m_min.x)/m_cell),cy=int((goal.y-m_min.y)/m_cell);
+    for(int dx=-2;dx<=2;++dx)for(int dy=-2;dy<=2;++dy) {
+        const auto column=m_columns.find(Key(cx+dx,cy+dy));if(column==m_columns.end())continue;
+        for(int id:column->second) {
+            const Vec3& p=m_nodes[id].pos;const float dz=fabs_tpl(p.z-goal.z);
+            if(dz>2.5f)continue;
+            // Item-origin LOS can hit the item's own geometry. This is a conservative
+            // topology test, not FindPath: retain if ANY plausible nearby floor is reachable.
+            trace.Consider(id,p.z,(p-goal).GetLengthSquared2D()+4.f*dz*dz,m_reachability.Reaches(from,id));
+        }
+    }
+    return trace.Unreachable();
 }
 void BotNav::Tick(float dt)
 {
