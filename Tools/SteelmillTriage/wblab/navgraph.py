@@ -83,7 +83,12 @@ def check(d: dict, memory=None):
 
     schema = d.get("schema")
     if schema in LEGACY_SCHEMAS:
-        return [f"schema {schema!r} must be converted first (navgraph.read_json / from_wbnav1)"], warn
+        try:
+            upgraded = from_wbnav1(d)
+        except (GraphError, KeyError, TypeError, IndexError) as ex:
+            return [f"wbnav/1 export could not be converted: {ex}"], warn
+        d.clear(); d.update(upgraded)
+        schema = SCHEMA
     if schema != SCHEMA:
         return [f"schema {schema!r} != {SCHEMA!r}"], warn
     b = d.get("build")

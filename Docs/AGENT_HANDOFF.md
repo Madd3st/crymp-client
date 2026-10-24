@@ -8,7 +8,9 @@ Commands in **b9ca22d3**, matched MSVC x64 Release experimental client/server PA
 Local loopback LAN IA gate required; manual only. Stopped/running AI state preserved.
 60s command smoke reproduces spawn195 at+5s; closed gate/invalid inputs refuse.
 22 Triage tests PASS; updated QA runner6bots60s PASS, automatic summary.json created.
-Current summary uses native steelmill-triage/1; dedicated Claude contract pending.
+Summary adapter updated to Claude31e9394b: warsbots-run-summary/1 per run.
+23 Triage tests and saved6/15-bot log replays PASS; no game/build rerun.
+Analyze stays steelmill-triage/1 for HTML. Labels encode scenario; no cross-scenario verdict.
 QA stopped and memory restored. Human me/client replication still need live check.
 [Commands, caveats and evidence](Experiments/steelmill-debug-commands-2026-10-24.md).
 B/C remain default OFF after prior pickup regression; no speed/graph/PS changes.

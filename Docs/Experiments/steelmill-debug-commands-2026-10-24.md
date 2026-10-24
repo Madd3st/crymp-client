@@ -32,9 +32,17 @@ Missing Python/tool or Triage failure fails a normally completed QA batch, and w
 without replacing the original exception during failed/interrupted QA. No runs captured
 means no summary (no invented data). Previous summary is removed before analyzer rerun.
 
-Tools/SteelmillTriage is a scoped import of649653a3, no branch merge.22 unit tests PASS;
-real660s log+wbnav/1 replay PASS. Until Claude publishes a dedicated summary contract,
-summary.json preserves native steelmill-triage/1 schema without inventing new fields.
+Tools/SteelmillTriage updated by scoped import to31e9394b, no branch merge.23 unit
+tests PASS; real saved6/15-bot log+wbnav/1 replays PASS. The adapter invokes summary
+with label/memory and the graph exported for that exact run, never another run graph.
+Compact schema is warsbots-run-summary/1; analyze remains detailed steelmill-triage/1.
+[Published contract](../Research/SteelmillTriage/SUMMARY_CONTRACT.md).
+Single-run batch writes summary.json; multi-run batches write <tag>-summary.json
+(one object per run, all beside captured logs). Labels include map,bots,requested
+duration,flags and roster. Different scenarios are not assigned a comparative verdict.
+Native absent graph is null; baseline without export never borrows candidate graph.
+Contract watchdog.episodes counts level1; sink escape can start at level2, so use
+reached_level2/self_kills as well, not episodes alone for C. No tool semantics changed.
 End-to-end six-bot60s runner PASS: build/triage-runner-b9ca22d3/summary.json
 created automatically, with both wbnav/1 exports accepted. No engine errors.
 This is a pipeline smoke, not a10-minute behavioral soak.

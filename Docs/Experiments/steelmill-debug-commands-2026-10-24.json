@@ -85,5 +85,19 @@
     "unit_tests": 22,
     "upstream": "649653a3",
     "contract": "Dedicated Claude summary contract pending; native output preserved"
+  },
+  "summary_contract_replay": {
+    "upstream": "31e9394b3f0eab13c67c367a9b336396eb6fdcb5",
+    "schema": "warsbots-run-summary/1",
+    "unit_tests": 23,
+    "single_run": "build/triage-runner-b9ca22d3/summary.json",
+    "multi_run": "build/summary-contract-replay/",
+    "checks": [
+      "distinct per-run summaries",
+      "scenario labels differ when flags differ",
+      "missing baseline graph stays null",
+      "candidate graph memory_link OK"
+    ],
+    "new_game_runs": 0
   }
 }
