@@ -72,14 +72,14 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 	return args->GetArgCount() >= first + 3 && ParseCoordinate(args->GetArg(first), position.x) &&
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
-const char* kCommands[] = { "wb_qa_time_scale", "wb_nav_audit",
+const char* kCommands[] = { "wb_demo_start", "wb_demo_stop", "wb_demo_mark", "wb_qa_time_scale", "wb_nav_audit",
 	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_bot_pace", "wb_revive_guard", "wb_spawn_exclude195", "wb_nav_knee_fix", "wb_move_trace", "wb_revive_z_test", "wb_revive_hooks_test", "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
+const char* kVariables[] = { "wb_demo_record", "wb_demo_hz", "wb_bot_pace", "wb_revive_guard", "wb_spawn_exclude195", "wb_nav_knee_fix", "wb_move_trace", "wb_revive_z_test", "wb_revive_hooks_test", "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
 }
 
 BotManager* BotManager::Self()
@@ -98,7 +98,11 @@ void BotManager::Initialize(IGameFramework* framework)
 	framework->RegisterListener(this, "WarsBots", FRAMEWORKLISTENERPRIORITY_GAME);
 	gEnv->pEntitySystem->AddSink(this);
 
+	m_demo.Initialize(framework,this);
 	IConsole* console = gEnv->pConsole;
+    console->Register("wb_demo_record",&m_demoRecord,0,0,"Opt-in server wbdemo/2 recorder; exit: diagnostic-only, default OFF");
+    console->Register("wb_demo_hz",&m_demoHz,20,0,"Diagnostic demo sample rate10..60; default20");
+    for(const char* command:{"wb_demo_start","wb_demo_stop","wb_demo_mark"})console->AddCommand(command,DemoCommand,0,"Local IA server: start [label], stop, mark <text>; optional diagnostic recording");
 	console->Register("wb_probe_local_test", &m_localTestEnabled, 0, 0,
 		"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction.");
 	console->Register("wb_bot_cloak_experimental", &m_cloakExperimental, 0, 0, "Experimental bot cloak, defaults OFF");
@@ -163,6 +167,7 @@ void BotManager::Shutdown()
 	if (!m_initialized)
 		return;
 	m_initialized = false;
+    m_demo.Shutdown();
 	for (const char* name : kCommands) gEnv->pConsole->RemoveCommand(name);
 	for (const char* name : kVariables) gEnv->pConsole->UnregisterVariable(name, true);
 	EndLevel();
@@ -207,6 +212,7 @@ bool BotManager::IsOwnedProjectileHit(const HitInfo& hit) const
 void BotManager::TraceHit(const char* phase, const HitInfo& hit)
 {
 	if (!m_framework || !gEnv->bServer) return;
+    if(m_demo.Active() && !std::strcmp(phase,"after-Lua"))m_demo.Hit(hit);
 	BotInstance* target = Find(hit.targetId);
 	BotInstance* shooter = Find(hit.shooterId);
 	if (!target && !shooter) return; // Human-vs-human hits are none of our business.
@@ -246,6 +252,7 @@ void BotManager::TraceShot(EntityId weaponId, EntityId shooter, EntityId project
 
 void BotManager::TraceKill(EntityId targetId, EntityId shooterId, bool killerEventEmitted)
 {
+    m_demo.Kill(targetId,shooterId);
 	// Map memory learns from every kill on the server, human ones included.
 	if (IEntity* victim = gEnv->pEntitySystem->GetEntity(targetId)) m_nav.ReportDeath(victim->GetWorldPos());
 	if (shooterId && shooterId != targetId)
@@ -358,6 +365,7 @@ BotInstance* BotManager::AddWith(const Vec3* position, const BotProfile& profile
 		if (!spawn) return nullptr;
 		where = spawn->GetWorldPos() + Vec3(0,0,0.2f);
 	}
+	if(m_demoRecord==1 && !m_demo.Active())m_demo.Start(nullptr,m_demoHz);
 	std::unique_ptr<BotInstance> bot(new BotInstance(*this, number, profile));
 	const bool spawned = bot->Spawn(where);
 	m_spawning = nullptr;
@@ -399,6 +407,7 @@ void BotManager::Sweep()
 
 void BotManager::EndLevel()
 {
+    m_demo.EndLevel();
     if(m_qaTimeScale!=1.f){gEnv->pTimer->SetTimeScale(1.f);m_qaTimeScale=1.f;}
 	m_levelReady = false;
 	for (BotInstance* bot : Ordered()) bot->Remove();
@@ -436,8 +445,8 @@ void BotManager::OnPostUpdate(float dt)
     m_moveTrace.Update(m_framework,*this);
 	// Restore outside the action-event callback, once the reset level is usable again.
 	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
-    if(m_nav.AuditOnly()){if(CanRunLocalIA()){m_nav.Begin();m_nav.Step(2.f);}return;}
-	if (m_bots.empty()) return;
+    if(m_nav.AuditOnly()){if(CanRunLocalIA()){m_nav.Begin();m_nav.Step(2.f);}m_demo.Update(m_demoRecord==1,m_demoHz);return;}
+	if (m_bots.empty()){m_demo.Update(m_demoRecord==1,m_demoHz);return;}
 	// Navigation graph is built lazily once bots exist, a few ms per frame; geometry survives
 	// IA game resets, so only level changes discard it.
 	if (m_levelReady && CanRunLocalIA()) { m_nav.Begin(); m_nav.Step(2.0f); m_nav.Tick(dt); }
@@ -450,6 +459,7 @@ void BotManager::OnPostUpdate(float dt)
 		StatusReport();
 		m_nextProfileLog = m_clock + 10.0f;
 	}
+    m_demo.Update(m_demoRecord==1,m_demoHz);
 }
 
 void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
@@ -824,6 +834,17 @@ void BotManager::NavExplainCommand(IConsoleCmdArgs* args)
     if(args->GetArgCount()!=3 || !ParseInt(args->GetArg(1),from) || !ParseInt(args->GetArg(2),to))
     {WB_LOG(0,"[WarsBots] Usage: wb_nav_explain <fromNode> <toNode>");return;}
     self->m_nav.Explain(from,to);
+}
+
+void BotManager::DemoCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self();if(!self || !self->CanRunLocalIA() || !gEnv->bServer || !args)return;
+    const char* command=args->GetArg(0);
+    if(!std::strcmp(command,"wb_demo_start")){
+        if(args->GetArgCount()>2)return;
+        if(self->m_demo.Start(args->GetArgCount()==2?args->GetArg(1):nullptr,self->m_demoHz))self->m_demoRecord=1;
+    }else if(!std::strcmp(command,"wb_demo_stop")){self->m_demoRecord=0;self->m_demo.Stop();}
+    else if(args->GetArgCount()>1){std::string text;for(int i=1;i<args->GetArgCount();++i){if(i>1)text+=' ';text+=args->GetArg(i);}self->m_demo.Mark(text.c_str());}
 }
 
 void BotManager::QATimeScaleCommand(IConsoleCmdArgs* args)

@@ -24,6 +24,8 @@ public:
 	bool Attack(CActor& actor, IActor& target, float now, bool verbose);
 	EntityId Target() const { return m_target; }
 	bool Visible() const { return m_visible; }
+    EntityId LastAttacker()const{return m_retaliator;}
+    bool DamageMemory(float now)const{return m_retaliator!=0 && now<m_retaliatorUntil;}
 	const Vec3& LastPosition() const { return m_lastPosition; }
 	const Vec3& LastAim() const { return m_lastAim; }
 	float SampleTime() const { return m_sampleTime; }

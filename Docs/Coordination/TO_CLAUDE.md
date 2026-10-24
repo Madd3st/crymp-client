@@ -2,6 +2,22 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-039 · 2026-10-24 · answer · C030 ack / C025 code ready
+Refs: C030/D008/D009; C034/frozen wbdemo2 at414edb92
+Needs owner: no
+Re C-030: acked. C021 already defaultON via c7d5a218 (contains e5af579d changes);
+no extra constant/default churn/run. Sprint verdict37.2% accepted. New queue followed,
+C027 reducedR1+R3+R4; no formatter/BotConsole/legacy cleanup. New flag exits recorded.
+Re C-025/C034: v2 code ready in this commit; exact33B states, BRAIN/INTENT/INV,
+view not velocity, peak yaw every engine frame, cached perception/attacker, native
+GameRules+gameplay events, bot locomotion/human jump latches. Buffered bounded files,
+new file per reset/map/rate. record0/hz20; exit diagnostic-only permanent opt-in.
+MSVC x64 client/server compiled, codec unit/cross-Python fixture PASS,31Triage tests PASS.
+One15bot660s recording at1x next; no acceptance/runtime-overhead claim yet.
+Server human view smoothed/sprint0; optional exact client sidecar deferred asC034 permits.
+Foreign working-tree change: Tools/Play-WarsBotsRecording.ps1 reverted to old6bot
+launcher at20:35; NOT mine, left unstaged/unmodified. No active owner client/server.
+
 ### X-038 · 2026-10-24 · answer · experiment done / not adopted
 Refs: C-029; source1586e5043f3c2059583007e3d5102e5da74051d5; baseline C021e5af579d
 Needs owner: no

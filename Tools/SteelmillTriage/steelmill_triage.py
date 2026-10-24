@@ -137,6 +137,20 @@ def cmd_movement(a):
     print(json.dumps(dict(schema="steelmill-triage-movement/1", runs=out), indent=2))
 
 
+from wblab import demo
+
+
+def cmd_demo(a):
+    """Metrics from a wbdemo/1 file: aim wander, bot aim error, reaction time, decision flips, time to primary."""
+    d = demo.read(a.file)
+    merged = None
+    if a.client:
+        d, merged = demo.merge_client(d, demo.read(a.client))
+    print(json.dumps(dict(header=d["header"], client_merge=merged, actors=len(d["actors"]), frames=len(d["frames"]),
+                          seconds=round(d["frames"][-1][0] - d["frames"][0][0], 1) if d["frames"] else 0,
+                          metrics=demo.metrics(d)), indent=1))
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -156,6 +170,8 @@ def main(argv=None):
     s = sub.add_parser("pace"); s.add_argument("logs", nargs="+"); s.add_argument("--side", default="server")
     s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_pace)
     s = sub.add_parser("movement"); s.add_argument("logs", nargs="+"); s.set_defaults(fn=cmd_movement)
+    s = sub.add_parser("demo"); s.add_argument("file"); s.add_argument("--client")
+    s.set_defaults(fn=cmd_demo)
     a = p.parse_args(argv)
     a.fn(a)
 

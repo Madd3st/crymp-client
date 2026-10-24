@@ -30,6 +30,13 @@ public:
 	void SetVerbose(bool enabled) { m_verbose = enabled; }
 	const char* StateName() const;
 	EntityId Target() const { return m_combat.Target(); }
+    // Read-only diagnostic snapshot, consumed after this instance's decision tick.
+    unsigned DecisionSerial()const{return m_decisionSerial;}
+    const BotIntent& Intent()const{return m_intent;}
+    const BotCombat& Combat()const{return m_combat;}
+    Vec3 NextCorner()const{return m_pathIndex<m_path.size()?m_path[m_pathIndex]:m_intent.destination;}
+    const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
+
 private:
 	void Change(State state);
 	void ResetLife();
@@ -91,6 +98,7 @@ private:
 	IEntityClass* m_previousWeaponClass = nullptr;
 	BotProfile m_profile;
 	int m_number = 0;
+    unsigned m_decisionSerial=0;
     EntityId m_actorId=0;
 	float m_phase = 0;
 	BotLocomotion m_locomotion;

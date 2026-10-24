@@ -279,6 +279,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	m_tick += dt;
 	if (m_tick < 0.1f) return; // Bound entity searches, raycasts and decisions to 10 Hz.
 	const float decisionTime = m_tick;
+    ++m_decisionSerial;
 	m_tick = 0;
 	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
 

@@ -316,6 +316,7 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 		m_number, id, Owns(id) ? 1 : 0, alive ? 1 : 0, revived ? revived->GetHealth() : -1);
 	if (alive)
 	{
+        m_owner.Demo().Revive(id,chosen);
 		if(!guardRetry)BotMatch::EquipLikePlayer(*rules, *revived);
 		m_lastSpawnLocation = chosen;
 		m_lastHealth = revived->GetHealth();

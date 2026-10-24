@@ -9,6 +9,7 @@ struct IGameFramework;
 #include "CryGame/Bots/BotInstance.h"
 #include "CryGame/Bots/BotNav.h"
 #include "CryGame/Bots/BotMoveTrace.h"
+#include "CryGame/Bots/BotDemoRecorder.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -46,6 +47,7 @@ public:
 
 	bool CanRunLocalIA() const;
 	IGameFramework* Framework() const { return m_framework; }
+    BotDemoRecorder& Demo(){return m_demo;}
 	const BotNav& Nav() const { return m_nav; }
 	BotNav& Nav() { return m_nav; }
 	int Count() const { return int(m_bots.size()); }
@@ -107,6 +109,7 @@ private:
 	static void SelectCommand(IConsoleCmdArgs* args);
 	static void NavCommand(IConsoleCmdArgs* args);
     static void NavAuditCommand(IConsoleCmdArgs* args);
+    static void DemoCommand(IConsoleCmdArgs* args);
     static void QATimeScaleCommand(IConsoleCmdArgs* args);
     static void GeometryExportCommand(IConsoleCmdArgs* args);
     static void NavExportCommand(IConsoleCmdArgs* args);
@@ -153,6 +156,8 @@ private:
     float m_qaTimeScale = 1.f;
 	BotNav m_nav;
     BotMoveTrace m_moveTrace;
+    BotDemoRecorder m_demo;
+    int m_demoRecord=0,m_demoHz=20;
 };
 #endif
 }

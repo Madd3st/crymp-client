@@ -2,6 +2,8 @@
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotLocomotion.h"
+#include "CryGame/Game.h"
+#include "CryGame/Bots/BotManager.h"
 #include "CryGame/Actors/Player/Player.h"
 #include "CryCommon/CryAction/IMovementController.h"
 
@@ -39,6 +41,7 @@ void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 	{
 		m_pending=false; m_airborne=true;
 		actor.PublishWarsBotJump(m_strength);
+        g_pGame->GetBotManager().Demo().Jump(actor.GetEntityId(),m_strength);
 		WB_LOG(2, "[WarsBots] JUMP TAKEOFF: strength=%d vz=%.2f energy=%.1f actor=%u.",m_strength?1:0,state.velocity.z,state.energy,actor.GetEntityId());
 	}
 	if (m_pending && now-m_requested>1.0f) { m_pending=false; Refused(actor,"jump_not_accepted_by_native_movement",now); }
@@ -48,6 +51,7 @@ void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 		if (state.grounded)
 		{
 			WB_LOG(2, "[WarsBots] JUMP LANDING: strength=%d rise=%.2f displacementZ=%.2f energy=%.1f actor=%u.",m_strength?1:0,m_apex-m_startZ,state.position.z-m_startZ,state.energy,actor.GetEntityId());
+            g_pGame->GetBotManager().Demo().Land(actor.GetEntityId(),m_apex-state.position.z);
 			m_airborne=false;
             if(BotPaceEnabled())state.nextJump=now+.5f;
 		}
