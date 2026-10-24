@@ -47,7 +47,7 @@ def load_obj(path, up='z'):
     return v, np.asarray(fs, dtype=np.int64).reshape(-1, 3)
 
 
-def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None):
+def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None, zmin=None):
     """Barycentric point samples of every triangle; returns xyz (n,3) float32 and walkable flag per sample."""
     a, b, c = v[f[:, 0]], v[f[:, 1]], v[f[:, 2]]
     if bounds is not None:
@@ -57,6 +57,9 @@ def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None):
         a, b, c = a[keep], b[keep], c[keep]
     if zmax is not None:                                       # drop level ceilings / sky colliders
         keep = np.minimum(np.minimum(a[:, 2], b[:, 2]), c[:, 2]) <= zmax
+        a, b, c = a[keep], b[keep], c[keep]
+    if zmin is not None:                                       # drop sea bed / under-water terrain (players swim there)
+        keep = np.maximum(np.maximum(a[:, 2], b[:, 2]), c[:, 2]) >= zmin
         a, b, c = a[keep], b[keep], c[keep]
     # split huge triangles (level planes, terrain skirts) and drop pieces outside the bounds before sampling
     for _ in range(12):
@@ -100,10 +103,10 @@ def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None):
 class WalkModel:
     """Spans = solid vertical intervals per (ix, iy) column; open spans = walkable tops with clearance."""
 
-    def __init__(self, v, f, bounds=None, zmax=None, **kw):
+    def __init__(self, v, f, bounds=None, zmax=None, zmin=None, **kw):
         self.p = dict(DEFAULTS, **kw)
         cs = self.p['cs']
-        pts, wk = _samples(v, f, cs * 0.7, math.cos(math.radians(self.p['max_slope'])), bounds, zmax)
+        pts, wk = _samples(v, f, cs * 0.7, math.cos(math.radians(self.p['max_slope'])), bounds, zmax, zmin)
         if bounds is None:
             lo, hi = pts[:, :2].min(0), pts[:, :2].max(0)
             bounds = ((float(lo[0]), float(lo[1])), (float(hi[0]), float(hi[1])))

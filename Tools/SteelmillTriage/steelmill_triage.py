@@ -155,7 +155,7 @@ def cmd_navmesh(a):
     if a.bounds:
         x0, y0, x1, y1 = (float(t) for t in a.bounds.split(","))
         bounds = ((x0, y0), (x1, y1))
-    m = navmesh.WalkModel(v, f, bounds=bounds, zmax=a.zmax, cs=a.cs, climb=a.climb, agent_r=a.radius,
+    m = navmesh.WalkModel(v, f, bounds=bounds, zmax=a.zmax, zmin=a.zmin, cs=a.cs, climb=a.climb, agent_r=a.radius,
                           agent_h=a.height, max_drop=a.max_drop, max_slope=a.slope)
     route = []
     for log in a.trace or []:
@@ -257,6 +257,7 @@ def main(argv=None):
     s.add_argument("--spawns"); s.add_argument("--items"); s.add_argument("--trace", nargs="*")
     s.add_argument("--png", help="top-view PNG of the walk model (with all links)")
     s.add_argument("--zmax", type=float, help="drop triangles entirely above (level ceilings)")
+    s.add_argument("--zmin", type=float, help="drop triangles entirely below (sea bed: players swim)")
     s.add_argument("--no-jumps", action="store_true"); s.add_argument("--jump-vh", type=float, default=4.5)
     s.add_argument("--cs", type=float, default=0.3); s.add_argument("--climb", type=float, default=0.5)
     s.add_argument("--radius", type=float, default=0.4); s.add_argument("--height", type=float, default=1.8)
