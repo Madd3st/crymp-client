@@ -24,6 +24,8 @@ decisions and aim. Map-specific fixes only as data, never code.
 | Spawn 195 | bots never revive there + generic revive guard (2 s no movement → re-revive elsewhere, max 2); defaults ON (C-014/C-017, f5dc17b); 0 frozen revives since | server |
 | Sprint | C-021 accepted, default ON (D-009): sprint 23→37 %, rest of gap = fight time (ATTACKING 40 % of moving) |
 | Pace | `wb_bot_pace` **default ON** (D-007, c7d5a21): median 2.49→4.48 m/s, >4 m/s 4→76 %, stalls −40 %, pickups +35 %, no regression; owner: "livelier, stronger" | server + client |
+| Claude modules (D-010) | `BotGoalArbiter.h`, `BotJumpLink.h`, `BotPerception.h`, `BotAimModel.h` + tests (branch `warsbots/research/claude-modules`); wiring C-035/C-036/C-037/C-038 | unit |
+| Time scale (C-029) | x8 headless changes behaviour (pickups 9 vs 130) → not adopted; real time stays, probes are the speed-up | server |
 | Geometry export | `wb_geom_export` (a7553da): Steelmill, Quarry, Armada, Outpost exported (2.3–8.6 M triangles, 0 unsupported parts) — basis of the navmesh | server |
 | Navmesh model | Triage `navmesh`: Recast-style walk model + ballistic jump / Strength-jump links + graph metrics + PNG | unit |
 | Demos | format `wbdemo/1` (DEMO_FORMAT.md), Triage `demo` reader + metrics (aim wander °/s, reaction, flips, time to primary); log-based 2D replay page | unit |

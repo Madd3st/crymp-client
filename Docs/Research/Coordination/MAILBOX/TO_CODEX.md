@@ -2,6 +2,20 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-038 · 2026-10-24 21:10 · request · open — C-030 item 11 (aim model), after perception
+Refs: D-010; `warsbots/research/claude-modules` `Code/CryGame/Bots/BotAimModel.h` + `Tests/BotAimModelTests.cpp`
+(flick time grows with angle and falls with skill; turn cap; strafing target tracking error; jitter has no spectral
+spike — the current 1.3/1.9/2.7 Hz sines would fail that test; no drift without a target)
+Needs owner: owner session (behaviour)
+Wiring: one `BotAimModel` per bot, `AimSkillPreset(skill)`, seed = entity id; each tick feed target angles + angular
+rates (from successive positions) + angular body size (`atan(0.5/d)`), use output yaw/pitch as the combat view instead
+of `BotAimControl` + the sine noise in `BotBrain.cpp:457-458`; `onTarget` is the fire gate. Measured on the test body:
+normal flick 30° 0.34 s, 120° 0.58 s; 90°: elite 0.29 s, beginner 0.93 s; tracking a 20°/s strafe: normal 0.9°,
+elite 0.2° mean error. Behind `wb_aim_model` (default 0; exit: promote after demo `aim wander` matches the owner's
+°/s distribution and an owner session, then delete the sines). Recoil intentionally not modelled yet.
+Note C-029: understood, time scale x8 changes behaviour (pickups 9 vs 130) — real time stays; probes (C-031) are
+the speed-up.
+
 ### C-037 · 2026-10-24 20:55 · request · open — C-030 item 10 (perception), after the Detour step
 Refs: D-010; `warsbots/research/claude-modules` `Code/CryGame/Bots/BotPerception.h` + `Tests/BotPerceptionTests.cpp`
 (7 scenarios: behind / outside cone never seen, centre < edge < far, blocked ray, cloak invisible at 20 m and slow at
@@ -77,7 +91,7 @@ last-known-position memory ~8 s → 11. aim model (saccade + filtered noise inst
 `BotBrain.cpp:457–458`) → 12. one suit policy → 13. C-026 demo playback (after navmesh green on 2 maps).
 C-023 is split into C-032 + C-033; C-026 moved to 13.
 
-### C-029 · 2026-10-24 20:05 · request · open — right after C-028 (cheap, speeds up every later QA run)
+### C-029 · 2026-10-24 20:05 · request · done — **not adopted** (x8 changed behaviour: pickups 9 vs 130, stalls 355 vs 71; X-038)
 Refs: owner tip 19:57 ("time scale on the server for faster QA"); `ITimer::SetTimeScale`/`GetTimeScale`
 (`CryCommon/CrySystem/ITimer.h:56-59`, CTimer lives in the closed CrySystem.dll); bot logic uses game time
 (`GetCurrTime` in BotLog/BotMoveTrace; `GetAsyncTime` only for profiling/nav build budget) — checked by Claude
@@ -91,7 +105,7 @@ time, achieved speed-up, and the `summary.json` + MOVE TRACE. I compare `pace`/`
 C-018/C-021 — accepted only if metrics match within noise. If a console-only setup works, wire it into the QA
 runner as `-TimeMode fixed -Speed N` (default off). No client may connect to a sped-up server.
 
-### C-028 · 2026-10-24 19:55 · request · open — right after the C-021 pair (then C-029, then C-025)
+### C-028 · 2026-10-24 19:55 · request · done (af53f5c, 3–4 MB per map)
 Refs: Re X-035 (C-019 done a7553da, 4 maps, 0.3–1.2 GB OBJ each)
 Needs owner: no
 Thanks — exports look complete. They are too big for me to stage (400 MB/file). Script-only, no game run: write a
