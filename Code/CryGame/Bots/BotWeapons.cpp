@@ -91,6 +91,8 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
     BotGoalProjection firstTrace;Vec3 firstGoal(0,0,0);
 	NavMeshCore* mesh = CurrentNavMesh();
 	const float meshFrom[3] = {origin.x, origin.y, origin.z};
+	float meshSnap[3];
+	if (mesh && !mesh->Project(meshFrom, meshSnap)) mesh = nullptr; // we stand off the mesh: no filtering, old behaviour
 	int meshRejected = 0;
 	HeldWeapon held[8]; int heldCount = 0;
 	const bool ranked = BotConfig::Get().weaponRank == 1;

@@ -470,6 +470,8 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			const bool safe = m_profile.style == BotStyle::Marksman || m_profile.style == BotStyle::Defender;
 			NavMeshCore* mesh = CurrentNavMesh();
 			const float from[3] = {feet.x, feet.y, feet.z};
+			float snap[3];
+			if (mesh && !mesh->Project(from, snap)) mesh = nullptr; // off the mesh: keep the old goal choice
 			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q); };
 			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot, &feet, actor.GetEntityId()) &&
 				(hotspot - feet).GetLengthSquared2D() > 64.0f && reachable(hotspot))
