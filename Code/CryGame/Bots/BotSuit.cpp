@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "BotConfig.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotSuit.h"
@@ -8,8 +9,8 @@ namespace WarsBots
 {
 bool BotSuit::CloakEnabled()
 {
-	ICVar* flag = gEnv->pConsole->GetCVar("wb_bot_cloak_experimental");
-	return flag && flag->GetIVal() == 1;
+	const int& flag=BotConfig::Get().cloakExperimental;
+	return flag==1;
 }
 bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float now)
 {

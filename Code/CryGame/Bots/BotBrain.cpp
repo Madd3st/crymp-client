@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "BotConfig.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotBrain.h"
@@ -295,8 +296,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		ExecuteIntent(actor,decisionTime); return;
 	}
 	m_testGait=-1;
-    ICVar* qaWeapon=gEnv->pConsole->GetCVar("wb_qa_socom_only");
-    const bool socomQA=qaWeapon && qaWeapon->GetIVal()==1 && bot.CanRunLocalIA();
+    const int& qaWeapon=BotConfig::Get().qaSocomOnly;
+    const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
     if (socomQA && (!actor.GetCurrentItem() ||
         strcmp(actor.GetCurrentItem()->GetEntity()->GetClass()->GetName(),"SOCOM") ||
         !BotWeapons::Current(actor) || !BotWeapons::HasAmmunition(actor,*BotWeapons::Current(actor)))) {
@@ -573,8 +574,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
 }
 bool BotBrain::NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect)
 {
-	ICVar* experiment=gEnv->pConsole->GetCVar("wb_progress_experiment");
-	if (!experiment || experiment->GetIVal()!=1) { m_progress.Reset(); return false; }
+	const int& experiment=BotConfig::Get().progressExperiment;
+	if (experiment!=1) { m_progress.Reset(); return false; }
 	if (!m_blackboard.canMove) { m_progress.Reset(); return false; }
 	const Vec3 p=actor.GetEntity()->GetWorldPos();
 	const float timeout=6.0f-2.0f*m_profile.targetJudgement;
@@ -587,13 +588,13 @@ bool BotBrain::NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool pro
 
 bool BotBrain::RecoverTrap(CPlayer& actor)
 {
-    ICVar* enabled=gEnv->pConsole->GetCVar("wb_trap_recovery");
-    if (!enabled || enabled->GetIVal()!=1 || !gEnv->bServer ||
+    const int& enabled=BotConfig::Get().trapRecovery;
+    if (enabled!=1 || !gEnv->bServer ||
         !g_pGame->GetBotManager().Owns(actor.GetEntityId()) || !g_pGame->GetBotManager().CanRunLocalIA())
     { m_trap.Reset(); m_trapStepUntil=0; return false; }
     const Vec3 p=actor.GetEntity()->GetWorldPos();
-    const ICVar* sinkFlag=gEnv->pConsole->GetCVar("wb_sink_escape");
-    const bool sinkEnabled=sinkFlag && sinkFlag->GetIVal()==1;
+    const int& sinkFlag=BotConfig::Get().sinkEscape;
+    const bool sinkEnabled=sinkFlag==1;
     if(m_trap.Age(m_now)<7.f){m_trapComponentChecked=false;m_trapClosed=false;}
     if(sinkEnabled && !m_trapComponentChecked && m_trap.Age(m_now)>=7.f)
     {

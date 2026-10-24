@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "BotConfig.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotNav.h"
 #include "CryGame/Bots/BotLog.h"
@@ -430,8 +431,8 @@ bool BotNav::PickHotspot(unsigned seed, bool preferSafe, Vec3& out, const Vec3* 
     if(m_auditOnly)return false;
 	if (m_phase != Phase::Ready || m_memory.empty()) return false;
 	// Reservoir-style weighted pick over nodes with fight history; cheap enough at 10 Hz/bots.
-    const ICVar* all=gEnv->pConsole->GetCVar("wb_hotspot_all_nodes");
-    const std::size_t stride=all && all->GetIVal()==1 ? 1 : 2;
+    const int& all=BotConfig::Get().hotspotAllNodes;
+    const std::size_t stride=all==1 ? 1 : 2;
     const int fromNode=from && GoalFilterEnabled()?NodeAt(*from):-1;
     unsigned skipped=0;int first=-1;
     const int chosen=BotHotspot::Pick(seed,m_memory.size(),stride,[&](std::size_t i) {
@@ -448,8 +449,8 @@ bool BotNav::PickHotspot(unsigned seed, bool preferSafe, Vec3& out, const Vec3* 
 
 bool BotNav::GoalFilterEnabled() const
 {
-    const ICVar* flag=gEnv->pConsole->GetCVar("wb_reachable_goals");
-    return flag && flag->GetIVal()==1 && m_reachability.Ready();
+    const int& flag=BotConfig::Get().reachableGoals;
+    return flag==1 && m_reachability.Ready();
 }
 bool BotNav::KnownUnreachable(int from,const Vec3& goal,BotGoalProjection& trace) const
 {
@@ -471,9 +472,9 @@ bool BotNav::KnownUnreachable(int from,const Vec3& goal,BotGoalProjection& trace
 void BotNav::Tick(float dt)
 {
 	if (m_phase != Phase::Ready) return;
-    const ICVar* filter=gEnv->pConsole->GetCVar("wb_reachable_goals");
-    const ICVar* escape=gEnv->pConsole->GetCVar("wb_sink_escape");
-    if(!m_componentsAttempted && ((filter && filter->GetIVal()==1) || (escape && escape->GetIVal()==1)))
+    const int& filter=BotConfig::Get().reachableGoals;
+    const int& escape=BotConfig::Get().sinkEscape;
+    if(!m_componentsAttempted && ((filter==1) || (escape==1)))
     {
         m_componentsAttempted=true;const CTimeValue start=gEnv->pTimer->GetAsyncTime();
         std::vector<std::vector<int>> graph(m_nodes.size());

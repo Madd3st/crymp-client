@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "BotConfig.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotDataPath.h"
 #include "CryCommon/CrySystem/ILog.h"
@@ -40,8 +41,8 @@ void Log(int level, const char* format, ...)
 	_vsnprintf(buffer, sizeof(buffer) - 1, format, args);
 	va_end(args);
 	buffer[sizeof(buffer) - 1] = '\0';
-	ICVar* cvar = gEnv->pConsole ? gEnv->pConsole->GetCVar("wb_log") : nullptr;
-	const int console = cvar ? cvar->GetIVal() : 1;
+	const BotConfig& config=BotConfig::Get();
+	const int console = config.registered ? config.logLevel : 1;
 	if (level <= console)
 		CryLogAlways("%s", buffer); // console + main log
 	if (!g_traceTried) OpenTrace();

@@ -10,6 +10,7 @@ struct IGameFramework;
 #include "CryGame/Bots/BotNav.h"
 #include "CryGame/Bots/BotMoveTrace.h"
 #include "CryGame/Bots/BotDemoRecorder.h"
+#include "CryGame/Bots/BotConfig.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -137,11 +138,6 @@ private:
 	bool m_levelReady = false;
     mutable bool m_spawnExcludeLogged=false;
 	bool m_defaultVerbose = false;
-	int m_localTestEnabled = 0;
-	int m_cloakExperimental = 0;
-	int m_maxBots = 6;
-	int m_logLevel = 1;
-	int m_skill = int(BotSkill::Normal);
 	int m_selected = 0;
 	std::string m_creatingName;
 	BotInstance* m_spawning = nullptr;
@@ -157,7 +153,7 @@ private:
 	BotNav m_nav;
     BotMoveTrace m_moveTrace;
     BotDemoRecorder m_demo;
-    int m_demoRecord=0,m_demoHz=20;
+    BotConfig& m_config=BotConfig::Get();
 };
 #endif
 }

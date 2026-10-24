@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include "BotConfig.h"
 #include "BotMoveTrace.h"
 #include "BotManager.h"
 #include "BotLog.h"
@@ -10,9 +11,9 @@
 namespace WarsBots {
 void BotMoveTrace::Update(IGameFramework* framework,const BotManager& manager)
 {
- const ICVar* flag=gEnv->pConsole->GetCVar("wb_move_trace");
+ const int& flag=BotConfig::Get().moveTrace;
  CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
- const bool enabled=flag && flag->GetIVal()==1 && framework && rules &&
+ const bool enabled=flag==1 && framework && rules &&
   !std::strcmp(rules->GetEntity()->GetClass()->GetName(),"InstantAction") &&
   (gEnv->bServer?manager.CanRunLocalIA():gEnv->bMultiplayer);
  if(!enabled){if(m_clock.active)Reset();return;}

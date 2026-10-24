@@ -3,6 +3,7 @@
 #include "BotDemoCodec.h"
 #include "BotDataPath.h"
 #include "BotManager.h"
+#include "BotConfig.h"
 #include "BotLog.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
@@ -106,7 +107,16 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
   do{path=DataDirectory(L"Demos")/(key+"-"+stamp+(tag.empty()?"":"-"+tag)+"-"+std::to_string(++fileSerial)+".wbdemo");}while(std::filesystem::exists(path));
   file=_wfopen(path.c_str(),L"wb");if(!file)throw std::runtime_error("cannot create demo");setvbuf(file,nullptr,_IOFBF,65536);
   nlohmann::json flags=nlohmann::json::object();
-  for(const char* name:{"wb_bot_pace","wb_spawn_exclude195","wb_revive_guard","wb_trap_recovery","wb_reachable_goals","wb_sink_escape","wb_progress_experiment","wb_move_trace","wb_qa_socom_only"})if(ICVar* c=gEnv->pConsole->GetCVar(name))flags[name]=c->GetIVal();
+  const BotConfig& config=BotConfig::Get();
+  flags["wb_bot_pace"]=config.botPace;
+  flags["wb_spawn_exclude195"]=config.spawnExclude195;
+  flags["wb_revive_guard"]=config.reviveGuard;
+  flags["wb_trap_recovery"]=config.trapRecovery;
+  flags["wb_reachable_goals"]=config.reachableGoals;
+  flags["wb_sink_escape"]=config.sinkEscape;
+  flags["wb_progress_experiment"]=config.progressExperiment;
+  flags["wb_move_trace"]=config.moveTrace;
+  flags["wb_qa_socom_only"]=config.qaSocomOnly;
   flags["wb_demo_record"]=1;flags["wb_demo_hz"]=hz;
   std::string server=gEnv->pLog?std::filesystem::path(gEnv->pLog->GetFileName()).stem().string():"local";
   const std::string header=nlohmann::json({{"map",map},{"build",CRYMP_GIT_SHA},{"started",iso},{"hz",hz},{"server",server},{"navmesh","none"},{"flags",flags}}).dump();

@@ -2,6 +2,7 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotManager.h"
+#include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Bots/BotGeometryExport.h"
 #include "version.h"
 #include "CryGame/Bots/BotCombat.h"
@@ -27,23 +28,9 @@ namespace WarsBots
 {
 namespace
 {
-int g_progressExperiment=0;
-int g_trapRecovery=0;
-int g_physicsDiagnostics=0;
-int g_moveTrace=0;
-int g_navKneeFix=0;
-int g_spawnExclude195=1;
-int g_reviveGuard=1;
-int g_botPace=1;
-float g_reviveZTest=-2.f;
-int g_reviveHooksTest=0;
-int g_reachableGoals=0;
-int g_sinkEscape=0;
-int g_hotspotAllNodes=0;
-int g_fireDiagnostics=0, g_fireBudget=20000;
-int g_qaSocomOnly=0;
+int g_fireBudget=20000;
 bool FireTrace() {
-    if (!g_fireDiagnostics || !gEnv->bServer || g_fireBudget<=0) return false;
+    if (!BotConfig::Get().fireDiagnostics || !gEnv->bServer || g_fireBudget<=0) return false;
     if (--g_fireBudget==0) WB_LOG(1,"[WarsBots] FIRE TRACE capped; remaining episode context incomplete.");
     return true;
 }
@@ -79,7 +66,6 @@ const char* kCommands[] = { "wb_demo_start", "wb_demo_stop", "wb_demo_mark", "wb
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_demo_record", "wb_demo_hz", "wb_bot_pace", "wb_revive_guard", "wb_spawn_exclude195", "wb_nav_knee_fix", "wb_move_trace", "wb_revive_z_test", "wb_revive_hooks_test", "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
 }
 
 BotManager* BotManager::Self()
@@ -100,32 +86,10 @@ void BotManager::Initialize(IGameFramework* framework)
 
 	m_demo.Initialize(framework,this);
 	IConsole* console = gEnv->pConsole;
-    console->Register("wb_demo_record",&m_demoRecord,0,0,"Opt-in server wbdemo/2 recorder; exit: diagnostic-only, default OFF");
-    console->Register("wb_demo_hz",&m_demoHz,20,0,"Diagnostic demo sample rate10..60; default20");
+    m_config.Register(*console);
+
     for(const char* command:{"wb_demo_start","wb_demo_stop","wb_demo_mark"})console->AddCommand(command,DemoCommand,0,"Local IA server: start [label], stop, mark <text>; optional diagnostic recording");
-	console->Register("wb_probe_local_test", &m_localTestEnabled, 0, 0,
-		"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction.");
-	console->Register("wb_bot_cloak_experimental", &m_cloakExperimental, 0, 0, "Experimental bot cloak, defaults OFF");
-    console->Register("wb_hotspot_all_nodes", &g_hotspotAllNodes, 0, 0, "Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak.");
-    console->Register("wb_sink_escape", &g_sinkEscape, 0, 0, "Opt-in physical escape at8s in closed SCCs; requires trap recovery1; default OFF.");
-    console->Register("wb_reachable_goals", &g_reachableGoals, 0, 0, "Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF.");
-    console->Register("wb_revive_z_test", &g_reviveZTest, -2.f, 0, "Manual revive only: -2 legacy0.2 default; 0 or0.2 explicit; -1 native selector offset for same spawn.");
-    console->Register("wb_revive_hooks_test", &g_reviveHooksTest, 0, 0, "Manual BOT revive only: bit1 Spawned, bit2 UpdateAreas; default0; no automatic lifecycle change.");
-    console->Register("wb_bot_pace", &g_botPace, 1, 0, "C018 native pace: stance speed,sprint40/20,Speed130/60,Strength70; default ON; set0 for legacy pace.");
-    console->Register("wb_revive_guard", &g_reviveGuard, 1, 0, "C014 candidate safety:2s post-revive check, max2 native retries; no kill/score change.");
-    console->Register("wb_spawn_exclude195", &g_spawnExclude195, 1, 0, "C014 candidate safety: automatic bot spawn selection excludes195; humans/manual debug unaffected.");
-    console->Register("wb_nav_knee_fix", &g_navKneeFix, 0, 0, "Export-only audit requested variant:0 OFF,1 knee0.8,2 conditional step; latched by wb_nav_audit; never normal AI.");
-    console->Register("wb_move_trace", &g_moveTrace, 0, 0, "Opt-in4Hz human/bot motion trace, frame-latched jumps/landings; IA only, default OFF,200000line cap.");
-    console->Register("wb_physics_diagnostics", &g_physicsDiagnostics, 0, 0, "Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF.");
-    console->Register("wb_trap_recovery", &g_trapRecovery, 0, 0, "Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak.");
-	console->Register("wb_progress_experiment", &g_progressExperiment, 0, 0,
-		"Experimental stationary-combat recovery: 0 OFF (default), 1 ON; local IA bots only.");
-    console->Register("wb_qa_socom_only", &g_qaSocomOnly, 0, 0, "Local IA test only: suppress weapon upgrades/fallback, retain native SOCOM/ammo; default OFF.");
-    console->Register("wb_fire_diagnostics", &g_fireDiagnostics, 0, 0, "Opt-in shot/hit diagnostics; at most 20000 records per level; default OFF.");
-	console->Register("wb_log", &m_logLevel, 1, 0, "WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file.");
-	console->Register("wb_maxbots", &m_maxBots, 6, 0, "Maximum simultaneous WarsBots (1..16, default 6)");
-	console->Register("wb_skill", &m_skill, int(BotSkill::Normal), 0,
-		"Default skill for wb_add: 0 beginner, 1 normal, 2 veteran, 3 elite");
+
     console->AddCommand("wb_watch", WatchCommand, 0, "Spectators only: wb_watch list|<botNumber>|next|prev|status|off; native F1 toggles first person");
     console->AddCommand("wb_watch_info", WatchInfoCommand, 0, "Local IA server only: decisions of bots followed by real spectators");
     console->AddCommand("wb_watch_check", WatchCheckCommand, 0, "Local IA server/no clients: assert native Lua spectator selection without changing any actor");
@@ -159,7 +123,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_bot_suit", BotAbilityCommand, 0, "wb_bot_suit defense|speed|strength|cloak|auto: selected bot");
 	console->AddCommand("wb_bot_abilities", BotAbilityCommand, 0, "Ability and physical state of the selected bot");
 	WB_LOG(0, "[WarsBots] BotManager initialized (build " CRYMP_VERSION_STRING "): registry by EntityId, limit wb_maxbots=%d (hard %d); gate wb_probe_local_test=0; no automatic spawn.",
-		m_maxBots, kHardLimit);
+		m_config.maxBots, kHardLimit);
 }
 
 void BotManager::Shutdown()
@@ -169,7 +133,7 @@ void BotManager::Shutdown()
 	m_initialized = false;
     m_demo.Shutdown();
 	for (const char* name : kCommands) gEnv->pConsole->RemoveCommand(name);
-	for (const char* name : kVariables) gEnv->pConsole->UnregisterVariable(name, true);
+	m_config.Unregister(*gEnv->pConsole);
 	EndLevel();
 	m_nav.Reset();
 	gEnv->pEntitySystem->RemoveSink(this);
@@ -265,12 +229,12 @@ void BotManager::TraceKill(EntityId targetId, EntityId shooterId, bool killerEve
 
 bool BotManager::CanRunLocalIA() const
 {
-	return CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_localTestEnabled, false);
+	return CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, false);
 }
 
 int BotManager::MaxBots() const
 {
-	return clamp_tpl(m_maxBots, 1, kHardLimit);
+	return clamp_tpl(m_config.maxBots, 1, kHardLimit);
 }
 
 EntityId BotManager::ChooseSpawnLocation(EntityId self, EntityId avoid, const std::vector<EntityId>* rejected) const
@@ -285,7 +249,7 @@ EntityId BotManager::ChooseSpawnLocation(EntityId self, EntityId avoid, const st
 		for (int i = 0; i < count; ++i)
 		{
 			const EntityId candidate = rules->GetSpawnLocation((start + i) % count);
-            if(g_spawnExclude195==1 && candidate==195){
+            if(BotConfig::Get().spawnExclude195==1 && candidate==195){
                 if(!m_spawnExcludeLogged){WB_LOG(0,"[WarsBots] SPAWN EXCLUDE id=195 reason=revive_freeze");m_spawnExcludeLogged=true;}
                 continue;
             }
@@ -334,7 +298,7 @@ BotInstance* BotManager::Selected() const
 BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyle* style, bool startAI)
 {
     if(m_nav.AuditOnly()){WB_LOG(0,"[WarsBots] Add refused: export-only NAV AUDIT active");return nullptr;}
-	if (!CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_localTestEnabled, true))
+	if (!CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, true))
 		return nullptr;
 	if (Count() >= MaxBots())
 	{
@@ -365,7 +329,7 @@ BotInstance* BotManager::AddWith(const Vec3* position, const BotProfile& profile
 		if (!spawn) return nullptr;
 		where = spawn->GetWorldPos() + Vec3(0,0,0.2f);
 	}
-	if(m_demoRecord==1 && !m_demo.Active())m_demo.Start(nullptr,m_demoHz);
+	if(m_config.demoRecord==1 && !m_demo.Active())m_demo.Start(nullptr,m_config.demoHz);
 	std::unique_ptr<BotInstance> bot(new BotInstance(*this, number, profile));
 	const bool spawned = bot->Spawn(where);
 	m_spawning = nullptr;
@@ -445,8 +409,8 @@ void BotManager::OnPostUpdate(float dt)
     m_moveTrace.Update(m_framework,*this);
 	// Restore outside the action-event callback, once the reset level is usable again.
 	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
-    if(m_nav.AuditOnly()){if(CanRunLocalIA()){m_nav.Begin();m_nav.Step(2.f);}m_demo.Update(m_demoRecord==1,m_demoHz);return;}
-	if (m_bots.empty()){m_demo.Update(m_demoRecord==1,m_demoHz);return;}
+    if(m_nav.AuditOnly()){if(CanRunLocalIA()){m_nav.Begin();m_nav.Step(2.f);}m_demo.Update(m_config.demoRecord==1,m_config.demoHz);return;}
+	if (m_bots.empty()){m_demo.Update(m_config.demoRecord==1,m_config.demoHz);return;}
 	// Navigation graph is built lazily once bots exist, a few ms per frame; geometry survives
 	// IA game resets, so only level changes discard it.
 	if (m_levelReady && CanRunLocalIA()) { m_nav.Begin(); m_nav.Step(2.0f); m_nav.Tick(dt); }
@@ -459,7 +423,7 @@ void BotManager::OnPostUpdate(float dt)
 		StatusReport();
 		m_nextProfileLog = m_clock + 10.0f;
 	}
-    m_demo.Update(m_demoRecord==1,m_demoHz);
+    m_demo.Update(m_config.demoRecord==1,m_config.demoHz);
 }
 
 void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
@@ -527,7 +491,7 @@ void BotManager::StatusReport()
 		worst = max(worst, bot->MaxUpdateMs());
 	}
 	WB_LOG(0, "[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u progressExperiment=%d (since last report).",
-		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount(), g_progressExperiment);
+		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount(), BotConfig::Get().progressExperiment);
 	for (BotInstance* bot : Ordered()) bot->ResetProfile();
 }
 
@@ -666,7 +630,7 @@ void BotManager::AddCommand(IConsoleCmdArgs* args)
 	BotManager* self = Self();
 	if (!self || !args || !gEnv->bServer) return;
 	int count = 1;
-	BotSkill skill = BotSkill(clamp_tpl(self->m_skill, 0, int(BotSkill::Count) - 1));
+	BotSkill skill = BotSkill(clamp_tpl(self->m_config.skill, 0, int(BotSkill::Count) - 1));
 	BotStyle style = BotStyle::Universal;
 	const bool styleGiven = args->GetArgCount() >= 4;
 	if ((args->GetArgCount() >= 2 && (!ParseInt(args->GetArg(1), count) || count < 1 || count > kHardLimit)) ||
@@ -793,18 +757,18 @@ void BotManager::ReviveAtCommand(IConsoleCmdArgs* args)
     {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: non-spectator actor with inventory, no vehicle/freeze required");return;}
     const EntityId id=actor->GetEntityId();
     float offset=.2f;
-    if(g_reviveZTest==-1.f) {
+    if(BotConfig::Get().reviveZTest==-1.f) {
         bool matched=false;EntityId selected=0;int tries=0;
         for(;tries<128;++tries) {selected=rules->GetSpawnLocation(id,true,true,0,0,Vec3(0,0,0),&offset,0);if(selected==spawn->GetId()){matched=true;break;}}
         WB_LOG(0,"[WarsBots] DEBUG NATIVE OFFSET requested=%d selected=%u matched=%d attempts=%d z=%.3f",spawnNumber,selected,matched?1:0,std::min(tries+1,128),offset);
         if(!matched)return; // Never apply another spawn's native offset to this one.
-    } else if(g_reviveZTest==0.f || fabs_tpl(g_reviveZTest-.2f)<.0001f)offset=g_reviveZTest;
-    else if(g_reviveZTest!=-2.f) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: z test must be -2,-1,0,0.2");return;}
-    if(g_reviveHooksTest<0 || g_reviveHooksTest>3) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: hook mask must be0..3");return;}
+    } else if(BotConfig::Get().reviveZTest==0.f || fabs_tpl(BotConfig::Get().reviveZTest-.2f)<.0001f)offset=BotConfig::Get().reviveZTest;
+    else if(BotConfig::Get().reviveZTest!=-2.f) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: z test must be -2,-1,0,0.2");return;}
+    if(BotConfig::Get().reviveHooksTest<0 || BotConfig::Get().reviveHooksTest>3) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: hook mask must be0..3");return;}
     const Vec3 position=spawn->GetWorldPos()+Vec3(0,0,offset); const Ang3 angles(spawn->GetWorldRotation());
     const bool running=bot && bot->AIEnabled();
     if(running)bot->Brain().Stop(*bot);
-    WB_LOG(0,"[WarsBots] DEBUG REVIVE actor=%u bot=%d spawnId=%d manual=1 nativeKill=%d zOffset=%.3f hooks=%d",id,bot?bot->Number():0,spawnNumber,actor->GetHealth()>0?1:0,offset,bot?g_reviveHooksTest:0);
+    WB_LOG(0,"[WarsBots] DEBUG REVIVE actor=%u bot=%d spawnId=%d manual=1 nativeKill=%d zOffset=%.3f hooks=%d",id,bot?bot->Number():0,spawnNumber,actor->GetHealth()>0?1:0,offset,bot?BotConfig::Get().reviveHooksTest:0);
     if(actor->GetHealth()>0)rules->KillPlayer(actor,false,true,id,0,float(actor->GetHealth()),0,0,Vec3(0,0,0));
     // Kill callbacks may remove an entity; never use a stale actor pointer.
     CActor* current=static_cast<CActor*>(self->m_framework->GetIActorSystem()->GetActor(id));
@@ -842,8 +806,8 @@ void BotManager::DemoCommand(IConsoleCmdArgs* args)
     const char* command=args->GetArg(0);
     if(!std::strcmp(command,"wb_demo_start")){
         if(args->GetArgCount()>2)return;
-        if(self->m_demo.Start(args->GetArgCount()==2?args->GetArg(1):nullptr,self->m_demoHz))self->m_demoRecord=1;
-    }else if(!std::strcmp(command,"wb_demo_stop")){self->m_demoRecord=0;self->m_demo.Stop();}
+        if(self->m_demo.Start(args->GetArgCount()==2?args->GetArg(1):nullptr,self->m_config.demoHz))self->m_config.demoRecord=1;
+    }else if(!std::strcmp(command,"wb_demo_stop")){self->m_config.demoRecord=0;self->m_demo.Stop();}
     else if(args->GetArgCount()>1){std::string text;for(int i=1;i<args->GetArgCount();++i){if(i>1)text+=' ';text+=args->GetArg(i);}self->m_demo.Mark(text.c_str());}
 }
 
@@ -894,7 +858,7 @@ void BotManager::NavAuditCommand(IConsoleCmdArgs* args)
  if(self->Count() || !players.empty()){WB_LOG(0,"[WarsBots] NAV AUDIT refused: no bots/players allowed");return;}
  if(args->GetArgCount()==2 && !std::strcmp(args->GetArg(1),"stop")){self->m_nav.Reset();return;}
  if(args->GetArgCount()!=1)return;
- self->m_nav.StartAudit(g_navKneeFix);
+ self->m_nav.StartAudit(BotConfig::Get().navKneeFix);
 }
 
 void BotManager::NavCommand(IConsoleCmdArgs*)
@@ -919,7 +883,7 @@ void BotManager::ProbeSpawnCommand(IConsoleCmdArgs* args)
 	if (!self || !args || args->GetArgCount() != 4 || !ParsePosition(args, 1, position))
 	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_spawn x y z (finite world coordinates)."); return; }
     const BotStyle qaStyle=BotStyle::Universal;
-	if (BotInstance* bot = self->Add(&position, BotSkill(clamp_tpl(self->m_skill, 0, 3)), g_qaSocomOnly==1?&qaStyle:nullptr, false))
+	if (BotInstance* bot = self->Add(&position, BotSkill(clamp_tpl(self->m_config.skill, 0, 3)), BotConfig::Get().qaSocomOnly==1?&qaStyle:nullptr, false))
 		self->m_selected = bot->Number();
 }
 
@@ -952,7 +916,7 @@ void BotManager::BotStartCommand(IConsoleCmdArgs* args)
 	BotInstance* bot = self->Selected();
 	if (!bot)
 	{
-		bot = self->Add(hasPosition ? &position : nullptr, BotSkill(clamp_tpl(self->m_skill, 0, 3)), nullptr, false);
+		bot = self->Add(hasPosition ? &position : nullptr, BotSkill(clamp_tpl(self->m_config.skill, 0, 3)), nullptr, false);
 		if (!bot) return;
 		self->m_selected = bot->Number();
 	}

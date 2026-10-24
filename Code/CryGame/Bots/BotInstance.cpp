@@ -1,5 +1,6 @@
 // WarsBots: per-bot lifecycle. Uses the existing actor network binding; no fabricated channel.
 #include "PortIncludes.h"
+#include "BotConfig.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotInstance.h"
 #include "CryGame/Bots/BotManager.h"
@@ -193,8 +194,8 @@ void BotInstance::Status() const
 
 bool BotInstance::PhysicsDiagnostics() const
 {
-    const ICVar* flag=gEnv->pConsole->GetCVar("wb_physics_diagnostics");
-    return flag && flag->GetIVal()==1 && Owns(m_entityId) && CanRunLocalIA();
+    const int& flag=BotConfig::Get().physicsDiagnostics;
+    return flag==1 && Owns(m_entityId) && CanRunLocalIA();
 }
 
 void BotInstance::BeginPhysicsProbe(const char* origin)
@@ -294,8 +295,8 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
     }
 	IEntity* spawn = gEnv->pEntitySystem->GetEntity(chosen);
 	if (!spawn) return false;
-	const ICVar* hookFlag=gEnv->pConsole->GetCVar("wb_revive_hooks_test");
-    const int hooks=forcedSpawn && hookFlag ? hookFlag->GetIVal() : 0;
+	const int& hookFlag=BotConfig::Get().reviveHooksTest;
+    const int hooks=forcedSpawn ? hookFlag : 0;
     if((hooks&1) && spawn->GetScriptTable() && actor->GetEntity()->GetScriptTable())
         WB_LOG(0,"[WarsBots] DEBUG REVIVE Spawned actor=%u called=%d",id,Script::CallMethod(spawn->GetScriptTable(),"Spawned",actor->GetEntity()->GetScriptTable())?1:0);
     if(!Owns(id))return false;
@@ -323,8 +324,8 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 		m_lastHitShooter = 0;
 		m_killPlayerObserved = false;
         BeginPhysicsProbe("revive");
-        const ICVar* guard=gEnv->pConsole->GetCVar("wb_revive_guard");
-        if(guard && guard->GetIVal()==1){
+        const int& guard=BotConfig::Get().reviveGuard;
+        if(guard==1){
             if(!guardRetry)m_guardFailedSpawns.clear();
             m_guardOrigin=revived->GetEntity()->GetWorldPos();
             m_reviveGuard.Begin(gEnv->pTimer->GetFrameStartTime().GetSeconds(),!guardRetry);
@@ -335,9 +336,9 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 void BotInstance::CheckReviveGuard(float now)
 {
     if(!m_reviveGuard.Pending())return;
-    const ICVar* flag=gEnv->pConsole->GetCVar("wb_revive_guard");
+    const int& flag=BotConfig::Get().reviveGuard;
     CActor* actor=GetActor();
-    if(!flag || flag->GetIVal()!=1 || !CanRunLocalIA() || !Owns(m_entityId) || !m_brain.Running() ||
+    if(flag!=1 || !CanRunLocalIA() || !Owns(m_entityId) || !m_brain.Running() ||
         !actor || actor->GetHealth()<=0 || actor->GetLinkedVehicle() || g_pGame->GetGameRules()->IsFrozen(m_entityId))
     {m_reviveGuard.Cancel();return;}
     const float moved=(actor->GetEntity()->GetWorldPos()-m_guardOrigin).GetLength();
