@@ -3,6 +3,7 @@
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Bots/BotFireControl.h"
+#include "CryGame/Bots/BotAimControl.h"
 #include "CryGame/Bots/BotTargeting.h"
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Game.h"
@@ -28,7 +29,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
+void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
 
 void BotCombat::StopFire()
 {
@@ -103,9 +104,21 @@ bool BotCombat::Observe(CActor& actor, IActor& target, float now, bool verbose)
 			WB_LOG(2,"[WarsBots] TARGET REACQUIRE actor=%u target=%u delay=%.2f.",
 				actor.GetEntityId(),m_target,m_profile.reaction);
 		}
+        if(now>=m_nextAimChoice) {
+            IItem* held=actor.GetCurrentItem();
+            const char* name=held?held->GetEntity()->GetClass()->GetName():nullptr;
+            const unsigned sample=actor.GetEntityId()*16777619u ^ target.GetEntityId()*33u ^ unsigned(now*10)*2654435761u;
+            m_preferHead=BotAimControl::PreferHead(m_profile,name,
+                (target.GetEntity()->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength(),sample);
+            m_nextAimChoice=now+1.5f;
+            if(verbose) WB_LOG(2,"[WarsBots] AIM ZONE actor=%u target=%u preferred=%s interval=1.5.",
+                actor.GetEntityId(),target.GetEntityId(),m_preferHead?"head":"body");
+        }
 		m_lastSeen = now;
 		m_lastPosition = target.GetEntity()->GetWorldPos();
-		m_lastAim = chest ? AimPoint(target) : Eyes(target) - Vec3(0,0,0.08f);
+        const Vec3 headPoint=Eyes(target)-Vec3(0,0,.08f);
+        const bool preferredHeadClear=m_preferHead && ClearRay(actor,target,Eyes(actor),headPoint,obstruction);
+        m_lastAim=preferredHeadClear?headPoint:(chest?AimPoint(target):Eyes(target));
 	}
 	else if (verbose && now >= m_nextDiagnostic)
 	{
@@ -169,7 +182,7 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 	const EntityId previous=m_target;
 	if (best->GetEntityId()!=previous)
 	{
-		StopFire(); m_target=best->GetEntityId(); m_selectedAt=now;
+		StopFire(); m_target=best->GetEntityId(); m_selectedAt=now; m_nextAimChoice=0;
 		m_nextBurst=m_profile.NextTargetBurst(m_nextBurst,now); m_shotBlocked=false;
 		WB_LOG(2,"[WarsBots] TARGET CHOICE actor=%u old=%u target=%u skill=%s style=%s score=%.3f visible=%d health=%d ammo=%d.",
 			actor.GetEntityId(),previous,m_target,BotProfile::SkillName(m_profile.skill),BotProfile::StyleName(m_profile.style),
@@ -191,12 +204,12 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 	EntityId obstruction = 0;
 	// Muzzle ray to the chest, else to the head: the weapon sits lower/side of the eyes, so cover
 	// that the eyes clear can still block the barrel. Report it so the brain can reposition.
-	Vec3 shotPoint = AimPoint(target);
+	Vec3 shotPoint = m_target==target.GetEntityId() && m_visible ? m_lastAim : AimPoint(target);
 	bool clear = muzzleState.weaponPosition.IsValid() &&
 		ClearRay(actor, target, muzzleState.weaponPosition, shotPoint, obstruction);
 	if (!clear && muzzleState.weaponPosition.IsValid())
 	{
-		shotPoint = Eyes(target) - Vec3(0,0,0.08f);
+		shotPoint = (shotPoint-AimPoint(target)).GetLengthSquared()>.01f ? AimPoint(target) : Eyes(target)-Vec3(0,0,.08f);
 		clear = ClearRay(actor, target, muzzleState.weaponPosition, shotPoint, obstruction);
 	}
 	m_shotBlocked = !clear;

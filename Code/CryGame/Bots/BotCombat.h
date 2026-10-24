@@ -34,6 +34,8 @@ public:
 	static unsigned TakeScanCount();
 private:
 	BotProfile m_profile;
+    bool m_preferHead=false;
+    float m_nextAimChoice=0;
 	EntityId m_retaliator=0, m_avoid=0;
 	float m_avoidUntil=0, m_lastBurstRequest=-100.0f;
 	float m_retaliatorUntil=0, m_selectedAt=0, m_nextScan=0;

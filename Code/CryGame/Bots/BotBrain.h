@@ -51,6 +51,9 @@ private:
 	State m_state = State::SPAWNING;
 	float m_now = 0, m_tick = 0, m_stateTime = 0, m_weaponSearchStarted = 0, m_nextSearch = 0, m_deadTime = 0;
 	float m_nextTelemetry = 0;
+    Vec3 m_trackedAim=Vec3(0,0,0);
+    EntityId m_trackedTarget=0;
+    float m_trackedSelection=-1;
 	EntityId m_weaponTarget = 0;
 	Vec3 m_patrolGoal = Vec3(0,0,0);
 	float m_patrolUntil = 0, m_blockedSince = 0, m_chaseBlockedSince = 0, m_shotBlockedSince = 0;

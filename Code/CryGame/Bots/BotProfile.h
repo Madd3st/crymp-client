@@ -30,6 +30,9 @@ struct BotProfile
 	// Additional aim error on top of native weapon spread: min(max, distance*perMetre).
 	float aimErrorPerMetre = 0.006f;
 	float aimErrorMax = 0.25f;
+    float aimErrorFloor = 0.06f; // metres: close-range tracking never becomes exact
+    float trackingLag = 0.15f;   // seconds: observation-following, not target prediction
+    float headPreference = 0.06f; // strategic zone choice, separate from aim error
 	// Chance to Strength-jump right after being hit in a fight (dodge), per hit event.
 	float dodgeChance = 0.3f;
 	// Tactical competence is separate from style. All inputs must be own state or visible cues.
@@ -133,6 +136,10 @@ struct BotProfile
 		p.dodgeChance = dodge[s] + ((style == BotStyle::Assault || style == BotStyle::Flanker) && s > 0 ? 0.15f : 0.0f);
 		p.aimErrorPerMetre *= aim[s];
 		p.aimErrorMax *= aim[s];
+        static const float floors[]={.10f,.07f,.05f,.035f};
+        static const float lag[]={.22f,.16f,.13f,.11f};
+        static const float head[]={.02f,.06f,.10f,.16f};
+        p.aimErrorFloor=floors[s];p.trackingLag=lag[s];p.headPreference=head[s];
 		p.burstGap *= gap[s];
 		return p;
 	}

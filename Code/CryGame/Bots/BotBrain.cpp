@@ -1,6 +1,8 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotBrain.h"
+#include "CryGame/Bots/BotAimControl.h"
+#include "CryCommon/CryAction/IMovementController.h"
 #include "CryGame/Bots/BotInstance.h"
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotWeapons.h"
@@ -127,7 +129,7 @@ void BotBrain::Configure(const BotProfile& profile, int number)
 
 void BotBrain::ResetLife()
 {
-	m_progress.Reset(); m_escapeUntil=0;
+	m_progress.Reset(); m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_locomotion.Reset();
 	m_suit.Reset(); m_blackboard=BotBlackboard(); m_intent=BotIntent();
 	m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
@@ -427,9 +429,16 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	m_blackboard.lastEnemyPosition=destination;
 	const float distance = (destination - actor.GetEntity()->GetWorldPos()).GetLength();
 	m_blackboard.distance=distance;
-	Vec3 aim = m_combat.LastAim();
-	// Small deterministic error; the weapon still supplies its own normal spread.
-	const float error = min(m_profile.aimErrorMax, distance * m_profile.aimErrorPerMetre);
+    Vec3 aim=m_combat.LastAim();
+    if(m_trackedTarget!=m_combat.Target() || m_trackedSelection!=m_combat.SelectedAt()) {
+        SMovementState movement;actor.GetMovementController()->GetMovementState(movement);
+        m_trackedAim=movement.eyePosition+movement.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)*max(1.f,distance);
+        m_trackedTarget=m_combat.Target();m_trackedSelection=m_combat.SelectedAt();
+    }
+    // Track only the last observed/cached point. No velocity extrapolation or hidden query.
+    m_trackedAim+=(aim-m_trackedAim)*BotAimControl::Alpha(m_profile,decisionTime);
+    aim=m_trackedAim;
+    const float error=BotAimControl::ErrorRadius(m_profile,distance);
 	const float t = m_now + m_phase;
 	aim += Vec3(sinf(t * 2.7f), cosf(t * 1.9f), sinf(t * 1.3f) * 0.3f) * error;
 	IItem* held=actor.GetCurrentItem();
