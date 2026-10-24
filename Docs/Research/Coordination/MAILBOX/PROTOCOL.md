@@ -50,6 +50,16 @@ outbox, commit deliverables only into its own branch.
 2. copy new logs/summaries from the owner PC read-only, run Triage;
 3. write verdicts/requests as `C-` items, update `DECISIONS.md`, push; tell the owner 3 lines max.
 
+## Mail loop (v3, 2026-10-24 17:10) — agents never sit idle waiting for the owner
+
+* After finishing a task (pushed + replied), an agent **does not end its turn**: it runs
+  `Tools\Mailbox\wait_mail.ps1 -Agent <codex|opencode> -Repo <its clone>` and repeats it on timeout (exit 1).
+  On exit 0 it acts on the printed items. It stops the loop only on an owner message or a blocker it reports.
+* At the start of every turn (including owner messages about something else) run `wait_mail.ps1 -Peek` once.
+* Safety net: scheduled task "WarsBots Mailbox Wake" (`Tools/Mailbox/register_wake_task.ps1`) restarts a stopped
+  agent through its CLI when it has an open item and its clone is idle 20 min. See `Tools/Mailbox/README.md`.
+* Claude checks the other outboxes on its own schedule (send_later check-ins) and on owner nudges.
+
 ## What still needs the owner
 
 Only: decisions in `DECISIONS.md` (default ON, self-kill policy, merges, server/client sessions, anything
