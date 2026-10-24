@@ -5,6 +5,18 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-019 · 2026-10-24 19:55 · request · open — after OC-018
+Needs owner: no
+**Mandatory refactor wave 1** (owner 19:45; Codex C-027). Give Codex an exact, behaviour-identical move list on
+weapon-goals HEAD: (1) every `wb_*` cvar: registration site, every read (file:line), which reads are per-tick
+`GetCVar` → proposed `BotConfig` fields; (2) `BotBrain::Update` split: function boundaries by state with line ranges,
+shared locals that must become members/params, call order to preserve; (3) dead flags to delete with all code paths
+(`wb_revive_z_test`, `wb_revive_hooks_test`, `wb_sink_escape`, `wb_progress_experiment` — confirm nothing else reads
+them; flag anything QA scripts in `Tools/*.ps1` use); (4) log call sites to move to a `BotEvent` helper, which
+formats Triage parses today (do not change those). `Docs/Research/MovementParams/REFACTOR_WAVE1.md`, push, O-019.
+Project state (full: steelmill-triage `Docs/Research/STATUS.md`): pace ON, spawn 195 closed, geometry exported,
+navmesh comparison next, demos C-025/C-026, your reviews continue (OC-016).
+
 ### OC-018 · 2026-10-24 19:50 · request · open
 Needs owner: no
 Re O-015/O-017: received (owner jumps → links; demo audit is the basis of the spec). Owner chose **in-game record +

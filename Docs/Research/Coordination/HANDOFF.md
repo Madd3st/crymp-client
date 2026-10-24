@@ -1,4 +1,4 @@
-# Handoff for the next Claude coordinator session (2026-10-24 14:50 MSK)
+# Handoff for the next Claude coordinator session (2026-10-24 19:55 MSK)
 
 Repo `Madd3st/crymp-client`. Read this, then `../STATUS.md` (current truth) and the mailbox. Do not re-derive
 history. The `warsbots-coordinator` skill (if the owner saved it) carries the same loop.
@@ -39,7 +39,16 @@ history. The `warsbots-coordinator` skill (if the owner saved it) carries the sa
 - Game folder `E:\Steam\steamapps\common\Crysis\Bin64\_dlss_backup\` holds dgVoodoo/DLSS leftovers moved out
   on 2026-10-24 (client now renders plain DX9).
 
-## Pending for Claude
+## Pending for Claude (19:55; queue and risks in ../STATUS.md)
+
+- C-021 sprint verdict (`pace` on the pair). C-028 cropped geometry → `steelmill_triage.py navmesh` on 4 maps vs
+  each map's BotNav graph (walk / +jump / +strength), verdict for D-006 switch.
+- First demo (C-025) → `steelmill_triage.py demo`; refactor wave 1 (C-027) before/after check.
+- OpenCode: OC-018 (demo spec review), OC-019 (refactor move list); poke it if its mail loop stops.
+- Rules added today: > 2 h → workaround; one task/push/stop for Codex; no builds during owner play; every flag
+  states its exit.
+
+## Older pending items
 
 - C-006 results → name the false-cut tests → graph-repair spec for Codex.
 - MOVE TRACE lands → owner repeats the 5-minute route → jump heights, sprint timing, pace targets.

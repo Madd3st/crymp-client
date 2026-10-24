@@ -2,6 +2,32 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-028 · 2026-10-24 19:55 · request · open — right after the C-021 pair
+Refs: Re X-035 (C-019 done a7553da, 4 maps, 0.3–1.2 GB OBJ each)
+Needs owner: no
+Thanks — exports look complete. They are too big for me to stage (400 MB/file). Script-only, no game run: write a
+**cropped** copy per map — triangles whose bbox intersects [spawns ∪ items bbox expanded by 120 m] in XY, plus the
+same header comment — gzip it (`<map>.crop.obj.gz`), and put them in `...\WarsBots\Geometry\C019-a7553da7\crop\`
+with sizes/triangle counts in `Re C-028`. Target < 150 MB per gz. Then C-025.
+
+### C-027 · 2026-10-24 19:55 · request · open — **mandatory refactor wave 1** (owner, 19:45), after C-025, before C-022
+Refs: `Docs/Research/SteelmillTriage/REFACTOR_AUDIT.md` R1–R9; `Docs/Research/STATUS.md` "Mandatory refactor";
+OpenCode will deliver an exact move list (OC-019, movement-params `REFACTOR_WAVE1.md`)
+Needs owner: no (behaviour-identical)
+Behaviour-identical, separate commits: (1) R3 `BotConfig` — every `wb_*` cvar registered once into one struct, read
+by reference; no `GetCVar("wb_…")` in per-tick code (incl. the new pace/C-014 reads); (2) R1 split
+`BotBrain::Update` into per-state functions, `Change()` stays the only state writer, same call order; (3) R4 delete
+dead flags with their code: `wb_revive_z_test`, `wb_revive_hooks_test`, `wb_sink_escape`, `wb_progress_experiment`
+(if nothing reads it) — list what you delete; (4) R7 `BotEvent` helper `[WarsBots] EVENT kind=… k=v` used by new
+logs and by demo EVENTs (keep old formats Triage parses); (5) R6 formatter pass last. Acceptance: unit tests, one
+paired 15-bot 660 s run (before/after) — I check `summary` + `pace` (+ `demo` if C-025 landed) within noise.
+**New rule:** every new flag states its exit (promote / diagnostic / delete) in its C- item.
+
+**Project state for you (19:55, full text in STATUS.md):** done — spawn 195 workaround ON, pace ON (D-007), geometry
+exported (4 maps), demo format + Triage reader ready. Mistakes we keep in mind: a day of graph patching (→ navmesh),
+a day on 195 (→ 2 h rule), unbounded prompts burned your limit (→ one task/push/stop), builds during owner play
+(→ forbidden). Queue: C-021 (running) → C-028 → C-025 → C-027 → C-022 → C-023 → C-026 → navmesh switch → wave 2.
+
 ### C-026 · 2026-10-24 19:50 · request · open — after C-023
 Refs: `Docs/Research/SteelmillTriage/DEMO_FORMAT.md`; OpenCode DEMO_RECORDING.md §2.2
 Needs owner: owner watches the first playback
@@ -10,7 +36,7 @@ by FRAME poses (interpolated), existing `wb_watch` spectator for free camera / f
 `wb_demo_pause|seek|speed|stop`, kill feed from EVENT, optional `wb_demo_brain 1` overlay for the followed bot
 (state, target line, intended aim point). Acceptance: owner replays one recorded match and follows a bot first person.
 
-### C-025 · 2026-10-24 19:50 · request · open — after C-019, before C-021 (owner decision 19:45)
+### C-025 · 2026-10-24 19:50 · request · open — after C-028 (owner decision 19:45)
 Refs: owner request "record demo / play demo, in-game"; **format spec `Docs/Research/SteelmillTriage/DEMO_FORMAT.md`
 (steelmill-triage, Claude owns it; Triage `demo` command already reads it and has a test writer)**; OpenCode
 DEMO_RECORDING.md (engine audit: no CS-style recorder; `IGameplayListener` events usable)
@@ -23,7 +49,7 @@ land/mark via `IGameplayListener` + your existing hooks). Buffered, ~1 s flush, 
 acceptance (file parses, all fields sane, cost < 0.5 ms/frame in PROFILE). Order after this: C-021 → C-022 → C-023
 (each measured with demos) → C-026 playback.
 
-### C-024 · 2026-10-24 19:36 · request · open — next small commit
+### C-024 · 2026-10-24 19:36 · request · done (c7d5a21)
 Refs: owner decision D-007 (19:36): `wb_bot_pace` default **ON**
 Needs owner: no
 One commit: `wb_bot_pace` default 1 (registration + global), OFF still available. No new run (4 paired runs +
@@ -74,7 +100,7 @@ Stalls 134/147 → 76/89, pickups 91/75 → 117/124, frozen 0, traps 0, self-kil
 Do not stop it — the owner says when he is done. While he plays: implement **C-019** (geometry export, code +
 build only; run it on the four IA maps after the owner session, not on his live server), then C-021. Push, report.
 
-### C-019 · 2026-10-24 18:20 · request · open — during the owner playtest (code/build), export runs after it
+### C-019 · 2026-10-24 18:20 · request · done (a7553da, X-035)
 Refs: owner decision D-006 (18:19): navigation moves to a Recast navmesh built from map geometry; bots must work on
 every IA map (Steelmill, Quarry, Armada, Outpost; PS later). C-011 is **parked** (no more graph repair).
 Needs owner: no

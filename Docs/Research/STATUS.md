@@ -1,86 +1,123 @@
-# WarsBots research status — 2026-10-24 18:35 MSK
+# WarsBots project status — 2026-10-24 19:55 MSK
 
-One page, current truth. Evidence: **src** source · **unit** tests · **server** server logs · **client** owner in
-the client / video · **graph** real BotNav export analysed offline. History lives in git and the journal below.
+Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
+server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
 
-## Known
+## Goal
 
-| Topic | Fact | Evidence |
+Bots that play Crysis Wars Instant Action like humans **on every IA map** (Steelmill, Quarry, Armada, Outpost; Power
+Struggle later): human pace, vertical movement (jumps, Strength jumps), sensible weapon choice (SCAR first), stable
+decisions and aim. Map-specific fixes only as data, never code.
+
+## Who does what now
+
+| Agent | Now | Next |
 | --- | --- | --- |
-| Spawn 195 workaround (C-014, 6147cf8/3bda447) | one 15-bot 660 s run: 202 revives, 0 frozen (after Triage fix: frozen = never > 0.3 m from revive point), 0 at 195, traps 0, stalls 104 vs 111, self-kills 0 → PASS; defaults ON (f5dc17b) | server |
-| Spawn 195 (1247.50, 1319.75) | human `wb_revive_at 195 me` does **not** freeze (owner, 15:45); bot revives freeze 19/19 across 825 revives in 10 logs; spawn 218 18 m away 0/11; body: groundHeight invalid, bStuck 3/4; zero revive offset still 9/9 frozen; humans spawn fine there (owner, years of play) | server + client |
-| Graph shape | 506 SCCs; outer terrain ring (1714 nodes) and factory (1536) have **0 edges** between them; 51 sinks = 25 % of nodes; 13/36 spawns outside both | graph |
-| Missing terrain classes | metal stairs/catwalks with pipe railings, strength-jump ledges (+7 m), roofs with 3–10 m drops; owner spends >50 % of time on parts the graph treats as traps/islands; 1/28 of his component changes is reproducible by the graph | client + graph |
-| Route failures | `no_route` 90–92 % of NAV fallbacks; most start or end in sinks/islands; A* budget explains none | server + graph |
-| Watchdog (`wb_trap_recovery`) | 15/16 episodes in non-main components; levels 1–3 free a bot only in the main component; 45 s self-kill is the only exit at 195 (owner: keep, D-001) | server |
-| Weapon filter B (`wb_reachable_goals`) | lowers pickups; of 255 skips 51 % projection errors (fixed in 1db9a47), 49 % "unreachable" only because the graph is wrong → parked until graph repair | server + graph + level |
-| Sink escape C (`wb_sink_escape`) | no measurable effect yet | server |
-| Owner playtest OwnerPace7 (19:17, 7 bots, pace ON) | bots feel livelier and stronger; aim wanders/indecision; pistol fights too eager (wants SCAR first); "teleports" — server trace clean, Codex MSVC builds at 100 % CPU during the session → client starvation (rule: no builds during owner play). Live: median 4.49 m/s, >4 m/s 76 %, sprint 31 %, 45 revives 0 frozen | client + server |
-| Pace ON (`wb_bot_pace`, C-018 ef25395e, 2+2 paired runs) | median 2.49→4.48 m/s, >4 m/s 4→76 %, sprint 8→22 % (gap), stalls 134/147→76/89, pickups 91/75→117/124, frozen 0, traps 0 → win, no regression; default ON = D-007 after owner playtest | server |
-| Pace (owner MOVE TRACE) | owner moving median 5.0–5.7 m/s, >4 m/s 70–77 %, sprint 46–54 %, Armor 84–87 %, Speed-mode bursts to 13 m/s, Strength ledge climbs +4–5 m per jump; bots 2.5 m/s, >4 m/s 4–10 %, sprint 7–17 % | client trace + server |
-| Player movement (src, OpenCode OC-001 @ 981bd134, spot-checked) | MP stance run `maxSpeed 4.5` m/s, sprint ×1.5 = 6.75, Speed mode up to ~10–14.7 m/s short bursts; jump 1.0 m, Strength jump 4.7 m (70 energy); energy 200, regen 10/s, sprint drain 50/s; air control 0.9; wall jump impulse 600. **Bots are capped at 2.5 m/s — slower than a human running without sprint** | src |
-| Decision flips (OpenCode O-004 @ 5e8d5638, spot-checked) | CHASING_ENEMY ↔ MOVING_TO_WEAPON flips come from the weapon-upgrade gate using instantaneous `!Visible()` without a primary (`BotBrain.cpp:334`) vs chase on visible-but-far, no hysteresis/commitment timer | src |
-| Map data | 36 spawns, 78 map-placed weapons, minimap 2048² with bounds; CryAI nav in level.pak absent | level files |
+| Codex (code, builds, runs) | C-021 sprint pair running (baseline ef25395e vs e5af579d) | C-028 cropped geometry → C-025 demo recording → C-027 refactor wave 1 → C-022 weapons → C-023 aim → C-026 demo playback |
+| OpenCode (read-only research + review) | OC-018 demo spec review + playback puppets | OC-019 refactor wave-1 move list; reviews every Codex push (OC-016) |
+| Claude (coordination, Triage, verdicts) | status, C-021 verdict when it lands | navmesh comparison on 4 maps when cropped geometry lands; demo metrics on the first demo |
 
-## Now (18:35)
+## Done (2026-10-23 … 24)
 
-- Codex: C-018 pace — code `ef25395e` (flag `wb_bot_pace`, default 0), 4 paired 15-bot 660 s runs with MOVE TRACE
-  running until ~19:10, then STOP. Next: C-019 geometry export (D-006).
-- OpenCode: OC-008/009/010 done (reviews of 994aeab/6147cf8/3bda447; mail loop works; WALL_STARE audit). Now
-  OC-011 (engine geometry-export recipe for C-019), then OC-012 (review `ef25395e`).
-- Claude: terrain-only navmesh rehearsal from level files (Steelmill + 3 IA maps) with a voxel walkability model,
-  scored with the graph metrics; at ~19:10 pace/summary verdict on the 4 C-018 runs.
-- Finding (OC-010): with no route `Steer` returns the raw goal → bots walk/aim into walls; wall staring is largely
-  a navigation symptom (no_route ~90 %) — another reason for D-006.
+| Area | Result | Evidence |
+| --- | --- | --- |
+| Spawn 195 | bots never revive there + generic revive guard (2 s no movement → re-revive elsewhere, max 2); defaults ON (C-014/C-017, f5dc17b); 0 frozen revives since | server |
+| Pace | `wb_bot_pace` **default ON** (D-007, c7d5a21): median 2.49→4.48 m/s, >4 m/s 4→76 %, stalls −40 %, pickups +35 %, no regression; owner: "livelier, stronger" | server + client |
+| Geometry export | `wb_geom_export` (a7553da): Steelmill, Quarry, Armada, Outpost exported (2.3–8.6 M triangles, 0 unsupported parts) — basis of the navmesh | server |
+| Navmesh model | Triage `navmesh`: Recast-style walk model + ballistic jump / Strength-jump links + graph metrics + PNG | unit |
+| Demos | format `wbdemo/1` (DEMO_FORMAT.md), Triage `demo` reader + metrics (aim wander °/s, reaction, flips, time to primary); log-based 2D replay page | unit |
+| Measurement | `summary.json` contract, MOVE TRACE 4 Hz (owner + bots), Triage `pace`, `summary`, `replay`; owner reference pace recorded | server + client |
+| Research (OpenCode) | player vs bot movement params, decision-flip root cause, wall-stare root cause, sprint gap, engine geometry API, Detour integration plan, demo engine audit, owner jumps → links, reviews of every Codex push | src |
+| Process | mailbox (C-/OC-/X-/O- items), decisions file (D-001…D-007), mail loop for OpenCode, owner questions in chat | — |
 
-## Open, in order (D-006, 18:19: all maps, navmesh)
+## Mistakes we made
 
-Goal: bots play correctly on **every IA map** (Steelmill, Quarry, Armada, Outpost; PS later). Map-specific fixes
-only as data (e.g. a bad-spawn list), never code. Acceptance on ≥ 2 maps from now on.
+1. **A day of patching symptoms of a broken navigation approach** (graph repair C-006/C-011, weapon filter B, sink
+   escape C, trap watchdog levels). Each patch helped a little, so nobody stopped to ask "does this work on another
+   map?". The signals (25 % sinks, 0 edges between the two halves, 90 % no_route) were visible in the morning; the
+   coordinator read them as "repair the graph" instead of "replace the approach". → D-006 navmesh.
+2. **Spawn 195: a whole day of diagnosis by three agents**; the workaround took one hour. → rule: > 2 h → workaround.
+3. **Triage false positive** (frozen revive = first vs last sample) failed C-014 and cost a Codex cycle. → metrics
+   get a unit test for the failure they detect *and* for the look-alike (jitter in place).
+4. **Unbounded prompts burned Codex's limit** ("keep developing on your own"), and old queued messages would have
+   restarted cancelled work. → one task, one push, stop; weekly budget watched (61 % left at 17:16).
+5. **Builds during the owner's playtest** (CPU 100 %) looked like "teleporting" bots. → no builds/heavy runs while
+   the owner plays.
+6. **Mail not picked up**: agents finished a task and waited for the owner instead of reading the mailbox. →
+   mail loop (`wait_mail.ps1`), Claude pokes idle agents directly.
+7. Mislabelled map parts once (outer ring as "upper level") until the minimap underlay; atlas unreadable to the owner
+   at first. → always show data on the real minimap.
 
-1. ~~Spawn 195 workaround~~ — PASS (C-014/C-017). Generic revive guard stays; the 195 exclusion is Steelmill data.
-2. **Pace / sprint** (C-013 → C-018, Codex now) — targets from the owner trace; map-independent.
-3. **Navmesh (D-006)**: `wb_geom_export` on 4 IA maps (C-019, prep OC-011) → Claude builds Recast navmesh offline
-   → compare with BotNav graph (traps, spawns outside the main part, owner route reproducibility, no_route) →
-   if it wins, bots switch to Detour paths. Vertical play is first-class: auto-generated ballistic jump links
-   (normal 1.0 m apex, Strength 4.7 m apex / 70 energy, arc clearance) + owner MOVE TRACE jumps as off-mesh links;
-   Triage `navmesh` reports walk / +jump / +Strength so the value of jumps is measured per map.
-   Graph repair (C-006/C-011), filter B, sink escape C, most trap-watchdog levels → parked, removed in refactor.
-4. **Wall staring** (owner video) — OC-010 audit → MOVE TRACE aimYaw/wallDist → fix.
-5. Decision stability (CHASING↔MOVING_TO_WEAPON) — `PATCH_DECISION_COMMIT.md`; later utility-AI decision layer.
-6. ML: parameter tuning from paired runs first (after 2–3), decision learning from `episodes.jsonl` later,
-   imitation of the owner last.
-7. **In-game demos** (owner 19:26/19:45): format `SteelmillTriage/DEMO_FORMAT.md` (wbdemo/1, view yaw/pitch 20 Hz +
-   bot brain track + events); recording C-025 right after geometry export, before sprint/weapon/aim fixes (they are
-   measured with demos: aim wander °/s, reaction time, flips, time to primary — Triage `demo`); in-game playback C-026
-   after C-023. Log-based 2D replay (`replay`, artifact) stays as a quick viewer.
-8. Weapon priority (SCAR first, avoid pistol fights) C-022; aim/decision commit C-023.
-9. Bot-code refactor (REFACTOR_AUDIT) — remove graph-patch flags after the navmesh switch.
+## Dead ends (parked or removed)
 
-## Lessons (2026-10-24)
+| Dead end | Why | Fate |
+| --- | --- | --- |
+| Self-built ray-sampled nav graph + repairs (knee ray, edge audit) | approach cannot represent stairs, railings, ledges, roofs; per-map bugs | replaced by navmesh (D-006); removed in refactor wave 2 |
+| Weapon reachability filter B (`wb_reachable_goals`) | half its skips were graph errors | delete with BotNav |
+| Sink escape C (`wb_sink_escape`) | no effect | delete |
+| Spawn 195 root cause (native revive hooks, z offsets, channel) | 10/10 failures, cause still unknown | parked; workaround is permanent |
+| Terrain from `heightmap.dat` | undocumented CryEngine 2 format | replaced by engine geometry export |
+| Speech-to-text of owner videos | Whisper/HF blocked in the workspace | owner gives text notes |
 
-- We patched symptoms of a broken navigation approach for a day (graph repair, filters, escape, watchdog) because
-  every patch helped a little. Check each fix against "does this work on another map?".
-- Spawn 195: a whole day of diagnosis by three agents; the workaround took one hour. Rule: > 2 h → workaround.
+## Risks
+
+| Risk | Impact | Mitigation |
+| --- | --- | --- |
+| Navmesh may not reproduce stairs/catwalks/roofs better than the graph | navigation stays dumb | offline comparison on 4 maps before any switch; owner jumps as off-mesh links; shadow mode first |
+| Geometry files are 0.3–1.2 GB OBJ | cannot be staged to Triage (400 MB/file limit) | C-028 cropped/binary export |
+| Codex weekly limit (61 % at 17:16, resets 30 Oct; 2 manual resets left) | work stops mid-task | narrow tasks, research/review moved to OpenCode and Claude, no idle wake-ups |
+| Flag sprawl and a 361-line `BotBrain::Update` | every change risks regressions; new features (weapons, aim, decision layer) land in the same function | **mandatory refactor** waves 1–2 (below) |
+| Demo recording cost on the server | frame drops with 16 actors | acceptance < 0.5 ms/frame in PROFILE, buffered writes |
+| Single-map evidence | fixes that only work on Steelmill | acceptance on ≥ 2 maps from the navmesh step on |
+| Native spawn-195 freeze cause unknown | could appear on other maps' spawns | generic revive guard logs `REVIVE GUARD` everywhere; Triage `summary` counts frozen revives per spawn |
+
+## Mandatory refactor (owner, 19:45) — behaviour-identical, gated by paired runs + demo metrics
+
+Rule from now: every new flag names its exit (promote / keep as diagnostic / delete) in its C- item; no flag lives
+longer than two steps without a decision.
+
+**Wave 1 — C-027, before C-022/C-023 (they change the brain):**
+R3 one `BotConfig` struct instead of hot-path `GetCVar("wb_…")` (OpenCode found new ones in pace code) ·
+R1 split `BotBrain::Update` (361 lines) into per-state functions, `Change()` the only state writer ·
+R4 delete dead experiment flags with their code (`wb_revive_z_test`, `wb_revive_hooks_test`, `wb_progress_experiment`
+if unused, `wb_sink_escape`) · R7 one `BotEvent` log helper (shared with demo EVENTs) · R6 one formatter commit.
+Acceptance: unit tests pass, one paired run with `summary` and demo metrics unchanged within noise.
+
+**Wave 2 — after the navmesh switch:** delete BotNav graph build/knee audit/reachability/goal projection/most watchdog
+levels (list: OpenCode DETOUR_INTEGRATION.md §5), R2 `BotConsole.cpp`, R5 legacy single-bot commands, R8 one revive path.
+
+## Queue (in order)
+
+1. C-021 sprint gap — running. 2. C-028 cropped geometry → Claude navmesh vs graph on 4 maps. 3. C-025 demo
+recording. 4. **C-027 refactor wave 1.** 5. C-022 weapon priority (SCAR first). 6. C-023 aim + decision commit.
+7. C-026 in-game demo playback. 8. Navmesh switch (Detour, shadow mode → flag). 9. Refactor wave 2.
+10. ML: parameter tuning from paired runs; decision learning from demos; owner imitation last.
+
+## Rules
+
+Codex owns game code, builds, servers; Claude and OpenCode never edit it. Default OFF until paired runs show no
+regression; behaviour defaults need the owner (D-002). > 2 h diagnosis → workaround + parked ticket. One task, one
+push, stop. No builds while the owner plays. Questions to the owner go into chat.
 
 ## Where things are
 
 | What | Where |
 | --- | --- |
-| How to work (roles, loop, rules) | `Coordination/HANDOFF.md` |
-| Talking to Codex | `Coordination/MAILBOX/` (`TO_CODEX.md`, `PROTOCOL.md`, `DECISIONS.md`); Codex replies in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals |
-| Branch SHAs, component table | `Coordination/PROJECT_COORDINATION.md` |
-| Tools | `Tools/SteelmillTriage` (`summary`, `analyze`, `graph`, `movement`, `pace` (MOVE TRACE + C-013 check), `mem`, `level`, `episodes`) |
-| Contracts | `SteelmillTriage/SUMMARY_CONTRACT.md` (run verdict), Lab branch `BOTNAV_EXPORT_CONTRACT.md` (graph export) |
-| Owner map | Steelmill Nav Atlas (private artifact, link in HANDOFF) |
+| Roles, loop | `Coordination/HANDOFF.md` |
+| Mailbox | `Coordination/MAILBOX/` (`TO_CODEX.md`, `TO_OPENCODE.md`, `DECISIONS.md`, `PROTOCOL.md`); replies: weapon-goals `Docs/Coordination/TO_CLAUDE.md`, movement-params `Docs/Coordination/OPENCODE_TO_CLAUDE.md` |
+| Tools | `Tools/SteelmillTriage`: `summary`, `pace`, `navmesh`, `demo`, `replay`, `analyze`, `graph`, `movement`, `mem`, `level`, `episodes`; `Tools/Mailbox` |
+| Specs | `SteelmillTriage/SUMMARY_CONTRACT.md`, `SteelmillTriage/DEMO_FORMAT.md`, OpenCode `MovementParams/*.md` |
+| Owner pages | Steelmill Nav Atlas, Steelmill Replay (private artifacts) |
 
-## Journal (dated, newest first)
+## Journal (newest first)
 
 | Date | File | What |
 | --- | --- | --- |
-| 10-24 14:20 | `SteelmillTriage/OWNER-VIDEO-2026-10-24.md` | owner reference video: pace, stairs, strength jumps, roofs |
-| 10-24 13:00 | `SteelmillTriage/REVIEW-2026-10-24-1300-codex-ABCD.md` | Codex A–D review, B regression |
-| 10-24 05:15 | `SteelmillTriage/PLAYTEST-2026-10-24-0458.md` (+ addenda 11:30, 11:40) | first real graph, Recovery6, r3 soak, spawn 195 point-specific |
-| 10-24 05:15 | `SteelmillTriage/CODEX_MESSAGE-2026-10-24-0515.md` | requests A–D (superseded by the mailbox) |
-| 10-24 03:00 | `SteelmillTriage/FINDINGS-2026-10-24.md` | F1–F5 from older owner logs |
-| 10-24 04:30 | `SteelmillTriage/MOVEMENT_BASELINE.md` | pace profile, MOVE TRACE spec |
+| 10-24 19:50 | `SteelmillTriage/DEMO_FORMAT.md` | in-game demo format |
+| 10-24 19:25 | owner playtest OwnerPace7 | pace ON feels right; aim wander; SCAR first; "teleports" = CPU |
+| 10-24 19:20 | C-020 in TO_CODEX.md | pace verdict (4 paired runs) |
+| 10-24 18:19 | DECISIONS D-006 | navmesh for all maps |
+| 10-24 14:20 | `SteelmillTriage/OWNER-VIDEO-2026-10-24.md` | owner reference video |
+| 10-24 13:00 | `SteelmillTriage/REVIEW-2026-10-24-1300-codex-ABCD.md` | Codex A–D review |
+| 10-24 05:15 | `SteelmillTriage/PLAYTEST-2026-10-24-0458.md` | first real graph, spawn 195 |
+| 10-24 03:00 | `SteelmillTriage/FINDINGS-2026-10-24.md` | F1–F5 from old logs |
