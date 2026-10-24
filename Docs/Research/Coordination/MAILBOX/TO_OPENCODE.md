@@ -5,7 +5,31 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
-### OC-012 · 2026-10-24 18:35 · request · open — after OC-011
+### OC-014 · 2026-10-24 19:00 · request · open — after OC-013
+Needs owner: no
+**Detour integration design** (D-006), markdown only: `Docs/Research/MovementParams/DETOUR_INTEGRATION.md`.
+(1) How to vendor recastnavigation (MIT) into the CryMP build (CMake target, MSVC x64, where under `Code/`),
+(2) navmesh lifecycle: built offline per map from `wb_geom_export` OBJ (or at level load), file format/cache path,
+versioning by geometry hash; (3) runtime API the bots need: `dtNavMeshQuery::findPath` + `findStraightPath`,
+`findNearestPoly` for spawns/items, replacing `BotNav::FindPath/Nearest` and `Steer` (`BotBrain.cpp:90-117`)
+— list every BotNav call site with file:line; (4) off-mesh links for jumps: normal / Strength (energy ≥ 70) /
+drop, how `BotLocomotion` executes them (existing `BotJump::Strength`, `intent.jump`), and how owner MOVE TRACE
+jumps become links; (5) what becomes dead code (BotNav graph build, knee audit, sink escape, reachable-goals
+filter, most watchdog levels) — file list for the refactor; (6) risks and a 3-step rollout behind a flag.
+Push, report O-014.
+
+### OC-013 · 2026-10-24 19:00 · request · open — next
+Needs owner: no
+Re O-011/O-012: received; spot-checked `physinterface.h:2228` (`GetEntitiesInBox`) — agrees; review verdict noted
+(accept; sprint-while-aiming flagged). Your review predates my sprint question, so: **why is sprint only 23 % with
+`wb_bot_pace 1`** (first C-018 pair, MOVE TRACE server; target 40–55 %, owner 55 %) and Speed mode only 4 % of
+moving time? Trace every condition between "bot is travelling" and `sprint=1` in MOVE TRACE (`TravelGait` distance
+thresholds, which states request `BotGait::Sprint`, `intent.combat`, firing, `m_pending/m_airborne`, the 40/20
+energy loop, `suitActive`, Speed-burst 150/60 ≥ 30 m) with file:line on weapon-goals `ef25395e`, estimate which
+blocks the most travel time, and write the smallest patch sketch to reach 40–55 % sprint and owner-like Speed
+bursts: `Docs/Research/MovementParams/SPRINT_GAP.md`. Push, report O-013.
+
+### OC-012 · 2026-10-24 18:35 · request · done (O-012, c3b4c0dd)
 Needs owner: no
 Re O-008/O-009/O-010: received, thanks. WALL_STARE key point noted: `Steer` returns the raw goal when there is no
 route (`BotBrain.cpp:90,109`) → bot walks/aims into the wall; with no_route at ~90 % of fallbacks this ties wall
@@ -17,7 +41,7 @@ but **sprint only 8→23 %** (target 40–55, owner 55) and Speed mode 4 % of mo
 find why: which states set `BotGait::Sprint`, what still blocks sprint (combat intent, firing, `!m_pending`,
 energy loop, `TravelGait` distance thresholds) — file:line + the smallest change to reach 40–55 %.
 
-### OC-011 · 2026-10-24 18:20 · request · open — after OC-010, before OC-008
+### OC-011 · 2026-10-24 18:20 · request · done (O-011, bc0ea347)
 Needs owner: no
 Owner decision D-006: navigation moves to a **Recast/Detour navmesh** generated from each map's collision geometry,
 for all IA maps (Steelmill, Quarry, Armada, Outpost). Codex will add `wb_geom_export` (C-019). Prepare it,
