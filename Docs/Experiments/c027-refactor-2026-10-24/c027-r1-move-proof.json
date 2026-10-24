@@ -1,0 +1,64 @@
+{
+  "sections": [
+    {
+      "section": "telemetry",
+      "original_sha256": "1fce9234248e0aff72e2ef209cd5fe024932a1eaa53aaf292b05cc898465d1f6",
+      "inverse_sha256": "1fce9234248e0aff72e2ef209cd5fe024932a1eaa53aaf292b05cc898465d1f6",
+      "equal": true
+    },
+    {
+      "section": "dead",
+      "original_sha256": "fd641e383700b89cd676848dc4ce728e5ce94c5dcc81d1c7bd444ae7f0ef17a5",
+      "inverse_sha256": "fd641e383700b89cd676848dc4ce728e5ce94c5dcc81d1c7bd444ae7f0ef17a5",
+      "equal": true
+    },
+    {
+      "section": "test",
+      "original_sha256": "5f68ecf4555159b4e7083d5424e98af2531603b0075d2eb53a391be5f624d791",
+      "inverse_sha256": "5f68ecf4555159b4e7083d5424e98af2531603b0075d2eb53a391be5f624d791",
+      "equal": true
+    },
+    {
+      "section": "seek",
+      "original_sha256": "04cf4b293b1a7f4adcb59bb79d2ebd08ba724823beb23eb4e49e7f60a246c6f6",
+      "inverse_sha256": "04cf4b293b1a7f4adcb59bb79d2ebd08ba724823beb23eb4e49e7f60a246c6f6",
+      "equal": true
+    },
+    {
+      "section": "upgrade",
+      "original_sha256": "5e8943d4eb45563f14b9f01e0e6749d01e7c9d2fef5447cd80571f607aeaa4b6",
+      "inverse_sha256": "5e8943d4eb45563f14b9f01e0e6749d01e7c9d2fef5447cd80571f607aeaa4b6",
+      "equal": true
+    },
+    {
+      "section": "roam",
+      "original_sha256": "71b99db4ee4fc8091fba5a0fa64b8284e95efdfc1e461014dbaa29373d22509f",
+      "inverse_sha256": "71b99db4ee4fc8091fba5a0fa64b8284e95efdfc1e461014dbaa29373d22509f",
+      "equal": true
+    },
+    {
+      "section": "attack",
+      "original_sha256": "e145b6b0b74607faf866340e856fd94e313f7fac6da42755ebe2db4cce819c8a",
+      "inverse_sha256": "e145b6b0b74607faf866340e856fd94e313f7fac6da42755ebe2db4cce819c8a",
+      "equal": true
+    },
+    {
+      "section": "chase",
+      "original_sha256": "708e3ba9851fb173477ffae1cc8a9eae75dfc81ab0e6722b66866c373a76acc9",
+      "inverse_sha256": "708e3ba9851fb173477ffae1cc8a9eae75dfc81ab0e6722b66866c373a76acc9",
+      "equal": true
+    },
+    {
+      "section": "post",
+      "original_sha256": "a540120b8eb65c8d679dee81357929ef9207ce5fff75f9787be775553fa190c4",
+      "inverse_sha256": "a540120b8eb65c8d679dee81357929ef9207ce5fff75f9787be775553fa190c4",
+      "equal": true
+    }
+  ],
+  "update_lines_before": 362,
+  "update_lines_after": 32,
+  "state_writer": "Change only; silent Start initialization preserves former assignment without extra logs",
+  "random_calls_before": 1,
+  "random_calls_after": 1,
+  "blank_line_whitespace_cleanup": true
+}

@@ -1,0 +1,134 @@
+[
+  {
+    "name": "wb_demo_record",
+    "old": "m_demoRecord",
+    "field": "demoRecord",
+    "default": "0"
+  },
+  {
+    "name": "wb_demo_hz",
+    "old": "m_demoHz",
+    "field": "demoHz",
+    "default": "20"
+  },
+  {
+    "name": "wb_probe_local_test",
+    "old": "m_localTestEnabled",
+    "field": "gateOpen",
+    "default": "0"
+  },
+  {
+    "name": "wb_bot_cloak_experimental",
+    "old": "m_cloakExperimental",
+    "field": "cloakExperimental",
+    "default": "0"
+  },
+  {
+    "name": "wb_hotspot_all_nodes",
+    "old": "g_hotspotAllNodes",
+    "field": "hotspotAllNodes",
+    "default": "0"
+  },
+  {
+    "name": "wb_sink_escape",
+    "old": "g_sinkEscape",
+    "field": "sinkEscape",
+    "default": "0"
+  },
+  {
+    "name": "wb_reachable_goals",
+    "old": "g_reachableGoals",
+    "field": "reachableGoals",
+    "default": "0"
+  },
+  {
+    "name": "wb_revive_z_test",
+    "old": "g_reviveZTest",
+    "field": "reviveZTest",
+    "default": "-2.f"
+  },
+  {
+    "name": "wb_revive_hooks_test",
+    "old": "g_reviveHooksTest",
+    "field": "reviveHooksTest",
+    "default": "0"
+  },
+  {
+    "name": "wb_bot_pace",
+    "old": "g_botPace",
+    "field": "botPace",
+    "default": "1"
+  },
+  {
+    "name": "wb_revive_guard",
+    "old": "g_reviveGuard",
+    "field": "reviveGuard",
+    "default": "1"
+  },
+  {
+    "name": "wb_spawn_exclude195",
+    "old": "g_spawnExclude195",
+    "field": "spawnExclude195",
+    "default": "1"
+  },
+  {
+    "name": "wb_nav_knee_fix",
+    "old": "g_navKneeFix",
+    "field": "navKneeFix",
+    "default": "0"
+  },
+  {
+    "name": "wb_move_trace",
+    "old": "g_moveTrace",
+    "field": "moveTrace",
+    "default": "0"
+  },
+  {
+    "name": "wb_physics_diagnostics",
+    "old": "g_physicsDiagnostics",
+    "field": "physicsDiagnostics",
+    "default": "0"
+  },
+  {
+    "name": "wb_trap_recovery",
+    "old": "g_trapRecovery",
+    "field": "trapRecovery",
+    "default": "0"
+  },
+  {
+    "name": "wb_progress_experiment",
+    "old": "g_progressExperiment",
+    "field": "progressExperiment",
+    "default": "0"
+  },
+  {
+    "name": "wb_qa_socom_only",
+    "old": "g_qaSocomOnly",
+    "field": "qaSocomOnly",
+    "default": "0"
+  },
+  {
+    "name": "wb_fire_diagnostics",
+    "old": "g_fireDiagnostics",
+    "field": "fireDiagnostics",
+    "default": "0"
+  },
+  {
+    "name": "wb_log",
+    "old": "m_logLevel",
+    "field": "logLevel",
+    "default": "1"
+  },
+  {
+    "name": "wb_maxbots",
+    "old": "m_maxBots",
+    "field": "maxBots",
+    "default": "6"
+  },
+  {
+    "name": "wb_skill",
+    "old": "m_skill",
+    "field": "skill",
+    "default": "1"
+  }
+]

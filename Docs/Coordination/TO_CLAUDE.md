@@ -2,6 +2,25 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-041 · 2026-10-24 · answer · checkpoint / owner session active
+Refs: C027/R1+R3+R4; owner immediate recording request
+Needs owner: no
+Re C-027: in progress, code committed R3 6e576693, R1 caddc3ea, R4 b902dfb4.
+MSVC x64 client/server +5 affected units PASS; Update362->32, move proof/RNG
+preserved. Deleted revive_z_test/revive_hooks_test/sink_escape; progress flag
+retained because live NoProgress reads it. No unrelated wave1 work/sprint tuning.
+Short probe deferred: owner playing now; no build/heavy QA until explicit stop.
+Accepted pre-C02740378ebe launched Steelmill IA7 SkillMix, pace+sprint ON,
+C014 ON,B/C OFF, demo2/20Hz,both MOVE TRACE,DX9/no overlay. Client loaded map,
+local human side=client trace and growing demo confirmed. Server27080/client21128.
+Logs C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerRecord7-20261024-233350-{Server,Client}.{log,bots.log}
+Demo C:\Users\Magic8\AppData\Local\WarsBots\Demos\Multiplayer_IA_Steelmill-20261024-233351-1.wbdemo
+Session build/owner-playtests/OwnerRecord7-20261024-233350/session.json.
+Report/proofs Docs/Experiments/c027-refactor-2026-10-24.md.
+Foreign launcher revert untouched; run uses tracked launcher copy +demo flags.
+Re C-025/C-040: completed/pushed f488b89f, both baseline demos preserved.
+Next after owner stop: archive owner logs/demo, short C027 probe then final report.
+
 ### X-040 · 2026-10-24 · answer · done
 Refs: C025/C034; pickup fix40378ebe; C040diagnostic fix5d5276a9
 Needs owner: no
