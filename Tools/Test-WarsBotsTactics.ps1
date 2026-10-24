@@ -26,7 +26,9 @@ param(
     [ValidateRange(-1,1)][int]$CandidateProgress=-1,
     [ValidateRange(-1,1)][int]$BaselineProgress=-1,
     [string]$ExpectedBaseline="eea973f0",
-    [string]$OutputDirectory='build/tactics-qa'
+    [string]$OutputDirectory='build/tactics-qa',
+    [string]$PythonExecutable='',
+    [string]$TriageScript=(Join-Path $PSScriptRoot 'SteelmillTriage/steelmill_triage.py')
 )
 $ErrorActionPreference='Stop'
 if($CandidateOnly -and $BaselineOnly){throw 'Choose one comparison side, not both.'}
@@ -58,6 +60,7 @@ foreach($pair in @(@('baseline',$BaselineDirectory),@('candidate',$CandidateDire
 }
 $runs=@()
 $p=$null
+$qaCompleted=$false
 try {
     for($repeat=$FirstRepeat-1;$repeat -lt $FirstRepeat-1+$Repeats;$repeat++) {
         foreach($bots in $Counts) {
@@ -143,6 +146,7 @@ try {
             }
         }
     }
+    $qaCompleted=$true
 } finally {
     # Never stop a server a human joined. Restore memory only when no server can be using it.
     if($p -and -not $p.HasExited -and -not $joined){Stop-Process -Id $p.Id; $null=$p.WaitForExit(15000)}
@@ -150,4 +154,12 @@ try {
         Copy-Item -LiteralPath $backup -Destination $memory -Force
         if((Get-FileHash -LiteralPath $memory).Hash -ne $memoryHash){throw 'Final memory restore failed'}
     } else { Write-Warning "Live server retained; memory backup preserved at $backup" }
+    if(Test-Path -LiteralPath (Join-Path $out 'runs.json')) {
+        try {
+            & (Join-Path $PSScriptRoot 'Invoke-WarsBotsTriage.ps1') -OutputDirectory $out -PythonExecutable $PythonExecutable -TriageScript $TriageScript
+        } catch {
+            if($qaCompleted){throw}
+            Write-Warning "Triage also failed while handling interrupted/failed QA: $_"
+        }
+    }
 }

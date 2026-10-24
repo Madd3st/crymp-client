@@ -1,0 +1,1 @@
+Pinned read-only offline Triage import from warsbots/research/steelmill-triage @649653a3. No branch merge. wbnav/1 remains unchanged; reader adapts it internally. Summary contract pending upstream; QA summary.json currently preserves native steelmill-triage/1 output.

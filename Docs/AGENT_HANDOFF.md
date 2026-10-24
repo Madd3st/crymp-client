@@ -1,5 +1,18 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
+## Current: explicit local reproduction commands and automatic Triage
+
+Commands in **b9ca22d3**, matched MSVC x64 Release experimental client/server PASS.
+`wb_revive_at 195 [botNumber|me]` uses native kill/revive at registered spawn;
+`wb_teleport botNumber x y z` relocates owned live bot with native broadcast.
+Local loopback LAN IA gate required; manual only. Stopped/running AI state preserved.
+60s command smoke reproduces spawn195 at+5s; closed gate/invalid inputs refuse.
+22 Triage tests PASS; updated QA runner6bots60s PASS, automatic summary.json created.
+Current summary uses native steelmill-triage/1; dedicated Claude contract pending.
+QA stopped and memory restored. Human me/client replication still need live check.
+[Commands, caveats and evidence](Experiments/steelmill-debug-commands-2026-10-24.md).
+B/C remain default OFF after prior pickup regression; no speed/graph/PS changes.
+
 ## Current: native body diagnostics and gated SCC experiments
 
 Latest built game source **ca198a42**, MSVC x64 Release experimental client/server PASS.

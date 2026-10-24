@@ -1,0 +1,89 @@
+{
+  "source": "b9ca22d3",
+  "checks": [
+    "DEBUG TELEPORT refused: local IA gate closed",
+    "DEBUG REVIVE refused: local IA gate closed",
+    "Usage: wb_teleport",
+    "spawnId=999999 not registered",
+    "DEBUG REVIVE actor=",
+    "spawnId=195 manual=1",
+    "sameEntity=1 alive=1",
+    "DEBUG TELEPORT actor=",
+    "position=\\(1240.000,1320.000,136.500\\)",
+    "spawn=195 phase=\\+5"
+  ],
+  "completed": true,
+  "matched_build": {
+    "sha": "b9ca22d3cb7b61350920a8917d162222ccc453fb",
+    "config": "MSVC x64 Release experimental ON; reproduction commands manual only",
+    "server": "FA0D6879169FFD2E59C338CC370B681C172C522E2D1A854F638E34C8B010E90E",
+    "client": "3E3593B8AF3FAD6A171152187B32B98F04ABFAFDD2AA0218789CD694F39E0083"
+  },
+  "memory_sha256": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE",
+  "triage_runner": {
+    "run": {
+      "reachable_goals_requested": -1,
+      "sink_escape_requested": -1,
+      "explain_nodes": [],
+      "physics_diagnostics_requested": -1,
+      "observed_seconds": 57.9,
+      "nav_exports": 2,
+      "hotspot_all_nodes_requested": -1,
+      "tag": "candidate-r1-n6",
+      "session": "triage-runner-b9ca22d3",
+      "progress_requested": -1,
+      "trap_recovery_requested": -1,
+      "fire_diagnostics": false,
+      "style_mode": "auto",
+      "skill_rotation_step": 1,
+      "variant": "candidate",
+      "repeat": 1,
+      "bots": 6,
+      "seconds": 60,
+      "source_sha": "b9ca22d3cb7b61350920a8917d162222ccc453fb",
+      "server_sha256": "FA0D6879169FFD2E59C338CC370B681C172C522E2D1A854F638E34C8B010E90E",
+      "client_sha256": "3E3593B8AF3FAD6A171152187B32B98F04ABFAFDD2AA0218789CD694F39E0083",
+      "memory_sha256": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE",
+      "roster": [
+        {
+          "number": 1,
+          "skill": "beginner",
+          "style": "auto"
+        },
+        {
+          "number": 2,
+          "skill": "normal",
+          "style": "auto"
+        },
+        {
+          "number": 3,
+          "skill": "veteran",
+          "style": "auto"
+        },
+        {
+          "number": 4,
+          "skill": "elite",
+          "style": "auto"
+        },
+        {
+          "number": 5,
+          "skill": "beginner",
+          "style": "auto"
+        },
+        {
+          "number": 6,
+          "skill": "normal",
+          "style": "auto"
+        }
+      ],
+      "log": "WarsBots-Tactics-triage-runner-b9ca22d3-candidate-r1-n6.bots.log",
+      "completed": true,
+      "kills": 2
+    },
+    "summary_schema": "steelmill-triage/1",
+    "summary_runs": 1,
+    "unit_tests": 22,
+    "upstream": "649653a3",
+    "contract": "Dedicated Claude summary contract pending; native output preserved"
+  }
+}
