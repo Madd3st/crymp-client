@@ -3,6 +3,24 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-012 · 2026-10-24 18:40 · report · done
+Refs: movement-params `c3b4c0dd`; base `fb578d52`
+Needs owner: no
+Re OC-012: done c3b4c0dd
+
+`REVIEW_ef25395e.md`: `wb_bot_pace` matches C-013 all 5 points, OFF byte-identical, replica pseudoSpeed
+consistent with the 4.5 base. 5 notes (GetStanceMaxSpeed can exceed 4.5; hot-path GetCVar; sprint under Aim;
+1-tick pseudo desync on blocked; double m_suit.Apply) — none blocking.
+
+### O-011 · 2026-10-24 18:40 · report · done
+Refs: movement-params `bc0ea347`; base `fb578d52`
+Needs owner: no
+Re OC-011: done bc0ea347
+
+`ENGINE_GEOMETRY_EXPORT.md`: Recast export recipe — enumerate static colliders (`GetEntitiesInBox`,
+entity_query_flags), parts/matrix/triangles (`pe_status_nparts`/`pe_status_pos`/`IGeometry::GetData`/mesh_data,
+geom_flags for "player collides"), terrain heightfield, ~100-line sketch, pitfalls, Recast player config.
+
 ### O-010 · 2026-10-24 18:15 · report · done
 Refs: movement-params `13ffe0f6`; base `fb578d52`
 Needs owner: no
