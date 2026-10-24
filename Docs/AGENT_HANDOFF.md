@@ -1,5 +1,27 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
+## Current: recovery candidate and owner live session
+
+Latest built game source **d4b0854c**, MSVC x64 Release experimental client+server PASS.
+Separate commits: b3ce761f watchdog; b53b3f87 actor/NAV diagnostics; e4eb64ee graph export;
+d4b0854c gated all-node hotspot scan. `wb_trap_recovery` and `wb_hotspot_all_nodes`
+compile/runtime defaults OFF. 6-bot recovery soak660s PASS (659.24s observed), native
+self-kill at45.11s + same-actor5s respawn confirmed; selector/watchdog unit tests PASS.
+Graph exports independently validated, repeat arrays identical. **Final15-bot10min soak
+NOT COMPLETE:** owner requested live access at~254s. Full-hotspot stays OFF for live play.
+[Report/commands](Experiments/steelmill-recovery-2026-10-24.md),
+[metrics/hashes](Experiments/steelmill-recovery-2026-10-24.json).
+
+**ACTIVE OWNER SESSION:** source d4b0854c,6 Normal, server PID147120, client PID136756,
+port64150, recovery1, hotspot_all_nodes0. Metadata
+`build/owner-playtests/recovery6-20261024-045803/session.json`.
+Do not stop without owner permission. Old spectator server135448 stopped with explicit
+permission; final logs archived. QA memory restored before this new live session.
+Pending: final15-bot soak, F1 root cause/human spawn195 comparison, native movement
+speed investigation (Claude lead; no speed caps changed), live regression of recovery.
+Research branch442296db read without merging; no fake channels, PS or standard-player changes.
+
+
 ## Current P1: native bot spectator, 2026-10-24
 
 Latest built game source **`a6ee9e9e`**, feature `aeda53df`; MSVC x64 Release
@@ -25,7 +47,7 @@ Automated QA servers stopped and original QA memory restored before this live se
 
 Matched source `a6ee9e9e`: Steelmill, **6 Normal** bots, loopback port64150.
 Server PID135448, client PID54148. Client log confirms map loaded; server telemetry
-reports clients=1. **Session left running for the owner; do not stop without permission.**
+reports clients=1. **Historical session: stopped with explicit permission; final logs archived in its `final/` directory.**
 Session metadata: `build/owner-playtests/spectator6-20261024-041505/session.json`.
 Profile logs: `WarsBots-Spectator6-20261024-041505-{Server,Client}.log` and server
 `.bots.log`. Owner positively confirmed spectator/FP camera. HUD and complete network/

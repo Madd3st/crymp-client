@@ -1,0 +1,312 @@
+{
+  "schema": 1,
+  "runs": [
+    {
+      "metadata": {
+        "tag": "candidate-r1-n6",
+        "session": "trap-soak-b3ce761f",
+        "progress_requested": -1,
+        "trap_recovery_requested": 1,
+        "fire_diagnostics": false,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 1,
+        "bots": 6,
+        "seconds": 660,
+        "source_sha": "b3ce761fa21a493cd827a50d02273122f2e2f8da",
+        "server_sha256": "246FE30A9DB81C3D454D7167E680282B0E6CBFC6CE0468F06316EA9B15663745",
+        "client_sha256": "E849EF2FCE3EDDDCC926AFC3329BEE39FBB6A332AFD3DF5755F018DF28757289",
+        "memory_sha256": "F898686360DE2AE3B69604D2FCC7703DAA79EC274D32E49808C86AD77D79549A",
+        "roster": [
+          {
+            "style": "auto",
+            "number": 1,
+            "skill": "beginner"
+          },
+          {
+            "style": "auto",
+            "number": 2,
+            "skill": "normal"
+          },
+          {
+            "style": "auto",
+            "number": 3,
+            "skill": "veteran"
+          },
+          {
+            "style": "auto",
+            "number": 4,
+            "skill": "elite"
+          },
+          {
+            "style": "auto",
+            "number": 5,
+            "skill": "beginner"
+          },
+          {
+            "style": "auto",
+            "number": 6,
+            "skill": "normal"
+          }
+        ],
+        "log": "WarsBots-Tactics-trap-soak-b3ce761f-candidate-r1-n6.bots.log",
+        "completed": true,
+        "kills": 39
+      },
+      "log_sha256": "e1c8b784b7dd1a911002f74c50a3e488a0c762f737916fe41b3d6b7ad76cbf00",
+      "observed_seconds": 659.24,
+      "stages": {
+        "1": 6,
+        "2": 2,
+        "3": 2,
+        "4": 1
+      },
+      "native_self_kills": 1
+    },
+    {
+      "metadata": {
+        "observed_seconds": 68.68,
+        "nav_exports": 1,
+        "hotspot_all_nodes_requested": 1,
+        "tag": "candidate-r1-n15",
+        "session": "trap-nav-soak-d4b0854c",
+        "progress_requested": -1,
+        "trap_recovery_requested": 1,
+        "fire_diagnostics": false,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 1,
+        "bots": 15,
+        "seconds": 660,
+        "source_sha": "d4b0854c2d3281f6b3b7ba9e22ccdc6b809034c1",
+        "server_sha256": "3ECC4BDF1F15013FEFAC56FB268900E8B14020C198CB5EE419AAE3CC8B31A6DF",
+        "client_sha256": "6936B1DAAE474819E90EA2B6202826FE1932E10E1E701236895D317EA9889D63",
+        "memory_sha256": "F898686360DE2AE3B69604D2FCC7703DAA79EC274D32E49808C86AD77D79549A",
+        "roster": [
+          {
+            "number": 1,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 2,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 3,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 4,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 5,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 6,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 7,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 8,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 9,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 10,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 11,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 12,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 13,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 14,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 15,
+            "skill": "veteran",
+            "style": "auto"
+          }
+        ],
+        "log": "WarsBots-Tactics-trap-nav-soak-d4b0854c-candidate-r1-n15.bots.log",
+        "completed": false,
+        "kills": 22
+      },
+      "log_sha256": "e9b8b0b7996f7a410e6d463921a39fe6b5c7bbdbd324c62d9359b5d4f349fc70",
+      "observed_seconds": 68.68,
+      "stages": {
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "native_self_kills": 0
+    },
+    {
+      "metadata": {
+        "observed_seconds": 254.41,
+        "nav_exports": 2,
+        "hotspot_all_nodes_requested": 1,
+        "tag": "candidate-r1-n15",
+        "session": "trap-nav-soak-d4b0854c-r2",
+        "progress_requested": -1,
+        "trap_recovery_requested": 1,
+        "fire_diagnostics": false,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 1,
+        "bots": 15,
+        "seconds": 660,
+        "source_sha": "d4b0854c2d3281f6b3b7ba9e22ccdc6b809034c1",
+        "server_sha256": "3ECC4BDF1F15013FEFAC56FB268900E8B14020C198CB5EE419AAE3CC8B31A6DF",
+        "client_sha256": "6936B1DAAE474819E90EA2B6202826FE1932E10E1E701236895D317EA9889D63",
+        "memory_sha256": "F898686360DE2AE3B69604D2FCC7703DAA79EC274D32E49808C86AD77D79549A",
+        "roster": [
+          {
+            "number": 1,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 2,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 3,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 4,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 5,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 6,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 7,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 8,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 9,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 10,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 11,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 12,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 13,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 14,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 15,
+            "skill": "veteran",
+            "style": "auto"
+          }
+        ],
+        "log": "WarsBots-Tactics-trap-nav-soak-d4b0854c-r2-candidate-r1-n15.bots.log",
+        "completed": false,
+        "kills": 88
+      },
+      "log_sha256": "a57731940c5a61e7f1663cc4b6aba1c30c2ad6ccabe8e1c3902647a7ae787aef",
+      "observed_seconds": 254.41,
+      "stages": {
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      },
+      "native_self_kills": 0
+    }
+  ],
+  "hotspot_benchmark_us": {
+    "stride2": 1.97,
+    "all_nodes": 3.669,
+    "nodes": 7633,
+    "queries_per_mode": 5000,
+    "scope": "pure weighted selector microbenchmark; not whole-process performance"
+  },
+  "export": {
+    "nodes": 7633,
+    "edges": 41618,
+    "spawns": 36,
+    "bytes": 684128,
+    "ms": [
+      9.26,
+      9.06
+    ],
+    "stable_arrays_sha256": "37d36e25ecb0ebb1aaf5146abfe33a6b8eac7ee236e450263081f6f29803b38b",
+    "validator_source": "442296db",
+    "local_path": "build/trap-nav-soak-d4b0854c-r2",
+    "passed": true
+  },
+  "full_latest_10min_soak": "PENDING: owner requested live access at ~254s; not a pass"
+}
