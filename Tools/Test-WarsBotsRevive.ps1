@@ -22,6 +22,7 @@ $dataMemory=Join-Path $env:LOCALAPPDATA 'WarsBots/Memory'
 $memory=Join-Path $dataMemory 'Multiplayer_IA_Steelmill.mem'
 $dir=(Resolve-Path -LiteralPath $BuildDirectory).Path
 $manifest=Get-Content (Join-Path $dir 'claude-build.json') -Raw|ConvertFrom-Json
+    if($manifest.data_layout -ne 'local-v1'){throw 'QA requires local-v1 build after C-008; frozen legacy builds use old profile paths'}
 $exe=Join-Path $dir 'CryMP-Server64.exe'
 if(-not $manifest.sha.StartsWith($ExpectedSource) -or (Get-FileHash $exe).Hash -ne $manifest.server){throw 'Build identity mismatch'}
 New-Item -ItemType Directory $out|Out-Null

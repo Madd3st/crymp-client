@@ -1,0 +1,215 @@
+{
+  "source": "dae506db",
+  "pure_state_unit": "PASS",
+  "build": "MSVC x64 Release experimental client/server PASS; initial missing CMake source fixed",
+  "human_client_validation": "pending live owner recording",
+  "runs": [
+    {
+      "tag": "baseline-r1-n6",
+      "completed": true,
+      "source": "dae506db8f9747e313e1e8c7819079bf6f06c6a0",
+      "trace_rows": 0,
+      "actors": 0,
+      "median_dt": null,
+      "max_line_bytes": 0,
+      "events": {
+        "takeoffs": 0,
+        "jumpEdges": 0,
+        "landEdges": 0
+      },
+      "summary": {
+        "schema": "warsbots-run-summary/1",
+        "label": "map=multiplayer/ia/steelmill;bots=6;seconds=60;style=auto;progress_requested=-1;trap_recovery_requested=-1;hotspot_all_nodes_requested=-1;physics_diagnostics_requested=-1;reachable_goals_requested=-1;sink_escape_requested=-1;fire_diagnostics=False;move_trace_requested=-1;roster=1:beginner:auto,2:normal:auto,3:veteran:auto,4:elite:auto,5:beginner:auto,6:normal:auto",
+        "log": "WarsBots-Tactics-move-trace-onoff-dae506db-baseline-r1-n6.bots.log",
+        "log_sha256": "08a10ad370b2811a960c999536267d70e25a986e2d25afa0f63212c68a52b60a",
+        "build": "v26-84-gdae506db",
+        "bots": 6,
+        "seconds": 58.5,
+        "live_bot_minutes": 5.6,
+        "spawn195": {
+          "revives": 0,
+          "frozen": 0
+        },
+        "revives": {
+          "total": 0,
+          "frozen": 0,
+          "frozen_spawns": {}
+        },
+        "watchdog": {
+          "episodes": 0,
+          "at_spawn195": 0,
+          "reached_level": {},
+          "self_kills": 0
+        },
+        "pinned_live_percent": 0.0,
+        "traps_ge60s": 0,
+        "stalls": 10,
+        "nav_fallback": {
+          "total": 111,
+          "per_bot_minute": 19.67,
+          "reasons": {
+            "goal_unprojected": 12,
+            "no_route": 99
+          },
+          "no_route_percent": 89.2
+        },
+        "unreachable_weapon_skips": 17,
+        "goal_skips": {},
+        "pickups": {
+          "total": 6,
+          "lives": 0,
+          "lives_with_pickup": 0,
+          "lives_with_pickup_percent": null
+        },
+        "movement": {
+          "moving_samples": 168,
+          "over_4ms_percent": 6.5,
+          "native_sprint_percent": 10.1,
+          "median_speed_by_state_max": 2.5
+        },
+        "graph": null
+      }
+    },
+    {
+      "tag": "candidate-r1-n6",
+      "completed": true,
+      "source": "dae506db8f9747e313e1e8c7819079bf6f06c6a0",
+      "trace_rows": 1290,
+      "actors": 12,
+      "median_dt": 0.266,
+      "max_line_bytes": 329,
+      "events": {
+        "takeoffs": 11,
+        "jumpEdges": 6,
+        "landEdges": 23
+      },
+      "summary": {
+        "schema": "warsbots-run-summary/1",
+        "label": "map=multiplayer/ia/steelmill;bots=6;seconds=60;style=auto;progress_requested=-1;trap_recovery_requested=0;hotspot_all_nodes_requested=-1;physics_diagnostics_requested=-1;reachable_goals_requested=0;sink_escape_requested=0;fire_diagnostics=False;move_trace_requested=1;roster=1:beginner:auto,2:normal:auto,3:veteran:auto,4:elite:auto,5:beginner:auto,6:normal:auto",
+        "log": "WarsBots-Tactics-move-trace-onoff-dae506db-candidate-r1-n6.bots.log",
+        "log_sha256": "53cd80660c6d863027baecaec12d7e14791496b38131b769afe5725e0bffe0bb",
+        "build": "v26-84-gdae506db",
+        "bots": 6,
+        "seconds": 58.1,
+        "live_bot_minutes": 5.5,
+        "spawn195": {
+          "revives": 0,
+          "frozen": 0
+        },
+        "revives": {
+          "total": 0,
+          "frozen": 0,
+          "frozen_spawns": {}
+        },
+        "watchdog": {
+          "episodes": 0,
+          "at_spawn195": 0,
+          "reached_level": {},
+          "self_kills": 0
+        },
+        "pinned_live_percent": 0.0,
+        "traps_ge60s": 0,
+        "stalls": 8,
+        "nav_fallback": {
+          "total": 117,
+          "per_bot_minute": 21.11,
+          "reasons": {
+            "goal_unprojected": 4,
+            "no_route": 113
+          },
+          "no_route_percent": 96.6
+        },
+        "unreachable_weapon_skips": 14,
+        "goal_skips": {},
+        "pickups": {
+          "total": 4,
+          "lives": 1,
+          "lives_with_pickup": 0,
+          "lives_with_pickup_percent": 0.0
+        },
+        "movement": {
+          "moving_samples": 166,
+          "over_4ms_percent": 7.2,
+          "native_sprint_percent": 11.4,
+          "median_speed_by_state_max": 2.5
+        },
+        "graph": null
+      }
+    }
+  ],
+  "corrected_phase_run": {
+    "source": "8b9236f48c792871bb8a7db9fb9895114c80ae78",
+    "completed": true,
+    "rows": 1373,
+    "actors": 12,
+    "effective_hz": 3.998718058034336,
+    "median_dt": 0.254,
+    "min_dt": 0.221,
+    "max_dt": 0.278,
+    "events": {
+      "takeoffs": 14,
+      "jumpEdges": 3,
+      "landEdges": 26
+    },
+    "summary": {
+      "schema": "warsbots-run-summary/1",
+      "label": "map=multiplayer/ia/steelmill;bots=6;seconds=60;style=auto;progress_requested=-1;trap_recovery_requested=0;hotspot_all_nodes_requested=-1;physics_diagnostics_requested=-1;reachable_goals_requested=0;sink_escape_requested=0;fire_diagnostics=False;move_trace_requested=1;roster=1:beginner:auto,2:normal:auto,3:veteran:auto,4:elite:auto,5:beginner:auto,6:normal:auto",
+      "log": "WarsBots-Tactics-move-trace-phase-8b9236f4-candidate-r1-n6.bots.log",
+      "log_sha256": "dc9504b96fa7f3620e245eb25697461cdc0f06b8c0fc91470b190055617d7b37",
+      "build": "v26-85-g8b9236f4",
+      "bots": 6,
+      "seconds": 58.7,
+      "live_bot_minutes": 5.5,
+      "spawn195": {
+        "revives": 0,
+        "frozen": 0
+      },
+      "revives": {
+        "total": 0,
+        "frozen": 0,
+        "frozen_spawns": {}
+      },
+      "watchdog": {
+        "episodes": 0,
+        "at_spawn195": 0,
+        "reached_level": {},
+        "self_kills": 0
+      },
+      "pinned_live_percent": 0.0,
+      "traps_ge60s": 0,
+      "stalls": 7,
+      "nav_fallback": {
+        "total": 103,
+        "per_bot_minute": 18.84,
+        "reasons": {
+          "goal_unprojected": 12,
+          "no_route": 91
+        },
+        "no_route_percent": 88.3
+      },
+      "unreachable_weapon_skips": 13,
+      "goal_skips": {},
+      "pickups": {
+        "total": 8,
+        "lives": 1,
+        "lives_with_pickup": 1,
+        "lives_with_pickup_percent": 100.0
+      },
+      "movement": {
+        "moving_samples": 164,
+        "over_4ms_percent": 10.4,
+        "native_sprint_percent": 14.0,
+        "median_speed_by_state_max": 2.5
+      },
+      "graph": null
+    },
+    "matched_build": {
+      "client": "B005C9E459046974C927F9C9987AF3FC77968AF84D94BDF2A99D815A29363B3F",
+      "server": "A03B4FA9986E58E15AD395021C215ABA940B1DE24E9704C7860D69C9A647EEF1",
+      "data_layout": "local-v1",
+      "sha": "8b9236f48c792871bb8a7db9fb9895114c80ae78",
+      "config": "MSVC x64 Release experimental; phase-correct MOVE TRACE default0, local data",
+      "move_trace": true
+    }
+  }
+}

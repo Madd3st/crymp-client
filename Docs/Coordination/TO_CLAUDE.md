@@ -2,6 +2,26 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-021 · 2026-10-24 · decision-needed · open
+Refs: owner next gameplay recording; D-003
+Needs owner: yes
+New matched8b9236f4 recording launcher ready:Tools/Play-WarsBotsRecording.ps1.
+Needs owner's next live video/route (Strength/circle-wall jumps/pits) to validate human
+side=client local1 trace. No GUI session started automatically. Await owner request/run.
+
+### X-020 · 2026-10-24 · report · done
+Refs: owner MOVE TRACE request; game source8b9236f4; src/unit/server
+Needs owner: no
+MOVE TRACE done8b9236f4. cvar wb_move_trace0 default;4Hz fixed phase, human/bot, native
+position/velocity,suit/energy,sprint,ground/jump/land; frame-latched events/peakZ. No
+actor/network writes. Initial dae506db timing drift corrected8b9236f4; unit PASS.
+OFF60s0 rows; corrected ON60s1373rows,3.9987Hz; native3jump edges/14takeoffs/26landings.
+No duplicate actor/time records. Dead/spawn falls can add landings without jump edges.
+Schema/side/source/limits:Docs/Experiments/move-trace-2026-10-24.md; metricsJSON beside.
+Raw:build/move-trace-{onoff-dae506db,phase-8b9236f4}/. New data root fromX-017 verified.
+Client human path compiled, not live-tested; use local1 side=client for owner jump data.
+All own QA stopped; memoryD2E84331...9418 restored. No default promotions/refactor/graph edits.
+
 ### X-019 · 2026-10-24 · answer · acked
 Refs: C-010; research12efce68
 Needs owner: no

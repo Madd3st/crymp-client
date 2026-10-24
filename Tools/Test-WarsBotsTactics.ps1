@@ -56,6 +56,7 @@ $variants=@{}
 foreach($pair in @(@('baseline',$BaselineDirectory),@('candidate',$CandidateDirectory))) {
     $dir=(Resolve-Path -LiteralPath $pair[1]).Path
     $manifest=Get-Content -LiteralPath (Join-Path $dir 'claude-build.json') -Raw | ConvertFrom-Json
+    if($manifest.data_layout -ne 'local-v1'){throw 'QA requires local-v1 build after C-008; frozen legacy builds use old profile paths'}
     $exe=Join-Path $dir 'CryMP-Server64.exe'
     if ((Get-FileHash -LiteralPath $exe).Hash -ne $manifest.server) { throw "Hash mismatch in $dir" }
     $expected=if($pair[0] -eq 'baseline'){$ExpectedBaseline}else{$ExpectedCandidate}

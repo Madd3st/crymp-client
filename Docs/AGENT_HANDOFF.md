@@ -1,6 +1,24 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
-## Reboot checkpoint: all QA stopped, 2026-10-24
+## Current: local data, C-006 complete, MOVE TRACE ready
+
+Latest matched game source **8b9236f4**, MSVC x64 Release experimental client/server PASS;
+artifacts build/play-8b9236f4/. wb_move_trace defaults0, frame-latched human/bot records,
+fixed250ms grid. Unit tests PASS; OFF60s zero rows; corrected ON60s1373 rows,3.9987Hz.
+Human/local-client trace still needs owner recording; no GUI launched in this QA step.
+[Schema, limits, launch and metrics](Experiments/move-trace-2026-10-24.md).
+Owner recording launcher:Tools/Play-WarsBotsRecording.ps1 (6Normal,DX9,displayInfo1,
+B/C/fullhotspot0,recovery1,physicsdiag1,trace1 both sides; refuses existing sessions).
+Logs:C:\Users\Magic8\AppData\Local\WarsBots\Logs; memory/exports:sibling Memory.
+173 files migrated with hashes; ordinary Crysis profile untouched. Old frozen builds use
+old profile paths; current QA rejects them. QA ports46040/record46050 avoid MSI64140.
+C-002 NOT fixed:native selector+Spawned+UpdateAreas10 valid body+5 samples pinned195.
+C-006 PASS40pairs/80directions; all first blockedclearance h0.5; raw/counts committed.
+Graph arrays unchanged; no graph repair/speed changes. B parked OFF perC-009, C OFF;
+refactor deferredC-010. All own QA processes stopped, local memory restoredD2E84331...9418.
+Next: owner trace/video and native body/contact diagnosis, then reviewed graph proposal.
+
+## Historical reboot checkpoint: all QA stopped, 2026-10-24
 
 Owner requested reboot. All own servers/runners stopped; original map memory restored.
 Last built sourcef9cb6599; matched artifacts build/play-f9cb6599/. No GUI/client started.
