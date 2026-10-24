@@ -10,7 +10,7 @@ python Tools/SteelmillTriage/steelmill_triage.py graph <level.nav.json> --mem <l
 python -m unittest discover -s Tools/SteelmillTriage/tests
 ```
 
-`analyze` writes `lab_report.json` and `steelmill_lab.html` (self-contained map viewer:
+`analyze` writes `triage_report.json` and `steelmill_triage.html` (self-contained map viewer:
 layers, floor filter, hover details, click a trap row to zoom its floor). Copy logs out of
 `My Games/Crysis` first if a QA run might still be writing them.
 

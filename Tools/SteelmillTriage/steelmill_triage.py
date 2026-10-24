@@ -50,13 +50,13 @@ def cmd_analyze(a):
             label = f"{Path(path).name} · run {run.index}"
             payloads.append(render.build_payload(label, run, summary, st, analysis.pinned(run), grid, graph, memory))
     report = dict(schema="steelmill-triage/1", memory=memory.summary() if memory else None, runs=results)
-    (out / "lab_report.json").write_text(json.dumps(report, indent=2, default=list) + "\n", encoding="utf-8")
-    render.write_html(out / "steelmill_lab.html", payloads)
+    (out / "triage_report.json").write_text(json.dumps(report, indent=2, default=list) + "\n", encoding="utf-8")
+    render.write_html(out / "steelmill_triage.html", payloads)
     for s in results:
         print(f"{s['log']} run {s['run']}: {s['bots']} bots {s['seconds']:.0f}s build={s['build']} "
               f"pinned={s['pinned']['live_percent']}% traps={s['traps']['count']} stalls={s['stalls']['count']} "
               f"fallbacks={s['nav_fallback']['counts'].get('total', 0)}")
-    print(f"wrote {out / 'lab_report.json'} and {out / 'steelmill_lab.html'}")
+    print(f"wrote {out / 'triage_report.json'} and {out / 'steelmill_triage.html'}")
 
 
 def cmd_graph(a):
