@@ -3,6 +3,11 @@
 Repo `Madd3st/crymp-client`. Read this, then `../STATUS.md` (current truth) and the mailbox. Do not re-derive
 history. The `warsbots-coordinator` skill (if the owner saved it) carries the same loop.
 
+## Status reply format (owner, 25.10 00:07)
+
+When the owner asks "статус", answer in this order: 1) who is doing what right now (Codex / OpenCode / Claude),
+2) what is done, 3) what is planned next, 4) priorities, 5) where we are on the roadmap (step N of the D-008 queue).
+
 ## Roles and rules
 
 - **D-010 (20:27):** Claude also writes engine-free logic modules (`Code/CryGame/Bots/Bot*.h` + `Tests/*Tests.cpp`,
