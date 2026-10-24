@@ -74,11 +74,13 @@ bool BotInstance::Spawn(const Vec3& position)
 	WB_LOG(0, "[WarsBots] #%d created EntityId=%u name=%s profile=%s/%s position=(%.3f, %.3f, %.3f).",
 		m_number, m_entityId, m_name, BotProfile::StyleName(m_profile.style), BotProfile::SkillName(m_profile.skill),
 		actualPosition.x, actualPosition.y, actualPosition.z);
+    BeginPhysicsProbe("create");
 	return true;
 }
 
 void BotInstance::Remove()
 {
+    m_physicsProbe.Cancel();
 	m_brain.Stop(*this);
 	if (!m_entityId)
 		return;
@@ -108,6 +110,7 @@ void BotInstance::Remove()
 
 void BotInstance::OnEntityDone()
 {
+    m_physicsProbe.Cancel();
 	if (!m_entityId)
 		return;
 	m_brain.Stop(*this);
@@ -185,10 +188,57 @@ void BotInstance::Status() const
 		m_killPlayerObserved ? 1 : 0, m_updateCount ? m_totalUpdateMs / float(m_updateCount) : 0.0f, m_maxUpdateMs);
 }
 
+bool BotInstance::PhysicsDiagnostics() const
+{
+    const ICVar* flag=gEnv->pConsole->GetCVar("wb_physics_diagnostics");
+    return flag && flag->GetIVal()==1 && Owns(m_entityId) && CanRunLocalIA();
+}
+
+void BotInstance::BeginPhysicsProbe(const char* origin)
+{
+    m_physicsProbe.Cancel();
+    if (!PhysicsDiagnostics()) return;
+    m_physicsOrigin=origin;++m_physicsEpoch;
+    m_physicsProbe.Start(gEnv->pTimer->GetFrameStartTime().GetSeconds());
+    TracePhysics("now",0.f);
+}
+
+void BotInstance::TracePhysics(const char* phase,float elapsed) const
+{
+    CActor* actor=GetActor();
+    if (!actor || !PhysicsDiagnostics()) return;
+    IPhysicalEntity* body=actor->GetEntity()->GetPhysics();
+    pe_status_pos pose;pe_status_awake awake;pe_status_living living;pe_player_dynamics dynamics;
+    const bool hasPose=body && body->GetStatus(&pose)>0;
+    const bool hasLiving=body && body->GetStatus(&living)>0;
+    const bool hasDynamics=body && body->GetParams(&dynamics)>0;
+    const Vec3 entity=actor->GetEntity()->GetWorldPos(),physical=hasPose?pose.pos:Vec3(0,0,0);
+    WB_LOG(1,"[WarsBots] BODY STATE actor=%u epoch=%u spawn=%u origin=%s phase=%s elapsed=%.3f health=%d profile=%u type=%d awake=%d active=%d enabled=unknown_api poseValid=%d entity=(%.3f,%.3f,%.3f) physics=(%.3f,%.3f,%.3f) delta=%.4f.",
+        m_entityId,m_physicsEpoch,m_lastSpawnLocation,m_physicsOrigin,phase,elapsed,actor->GetHealth(),
+        unsigned(actor->GetGameObject()->GetAspectProfile(eEA_Physics)),body?body->GetType():-1,
+        body?body->GetStatus(&awake):-1,hasDynamics && !is_unused(dynamics.bActive)?dynamics.bActive:-1,hasPose?1:0,
+        entity.x,entity.y,entity.z,physical.x,physical.y,physical.z,hasPose?(entity-physical).GetLength():-1.f);
+    if (hasLiving)
+        WB_LOG(1,"[WarsBots] BODY LIVING actor=%u epoch=%u spawn=%u phase=%s flying=%d stuck=%d squashed=%d stairs=%d groundHeight=%.3f groundCollider=%d vel=(%.3f,%.3f,%.3f) requested=(%.3f,%.3f,%.3f) airControl=%.3f.",
+            m_entityId,m_physicsEpoch,m_lastSpawnLocation,phase,living.bFlying,living.bStuck,living.bSquashed,living.bOnStairs,
+            living.groundHeight,living.pGroundCollider?1:0,living.vel.x,living.vel.y,living.vel.z,
+            living.velRequested.x,living.velRequested.y,living.velRequested.z,hasDynamics && !is_unused(dynamics.kAirControl)?dynamics.kAirControl:-1.f);
+    else WB_LOG(1,"[WarsBots] BODY LIVING actor=%u epoch=%u spawn=%u phase=%s supported=0.",m_entityId,m_physicsEpoch,m_lastSpawnLocation,phase);
+}
+
 void BotInstance::Update(float dt)
 {
 	const CTimeValue started = gEnv->pTimer->GetAsyncTime();
 	m_brain.Update(*this, dt);
+    CActor* sampled=GetActor();
+    if (!PhysicsDiagnostics() || !sampled || sampled->GetHealth()<=0) m_physicsProbe.Cancel();
+    else
+    {
+        const float now=gEnv->pTimer->GetFrameStartTime().GetSeconds();
+        const unsigned due=m_physicsProbe.Take(now);
+        if (due&1u) TracePhysics("+1",m_physicsProbe.Elapsed(now));
+        if (due&2u) TracePhysics("+5",m_physicsProbe.Elapsed(now));
+    }
 	if (Owns(m_entityId))
 		if (IActor* actor = m_owner.Framework()->GetIActorSystem()->GetActor(m_entityId))
 		{
@@ -248,6 +298,7 @@ bool BotInstance::Revive()
 		m_lastHealth = revived->GetHealth();
 		m_lastHitShooter = 0;
 		m_killPlayerObserved = false;
+        BeginPhysicsProbe("revive");
 	}
 	return alive;
 }

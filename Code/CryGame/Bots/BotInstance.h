@@ -6,6 +6,7 @@
 #include "CryCommon/CryEntitySystem/IEntity.h"
 #include "CryGame/Bots/BotBrain.h"
 #include "CryGame/Bots/BotProfile.h"
+#include "CryGame/Bots/BotPhysicsProbe.h"
 
 struct HitInfo;
 class CActor;
@@ -57,6 +58,12 @@ public:
 	void ResetProfile() { m_maxUpdateMs = m_totalUpdateMs = 0; m_updateCount = 0; }
 
 private:
+    bool PhysicsDiagnostics() const;
+    void BeginPhysicsProbe(const char* origin);
+    void TracePhysics(const char* phase, float elapsed) const;
+    BotPhysicsProbe m_physicsProbe;
+    const char* m_physicsOrigin="none";
+    unsigned m_physicsEpoch=0;
 	BotManager& m_owner;
 	const int m_number;
 	char m_name[32] = {};
