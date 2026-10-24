@@ -1,0 +1,540 @@
+{
+  "schema": 1,
+  "game_source": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+  "report_fix": "2a2ac39d",
+  "protocol": "2 repeats x 120 seconds x 6/15 bots; skill rotation; identical memory snapshot, RNG not fixed",
+  "runs": [
+    {
+      "metadata": {
+        "tag": "candidate-r1-n6",
+        "session": "p1-regression-8f0abd5f",
+        "progress_requested": -1,
+        "fire_diagnostics": true,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 1,
+        "bots": 6,
+        "seconds": 120,
+        "source_sha": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+        "server_sha256": "6EF0C0A4D18BAE5F0BE0C61254548829ADC37E3E7C197A024F3A01B214EB9953",
+        "client_sha256": "E9DE7C07D4C0682FA2877564540C46450C822739B05688D3121E36ED3417563C",
+        "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+        "roster": [
+          {
+            "skill": "beginner",
+            "number": 1,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 2,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 3,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 4,
+            "style": "auto"
+          },
+          {
+            "skill": "beginner",
+            "number": 5,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 6,
+            "style": "auto"
+          }
+        ],
+        "log": "WarsBots-Tactics-p1-regression-8f0abd5f-candidate-r1-n6.bots.log",
+        "completed": true,
+        "kills": 4
+      },
+      "metrics": {
+        "kills": 4,
+        "deaths": 4,
+        "revives_alive": 4,
+        "median_reported_window_ms": 0.0765,
+        "max_single_bot_update_ms": 2.59,
+        "weapon_timeouts": 35,
+        "blocked_percent": 2.08,
+        "observed_seconds": 118.3
+      },
+      "log_sha256": "61c98882d5419cc2deff1584613df6b8b63e14b6380c52a3c3abf80afd0f653c",
+      "cadence": {
+        "SOCOM": {
+          "shots": 46,
+          "active_interval_samples": 32,
+          "active_interval_min": 0.35,
+          "active_interval_median": 0.38,
+          "clip_decrement_values": [
+            1
+          ]
+        },
+        "SCAR": {
+          "shots": 30,
+          "active_interval_samples": 29,
+          "active_interval_min": 0.09,
+          "active_interval_median": 0.09,
+          "clip_decrement_values": [
+            1
+          ]
+        },
+        "FY71": {
+          "shots": 26,
+          "active_interval_samples": 24,
+          "active_interval_min": 0.09,
+          "active_interval_median": 0.375,
+          "clip_decrement_values": [
+            1
+          ]
+        },
+        "SMG": {
+          "shots": 21,
+          "active_interval_samples": 16,
+          "active_interval_min": 0.06,
+          "active_interval_median": 0.07,
+          "clip_decrement_values": [
+            1
+          ]
+        }
+      },
+      "counters": {
+        "invulnerable_impacts_excluded": 1,
+        "native_shot_events": 123,
+        "shot_callbacks_unknown_replica_state": 7,
+        "pending_before_at_end": 0
+      },
+      "exact_duplicate_shot_callbacks": 0,
+      "registered_actor_hits": 50,
+      "head_hits": 2,
+      "episode_cap_drops": 0
+    },
+    {
+      "metadata": {
+        "tag": "candidate-r1-n15",
+        "session": "p1-regression-8f0abd5f",
+        "progress_requested": -1,
+        "fire_diagnostics": true,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 1,
+        "bots": 15,
+        "seconds": 120,
+        "source_sha": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+        "server_sha256": "6EF0C0A4D18BAE5F0BE0C61254548829ADC37E3E7C197A024F3A01B214EB9953",
+        "client_sha256": "E9DE7C07D4C0682FA2877564540C46450C822739B05688D3121E36ED3417563C",
+        "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+        "roster": [
+          {
+            "skill": "beginner",
+            "number": 1,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 2,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 3,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 4,
+            "style": "auto"
+          },
+          {
+            "skill": "beginner",
+            "number": 5,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 6,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 7,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 8,
+            "style": "auto"
+          },
+          {
+            "skill": "beginner",
+            "number": 9,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 10,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 11,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 12,
+            "style": "auto"
+          },
+          {
+            "skill": "beginner",
+            "number": 13,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 14,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 15,
+            "style": "auto"
+          }
+        ],
+        "log": "WarsBots-Tactics-p1-regression-8f0abd5f-candidate-r1-n15.bots.log",
+        "completed": true,
+        "kills": 37
+      },
+      "metrics": {
+        "kills": 37,
+        "deaths": 37,
+        "revives_alive": 32,
+        "median_reported_window_ms": 0.23249999999999998,
+        "max_single_bot_update_ms": 6.16,
+        "weapon_timeouts": 43,
+        "blocked_percent": 2.96,
+        "observed_seconds": 119.07
+      },
+      "log_sha256": "2788e965d8d2f8444876d9689679fc0f8d20ddc57d157c34bef8c47293731c4a",
+      "cadence": {
+        "SOCOM": {
+          "shots": 1007,
+          "active_interval_samples": 879,
+          "active_interval_min": 0.24,
+          "active_interval_median": 0.37,
+          "clip_decrement_values": [
+            1
+          ]
+        },
+        "FY71": {
+          "shots": 273,
+          "active_interval_samples": 246,
+          "active_interval_min": 0.09,
+          "active_interval_median": 0.12,
+          "clip_decrement_values": [
+            1
+          ]
+        },
+        "SMG": {
+          "shots": 64,
+          "active_interval_samples": 60,
+          "active_interval_min": 0.06,
+          "active_interval_median": 0.09,
+          "clip_decrement_values": [
+            1
+          ]
+        }
+      },
+      "counters": {
+        "native_shot_events": 1344,
+        "shot_callbacks_unknown_replica_state": 64,
+        "invulnerable_impacts_excluded": 2,
+        "pending_before_at_end": 1
+      },
+      "exact_duplicate_shot_callbacks": 0,
+      "registered_actor_hits": 535,
+      "head_hits": 19,
+      "episode_cap_drops": 0
+    },
+    {
+      "metadata": {
+        "tag": "candidate-r2-n6",
+        "session": "p1-regression-8f0abd5f",
+        "progress_requested": -1,
+        "fire_diagnostics": true,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 2,
+        "bots": 6,
+        "seconds": 120,
+        "source_sha": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+        "server_sha256": "6EF0C0A4D18BAE5F0BE0C61254548829ADC37E3E7C197A024F3A01B214EB9953",
+        "client_sha256": "E9DE7C07D4C0682FA2877564540C46450C822739B05688D3121E36ED3417563C",
+        "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+        "roster": [
+          {
+            "skill": "normal",
+            "number": 1,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 2,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 3,
+            "style": "auto"
+          },
+          {
+            "skill": "beginner",
+            "number": 4,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 5,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 6,
+            "style": "auto"
+          }
+        ],
+        "log": "WarsBots-Tactics-p1-regression-8f0abd5f-candidate-r2-n6.bots.log",
+        "completed": true,
+        "kills": 12
+      },
+      "metrics": {
+        "kills": 12,
+        "deaths": 12,
+        "revives_alive": 12,
+        "median_reported_window_ms": 0.0825,
+        "max_single_bot_update_ms": 2.59,
+        "weapon_timeouts": 23,
+        "blocked_percent": 1.58,
+        "observed_seconds": 118.42
+      },
+      "log_sha256": "9a298700d1dd5d1cccb7de295e2c5cfd7dcef0350a1b6389c4abe6285eec65c6",
+      "cadence": {
+        "SOCOM": {
+          "shots": 206,
+          "active_interval_samples": 165,
+          "active_interval_min": 0.24,
+          "active_interval_median": 0.36,
+          "clip_decrement_values": [
+            1
+          ]
+        },
+        "FY71": {
+          "shots": 134,
+          "active_interval_samples": 118,
+          "active_interval_min": 0.09,
+          "active_interval_median": 0.12,
+          "clip_decrement_values": [
+            1
+          ]
+        }
+      },
+      "counters": {
+        "native_shot_events": 340,
+        "shot_callbacks_unknown_replica_state": 15,
+        "invulnerable_impacts_excluded": 2,
+        "pending_before_at_end": 0
+      },
+      "exact_duplicate_shot_callbacks": 0,
+      "registered_actor_hits": 156,
+      "head_hits": 3,
+      "episode_cap_drops": 0
+    },
+    {
+      "metadata": {
+        "tag": "candidate-r2-n15",
+        "session": "p1-regression-8f0abd5f",
+        "progress_requested": -1,
+        "fire_diagnostics": true,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 2,
+        "bots": 15,
+        "seconds": 120,
+        "source_sha": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+        "server_sha256": "6EF0C0A4D18BAE5F0BE0C61254548829ADC37E3E7C197A024F3A01B214EB9953",
+        "client_sha256": "E9DE7C07D4C0682FA2877564540C46450C822739B05688D3121E36ED3417563C",
+        "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+        "roster": [
+          {
+            "skill": "normal",
+            "number": 1,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 2,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 3,
+            "style": "auto"
+          },
+          {
+            "skill": "beginner",
+            "number": 4,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 5,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 6,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 7,
+            "style": "auto"
+          },
+          {
+            "skill": "beginner",
+            "number": 8,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 9,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 10,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 11,
+            "style": "auto"
+          },
+          {
+            "skill": "beginner",
+            "number": 12,
+            "style": "auto"
+          },
+          {
+            "skill": "normal",
+            "number": 13,
+            "style": "auto"
+          },
+          {
+            "skill": "veteran",
+            "number": 14,
+            "style": "auto"
+          },
+          {
+            "skill": "elite",
+            "number": 15,
+            "style": "auto"
+          }
+        ],
+        "log": "WarsBots-Tactics-p1-regression-8f0abd5f-candidate-r2-n15.bots.log",
+        "completed": true,
+        "kills": 37
+      },
+      "metrics": {
+        "kills": 37,
+        "deaths": 37,
+        "revives_alive": 33,
+        "median_reported_window_ms": 0.236,
+        "max_single_bot_update_ms": 4.42,
+        "weapon_timeouts": 65,
+        "blocked_percent": 3.21,
+        "observed_seconds": 118.65
+      },
+      "log_sha256": "552e793a988f97ec22f4592be2e0f1ed0d29efe6beae33dca86ccc8131c7c245",
+      "cadence": {
+        "SOCOM": {
+          "shots": 1212,
+          "active_interval_samples": 1061,
+          "active_interval_min": 0.24,
+          "active_interval_median": 0.36,
+          "clip_decrement_values": [
+            1
+          ]
+        },
+        "FY71": {
+          "shots": 35,
+          "active_interval_samples": 30,
+          "active_interval_min": 0.09,
+          "active_interval_median": 0.12,
+          "clip_decrement_values": [
+            1
+          ]
+        },
+        "SCAR": {
+          "shots": 104,
+          "active_interval_samples": 95,
+          "active_interval_min": 0.09,
+          "active_interval_median": 0.1,
+          "clip_decrement_values": [
+            1
+          ]
+        }
+      },
+      "counters": {
+        "native_shot_events": 1351,
+        "invulnerable_impacts_excluded": 3,
+        "shot_callbacks_unknown_replica_state": 55,
+        "pending_before_at_end": 0
+      },
+      "exact_duplicate_shot_callbacks": 0,
+      "registered_actor_hits": 570,
+      "head_hits": 10,
+      "episode_cap_drops": 0
+    }
+  ],
+  "spectator": {
+    "passed": true,
+    "source_sha": "a6ee9e9e245d14014fa8200df98595958edb7c32",
+    "seconds": 60,
+    "native_query_passes": 5,
+    "server_sha256": "3AC89C4F6FACD196E3CD8582766623A70E3BDF4F278A7F904128B7642F5FE0E8",
+    "client_tested": false,
+    "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+    "client_sha256": "F3A18AB774723FFBEC6F1FEC0C78E0BB9520138D905976EF73BD44CBDF431E74",
+    "native_query_participants": [
+      0,
+      1,
+      3,
+      6,
+      5
+    ],
+    "assertions": 31,
+    "log_hashes": {
+      "WarsBots-spectator-a6ee9e9e.bots.log": "86db3434228c676e6df4d4073a4f7c99002f5358ae74986525537e08d0259d98",
+      "WarsBots-spectator-a6ee9e9e.log": "0b9a491398f8d962455419216f93ca9c10e224daab1ba142a56fde36852c7a99"
+    },
+    "local_artifacts": "build\\spectator-a6ee9e9e",
+    "visual_camera_hud_replication": "NOT TESTED"
+  },
+  "failed_pilot": {
+    "source": "aeda53df",
+    "local_artifacts": "build/spectator-aeda53df",
+    "passed": false,
+    "reason": "QA used a Lua number instead of NULL_ENTITY; same-frame removal checks preceded deferred entity deletion; corrected in a6ee9e9e"
+  }
+}

@@ -1,5 +1,32 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
+## Current P1: native bot spectator, 2026-10-24
+
+Latest built game source **`a6ee9e9e`**, feature `aeda53df`; MSVC x64 Release
+experimental client+server PASS. Frozen matched EXEs/manual launchers:
+`build/play-a6ee9e9e/` (port64150, no auto bots); installed game EXEs untouched.
+Native spectator chooses owned local IA bots; `wb_watch list|1..16|next|prev|status|off`
+requires an existing real spectator, native F1 toggles FP. FP view uses replicated aim
+and native smoothing. `wb_watch_info` prints followed bot decisions on server only.
+No fake channels, changed network layout, PS changes or research merge.
+
+Frozen `8f0abd5f`: 4 completed 120s headless regressions (6/15 bots x2), no crash/script
+errors or exact duplicate shot callbacks. 3158 native shots; 141 unclassified callbacks
+excluded from cadence. SOCOM min0.24s, contiguous native clip changes1. Median bot
+Update sum0.0765–0.0825ms/frame (6), 0.2325–0.236ms/frame (15); not total server CPU.
+Exporter lifecycle/gap defect fixed in `2a2ac39d`; 11 Python tests pass.
+Spectator C++ tests PASS; 60s headless native Lua/C++ queries PASS: 31 assertions over
+0/1/3/6/5 participants, including deferred removal. Failed QA pilot preserved separately.
+See [experiment, commands and live checklist](Experiments/regression-spectator-2026-10-24.md)
+and [metrics/hashes](Experiments/regression-spectator-2026-10-24.json).
+
+All QA servers stopped, original memory restored. Graphical client not launched.
+**Pending:** live FP/TP camera/HUD, real-observer switching, death/respawn/removal/map
+and late second client; default-OFF build not rerun. Do not claim client replication PASS.
+Read Claude research `47ccfacf` without merging. Next priority: matched live spectator
+validation and reproduced fixes, then weapon/range naturalness. Main remains untouched.
+
+
 ## Current P0: native 1v1 and aim candidate, 2026-10-24
 
 Built/tested game source **`8f0abd5f`**. Fixed redundant local NetShoot only for owned
@@ -20,9 +47,9 @@ and [JSON](Experiments/duel-aim-2026-10-24.json).
 Old owner server stopped with explicit permission; full logs archived. All QA servers
 ended, memory restored (hash in evidence). No client launched, active EXE replaced,
 PS gate opened or ML added. Default-OFF not rebuilt; human/visual/replication and
-6/15-bot scaling regression remain untested. Frozen pair `build/play-8f0abd5f/`,
+6/15-bot scaling regression was pending at this historical checkpoint (completed above). Frozen pair `build/play-8f0abd5f/`,
 prepared manual launchers (port64150, no auto bots, SOCOM QA fixture OFF).
-Next: human naturalness/replication and further weapon/range checks, then spectator.
+Previous next step: human naturalness/replication and further weapon/range checks, then spectator; superseded above.
 P0 remains open for full validation; previous blocked candidate was `2fcb4c0f`.
 
 ## Power Struggle planning, 2026-10-24
