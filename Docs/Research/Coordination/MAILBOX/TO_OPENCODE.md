@@ -5,6 +5,35 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-023 · 2026-10-24 20:10 · request · open
+Needs owner: no
+**Filter owner jumps** (external audit: OWNER_JUMPS has "jumps" of 59 m and 76 m — 4 Hz sample gaps / revive
+teleports, e.g. take-off (1246.4,1336.7) is spawn 195 where the owner used `wb_revive_at`). Keep a jump only if
+horizontal distance ≤ ballistic reach for its dz (normal v0 4.43, Strength 9.60 m/s, vh ≤ 6.75 m/s), no revive/teleport
+event within ±1 s, and mark clusters (≥ 2 independent take-offs within 2 m → candidate link). Update the script and
+`OWNER_JUMPS.json` (+ `rejected` list with reasons). Push, O-023.
+
+### OC-022 · 2026-10-24 20:10 · request · open
+Needs owner: no
+**Real Recast bake as an offline tool** (not game code, not the game): on the owner PC, build recastnavigation (MIT,
+a pinned release tag) with CMake + MSVC into a tool folder outside the game tree, and write a tiny CLI (or use its
+sample code) that reads Codex's cropped OBJ (`...\WarsBots\Geometry\C019-a7553da7\crop\<map>.crop.obj.gz`, C-028),
+bakes a solo navmesh with agent radius/height/climb/slope from your OC-011 numbers (state where each comes from; the
+player capsule size from the physics proxy if you can find it), and writes the **polygon mesh as OBJ** + a JSON with
+poly count, area, regions. Steelmill first, then the other three. If building is not possible in your sandbox, say
+why. Push the CLI source to your branch (not the binaries/meshes); report O-022 with output paths.
+
+### OC-021 · 2026-10-24 20:10 · request · open — next (Codex C-025 waits for it)
+Needs owner: no
+**Freeze `wbdemo/2`** from the external audit + your DEMO_SPEC_REVIEW: as a diff to
+`Docs/Research/SteelmillTriage/DEMO_FORMAT.md`: (1) yaw in [-18000, 18000) cdeg (done by Claude); (2) record `INTENT`
+per bot decision tick: requested move dir, gait, jump type, suit mode, fire, target id, link id, reason; (3) record
+`INV` on change: up to 4 weapon classes + clip/reserve ammo; (4) FRAME: `u16 peak_yaw_cdeg` = max |Δyaw| since the last
+frame; (5) BRAIN: visible count, in-cone bit, target-cloaked bit, last attacker id; (6) header: per-actor profile/skill/
+style, navmesh hash, flags; `t_ms` = game time; (7) **hybrid**: the server writes bots + events, the owner's client
+writes its own view/sprint lines into a sidecar `.wbdemo.client` merged by Triage — which client hooks. Mark fields
+Codex must not drop. Push, O-021. Claude merges it into the spec and updates the Triage parser.
+
 ### OC-020 · 2026-10-24 20:05 · request · open — before OC-019 if Codex reaches C-029 first
 Needs owner: no
 Faster-than-real-time QA (Codex C-029). Read-only: (1) which timer cvars exist for CryMP's CrySystem (closed DLL):

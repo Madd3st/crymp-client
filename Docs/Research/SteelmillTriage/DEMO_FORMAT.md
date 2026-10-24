@@ -1,4 +1,4 @@
-# WarsBots demo format `wbdemo/1` (owner request 2026-10-24: "record demo / play demo")
+# WarsBots demo format `wbdemo/1` (draft — v2 freeze pending OC-021: INTENT, INV, peak yaw, perception bits, client-side human view) (owner request 2026-10-24: "record demo / play demo")
 
 Owner of the format: Claude (Triage parser `Tools/SteelmillTriage/wblab/demo.py`). Writer: Codex (`wb_demo_record`,
 C-025). Player: Codex (`wb_demo_play`, C-026). Review: OpenCode. Background and engine audit:
@@ -37,7 +37,7 @@ ACTOR_STATE (31 bytes):
 ```
 u32 id
 f32 x, y, z            feet position, world metres
-i16 yaw_cdeg           view yaw, centi-degrees, 0 = +Y (north), clockwise   (the *view*, not velocity)
+i16 yaw_cdeg           view yaw, centi-degrees in [-18000, 18000), 0 = +Y (north), clockwise (the *view*)
 i16 pitch_cdeg         view pitch, centi-degrees, + = up
 u8  stance             0 stand, 1 crouch, 2 prone, 3 swim, 4 dead/spectating
 u8  flags              bit0 alive, bit1 sprint, bit2 grounded, bit3 firing, bit4 zoomed, bit5 reloading

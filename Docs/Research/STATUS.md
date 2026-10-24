@@ -22,6 +22,7 @@ decisions and aim. Map-specific fixes only as data, never code.
 | Area | Result | Evidence |
 | --- | --- | --- |
 | Spawn 195 | bots never revive there + generic revive guard (2 s no movement → re-revive elsewhere, max 2); defaults ON (C-014/C-017, f5dc17b); 0 frozen revives since | server |
+| Sprint | C-021 accepted, default ON (D-009): sprint 23→37 %, rest of gap = fight time (ATTACKING 40 % of moving) |
 | Pace | `wb_bot_pace` **default ON** (D-007, c7d5a21): median 2.49→4.48 m/s, >4 m/s 4→76 %, stalls −40 %, pickups +35 %, no regression; owner: "livelier, stronger" | server + client |
 | Geometry export | `wb_geom_export` (a7553da): Steelmill, Quarry, Armada, Outpost exported (2.3–8.6 M triangles, 0 unsupported parts) — basis of the navmesh | server |
 | Navmesh model | Triage `navmesh`: Recast-style walk model + ballistic jump / Strength-jump links + graph metrics + PNG | unit |
@@ -29,6 +30,14 @@ decisions and aim. Map-specific fixes only as data, never code.
 | Measurement | `summary.json` contract, MOVE TRACE 4 Hz (owner + bots), Triage `pace`, `summary`, `replay`; owner reference pace recorded | server + client |
 | Research (OpenCode) | player vs bot movement params, decision-flip root cause, wall-stare root cause, sprint gap, engine geometry API, Detour integration plan, demo engine audit, owner jumps → links, reviews of every Codex push | src |
 | Process | mailbox (C-/OC-/X-/O- items), decisions file (D-001…D-007), mail loop for OpenCode, owner questions in chat | — |
+
+## External audit (Fable 5.1, 20:05)
+
+Agreed and adopted (D-008): navmesh right, but links need an executor state and filtering; bots see everyone within
+80 m with no view cone or cloak check (`BotCombat.cpp:142–166`, verified) — perception before aim polish; goal arbiter,
+not a framework rewrite; probes instead of soaks; `wbdemo/1` had a yaw overflow and lacked INTENT/INV (fixed/OC-021);
+summary lacks flips/state time/suit/jump fields. Kept against the audit: C-029 time-scale experiment (audit assumed no
+fast simulation).
 
 ## Mistakes we made
 
@@ -86,13 +95,16 @@ Acceptance: unit tests pass, one paired run with `summary` and demo metrics unch
 **Wave 2 — after the navmesh switch:** delete BotNav graph build/knee audit/reachability/goal projection/most watchdog
 levels (list: OpenCode DETOUR_INTEGRATION.md §5), R2 `BotConsole.cpp`, R5 legacy single-bot commands, R8 one revive path.
 
-## Queue (in order)
+## Queue (in order) — re-planned after the external audit (D-008, 20:08)
 
-1. C-021 sprint gap — running. 2. C-028 cropped geometry → Claude navmesh vs graph on 4 maps. 2b. **C-029
-faster-than-real-time headless QA** (owner tip: time scale; fixed step + uncapped rate preferred; accepted only if
-metrics match 1× runs) — enables many more runs and ML tuning. 3. C-025 demo recording. 4. **C-027 refactor wave 1.** 5. C-022 weapon priority (SCAR first). 6. C-023 aim + decision commit.
-7. C-026 in-game demo playback. 8. Navmesh switch (Detour, shadow mode → flag). 9. Refactor wave 2.
-10. ML: parameter tuning from paired runs; decision learning from demos; owner imitation last.
+1. C-028 cropped geometry → **offline navmesh verdict on 4 maps** (Claude `navmesh` + OpenCode real Recast bake OC-022):
+   spawn → weapon reachability, catwalks survive erosion, 0 links longer than ballistics, owner-route coverage.
+   The old graph is **not** the oracle. 2. C-029 time-scale experiment. 3. `wbdemo/2` freeze (OC-021) → C-025 demo
+   recording. 4. C-027 refactor wave 1 = R1 + R3 + R4. 5. C-031 probe harness (30–90 s scenarios on 4 maps).
+6. C-032 goal arbiter. 7. C-033 look along travel. 8. C-022 weapon rank. 9. Detour behind a flag + jump-link executor
+   state → switch on Steelmill, then a second map. 10. Perception: view cone, cloak, last-known position.
+11. Aim model (saccade + filtered noise). 12. One suit policy. 13. C-026 in-game demo playback. Later: refactor wave 2,
+    Power Struggle, ML (not this quarter; revisit if C-029 gives fast simulation).
 
 ## Rules
 

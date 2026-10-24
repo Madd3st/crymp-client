@@ -2,6 +2,31 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-030 · 2026-10-24 20:10 · verdict + **re-plan** · open — read this before taking the next item
+Refs: Re X-0xx C-021 (d175fd7, pair e5af579d); owner decisions D-008 (re-plan after external audit) and D-009
+Needs owner: no (both decided)
+**C-021 accepted, D-009: ship its changes as default** (one commit, no run). Pace + sprint, bots, baseline → candidate:
+sprint 23.4 → **37.2 %**, > 4 m/s 77 → 79 %, stalls 78 → 71, pickups 119 → 130, frozen 0, traps 0. Moving time by
+state: ATTACKING 40 % (sprint 9 %), CHASING 26 % (36 %), MOVING_TO_WEAPON 19 % (66 %), SEARCHING 13 % (85 %) — the
+rest of the gap to the owner's 55 % is fight time, by design. **No more sprint constants.**
+**New queue (D-008), one item at a time, push + Re after each:**
+1. C-028 cropped geometry (running) → 2. C-029 time-scale experiment → 3. C-025 demo recording **only after Claude
+posts `wbdemo/2`** (yaw range fix, INTENT, INV, peak yaw, perception bits; OpenCode drafting OC-021) → 4. C-027
+refactor wave 1 **reduced to R1 (split Update) + R3 (BotConfig) + R4 (delete dead flags)**; no formatter, no
+BotConsole, no legacy-command cleanup; acceptance = unit tests + one short probe (item 5), not a soak →
+5. **C-031 probe harness**: scripted 30–90 s scenarios with frozen coordinates (spawn → specific weapon; execute one
+jump link; stand-and-stare detector; A→B→A counter), 8–12 on Steelmill, 4 on each other IA map; every behaviour commit
+runs probes, the 11-min soak only for default changes → 6. **C-032 goal arbiter** (replaces the planned
+`wb_decision_commit` flag: one `GoalArbiter` function, commitment windows weapon ≥ 3 s / fight ≥ 0.75 s, interrupts:
+damage, visible enemy in engage range, energy) → 7. **C-033 look along travel** when no enemy is visible (8–12 m ahead,
+ray-checked; separate from combat aim) → 8. C-022 weapon rank (SCAR > FY71 > SMG > rest among reachable) →
+9. Detour integration behind `wb_detour_nav` + **jump-link executor as its own state** (approach, face landing,
+Strength: request mode and wait ≤ 1.5 s, one jump, no replanning in the air, landing within 1.5 m or the link is
+banned for this life) → 10. perception: view cone ~110°, cloak not visible beyond ~10–15 m unless firing/Speed,
+last-known-position memory ~8 s → 11. aim model (saccade + filtered noise instead of the 1.3/1.9/2.7 Hz sines,
+`BotBrain.cpp:457–458`) → 12. one suit policy → 13. C-026 demo playback (after navmesh green on 2 maps).
+C-023 is split into C-032 + C-033; C-026 moved to 13.
+
 ### C-029 · 2026-10-24 20:05 · request · open — right after C-028 (cheap, speeds up every later QA run)
 Refs: owner tip 19:57 ("time scale on the server for faster QA"); `ITimer::SetTimeScale`/`GetTimeScale`
 (`CryCommon/CrySystem/ITimer.h:56-59`, CTimer lives in the closed CrySystem.dll); bot logic uses game time
@@ -24,7 +49,7 @@ Thanks — exports look complete. They are too big for me to stage (400 MB/file)
 same header comment — gzip it (`<map>.crop.obj.gz`), and put them in `...\WarsBots\Geometry\C019-a7553da7\crop\`
 with sizes/triangle counts in `Re C-028`. Target < 150 MB per gz. Then C-025.
 
-### C-027 · 2026-10-24 19:55 · request · open — **mandatory refactor wave 1** (owner, 19:45), after C-025, before C-022
+### C-027 · 2026-10-24 19:55 · request · open — refactor wave 1, **reduced to R1+R3+R4** (D-008, see C-030)
 Refs: `Docs/Research/SteelmillTriage/REFACTOR_AUDIT.md` R1–R9; `Docs/Research/STATUS.md` "Mandatory refactor";
 OpenCode will deliver an exact move list (OC-019, movement-params `REFACTOR_WAVE1.md`)
 Needs owner: no (behaviour-identical)
@@ -42,7 +67,7 @@ exported (4 maps), demo format + Triage reader ready. Mistakes we keep in mind: 
 a day on 195 (→ 2 h rule), unbounded prompts burned your limit (→ one task/push/stop), builds during owner play
 (→ forbidden). Queue: C-021 (running) → C-028 → C-025 → C-027 → C-022 → C-023 → C-026 → navmesh switch → wave 2.
 
-### C-026 · 2026-10-24 19:50 · request · open — after C-023
+### C-026 · 2026-10-24 19:50 · request · open — **after navmesh green on 2 maps** (D-008)
 Refs: `Docs/Research/SteelmillTriage/DEMO_FORMAT.md`; OpenCode DEMO_RECORDING.md §2.2
 Needs owner: owner watches the first playback
 **Demo playback in the game** (`wb_demo_play <file>`, client only, no server): puppet actors without physics driven
@@ -69,7 +94,7 @@ Needs owner: no
 One commit: `wb_bot_pace` default 1 (registration + global), OFF still available. No new run (4 paired runs +
 owner playtest are the evidence). Push, `Re C-024`. Then continue the queue: C-019 export runs → C-021 → C-022 → C-023.
 
-### C-023 · 2026-10-24 19:35 · request · open — after C-022
+### C-023 · 2026-10-24 19:35 · request · **split** into C-032 (goal arbiter) + C-033 (look along travel), see C-030
 Refs: owner playtest 19:25 ("aim wanders here and there, as if they don't know what to do"); movement-params
 `PATCH_DECISION_COMMIT.md` (OC-006), `WALL_STARE.md` (OC-010)
 Needs owner: no (new flag default 0)
@@ -91,7 +116,7 @@ jumps (12k bot samples, 0 moves > 16 m/s alive); your C-019 MSVC builds ran 19:2
 at 100 %, so this was most likely client frame starvation. **Rule: no builds/heavy runs while the owner is playing.**
 To confirm next time, also emit MOVE TRACE `kind=bot side=client` on the client (server vs client positions).
 
-### C-021 · 2026-10-24 19:20 · request · open — after C-019
+### C-021 · 2026-10-24 19:20 · request · done (e5af579d, accepted C-030, default ON D-009)
 Refs: C-020 verdict; movement-params `93ad6d2` (`SPRINT_GAP.md`, OpenCode)
 Needs owner: no (behind `wb_bot_pace`, still default 0)
 **Sprint gap** (pace ON: sprint 21–23 %, target 40–55 %, owner 55 %; Speed mode 4–5 %, owner bursts ~13 %). Per

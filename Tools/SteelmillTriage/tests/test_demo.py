@@ -34,5 +34,15 @@ class DemoTests(unittest.TestCase):
         self.assertGreater(m['decision_flips_per_bot_min'], 0)
 
 
+class DemoYawTests(unittest.TestCase):
+    def test_yaw_350_and_minus_10_do_not_overflow(self):
+        fd, p = tempfile.mkstemp(suffix='.wbdemo'); os.close(fd)
+        w = demo.Writer(p, {'map': 't'}); w.actor(0, 1, 'bot', 'b')
+        w.frame(0.0, [dict(id=1, x=0, y=0, z=0, yaw=350.0)]); w.frame(0.05, [dict(id=1, x=0, y=0, z=0, yaw=-10.0)])
+        w.close()
+        f = demo.read(p)['frames']
+        self.assertEqual(f[0][1][0][4], -1000); self.assertEqual(f[1][1][0][4], -1000)
+
+
 if __name__ == '__main__':
     unittest.main()

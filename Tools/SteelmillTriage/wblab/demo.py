@@ -76,7 +76,7 @@ class Writer:
 
     def frame(self, t, states):
         """states: list of dicts id,x,y,z,yaw,pitch(deg),stance,flags,mode,energy,health,weapon(class),weapon_id."""
-        body = b''.join(STATE.pack(s['id'], s['x'], s['y'], s['z'], int(round(s.get('yaw', 0) * 100)),
+        body = b''.join(STATE.pack(s['id'], s['x'], s['y'], s['z'], int(round(((s.get('yaw', 0) + 180.0) % 360.0 - 180.0) * 100)),
                                    int(round(s.get('pitch', 0) * 100)), s.get('stance', 0), s.get('flags', 5),
                                    s.get('mode', 3), s.get('energy', 200), s.get('health', 100),
                                    self.sid(s.get('weapon', '')), s.get('weapon_id', 0)) for s in states)
