@@ -30,8 +30,11 @@ flag toggled or map changes. DEMO PROFILE reports observer overhead including ev
 **Exit for new wb_demo_record/hz: diagnostic-only opt-in, permanent tool; never
 promote to default recording.** No runtime gameplay-policy flag added.
 
-Codec sizes/yaw edges checked in Tests/BotDemoCodecTests.cpp; C++ fixture read by
-canonical Python reader,31Triage tests PASS. MSVC x64 Release compiled. First15bot660s recording parsed/20Hz/avg0.0433ms, but missed direct bot pickup events;
-observer hook fixed, a second full run required for acceptance. Native by-death drops
-are not emitted by CActor and are not synthesized from inventory changes.
-Server15bot660s final acceptance pending; client playback/sidecar untested and unimplemented.
+C025 runtime complete: two660s datasets (initial pickup gap preserved; fixed dataset
+contains all mandatory events), one60s C040 diagnostic probe.20Hz, average cost
+0.0339ms/frame for fixed baseline, exact peak disclosed in experiment report.
+[Data/result](Experiments/c025-demo-2026-10-24.md). Codec sizes/yaw boundaries and
+cross-Python reader fixture PASS; C040target-only metric test PASS.
+BRAIN aim now raw cached target point when target_id exists. Parser target error uses
+alive target FRAME XY, labelled yaw-only for preserved baselines; native3D reference
+from eye is logged separately (no layout change). Client sidecar/playback pending.

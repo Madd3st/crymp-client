@@ -1,15 +1,17 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## C029 experiment complete; next C025→C027→C022→C023→C026
+## C025/C040 complete; next C027 reduced refactor
 
-C0284gzip crops3.4–4.4MB available Geometry/C019-a7553da7/crop/, af53f5cc.
-C029fixed-step absent; API scale8 technically ran but behaviour differs badly
-(pickups130→9,stalls71→355). Not adopted; later acceptance QA stays1x.
-See Experiments/c029-time-2026-10-24.md; time scope explicitly post-spawn loop,
-future stopwatch corrected. Source1586e504, diagnostic-only/default-off QA mode.
-C021 pair verdict pending Claude, results d175fd7e; C024pace defaultON.
-No active owner/QA processes, memory restored. Next demo recording C025.
-New flags require exit; no builds/heavy QA during owner play.
+Recorder+pickup fix40378ebe, diagnostic aim5d5276a9. Two660s baseline demos
+preserved in LOCALAPPDATA/WarsBots/Demos (initial pickup gap; fixed has all required
+EVENTs).20Hz; fixed average0.0339ms/frame. Codec/wire/reader tests PASS. Target yaw
+error baseline3.4/3.6deg; native-eye3D short probe separately reported, no fabricated
+historical3D. Data/commands/paths in Experiments/c025-demo-2026-10-24.md.
+No active QA/owner client, memory restored. Foreign launcher edit remains unstaged.
+C021accepted/defaultON, constants frozen. C030/D008 queue now C027(R1+R3+R4 only),
+C031probes,C032/C035arbiter,C033travel look,C022weapon,Detour+jump,perception,
+aim,suit,C026after navmesh green2maps. C041 ladder/lift export low priority.
+Between tasks use wait_mail.ps1; no builds/heavy QA during owner play; flag exits required.
 
 ## Historical checkpoint: C-018 paired pace QA complete
 

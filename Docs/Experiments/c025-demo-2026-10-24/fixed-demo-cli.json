@@ -1,0 +1,55 @@
+{
+ "header": {
+  "build": "40378ebe1ea34f2afa452170e40aff9b029b85b1",
+  "flags": {
+   "wb_bot_pace": 1,
+   "wb_demo_hz": 20,
+   "wb_demo_record": 1,
+   "wb_move_trace": 1,
+   "wb_progress_experiment": 0,
+   "wb_qa_socom_only": 0,
+   "wb_reachable_goals": 0,
+   "wb_revive_guard": 1,
+   "wb_sink_escape": 0,
+   "wb_spawn_exclude195": 1,
+   "wb_trap_recovery": 1
+  },
+  "hz": 20,
+  "map": "Multiplayer/IA/Steelmill",
+  "navmesh": "none",
+  "server": "WarsBots-Tactics-c025-demo-40378ebe-candidate-r1-n15",
+  "started": "2026-10-24T21:02:06"
+ },
+ "client_merge": null,
+ "actors": 30,
+ "frames": 13208,
+ "seconds": 660.2,
+ "metrics": {
+  "aim_wander_deg_s": {
+   "human": null,
+   "bot": 13.9
+  },
+  "aim_wander_samples": {
+   "human": 0,
+   "bot": 67719
+  },
+  "bot_aim_error_deg": 3.6,
+  "bot_aim_error_samples": 131570,
+  "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+  "bot_brain_aim_error_deg": 0.0,
+  "reaction_s": 0.8,
+  "reactions": 2544,
+  "decision_flips_per_bot_min": 14.91,
+  "time_to_primary_s": 6.7,
+  "primaries": 109,
+  "kills_by_weapon": {
+   "SOCOM": 149,
+   "?": 1,
+   "SMG": 12,
+   "SCAR": 14,
+   "FY71": 20,
+   "Shotgun": 49,
+   "Hurricane": 1
+  }
+ }
+}

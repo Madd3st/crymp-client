@@ -1,0 +1,84 @@
+{
+  "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Probes\\C040\\Multiplayer_IA_Steelmill-20261024-225919-1.wbdemo",
+  "sha256": "e0eb76b4aa78f8506ad8d9e83b08f357f1491ed3ada6138d0eef80a933452e89",
+  "bytes": 1268869,
+  "header": {
+    "build": "5d5276a9396494c62d04ac16e7f5b18beb044dbb",
+    "flags": {
+      "wb_bot_pace": 1,
+      "wb_demo_hz": 20,
+      "wb_demo_record": 1,
+      "wb_move_trace": 1,
+      "wb_progress_experiment": 0,
+      "wb_qa_socom_only": 0,
+      "wb_reachable_goals": 0,
+      "wb_revive_guard": 1,
+      "wb_sink_escape": 0,
+      "wb_spawn_exclude195": 1,
+      "wb_trap_recovery": 1
+    },
+    "hz": 20,
+    "map": "Multiplayer/IA/Steelmill",
+    "navmesh": "none",
+    "server": "WarsBots-Tactics-c040-probe-5d5276a9-candidate-r1-n15",
+    "started": "2026-10-24T22:59:19"
+  },
+  "status": "diagnostic probe",
+  "actors": 30,
+  "frames": 1156,
+  "seconds": 57.738,
+  "hz": 20.02147632408466,
+  "wire_records": {
+    "5": 1661,
+    "1": 40,
+    "2": 45,
+    "4": 6426,
+    "6": 6426,
+    "7": 1127,
+    "3": 1156
+  },
+  "tail_bytes": 0,
+  "events": {
+    "suit": 175,
+    "land": 72,
+    "shot": 1013,
+    "jump": 16,
+    "hit": 339,
+    "pickup": 11,
+    "kill": 20,
+    "revive": 15
+  },
+  "server_real_pickups": 11,
+  "profile_avg_ms": 0.0258,
+  "profile_worst_ms": 0.13,
+  "native_3d_aim_profile": {
+    "samples": 4225,
+    "median": 8.66,
+    "p95": 142.69
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 16.1
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 6066
+    },
+    "bot_aim_error_deg": 3.4,
+    "bot_aim_error_samples": 11934,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": 2.6,
+    "reaction_s": 0.8,
+    "reactions": 231,
+    "decision_flips_per_bot_min": 15.16,
+    "time_to_primary_s": 4.4,
+    "primaries": 1,
+    "kills_by_weapon": {
+      "SOCOM": 14,
+      "SMG": 3,
+      "Hurricane": 1,
+      "Shotgun": 2
+    }
+  }
+}

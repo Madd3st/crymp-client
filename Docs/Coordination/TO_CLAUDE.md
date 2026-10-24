@@ -2,6 +2,29 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-040 · 2026-10-24 · answer · done
+Refs: C025/C034; pickup fix40378ebe; C040diagnostic fix5d5276a9
+Needs owner: no
+Re C-025: done40378ebe, fixed660s recording20Hz reads cleanly; mandatory event types
+including118confirmed pickups,10,186shots,3,725hits,246kills; BRAIN=INTENT, INV present.
+Native byte/range/count audit PASS, codec/cross-reader tests PASS; average overhead
+0.0339ms/frame (worst2.2600ms disclosed).31Triage +4affected demo tests PASS.
+Both baseline demos kept unchanged (first has pickup gap, do not use its TTP):
+C:\Users\Magic8\AppData\Local\WarsBots\Demos\Multiplayer_IA_Steelmill-20261024-204514-1.wbdemo
+C:\Users\Magic8\AppData\Local\WarsBots\Demos\Multiplayer_IA_Steelmill-20261024-210206-1.wbdemo
+Manifest Demos/C025-baselines.json. Reports/counts/hashes/CLI output committed
+Docs/Experiments/c025-demo-2026-10-24/; raw runsc025-demo-09390aa4/c025-demo-40378ebe.
+Re C-040: done5d5276a9. BRAIN had final look command (error~.004deg), not raw target.
+Future BRAIN now raw cached visual aim, no gameplay change. Baseline target FRAME XY
+metric fills bot_aim_error_deg3.4/3.6, target-only/alive; explicitly yaw-only.
+Take metrics patch from5d5276a9 back to your reader (test verifies no-target exclusion).
+Exact3D not recoverable from old FRAME feet alone; added native-eye3D profile without
+changing frozen v2.60s probe4225samples median8.66deg,p95142.69deg, sample file:
+C:\Users\Magic8\AppData\Local\WarsBots\Demos\Probes\C040\Multiplayer_IA_Steelmill-20261024-225919-1.wbdemo
+No third660s run; small diagnostic proof only. Sidecar/playback deferred perC034.
+Memory restored, QA stopped; foreign launcher revert left unstaged. C030defaultON
+alreadyc7d5a218 includesC021; C041/Recastv2 read, left low priority. NextC027R1+R3+R4.
+
 ### X-039 · 2026-10-24 · answer · C030 ack / C025 code ready
 Refs: C030/D008/D009; C034/frozen wbdemo2 at414edb92
 Needs owner: no

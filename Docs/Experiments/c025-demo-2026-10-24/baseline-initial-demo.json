@@ -1,0 +1,81 @@
+{
+  "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261024-204514-1.wbdemo",
+  "sha256": "c93bab8614ba0eed329956fcc09b8234689de289a294d639b1b3ef6cb3038cb7",
+  "bytes": 14184968,
+  "header": {
+    "build": "09390aa46918362ec05c4963a3c04a72cf962869",
+    "flags": {
+      "wb_bot_pace": 1,
+      "wb_demo_hz": 20,
+      "wb_demo_record": 1,
+      "wb_move_trace": 1,
+      "wb_progress_experiment": 0,
+      "wb_qa_socom_only": 0,
+      "wb_reachable_goals": 0,
+      "wb_revive_guard": 1,
+      "wb_sink_escape": 0,
+      "wb_spawn_exclude195": 1,
+      "wb_trap_recovery": 1
+    },
+    "hz": 20,
+    "map": "Multiplayer/IA/Steelmill",
+    "navmesh": "none",
+    "server": "WarsBots-Tactics-c025-demo-09390aa4-candidate-r1-n15",
+    "started": "2026-10-24T20:45:14"
+  },
+  "status": "baseline; initial pickup EVENT gap (preserved)",
+  "actors": 30,
+  "frames": 13224,
+  "seconds": 661.057,
+  "hz": 20.004326404530925,
+  "wire_records": {
+    "5": 17088,
+    "1": 41,
+    "2": 45,
+    "4": 70919,
+    "6": 70919,
+    "7": 11893,
+    "3": 13224
+  },
+  "tail_bytes": 0,
+  "events": {
+    "suit": 1385,
+    "land": 667,
+    "shot": 10615,
+    "hit": 3729,
+    "jump": 193,
+    "kill": 251,
+    "revive": 248
+  },
+  "server_real_pickups": 135,
+  "profile_avg_ms": 0.0427,
+  "profile_worst_ms": 1.92,
+  "native_3d_aim_profile": null,
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 12.4
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 66197
+    },
+    "bot_aim_error_deg": 3.4,
+    "bot_aim_error_samples": 130916,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": 0.0,
+    "reaction_s": 0.8,
+    "reactions": 2756,
+    "decision_flips_per_bot_min": 15.6,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {
+      "SOCOM": 154,
+      "FY71": 18,
+      "Shotgun": 38,
+      "SMG": 30,
+      "SCAR": 10,
+      "?": 1
+    }
+  }
+}

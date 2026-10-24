@@ -1,15 +1,17 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
-## C021 pair complete; next C028→C025→C027→C022→C023→C026
+## C025/C040 complete; next C027 reduced refactor
 
-C019 four maps exported+validated, local Geometry/C019-a7553da7/; C024defaultON.
-C021e5af579d one15bot660s pair completed vs ef25395e, pace1/trace1 both,
-same roster/memory/flags. Frozen0,traps0 both; selfkills1 each; stalls78→71,
-pickups119→130. Claude/owner decides sprint verdict. Owner memory restored,
-QA stopped. See Docs/Experiments/c021-sprint-2026-10-24.md +data directory.
-Owner session archive: LOCALAPPDATA/WarsBots/Logs/OwnerPace7-20261024-191733/.
-Next offline C028 crop, then demos, mandatory behaviour-identical refactor wave1,
-weapons, aim, playback. Flag exits required. No builds/heavy QA during owner play.
+Recorder+pickup fix40378ebe, diagnostic aim5d5276a9. Two660s baseline demos
+preserved in LOCALAPPDATA/WarsBots/Demos (initial pickup gap; fixed has all required
+EVENTs).20Hz; fixed average0.0339ms/frame. Codec/wire/reader tests PASS. Target yaw
+error baseline3.4/3.6deg; native-eye3D short probe separately reported, no fabricated
+historical3D. Data/commands/paths in Experiments/c025-demo-2026-10-24.md.
+No active QA/owner client, memory restored. Foreign launcher edit remains unstaged.
+C021accepted/defaultON, constants frozen. C030/D008 queue now C027(R1+R3+R4 only),
+C031probes,C032/C035arbiter,C033travel look,C022weapon,Detour+jump,perception,
+aim,suit,C026after navmesh green2maps. C041 ladder/lift export low priority.
+Between tasks use wait_mail.ps1; no builds/heavy QA during owner play; flag exits required.
 
 ## Historical checkpoint: C-018 paired pace QA complete
 
