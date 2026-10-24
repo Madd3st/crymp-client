@@ -174,7 +174,7 @@ class GraphTests(unittest.TestCase):
 
     def test_rejects_contract_violations(self):
         self.assertTrue(broken(lambda d: d.update(schema="wbnav/1")))
-        self.assertIn("retired", broken(lambda d: d.update(schema="wbnav/1"))[0])
+        self.assertIn("converted", broken(lambda d: d.update(schema="wbnav/1"))[0])
         self.assertTrue(broken(lambda d: d["nodes"][2].__setitem__(0, 7)))            # id != index
         self.assertTrue(broken(lambda d: d["nodes"][3].__setitem__(6, 5)))            # layer >= max
         self.assertTrue(broken(lambda d: d["nodes"][3].__setitem__(4, 1)))            # duplicate slot
@@ -213,6 +213,29 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(navgraph.fingerprint(d), d["fingerprint"])
         s = navgraph.NavGraph(d).summary()
         self.assertEqual((s["nodes"], s["edges"]), (51, 276))
+
+    def test_wbnav1_converts_losslessly(self):
+        d = tiny_graph()
+        legacy = dict(schema="wbnav/1", level="Test", build=dict(describe="x"),
+                      grid=dict(nx=3, ny=1, cell=3.0, min_x=100.0, min_y=200.0, min_z=-1.0, max_z=10.0),
+                      params=dict(layers=5), counts=dict(nodes=4, edges=4),
+                      nodes=[[n[1], n[2], n[3], n[5]] for n in d["nodes"]],
+                      edges=dict(first=[0, 0, 1, 3], count=[0, 1, 2, 1], to=[2, 1, 3, 2], cost=[3.0] * 4))
+        up = navgraph.from_wbnav1(legacy)
+        self.assertEqual(up["nodes"], d["nodes"]); self.assertEqual(up["edges"], d["edges"])
+        self.assertEqual(navgraph.check(up)[0], [])
+        self.assertEqual(up["fingerprint"], d["fingerprint"])
+
+    def test_scc_profile_finds_sink_and_classifies_routes(self):
+        d = tiny_graph(); d["edges"] = [[1, 2, 3.0], [2, 1, 3.0], [2, 3, 3.0]]  # node 3: enter only
+        d["counts"]["edges"] = 3; d["fingerprint"] = navgraph.fingerprint(d)
+        d["spawns"] = [[195, 107.5, 201.5, 0.0]]
+        g = navgraph.NavGraph(d); p = g.scc_profile()
+        self.assertEqual(p["sink_sccs"], 1); self.assertEqual(p["spawns"], {"sink": 1})
+        r = g.classify_native_routes(["1.0 [WarsBots] #1 NAV fallback start=(0,0,0) goal=(1,1,1) retry=2.0. actor=1 reason=no_route from=3 to=1 expanded=1",
+                                      "2.0 [WarsBots] #1 NAV fallback start=(0,0,0) goal=(1,1,1) retry=2.0. actor=1 reason=goal_unprojected from=3 to=-1 expanded=0"])
+        self.assertEqual(r["native_reasons"], {"no_route": 1, "goal_unprojected": 1})
+        self.assertEqual(r["no_route_start"], {"sink": 1})
 
     def test_gzip_and_size_cap(self):
         import gzip

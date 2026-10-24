@@ -1,7 +1,10 @@
 """BotNav graph export reader, schema `warsbots/botnav-graph/1`.
 
 Contract: Docs/Research/SteelmillLab/BOTNAV_EXPORT_CONTRACT.md (branch warsbots/research/steelmill-lab).
-The old Triage schema `wbnav/1` is retired; loading it raises GraphError with a pointer here.
+Codex's `wb_nav_export` (e4eb64ee) writes the older Triage schema `wbnav/1` (CSR edges, nodes
+[x, y, z, iy]). `read_json` converts it losslessly into botnav-graph/1: ix = trunc((x-min_x)/cell)
+as in BotNav, layer = position in the column by node id (scan order, top first), fingerprint
+recomputed. `check()` on a raw wbnav/1 dict still reports it, so nothing slips through unconverted.
 
 What this module does offline, without the game:
   * validates an export (contract section 4, plus the section 5 fingerprint and the
@@ -80,7 +83,7 @@ def check(d: dict, memory=None):
 
     schema = d.get("schema")
     if schema in LEGACY_SCHEMAS:
-        return [f"schema {schema!r} is retired; re-export with wb_nav_export ({SCHEMA})"], warn
+        return [f"schema {schema!r} must be converted first (navgraph.read_json / from_wbnav1)"], warn
     if schema != SCHEMA:
         return [f"schema {schema!r} != {SCHEMA!r}"], warn
     b = d.get("build")
@@ -215,6 +218,8 @@ def check(d: dict, memory=None):
 
     if d.get("fixture"):
         warn.append("fixture=true: synthetic graph, not a game export")
+    if d.get("converted_from"):
+        warn.append(f"converted from {d['converted_from']}; ask for a native {SCHEMA} export eventually")
     return err, warn[:200]
 
 
@@ -385,6 +390,58 @@ class NavGraph:
                   "drop(<-0.75)"] += 1
         return dict(c)
 
+    def scc_profile(self):
+        """SCC condensation facts: sinks (enter, no exit), no-entry islands, spawn classes."""
+        scc = self.components(); sid = [0] * len(self.nodes)
+        for k, c in enumerate(scc):
+            for v in c: sid[v] = k
+        leave = Counter(); enter = Counter(); between = Counter()
+        for i in range(len(self.nodes)):
+            for e in self.out(i):
+                j = self.to[e]
+                if sid[i] != sid[j]:
+                    leave[sid[i]] += 1; enter[sid[j]] += 1
+                    if {sid[i], sid[j]} == {0, 1}: between[(sid[i], sid[j])] += 1
+        def kind(k):
+            if k in (0, 1): return f"main{k}"
+            if leave[k] == 0 and enter[k] > 0: return "sink"
+            if enter[k] == 0 and leave[k] > 0: return "no_entry"
+            if leave[k] == 0 and enter[k] == 0: return "isolated"
+            return "other"
+        sinks = [k for k in range(len(scc)) if kind(k) == "sink"]
+        prof = dict(scc_count=len(scc), main_sizes=[len(c) for c in scc[:2]],
+                    main0_main1_edges=sum(between.values()),
+                    sink_sccs=len(sinks), nodes_in_sinks=sum(len(scc[k]) for k in sinks),
+                    largest_sinks=sorted((len(scc[k]) for k in sinks), reverse=True)[:8])
+        spawns = self.data.get("spawns") or []
+        if spawns:
+            rows = []
+            for r in spawns:
+                n = self.nearest(r[1:4]); k = sid[n] if n >= 0 else None
+                rows.append(dict(spawn=r[0], node=n, kind=kind(k) if k is not None else "unprojected",
+                                 scc_size=len(scc[k]) if k is not None else 0))
+            prof["spawns"] = dict(Counter(x["kind"] for x in rows))
+            prof["spawns_outside_main"] = [x for x in rows if not x["kind"].startswith("main")]
+        self._scc = (sid, kind)
+        return prof
+
+    def classify_native_routes(self, lines):
+        """Native `reason=no_route from=A to=B` lines → start/goal component kinds."""
+        import re
+        if not hasattr(self, "_scc"): self.scc_profile()
+        sid, kind = self._scc
+        st = Counter(); gl = Counter(); pr = Counter(); reasons = Counter()
+        for line in lines:
+            m = re.search(r"NAV fallback .*reason=(\w+)(?: from=(-?\d+) to=(-?\d+))?", line)
+            if not m: continue
+            reasons[m.group(1)] += 1
+            if m.group(1) != "no_route" or m.group(2) is None: continue
+            a, b = int(m.group(2)), int(m.group(3))
+            if not (0 <= a < len(sid) and 0 <= b < len(sid)): continue
+            ka, kb = kind(sid[a]), kind(sid[b]); st[ka] += 1; gl[kb] += 1; pr[f"{ka}->{kb}"] += 1
+        return dict(native_reasons=dict(reasons), no_route_start=dict(st), no_route_goal=dict(gl),
+                    top_pairs=dict(pr.most_common(6)))
+
     def summary(self):
         strong = self.components(); weak = self.components(undirected=True)
         indeg = Counter(self.to)
@@ -403,6 +460,44 @@ class NavGraph:
         )
 
 
+def from_wbnav1(d: dict) -> dict:
+    """Lossless upgrade of a Codex wbnav/1 export to warsbots/botnav-graph/1."""
+    g = d["grid"]; e = d["edges"]; p = d.get("params") or {}
+    cell, mx, my = float(g["cell"]), float(g["min_x"]), float(g["min_y"])
+    rank = defaultdict(int); nodes = []
+    for i, row in enumerate(d["nodes"]):
+        x, y, z = row[0], row[1], row[2]
+        ix = int((x - mx) / cell); iy = int((y - my) / cell)
+        if len(row) > 3 and row[3] != iy:
+            raise GraphError(f"wbnav/1 node {i}: stored column {row[3]} != iy {iy} from position")
+        nodes.append([i, x, y, z, ix, iy, rank[(ix, iy)]]); rank[(ix, iy)] += 1
+    edges = []
+    for a in range(len(nodes)):
+        f, c = e["first"][a], e["count"][a]
+        for k in range(f, f + c):
+            edges.append([a, e["to"][k], e["cost"][k]])
+    out = dict(
+        schema=SCHEMA, fixture=False, level=d.get("level"), source="wbnav/1 via navgraph.from_wbnav1",
+        build_version=(d.get("build") or {}).get("describe"),
+        build=dict(nx=g["nx"], ny=g["ny"], cell=cell, min_x=mx, min_y=my,
+                   min_z=g.get("min_z"), max_z=g.get("max_z"), max_layers=int(p.get("layers", MAX_LAYERS)),
+                   water_level=d.get("water_level"),
+                   params=dict(astar_expansion_cap=p.get("astar_budget", A_STAR_BUDGET),
+                               nearest_radius_columns=p.get("nearest_radius_columns", NEAREST_RADIUS),
+                               nearest_max_dz=p.get("nearest_max_dz", NEAREST_MAX_DZ))),
+        counts=dict(nodes=len(nodes), edges=len(edges), truncated_edge_lists=0),
+        node_columns=list(NODE_COLUMNS), nodes=nodes, edge_columns=list(EDGE_COLUMNS), edges=edges,
+        memory_compat=dict(nx=g["nx"], ny=g["ny"], cell=cell, min_x=mx, min_y=my, count=len(nodes)),
+        converted_from="wbnav/1",
+    )
+    if "spawns" in d:
+        out["spawns"] = d["spawns"]
+    if "counts" in d and (d["counts"].get("nodes") != len(nodes) or d["counts"].get("edges") != len(edges)):
+        raise GraphError(f"wbnav/1 counts {d['counts']} disagree with arrays ({len(nodes)}, {len(edges)})")
+    out["fingerprint"] = fingerprint(out)
+    return out
+
+
 def read_json(path) -> dict:
     p = Path(path)
     if p.stat().st_size > MAX_BYTES:
@@ -413,9 +508,12 @@ def read_json(path) -> dict:
         if len(raw) > MAX_BYTES:
             raise GraphError(f"{p.name}: decompressed size exceeds the 64 MiB cap")
     try:
-        return json.loads(raw.decode("utf-8-sig"))
+        d = json.loads(raw.decode("utf-8-sig"))
     except (UnicodeDecodeError, json.JSONDecodeError) as ex:
         raise GraphError(f"{p.name}: not valid UTF-8 JSON ({ex})")
+    if d.get("schema") in LEGACY_SCHEMAS:
+        d = from_wbnav1(d)
+    return d
 
 
 def load(path, memory=None) -> NavGraph:

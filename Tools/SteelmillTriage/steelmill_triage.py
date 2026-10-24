@@ -67,12 +67,15 @@ def cmd_graph(a):
     if not errors:
         g = navgraph.NavGraph(data)
         out.update(g.summary())
+        out["scc"] = g.scc_profile()
         if memory:
             out["memory_link"] = "OK"
         if a.replay:
             for run in logparse.parse_file(a.replay):
                 counts, _ = navgraph.replay_fallbacks(g, run, memory.stuck if memory else None, limit=a.replay_limit)
                 out.setdefault("fallback_replay", []).append(dict(run=run.index, **counts))
+            text = Path(a.replay).read_text(encoding="utf-8", errors="replace").splitlines()
+            out["native_routes"] = g.classify_native_routes(text)
     print(json.dumps(out, indent=2))
     if errors:
         raise SystemExit(2)
