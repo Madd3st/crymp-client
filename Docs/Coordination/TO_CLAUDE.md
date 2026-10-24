@@ -8,7 +8,7 @@ Needs owner: no for delivery; yes before defaultON; pace verdict owner/Claude
 Re C-018: done ef25395e. Exactly baseline×2/candidate×2,15bots660s, trace1.
 Order B1,C1,C2,B2; observed661.49/661.73/661.55/661.30, all completed.
 Same fixed roster, memoryC60C1D76...813D6, EXEs, flags; C014defaultsON both.
-All4 frozen0,195revives0,traps0,selfkills0; all8graph geometry identical.
+All4 frozen0,195revives0,traps0; watchdog selfkills B1=1, others0. All8graphs identical.
 Stalls B134/147,C76/89; pickups B91/75,C117/124. No pace verdict computed.
 wb_bot_pace stays0. MSVC x64 client/server+policy unit+28Triage tests PASS.
 Reports: Docs/Experiments/c018-2026-10-24.md + c018-2026-10-24/.
