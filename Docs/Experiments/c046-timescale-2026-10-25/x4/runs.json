@@ -1,0 +1,114 @@
+{
+  "demo_record_requested": 1,
+  "time_mode": "scale",
+  "requested_speed": 4.0,
+  "wall_seconds": 167.1255978,
+  "game_seconds": 664.72,
+  "speedup": 3.9773679720534107,
+  "time_error": "",
+  "bot_pace_requested": 1,
+  "fixed_roster": true,
+  "move_trace_requested": 1,
+  "reachable_goals_requested": 0,
+  "explain_nodes": [],
+  "explain_pairs_path": "",
+  "physics_diagnostics_requested": 1,
+  "observed_seconds": 664.72,
+  "nav_exports": 2,
+  "hotspot_all_nodes_requested": 0,
+  "tag": "candidate-r1-n15",
+  "session": "c046-x4-20261025",
+  "progress_requested": 0,
+  "trap_recovery_requested": 1,
+  "fire_diagnostics": true,
+  "style_mode": "auto",
+  "skill_rotation_step": 1,
+  "variant": "candidate",
+  "repeat": 1,
+  "bots": 15,
+  "seconds": 660,
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+  "client_sha256": "32C36AC6E23E9EF1CDB35481AE3B515F7C4669B75C73D343D66D7C8F35EB4E2F",
+  "memory_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+  "roster": [
+    {
+      "number": 1,
+      "style": "auto",
+      "skill": "beginner"
+    },
+    {
+      "number": 2,
+      "style": "auto",
+      "skill": "normal"
+    },
+    {
+      "number": 3,
+      "style": "auto",
+      "skill": "veteran"
+    },
+    {
+      "number": 4,
+      "style": "auto",
+      "skill": "elite"
+    },
+    {
+      "number": 5,
+      "style": "auto",
+      "skill": "beginner"
+    },
+    {
+      "number": 6,
+      "style": "auto",
+      "skill": "normal"
+    },
+    {
+      "number": 7,
+      "style": "auto",
+      "skill": "veteran"
+    },
+    {
+      "number": 8,
+      "style": "auto",
+      "skill": "elite"
+    },
+    {
+      "number": 9,
+      "style": "auto",
+      "skill": "beginner"
+    },
+    {
+      "number": 10,
+      "style": "auto",
+      "skill": "normal"
+    },
+    {
+      "number": 11,
+      "style": "auto",
+      "skill": "veteran"
+    },
+    {
+      "number": 12,
+      "style": "auto",
+      "skill": "elite"
+    },
+    {
+      "number": 13,
+      "style": "auto",
+      "skill": "beginner"
+    },
+    {
+      "number": 14,
+      "style": "auto",
+      "skill": "normal"
+    },
+    {
+      "number": 15,
+      "style": "auto",
+      "skill": "veteran"
+    }
+  ],
+  "log": "WarsBots-Tactics-c046-x4-20261025-candidate-r1-n15.bots.log",
+  "completed": true,
+  "kills": 186
+}

@@ -1,5 +1,13 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+## C046 complete; C044/C050 batch next
+
+Same C043 b902dfb4 control/roster/memory/flags at scale2 and4,660game s each.
+1x/2x/4x pickups134/92/28,stalls69/117/152,kills236/217/186; no adoption.
+Keep1x for acceptance. Report Experiments/c046-timescale-2026-10-25.md.
+Memory restored; no QA/game active. C050ae798245 ready; C051 restores Codex
+ownership of game integration. Review/build next, C044 before arbiter per owner.
+
 ## C043 pair complete; C046 next
 
 Pre-refactor40378ebe vs C027b902dfb4,15bots660s each1x, matched fixture.

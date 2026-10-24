@@ -1,0 +1,91 @@
+{
+  "schema": "warsbots-run-summary/1",
+  "label": "map=multiplayer/ia/steelmill;bots=15;seconds=660;style=auto;progress_requested=0;trap_recovery_requested=1;hotspot_all_nodes_requested=0;physics_diagnostics_requested=1;reachable_goals_requested=0;sink_escape_requested=unknown;fire_diagnostics=True;move_trace_requested=1;bot_pace_requested=1;time_mode=scale;requested_speed=4;demo_record_requested=1;roster=1:beginner:auto,2:normal:auto,3:veteran:auto,4:elite:auto,5:beginner:auto,6:normal:auto,7:veteran:auto,8:elite:auto,9:beginner:auto,10:normal:auto,11:veteran:auto,12:elite:auto,13:beginner:auto,14:normal:auto,15:veteran:auto",
+  "log": "WarsBots-Tactics-c046-x4-20261025-candidate-r1-n15.bots.log",
+  "log_sha256": "c910f71d727e68c343bbd4d2d211ab5f73a7d4dc8e76007c193b83d33306929a",
+  "build": "v26-115-gb902dfb4-dirty",
+  "bots": 15,
+  "seconds": 664.7,
+  "live_bot_minutes": 143.9,
+  "spawn195": {
+    "revives": 0,
+    "frozen": 0
+  },
+  "revives": {
+    "total": 158,
+    "frozen": 0,
+    "frozen_spawns": {}
+  },
+  "watchdog": {
+    "episodes": 14,
+    "at_spawn195": 0,
+    "reached_level": {
+      "1": 14,
+      "2": 10,
+      "3": 4,
+      "4": 2
+    },
+    "self_kills": 2
+  },
+  "pinned_live_percent": 0.0,
+  "traps_ge60s": 0,
+  "stalls": 152,
+  "nav_fallback": {
+    "total": 2477,
+    "per_bot_minute": 17.21,
+    "reasons": {
+      "goal_unprojected": 206,
+      "no_route": 2182,
+      "start_unprojected": 89
+    },
+    "no_route_percent": 88.1
+  },
+  "unreachable_weapon_skips": 188,
+  "goal_skips": {},
+  "pickups": {
+    "total": 28,
+    "lives": 188,
+    "lives_with_pickup": 24,
+    "lives_with_pickup_percent": 12.8,
+    "by_spawn_kind": {
+      "isolated": {
+        "lives": 14,
+        "with_pickup": 2,
+        "percent": 14.3
+      },
+      "main": {
+        "lives": 127,
+        "with_pickup": 13,
+        "percent": 10.2
+      },
+      "other": {
+        "lives": 15,
+        "with_pickup": 0,
+        "percent": 0.0
+      },
+      "sink": {
+        "lives": 32,
+        "with_pickup": 9,
+        "percent": 28.1
+      }
+    }
+  },
+  "movement": {
+    "moving_samples": 4454,
+    "over_4ms_percent": 62.9,
+    "native_sprint_percent": 43.9,
+    "median_speed_by_state_max": 4.87
+  },
+  "graph": {
+    "fingerprint": "cfcf02f03d6d7bcf4a788f7c62d597499a0cebafe538d4e79ec4b465c0d4bbe6",
+    "nodes": 7633,
+    "edges": 41618,
+    "sink_sccs": 51,
+    "nodes_in_sinks_percent": 25.3,
+    "main0_main1_edges": 0,
+    "spawns_outside_main": 13,
+    "revives_on_non_main_spawns_percent": 34.8,
+    "no_route_goal_outside_main_percent": 68.8,
+    "memory_link": "OK"
+  }
+}

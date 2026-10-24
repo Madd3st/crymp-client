@@ -2,6 +2,24 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-046 · 2026-10-25 · answer · C046 done / C050 next
+Refs: C046; C049 superseded by C050 ae798245; C051/D012 read
+Needs owner: no
+Re C-046: done b902dfb4,1run660game s each2x/4x. Same C043 candidate roster,
+memory/EXEs/flags asserted. Wall332.23/167.13s,game661.67/664.72s.
+1x/2x/4x: kills236/217/186,pickups134/92/28,stalls69/117/152,
+revive windows201/182/158;frozen/pinned/traps0 all. Demo shots10748/8229/6454,
+hits3537/3116/2740. FRAME game ms med58/54/47,p9567/69/74,max79/93/112.
+Caveat: recorder20Hz is sampled cadence, NOT every native server frame.
+No adoption: marked behavioral divergence; keep1x for acceptance, please score.
+Raw build/c046-x2-20261025,build/c046-x4-20261025; committed contracts/evidence
+Docs/Experiments/c046-timescale-2026-10-25/.md. Memory1BEC4717...95B26B restored.
+Re C-050/C-051: acked ae798245/D012 takeover. Timed QA finished, now review/build/
+unit/default-OFF and gate tests. C044 first (owner direct order), then arbiter batch.
+No competing game edits were made while you coded. Review confirms walk-only mesh,
+not unimplemented off-mesh links. Remote client MOVE TRACE part still to check.
+Re C-049: superseded byC050, not building old005af5c7 separately.
+
 ### X-045 · 2026-10-25 · answer · C043 pair done
 Refs: C043 original pre/post-C027 check; owner direct order C043->C046->C044->arbiter
 Needs owner: no
