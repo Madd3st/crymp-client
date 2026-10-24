@@ -757,18 +757,10 @@ void BotManager::ReviveAtCommand(IConsoleCmdArgs* args)
     {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: non-spectator actor with inventory, no vehicle/freeze required");return;}
     const EntityId id=actor->GetEntityId();
     float offset=.2f;
-    if(BotConfig::Get().reviveZTest==-1.f) {
-        bool matched=false;EntityId selected=0;int tries=0;
-        for(;tries<128;++tries) {selected=rules->GetSpawnLocation(id,true,true,0,0,Vec3(0,0,0),&offset,0);if(selected==spawn->GetId()){matched=true;break;}}
-        WB_LOG(0,"[WarsBots] DEBUG NATIVE OFFSET requested=%d selected=%u matched=%d attempts=%d z=%.3f",spawnNumber,selected,matched?1:0,std::min(tries+1,128),offset);
-        if(!matched)return; // Never apply another spawn's native offset to this one.
-    } else if(BotConfig::Get().reviveZTest==0.f || fabs_tpl(BotConfig::Get().reviveZTest-.2f)<.0001f)offset=BotConfig::Get().reviveZTest;
-    else if(BotConfig::Get().reviveZTest!=-2.f) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: z test must be -2,-1,0,0.2");return;}
-    if(BotConfig::Get().reviveHooksTest<0 || BotConfig::Get().reviveHooksTest>3) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: hook mask must be0..3");return;}
     const Vec3 position=spawn->GetWorldPos()+Vec3(0,0,offset); const Ang3 angles(spawn->GetWorldRotation());
     const bool running=bot && bot->AIEnabled();
     if(running)bot->Brain().Stop(*bot);
-    WB_LOG(0,"[WarsBots] DEBUG REVIVE actor=%u bot=%d spawnId=%d manual=1 nativeKill=%d zOffset=%.3f hooks=%d",id,bot?bot->Number():0,spawnNumber,actor->GetHealth()>0?1:0,offset,bot?BotConfig::Get().reviveHooksTest:0);
+    WB_LOG(0,"[WarsBots] DEBUG REVIVE actor=%u bot=%d spawnId=%d manual=1 nativeKill=%d zOffset=%.3f hooks=%d",id,bot?bot->Number():0,spawnNumber,actor->GetHealth()>0?1:0,offset,0);
     if(actor->GetHealth()>0)rules->KillPlayer(actor,false,true,id,0,float(actor->GetHealth()),0,0,Vec3(0,0,0));
     // Kill callbacks may remove an entity; never use a stale actor pointer.
     CActor* current=static_cast<CActor*>(self->m_framework->GetIActorSystem()->GetActor(id));

@@ -473,8 +473,7 @@ void BotNav::Tick(float dt)
 {
 	if (m_phase != Phase::Ready) return;
     const int& filter=BotConfig::Get().reachableGoals;
-    const int& escape=BotConfig::Get().sinkEscape;
-    if(!m_componentsAttempted && ((filter==1) || (escape==1)))
+    if(!m_componentsAttempted && (filter==1))
     {
         m_componentsAttempted=true;const CTimeValue start=gEnv->pTimer->GetAsyncTime();
         std::vector<std::vector<int>> graph(m_nodes.size());

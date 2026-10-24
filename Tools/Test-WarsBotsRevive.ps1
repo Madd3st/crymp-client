@@ -6,9 +6,7 @@ param(
  [Parameter(Mandatory)][string]$BuildDirectory,
  [Parameter(Mandatory)][string]$ExpectedSource,
  [string]$OutputDirectory='build/revive-offset-qa',
- [ValidateSet('zero','legacy','native')][string[]]$Modes=@('zero','legacy','native'),
- [ValidateRange(1,10)][int]$Trials=10,
- [ValidateRange(0,3)][int]$Hooks=0
+ [ValidateRange(1,10)][int]$Trials=10
 )
 $ErrorActionPreference='Stop'
 $repo=Split-Path $PSScriptRoot -Parent
@@ -30,14 +28,14 @@ $backup=Join-Path $out 'initial-memory.mem';Copy-Item $memory $backup
 $memoryHash=(Get-FileHash $backup).Hash
 $runs=@();$p=$null;$joined=$false
 try {
- foreach($mode in $Modes){
+ foreach($mode in @('legacy')){
   if((Servers).Count){throw 'Server appeared; refusing shared memory mutation'}
   Copy-Item $backup $memory -Force
-  $tag="revive195-$mode-h$Hooks";$name="WarsBots-$([IO.Path]::GetFileName($out))-$tag.log"
+  $tag="revive195-$mode";$name="WarsBots-$([IO.Path]::GetFileName($out))-$tag.log"
   $log=Join-Path $profile $name;$trace=$log -replace '\.log$','.bots.log'
   if(Test-Path $log){throw 'Existing evidence would be overwritten'}
-  $offset=@{zero='0';legacy='0.2';native='-1'}[$mode]
-  $commands=" +wb_probe_local_test 1 +wb_physics_diagnostics 1 +wb_debug 1 +wb_add 1 normal +wb_spawn_box 195 +wb_revive_z_test $offset +wb_revive_hooks_test $Hooks +wb_nav_export after 15"
+  $offset='0.2' # Closed offset/hook experiments removed; native default path only.
+  $commands=" +wb_probe_local_test 1 +wb_physics_diagnostics 1 +wb_debug 1 +wb_add 1 normal +wb_spawn_box 195 +wb_nav_export after 15"
   # 16s spacing gives the native summary's ~12s freeze detector complete windows.
   for($i=0;$i -lt $Trials;$i++){$commands+=" +wb_revive_at after $(5+16*$i) 195 1"}
   $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill$commands"
@@ -56,11 +54,10 @@ try {
   Copy-Item $log,$trace $out
   $raw=Get-Content $trace -Raw;$engine=Get-Content $log -Raw
   $count=([regex]::Matches($raw,'DEBUG REVIVE actor=.*spawnId=195 manual=1')).Count
-  $expectedZ=if($mode -eq 'legacy'){'0.200'}else{'0.000'}
+  $expectedZ='0.200'
   $offsetEvidence=([regex]::Matches($raw,'DEBUG REVIVE actor=.*zOffset='+[regex]::Escape($expectedZ))).Count -eq $Trials
-  if($mode -eq 'native'){$offsetEvidence=([regex]::Matches($raw,'DEBUG NATIVE OFFSET .*matched=1')).Count -eq $Trials}
   $ok=-not $early -and $count -eq $Trials -and $offsetEvidence -and $captured -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
-  $run=[ordered]@{tag=$tag;log=[IO.Path]::GetFileName($trace);bots=1;seconds=$seconds;trials=$Trials;mode=$mode;hooks=$Hooks;z_offset_requested=$offset;source_sha=$manifest.sha;server_sha256=$manifest.server;client_sha256=$manifest.client;memory_sha256=$memoryHash;manual_revives=$count;completed=$ok;style_mode='auto';physics_diagnostics_requested=1;roster=@(@{number=1;skill='normal';style='auto'})}
+  $run=[ordered]@{tag=$tag;log=[IO.Path]::GetFileName($trace);bots=1;seconds=$seconds;trials=$Trials;mode=$mode;z_offset_requested=$offset;source_sha=$manifest.sha;server_sha256=$manifest.server;client_sha256=$manifest.client;memory_sha256=$memoryHash;manual_revives=$count;completed=$ok;style_mode='auto';physics_diagnostics_requested=1;roster=@(@{number=1;skill='normal';style='auto'})}
   $runs+=$run;$runs|ConvertTo-Json -Depth 6|Set-Content (Join-Path $out 'runs.json')
   Write-Host "END $tag completed=$ok manualRevives=$count"
   if(-not $ok){throw "Probe fixture failed $tag; preserve partial logs"}

@@ -10,9 +10,7 @@ const IntBinding kInts[]={
  {"wb_probe_local_test",&BotConfig::gateOpen,"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction."},
  {"wb_bot_cloak_experimental",&BotConfig::cloakExperimental,"Experimental bot cloak, defaults OFF"},
  {"wb_hotspot_all_nodes",&BotConfig::hotspotAllNodes,"Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak."},
- {"wb_sink_escape",&BotConfig::sinkEscape,"Opt-in physical escape at8s in closed SCCs; requires trap recovery1; default OFF."},
  {"wb_reachable_goals",&BotConfig::reachableGoals,"Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF."},
- {"wb_revive_hooks_test",&BotConfig::reviveHooksTest,"Manual BOT revive only: bit1 Spawned, bit2 UpdateAreas; default0; no automatic lifecycle change."},
  {"wb_bot_pace",&BotConfig::botPace,"C018 native pace: stance speed,sprint40/20,Speed130/60,Strength70; default ON; set0 for legacy pace."},
  {"wb_revive_guard",&BotConfig::reviveGuard,"C014 candidate safety:2s post-revive check, max2 native retries; no kill/score change."},
  {"wb_spawn_exclude195",&BotConfig::spawnExclude195,"C014 candidate safety: automatic bot spawn selection excludes195; humans/manual debug unaffected."},
@@ -27,21 +25,15 @@ const IntBinding kInts[]={
  {"wb_maxbots",&BotConfig::maxBots,"Maximum simultaneous WarsBots (1..16, default 6)"},
  {"wb_skill",&BotConfig::skill,"Default skill for wb_add: 0 beginner, 1 normal, 2 veteran, 3 elite"},
 };
-struct FloatBinding {const char* name;float BotConfig::*field;const char* help;};
-const FloatBinding kFloats[]={
- {"wb_revive_z_test",&BotConfig::reviveZTest,"Manual revive only: -2 legacy0.2 default; 0 or0.2 explicit; -1 native selector offset for same spawn."},
-};
 }
 void BotConfig::Register(IConsole& console){
  if(registered)return;
  *this=BotConfig{};
  for(const auto& b:kInts)console.Register(b.name,&(this->*b.field),this->*b.field,0,b.help);
- for(const auto& b:kFloats)console.Register(b.name,&(this->*b.field),this->*b.field,0,b.help);
  registered=true;
 }
 void BotConfig::Unregister(IConsole& console){
  if(!registered)return;registered=false;
  for(const auto& b:kInts)console.UnregisterVariable(b.name,true);
- for(const auto& b:kFloats)console.UnregisterVariable(b.name,true);
 }
 }

@@ -19,10 +19,7 @@ struct BotConfig {
  int spawnExclude195=1;
  int reviveGuard=1;
  int botPace=1;
- float reviveZTest=-2.f;
- int reviveHooksTest=0;
  int reachableGoals=0;
- int sinkEscape=0;
  int hotspotAllNodes=0;
  int fireDiagnostics=0;
  int qaSocomOnly=0;

@@ -295,10 +295,6 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
     }
 	IEntity* spawn = gEnv->pEntitySystem->GetEntity(chosen);
 	if (!spawn) return false;
-	const int& hookFlag=BotConfig::Get().reviveHooksTest;
-    const int hooks=forcedSpawn ? hookFlag : 0;
-    if((hooks&1) && spawn->GetScriptTable() && actor->GetEntity()->GetScriptTable())
-        WB_LOG(0,"[WarsBots] DEBUG REVIVE Spawned actor=%u called=%d",id,Script::CallMethod(spawn->GetScriptTable(),"Spawned",actor->GetEntity()->GetScriptTable())?1:0);
     if(!Owns(id))return false;
     actor=GetActor();if(!actor)return false;
     const float z=forcedSpawn?forcedZOffset:0.2f;
@@ -307,8 +303,6 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 	WB_LOG(2, "[WarsBots] #%d revive requested EntityId=%u spawnId=%u previousSpawn=%u position=(%.3f,%.3f,%.3f).",
 		m_number, id, chosen, m_lastSpawnLocation, position.x, position.y, position.z);
 	rules->RevivePlayer(actor, position, angles, 0, !guardRetry);
-    if((hooks&2) && actor->GetEntity()->GetScriptTable())
-        WB_LOG(0,"[WarsBots] DEBUG REVIVE UpdateAreas actor=%u called=%d",id,Script::CallMethod(actor->GetEntity()->GetScriptTable(),"UpdateAreas")?1:0);
 
 	IActor* revived = m_owner.Framework()->GetIActorSystem()->GetActor(id);
 	const bool alive = Owns(id) && revived && revived->GetHealth() > 0 &&

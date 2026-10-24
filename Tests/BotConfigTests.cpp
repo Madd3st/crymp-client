@@ -6,7 +6,7 @@ int main(){
  auto& config=BotConfig::Get();assert(!config.registered && !BotPaceEnabled());
  assert(config.botPace==1 && config.spawnExclude195==1 && config.reviveGuard==1);
  assert(config.demoRecord==0 && config.demoHz==20 && config.gateOpen==0 && config.logLevel==1 && config.maxBots==6 && config.skill==1);
- assert(config.reviveZTest==-2.f && config.reviveHooksTest==0 && config.sinkEscape==0 && config.progressExperiment==0);
+ assert(config.progressExperiment==0);
  auto* const stable=&config;int* binding=&config.botPace;
  config.registered=true;assert(BotPaceEnabled());*binding=0;assert(!BotPaceEnabled());*binding=2;assert(!BotPaceEnabled());*binding=1;assert(BotPaceEnabled());
  config.registered=false;assert(!BotPaceEnabled());assert(&BotConfig::Get()==stable);

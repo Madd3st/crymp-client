@@ -113,7 +113,6 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
   flags["wb_revive_guard"]=config.reviveGuard;
   flags["wb_trap_recovery"]=config.trapRecovery;
   flags["wb_reachable_goals"]=config.reachableGoals;
-  flags["wb_sink_escape"]=config.sinkEscape;
   flags["wb_progress_experiment"]=config.progressExperiment;
   flags["wb_move_trace"]=config.moveTrace;
   flags["wb_qa_socom_only"]=config.qaSocomOnly;
