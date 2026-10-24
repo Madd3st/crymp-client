@@ -1,26 +1,24 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## Current: recovery candidate and owner live session
+## Current: recovery and full-hotspot soak passed
 
 Latest built game source **d4b0854c**, MSVC x64 Release experimental client+server PASS.
-Separate commits: b3ce761f watchdog; b53b3f87 actor/NAV diagnostics; e4eb64ee graph export;
-d4b0854c gated all-node hotspot scan. `wb_trap_recovery` and `wb_hotspot_all_nodes`
-compile/runtime defaults OFF. 6-bot recovery soak660s PASS (659.24s observed), native
-self-kill at45.11s + same-actor5s respawn confirmed; selector/watchdog unit tests PASS.
-Graph exports independently validated, repeat arrays identical. **Final15-bot10min soak
-NOT COMPLETE:** owner requested live access at~254s. Full-hotspot stays OFF for live play.
+6-bot recovery soak659.24s PASS; final15-bot recovery/full-hotspot soak659.96s PASS.
+Final summed bot Update median0.243ms/frame, worst single Update10.7ms; not total CPU.
+Two graph exports validated/matching. F1 at spawn195 detected despite blocked0/grounded0;
+native self-kill after45.02s and native same-actor respawn confirmed. F1 root cause remains.
+All runtime feature defaults remainOFF. No speed/ordinary-player/PS changes.
 [Report/commands](Experiments/steelmill-recovery-2026-10-24.md),
 [metrics/hashes](Experiments/steelmill-recovery-2026-10-24.json).
 
-**ACTIVE OWNER SESSION:** source d4b0854c,6 Normal, server PID147120, client PID136756,
-port64150, recovery1, hotspot_all_nodes0. Metadata
-`build/owner-playtests/recovery6-20261024-045803/session.json`.
-Do not stop without owner permission. Old spectator server135448 stopped with explicit
-permission; final logs archived. QA memory restored before this new live session.
-Pending: final15-bot soak, F1 root cause/human spawn195 comparison, native movement
-speed investigation (Claude lead; no speed caps changed), live regression of recovery.
-Research branch442296db read without merging; no fake channels, PS or standard-player changes.
-
+Owner finished6-Normal playtest (883.55s). Server147120 stopped with explicit permission,
+final logs archived: `build/owner-playtests/recovery6-20261024-045803/final/`.
+Owner impressions pending. Three recovery suicides and same-actor~5s revives in logs;
+visual recovery/overall naturalness not claimed. QA servers stopped; original map memory
+restored (01F4C7F4...668AE). Client was not forcibly closed; check processes before QA.
+Next: bounded native physics diagnostic/controlled F1 reproduction and human spawn195
+comparison; then native gait/sprint investigation. Native stand max4.5/pseudo1,2,3 confirmed
+in source; bot speed caps not changed. Research442296db read without merging.
 
 ## Current P1: native bot spectator, 2026-10-24
 

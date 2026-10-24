@@ -285,6 +285,126 @@
         "4": 0
       },
       "native_self_kills": 0
+    },
+    {
+      "metadata": {
+        "observed_seconds": 659.96,
+        "nav_exports": 2,
+        "hotspot_all_nodes_requested": 1,
+        "tag": "candidate-r1-n15",
+        "session": "trap-nav-soak-d4b0854c-r3",
+        "progress_requested": -1,
+        "trap_recovery_requested": 1,
+        "fire_diagnostics": false,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 1,
+        "bots": 15,
+        "seconds": 660,
+        "source_sha": "d4b0854c2d3281f6b3b7ba9e22ccdc6b809034c1",
+        "server_sha256": "3ECC4BDF1F15013FEFAC56FB268900E8B14020C198CB5EE419AAE3CC8B31A6DF",
+        "client_sha256": "6936B1DAAE474819E90EA2B6202826FE1932E10E1E701236895D317EA9889D63",
+        "memory_sha256": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE",
+        "roster": [
+          {
+            "number": 1,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 2,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 3,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 4,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 5,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 6,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 7,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 8,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 9,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 10,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 11,
+            "skill": "veteran",
+            "style": "auto"
+          },
+          {
+            "number": 12,
+            "skill": "elite",
+            "style": "auto"
+          },
+          {
+            "number": 13,
+            "skill": "beginner",
+            "style": "auto"
+          },
+          {
+            "number": 14,
+            "skill": "normal",
+            "style": "auto"
+          },
+          {
+            "number": 15,
+            "skill": "veteran",
+            "style": "auto"
+          }
+        ],
+        "log": "WarsBots-Tactics-trap-nav-soak-d4b0854c-r3-candidate-r1-n15.bots.log",
+        "completed": true,
+        "kills": 217
+      },
+      "log_sha256": "a4e5e397562a0882bc102dd5143ce8f4c6d7ac0d94f5ebfbc6c1bb83bbf579b4",
+      "observed_seconds": 659.96,
+      "stages": {
+        "1": 9,
+        "2": 4,
+        "3": 4,
+        "4": 2
+      },
+      "native_self_kills": 2,
+      "metrics": {
+        "kills": 217,
+        "deaths": 217,
+        "revives_alive": 214,
+        "median_reported_window_ms": 0.243,
+        "max_single_bot_update_ms": 10.7,
+        "blocked_percent": 1.36,
+        "weapon_timeouts": 278
+      }
     }
   ],
   "hotspot_benchmark_us": {
@@ -308,5 +428,273 @@
     "local_path": "build/trap-nav-soak-d4b0854c-r2",
     "passed": true
   },
-  "full_latest_10min_soak": "PENDING: owner requested live access at ~254s; not a pass"
+  "full_latest_10min_soak": "PASS: d4b0854c, 15 bots, 659.96s observed, both flags1, two matching exports, no engine errors",
+  "owner_playtest": {
+    "source": "d4b0854c",
+    "observed_seconds": 883.55,
+    "log_sha256": "b047288b45d2efae3b916b3a41b79a6551fded40c7367c9a05c145c8ccbeb440",
+    "recovery_events": [
+      {
+        "level": "1",
+        "actor": "131027",
+        "age": "8.08",
+        "pos": "(1317.20,1348.63,148.25)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 159.21
+      },
+      {
+        "level": "2",
+        "actor": "131027",
+        "age": "16.11",
+        "pos": "(1317.20,1348.63,148.25)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 167.25
+      },
+      {
+        "level": "3",
+        "actor": "131027",
+        "age": "24.02",
+        "pos": "(1317.20,1348.63,148.25)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 175.16
+      },
+      {
+        "level": "4",
+        "actor": "131027",
+        "age": "45.02",
+        "pos": "(1317.20,1348.63,148.25)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 196.16
+      },
+      {
+        "level": "4",
+        "actor": "131027",
+        "nativeSelfKill": "1",
+        "health": "0.",
+        "seconds": 196.16
+      },
+      {
+        "level": "1",
+        "actor": "131027",
+        "age": "8.12",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 209.4
+      },
+      {
+        "level": "2",
+        "actor": "131027",
+        "age": "16.07",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 217.36
+      },
+      {
+        "level": "3",
+        "actor": "131027",
+        "age": "24.08",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 225.37
+      },
+      {
+        "level": "4",
+        "actor": "131027",
+        "age": "45.05",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 246.33
+      },
+      {
+        "level": "4",
+        "actor": "131027",
+        "nativeSelfKill": "1",
+        "health": "0.",
+        "seconds": 246.33
+      },
+      {
+        "level": "1",
+        "actor": "131027",
+        "age": "8.03",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 552.26
+      },
+      {
+        "level": "2",
+        "actor": "131027",
+        "age": "16.07",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 560.29
+      },
+      {
+        "level": "3",
+        "actor": "131027",
+        "age": "24.03",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 568.26
+      },
+      {
+        "level": "1",
+        "actor": "131037",
+        "age": "8.02",
+        "pos": "(1325.79,1333.10,142.56)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 583.55
+      },
+      {
+        "level": "2",
+        "actor": "131037",
+        "age": "16.07",
+        "pos": "(1325.79,1333.10,142.56)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 591.6
+      },
+      {
+        "level": "3",
+        "actor": "131037",
+        "age": "24.10",
+        "pos": "(1325.57,1332.87,142.56)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 599.62
+      },
+      {
+        "level": "4",
+        "actor": "131037",
+        "age": "45.00",
+        "pos": "(1325.57,1332.87,142.56)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 620.53
+      },
+      {
+        "level": "4",
+        "actor": "131037",
+        "nativeSelfKill": "1",
+        "health": "0.",
+        "seconds": 620.53
+      },
+      {
+        "level": "1",
+        "actor": "131032",
+        "age": "8.01",
+        "pos": "(1199.48,1298.28,138.17)",
+        "blocked": "1",
+        "speed": "0.00",
+        "grounded": "1.",
+        "seconds": 656.92
+      },
+      {
+        "level": "1",
+        "actor": "131027",
+        "age": "8.08",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 688.46
+      },
+      {
+        "level": "2",
+        "actor": "131027",
+        "age": "16.04",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 696.43
+      },
+      {
+        "level": "3",
+        "actor": "131027",
+        "age": "24.00",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 704.39
+      },
+      {
+        "level": "1",
+        "actor": "131017",
+        "age": "8.05",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 769.36
+      },
+      {
+        "level": "2",
+        "actor": "131017",
+        "age": "16.09",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 777.4
+      },
+      {
+        "level": "3",
+        "actor": "131017",
+        "age": "24.08",
+        "pos": "(1247.50,1319.75,136.51)",
+        "blocked": "0",
+        "speed": "0.00",
+        "grounded": "0.",
+        "seconds": 785.39
+      }
+    ],
+    "terminal_respawns": [
+      {
+        "actor": 131027,
+        "self_kill_seconds": 196.16,
+        "same_actor_revive_seconds": 201.16
+      },
+      {
+        "actor": 131027,
+        "self_kill_seconds": 246.33,
+        "same_actor_revive_seconds": 251.36
+      },
+      {
+        "actor": 131037,
+        "self_kill_seconds": 620.53,
+        "same_actor_revive_seconds": 625.54
+      }
+    ],
+    "owner_visual_feedback": "pending",
+    "scope": "owner session; six Normal; recovery1, full-hotspot0; not a controlled comparison"
+  },
+  "memory_restored_sha256": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE"
 }

@@ -3,6 +3,31 @@
 Research source: `origin/warsbots/research/steelmill-triage@442296db`, FINDINGS and
 NAV_EXPORT_CONTRACT, read without merging. [Evidence](steelmill-recovery-2026-10-24.json).
 
+## Completed continuation: final source d4b0854c
+
+15-bot continuation `build/trap-nav-soak-d4b0854c-r3/`: **PASS**,660s requested,
+659.96s observed, recovery1/full-hotspot1, two consistent exports. No engine error/crash
+markers. Median summed bot Update0.243ms/frame, worst single bot Update10.7ms;
+217 native deaths include2 recovery suicides,214 revives before the run ended.
+Recovery stages1/2/3/4:9/4/4/2. F1 at spawn195 explicitly reached nativeSelfKill at
+45.02s with blocked0/grounded0. Offline Triage: pinned2.0%, traps>=60s0,117 stalls,
+1970 fallbacks. This is one completed long run, not proof that navigation is fixed.
+Memory restored to01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE.
+Source/hash frozen; no successful checks rerun without new input.
+
+Owner live match ended at883.55s. Server147120 stopped with explicit permission;
+client was not forcibly closed. Final logs and recovery-events.json archived in its
+`final/` folder. Three native recovery suicides, each followed by same-actor respawn
+~5s later. F1 and F2 both observed. Owner impressions pending; no visual recovery PASS.
+
+The earlier interrupted runs below remain failed/incomplete historical evidence.
+Both runtime feature defaults remain0. No installed EXE or ordinary-player rules changed.
+Next: bounded native physics diagnostic of F1; human spawn comparison still pending.
+Native speed lead confirmed read-only: Player.lua STANCE_STAND normal1.75/max4.5,
+GetStanceMaxSpeed applies speedMultiplier/zoom, CalculatePseudoSpeed returns1/2/3.
+Do not treat4.5 as a universal stance/zoom-independent speed or sparse LOS samples as
+precise player telemetry. No speed tuning in this continuation.
+
 Changes, separate commits:
 - b3ce761f: opt-in `wb_trap_recovery 1`, default0. Reuses BotProgress with0.5m radius;
   independent of blocked and FSM transitions. Continuous move request without displacement
@@ -59,7 +84,7 @@ python -B build/steelmill-triage-validator/steelmill_triage.py graph build/trap-
 Last long command was interrupted for requested live access; do not present it as PASS.
 Use a NEW output folder to resume after owner permits stopping the live server.
 
-## Current live session / next work
+## Historical live session / previous next work
 
 Owner requested access now: d4b0854c,6 Normal, port64150, recovery1 (prior11min soak),
 full-hotspot0 (no completed10min soak yet). Metadata:
