@@ -200,7 +200,7 @@ function draw(){
       if(s[7]){ctx.fillStyle=css("--speed");ctx.beginPath();ctx.moveTo(X+ux*(L+5),Y+uy*(L+5));ctx.lineTo(X+ux*L-uy*3,Y+uy*L+ux*3);ctx.lineTo(X+ux*L+uy*3,Y+uy*L-ux*3);ctx.fill();}}
     if(st.follow===a.id){ctx.strokeStyle=css("--ink");ctx.lineWidth=1;ctx.beginPath();ctx.arc(X,Y,R+8,0,7);ctx.stroke();}
     if($("labels").checked){ctx.fillStyle=css("--ink");ctx.fillText(`${a.name}  ${(stateAt(a,t)||"").replace(/_/g," ").toLowerCase()}`,X+R+6,Y-R-2);
-      ctx.fillStyle=css("--dim");ctx.fillText(`${v.toFixed(1)} m/s · z ${s[3].toFixed(0)} · hp ${s[8]} · e ${s[9]}`,X+R+6,Y+R+10);}
+      ctx.fillStyle=css("--dim");ctx.fillText(`${D.gaze?'':v.toFixed(1)+' m/s · '}z ${s[3].toFixed(0)} · hp ${s[8]} · e ${s[9]}`,X+R+6,Y+R+10);}
   }
   $("clock").textContent=`${Math.floor(t/60)}:${(t%60).toFixed(1).padStart(4,"0")}`;$("seek").value=t;
   roster(P,t);feed(t);
@@ -230,3 +230,34 @@ st.t=D.kills.length?Math.max(D.start||0,D.kills[0][0]-3):Math.min((D.start||0)+3
 requestAnimationFrame(tick);
 </script>
 '''
+
+
+def build_from_demo(d, label=None):
+    """Same replay data from a wbdemo/2 file (wblab.demo.read). The arrow shows where the player LOOKS (yaw),
+    not where it moves — that is what a demo adds over MOVE TRACE."""
+    import math
+    tracks, states, targets = {}, {}, {}
+    for t, rows in d['frames']:
+        for r in rows:
+            aid, x, y, z, yaw, mode, energy, health = str(r[0]), r[1], r[2], r[3], r[4] / 100.0, r[8], r[9], r[10]
+            yr = math.radians(yaw)
+            tracks.setdefault(aid, []).append([round(t, 2), round(x, 2), round(y, 2), round(z, 2),
+                                               round(4 * math.sin(yr), 2), round(4 * math.cos(yr), 2),
+                                               int(mode), 0, int(health), int(energy)])
+    for b in d['brain']:
+        a = str(b['id']); lst = states.setdefault(a, [])
+        if not lst or lst[-1][1] != b['state']:
+            lst.append([round(b['t'], 2), b['state']])
+        if b['target']:
+            tg = targets.setdefault(a, [])
+            if not tg or tg[-1][1] != str(b['target']):
+                tg.append([round(b['t'], 2), str(b['target'])])
+    kills = [[round(e['t'], 2), str(e['actor']), str(e['other'])] for e in d['events'] if e['kind'] == 'kill']
+    acts = [a for a in d['actors'].values() if str(a['id']) in tracks]
+    acts.sort(key=lambda a: (a['kind'] != 'human', a['name']))
+    dur = d['frames'][-1][0] if d['frames'] else 0
+    return dict(schema='warsbots-replay/1', gaze=True, label=label or 'demo', start=0.0, duration=round(dur, 2),
+                actors=[dict(id=str(a['id']), kind=a['kind'], name=a['name'] + ('' if a['kind'] == 'human' else ' · ' + a.get('profile', '')),
+                             track=tracks[str(a['id'])], states=states.get(str(a['id']), []),
+                             targets=targets.get(str(a['id']), []), score=None) for a in acts],
+                kills=kills)
