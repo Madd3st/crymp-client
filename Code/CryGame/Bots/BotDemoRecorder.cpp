@@ -211,6 +211,7 @@ void BotDemoRecorder::Mark(const char* text){if(m_impl)m_impl->Safe([&]{m_impl->
 void BotDemoRecorder::Hit(const HitInfo& hit){if(m_impl)m_impl->Safe([&]{m_impl->Event(2,hit.targetId,hit.shooterId,hit.damage,hit.pos);});}
 void BotDemoRecorder::Kill(uint32_t victim,uint32_t killer){if(m_impl)m_impl->Safe([&]{m_impl->Event(3,victim,killer,0,m_impl->Position(victim));});}
 void BotDemoRecorder::Revive(uint32_t id,uint32_t spawn){if(m_impl)m_impl->Safe([&]{if(auto* s=m_impl->Ensure(id))s->movementValid=false;m_impl->Event(4,id,0,float(spawn),m_impl->Position(id));});}
+void BotDemoRecorder::Pickup(uint32_t id,uint32_t item){if(m_impl)m_impl->Safe([&]{auto* entity=gEnv->pEntitySystem->GetEntity(item);if(entity)m_impl->Event(5,id,item,float(m_impl->String(entity->GetClass()->GetName())),m_impl->Position(id));});}
 void BotDemoRecorder::Jump(uint32_t id,bool strength){if(m_impl)m_impl->Safe([&]{m_impl->Event(8,id,0,strength?1.f:0.f,m_impl->Position(id));});}
 void BotDemoRecorder::Land(uint32_t id,float height){if(m_impl)m_impl->Safe([&]{m_impl->Land(id,height);});}
 float BotDemoRecorder::AverageMs()const{return m_impl && m_impl->frames?float(m_impl->totalMs/m_impl->frames):0;}

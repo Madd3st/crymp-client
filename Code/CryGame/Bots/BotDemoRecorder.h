@@ -15,6 +15,7 @@ public:
  bool Active()const;
  void Hit(const HitInfo&);void Kill(uint32_t victim,uint32_t killer);
  void Revive(uint32_t id,uint32_t spawn);
+ void Pickup(uint32_t id,uint32_t item);
  void Jump(uint32_t id,bool strength);void Land(uint32_t id,float height);
  float AverageMs()const;float WorstMs()const;
 private:

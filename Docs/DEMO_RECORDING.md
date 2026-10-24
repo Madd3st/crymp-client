@@ -8,7 +8,8 @@ use<=32ASCII letters/digits/_/-. No automatic bot spawn or actor mutation.
 Format: frozen **wbdemo/2**, canonical spec owned by research/steelmill-triage
 Docs/Research/SteelmillTriage/DEMO_FORMAT.md at414edb92. STRING before first use,
 ACTOR join/leave,33-byte FRAME states, BRAIN+INTENT per decision tick, inventory
-on change, stock gameplay shot/pickup/drop/suit; hit/kill/revive from existing
+on change, stock gameplay shot/human-pickup/manual-drop/suit; successful direct bot pickup hook;
+hit/kill/revive from existing
 GameRules/instance hooks, bot jump/land from locomotion latches, human jump transition
 and all-actor landing sampled every engine frame. Land latches deduplicated250ms.
 Actual view quaternion, yaw[-18000,18000), pitch+up, peak inter-frame yaw preserved.
@@ -30,5 +31,7 @@ flag toggled or map changes. DEMO PROFILE reports observer overhead including ev
 promote to default recording.** No runtime gameplay-policy flag added.
 
 Codec sizes/yaw edges checked in Tests/BotDemoCodecTests.cpp; C++ fixture read by
-canonical Python reader,31Triage tests PASS. MSVC x64 Release compiled. Server15bot
-660s recording acceptance pending; client playback/sidecar untested and unimplemented.
+canonical Python reader,31Triage tests PASS. MSVC x64 Release compiled. First15bot660s recording parsed/20Hz/avg0.0433ms, but missed direct bot pickup events;
+observer hook fixed, a second full run required for acceptance. Native by-death drops
+are not emitted by CActor and are not synthesized from inventory changes.
+Server15bot660s final acceptance pending; client playback/sidecar untested and unimplemented.
