@@ -5,6 +5,7 @@
 #include "CryGame/Bots/BotProfile.h"
 #include <vector>
 #include "CryGame/Bots/BotProgress.h"
+#include "CryGame/Bots/BotTrapWatchdog.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 namespace WarsBots
@@ -34,6 +35,11 @@ private:
 	void ExecuteIntent(CPlayer& actor, float dt);
 	bool NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect=false);
 	BotProgress m_progress;
+    bool RecoverTrap(CPlayer& actor);
+    BotTrapWatchdog m_trap;
+    Vec3 m_trapDirection=Vec3(0,1,0);
+    float m_trapStepUntil=0;
+    bool m_trapJumpAttempted=false;
 	float m_escapeUntil=0;
 	BotBlackboard m_blackboard;
 	BotIntent m_intent;

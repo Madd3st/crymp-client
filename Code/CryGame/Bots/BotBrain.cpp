@@ -129,7 +129,7 @@ void BotBrain::Configure(const BotProfile& profile, int number)
 
 void BotBrain::ResetLife()
 {
-	m_progress.Reset(); m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
+	m_progress.Reset(); m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_locomotion.Reset();
 	m_suit.Reset(); m_blackboard=BotBlackboard(); m_intent=BotIntent();
 	m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
@@ -174,6 +174,7 @@ bool BotBrain::Start(BotInstance& bot)
 void BotBrain::Stop(BotInstance& bot)
 {
 	if (!m_running) return;
+	m_trap.Reset(); m_trapStepUntil=0;
 	m_running = false; // Cancel respawn before touching entity/weapon lifetime.
 	m_combat.Reset();
 	if (CActor* actor = bot.GetActor())
@@ -239,6 +240,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	}
 	if (actor.GetHealth() <= 0)
 	{
+		m_trap.Reset(); m_trapStepUntil=0;
 		m_combat.StopFire();
 		m_locomotion.Stop(actor);
 		m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
@@ -569,12 +571,61 @@ bool BotBrain::NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool pro
 	return true;
 }
 
+bool BotBrain::RecoverTrap(CPlayer& actor)
+{
+    ICVar* enabled=gEnv->pConsole->GetCVar("wb_trap_recovery");
+    if (!enabled || enabled->GetIVal()!=1 || !gEnv->bServer ||
+        !g_pGame->GetBotManager().Owns(actor.GetEntityId()) || !g_pGame->GetBotManager().CanRunLocalIA())
+    { m_trap.Reset(); m_trapStepUntil=0; return false; }
+    const Vec3 p=actor.GetEntity()->GetWorldPos();
+    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove);
+    if (level)
+    {
+        WB_LOG(1,"[WarsBots] TRAP RECOVERY level=%d actor=%u age=%.2f pos=(%.2f,%.2f,%.2f) blocked=%d speed=%.2f grounded=%d.",
+            level,actor.GetEntityId(),m_trap.Age(m_now),p.x,p.y,p.z,m_blackboard.blocked?1:0,m_blackboard.velocity.GetLength2D(),m_blackboard.grounded?1:0);
+        if (level==1)
+        {
+            m_path.clear();m_pathIndex=0;m_nextRepath=m_minRepath=0;
+        }
+        else if (level==2 || level==3)
+        {
+            Vec3 forward=m_intent.destination-p;forward.z=0;forward.NormalizeSafe(actor.GetBaseQuat().GetColumn1());
+            m_trapDirection=level==2 ? Vec3(-forward.y,forward.x,0)*float(m_number%2?1:-1) : -forward;
+            m_trapStepUntil=m_now+3.f;m_trapJumpAttempted=false;
+        }
+        else if (level==4)
+        {
+            // Native IA suicide -> ProcessDeath/OnPlayerKilled -> GameRules::KillPlayer.
+            // Keeps score penalties, native death broadcasts and the existing same-actor respawn.
+            m_combat.StopFire();m_locomotion.Stop(actor);
+            CGameRules* rules=g_pGame->GetGameRules();
+            const bool called=rules && Script::CallMethod(rules->GetEntity()->GetScriptTable(),"KillPlayer",actor.GetEntity()->GetScriptTable());
+            WB_LOG(1,"[WarsBots] TRAP RECOVERY level=4 actor=%u nativeSelfKill=%d health=%d.",actor.GetEntityId(),called?1:0,actor.GetHealth());
+            return true;
+        }
+    }
+    if (!m_trap.Level()) m_trapStepUntil=0;
+    if (m_trap.Level()>=2 && m_trap.Level()<4 && m_now<m_trapStepUntil)
+    {
+        m_combat.StopFire();m_intent.combat=BotCombatIntent::None;
+        m_intent.MoveTo(p+m_trapDirection*3.f,m_intent.aim);
+        m_intent.strafe=false;m_intent.gait=BotGait::Run;m_intent.suitMode=NANOMODE_DEFENSE;
+        m_intent.jump=BotJump::None;
+        if (m_trap.Level()==3 && !m_trapJumpAttempted && m_blackboard.grounded &&
+            m_blackboard.mode==NANOMODE_DEFENSE && m_now>=m_blackboard.nextJump)
+        { m_intent.jump=BotJump::Normal;m_trapJumpAttempted=true; } // Executor still requires JumpSpace.
+    }
+    return false;
+}
+
 void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 {
+    if (RecoverTrap(actor)) return;
 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
 		m_intent.suitMode=static_cast<ENanoMode>(m_testMode);
 	m_blackboard.obstacleJump=BotJump::None;
-	if (m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil)
+	if (m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
+        !(m_trap.Level()>=2 && m_now<m_trapStepUntil))
 	{
 		const Vec3 direction=(m_intent.destination-m_blackboard.position).GetNormalizedSafe(FORWARD_DIRECTION);
 		m_blackboard.obstacleJump=m_locomotion.Obstacle(actor,direction);

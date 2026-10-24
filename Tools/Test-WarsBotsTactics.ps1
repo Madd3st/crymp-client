@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory)][string]$GameDirectory,
     [Parameter(Mandatory)][string]$BaselineDirectory,
     [Parameter(Mandatory)][string]$CandidateDirectory,
-    [ValidateRange(60,600)][int]$Seconds=120,
+    [ValidateRange(60,1800)][int]$Seconds=120,
     [ValidateRange(1,4)][int]$Repeats=2,
     [ValidateRange(1,4)][int]$FirstRepeat=1,
     # Four repeats with step=1 place every skill in every slot. Archived October
@@ -14,6 +14,7 @@ param(
     [switch]$CandidateOnly,
     [switch]$BaselineOnly,
     [switch]$FireDiagnostics,
+    [ValidateRange(-1,1)][int]$CandidateTrapRecovery=-1,
     [ValidateSet("auto","universal")][string]$Style="auto",
     [string]$ExpectedCandidate="",
     [ValidateRange(-1,1)][int]$CandidateProgress=-1,
@@ -78,6 +79,7 @@ try {
                     $commands+=" +wb_add 1 $skill"
                     if($Style -ne "auto"){$commands+=" $Style"}
                 }
+                if($variant -eq 'candidate' -and $CandidateTrapRecovery -ge 0){$commands=" +wb_trap_recovery $CandidateTrapRecovery"+$commands}
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
@@ -104,8 +106,8 @@ try {
                 }
                 $text=if(Test-Path -LiteralPath $trace){Get-Content -LiteralPath $trace -Raw}else{''}
                 $numbers=@([regex]::Matches($text,'#(\d+) created EntityId=') | ForEach-Object {$_.Groups[1].Value} | Sort-Object -Unique)
-                $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED'
-                $run=[ordered]@{tag=$tag;session=$sessionTag;progress_requested=$progress;fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
+                $run=[ordered]@{tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"

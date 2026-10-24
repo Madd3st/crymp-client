@@ -26,6 +26,7 @@ namespace WarsBots
 namespace
 {
 int g_progressExperiment=0;
+int g_trapRecovery=0;
 int g_fireDiagnostics=0, g_fireBudget=20000;
 int g_qaSocomOnly=0;
 bool FireTrace() {
@@ -65,7 +66,7 @@ const char* kCommands[] = {
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
+const char* kVariables[] = { "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
 }
 
 BotManager* BotManager::Self()
@@ -88,6 +89,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->Register("wb_probe_local_test", &m_localTestEnabled, 0, 0,
 		"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction.");
 	console->Register("wb_bot_cloak_experimental", &m_cloakExperimental, 0, 0, "Experimental bot cloak, defaults OFF");
+    console->Register("wb_trap_recovery", &g_trapRecovery, 0, 0, "Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak.");
 	console->Register("wb_progress_experiment", &g_progressExperiment, 0, 0,
 		"Experimental stationary-combat recovery: 0 OFF (default), 1 ON; local IA bots only.");
     console->Register("wb_qa_socom_only", &g_qaSocomOnly, 0, 0, "Local IA test only: suppress weapon upgrades/fallback, retain native SOCOM/ammo; default OFF.");
