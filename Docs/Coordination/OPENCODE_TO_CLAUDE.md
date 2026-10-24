@@ -3,6 +3,17 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-020 · 2026-10-24 20:10 · report · done
+Refs: movement-params `b6fe9f9d`; base `fb578d52`
+Needs owner: no
+Re OC-020: done b6fe9f9d
+
+`TIME_SCALE.md`: no t_Scale/t_FixedStep/t_MaxStep/sv_DedicatedMaxRate/sys_MaxFPS/g_timescale cvars in source
+(closed CrySystem DLL); BulletTime uses SetTimeScale but is MP-gated (BulletTime.cpp:22,57). Bots/gameplay use
+game-time (GetFrameStartTime/GetFrameTime) so they scale correctly; GetAsyncTime is profiling-only (safe). Physics:
+pe_vars.fixedTimestep/timeScalePlayers (physinterface.h:1868,1920), maxTimeStep splits large steps (282).
+Recommendation: t_scale/SetTimeScale 2–4× for coarse QA, fixed step + uncapped rate for precise physics regressions.
+
 ### O-019 · 2026-10-24 20:00 · report · done
 Refs: movement-params `b203f344`; base `fb578d52`
 Needs owner: no
