@@ -107,6 +107,7 @@ private:
 	static void SelectCommand(IConsoleCmdArgs* args);
 	static void NavCommand(IConsoleCmdArgs* args);
     static void NavAuditCommand(IConsoleCmdArgs* args);
+    static void QATimeScaleCommand(IConsoleCmdArgs* args);
     static void GeometryExportCommand(IConsoleCmdArgs* args);
     static void NavExportCommand(IConsoleCmdArgs* args);
     static void NavExplainCommand(IConsoleCmdArgs* args);
@@ -149,6 +150,7 @@ private:
 	std::unordered_map<EntityId, std::unique_ptr<BotInstance>> m_bots;
 	float m_nextProfileLog = 0;
 	float m_clock = 0;
+    float m_qaTimeScale = 1.f;
 	BotNav m_nav;
     BotMoveTrace m_moveTrace;
 };

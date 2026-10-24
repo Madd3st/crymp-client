@@ -16,6 +16,8 @@ param(
     [switch]$BaselineOnly,
     [switch]$FireDiagnostics,
     [switch]$FixedRoster,
+    [ValidateSet("wall","fixed","scale")][string]$TimeMode="wall",
+    [ValidateRange(1,8)][double]$Speed=1,
     [ValidateRange(-1,1)][int]$BaselineBotPace=-1,
     [ValidateRange(-1,1)][int]$CandidateBotPace=-1,
     [ValidateRange(-1,1)][int]$CandidateTrapRecovery=-1,
@@ -56,6 +58,7 @@ $port=$Port
 $sessionTag=(Split-Path $out -Leaf) -replace '[^A-Za-z0-9_-]','_' 
 function Servers { @(Get-Process -Name 'CryMP-Server64' -ErrorAction SilentlyContinue | Where-Object { -not $_.HasExited }) }
 if ((Servers).Count) { throw 'An existing CryMP server is active; refusing shared-memory QA.' }
+if(Get-Process CryMP-Client64 -ErrorAction SilentlyContinue){throw 'Owner client active; heavy QA deferred'}
 if (Get-NetUDPEndpoint -LocalPort $port -ErrorAction SilentlyContinue) { throw "UDP $port is busy" }
 if (-not (Test-Path -LiteralPath $memory)) { throw 'An existing Steelmill memory snapshot is required for this comparison.' }
 if (Test-Path -LiteralPath $backup) { throw 'Use a fresh output directory; existing evidence will not be overwritten.' }
@@ -135,17 +138,37 @@ try {
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
-                $args="-dir `"$game`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_debug 1 +wb_maxbots $bots$commands +wb_list"
+                $timeCommands=''
+                if($TimeMode -ne 'wall'){
+                    # Diagnostic-only QA. Never expose a sped-up server to an accidental client.
+                    $password=[guid]::NewGuid().ToString('N')
+                    $rate=[math]::Round(30*$Speed)
+                    $scale=$Speed.ToString([Globalization.CultureInfo]::InvariantCulture)
+                    $timeCommands=if($TimeMode -eq 'fixed'){" +t_FixedStep 0.033333 +t_Scale 1 +sv_DedicatedMaxRate $rate"}else{" +wb_qa_time_scale $scale +sv_DedicatedMaxRate 30"}
+                    $timeCommands=" +sv_password $password"+$timeCommands
+                }
+                $args="-dir `"$game`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_debug 1 +wb_maxbots $bots$commands$timeCommands +wb_list"
                 Write-Host "START $tag sha=$($v.manifest.sha) memory=$memoryHash"
                 $p=Start-Process -FilePath $v.exe -ArgumentList $args -WorkingDirectory $game -WindowStyle Hidden -PassThru
-                $deadline=[DateTime]::UtcNow.AddSeconds($Seconds)
+                $wallWatch=[Diagnostics.Stopwatch]::StartNew()
+                $deadline=[DateTime]::UtcNow.AddSeconds($(if($TimeMode -eq 'wall'){$Seconds}else{$Seconds*2}))
+                $gameObserved=0.;$timeError=''
+
                 $text='';$engine='';$joined=$false
                 $navPath=Join-Path $dataMemory 'Multiplayer_IA_Steelmill.nav.json'
                 $navCaptured=0;$navStamp=[DateTime]::UtcNow
                 while([DateTime]::UtcNow -lt $deadline -and -not $p.HasExited) {
-                    Start-Sleep -Seconds 5
+                    Start-Sleep -Seconds $(if($TimeMode -eq 'wall'){5}else{1})
                     if(Test-Path -LiteralPath $trace){$text=Get-Content -LiteralPath $trace -Raw}
                     if(Test-Path -LiteralPath $log){$engine=Get-Content -LiteralPath $log -Raw}
+                    if($TimeMode -ne 'wall'){
+                        $times=[regex]::Matches($text,'(?m)^([0-9.]+) ')
+                        if($times.Count){$gameObserved=[double]$times[$times.Count-1].Groups[1].Value}
+                        if($engine -match 'Unknown command: (t_FixedStep|t_Scale|sv_DedicatedMaxRate|wb_qa_time_scale)'){$timeError='Native timer/rate CVar unavailable';break}
+                        if($text -match 'QA TIME SCALE refused'){$timeError='Dedicated/password/gate refused time scale';break}
+                        if($wallWatch.Elapsed.TotalSeconds -gt 30 -and $gameObserved/$wallWatch.Elapsed.TotalSeconds -lt 1.2){$timeError='Requested acceleration not observed after30s';break}
+                        if($gameObserved -ge $Seconds){break}
+                    }
                     if($NavExports -and $navCaptured -lt 2 -and (Test-Path -LiteralPath $navPath)){
                         $navFile=Get-Item -LiteralPath $navPath
                         if($navFile.LastWriteTimeUtc -gt $navStamp){
@@ -156,6 +179,7 @@ try {
                     $joined=$text -match 'clients=[1-9]'
                     if($joined -or $engine -match 'CRASH DETECTED'){break}
                 }
+                $wallWatch.Stop();$wallSeconds=$wallWatch.Elapsed.TotalSeconds
                 $early=$p.HasExited
                 if($joined){throw 'A real client joined; QA left that server running and stopped the batch.'}
                 if(-not $p.HasExited){Stop-Process -Id $p.Id}
@@ -172,8 +196,9 @@ try {
                 $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
                 if($NavExports -and $navCaptured -ne 2){$ok=$false}
                 if($ExplainPairsPath -and ([regex]::Matches($text,'NAV explain from=')).Count -ne 80){$ok=$false}
-                if($Seconds -ge 660 -and $observed -lt 600){$ok=$false}
-                $run=[ordered]@{bot_pace_requested=$pace;fixed_roster=[bool]$FixedRoster;move_trace_requested=$(if($variant -eq 'candidate'){$CandidateMoveTrace}else{$BaselineMoveTrace});reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{$BaselineReachableGoals});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{$BaselineSinkEscape});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{$BaselinePhysicsDiagnostics});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{$BaselineHotspotAllNodes});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{$BaselineTrapRecovery});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                if($Seconds -ge 660 -and $observed -lt $(if($TimeMode -eq 'wall'){600}else{$Seconds})){$ok=$false}
+                if($timeError){$ok=$false}
+                $run=[ordered]@{time_mode=$TimeMode;requested_speed=$Speed;wall_seconds=$wallSeconds;game_seconds=$observed;speedup=$(if($wallSeconds -gt 0){$observed/$wallSeconds}else{0});time_error=$timeError;bot_pace_requested=$pace;fixed_roster=[bool]$FixedRoster;move_trace_requested=$(if($variant -eq 'candidate'){$CandidateMoveTrace}else{$BaselineMoveTrace});reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{$BaselineReachableGoals});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{$BaselineSinkEscape});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{$BaselinePhysicsDiagnostics});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{$BaselineHotspotAllNodes});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{$BaselineTrapRecovery});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"

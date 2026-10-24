@@ -72,7 +72,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 	return args->GetArgCount() >= first + 3 && ParseCoordinate(args->GetArg(first), position.x) &&
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
-const char* kCommands[] = { "wb_nav_audit",
+const char* kCommands[] = { "wb_qa_time_scale", "wb_nav_audit",
 	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
@@ -135,6 +135,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->AddCommand("wb_revive_at",ReviveAtCommand,0,"wb_revive_at <spawnEntityId> [botNumber|me]: manual native kill/revive; selected bot by default; local IA only");
     console->AddCommand("wb_teleport",TeleportCommand,0,"wb_teleport <botNumber> x y z: manual owned live bot relocation; local IA only");
 	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
+    console->AddCommand("wb_qa_time_scale",QATimeScaleCommand,0,"Diagnostic only:1..8, password-protected local dedicated IA/no humans; resets on level end");
     console->AddCommand("wb_geom_export",GeometryExportCommand,0,"Offline local IA/no actors: static collision OBJ + spawn/item JSON; optional path.obj");
 	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
 	console->AddCommand("wb_nav_audit",NavAuditCommand,0,"Local IA/no actors: build export-only graph using knee variant; stop resets to ordinary graph");
@@ -398,6 +399,7 @@ void BotManager::Sweep()
 
 void BotManager::EndLevel()
 {
+    if(m_qaTimeScale!=1.f){gEnv->pTimer->SetTimeScale(1.f);m_qaTimeScale=1.f;}
 	m_levelReady = false;
 	for (BotInstance* bot : Ordered()) bot->Remove();
 	// After a level ends no entity can still be ours: drop every slot unconditionally.
@@ -424,6 +426,13 @@ void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)
 
 void BotManager::OnPostUpdate(float dt)
 {
+    if(m_qaTimeScale!=1.f){
+        CGameRules::TPlayers humans;if(g_pGame && g_pGame->GetGameRules())g_pGame->GetGameRules()->GetPlayers(humans);
+        if(!humans.empty() || !CanRunLocalIA()){
+            gEnv->pTimer->SetTimeScale(1.f);m_qaTimeScale=1.f;
+            WB_LOG(0,"[WarsBots] QA TIME SCALE reset reason=human_or_gate");
+        }
+    }
     m_moveTrace.Update(m_framework,*this);
 	// Restore outside the action-event callback, once the reset level is usable again.
 	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
@@ -815,6 +824,19 @@ void BotManager::NavExplainCommand(IConsoleCmdArgs* args)
     if(args->GetArgCount()!=3 || !ParseInt(args->GetArg(1),from) || !ParseInt(args->GetArg(2),to))
     {WB_LOG(0,"[WarsBots] Usage: wb_nav_explain <fromNode> <toNode>");return;}
     self->m_nav.Explain(from,to);
+}
+
+void BotManager::QATimeScaleCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self();CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+    CGameRules::TPlayers humans;if(rules)rules->GetPlayers(humans);
+    ICVar* password=gEnv->pConsole->GetCVar("sv_password");float value=0;
+    if(!self || !self->CanRunLocalIA() || !gEnv->pSystem->IsDedicated() || !humans.empty() ||
+       !password || std::strlen(password->GetString())<16 || !args || args->GetArgCount()!=2 ||
+       !ParseCoordinate(args->GetArg(1),value) || value<1 || value>8)
+    {WB_LOG(0,"[WarsBots] QA TIME SCALE refused: dedicated local IA/password>=16/no humans; value1..8");return;}
+    gEnv->pTimer->SetTimeScale(value);self->m_qaTimeScale=value;
+    WB_LOG(0,"[WarsBots] QA TIME SCALE requested=%.3f actual=%.3f",value,gEnv->pTimer->GetTimeScale());
 }
 
 void BotManager::GeometryExportCommand(IConsoleCmdArgs* args)
