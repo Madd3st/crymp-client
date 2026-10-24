@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Steelmill AI Lab: offline inspection of WarsBots map memory, trace logs and (future) graph exports.
+"""Steelmill Triage: offline inspection of WarsBots map memory, trace logs and (future) graph exports.
 
-  steelmill_lab.py mem  <file.mem> [--against older.mem]       memory statistics / growth
-  steelmill_lab.py analyze <run.bots.log>... [--mem f.mem] [--graph nav.json] [--out DIR]
-  steelmill_lab.py graph <nav.json> [--mem f.mem] [--replay run.bots.log]
+  steelmill_triage.py mem  <file.mem> [--against older.mem]       memory statistics / growth
+  steelmill_triage.py analyze <run.bots.log>... [--mem f.mem] [--graph nav.json] [--out DIR]
+  steelmill_triage.py graph <nav.json> [--mem f.mem] [--replay run.bots.log]
 
 Read-only: never writes next to its inputs. Stdlib only (Python 3.9+).
 """
@@ -49,7 +49,7 @@ def cmd_analyze(a):
             results.append(summary)
             label = f"{Path(path).name} · run {run.index}"
             payloads.append(render.build_payload(label, run, summary, st, analysis.pinned(run), grid, graph, memory))
-    report = dict(schema="steelmill-lab/1", memory=memory.summary() if memory else None, runs=results)
+    report = dict(schema="steelmill-triage/1", memory=memory.summary() if memory else None, runs=results)
     (out / "lab_report.json").write_text(json.dumps(report, indent=2, default=list) + "\n", encoding="utf-8")
     render.write_html(out / "steelmill_lab.html", payloads)
     for s in results:
@@ -80,7 +80,7 @@ def main(argv=None):
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("mem"); s.add_argument("file"); s.add_argument("--against"); s.set_defaults(fn=cmd_mem)
     s = sub.add_parser("analyze"); s.add_argument("logs", nargs="+"); s.add_argument("--mem"); s.add_argument("--graph")
-    s.add_argument("--out", default="steelmill-lab-out"); s.add_argument("--replay-limit", type=int, default=20000)
+    s.add_argument("--out", default="steelmill-triage-out"); s.add_argument("--replay-limit", type=int, default=20000)
     s.set_defaults(fn=cmd_analyze)
     s = sub.add_parser("graph"); s.add_argument("file"); s.add_argument("--mem"); s.add_argument("--replay")
     s.add_argument("--replay-limit", type=int, default=20000); s.set_defaults(fn=cmd_graph)

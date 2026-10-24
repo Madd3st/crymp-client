@@ -1,5 +1,5 @@
 {
-  "schema": "steelmill-lab/1",
+  "schema": "steelmill-triage/1",
   "memory": {
     "fingerprint": {
       "nx": 96,

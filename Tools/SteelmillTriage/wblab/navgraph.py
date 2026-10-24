@@ -1,4 +1,4 @@
-"""BotNav graph export (schema wbnav/1, see Docs/Research/SteelmillLab/NAV_EXPORT_CONTRACT.md).
+"""BotNav graph export (schema wbnav/1, see Docs/Research/SteelmillTriage/NAV_EXPORT_CONTRACT.md).
 
 Loads and validates an export, reproduces BotNav's projection and A* offline (without
 the physics ray that Nearest() also requires), finds connected components and replays

@@ -62,7 +62,7 @@ def build_payload(label, run, summary, stall_rows, pins, grid, graph=None, memor
     return payload
 
 
-def write_html(path, payloads, title="Steelmill AI Lab"):
+def write_html(path, payloads, title="Steelmill Triage"):
     data = json.dumps(payloads, separators=(",", ":"))
     html = TEMPLATE.replace("__TITLE__", title).replace("__DATA__", data.replace("</", "<\\/"))
     with open(path, "w", encoding="utf-8") as f:
@@ -126,7 +126,7 @@ tbody tr { cursor: pointer } tbody tr:hover { background: var(--mapbg) }
 :focus-visible { outline: 2px solid var(--nav); outline-offset: 2px }
 </style>
 <div class="top">
-  <h1>Steelmill AI Lab</h1>
+  <h1>Steelmill Triage</h1>
   <span class="sub" id="meta"></span>
   <label class="sub runpick">run <select id="run"></select></label>
 </div>

@@ -13,20 +13,23 @@ tests, **server** = server logs, **client** = visual check in a real client.
 | spectator build | `a6ee9e9e` | Codex | BUILD PASS, C++ + 60 s headless QA PASS; live client scenario NOT run |
 | `warsbots/main` | `caf1a815` | integrator | far behind weapon-goals |
 | `warsbots/research/crymp-native-audit` | `47ccfacf` | Claude | done; docs + Tools/CryMPResearch |
-| `warsbots/research/steelmill-lab` | this branch | Claude | Steelmill AI Lab + findings |
+| `warsbots/research/steelmill-lab` | `332a3c8b` | Claude (session 01WT…) | Steelmill AI Lab tools (viewer, mem/log/graph, ML validator); started in parallel, no findings doc yet |
+| `warsbots/research/steelmill-triage` | this branch | Claude (coordinator) | findings from real logs, export contract, triage detectors, this file |
 | `warsbots/research/fps-ai-planning` | planned | Claude | FPS AI research + engine-free planner prototype |
 
 Codex report: `Docs/Experiments/regression-spectator-2026-10-24.md`. Spectator reuses the
 native observer flow (`GetNextSpectatorTarget` → `GetMatchParticipants` on local IA, native F1,
 renderer-local FP view from replicated aim), as recommended in the CryMP audit. Independent
-Lab pass over the same four regression logs agrees: no new movement regression versus older
-builds; the spawn-pin defect (Lab F1) is present in `8f0abd5f` too and predates it.
+Triage pass over the same four regression logs agrees: no new movement regression versus older
+builds; the spawn-pin defect (Triage F1) is present in `8f0abd5f` too and predates it.
 
 ## Current tasks
 
 - **Codex**: regression + Spectator done server-side; waiting for the owner's live client run
   (manual scenario in Codex's report).
-- **Claude**: Steelmill AI Lab (done in this branch) → FPS AI research → planner prototype.
+- **Claude**: two sessions ran Steelmill work in parallel by accident (see branches). Next for the
+  coordinator: FPS AI research → planner prototype. Proposed: Lab session absorbs the triage
+  detectors (pinned/trap/motion-join) into `Tools/SteelmillLab`, then `SteelmillTriage` is retired.
   No game files, no servers, no merges.
 
 ## Component state
@@ -37,11 +40,11 @@ builds; the spawn-pin defect (Lab F1) is present in `8f0abd5f` too and predates 
 | Spectator (`wb_watch`, F1) | implemented natively | unit + headless server; client not checked |
 | Aim / head zone | plausible in duels | server, small sample |
 | BotNav build | 7633 nodes / 41618 edges, stable | server |
-| BotNav routing | 15–18 failed queries per bot-minute, 42–62% cross-floor | server (Lab F3) |
-| Movement stuck handling | blind to "accepted but not moving" | server + src (Lab F1) |
-| Trap recovery | none after 1.5 s detours fail | server + src (Lab F2) |
-| Map memory | half ignored by hotspots, no decay | src + real .mem (Lab F4) |
-| ML dataset | not bandit-ready | server + src (Lab F5) |
+| BotNav routing | 15–18 failed queries per bot-minute, 42–62% cross-floor | server (Triage F3) |
+| Movement stuck handling | blind to "accepted but not moving" | server + src (Triage F1) |
+| Trap recovery | none after 1.5 s detours fail | server + src (Triage F2) |
+| Map memory | half ignored by hotspots, no decay | src + real .mem (Triage F4) |
+| ML dataset | not bandit-ready | server + src (Triage F5) |
 | Power Struggle | design only | docs |
 
 ## Known risks
@@ -64,7 +67,7 @@ default ON only after a soak shows no regression:
    spawn a human there. If geometry: exclude that spawn for bots or nudge revive position.
    If bot-only: trace `CMovementRequest`/`canMove` there.
 3. *Logging patch* per `NAV_EXPORT_CONTRACT.md` (reason on NAV fallback, actor on suit/jump).
-4. *`wb_nav_export`* per the contract. Unblocks the Lab graph layer and offline replay.
+4. *`wb_nav_export`* per the contract. Unblocks the graph layer in both Lab and Triage tools and offline replay.
 5. *PickHotspot stride bug* (`i += 2`): iterate all nodes; measure frame cost (it is 10 Hz).
 
 Deferred until 1–4 are in: stuck decay / edge-level penalties, roof links, any planner.

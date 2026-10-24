@@ -1,6 +1,6 @@
 # BotNav graph export contract (wbnav/1)
 
-Status: **proposal for Codex to implement**. Consumer: `Tools/SteelmillLab` (`navgraph.py`
+Status: **proposal for Codex to implement**. Consumer: `Tools/SteelmillTriage` (`navgraph.py`
 already validates and replays this format; tests use a synthetic graph). No game code
 was changed by this proposal.
 
@@ -47,7 +47,7 @@ UTF-8 JSON, one object. Floats with 2 decimals for positions and 3 for costs.
 }
 ```
 
-Rules the exporter must keep (the Lab validator rejects violations):
+Rules the exporter must keep (the Triage validator rejects violations):
 
 1. `nodes[i]` is exactly `m_nodes[i].pos` and `column` is `m_nodes[i].column` — same
    index as the `.mem` record, so memory overlays without remapping.
@@ -74,7 +74,7 @@ These make existing traces decisive instead of ambiguous. All are additive, leve
 
 ## Acceptance
 
-- `python Tools/SteelmillLab/steelmill_lab.py graph <export> --mem <same level .mem>` exits 0.
+- `python Tools/SteelmillTriage/steelmill_triage.py graph <export> --mem <same level .mem>` exits 0.
 - Node/edge counts equal the `NAV ready:` line of the same session.
 - Re-export twice in one session gives byte-identical `nodes/edges`.
 - No change in `PROFILE` frame cost outside the export frame.

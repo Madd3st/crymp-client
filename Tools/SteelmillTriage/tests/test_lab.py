@@ -1,4 +1,4 @@
-"""Synthetic tests for Steelmill AI Lab. Run: python -m unittest discover -s Tools/SteelmillLab/tests"""
+"""Synthetic tests for Steelmill Triage. Run: python -m unittest discover -s Tools/SteelmillTriage/tests"""
 import json
 import struct
 import sys
