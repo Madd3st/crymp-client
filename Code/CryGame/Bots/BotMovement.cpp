@@ -60,7 +60,7 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe) co
 		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
 }
 
-bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe)
+bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo)
 {
 	auto* controller = actor.GetMovementController();
 	if (!controller) return false;
@@ -105,7 +105,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 	CMovementRequest request;
 	request.SetMoveTarget(feet + direction * 2.0f);
 	request.SetDesiredSpeed(speed);
-	request.SetPseudoSpeed(speed<2.0f?0.3f:0.5f);
+	request.SetPseudoSpeed(pseudo>=0.f?pseudo:(speed<2.0f?0.3f:0.5f));
 	request.SetStance(stance);
 	request.SetLookTarget(lookAt);
 	request.SetAimTarget(lookAt);

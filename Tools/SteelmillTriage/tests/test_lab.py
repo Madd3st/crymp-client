@@ -286,5 +286,32 @@ class RenderTests(unittest.TestCase):
         self.assertEqual(json.loads(data)[0]["label"], "t")
 
 
+class ReviveFreezeTests(unittest.TestCase):
+    def test_jitter_in_place_is_not_frozen(self):
+        from wblab import summary
+        def tel(t, x, y): return f"{t:.2f} [WarsBots] AI telemetry EntityId=7 state=MOVING pos=({x}, {y}, 136.0)"
+        jitter = ["1.00 [WarsBots] revive requested EntityId=7 spawnId=153"] + [
+            tel(2 + 2 * i, 10 + d, 20) for i, d in enumerate([0, 0.7, -0.4, 0.9, 0.1])] + [tel(30, 10.1, 20)]
+        frozen = ["1.00 [WarsBots] revive requested EntityId=8 spawnId=195"] + [
+            f"{2 + 2 * i:.2f} [WarsBots] AI telemetry EntityId=8 state=MOVING pos=(5.0, 5.0, 136.0)" for i in range(5)] + [
+            "30.00 [WarsBots] AI telemetry EntityId=8 state=MOVING pos=(5.0, 5.0, 136.0)"]
+        r = summary.revives(jitter + frozen)
+        self.assertEqual(r[153], dict(revives=1, frozen=0))
+        self.assertEqual(r[195], dict(revives=1, frozen=1))
+
+
+class PaceTests(unittest.TestCase):
+    def test_pace_profile_and_accept(self):
+        from wblab import pace
+        mk = lambda a, k, sp, sprint, mode: (f"1.0 [WarsBots] MOVE TRACE actor={a} kind={k} side=server t=1 speed={sp} "
+                                             f"mode={mode} energy=150.0 sprint={sprint} takeoffs=0 health=100")
+        lines = [mk(1, 'bot', 2.5, 0, 3)] * 8 + [mk(1, 'bot', 0.0, 0, 3)] * 2 + [mk(2, 'human', 6.0, 1, 3)] * 4
+        lines.append(mk(3, 'bot', 9.9, 1, 3).replace('side=server', 'side=client'))
+        p = pace.profile(pace.parse(lines))
+        assert p['bot']['actors'] == 1 and p['bot']['moving_pct'] == 80.0 and p['bot']['moving_median'] == 2.5
+        assert p['human']['over4_pct'] == 100.0 and p['human']['sprint_pct'] == 100.0
+        ok, _ = pace.accept(p['bot']); assert not ok
+
+
 if __name__ == "__main__":
     unittest.main()

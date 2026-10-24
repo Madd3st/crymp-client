@@ -17,7 +17,7 @@ private:
 	bool JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength) const;
 	void Refused(CPlayer& actor, const char* reason, float now);
 	BotMovement m_movement;
-	bool m_pending = false, m_airborne = false, m_strength = false;
+	bool m_pending = false, m_airborne = false, m_strength = false, m_sprinting=false;
 	float m_requested = 0, m_startZ = 0, m_apex = 0, m_nextLog = 0;
 };
 }

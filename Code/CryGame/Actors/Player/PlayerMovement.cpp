@@ -7,6 +7,9 @@
 #include "CryCommon/CryRenderer/IRenderer.h"
 #include "CryCommon/CryRenderer/IRenderAuxGeom.h"
 #include "PlayerMovement.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "CryGame/Bots/BotPace.h"
+#endif
 #include "CryCommon/CryGame/GameUtils.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameCVars.h"
@@ -1069,6 +1072,13 @@ void CPlayerMovement::ProcessOnGroundOrJumping(CPlayer& player)
 		  //-> please adjust the prediction
 	if (m_player.IsPlayer())
 		AdjustMovementForEnvironment(move, (m_actions & ACTION_SPRINT) != 0);
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    else if(gEnv->bMultiplayer && m_player.IsWarsBotActor() && WarsBots::BotPaceEnabled()){
+        // Only the missing native MP Speed bonus. Native sprint multipliers above already apply.
+        if(CNanoSuit* suit=m_player.GetNanoSuit())if(suit->GetMode()==NANOMODE_SPEED)
+            move*=((m_actions&ACTION_SPRINT)!=0)?(1.f+suit->GetSlotValue(NANOSLOT_SPEED)*.005f):1.3f;
+    }
+#endif
 
 	//adjust prone movement for slopes
 	if (m_player.GetStance() == STANCE_PRONE && move.len2() > 0.01f)

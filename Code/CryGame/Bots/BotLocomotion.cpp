@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
+#include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotLocomotion.h"
 #include "CryGame/Actors/Player/Player.h"
 #include "CryCommon/CryAction/IMovementController.h"
@@ -18,7 +19,7 @@ bool Ray(CPlayer& actor, const Vec3& from, const Vec3& delta, ray_hit& hit)
 }
 void BotLocomotion::Reset()
 {
-	m_movement.Reset(); m_pending=m_airborne=m_strength=false;
+	m_movement.Reset(); m_pending=m_airborne=m_strength=m_sprinting=false;
 	m_requested=m_startZ=m_apex=m_nextLog=0;
 }
 void BotLocomotion::Stop(CPlayer& actor)
@@ -48,6 +49,7 @@ void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 		{
 			WB_LOG(2, "[WarsBots] JUMP LANDING: strength=%d rise=%.2f displacementZ=%.2f energy=%.1f actor=%u.",m_strength?1:0,m_apex-m_startZ,state.position.z-m_startZ,state.energy,actor.GetEntityId());
 			m_airborne=false;
+            if(BotPaceEnabled())state.nextJump=now+.5f;
 		}
 	}
 }
@@ -93,7 +95,8 @@ bool BotLocomotion::JumpSpace(CPlayer& actor, const Vec3& direction, bool moving
 }
 bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboard& state, float now, float dt)
 {
-	if (!state.canMove) { Stop(actor); Refused(actor,"movement_state",now); return false; }
+	const bool pace=BotPaceEnabled();
+    if (!state.canMove) { Stop(actor); Refused(actor,"movement_state",now); return false; }
 	const Vec3 direction=(intent.destination-state.position).GetNormalizedSafe(actor.GetBaseQuat().GetColumn1());
 	const bool strength=intent.jump==BotJump::Strength;
 	bool jump=false;
@@ -102,24 +105,28 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 		if (!state.grounded || m_pending || m_airborne) Refused(actor,"jump_not_grounded_or_pending",now);
 		else if (intent.stance==STANCE_PRONE || actor.GetStance()==STANCE_PRONE) Refused(actor,"jump_prone",now);
 		else if (now<state.nextJump) Refused(actor,"jump_cooldown",now);
-		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<90.0f)) Refused(actor,"jump_strength_mode_or_energy",now);
+		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<(pace?70.f:90.f))) Refused(actor,"jump_strength_mode_or_energy",now);
 		else if (!strength && state.mode==NANOMODE_STRENGTH) Refused(actor,"normal_jump_waiting_for_defense",now);
 		else if (!JumpSpace(actor,direction,intent.move,strength)) Refused(actor,"jump_clearance_or_landing",now);
 		else
 		{
 			jump=true; m_pending=true; m_strength=strength; m_requested=now;
-			m_startZ=m_apex=state.position.z; state.nextJump=now+3.0f;
+			m_startZ=m_apex=state.position.z; state.nextJump=now+(pace?.5f:3.f);
 			WB_LOG(2, "[WarsBots] BOT ACTION: JUMP strength=%d energy=%.1f actor=%u.",strength?1:0,state.energy,actor.GetEntityId());
 		}
 	}
 	// Let a validated jump carry forward through the low obstruction; never a position change.
-	const bool sprint=intent.move && intent.gait==BotGait::Sprint && intent.combat==BotCombatIntent::None &&
-		state.grounded && state.suitActive && state.energy>45.0f && !jump && !m_pending && !m_airborne && !actor.WarsBotWeaponFiring();
-	bool accepted=false;
-	if (intent.move)
-		accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,
-			intent.gait==BotGait::Walk?1.3f:2.5f,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe);
-	else { m_movement.Stop(actor); m_movement.Aim(actor,intent.aim); }
+    const bool eligible=intent.move && intent.gait==BotGait::Sprint &&
+        (pace?intent.combat!=BotCombatIntent::Fire:intent.combat==BotCombatIntent::None) &&
+        state.grounded && state.suitActive && !jump && !m_pending && !m_airborne && !actor.WarsBotWeaponFiring();
+    const bool sprint=eligible && (pace?PaceSprintEnergy(m_sprinting,state.energy):state.energy>45.f);
+    m_sprinting=sprint;
+    bool accepted=false;
+    if(intent.move){
+        const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(intent.stance):2.5f);
+        const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
+        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo);
+    }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
 	state.blocked=intent.move && !accepted;
 	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,intent.stance);
 	CMovementRequest request;

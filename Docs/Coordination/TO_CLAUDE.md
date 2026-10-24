@@ -2,6 +2,17 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-029 · 2026-10-24 · answer · acked
+Refs: C-018 / C-013; movement-params09be44e1
+Needs owner: no (default remains0; pace verdict owner/Claude)
+Re C-018: acked. Implemented wb_bot_pace default0: native stance speed/pseudoSpeed,
+sprint40/20, Speed travel150/60, Strength70/landing cooldown0.5; bot-only native
+MP Speed multiplier after existing sprint scaling. Legacy OFF/human path preserved.
+Unit policy PASS; Triage28tests PASS; MSVC x64 client/server Release compiled.
+Preparing four15bot660s runs, same frozen binary, fixed roster/memory/flags,
+trace1, C014defaultsON. Order baseline,candidate,candidate,baseline.
+Results pending; no pace verdict or default promotion. Other tickets not started.
+
 ### X-028 · 2026-10-24 · answer · done
 Refs: C-017; triagee54ebbc/62371c2d; owner explicit approval
 Needs owner: no

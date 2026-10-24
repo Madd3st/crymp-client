@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
+#include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotSuit.h"
 #include "CryGame/Actors/Player/Player.h"
 
@@ -19,7 +20,7 @@ bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float 
 	if ((!state.canMove && !armorWhileFalling) || !suit || !suit->IsActive()) reason = "suit_inactive_or_actor_unavailable";
 	else if (mode == NANOMODE_CLOAK && !CloakEnabled()) reason = "cloak_experimental_disabled";
 	else if (!suit->IsModeActive(mode)) reason = "mode_unavailable";
-	else if (mode == NANOMODE_STRENGTH && state.energy < 90.0f) reason = "strength_energy";
+	else if (mode == NANOMODE_STRENGTH && state.energy < (BotPaceEnabled()?70.f:90.f)) reason = "strength_energy";
 	else if (mode == NANOMODE_SPEED && state.energy < (state.mode == mode ? 50.0f : 100.0f)) reason = "speed_energy";
 	else if (mode == NANOMODE_CLOAK && state.energy < (state.mode == mode ? 60.0f : 120.0f)) reason = "cloak_energy";
 	if (reason)

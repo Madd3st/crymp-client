@@ -1,5 +1,13 @@
 # WarsBots for CryMP: status, 2026-10-24
 
+## C-018 in progress: opt-in native bot pace
+
+wb_bot_pace default0; bot-only stance speed, native pseudoSpeed/Speed multipliers,
+sprint energy hysteresis40/20 and travel Speed150/60. C014 defaults remainON.
+Policy unit and28Triage tests PASS; x64 experimental client/server Release compiled.
+Four controlled15bot660s runs pending, trace1 and same roster/memory/flags.
+Owner/Claude decides pace verdict. No default promotion or other tickets.
+
 ## STOP checkpoint: C-017 accepted C-014, defaults ON
 
 Owner explicitly approved restoring both C-014 defaults. wb_spawn_exclude195=1 and

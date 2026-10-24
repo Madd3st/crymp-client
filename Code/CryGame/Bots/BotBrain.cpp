@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
+#include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotBrain.h"
 #include "CryGame/Bots/BotAimControl.h"
 #include "CryCommon/CryAction/IMovementController.h"
@@ -69,12 +70,20 @@ float BotBrain::Rand01()
 // occasionally a forward Strength jump once Speed has been held long enough to switch modes.
 void BotBrain::TravelGait(float distance)
 {
+    if(BotPaceEnabled()){
+        const bool allowed=m_profile.skill!=BotSkill::Beginner || m_profile.useSpeed;
+        m_speedTravel=allowed && PaceSpeedBurst(m_speedTravel,distance,m_blackboard.energy);
+        m_intent.gait=allowed && distance>=8.f?BotGait::Sprint:BotGait::Run;
+        m_intent.suitMode=m_speedTravel?NANOMODE_SPEED:NANOMODE_DEFENSE;
+        if(!m_speedTravel)return;
+    }else{
 	if (!m_profile.useSpeed) { m_intent.gait=BotGait::Run; return; }
 	if (m_speedTravel) { if (m_blackboard.energy < 55.0f || distance < 8.0f) m_speedTravel = false; }
 	else if (m_blackboard.energy > 120.0f && distance > 15.0f) m_speedTravel = true;
 	m_intent.gait = m_speedTravel ? BotGait::Sprint : BotGait::Run;
 	if (!m_speedTravel) return;
 	m_intent.suitMode = NANOMODE_SPEED;
+    }
 	// Speed drains energy fast, so a ">160" threshold was almost never met: jump at >130 instead.
 	if (distance > 15.0f && m_blackboard.grounded && m_blackboard.energy > 130.0f &&
 		m_now >= m_blackboard.nextSuitChange && m_now >= m_nextTravelJump)
@@ -463,7 +472,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+away*4.0f,aim);
 		m_intent.strafe=visible; m_intent.combat=BotCombatIntent::Aim;
 		m_intent.suitMode=NANOMODE_DEFENSE;
-		if (!visible && m_profile.useSpeed && m_blackboard.energy>120 && m_now>=m_blackboard.damagedUntil)
+		if (!BotPaceEnabled() && !visible && m_profile.useSpeed && m_blackboard.energy>120 && m_now>=m_blackboard.damagedUntil)
 		{ m_intent.gait=BotGait::Sprint; m_intent.suitMode=NANOMODE_SPEED; m_intent.combat=BotCombatIntent::None; }
 		ExecuteIntent(actor,decisionTime); return;
 	}
@@ -538,7 +547,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos(),actor.GetEntityId());
 			m_combat.Reset(); m_chaseBlockedSince=0; m_patrolUntil=0; m_detour=true;
 		}
-		if (!visible) TravelGait(distance); // hunting a hidden target: Speed travel like a player
+		if (!visible || BotPaceEnabled()) TravelGait(distance); // hunting a hidden target: Speed travel like a player
 		else
 		{
 			m_intent.gait=m_profile.useSpeed && distance>(m_blackboard.mode==NANOMODE_SPEED?m_profile.sprintChaseRange-2.0f:m_profile.sprintChaseRange) && m_now-m_stateTime>0.4f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run;
@@ -650,10 +659,15 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 		m_intent.suitMode=NANOMODE_DEFENSE; // Armor before landing: native suit absorbs fall damage.
 	else if (!m_blackboard.grounded && static_cast<const SPlayerStats*>(actor.GetActorStats())->jumped && m_blackboard.mode==NANOMODE_STRENGTH && m_intent.jump==BotJump::None)
 		m_intent.suitMode=NANOMODE_STRENGTH;
-	if ((m_now<m_blackboard.damagedUntil || m_intent.combat!=BotCombatIntent::None || m_blackboard.energy<45.0f) && m_intent.jump!=BotJump::Strength)
+	if (!BotPaceEnabled() && (m_now<m_blackboard.damagedUntil || m_intent.combat!=BotCombatIntent::None || m_blackboard.energy<45.0f) && m_intent.jump!=BotJump::Strength)
 	{ m_intent.suitMode=NANOMODE_DEFENSE; if (m_intent.gait==BotGait::Sprint) m_intent.gait=BotGait::Run; }
-	const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
-	if (!suitReady && m_intent.gait==BotGait::Sprint) m_intent.gait=BotGait::Run;
+	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
+    if(BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){m_intent.suitMode=NANOMODE_DEFENSE;m_speedTravel=false;}
+    const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
+	if(!suitReady && m_intent.gait==BotGait::Sprint){
+        if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;m_intent.suitMode=NANOMODE_DEFENSE;m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
+        else m_intent.gait=BotGait::Run;
+    }
 	m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
 	if (m_intent.combat==BotCombatIntent::Fire && m_blackboard.mode!=NANOMODE_CLOAK)
 	{

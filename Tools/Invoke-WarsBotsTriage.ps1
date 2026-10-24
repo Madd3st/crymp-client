@@ -30,7 +30,7 @@ foreach($run in $runs) {
     $summary=Join-Path $out $filename
     if(Test-Path -LiteralPath $summary){Remove-Item -LiteralPath $summary}
     $label="map=multiplayer/ia/steelmill;bots=$($run.bots);seconds=$($run.seconds);style=$($run.style_mode)"
-    foreach($key in @('progress_requested','trap_recovery_requested','hotspot_all_nodes_requested','physics_diagnostics_requested','reachable_goals_requested','sink_escape_requested','fire_diagnostics','move_trace_requested')) {
+    foreach($key in @('progress_requested','trap_recovery_requested','hotspot_all_nodes_requested','physics_diagnostics_requested','reachable_goals_requested','sink_escape_requested','fire_diagnostics','move_trace_requested','bot_pace_requested')) {
         $value=$run.$key;if($null -eq $value){$value='unknown'}
         $label+=";$key=$value"
     }

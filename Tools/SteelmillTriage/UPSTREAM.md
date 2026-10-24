@@ -1,1 +1,1 @@
-Scoped offline Triage import through research729a568 (C-005 pickups/goal_skips). No merge. wbnav/1 unchanged. Summary warsbots-run-summary/1; compare only controlled scenarios.
+Scoped offline reporter import through855bb530 for C018 (includes e54ebbc corrected freeze metric). No merge. wbnav/1 unchanged. Pace verdict left to owner/Claude; harness generates summary only.

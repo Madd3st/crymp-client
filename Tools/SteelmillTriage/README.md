@@ -23,6 +23,8 @@ layers, floor filter, hover details, click a trap row to zoom its floor). Copy l
 | NAV fallback profile (distance, floor change, hot goals/starts) | yes | failure reason not logged |
 | Dataset quality checks (action vs state, unattributed lines) | yes | — |
 | Movement pace by state, sprint/suit/energy, bot vs human through the same LOS channel (`movement`) | yes | human trace (`MOVE TRACE`) for a real baseline |
+| Level facts: 36 spawns, 78 map-placed items, areas, minimap PNG + bounds from `level.pak`/`<Level>.xml`/`.dds` (`level`, ported from Steelmill Lab) | yes, on real Steelmill files; outputs contain game assets — keep them out of git | — |
+| ML dataset readiness of Codex `episodes.jsonl` (`episodes`, ported from Steelmill Lab) | yes | — |
 | Per-run verdict `summary.json` (`warsbots-run-summary/1`, see `Docs/Research/SteelmillTriage/SUMMARY_CONTRACT.md`) | yes | — |
 | Map viewer: positions, deaths, revives, stalls, pins, fallbacks | yes | — |
 | Graph reader (`warsbots/botnav-graph/1`): contract §4 validation, §5 fingerprint, `memory_compat` vs `.mem`, components, dead ends, vertical classes, offline A* replay of `NAV fallback` | yes, on the Lab fixture + synthetic tests; exit code 2 on an invalid export | a real `wb_nav_export` file (HANDOFF step 4) |

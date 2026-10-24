@@ -12,6 +12,9 @@ History:
 *************************************************************************/
 #include "CryCommon/CrySystem/ISystem.h"
 #include "CryGame/Bots/BotLog.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "CryGame/Bots/BotPace.h"
+#endif
 #include "CryGame/Game.h"
 #include "CryGame/GameCVars.h"
 #include "CryGame/GameActions.h"
@@ -4969,7 +4972,7 @@ void CPlayer::SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& a
 	m_warsBotPose = true;
 	m_warsBotStrafe = strafe && speed>0.01f;
 	m_warsBotDirection = Vec3(direction.x,direction.y,0).GetNormalizedSafe(m_baseQuat.GetColumn1());
-	m_warsBotSpeed = clamp_tpl(speed,0.0f,2.5f);
+	m_warsBotSpeed = clamp_tpl(speed,0.0f,WarsBots::BotPaceEnabled()?GetStanceMaxSpeed(STANCE_STAND):2.5f);
 	m_warsBotAim = aim;
 	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
 }
@@ -5011,7 +5014,7 @@ void CPlayer::UpdateWarsBotMotion(float dt)
 		if (m_warsBotSpeed>0.01f) request.SetMoveTarget(GetEntity()->GetWorldPos()+m_warsBotDirection*2.0f);
 		else request.ClearMoveTarget();
 		request.SetDesiredSpeed(m_warsBotSpeed);
-		request.SetPseudoSpeed(m_warsBotSpeed>0.01f ? (m_warsBotSprint?1.0f:(m_warsBotSpeed<2.0f?0.3f:0.5f)) : 0.0f);
+		request.SetPseudoSpeed(m_warsBotSpeed>0.01f ? (WarsBots::BotPaceEnabled()?CalculatePseudoSpeed(m_warsBotSprint):(m_warsBotSprint?1.0f:(m_warsBotSpeed<2.0f?0.3f:0.5f))) : 0.0f);
 		request.SetStance(static_cast<EStance>(m_warsBotStance));
 		request.SetLookTarget(m_warsBotAim);
 		request.SetAimTarget(m_warsBotAim);

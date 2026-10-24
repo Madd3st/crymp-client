@@ -15,14 +15,23 @@ param(
     [switch]$CandidateOnly,
     [switch]$BaselineOnly,
     [switch]$FireDiagnostics,
+    [switch]$FixedRoster,
+    [ValidateRange(-1,1)][int]$BaselineBotPace=-1,
+    [ValidateRange(-1,1)][int]$CandidateBotPace=-1,
     [ValidateRange(-1,1)][int]$CandidateTrapRecovery=-1,
+    [ValidateRange(-1,1)][int]$BaselineTrapRecovery=-1,
     [ValidateRange(-1,1)][int]$CandidatePhysicsDiagnostics=-1,
+    [ValidateRange(-1,1)][int]$BaselinePhysicsDiagnostics=-1,
     [ValidateRange(-1,1)][int]$CandidateMoveTrace=-1,
+    [ValidateRange(-1,1)][int]$BaselineMoveTrace=-1,
     [ValidateRange(-1,1)][int]$CandidateReachableGoals=-1,
+    [ValidateRange(-1,1)][int]$BaselineReachableGoals=-1,
     [ValidateRange(-1,1)][int]$CandidateSinkEscape=-1,
+    [ValidateRange(-1,1)][int]$BaselineSinkEscape=-1,
     [int[]]$ExplainNodes=@(),
     [string]$ExplainPairsPath='',
     [ValidateRange(-1,1)][int]$CandidateHotspotAllNodes=-1,
+    [ValidateRange(-1,1)][int]$BaselineHotspotAllNodes=-1,
     [switch]$NavExports,
     [ValidateSet("auto","universal")][string]$Style="auto",
     [string]$ExpectedCandidate="",
@@ -88,18 +97,25 @@ try {
                 $commands=''
                 $skills=@('beginner','normal','veteran','elite')
                 for($i=0;$i -lt $bots;$i++) {
-                    $skill=$skills[($i+$SkillRotationStep*$repeat)%4]
+                    $rotation=if($FixedRoster){0}else{$SkillRotationStep*$repeat}
+                    $skill=$skills[($i+$rotation)%4]
                     $roster+=@{number=$i+1;skill=$skill;style=$Style}
                     $commands+=" +wb_add 1 $skill"
                     if($Style -ne "auto"){$commands+=" $Style"}
                 }
-                if($variant -eq 'candidate' -and $CandidateTrapRecovery -ge 0){$commands=" +wb_trap_recovery $CandidateTrapRecovery"+$commands}
-                if($variant -eq 'candidate' -and $CandidateHotspotAllNodes -ge 0){$commands=" +wb_hotspot_all_nodes $CandidateHotspotAllNodes"+$commands}
+                $value=if($variant -eq 'candidate'){$CandidateTrapRecovery}else{$BaselineTrapRecovery}
+                if($value -ge 0){$commands=" +wb_trap_recovery $value"+$commands}
+                $value=if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{$BaselineHotspotAllNodes}
+                if($value -ge 0){$commands=" +wb_hotspot_all_nodes $value"+$commands}
                 if($NavExports){$commands=" +wb_nav_export after 15 +wb_nav_export after 25"+$commands}
-                if($variant -eq 'candidate' -and $CandidateMoveTrace -ge 0){$commands=" +wb_move_trace $CandidateMoveTrace"+$commands}
-                if($variant -eq 'candidate' -and $CandidatePhysicsDiagnostics -ge 0){$commands=" +wb_physics_diagnostics $CandidatePhysicsDiagnostics"+$commands}
-                if($variant -eq 'candidate' -and $CandidateReachableGoals -ge 0){$commands=" +wb_reachable_goals $CandidateReachableGoals"+$commands}
-                if($variant -eq 'candidate' -and $CandidateSinkEscape -ge 0){$commands=" +wb_sink_escape $CandidateSinkEscape"+$commands}
+                $value=if($variant -eq 'candidate'){$CandidateMoveTrace}else{$BaselineMoveTrace}
+                if($value -ge 0){$commands=" +wb_move_trace $value"+$commands}
+                $value=if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{$BaselinePhysicsDiagnostics}
+                if($value -ge 0){$commands=" +wb_physics_diagnostics $value"+$commands}
+                $value=if($variant -eq 'candidate'){$CandidateReachableGoals}else{$BaselineReachableGoals}
+                if($value -ge 0){$commands=" +wb_reachable_goals $value"+$commands}
+                $value=if($variant -eq 'candidate'){$CandidateSinkEscape}else{$BaselineSinkEscape}
+                if($value -ge 0){$commands=" +wb_sink_escape $value"+$commands}
                 if($ExplainNodes.Count){
                     if($ExplainNodes.Count -ne 2 -or $ExplainNodes[0] -lt 0 -or $ExplainNodes[1] -lt 0){throw 'ExplainNodes requires two nonnegative node IDs'}
                     $commands=" +wb_nav_explain after 15 $($ExplainNodes[0]) $($ExplainNodes[1])"+$commands
@@ -114,6 +130,8 @@ try {
                         $commands=" +wb_nav_explain after 15 $($pair.frm) $($pair.to)"+$commands
                     }
                 }
+                $pace=if($variant -eq 'candidate'){$CandidateBotPace}else{$BaselineBotPace}
+                if($pace -ge 0){$commands=" +wb_bot_pace $pace"+$commands}
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
@@ -155,7 +173,7 @@ try {
                 if($NavExports -and $navCaptured -ne 2){$ok=$false}
                 if($ExplainPairsPath -and ([regex]::Matches($text,'NAV explain from=')).Count -ne 80){$ok=$false}
                 if($Seconds -ge 660 -and $observed -lt 600){$ok=$false}
-                $run=[ordered]@{move_trace_requested=$(if($variant -eq 'candidate'){$CandidateMoveTrace}else{-1});reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{-1});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{-1});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $run=[ordered]@{bot_pace_requested=$pace;fixed_roster=[bool]$FixedRoster;move_trace_requested=$(if($variant -eq 'candidate'){$CandidateMoveTrace}else{$BaselineMoveTrace});reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{$BaselineReachableGoals});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{$BaselineSinkEscape});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{$BaselinePhysicsDiagnostics});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{$BaselineHotspotAllNodes});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{$BaselineTrapRecovery});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"
