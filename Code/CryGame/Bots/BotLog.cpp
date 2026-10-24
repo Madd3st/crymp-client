@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
+#include "CryGame/Bots/BotDataPath.h"
 #include "CryCommon/CrySystem/ILog.h"
 #include "CryCommon/CrySystem/ICryPak.h"
 #include "CryCommon/CrySystem/ITimer.h"
@@ -21,10 +22,9 @@ unsigned g_unflushed = 0;
 void OpenTrace()
 {
 	g_traceTried = true;
-	const char* user = gEnv->pCryPak ? gEnv->pCryPak->GetAlias("%USER%") : nullptr;
 	const char* logName = gEnv->pLog->GetFileName();
 	std::filesystem::path base = logName && *logName ? std::filesystem::path(logName).stem() : std::filesystem::path("WarsBots");
-	std::filesystem::path dir = user && *user ? std::filesystem::path(user) : std::filesystem::path(".");
+	std::filesystem::path dir = DataDirectory(L"Logs");
 	const std::filesystem::path path = dir / (base.wstring() + L".bots.log");
 	g_trace = _wfopen(path.c_str(), L"w");
 }

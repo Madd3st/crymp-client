@@ -36,8 +36,9 @@ $repo=Split-Path $PSScriptRoot -Parent
 $out=[IO.Path]::GetFullPath((Join-Path $repo $OutputDirectory))
 New-Item -ItemType Directory -Force $out | Out-Null
 $game=(Resolve-Path -LiteralPath $GameDirectory).Path
-$profile=Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'My Games\Crysis'
-$memory=Join-Path $profile 'WarsBots\Multiplayer_IA_Steelmill.mem'
+$profile=Join-Path $env:LOCALAPPDATA 'WarsBots/Logs'
+$dataMemory=Join-Path $env:LOCALAPPDATA 'WarsBots/Memory'
+$memory=Join-Path $dataMemory 'Multiplayer_IA_Steelmill.mem'
 $backup=Join-Path $out 'initial-memory.mem'
 $port=64140
 $sessionTag=(Split-Path $out -Leaf) -replace '[^A-Za-z0-9_-]','_' 
@@ -101,12 +102,12 @@ try {
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
-                $args="-dir `"$game`" -headless -logfile $name +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_debug 1 +wb_maxbots $bots$commands +wb_list"
+                $args="-dir `"$game`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_debug 1 +wb_maxbots $bots$commands +wb_list"
                 Write-Host "START $tag sha=$($v.manifest.sha) memory=$memoryHash"
                 $p=Start-Process -FilePath $v.exe -ArgumentList $args -WorkingDirectory $game -WindowStyle Hidden -PassThru
                 $deadline=[DateTime]::UtcNow.AddSeconds($Seconds)
                 $text='';$engine='';$joined=$false
-                $navPath=Join-Path $profile 'WarsBots/Multiplayer_IA_Steelmill.nav.json'
+                $navPath=Join-Path $dataMemory 'Multiplayer_IA_Steelmill.nav.json'
                 $navCaptured=0;$navStamp=[DateTime]::UtcNow
                 while([DateTime]::UtcNow -lt $deadline -and -not $p.HasExited) {
                     Start-Sleep -Seconds 5

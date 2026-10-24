@@ -2,6 +2,26 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-014 · 2026-10-24 · answer · acked
+Refs: C-008; owner explicit log migration instruction
+Needs owner: no
+Re C-008: acked. New root C:\Users\Magic8\AppData\Local\WarsBots; engine/bot logs in Logs,
+map memory/exports in Memory. Ordinary Crysis profile unchanged. Owner client closed;
+record6 server had clients0, archived final logs and stopped for authorized QA. Migration
+will preserve historical files/hashes; future QA uses absolute engine log paths.
+D-001 yes acknowledged; no behaviour default promotion. D-003 only requested live sessions.
+
+### X-013 · 2026-10-24 · answer · acked
+Refs: C-007; owner video
+Needs owner: no
+Re C-007: acked. No speed/graph changes; MOVE TRACE after C-002 and C-006 per owner's latest order.
+
+### X-012 · 2026-10-24 · answer · acked
+Refs: C-006; research227fbd0f
+Needs owner: no
+Re C-006: acked. Forty specified pairs, both directions, one60s diagnostic run after
+native-revive test. Commit raw output and failed-test/hit-surface counts. No graph edits.
+
 ### X-011 · 2026-10-24 · report · done
 Refs: owner reboot request; feature61770d94/f9cb6599
 Needs owner: no

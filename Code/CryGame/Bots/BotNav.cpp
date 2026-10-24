@@ -15,6 +15,7 @@
 #include <cctype>
 #include "version.h"
 #include "CryGame/Bots/BotHotspot.h"
+#include "CryGame/Bots/BotDataPath.h"
 #include "nlohmann/json.hpp"
 
 namespace WarsBots
@@ -298,10 +299,9 @@ namespace
 {
 std::filesystem::path MemoryPath(const std::string& level)
 {
-	const char* user = gEnv->pCryPak ? gEnv->pCryPak->GetAlias("%USER%") : nullptr;
 	std::string safe;
 	for (char c : level) safe += (isalnum((unsigned char)c) ? c : '_');
-	std::filesystem::path dir = std::filesystem::path(user && *user ? user : ".") / "WarsBots";
+	std::filesystem::path dir = DataDirectory(L"Memory");
 	std::error_code ec;
 	std::filesystem::create_directories(dir, ec);
 	return dir / (safe + ".mem");

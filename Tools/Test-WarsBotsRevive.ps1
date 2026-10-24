@@ -15,8 +15,9 @@ if(Test-Path -LiteralPath $out){throw 'Fresh output directory required'}
 function Servers {@(Get-Process CryMP-Server64 -ErrorAction SilentlyContinue)}
 if((Servers).Count -or (Get-Process CryMP-Client64 -ErrorAction SilentlyContinue)){throw 'Owner/game session present'}
 $port=64140;if(Get-NetUDPEndpoint -LocalPort $port -ErrorAction SilentlyContinue){throw 'QA port busy'}
-$profile=Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'My Games/Crysis'
-$memory=Join-Path $profile 'WarsBots/Multiplayer_IA_Steelmill.mem'
+$profile=Join-Path $env:LOCALAPPDATA 'WarsBots/Logs'
+$dataMemory=Join-Path $env:LOCALAPPDATA 'WarsBots/Memory'
+$memory=Join-Path $dataMemory 'Multiplayer_IA_Steelmill.mem'
 $dir=(Resolve-Path -LiteralPath $BuildDirectory).Path
 $manifest=Get-Content (Join-Path $dir 'claude-build.json') -Raw|ConvertFrom-Json
 $exe=Join-Path $dir 'CryMP-Server64.exe'
@@ -36,11 +37,11 @@ try {
   $commands=" +wb_probe_local_test 1 +wb_physics_diagnostics 1 +wb_debug 1 +wb_add 1 normal +wb_spawn_box 195 +wb_revive_z_test $offset +wb_revive_hooks_test $Hooks +wb_nav_export after 15"
   # 16s spacing gives the native summary's ~12s freeze detector complete windows.
   for($i=0;$i -lt 10;$i++){$commands+=" +wb_revive_at after $(5+16*$i) 195 1"}
-  $args="-dir `"$GameDirectory`" -headless -logfile $name +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill$commands"
+  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill$commands"
   Write-Host "START $tag sha=$($manifest.sha) ten explicit scheduled revives"
   $p=Start-Process $exe -ArgumentList $args -WorkingDirectory $GameDirectory -WindowStyle Hidden -PassThru
   $end=[DateTime]::UtcNow.AddSeconds(170);$joined=$false;$early=$false;$captured=$false
-  $nav=Join-Path $profile 'WarsBots/Multiplayer_IA_Steelmill.nav.json';$navStart=[DateTime]::UtcNow
+  $nav=Join-Path $dataMemory 'Multiplayer_IA_Steelmill.nav.json';$navStart=[DateTime]::UtcNow
   while([DateTime]::UtcNow -lt $end -and -not $p.HasExited){
    Start-Sleep -Seconds 5
    if(Test-Path $trace){$raw=Get-Content $trace -Raw;$joined=$raw -match 'clients=[1-9]'}
