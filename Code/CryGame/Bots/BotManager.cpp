@@ -107,7 +107,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->Register("wb_reachable_goals", &g_reachableGoals, 0, 0, "Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF.");
     console->Register("wb_revive_z_test", &g_reviveZTest, -2.f, 0, "Manual revive only: -2 legacy0.2 default; 0 or0.2 explicit; -1 native selector offset for same spawn.");
     console->Register("wb_revive_hooks_test", &g_reviveHooksTest, 0, 0, "Manual BOT revive only: bit1 Spawned, bit2 UpdateAreas; default0; no automatic lifecycle change.");
-    console->Register("wb_bot_pace", &g_botPace, 0, 0, "C018 native pace: stance speed,sprint40/20,Speed150/60,Strength70; default OFF.");
+    console->Register("wb_bot_pace", &g_botPace, 0, 0, "C018 native pace: stance speed,sprint40/20,Speed130/60,Strength70; default OFF.");
     console->Register("wb_revive_guard", &g_reviveGuard, 1, 0, "C014 candidate safety:2s post-revive check, max2 native retries; no kill/score change.");
     console->Register("wb_spawn_exclude195", &g_spawnExclude195, 1, 0, "C014 candidate safety: automatic bot spawn selection excludes195; humans/manual debug unaffected.");
     console->Register("wb_nav_knee_fix", &g_navKneeFix, 0, 0, "Export-only audit requested variant:0 OFF,1 knee0.8,2 conditional step; latched by wb_nav_audit; never normal AI.");

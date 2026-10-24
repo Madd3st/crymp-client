@@ -73,7 +73,8 @@ void BotBrain::TravelGait(float distance)
     if(BotPaceEnabled()){
         const bool allowed=m_profile.skill!=BotSkill::Beginner || m_profile.useSpeed;
         m_speedTravel=allowed && PaceSpeedBurst(m_speedTravel,distance,m_blackboard.energy);
-        m_intent.gait=allowed && distance>=8.f?BotGait::Sprint:BotGait::Run;
+        // Basic Armor sprint is available to every skill; complex Speed burst keeps the Beginner gate.
+        m_intent.gait=distance>=3.f?BotGait::Sprint:BotGait::Run;
         m_intent.suitMode=m_speedTravel?NANOMODE_SPEED:NANOMODE_DEFENSE;
         if(!m_speedTravel)return;
     }else{
