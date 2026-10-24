@@ -6,7 +6,7 @@ Two layers so agents read `MAILBOX/TO_CODEX.md` / `TO_OPENCODE.md` without the o
    turn; it runs
    `powershell -NoProfile -ExecutionPolicy Bypass -File Tools\Mailbox\wait_mail.ps1 -Agent codex -Repo <clone>`
    which polls `origin/warsbots/research/steelmill-triage` every 60 s for up to 9 min and exits 0 with the new
-   items printed (state in `.git\warsbots-mail-<agent>.last`) or 1 on timeout → call again. `-Peek` lists open
+   items printed (state in `%LOCALAPPDATA%\WarsBots\Mailbox\mail-<agent>.last`, override with `-StateDir`) or 1 on timeout → call again. `-Peek` lists open
    items without waiting. Only `git fetch` + `git show`; never checkout/merge.
 2. **Wake-up for stopped sessions** (safety net). `register_wake_task.ps1 -CodexRepo <clone> -OpenCodeRepo <clone>`
    registers the scheduled task "WarsBots Mailbox Wake" (every 10 min). `wake_agents.ps1` starts

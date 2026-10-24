@@ -7,25 +7,30 @@ WarsBots mailbox: block until Claude leaves new mail for this agent, then print 
   -TimeoutMin how long to wait (default 9, below most agent shell timeouts; call again in a loop)
   -PollSec    fetch interval (default 60)
   -Peek       print open items and exit at once (no waiting, no state change)
+  -StateDir   where the "last seen" counter lives (default %LOCALAPPDATA%\WarsBots\Mailbox; ASCII path)
 
 Exit 0 = new mail printed (state advanced), 1 = timeout (nothing new), 2 = error.
-State: <repo>\.git\warsbots-mail-<agent>.last (highest message ID already seen).
+State: <StateDir>\mail-<agent>.last (highest message ID already seen).
 #>
 param(
   [Parameter(Mandatory)][ValidateSet('codex','opencode')][string]$Agent,
   [Parameter(Mandatory)][string]$Repo,
   [int]$TimeoutMin = 9,
   [int]$PollSec = 60,
-  [switch]$Peek
+  [switch]$Peek,
+  [string]$StateDir = (Join-Path $env:LOCALAPPDATA 'WarsBots\Mailbox')
 )
 $ErrorActionPreference = 'Stop'
+# git prints UTF-8; without this PowerShell 5.1 mangles Cyrillic paths and message text.
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+$OutputEncoding = [Text.Encoding]::UTF8
 $branch = 'warsbots/research/steelmill-triage'
 $file   = if ($Agent -eq 'codex') { 'Docs/Research/Coordination/MAILBOX/TO_CODEX.md' } else { 'Docs/Research/Coordination/MAILBOX/TO_OPENCODE.md' }
 $prefix = if ($Agent -eq 'codex') { 'C' } else { 'OC' }
-$gitDir = (git -C $Repo rev-parse --git-dir 2>$null)
-if (-not $gitDir) { Write-Output "wait_mail: $Repo is not a git repo"; exit 2 }
-if (-not [IO.Path]::IsPathRooted($gitDir)) { $gitDir = Join-Path $Repo $gitDir }
-$state = Join-Path $gitDir "warsbots-mail-$Agent.last"
+git -C $Repo rev-parse --git-dir 2>$null | Out-Null
+if ($LASTEXITCODE -ne 0) { Write-Output "wait_mail: $Repo is not a git repo"; exit 2 }
+New-Item -ItemType Directory -Force -Path $StateDir | Out-Null
+$state = Join-Path $StateDir "mail-$Agent.last"
 
 function Get-Mail {
   git -C $Repo fetch -q origin "${branch}:refs/remotes/origin/$branch" 2>$null | Out-Null

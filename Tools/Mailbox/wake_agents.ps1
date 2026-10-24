@@ -20,6 +20,7 @@ param(
   [switch]$DryRun
 )
 $ErrorActionPreference = 'Continue'
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $logDir = Join-Path $env:LOCALAPPDATA 'WarsBots\Mailbox'
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
@@ -46,15 +47,13 @@ function Is-Idle($repo) {
 function Wake($agent, $repo) {
   if (-not $repo) { return }
   if (-not (Test-Path $repo)) { Log "$agent repo missing: $repo"; return }
-  $gitDir = git -C $repo rev-parse --git-dir
-  if (-not [IO.Path]::IsPathRooted($gitDir)) { $gitDir = Join-Path $repo $gitDir }
-  $pidFile = Join-Path $gitDir "warsbots-wake-$agent.pid"
+  $pidFile = Join-Path $logDir "wake-$agent.pid"
   if (Test-Path $pidFile) {
     $old = (Get-Content $pidFile -Raw).Trim()
     if ($old -and (Get-Process -Id $old -ErrorAction SilentlyContinue)) { Log "${agent}: run $old still alive, skip"; return }
   }
   # New mail since last wake? (separate state from the agent's own wait_mail state)
-  $wakeState = Join-Path $gitDir "warsbots-wake-$agent.last"
+  $wakeState = Join-Path $logDir "wake-$agent.last"
   $prefix = if ($agent -eq 'codex') { 'C' } else { 'OC' }
   $file = if ($agent -eq 'codex') { 'TO_CODEX.md' } else { 'TO_OPENCODE.md' }
   git -C $repo fetch -q origin 'warsbots/research/steelmill-triage:refs/remotes/origin/warsbots/research/steelmill-triage' 2>$null | Out-Null

@@ -29,7 +29,7 @@ def _pct(a, b):
 
 
 def revives(lines):
-    """Per spawn: revives and how many left the bot frozen (<0.3 m within ~12 s)."""
+    """Per spawn: revives and how many left the bot frozen (never > 0.3 m from the revive point within ~12 s)."""
     pend = {}; per = defaultdict(lambda: [0, 0])
     for ln in lines:
         m = _T.match(ln)
@@ -45,7 +45,9 @@ def revives(lines):
                 ps.append((float(e.group(3)), float(e.group(4))))
             else:
                 if len(ps) >= 2:
-                    moved = ((ps[-1][0] - ps[0][0]) ** 2 + (ps[-1][1] - ps[0][1]) ** 2) ** 0.5
+                    # max excursion from the revive point: a bot jittering in place (weapon-goal stall) can end
+                    # where it started; a real revive freeze never leaves the point (C-014 false positive @153).
+                    moved = max(((x - ps[0][0]) ** 2 + (y - ps[0][1]) ** 2) ** 0.5 for x, y in ps[1:])
                     per[sp][0] += 1; per[sp][1] += moved < FROZEN_MAX_MOVE_M
                 del pend[e.group(1)]
     return {sp: dict(revives=n, frozen=f) for sp, (n, f) in per.items()}
