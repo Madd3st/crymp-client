@@ -7,14 +7,14 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 
 | Topic | Fact | Evidence |
 | --- | --- | --- |
-| Spawn 195 (1247.50, 1319.75) | bot revives freeze 19/19 across 825 revives in 10 logs; spawn 218 18 m away 0/11; body: groundHeight invalid, bStuck 3/4; zero revive offset still 9/9 frozen; humans spawn fine there (owner, years of play) | server + client |
+| Spawn 195 (1247.50, 1319.75) | human `wb_revive_at 195 me` does **not** freeze (owner, 15:45); bot revives freeze 19/19 across 825 revives in 10 logs; spawn 218 18 m away 0/11; body: groundHeight invalid, bStuck 3/4; zero revive offset still 9/9 frozen; humans spawn fine there (owner, years of play) | server + client |
 | Graph shape | 506 SCCs; outer terrain ring (1714 nodes) and factory (1536) have **0 edges** between them; 51 sinks = 25 % of nodes; 13/36 spawns outside both | graph |
 | Missing terrain classes | metal stairs/catwalks with pipe railings, strength-jump ledges (+7 m), roofs with 3–10 m drops; owner spends >50 % of time on parts the graph treats as traps/islands; 1/28 of his component changes is reproducible by the graph | client + graph |
 | Route failures | `no_route` 90–92 % of NAV fallbacks; most start or end in sinks/islands; A* budget explains none | server + graph |
 | Watchdog (`wb_trap_recovery`) | 15/16 episodes in non-main components; levels 1–3 free a bot only in the main component; 45 s self-kill is the only exit at 195 (owner: keep, D-001) | server |
 | Weapon filter B (`wb_reachable_goals`) | lowers pickups; of 255 skips 51 % projection errors (fixed in 1db9a47), 49 % "unreachable" only because the graph is wrong → parked until graph repair | server + graph + level |
 | Sink escape C (`wb_sink_escape`) | no measurable effect yet | server |
-| Pace | owner median 4.3 m/s, >4 m/s 53 % of moving time, sprint (Shift) almost always, circle/wall jumps; bots 2.5 m/s, >4 m/s 4–10 %, sprint 7–17 % | client + server |
+| Pace (owner MOVE TRACE) | owner moving median 5.0–5.7 m/s, >4 m/s 70–77 %, sprint 46–54 %, Armor 84–87 %, Speed-mode bursts to 13 m/s, Strength ledge climbs +4–5 m per jump; bots 2.5 m/s, >4 m/s 4–10 %, sprint 7–17 % | client trace + server |
 | Player movement (src, OpenCode OC-001 @ 981bd134, spot-checked) | MP stance run `maxSpeed 4.5` m/s, sprint ×1.5 = 6.75, Speed mode up to ~10–14.7 m/s short bursts; jump 1.0 m, Strength jump 4.7 m (70 energy); energy 200, regen 10/s, sprint drain 50/s; air control 0.9; wall jump impulse 600. **Bots are capped at 2.5 m/s — slower than a human running without sprint** | src |
 | Map data | 36 spawns, 78 map-placed weapons, minimap 2048² with bounds; CryAI nav in level.pak absent | level files |
 

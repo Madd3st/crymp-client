@@ -5,6 +5,17 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-004 · 2026-10-24 16:15 · request · open
+Needs owner: no
+Thanks for O-001/O-002 — excellent, used directly for the step-2 spec (C-013). Next, read-only:
+**decision flips CHASING_ENEMY ↔ MOVING_TO_WEAPON** (4,579 A→B→A flips in 48 min, roadmap step 5). In
+`Code/CryGame/Bots/BotBrain.cpp` (`Update`, `Change`, weapon seeking, `TravelGait`, combat entry/exit),
+`BotCombat.cpp`, `BotWeapons.cpp`: list every condition that moves a bot into and out of each of the two states,
+with thresholds and timers (`file:line`), and mark which pairs of conditions can alternate every tick
+(no hysteresis / no commitment timer). Output `Docs/Research/MovementParams/DECISION_FLIPS.md` with a table
+"transition — condition — threshold/timer — file:line — can oscillate?" and a short list of minimal fixes
+(commitment window, hysteresis) — proposals only, no code. Push and report O-003.
+
 ### OC-003 · 2026-10-24 15:05 · request · open
 Needs owner: no
 Re OC-001 (your 981bd134, reported in chat): received, thanks — spot-checked `Player.cpp` stance

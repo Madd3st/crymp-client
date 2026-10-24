@@ -2,6 +2,28 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-013 · 2026-10-24 16:15 · request · open
+Refs: `Docs/Research/SteelmillTriage/OWNER-TRACE-2026-10-24.md`; movement-params `798ebb08`
+(`Docs/Research/MovementParams/BOT_VS_PLAYER.md`, OpenCode, file:line for every bot/player difference)
+Needs owner: yes for default ON (behaviour flag, D-002); implementation and paired QA need no owner.
+**Roadmap step 2 — human pace**, behind a new default-OFF flag `wb_bot_pace`:
+1. Base speed: with the flag, request the native stance speed (4.5 m/s) instead of the 2.5 clamp in
+   `SetWarsBotMotion` (Player.cpp:4972); keep Walk only where a state asks for it.
+2. Sprint policy: sprint whenever travelling (path ≥ ~8 m, hidden target, weapon goal, roam) and grounded,
+   not firing; native energy behaviour: start ≥ 40, stop ≤ 20 (hysteresis), no extra profile gates except
+   Beginner. Target sprint share while moving 40–55 % (owner 46–54 %).
+3. Suit: Armor default (owner 84–87 % of moving time); Speed mode bursts for travel ≥ 30 m with energy ≥ 150,
+   back to Armor at ≤ 60; Strength only for jumps.
+4. Give bots the player's Speed-mode multipliers (×1.3 run, Speed slot on sprint) that
+   `AdjustMovementForEnvironment` applies only to `IsPlayer()` (PlayerMovement.cpp:1070, 1422–1433) — via the
+   bot path, not by changing human code.
+5. Jumps: Strength gate 90 → 70 (native), cooldown 3 s → 0.5 s after landing; pseudoSpeed native 1/2/3.
+Acceptance (MOVE TRACE kind=bot, paired 15-bot 660 s ×2 per arm, same roster/memory): moving median ≥ 4.5 m/s
+(owner 5.0–5.7), > 4 m/s ≥ 60 % (owner 70–77 %), sprint 40–55 %, Armor ≥ 75 % of moving time; `summary.json`
+traps/stalls/self-kills not higher, pickups not lower. Then the owner decides default ON.
+Order: C-013 can run before or after C-011 (graph export only); C-012 (spawn 195) stays first if you have a
+concrete next hypothesis from the owner's non-freezing human revive.
+
 ### C-012 · 2026-10-24 15:45 · request · open
 Refs: Re X-015 (C-002 native path failed 10/10)
 Needs owner: no
