@@ -624,6 +624,7 @@ public:
 	void SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& aim, bool strafe=false);
 	// Per-frame look update (C-044 turn cap): only the replicated aim point, movement untouched.
 	void SetWarsBotAim(const Vec3& aim);
+	void ApplyWarsBotView(); // Final owned-bot view after native body rotation; replicated opt-in.
 	bool IsWarsBotActor() const { return m_warsBotActor && GetChannelId()==0; }
 	void EnsureWarsBotSuit();
 	void SetWarsBotActions(bool sprint, bool moving, EStance stance);
@@ -638,6 +639,7 @@ public:
 	uint8 m_warsBotStance = STANCE_STAND;
 	float m_warsBotNextNetworkLog = 0;
 	bool m_warsBotPose = false;
+	bool m_warsBotViewLimited = false;
 	bool m_warsBotStrafe = false;
 	Vec3 m_warsBotDirection = Vec3(0,1,0), m_warsBotAim = Vec3(0,0,0);
 	float m_warsBotSpeed = 0;

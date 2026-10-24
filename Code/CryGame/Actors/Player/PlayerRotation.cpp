@@ -130,6 +130,10 @@ void CPlayerRotation::Commit(CPlayer& player)
 		player.m_viewQuatFinal = m_viewQuatFinal.GetNormalized();
 	}
 
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    if (!player.IsTimeDemo()) player.ApplyWarsBotView();
+#endif
+
 	player.m_linkStats.baseQuatLinked = m_baseQuatLinked.GetNormalized();
 	player.m_linkStats.viewQuatLinked = m_viewQuatLinked.GetNormalized();
 

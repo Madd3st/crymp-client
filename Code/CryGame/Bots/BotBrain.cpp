@@ -849,6 +849,7 @@ float BotBrain::TurnRate() const
 void BotBrain::UpdateTurnCap(CPlayer& actor,float dt)
 {
 	if (m_now<m_testUntil) { m_lookValid=false; return; }
+	if (m_intent.aim.IsZero()) return; // No decided look point yet after start/revive.
 	const Vec3 eye=actor.GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
 	Vec3 want=m_intent.aim-eye;
 	const float dist=want.GetLength();
@@ -870,7 +871,10 @@ void BotBrain::UpdateTurnCap(CPlayer& actor,float dt)
 
 Vec3 BotBrain::CappedLook(CPlayer& actor) const
 {
-	if (!m_lookValid) return m_intent.aim;
+	if (!m_lookValid) {
+        const Vec3 eye=actor.GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
+        return eye+actor.GetViewRotation().GetColumn1()*max(2.0f,(m_intent.aim-eye).GetLength());
+    }
 	const Vec3 eye=actor.GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
 	return eye+m_lookDir*max(2.0f,(m_intent.aim-eye).GetLength());
 }

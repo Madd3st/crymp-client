@@ -14,6 +14,7 @@ History:
 #include "CryGame/Bots/BotLog.h"
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 #include "CryGame/Bots/BotPace.h"
+#include "CryGame/Bots/BotConfig.h"
 #endif
 #include "CryGame/Game.h"
 #include "CryGame/GameCVars.h"
@@ -3885,6 +3886,9 @@ bool CPlayer::IsThirdPerson() const
 
 void CPlayer::Revive(ReasonForRevive reason)
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	m_warsBotViewLimited=false; // Do not carry a former life's view override across revive.
+#endif
 	if (ShouldUseMPParams())
 	{
 		SetParamsMP(true);
@@ -4974,13 +4978,26 @@ void CPlayer::SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& a
 	m_warsBotDirection = Vec3(direction.x,direction.y,0).GetNormalizedSafe(m_baseQuat.GetColumn1());
 	m_warsBotSpeed = clamp_tpl(speed,0.0f,WarsBots::BotPaceEnabled()?GetStanceMaxSpeed(STANCE_STAND):2.5f);
 	m_warsBotAim = aim;
+	m_warsBotViewLimited=WarsBots::BotConfig::Get().botTurnCap==1 && g_pGame->GetBotManager().AIEnabled(GetEntityId());
+	ApplyWarsBotView();
 	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
 }
 void CPlayer::SetWarsBotAim(const Vec3& aim)
 {
 	if (!gEnv->bServer || !g_pGame || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
 	m_warsBotAim = aim;
+	m_warsBotViewLimited=WarsBots::BotConfig::Get().botTurnCap==1 && g_pGame->GetBotManager().AIEnabled(GetEntityId());
+	ApplyWarsBotView();
 	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
+}
+void CPlayer::ApplyWarsBotView()
+{
+    if (!m_warsBotPose || !m_warsBotViewLimited || !IsWarsBotActor() || GetHealth()<=0 || m_stats.isRagDoll || IsFrozen()) return;
+    if (gEnv->bServer && !g_pGame->GetBotManager().Owns(GetEntityId())) return;
+    // Same eye origin as the capped command. View is independent of locomotion/body heading.
+    const Vec3 eye=GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
+    const Vec3 direction=(m_warsBotAim-eye).GetNormalizedSafe(m_viewQuat.GetColumn1());
+    m_viewQuat=m_viewQuatFinal=Quat::CreateRotationVDir(direction);
 }
 void CPlayer::UpdateWarsBotMotion(float dt)
 {
@@ -5220,6 +5237,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 			ser.Value("warsBotDirection",m_warsBotDirection,'dir0');
 			ser.Value("warsBotSpeed",m_warsBotSpeed);
 			ser.Value("warsBotAim",m_warsBotAim,'wrld');
+			ser.Value("warsBotViewLimited",m_warsBotViewLimited,'bool');
 			ser.Value("strafe",m_warsBotStrafe,'bool');
 			ser.Value("sprint",m_warsBotSprint,'bool');
 			ser.Value("stance",m_warsBotStance,'stnc');
