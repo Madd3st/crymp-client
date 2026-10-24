@@ -64,7 +64,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
 const char* kCommands[] = {
-	"wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export",
+	"wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
@@ -115,6 +115,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_list", ListCommand, 0, "List bots: number, EntityId, profile, state");
 	console->AddCommand("wb_status", StatusCommand, 0, "Detailed status and per-bot update cost");
 	console->AddCommand("wb_debug", DebugCommand, 0, "wb_debug 0|1: verbose telemetry for all bots");
+	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
 	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
 	console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
 	console->AddCommand("wb_select", SelectCommand, 0, "wb_select <botNumber>: target of the legacy wb_bot_*/wb_probe_* commands");
@@ -670,6 +671,23 @@ void BotManager::DebugCommand(IConsoleCmdArgs* args)
 	{ WB_LOG(0, "[WarsBots] Usage: wb_debug 0|1."); return; }
 	self->m_defaultVerbose = !strcmp(args->GetArg(1), "1");
 	for (BotInstance* bot : self->Ordered()) bot->Brain().SetVerbose(self->m_defaultVerbose);
+}
+
+void BotManager::NavExplainCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self();
+    if(!self || !gEnv->bServer || !self->CanRunLocalIA())
+    {WB_LOG(0,"[WarsBots] NAV explain refused: local IA server required");return;}
+    int from=-1,to=-1,delay=0;
+    if(args->GetArgCount()==5 && !std::strcmp(args->GetArg(1),"after") && ParseInt(args->GetArg(2),delay) && delay>=1 && delay<=30 &&
+        ParseInt(args->GetArg(3),from) && ParseInt(args->GetArg(4),to) && from>=0 && to>=0)
+    {
+        char script[192];std::snprintf(script,sizeof(script),"Script.SetTimer(%d,function() System.ExecuteCommand('wb_nav_explain %d %d') end)",delay*1000,from,to);
+        gEnv->pScriptSystem->ExecuteBuffer(script,std::strlen(script),"WarsBots delayed edge explanation");return;
+    }
+    if(args->GetArgCount()!=3 || !ParseInt(args->GetArg(1),from) || !ParseInt(args->GetArg(2),to))
+    {WB_LOG(0,"[WarsBots] Usage: wb_nav_explain <fromNode> <toNode>");return;}
+    self->m_nav.Explain(from,to);
 }
 
 void BotManager::NavExportCommand(IConsoleCmdArgs* args)

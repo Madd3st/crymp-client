@@ -96,26 +96,59 @@ void BotNav::ScanColumn(int ix, int iy)
 	}
 }
 
-bool BotNav::Walkable(const Vec3& a, const Vec3& b) const
+struct BotNav::WalkTrace
 {
-	const float rise = b.z - a.z;
-	if (rise > 1.9f || rise < -3.2f) return false;
-	// Body clearance along the segment at knee, chest and head height.
-	for (float h : { 0.5f, 1.2f, 1.75f })
-		if (!Clear(a + Vec3(0, 0, h), b + Vec3(0, 0, h + max(0.0f, rise)))) return false;
-	// Continuous ground: no holes, no single step taller than a stair when going up.
-	float last = a.z;
-	for (float t : { 0.25f, 0.5f, 0.75f, 1.0f })
-	{
-		const Vec3 p = a + (b - a) * t;
-		ray_hit hit;
-		if (!RayHit(Vec3(p.x, p.y, max(a.z, b.z) + 1.0f), Vec3(0, 0, -(fabs_tpl(rise) + 4.5f)), hit)) return false;
-		const float step = hit.pt.z - last;
-		if (step > 0.75f) return false;              // a wall or ledge too tall to walk up
-		if (step < -3.2f) return false;              // a hole in the middle of the edge
-		last = hit.pt.z;
-	}
-	return fabs_tpl(last - b.z) < 0.8f;
+    const char* test="ok";float sample=0,value=0;Vec3 point=Vec3(0,0,0);
+    IPhysicalEntity* collider=nullptr;int surface=-1,part=-1;
+};
+bool BotNav::Walkable(const Vec3& a,const Vec3& b,WalkTrace* trace) const
+{
+    const auto fail=[&](const char* test,float sample,float value,const ray_hit* hit) {
+        if(trace){trace->test=test;trace->sample=sample;trace->value=value;
+            if(hit){trace->point=hit->pt;trace->collider=hit->pCollider;trace->surface=hit->surface_idx;trace->part=hit->partid;}}
+        return false;
+    };
+    const float rise=b.z-a.z;
+    if(rise>1.9f)return fail("rise",0,rise,nullptr);
+    if(rise< -3.2f)return fail("drop",0,rise,nullptr);
+    ray_hit hit;
+    for(float h:{.5f,1.2f,1.75f})
+    {
+        const Vec3 start=a+Vec3(0,0,h),end=b+Vec3(0,0,h+max(0.f,rise));
+        if(RayHit(start,end-start,hit))return fail("clearance",h,hit.dist,&hit);
+    }
+    float last=a.z;
+    for(float t:{.25f,.5f,.75f,1.f})
+    {
+        const Vec3 p=a+(b-a)*t;
+        if(!RayHit(Vec3(p.x,p.y,max(a.z,b.z)+1.f),Vec3(0,0,-(fabs_tpl(rise)+4.5f)),hit))return fail("ground_missing",t,0,nullptr);
+        const float step=hit.pt.z-last;
+        if(step>.75f)return fail("step_up",t,step,&hit);
+        if(step< -3.2f)return fail("step_drop",t,step,&hit);
+        last=hit.pt.z;
+    }
+    if(fabs_tpl(last-b.z)>=.8f)return fail("endpoint",1,fabs_tpl(last-b.z),&hit);
+    return true;
+}
+
+void BotNav::Explain(int from,int to) const
+{
+    if(!Ready() || from<0 || to<0 || from>=NodeCount() || to>=NodeCount())
+    {WB_LOG(0,"[WarsBots] NAV explain refused: ready=%d from=%d to=%d nodes=%d",Ready()?1:0,from,to,NodeCount());return;}
+    for(int direction=0;direction<2;++direction)
+    {
+        const int a=direction?to:from,b=direction?from:to;WalkTrace trace;
+        const bool allowed=Walkable(m_nodes[a].pos,m_nodes[b].pos,&trace);bool edge=false;
+        for(unsigned e=m_nodes[a].firstEdge;e<m_nodes[a].firstEdge+m_nodes[a].edgeCount;++e)edge|=m_edges[e].to==b;
+        IEntity* entity=trace.collider?static_cast<IEntity*>(trace.collider->GetForeignData(PHYS_FOREIGN_ID_ENTITY)):nullptr;
+        const Vec3& x=m_nodes[a].pos;const Vec3& y=m_nodes[b].pos;
+        const int dx=abs(int((x.x-m_min.x)/m_cell)-int((y.x-m_min.x)/m_cell));
+        const int dy=abs(int((x.y-m_min.y)/m_cell)-int((y.y-m_min.y)/m_cell));
+        WB_LOG(0,"[WarsBots] NAV explain from=%d to=%d candidate=%d storedEdge=%d allowed=%d test=%s sample=%.3f value=%.3f hit=(%.3f,%.3f,%.3f) entity=%u name=%s class=%s surface=%d part=%d",
+            a,b,dx<=1&&dy<=1&&dx+dy>0?1:0,edge?1:0,allowed?1:0,trace.test,trace.sample,trace.value,
+            trace.point.x,trace.point.y,trace.point.z,entity?entity->GetId():0,entity?entity->GetName():"none",
+            entity&&entity->GetClass()?entity->GetClass()->GetName():"static_or_terrain",trace.surface,trace.part);
+    }
 }
 
 bool BotNav::Step(float budgetMs)

@@ -106,6 +106,7 @@ private:
 	static void SelectCommand(IConsoleCmdArgs* args);
 	static void NavCommand(IConsoleCmdArgs* args);
     static void NavExportCommand(IConsoleCmdArgs* args);
+    static void NavExplainCommand(IConsoleCmdArgs* args);
     static void WatchCommand(IConsoleCmdArgs* args);
     static void WatchInfoCommand(IConsoleCmdArgs* args);
     static void WatchCheckCommand(IConsoleCmdArgs* args);

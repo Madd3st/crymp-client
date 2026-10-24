@@ -26,6 +26,7 @@ public:
 	Phase GetPhase() const { return m_phase; }
 	void Status() const;
     bool Export(const char* path=nullptr) const;
+    void Explain(int from, int to) const;
 
 	// Path of world points from start to goal (excluding start). False if no route is known.
     struct PathTrace { const char* reason="not_ready"; int from=-1,to=-1,expanded=0; };
@@ -57,7 +58,8 @@ private:
 	struct Memory { float stuck = 0, kills = 0, deaths = 0; };
 	struct Edge { int to; float cost; };
 	int Nearest(const Vec3& pos) const;
-	bool Walkable(const Vec3& a, const Vec3& b) const;
+	struct WalkTrace;
+    bool Walkable(const Vec3& a, const Vec3& b, WalkTrace* trace=nullptr) const;
 	void ScanColumn(int ix, int iy);
 	int64_t Key(int ix, int iy) const { return (int64_t(ix) << 32) | uint32_t(iy); }
 
