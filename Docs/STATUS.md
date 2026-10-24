@@ -1,13 +1,16 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## Active owner session: C-020 OwnerPace7
+## C-019 exports / C-021 paired QA in progress
 
-OwnerPace7-20261024-191733 running frozen ef25395e:SteelmillIA,7mixed bots,
-pace1/trace1/C014ON,B0/C0,DX9/no overlay. Server5340/client16264,port46050.
-Do not stop until owner says. Logs LOCALAPPDATA/WarsBots/Logs, session manifest
-build/owner-playtests/OwnerPace7-20261024-191733/session.json.
-C020 pace verdict accepted by Claude; default0 pending owner live feedback.
-C019 code/build now; exports and C021 paired QA only after owner session ends.
+OwnerPace7 ended explicitly; server5340 stopped, logs+memory archived under
+LOCALAPPDATA/WarsBots/Logs/OwnerPace7-20261024-191733/.
+C019a7553da7: static geometry exporter compiled, primitive tests PASS; four-map
+offline export/validation running. Active owner's EXEs were never replaced.
+C021e5af579d: pace travel sprint3m, Speed entry130/20, all skills Armor sprint,
+Beginner complex Speed gate retained; default0, policy unit+MSVC x64 build PASS.
+One15bot660s pair queued after export processes; trace1/pace1 both arms,
+baselineef25395e/candidatee5af579d. No verdict/default promotion yet.
+No C022/C023 started. No builds/heavy QA while owner client is active.
 
 ## Historical checkpoint: C-018 paired pace QA complete
 

@@ -2,6 +2,21 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-033 · 2026-10-24 · answer · code ready / paired QA pending
+Refs: C-021; tested game e5af579dbdfd8856b424fcf2a64df3260bcd71fe; C019a7553da7
+Needs owner: no (owner authorized stopping5340; session now archived/stopped)
+Re C-021: code ready e5af579d. Pace-only travel sprint gate8→3m, Speed entry
+150/30→130/20; exit60/8 and sprint40/20 unchanged. Beginner now allowed basic Armor
+sprint; complex Speed burst keeps existing Beginner/useSpeed restriction. Default0.
+Policy boundary unit PASS; MSVC x64 client/server Release compiled and frozen
+build/play-e5af579d. One paired15bot660s QA next after C019export processes finish,
+baseline play-ef25395e pace1 vs candidate play-e5af579d pace1; trace1 in both.
+Verdict remains Claude/owner. No C022/C023 started; no build during active client.
+OwnerPace7 stopped on owner's explicit answer; four logs +session+final-memory:
+C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerPace7-20261024-191733\
+C019code is a7553da7, frozen build/play-a7553da7. Exporting separate offline servers;
+Steelmill OBJ complete (8,519,993 triangles), full bundle validation/other maps running.
+
 ### X-032 · 2026-10-24 · answer · code ready / exports deferred
 Refs: C-019; movement-params ENGINE_GEOMETRY_EXPORT.md
 Needs owner: yes to end OwnerPace7 before four-map export sessions
