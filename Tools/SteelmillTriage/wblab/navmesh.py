@@ -209,6 +209,7 @@ class WalkModel:
         tmax = (v0 + math.sqrt(v0 * v0 + 2 * g * self.p['max_drop'])) / g
         rmax = vh * tmax
         src_out, dst_out = [], []
+        seen_keys = np.zeros(0, np.int64)
         z0 = self.zmax[take]; x0 = cx_all[take]; y0 = cy_all[take]; scc0 = self.scc[take]
         ang = np.arange(dirs) * 2 * math.pi / dirs
         for a in ang:
@@ -250,7 +251,15 @@ class WalkModel:
                             hit = has & (self.zmin[qq] < zf + H - 0.4) & (self.zmax[qq] > zf + 0.1)
                             clear &= ~hit
                     idx = idx[clear]
-                    src_out.append(take[idx]); dst_out.append(jj[idx])
+                    if len(idx):
+                        # evaluation needs component connectivity only: keep one link per (src SCC, dst SCC) pair
+                        key = scc0[idx].astype(np.int64) * (1 << 32) + self.scc[jj[idx]].astype(np.int64)
+                        key, first = np.unique(key, return_index=True)
+                        fresh = ~np.isin(key, seen_keys) if len(seen_keys) else np.ones(len(key), bool)
+                        sel = idx[first[fresh]]
+                        if len(sel):
+                            seen_keys = np.concatenate([seen_keys, key[fresh]])
+                            src_out.append(take[sel]); dst_out.append(jj[sel])
         src = np.concatenate(src_out) if src_out else np.zeros(0, np.int64)
         dst = np.concatenate(dst_out) if dst_out else np.zeros(0, np.int64)
         self.links[name] = (src, dst)
