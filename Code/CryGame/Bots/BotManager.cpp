@@ -29,6 +29,7 @@ int g_progressExperiment=0;
 int g_trapRecovery=0;
 int g_physicsDiagnostics=0;
 int g_reachableGoals=0;
+int g_sinkEscape=0;
 int g_hotspotAllNodes=0;
 int g_fireDiagnostics=0, g_fireBudget=20000;
 int g_qaSocomOnly=0;
@@ -69,7 +70,7 @@ const char* kCommands[] = {
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
+const char* kVariables[] = { "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
 }
 
 BotManager* BotManager::Self()
@@ -93,6 +94,7 @@ void BotManager::Initialize(IGameFramework* framework)
 		"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction.");
 	console->Register("wb_bot_cloak_experimental", &m_cloakExperimental, 0, 0, "Experimental bot cloak, defaults OFF");
     console->Register("wb_hotspot_all_nodes", &g_hotspotAllNodes, 0, 0, "Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak.");
+    console->Register("wb_sink_escape", &g_sinkEscape, 0, 0, "Opt-in physical escape at8s in closed SCCs; requires trap recovery1; default OFF.");
     console->Register("wb_reachable_goals", &g_reachableGoals, 0, 0, "Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF.");
     console->Register("wb_physics_diagnostics", &g_physicsDiagnostics, 0, 0, "Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF.");
     console->Register("wb_trap_recovery", &g_trapRecovery, 0, 0, "Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak.");

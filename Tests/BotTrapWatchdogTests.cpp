@@ -19,4 +19,9 @@ int main() {
  w.Update(0,0,0,80,true,false);assert(w.Level()==0);
  w.Update(0,0,0,81,true,true);assert(w.Update(0,0,.6f,89,true,true)==0); // climb counts as progress
  assert(w.Update(0,0,.6f,2,true,true)==0 && w.Level()==0); // clock rollback
+ w.Reset();w.Update(0,0,0,0,true,true,true);
+ assert(w.Update(0,0,0,8,true,true,true)==2); // Closed SCC bypasses repath at8s.
+ assert(w.Update(0,0,0,16,true,true,true)==0);
+ assert(w.Update(0,0,0,24,true,true,true)==3);
+ assert(w.Update(0,0,0,45,true,true,true)==4);
 }

@@ -581,11 +581,19 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
         !g_pGame->GetBotManager().Owns(actor.GetEntityId()) || !g_pGame->GetBotManager().CanRunLocalIA())
     { m_trap.Reset(); m_trapStepUntil=0; return false; }
     const Vec3 p=actor.GetEntity()->GetWorldPos();
-    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove);
+    const ICVar* sinkFlag=gEnv->pConsole->GetCVar("wb_sink_escape");
+    const bool sinkEnabled=sinkFlag && sinkFlag->GetIVal()==1;
+    if(m_trap.Age(m_now)<7.f){m_trapComponentChecked=false;m_trapClosed=false;}
+    if(sinkEnabled && !m_trapComponentChecked && m_trap.Age(m_now)>=7.f)
+    {
+        m_trapClosed=g_pGame->GetBotManager().Nav().InClosedComponent(p);
+        m_trapComponentChecked=true; // At most one projection per stalled window, not per decision.
+    }
+    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove,sinkEnabled && m_trapClosed);
     if (level)
     {
-        WB_LOG(1,"[WarsBots] TRAP RECOVERY level=%d actor=%u age=%.2f pos=(%.2f,%.2f,%.2f) blocked=%d speed=%.2f grounded=%d.",
-            level,actor.GetEntityId(),m_trap.Age(m_now),p.x,p.y,p.z,m_blackboard.blocked?1:0,m_blackboard.velocity.GetLength2D(),m_blackboard.grounded?1:0);
+        WB_LOG(1,"[WarsBots] TRAP RECOVERY level=%d actor=%u age=%.2f pos=(%.2f,%.2f,%.2f) blocked=%d speed=%.2f grounded=%d sink=%d.",
+            level,actor.GetEntityId(),m_trap.Age(m_now),p.x,p.y,p.z,m_blackboard.blocked?1:0,m_blackboard.velocity.GetLength2D(),m_blackboard.grounded?1:0,sinkEnabled && m_trapClosed?1:0);
         if (level==1)
         {
             m_path.clear();m_pathIndex=0;m_nextRepath=m_minRepath=0;

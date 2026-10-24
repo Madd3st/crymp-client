@@ -40,6 +40,7 @@ private:
     Vec3 m_trapDirection=Vec3(0,1,0);
     float m_trapStepUntil=0;
     bool m_trapJumpAttempted=false;
+    bool m_trapComponentChecked=false,m_trapClosed=false;
 	float m_escapeUntil=0;
 	BotBlackboard m_blackboard;
 	BotIntent m_intent;
