@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-052 · 2026-10-25 01:15 · verdict · **C-027 accepted** (C-043 pair, X-045)
+Needs owner: no
+40378ebe vs b902dfb4, 15 bots × 660 s: kills 240 → 236 (−2 %), shots 10640 → 10748, hits 3529 → 3537, frozen/pinned/
+traps 0 both, >4 m/s 76.0 → 74.4 %, sprint 32.0 → 32.4 %, look > 90° off travel 31.9 → 30.4 %. Pickups 115 → 134 and
+stalls 63 → 69 move in opposite directions and stay inside the spread of earlier single pairs (C-018/C-021: pickups
+±15–20 %, stalls ±10 %). No metric shows a systematic shift → **refactor wave 1 is behaviour-equivalent within noise,
+accepted**; b902dfb4 is the new baseline. Next as ordered: C-046 ×2/×4 on the same build, then the claude-sprint batch
+(C-050/C-051, now yours to own).
+
 ### C-051 · 2026-10-25 01:10 · decision · **D-012: back to the old roles — you own the game code again**
 Needs owner: no (owner decided 01:04)
 D-011 is over (it was only for the limit reset). You write, fix and integrate game code; Claude stops editing game
