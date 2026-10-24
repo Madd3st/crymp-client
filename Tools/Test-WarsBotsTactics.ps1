@@ -15,6 +15,8 @@ param(
     [switch]$BaselineOnly,
     [switch]$FireDiagnostics,
     [ValidateRange(-1,1)][int]$CandidateTrapRecovery=-1,
+    [ValidateRange(-1,1)][int]$CandidateHotspotAllNodes=-1,
+    [switch]$NavExports,
     [ValidateSet("auto","universal")][string]$Style="auto",
     [string]$ExpectedCandidate="",
     [ValidateRange(-1,1)][int]$CandidateProgress=-1,
@@ -80,6 +82,8 @@ try {
                     if($Style -ne "auto"){$commands+=" $Style"}
                 }
                 if($variant -eq 'candidate' -and $CandidateTrapRecovery -ge 0){$commands=" +wb_trap_recovery $CandidateTrapRecovery"+$commands}
+                if($variant -eq 'candidate' -and $CandidateHotspotAllNodes -ge 0){$commands=" +wb_hotspot_all_nodes $CandidateHotspotAllNodes"+$commands}
+                if($NavExports){$commands=" +wb_nav_export after 3 +wb_nav_export after 8"+$commands}
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
@@ -88,10 +92,19 @@ try {
                 $p=Start-Process -FilePath $v.exe -ArgumentList $args -WorkingDirectory $game -WindowStyle Hidden -PassThru
                 $deadline=[DateTime]::UtcNow.AddSeconds($Seconds)
                 $text='';$engine='';$joined=$false
+                $navPath=Join-Path $profile 'WarsBots/Multiplayer_IA_Steelmill.nav.json'
+                $navCaptured=0;$navStamp=[DateTime]::UtcNow
                 while([DateTime]::UtcNow -lt $deadline -and -not $p.HasExited) {
                     Start-Sleep -Seconds 5
                     if(Test-Path -LiteralPath $trace){$text=Get-Content -LiteralPath $trace -Raw}
                     if(Test-Path -LiteralPath $log){$engine=Get-Content -LiteralPath $log -Raw}
+                    if($NavExports -and $navCaptured -lt 2 -and (Test-Path -LiteralPath $navPath)){
+                        $navFile=Get-Item -LiteralPath $navPath
+                        if($navFile.LastWriteTimeUtc -gt $navStamp){
+                            $navCaptured++;$navStamp=$navFile.LastWriteTimeUtc
+                            Copy-Item -LiteralPath $navPath -Destination (Join-Path $out "$tag-nav-$navCaptured.json")
+                        }
+                    }
                     $joined=$text -match 'clients=[1-9]'
                     if($joined -or $engine -match 'CRASH DETECTED'){break}
                 }
@@ -107,7 +120,8 @@ try {
                 $text=if(Test-Path -LiteralPath $trace){Get-Content -LiteralPath $trace -Raw}else{''}
                 $numbers=@([regex]::Matches($text,'#(\d+) created EntityId=') | ForEach-Object {$_.Groups[1].Value} | Sort-Object -Unique)
                 $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
-                $run=[ordered]@{tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                if($NavExports -and $navCaptured -ne 2){$ok=$false}
+                $run=[ordered]@{nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"
