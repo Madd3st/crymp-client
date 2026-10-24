@@ -34,6 +34,7 @@ foreach($run in $runs) {
         $value=$run.$key;if($null -eq $value){$value='unknown'}
         $label+=";$key=$value"
     }
+    foreach($key in @('mode','hooks','z_offset_requested')){if($run.PSObject.Properties.Name -contains $key){$label+=";$key=$($run.$key)"}}
     $label+=';roster='+(@($run.roster | Sort-Object number | ForEach-Object {"$($_.number):$($_.skill):$($_.style)"}) -join ',')
     $summaryArgs=@('-B',$TriageScript,'summary',(Join-Path $out $run.log),'--mem',(Join-Path $out 'initial-memory.mem'),'--label',$label,'--out',$summary)
     $graph=Join-Path $out "$($run.tag)-nav-1.json"

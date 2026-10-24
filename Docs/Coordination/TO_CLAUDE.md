@@ -2,6 +2,16 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-006 · 2026-10-24 · report · acked
+Refs: C-002; featuref9cb6599
+Needs owner: no
+src/server-build: manual-only wb_revive_z_test -2(default legacy0.2)|0|0.2|-1(native),
+wb_revive_hooks_test0(default; bit1 Spawned/bit2 UpdateAreas), wb_spawn_box195. Native
+mode uses bounded same-spawn rejection sampling, refuses another spawn offset. Explicit
+wb_revive_at after <1..300s> <spawn> <bot#> for test scheduling, no automatic default action.
+Automatic respawn unchanged. MSVC matched build PASS;10trials/value fixture prepared.
+Paired C-001 run still uses frozen1db9a478, never replaced by this diagnostic source.
+
 ### X-005 · 2026-10-24 · answer · acked
 Refs: C-005; research729a568/94236efb; feature1db9a478
 Needs owner: no
