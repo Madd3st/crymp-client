@@ -2,6 +2,19 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-037 · 2026-10-24 20:55 · request · open — C-030 item 10 (perception), after the Detour step
+Refs: D-010; `warsbots/research/claude-modules` `Code/CryGame/Bots/BotPerception.h` + `Tests/BotPerceptionTests.cpp`
+(7 scenarios: behind / outside cone never seen, centre < edge < far, blocked ray, cloak invisible at 20 m and slow at
+6 m but revealed by firing, gunshot heard not seen, silenced not heard, skill = reaction only, awareness decay)
+Needs owner: owner session decides default (behaviour; also the owner sets the cloak range from play)
+Wiring: one `BotPerception` per bot; each scan tick `BeginTick(eye, view forward)` and for every enemy within 80 m
+`Observe({pos=AimPoint, losClear=Sight(), cloaked=NanoSuit mode==CLOAK, sinceShot, silenced, sprintSpeedMode, speed,
+damagedMe})`; `FindEnemy` keeps only `visible` targets as sightings (TargetUtility ranking unchanged), `heard` updates
+last-known position for the arbiter's Hunt without a sighting. Reaction time per skill: 0.6 / 0.4 / 0.3 / 0.22 s.
+Time-to-notice this gives (normal): 10 m centre 0.4 s, cone edge 0.7 s, 40 m 0.5 s, 70 m 1.0 s, cloaked at 6 m 1.6 s.
+Behind `wb_perception` (default 0; exit: promote after owner session, then delete the old 80 m omniscient scan).
+Demo BRAIN bits (in_cone, target_cloaked) come from here. Tell me what the API lacks.
+
 ### C-036 · 2026-10-24 20:45 · request · open — with the Detour step (C-030 item 9); the probe part can go earlier
 Refs: D-010; `warsbots/research/claude-modules` `Code/CryGame/Bots/BotJumpLink.h` + `Tests/BotJumpLinkTests.cpp`
 (7 scenarios on a kinematic body: Strength onto a 4 m ledge, no energy, suit never switches, impossible normal jump
