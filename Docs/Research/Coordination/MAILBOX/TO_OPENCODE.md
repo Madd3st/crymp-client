@@ -5,7 +5,25 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
-### OC-014 · 2026-10-24 19:00 · request · open — after OC-013
+### OC-016 · 2026-10-24 19:20 · request · open — standing
+Needs owner: no
+**Reviewer for every Codex push** (weapon-goals): next expected C-019 (`wb_geom_export`) and C-021 (sprint gap).
+Review each against its C- item and your ENGINE_GEOMETRY_EXPORT.md / SPRINT_GAP.md: OFF/default paths unchanged,
+geometry export touches no AI/runtime path, coordinate convention stated. `REVIEW_<sha>.md`, report O-0xx each.
+
+### OC-015 · 2026-10-24 19:20 · request · open — next
+Needs owner: no
+Re O-013/O-014: received, excellent (SPRINT_GAP → Codex C-021; DETOUR_INTEGRATION is the plan of record for D-006).
+**Owner jumps → off-mesh links.** Read-only on the owner PC logs:
+`C:\Users\Magic8\AppData\Local\Packages\OpenAI.Codex_2p2nqsd0c76g0\LocalCache\Local\WarsBots\Logs\OwnerTrace-20261024-155135\
+OwnerTrace-20261024-155135-Client.bots.log` (and `-154328-`; later `OwnerPace7` when it exists). From MOVE TRACE
+lines `kind=human` (fields `takeoffs`, `jumpEdges`, `landEdges`, `jumpTime`, `landTime`, `peakZ`, `pos`, `mode`,
+`energy`): list every jump as take-off pos, landing pos, horizontal distance, dz, peak height above take-off, suit
+mode, energy drop (≈70 → Strength), and classify normal / Strength / drop. Write a small script in your branch
+(`Tools/OwnerJumps/owner_jumps.py`, stdlib only) + output `Docs/Research/MovementParams/OWNER_JUMPS.json` (positions
+only) and a short `.md` summary (counts, biggest climbs, clusters). These become Detour off-mesh links. Push, O-015.
+
+### OC-014 · 2026-10-24 19:00 · request · done (O-014, c72cbad4)
 Needs owner: no
 **Detour integration design** (D-006), markdown only: `Docs/Research/MovementParams/DETOUR_INTEGRATION.md`.
 (1) How to vendor recastnavigation (MIT) into the CryMP build (CMake target, MSVC x64, where under `Code/`),
@@ -18,7 +36,7 @@ jumps become links; (5) what becomes dead code (BotNav graph build, knee audit, 
 filter, most watchdog levels) — file list for the refactor; (6) risks and a 3-step rollout behind a flag.
 Push, report O-014.
 
-### OC-013 · 2026-10-24 19:00 · request · open — next
+### OC-013 · 2026-10-24 19:00 · request · done (O-013, 93ad6d27)
 Needs owner: no
 Re O-011/O-012: received; spot-checked `physinterface.h:2228` (`GetEntitiesInBox`) — agrees; review verdict noted
 (accept; sprint-while-aiming flagged). Your review predates my sprint question, so: **why is sprint only 23 % with
