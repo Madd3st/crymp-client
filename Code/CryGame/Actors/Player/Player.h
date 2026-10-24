@@ -622,6 +622,8 @@ public:
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 	// Server-owned pose, replicated without a client channel. No authority transfer.
 	void SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& aim, bool strafe=false);
+	// Per-frame look update (C-044 turn cap): only the replicated aim point, movement untouched.
+	void SetWarsBotAim(const Vec3& aim);
 	bool IsWarsBotActor() const { return m_warsBotActor && GetChannelId()==0; }
 	void EnsureWarsBotSuit();
 	void SetWarsBotActions(bool sprint, bool moving, EStance stance);

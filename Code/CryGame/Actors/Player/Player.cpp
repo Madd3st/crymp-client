@@ -4976,6 +4976,12 @@ void CPlayer::SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& a
 	m_warsBotAim = aim;
 	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
 }
+void CPlayer::SetWarsBotAim(const Vec3& aim)
+{
+	if (!gEnv->bServer || !g_pGame || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
+	m_warsBotAim = aim;
+	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
+}
 void CPlayer::UpdateWarsBotMotion(float dt)
 {
 	if (!m_warsBotPose || GetChannelId()!=0 || GetHealth()<=0 || m_stats.isRagDoll || IsFrozen()) return;

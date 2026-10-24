@@ -39,6 +39,19 @@ void BotMovement::Aim(CActor& actor, const Vec3& target)
 	}
 }
 
+void BotMovement::Look(CActor& actor, const Vec3& target)
+{
+	static_cast<CPlayer&>(actor).SetWarsBotAim(target);
+	if (auto* controller = actor.GetMovementController())
+	{
+		CMovementRequest request;
+		request.SetLookTarget(target);
+		request.SetAimTarget(target);
+		request.SetFireTarget(target);
+		controller->RequestMovement(request);
+	}
+}
+
 bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe) const
 {
 	if (!gEnv->pPhysicalWorld || !actor.GetEntity()->GetPhysics())

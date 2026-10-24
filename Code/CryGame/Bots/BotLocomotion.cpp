@@ -139,4 +139,5 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 	actor.GetMovementController()->RequestMovement(request);
 	return accepted;
 }
+void BotLocomotion::Look(CPlayer& actor, const Vec3& target) { m_movement.Look(actor, target); }
 }

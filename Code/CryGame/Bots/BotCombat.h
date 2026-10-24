@@ -29,6 +29,7 @@ public:
 	const Vec3& LastPosition() const { return m_lastPosition; }
 	const Vec3& LastAim() const { return m_lastAim; }
 	float SampleTime() const { return m_sampleTime; }
+	float LastSeen() const { return m_lastSeen; } // last time the target was visible (0 = never)
 	// Last Attack had LOS from the eyes but the barrel was blocked by cover.
 	bool ShotBlocked() const { return m_shotBlocked; }
 	// Profiling counters across all bots (main thread only), reset on read.
