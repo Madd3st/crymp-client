@@ -15,6 +15,9 @@ param(
     [switch]$CandidateOnly,
     [switch]$BaselineOnly,
     [switch]$FireDiagnostics,
+    [ValidateSet('wb_bot_look','wb_bot_turn_cap','wb_bot_weapon_rank','wb_bot_arbiter','wb_bot_navmesh','wb_bot_perception','wb_bot_aim_model')][string[]]$BaselineFeatureGates=@(),
+    [ValidateSet('wb_bot_look','wb_bot_turn_cap','wb_bot_weapon_rank','wb_bot_arbiter','wb_bot_navmesh','wb_bot_perception','wb_bot_aim_model')][string[]]$CandidateFeatureGates=@(),
+    [switch]$InspectFeatureGates,
     [switch]$FixedRoster,
     [ValidateRange(-1,1)][int]$BaselineDemoRecord=-1,
     [ValidateRange(-1,1)][int]$CandidateDemoRecord=-1,
@@ -135,6 +138,9 @@ try {
                 if($pace -ge 0){$commands=" +wb_bot_pace $pace"+$commands}
                 $demo=if($variant -eq 'candidate'){$CandidateDemoRecord}else{$BaselineDemoRecord}
                 if($demo -ge 0){$commands=" +wb_demo_record $demo"+$commands}
+                $gates=if($variant -eq 'candidate'){@($CandidateFeatureGates)}else{@($BaselineFeatureGates)}
+                if($InspectFeatureGates){foreach($name in @('wb_bot_look','wb_bot_turn_cap','wb_bot_weapon_rank','wb_bot_arbiter','wb_bot_navmesh','wb_bot_perception','wb_bot_aim_model')){$commands=" +$name"+$commands}}
+                foreach($name in $gates){$commands=" +$name 1"+$commands}
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
@@ -198,7 +204,7 @@ try {
                 if($ExplainPairsPath -and ([regex]::Matches($text,'NAV explain from=')).Count -ne 80){$ok=$false}
                 if($Seconds -ge 660 -and $observed -lt $(if($TimeMode -eq 'wall'){600}else{$Seconds})){$ok=$false}
                 if($timeError){$ok=$false}
-                $run=[ordered]@{demo_record_requested=$demo;time_mode=$TimeMode;requested_speed=$Speed;wall_seconds=$wallSeconds;game_seconds=$observed;speedup=$(if($wallSeconds -gt 0){$observed/$wallSeconds}else{0});time_error=$timeError;bot_pace_requested=$pace;fixed_roster=[bool]$FixedRoster;move_trace_requested=$(if($variant -eq 'candidate'){$CandidateMoveTrace}else{$BaselineMoveTrace});reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{$BaselineReachableGoals});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{$BaselinePhysicsDiagnostics});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{$BaselineHotspotAllNodes});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{$BaselineTrapRecovery});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $run=[ordered]@{feature_gates=@($gates);inspect_feature_gates=[bool]$InspectFeatureGates;demo_record_requested=$demo;time_mode=$TimeMode;requested_speed=$Speed;wall_seconds=$wallSeconds;game_seconds=$observed;speedup=$(if($wallSeconds -gt 0){$observed/$wallSeconds}else{0});time_error=$timeError;bot_pace_requested=$pace;fixed_roster=[bool]$FixedRoster;move_trace_requested=$(if($variant -eq 'candidate'){$CandidateMoveTrace}else{$BaselineMoveTrace});reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{$BaselineReachableGoals});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{$BaselinePhysicsDiagnostics});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{$BaselineHotspotAllNodes});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{$BaselineTrapRecovery});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"
