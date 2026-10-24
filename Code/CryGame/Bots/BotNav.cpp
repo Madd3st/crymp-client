@@ -204,14 +204,17 @@ int BotNav::Nearest(const Vec3& pos) const
 	return best;
 }
 
-bool BotNav::FindPath(const Vec3& start, const Vec3& goal, std::vector<Vec3>& path) const
+bool BotNav::FindPath(const Vec3& start, const Vec3& goal, std::vector<Vec3>& path, PathTrace* trace) const
 {
+    PathTrace local;PathTrace& info=trace?*trace:local;info=PathTrace();
 	path.clear();
 	if (m_phase != Phase::Ready) return false;
 	++m_queries;
 	const int from = Nearest(start), to = Nearest(goal);
-	if (from < 0 || to < 0) return false;
-	if (from == to) { path.push_back(goal); return true; }
+    info.from=from;info.to=to;
+    if (from<0) { info.reason="start_unprojected";return false; }
+    if (to<0) { info.reason="goal_unprojected";return false; }
+	if (from == to) { info.reason="found";path.push_back(goal); return true; }
 	// A* with a node budget; graph is small (thousands of nodes) so allocations per query are fine.
 	const size_t n = m_nodes.size();
 	std::vector<float> g(n, 1e30f);
@@ -245,7 +248,9 @@ bool BotNav::FindPath(const Vec3& start, const Vec3& goal, std::vector<Vec3>& pa
 			}
 		}
 	}
-	if (parent[to] < 0) return false;
+	info.expanded=expanded;
+    if (parent[to] < 0) { info.reason=expanded>=6000?"budget":"no_route";return false; }
+    info.reason="found";
 	for (int cur = to; cur != from; cur = parent[cur]) path.push_back(m_nodes[cur].pos);
 	std::reverse(path.begin(), path.end());
 	path.push_back(goal);
@@ -266,11 +271,12 @@ std::filesystem::path MemoryPath(const std::string& level)
 }
 }
 
-void BotNav::ReportStuck(const Vec3& pos)
+void BotNav::ReportStuck(const Vec3& pos, std::uint32_t actor)
 {
 	if (m_phase != Phase::Ready) return;
 	const int id = Nearest(pos);
 	if (id < 0) return;
+    WB_LOG(2,"[WarsBots] NAV stuck report actor=%u node=%d pos=(%.2f,%.2f,%.2f)",actor,id,pos.x,pos.y,pos.z);
 	m_memory[id].stuck = min(m_memory[id].stuck + 1.0f, 20.0f);
 	m_dirty = true; ++m_events;
 }

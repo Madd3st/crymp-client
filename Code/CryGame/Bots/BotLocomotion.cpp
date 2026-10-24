@@ -27,9 +27,9 @@ void BotLocomotion::Stop(CPlayer& actor)
 	actor.SetWarsBotActions(false,false,STANCE_STAND);
 	const float nextLog=m_nextLog; Reset(); m_nextLog=nextLog;
 }
-void BotLocomotion::Refused(const char* reason, float now)
+void BotLocomotion::Refused(CPlayer& actor, const char* reason, float now)
 {
-	if (now >= m_nextLog) { WB_LOG(2, "[WarsBots] ACTION REFUSED: %s.",reason); m_nextLog=now+2.0f; }
+	if (now >= m_nextLog) { WB_LOG(2, "[WarsBots] ACTION REFUSED: %s actor=%u.",reason,actor.GetEntityId()); m_nextLog=now+2.0f; }
 }
 void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 {
@@ -38,15 +38,15 @@ void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 	{
 		m_pending=false; m_airborne=true;
 		actor.PublishWarsBotJump(m_strength);
-		WB_LOG(2, "[WarsBots] JUMP TAKEOFF: strength=%d vz=%.2f energy=%.1f.",m_strength?1:0,state.velocity.z,state.energy);
+		WB_LOG(2, "[WarsBots] JUMP TAKEOFF: strength=%d vz=%.2f energy=%.1f actor=%u.",m_strength?1:0,state.velocity.z,state.energy,actor.GetEntityId());
 	}
-	if (m_pending && now-m_requested>1.0f) { m_pending=false; Refused("jump_not_accepted_by_native_movement",now); }
+	if (m_pending && now-m_requested>1.0f) { m_pending=false; Refused(actor,"jump_not_accepted_by_native_movement",now); }
 	if (m_airborne)
 	{
 		m_apex=max(m_apex,state.position.z);
 		if (state.grounded)
 		{
-			WB_LOG(2, "[WarsBots] JUMP LANDING: strength=%d rise=%.2f displacementZ=%.2f energy=%.1f.",m_strength?1:0,m_apex-m_startZ,state.position.z-m_startZ,state.energy);
+			WB_LOG(2, "[WarsBots] JUMP LANDING: strength=%d rise=%.2f displacementZ=%.2f energy=%.1f actor=%u.",m_strength?1:0,m_apex-m_startZ,state.position.z-m_startZ,state.energy,actor.GetEntityId());
 			m_airborne=false;
 		}
 	}
@@ -93,23 +93,23 @@ bool BotLocomotion::JumpSpace(CPlayer& actor, const Vec3& direction, bool moving
 }
 bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboard& state, float now, float dt)
 {
-	if (!state.canMove) { Stop(actor); Refused("movement_state",now); return false; }
+	if (!state.canMove) { Stop(actor); Refused(actor,"movement_state",now); return false; }
 	const Vec3 direction=(intent.destination-state.position).GetNormalizedSafe(actor.GetBaseQuat().GetColumn1());
 	const bool strength=intent.jump==BotJump::Strength;
 	bool jump=false;
 	if (intent.jump!=BotJump::None)
 	{
-		if (!state.grounded || m_pending || m_airborne) Refused("jump_not_grounded_or_pending",now);
-		else if (intent.stance==STANCE_PRONE || actor.GetStance()==STANCE_PRONE) Refused("jump_prone",now);
-		else if (now<state.nextJump) Refused("jump_cooldown",now);
-		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<90.0f)) Refused("jump_strength_mode_or_energy",now);
-		else if (!strength && state.mode==NANOMODE_STRENGTH) Refused("normal_jump_waiting_for_defense",now);
-		else if (!JumpSpace(actor,direction,intent.move,strength)) Refused("jump_clearance_or_landing",now);
+		if (!state.grounded || m_pending || m_airborne) Refused(actor,"jump_not_grounded_or_pending",now);
+		else if (intent.stance==STANCE_PRONE || actor.GetStance()==STANCE_PRONE) Refused(actor,"jump_prone",now);
+		else if (now<state.nextJump) Refused(actor,"jump_cooldown",now);
+		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<90.0f)) Refused(actor,"jump_strength_mode_or_energy",now);
+		else if (!strength && state.mode==NANOMODE_STRENGTH) Refused(actor,"normal_jump_waiting_for_defense",now);
+		else if (!JumpSpace(actor,direction,intent.move,strength)) Refused(actor,"jump_clearance_or_landing",now);
 		else
 		{
 			jump=true; m_pending=true; m_strength=strength; m_requested=now;
 			m_startZ=m_apex=state.position.z; state.nextJump=now+3.0f;
-			WB_LOG(2, "[WarsBots] BOT ACTION: JUMP strength=%d energy=%.1f.",strength?1:0,state.energy);
+			WB_LOG(2, "[WarsBots] BOT ACTION: JUMP strength=%d energy=%.1f actor=%u.",strength?1:0,state.energy,actor.GetEntityId());
 		}
 	}
 	// Let a validated jump carry forward through the low obstruction; never a position change.

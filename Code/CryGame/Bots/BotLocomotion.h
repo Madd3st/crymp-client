@@ -15,7 +15,7 @@ public:
 	bool Execute(CPlayer& actor, const BotIntent& intent, BotBlackboard& state, float now, float dt);
 private:
 	bool JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength) const;
-	void Refused(const char* reason, float now);
+	void Refused(CPlayer& actor, const char* reason, float now);
 	BotMovement m_movement;
 	bool m_pending = false, m_airborne = false, m_strength = false;
 	float m_requested = 0, m_startZ = 0, m_apex = 0, m_nextLog = 0;

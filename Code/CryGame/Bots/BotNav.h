@@ -26,11 +26,12 @@ public:
 	void Status() const;
 
 	// Path of world points from start to goal (excluding start). False if no route is known.
-	bool FindPath(const Vec3& start, const Vec3& goal, std::vector<Vec3>& path) const;
+    struct PathTrace { const char* reason="not_ready"; int from=-1,to=-1,expanded=0; };
+	bool FindPath(const Vec3& start, const Vec3& goal, std::vector<Vec3>& path, PathTrace* trace=nullptr) const;
 	// --- Map memory ("learning the map"): per-node experience accumulated from play and kept on
 	// disk per level (%USER%/WarsBots/<level>.mem). Stuck spots make edges expensive; kill/death
 	// activity guides where bots look for fights. Nothing here observes enemies directly.
-	void ReportStuck(const Vec3& pos);
+	void ReportStuck(const Vec3& pos, std::uint32_t actor);
 	void ReportKill(const Vec3& pos);
 	void ReportDeath(const Vec3& pos);
 	// A roaming goal from experience: a fight hotspot (or a less-visited area to explore);

@@ -89,6 +89,7 @@ private:
 	IEntityClass* m_previousWeaponClass = nullptr;
 	BotProfile m_profile;
 	int m_number = 0;
+    EntityId m_actorId=0;
 	float m_phase = 0;
 	BotLocomotion m_locomotion;
 	BotCombat m_combat;

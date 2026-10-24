@@ -93,15 +93,17 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 	if (((goal - m_pathGoal).GetLengthSquared() > 16.0f || m_now >= m_nextRepath) && m_now >= m_minRepath)
 	{
 		m_minRepath = m_now + 0.75f;
-		const bool found = nav.FindPath(feet, goal, m_path);
+		BotNav::PathTrace trace;
+		const bool found = nav.FindPath(feet, goal, m_path, &trace);
 		m_pathIndex = 0;
 		m_pathGoal = goal;
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
 		if (!found)
 		{
 			m_path.clear();
-			WB_LOG(2, "[WarsBots] #%d NAV fallback start=(%.2f,%.2f,%.2f) goal=(%.2f,%.2f,%.2f) retry=2.0.",
-				m_number, feet.x, feet.y, feet.z, goal.x, goal.y, goal.z);
+			WB_LOG(2, "[WarsBots] #%d NAV fallback start=(%.2f,%.2f,%.2f) goal=(%.2f,%.2f,%.2f) retry=2.0. actor=%u reason=%s from=%d to=%d expanded=%d",
+				m_number, feet.x, feet.y, feet.z, goal.x, goal.y, goal.z,
+                m_actorId,trace.reason,trace.from,trace.to,trace.expanded);
 		}
 	}
 	if (m_path.empty()) return goal; // Sparse graph can miss a physically reachable item.
@@ -204,6 +206,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	dt = clamp_tpl(dt, 0.0f, 0.25f);
 	m_now += dt;
 	CPlayer& actor = static_cast<CPlayer&>(*bot.GetActor());
+    m_actorId=actor.GetEntityId();
 	m_blackboard.Sample(actor,m_now);
 	m_locomotion.Observe(actor,m_blackboard,m_now);
 	if (m_verbose && m_now >= m_nextTelemetry)
@@ -417,7 +420,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		if (bot.GetActor()!=&actor) return;
 		if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0)
 		{
-			g_pGame->GetBotManager().Nav().ReportStuck(feet); // learned: route around this spot next time
+			g_pGame->GetBotManager().Nav().ReportStuck(feet,actor.GetEntityId()); // learned: route around this spot next time
 			m_detour=true; m_patrolUntil=m_now; m_blockedSince=0; m_nextRepath=0;
 		}
 		else if (m_blackboard.blocked && m_blockedSince <= 0) m_blockedSince=m_now;
@@ -532,7 +535,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		if (m_chaseBlockedSince>0 && m_now-m_chaseBlockedSince>m_profile.blockedChasePatience)
 		{
 			if (m_verbose) WB_LOG(1, "[WarsBots] #%d chase abandoned target=%u (blocked, not visible).", m_number, m_combat.Target());
-			g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos());
+			g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos(),actor.GetEntityId());
 			m_combat.Reset(); m_chaseBlockedSince=0; m_patrolUntil=0; m_detour=true;
 		}
 		if (!visible) TravelGait(distance); // hunting a hidden target: Speed travel like a player
@@ -552,7 +555,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		m_now-m_combat.SelectedAt()<0.75f || (activeWeapon && activeWeapon->IsReloading());
 	if (m_intent.move && NoProgress(actor,"combat",m_combat.Target(),protect))
 	{
-		g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos());
+		g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos(),actor.GetEntityId());
 		m_combat.AvoidCurrent(m_now,8.0f); m_escapeUntil=m_now+1.5f;
 		m_detour=true; m_patrolUntil=0; m_nextRepath=0;
 	}
