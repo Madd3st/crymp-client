@@ -26,7 +26,7 @@ public:
 	bool Spawn(const Vec3& position);
 	// Removes only the entity this instance created. Safe to call repeatedly.
 	void Remove();
-	bool Revive(EntityId forcedSpawn = 0);
+	bool Revive(EntityId forcedSpawn = 0, float forcedZOffset = 0.2f);
 	bool DebugTeleport(const Vec3& position);
 	void Update(float dt);
 	// Entity system reported ENTITY_EVENT_DONE for our entity: forget it, never touch it again.

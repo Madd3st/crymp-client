@@ -108,6 +108,7 @@ private:
     static void NavExportCommand(IConsoleCmdArgs* args);
     static void NavExplainCommand(IConsoleCmdArgs* args);
     static void ReviveAtCommand(IConsoleCmdArgs* args);
+    static void SpawnBoxCommand(IConsoleCmdArgs* args);
     static void TeleportCommand(IConsoleCmdArgs* args);
     static void WatchCommand(IConsoleCmdArgs* args);
     static void WatchInfoCommand(IConsoleCmdArgs* args);

@@ -29,6 +29,8 @@ namespace
 int g_progressExperiment=0;
 int g_trapRecovery=0;
 int g_physicsDiagnostics=0;
+float g_reviveZTest=-2.f;
+int g_reviveHooksTest=0;
 int g_reachableGoals=0;
 int g_sinkEscape=0;
 int g_hotspotAllNodes=0;
@@ -65,13 +67,13 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
 const char* kCommands[] = {
-	"wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export", "wb_nav_explain",
+	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
+const char* kVariables[] = { "wb_revive_z_test", "wb_revive_hooks_test", "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
 }
 
 BotManager* BotManager::Self()
@@ -97,6 +99,8 @@ void BotManager::Initialize(IGameFramework* framework)
     console->Register("wb_hotspot_all_nodes", &g_hotspotAllNodes, 0, 0, "Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak.");
     console->Register("wb_sink_escape", &g_sinkEscape, 0, 0, "Opt-in physical escape at8s in closed SCCs; requires trap recovery1; default OFF.");
     console->Register("wb_reachable_goals", &g_reachableGoals, 0, 0, "Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF.");
+    console->Register("wb_revive_z_test", &g_reviveZTest, -2.f, 0, "Manual revive only: -2 legacy0.2 default; 0 or0.2 explicit; -1 native selector offset for same spawn.");
+    console->Register("wb_revive_hooks_test", &g_reviveHooksTest, 0, 0, "Manual BOT revive only: bit1 Spawned, bit2 UpdateAreas; default0; no automatic lifecycle change.");
     console->Register("wb_physics_diagnostics", &g_physicsDiagnostics, 0, 0, "Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF.");
     console->Register("wb_trap_recovery", &g_trapRecovery, 0, 0, "Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak.");
 	console->Register("wb_progress_experiment", &g_progressExperiment, 0, 0,
@@ -116,6 +120,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_list", ListCommand, 0, "List bots: number, EntityId, profile, state");
 	console->AddCommand("wb_status", StatusCommand, 0, "Detailed status and per-bot update cost");
 	console->AddCommand("wb_debug", DebugCommand, 0, "wb_debug 0|1: verbose telemetry for all bots");
+    console->AddCommand("wb_spawn_box",SpawnBoxCommand,0,"wb_spawn_box <spawnId>: read-only local IA physics2m box names/classes/proxies");
     console->AddCommand("wb_revive_at",ReviveAtCommand,0,"wb_revive_at <spawnEntityId> [botNumber|me]: manual native kill/revive; selected bot by default; local IA only");
     console->AddCommand("wb_teleport",TeleportCommand,0,"wb_teleport <botNumber> x y z: manual owned live bot relocation; local IA only");
 	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
@@ -686,9 +691,37 @@ void BotManager::TeleportCommand(IConsoleCmdArgs* args)
     if(!bot || !bot->DebugTeleport(position))WB_LOG(0,"[WarsBots] DEBUG TELEPORT refused: owned live unfrozen bot without vehicle required");
 }
 
+void BotManager::SpawnBoxCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self();int id=0;
+    if(!self || !self->CanRunLocalIA()) {WB_LOG(0,"[WarsBots] SPAWN BOX refused: local IA gate closed");return;}
+    if(!args || args->GetArgCount()!=2 || !ParseInt(args->GetArg(1),id) || id<=0)return;
+    CGameRules* rules=g_pGame->GetGameRules();bool registered=false;
+    for(int i=0;i<rules->GetSpawnLocationCount();++i)registered |= rules->GetSpawnLocation(i)==EntityId(id);
+    IEntity* spawn=registered?gEnv->pEntitySystem->GetEntity(EntityId(id)):nullptr;if(!spawn)return;
+    IPhysicalEntity** entities=nullptr;const Vec3 center=spawn->GetWorldPos(),radius(2,2,2);
+    const int count=gEnv->pPhysicalWorld->GetEntitiesInBox(center-radius,center+radius,entities,ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_living);
+    WB_LOG(0,"[WarsBots] SPAWN BOX spawn=%d center=(%.3f,%.3f,%.3f) count=%d cap=128",id,center.x,center.y,center.z,count);
+    for(int i=0;i<count && i<128;++i) {
+        IPhysicalEntity* physics=entities[i];if(!physics)continue;
+        IEntity* entity=static_cast<IEntity*>(physics->GetForeignData(PHYS_FOREIGN_ID_ENTITY));
+        unsigned proxies=0;if(entity)for(int p=0;p<ENTITY_PROXY_LAST;++p)if(entity->GetProxy(EEntityProxy(p)))proxies|=1u<<p;
+        pe_status_pos pose;const bool valid=physics->GetStatus(&pose)!=0;
+        WB_LOG(0,"[WarsBots] SPAWN BOX item=%d actor=%u name=%s class=%s type=%d foreign=%d proxies=0x%x pose=%d pos=(%.3f,%.3f,%.3f)",i,entity?entity->GetId():0,entity?entity->GetName():"none",entity?entity->GetClass()->GetName():"static_or_terrain",physics->GetType(),physics->GetiForeignData(),proxies,valid?1:0,valid?pose.pos.x:0,valid?pose.pos.y:0,valid?pose.pos.z:0);
+    }
+}
+
 void BotManager::ReviveAtCommand(IConsoleCmdArgs* args)
 {
     BotManager* self=Self();int spawnNumber=0,number=0;
+    if(self && self->CanRunLocalIA() && args && args->GetArgCount()==5 && !std::strcmp(args->GetArg(1),"after")) {
+        int delay=0,spawn=0,bot=0;
+        if(ParseInt(args->GetArg(2),delay) && delay>=1 && delay<=300 && ParseInt(args->GetArg(3),spawn) && spawn>0 && ParseInt(args->GetArg(4),bot) && bot>0 && bot<=16) {
+            char script[192];std::snprintf(script,sizeof(script),"Script.SetTimer(%d,function() System.ExecuteCommand('wb_revive_at %d %d') end)",delay*1000,spawn,bot);
+            gEnv->pScriptSystem->ExecuteBuffer(script,std::strlen(script),"WarsBots explicit delayed diagnostic revive");
+        }
+        return;
+    }
     if(!self || !self->CanRunLocalIA()) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: local IA gate closed");return;}
     if(!args || (args->GetArgCount()!=2 && args->GetArgCount()!=3) || !ParseInt(args->GetArg(1),spawnNumber) || spawnNumber<=0)
     {WB_LOG(0,"[WarsBots] Usage: wb_revive_at <spawnEntityId> [botNumber|me]");return;}
@@ -719,15 +752,24 @@ void BotManager::ReviveAtCommand(IConsoleCmdArgs* args)
         actor->GetSpectatorMode()!=CActor::eASM_None || (bot && !bot->Owns(actor->GetEntityId())))
     {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: non-spectator actor with inventory, no vehicle/freeze required");return;}
     const EntityId id=actor->GetEntityId();
-    const Vec3 position=spawn->GetWorldPos()+Vec3(0,0,0.2f); const Ang3 angles(spawn->GetWorldRotation());
+    float offset=.2f;
+    if(g_reviveZTest==-1.f) {
+        bool matched=false;EntityId selected=0;int tries=0;
+        for(;tries<128;++tries) {selected=rules->GetSpawnLocation(id,true,true,0,0,Vec3(0,0,0),&offset,0);if(selected==spawn->GetId()){matched=true;break;}}
+        WB_LOG(0,"[WarsBots] DEBUG NATIVE OFFSET requested=%d selected=%u matched=%d attempts=%d z=%.3f",spawnNumber,selected,matched?1:0,std::min(tries+1,128),offset);
+        if(!matched)return; // Never apply another spawn's native offset to this one.
+    } else if(g_reviveZTest==0.f || fabs_tpl(g_reviveZTest-.2f)<.0001f)offset=g_reviveZTest;
+    else if(g_reviveZTest!=-2.f) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: z test must be -2,-1,0,0.2");return;}
+    if(g_reviveHooksTest<0 || g_reviveHooksTest>3) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: hook mask must be0..3");return;}
+    const Vec3 position=spawn->GetWorldPos()+Vec3(0,0,offset); const Ang3 angles(spawn->GetWorldRotation());
     const bool running=bot && bot->AIEnabled();
     if(running)bot->Brain().Stop(*bot);
-    WB_LOG(0,"[WarsBots] DEBUG REVIVE actor=%u bot=%d spawnId=%d manual=1 nativeKill=%d",id,bot?bot->Number():0,spawnNumber,actor->GetHealth()>0?1:0);
+    WB_LOG(0,"[WarsBots] DEBUG REVIVE actor=%u bot=%d spawnId=%d manual=1 nativeKill=%d zOffset=%.3f hooks=%d",id,bot?bot->Number():0,spawnNumber,actor->GetHealth()>0?1:0,offset,bot?g_reviveHooksTest:0);
     if(actor->GetHealth()>0)rules->KillPlayer(actor,false,true,id,0,float(actor->GetHealth()),0,0,Vec3(0,0,0));
     // Kill callbacks may remove an entity; never use a stale actor pointer.
     CActor* current=static_cast<CActor*>(self->m_framework->GetIActorSystem()->GetActor(id));
     if(current && current==actor && current->GetHealth()<=0) {
-        if(bot)bot->Revive(EntityId(spawnNumber));
+        if(bot)bot->Revive(EntityId(spawnNumber),offset);
         else {
             rules->RevivePlayer(current,position,angles,rules->GetTeam(id),true);
             BotMatch::EquipLikePlayer(*rules,*current);
