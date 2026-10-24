@@ -1,6 +1,6 @@
 # WarsBots coordination (maintained by Claude)
 
-Updated 2026-10-24 04:20 MSK. Source of truth for code is GitHub; this file records what
+Updated 2026-10-24 04:25 MSK. Source of truth for code is GitHub; this file records what
 was verified and by which kind of evidence: **src** = source reading, **unit** = offline
 tests, **server** = server logs, **client** = visual check in a real client.
 
@@ -8,19 +8,24 @@ tests, **server** = server logs, **client** = visual check in a real client.
 
 | Branch | SHA | Owner | State |
 | --- | --- | --- | --- |
-| `warsbots/feature/weapon-goals` | `53023d52` | Codex | active; no push since 53023d52 at 04:00 |
-| last confirmed game build | `8f0abd5f` | Codex | BUILD PASS + server duels; client replication unverified |
+| `warsbots/feature/weapon-goals` | `0f338b12` | Codex | active; spectator + P1 regression report pushed 04:13 |
+| frozen P0 build | `8f0abd5f` | Codex | 4 headless 120 s runs (6/15 bots): no crash, no duplicate shots, 1 round per shot |
+| spectator build | `a6ee9e9e` | Codex | BUILD PASS, C++ + 60 s headless QA PASS; live client scenario NOT run |
 | `warsbots/main` | `caf1a815` | integrator | far behind weapon-goals |
 | `warsbots/research/crymp-native-audit` | `47ccfacf` | Claude | done; docs + Tools/CryMPResearch |
 | `warsbots/research/steelmill-lab` | this branch | Claude | Steelmill AI Lab + findings |
 | `warsbots/research/fps-ai-planning` | planned | Claude | FPS AI research + engine-free planner prototype |
 
-Codex P1 regression logs for `8f0abd5f` (6 and 15 bots, 2 runs each, ~120 s) exist on the
-owner's machine but are not committed yet. Spectator Mode: nothing published yet.
+Codex report: `Docs/Experiments/regression-spectator-2026-10-24.md`. Spectator reuses the
+native observer flow (`GetNextSpectatorTarget` → `GetMatchParticipants` on local IA, native F1,
+renderer-local FP view from replicated aim), as recommended in the CryMP audit. Independent
+Lab pass over the same four regression logs agrees: no new movement regression versus older
+builds; the spawn-pin defect (Lab F1) is present in `8f0abd5f` too and predates it.
 
 ## Current tasks
 
-- **Codex**: regression of `8f0abd5f` (shots, ammo, duplicates, perf) → Spectator Mode.
+- **Codex**: regression + Spectator done server-side; waiting for the owner's live client run
+  (manual scenario in Codex's report).
 - **Claude**: Steelmill AI Lab (done in this branch) → FPS AI research → planner prototype.
   No game files, no servers, no merges.
 
@@ -28,7 +33,8 @@ owner's machine but are not committed yet. Spectator Mode: nothing published yet
 
 | Component | State | Evidence |
 | --- | --- | --- |
-| Fire control / NetShoot replay fix | fixed for owned bots | unit + server (Codex) |
+| Fire control / NetShoot replay fix | fixed for owned bots, holds at 15 bots | unit + server (Codex); client not checked |
+| Spectator (`wb_watch`, F1) | implemented natively | unit + headless server; client not checked |
 | Aim / head zone | plausible in duels | server, small sample |
 | BotNav build | 7633 nodes / 41618 edges, stable | server |
 | BotNav routing | 15–18 failed queries per bot-minute, 42–62% cross-floor | server (Lab F3) |
@@ -54,7 +60,7 @@ default ON only after a soak shows no regression:
    escalate: repath → reverse/side step → jump out if `JumpSpace` allows → after 45 s, native
    self-kill through GameRules so it respawns (log `TRAP RECOVERY level=`). Uses only own
    position, no enemy knowledge.
-2. *Spawn 195 check* (F1): with Spectator Mode, look at (1247.50, 1319.75, 136.45); also
+2. *Spawn 195 check* (F1): during the live spectator run, follow a bot revived at (1247.50, 1319.75, 136.45) in FP/TP; also
    spawn a human there. If geometry: exclude that spawn for bots or nudge revive position.
    If bot-only: trace `CMovementRequest`/`canMove` there.
 3. *Logging patch* per `NAV_EXPORT_CONTRACT.md` (reason on NAV fallback, actor on suit/jump).
