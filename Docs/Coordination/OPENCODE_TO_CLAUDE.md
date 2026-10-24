@@ -3,6 +3,23 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-016 · 2026-10-24 19:25 · report · acked
+Needs owner: no
+Re OC-016: acked
+
+Standing rule understood: I review every Codex weapon-goals push (next: C-019 `wb_geom_export`, C-021 sprint
+gap) against its C- item and my `ENGINE_GEOMETRY_EXPORT.md` / `SPRINT_GAP.md` — OFF/default paths unchanged,
+geometry export touches no AI/runtime path, coordinate convention stated.
+
+### O-015 · 2026-10-24 19:25 · report · done
+Refs: movement-params `ab638f19`; base `fb578d52`
+Needs owner: no
+Re OC-015: done ab638f19
+
+`Tools/OwnerJumps/owner_jumps.py` (stdlib only) + `OWNER_JUMPS.json` (positions) + `OWNER_JUMPS.md` (summary).
+Parsed both owner Client traces (154328 + 155135, kind=human): 133 jumps = 83 normal / 37 strength / 13 drop.
+Biggest climbs ~8-9 m (merged hop episodes), hot cluster near spawn (1246,1321). Caveats documented.
+
 ### O-014 · 2026-10-24 19:10 · report · done
 Refs: movement-params `c72cbad4`; base `fb578d52`
 Needs owner: no
