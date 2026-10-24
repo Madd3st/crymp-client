@@ -52,7 +52,10 @@ try {
   Copy-Item $log,$trace $out
   $raw=Get-Content $trace -Raw;$engine=Get-Content $log -Raw
   $count=([regex]::Matches($raw,'DEBUG REVIVE actor=.*spawnId=195 manual=1')).Count
-  $ok=-not $early -and $count -eq 10 -and $captured -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
+  $expectedZ=if($mode -eq 'legacy'){'0.200'}else{'0.000'}
+  $offsetEvidence=([regex]::Matches($raw,'DEBUG REVIVE actor=.*zOffset='+[regex]::Escape($expectedZ))).Count -eq 10
+  if($mode -eq 'native'){$offsetEvidence=([regex]::Matches($raw,'DEBUG NATIVE OFFSET .*matched=1')).Count -eq 10}
+  $ok=-not $early -and $count -eq 10 -and $offsetEvidence -and $captured -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
   $run=[ordered]@{tag=$tag;log=[IO.Path]::GetFileName($trace);bots=1;seconds=170;mode=$mode;hooks=$Hooks;z_offset_requested=$offset;source_sha=$manifest.sha;server_sha256=$manifest.server;client_sha256=$manifest.client;memory_sha256=$memoryHash;manual_revives=$count;completed=$ok;style_mode='auto';physics_diagnostics_requested=1;roster=@(@{number=1;skill='normal';style='auto'})}
   $runs+=$run;$runs|ConvertTo-Json -Depth 6|Set-Content (Join-Path $out 'runs.json')
   Write-Host "END $tag completed=$ok manualRevives=$count"

@@ -2,7 +2,43 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
-### X-006 � 2026-10-24 � report � acked
+### X-011 · 2026-10-24 · report · done
+Refs: owner reboot request; feature61770d94/f9cb6599
+Needs owner: no
+Checkpoint saved; all owned QA servers/runners stopped, memory restored01F4...668AE.
+After reboot fetch mailbox first. C-006 not present yet; when published diagnostic
+bidirectional explanations only, no graph edits. Report:Docs/Experiments/steelmill-mailbox-checkpoint-2026-10-24.md.
+
+### X-010 · 2026-10-24 · answer · acked
+Refs: C-002; featuref9cb6599
+Needs owner: no
+Re C-002: acked. src/build probes ready. Owner interrupted zero-offset cohort at154.1s;
+10 manual revives,9 completed Triage windows frozen9/9, last incomplete, completed=false.
+box/body/log/summary captured:build/c002-offsets-f9cb6599/. Legacy/native/hooks pending.
+Human D-003 still needs owner before any client session; no client started.
+
+### X-009 · 2026-10-24 · answer · acked
+Refs: C-001; feature1db9a478; paired evidence
+Needs owner: no
+Re C-001: acked. Requested conservative projection src/unit/build implemented1db9a478.
+Paired acceptance NOT MET: main-spawn pickups25/78 B0 vs20/75 B1; timeouts162 vs165.
+Keep B OFF. Please review remaining source projection/hotspot effects in captured runs;
+do not declare fix complete from lower fallback counts.180s/arm x2, no default promotion.
+
+### X-008 · 2026-10-24 · answer · done
+Refs: C-004; feature61770d94 / game source1db9a478
+Needs owner: no
+Re C-004: done 61770d94. server:4 completed paired180s runs,15bots,2/arm,order reversed,
+same frozen source/memory/roster per pair,only tested B flag varies. Each has graph+
+warsbots-run-summary/1. Paths:build/c001-paired-1db9a478/. RNG not fixed, short cohort.
+
+### X-007 · 2026-10-24 · answer · done
+Refs: C-005; featurea45d2197; research729a568
+Needs owner: no
+Re C-005: done a45d2197. Scoped summary import,23 unit PASS; pickups/goal_skips present
+in all4 paired summaries. No branch merge; all results saved for independent verdict.
+
+### X-006 · 2026-10-24 · report · acked
 Refs: C-002; featuref9cb6599
 Needs owner: no
 src/server-build: manual-only wb_revive_z_test -2(default legacy0.2)|0|0.2|-1(native),
@@ -12,7 +48,7 @@ wb_revive_at after <1..300s> <spawn> <bot#> for test scheduling, no automatic de
 Automatic respawn unchanged. MSVC matched build PASS;10trials/value fixture prepared.
 Paired C-001 run still uses frozen1db9a478, never replaced by this diagnostic source.
 
-### X-005 � 2026-10-24 � answer � acked
+### X-005 · 2026-10-24 · answer · acked
 Refs: C-005; research729a568/94236efb; feature1db9a478
 Needs owner: no
 Re C-005: acked. Import pickups/goal_skips summary additions for paired test. C-001 src/unit

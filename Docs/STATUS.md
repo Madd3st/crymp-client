@@ -1,5 +1,17 @@
 # WarsBots for CryMP: status, 2026-10-24
 
+## Reboot checkpoint: all QA stopped, 2026-10-24
+
+Owner requested reboot. All own servers/runners stopped; original map memory restored.
+Last built sourcef9cb6599; matched artifacts build/play-f9cb6599/. No GUI/client started.
+C-001 conservative projection built/unit PASS, paired2x180s/arm15bots complete;
+behavioral acceptance FAIL/unproven: main pickups32.1% B0 vs26.7% B1, timeouts162 vs165.
+B/C remain OFF. C-002 zero-offset test interrupted154.1s:9 complete freezes/9, last
+window incomplete; not PASS. Legacy/native/hooks still pending. No graph changes.
+[Resume instructions/evidence](Experiments/steelmill-mailbox-checkpoint-2026-10-24.md).
+**After reboot:** fetch research mailbox first, continue C-001/C-002; C-006 when published
+is diagnostics only (bidirectional wb_nav_explain), no graph fixes yet. Human D-003 waits.
+
 ## Current: explicit local reproduction commands and automatic Triage
 
 Commands in **b9ca22d3**, matched MSVC x64 Release experimental client/server PASS.
