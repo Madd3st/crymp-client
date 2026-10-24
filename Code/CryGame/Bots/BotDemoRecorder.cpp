@@ -14,6 +14,7 @@
 #include "nlohmann/json.hpp"
 #include "version.h"
 #include <map>
+#include <array>
 #include <unordered_map>
 #include <algorithm>
 #include <filesystem>
@@ -37,6 +38,7 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
  IGameFramework* framework;BotManager* manager;FILE* file=nullptr;
  std::filesystem::path path;Bytes buffer;std::map<std::string,uint16_t> strings;
  std::unordered_map<EntityId,Seen> seen;uint64_t serial=0,written=0,frames=0,fileSerial=0;
+ std::array<uint32_t,18001> aimHistogram{};uint32_t aimSamples=0;
  bool failed=false;int hz=20;float nextFrame=0,lastFlush=0,nextProfile=0;
  double totalMs=0,worstMs=0,eventMs=0;
  Impl(IGameFramework* f,BotManager* m):framework(f),manager(m){}
@@ -109,6 +111,7 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
   std::string server=gEnv->pLog?std::filesystem::path(gEnv->pLog->GetFileName()).stem().string():"local";
   const std::string header=nlohmann::json({{"map",map},{"build",CRYMP_GIT_SHA},{"started",iso},{"hz",hz},{"server",server},{"navmesh","none"},{"flags",flags}}).dump();
   buffer.Raw("WBDM",4);buffer.U16(2);buffer.U32(uint32_t(header.size()));buffer.Raw(header.data(),header.size());
+  aimHistogram.fill(0);aimSamples=0;
   written=frames=serial=0;totalMs=worstMs=eventMs=0;nextFrame=lastFlush=Seconds();nextProfile=Seconds()+10;
   WB_LOG(0,"[WarsBots] DEMO START path=%s version=2 hz=%d",path.u8string().c_str(),hz);return true;
  }
@@ -142,7 +145,18 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
   if(combat.DamageMemory(Seconds()))bits|=4;
   const uint16_t reason=String(brain.DecisionReason()),stateId=String(state);
   Bytes b;b.U32(Now());b.U32(actor.GetEntityId());b.U16(stateId);b.U32(combat.Target());b.U8(combat.Visible()?1:0);
-  Vector(b,intent.aim);Vector(b,intent.destination);Vector(b,brain.NextCorner());b.U16(reason);b.U8(uint8_t(std::clamp(combat.VisibleEnemies(),0,255)));b.U8(bits);b.U32(combat.LastAttacker());Record(4,b);
+  // Raw observed target point, before BotAimControl filtering/sine command noise.
+  const Vec3 rawAim=combat.Target()?combat.LastAim():intent.aim;
+  Vector(b,rawAim);Vector(b,intent.destination);Vector(b,brain.NextCorner());b.U16(reason);b.U8(uint8_t(std::clamp(combat.VisibleEnemies(),0,255)));b.U8(bits);b.U32(combat.LastAttacker());Record(4,b);
+  if(combat.Target() && actor.GetHealth()>0){
+   SMovementState movement;actor.GetMovementController()->GetMovementState(movement);
+   const Vec3 delta=rawAim-movement.eyePosition;
+   if(delta.IsValid() && delta.len2()>1e-6f){
+    const Vec3 view=actor.GetViewRotation().GetColumn1().GetNormalizedSafe(FORWARD_DIRECTION);
+    const float angle=RAD2DEG(std::acos(std::clamp(view.Dot(delta.GetNormalized()),-1.f,1.f)));
+    ++aimHistogram[size_t(std::clamp(int(std::lround(angle*100)),0,18000))];++aimSamples;
+   }
+  }
   Vec3 direction=intent.move?(intent.destination-actor.GetEntity()->GetWorldPos()):Vec3(0,0,0);direction.z=0;direction.NormalizeSafe(Vec3(0,0,0));
   Bytes in;in.U32(Now());in.U32(actor.GetEntityId());in.F32(direction.x);in.F32(direction.y);in.U8(uint8_t(intent.gait));in.U8(uint8_t(intent.jump));in.U8(uint8_t(intent.suitMode));in.U8(uint8_t(intent.combat));in.U32(combat.Target());in.U32(0);in.U16(reason);Record(6,in);
  }
@@ -181,7 +195,10 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
   if(due){Bytes b;b.U32(Now());b.U8(count);if(!states.data.empty())b.Raw(states.data.data(),states.data.size());Record(3,b);}
   if(now-lastFlush>=1.f){Flush();lastFlush=now;}
   const double cost=(gEnv->pTimer->GetAsyncTime()-started).GetMilliSeconds()+eventMs;eventMs=0;totalMs+=cost;worstMs=std::max(worstMs,cost);++frames;
-  if(now>=nextProfile){WB_LOG(1,"[WarsBots] DEMO PROFILE avg=%.4fms/frame worst=%.4fms frames=%llu hz=%d bytes=%llu",totalMs/frames,worstMs,frames,hz,written+buffer.data.size());nextProfile=now+10;}
+  if(now>=nextProfile){WB_LOG(1,"[WarsBots] DEMO PROFILE avg=%.4fms/frame worst=%.4fms frames=%llu hz=%d bytes=%llu",totalMs/frames,worstMs,frames,hz,written+buffer.data.size());if(aimSamples){
+    const auto percentile=[&](double q){uint32_t sum=0,target=uint32_t(std::ceil(aimSamples*q));for(size_t i=0;i<aimHistogram.size();++i){sum+=aimHistogram[i];if(sum>=target)return float(i)*.01f;}return 0.f;};
+    WB_LOG(1,"[WarsBots] DEMO AIM ERROR samples=%u median=%.3fdeg p95=%.3fdeg reference=native_eye_to_cached_target_3d",aimSamples,percentile(.5),percentile(.95));
+   }nextProfile=now+10;}
  }
  void OnGameplayEvent(IEntity* entity,const GameplayEvent& event)override{
   Safe([&]{if(!entity)return;EntityId id=entity->GetId();const EntityId extra=EntityId(reinterpret_cast<uintptr_t>(event.extra));

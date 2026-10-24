@@ -4,6 +4,23 @@ from wblab import demo  # noqa: E402
 
 
 class DemoTests(unittest.TestCase):
+    def test_aim_error_uses_target_not_aligned_command(self):
+        fd, path = tempfile.mkstemp(suffix='.wbdemo'); os.close(fd)
+        try:
+            w = demo.Writer(path, {'map':'test','hz':20})
+            w.actor(0,1,'bot','WarsBot_01'); w.actor(0,2,'human','target')
+            w.brain(0,1,'ATTACKING',target=2,visible=True,aim=(0,10,0))
+            for i in range(4):
+                w.frame(i*.05,[dict(id=1,x=0,y=0,z=0,yaw=0),dict(id=2,x=10,y=0,z=0,yaw=0)])
+            w.brain(.2,1,'SEARCHING',target=0,aim=(0,10,0))
+            for i in range(4,100):
+                w.frame(i*.05,[dict(id=1,x=0,y=0,z=0,yaw=0),dict(id=2,x=10,y=0,z=0,yaw=0)])
+            w.close(); metrics=demo.metrics(demo.read(path))
+            self.assertEqual(metrics['bot_aim_error_deg'],90.0)
+            self.assertEqual(metrics['bot_brain_aim_error_deg'],0.0)
+            self.assertEqual(metrics['bot_aim_error_samples'],3)
+        finally: os.unlink(path)
+
     def test_roundtrip_and_metrics(self):
         fd, p = tempfile.mkstemp(suffix='.wbdemo'); os.close(fd)
         w = demo.Writer(p, {'map': 'test', 'hz': 20})

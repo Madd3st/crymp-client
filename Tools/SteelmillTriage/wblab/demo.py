@@ -195,9 +195,10 @@ def metrics(d):
             else: hi = m - 1
         return r
 
-    wander = {'human': [], 'bot': []}; aim_err = []
+    wander = {'human': [], 'bot': []}; aim_err = []; brain_aim_err = []
     prev = {}
     for t, rows in d['frames']:
+        frame_actors = {r[0]: r for r in rows}
         for r in rows:
             aid, x, y, z, yaw, pitch, stance, flags = r[0], r[1], r[2], r[3], r[4] / 100.0, r[5] / 100.0, r[6], r[7]
             alive = bool(flags & F_ALIVE)
@@ -207,9 +208,16 @@ def metrics(d):
                 if not (b and b['visible']):
                     rate = (abs(_wrap(yaw - p[1])) + abs(pitch - p[2])) / (t - p[0])
                     wander[kinds.get(aid, 'bot')].append(rate)
-                if b and any(b['aim']):
-                    want = _yaw_to(b['aim'][0] - x, b['aim'][1] - y)
-                    aim_err.append(abs(_wrap(want - yaw)))
+                if b and b['target']:
+                    # C040: old BRAIN stored the final look command, aligned by construction.
+                    # Target FRAME XY gives a true target bearing for both preserved baselines.
+                    target = frame_actors.get(b['target'])
+                    if target and target[7] & F_ALIVE:
+                        want = _yaw_to(target[1] - x, target[2] - y)
+                        aim_err.append(abs(_wrap(want - yaw)))
+                    if any(b['aim']):
+                        want = _yaw_to(b['aim'][0] - x, b['aim'][1] - y)
+                        brain_aim_err.append(abs(_wrap(want - yaw)))
             prev[aid] = (t, yaw, pitch, alive)
     # reaction: first visible-target brain sample → first shot by that bot at anyone after it
     shots = {}
@@ -268,6 +276,9 @@ def metrics(d):
         'aim_wander_deg_s': {k: med(v) for k, v in wander.items()},
         'aim_wander_samples': {k: len(v) for k, v in wander.items()},
         'bot_aim_error_deg': med(aim_err),
+        'bot_aim_error_samples': len(aim_err),
+        'bot_aim_error_reference': 'alive target FRAME XY; yaw only',
+        'bot_brain_aim_error_deg': med(brain_aim_err),
         'reaction_s': med(reactions), 'reactions': len(reactions),
         'decision_flips_per_bot_min': round(flips / (bot_seconds / 60.0), 2) if bot_seconds else None,
         'time_to_primary_s': med(ttp), 'primaries': len(ttp),
