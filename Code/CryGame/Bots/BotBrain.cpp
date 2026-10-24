@@ -9,6 +9,8 @@
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Bots/BotWeaponRank.h"
+#include "CryGame/Bots/BotNavMesh.h"
+#include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Actor.h"
@@ -101,14 +103,25 @@ void BotBrain::TravelGait(float distance)
 Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 {
 	const BotNav& nav = g_pGame->GetBotManager().Nav();
-	if (!nav.Ready()) return goal; // fallback: straight line + local avoidance
+	NavMeshCore* mesh = CurrentNavMesh(); // P0, wb_bot_navmesh: Detour corners instead of the sparse ray graph
+	if (!nav.Ready() && !mesh) return goal; // fallback: straight line + local avoidance
 	// Failed paths also respect the two-second retry deadline. An empty failed path is
 	// a cached result, not a reason to repeat A* at the 0.75-second global throttle.
 	if (((goal - m_pathGoal).GetLengthSquared() > 16.0f || m_now >= m_nextRepath) && m_now >= m_minRepath)
 	{
 		m_minRepath = m_now + 0.75f;
 		BotNav::PathTrace trace;
-		const bool found = nav.FindPath(feet, goal, m_path, &trace);
+		bool found = false;
+		if (mesh)
+		{
+			std::vector<float> xyz; const char* why = "navmesh";
+			const float a[3] = {feet.x, feet.y, feet.z}, b[3] = {goal.x, goal.y, goal.z};
+			found = mesh->FindPath(a, b, xyz, &why);
+			m_path.clear();
+			for (size_t i = 0; i + 2 < xyz.size(); i += 3) m_path.push_back(Vec3(xyz[i], xyz[i + 1], xyz[i + 2]));
+			trace.reason = why;
+		}
+		if (!found && nav.Ready()) found = nav.FindPath(feet, goal, m_path, &trace);
 		m_pathIndex = 0;
 		m_pathGoal = goal;
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
@@ -455,14 +468,17 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			Vec3 hotspot(0,0,0);
 			bool picked = false;
 			const bool safe = m_profile.style == BotStyle::Marksman || m_profile.style == BotStyle::Defender;
+			NavMeshCore* mesh = CurrentNavMesh();
+			const float from[3] = {feet.x, feet.y, feet.z};
+			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q); };
 			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot, &feet, actor.GetEntityId()) &&
-				(hotspot - feet).GetLengthSquared2D() > 64.0f)
+				(hotspot - feet).GetLengthSquared2D() > 64.0f && reachable(hotspot))
 			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; picked = true; }
 			else if (count && !m_detour)
 				for (int tries = 0; tries < count && !waypoint; ++tries, ++m_patrolStep)
 				{
 					IEntity* spawn = gEnv->pEntitySystem->GetEntity(rules->GetSpawnLocation(int((m_patrolStep * 7u + unsigned(m_number) * 3u) % unsigned(count))));
-					if (spawn && (spawn->GetWorldPos() - feet).GetLengthSquared2D() > 64.0f) waypoint = spawn;
+					if (spawn && (spawn->GetWorldPos() - feet).GetLengthSquared2D() > 64.0f && reachable(spawn->GetWorldPos())) waypoint = spawn;
 				}
 			if (picked) {}
 			else if (waypoint)

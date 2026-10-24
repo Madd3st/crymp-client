@@ -10,6 +10,8 @@
 #include "CryCommon/CryAction/IWeapon.h"
 #include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Bots/BotWeaponRank.h"
+#include "CryGame/Bots/BotNavMesh.h"
+#include "CryGame/Bots/BotNavMeshCore.h"
 
 namespace WarsBots
 {
@@ -87,6 +89,9 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
     const int from=nav.GoalFilterEnabled()?nav.NodeAt(origin):-1;
     unsigned rejected=0;int first=-1;EntityId firstItem=0;
     BotGoalProjection firstTrace;Vec3 firstGoal(0,0,0);
+	NavMeshCore* mesh = CurrentNavMesh();
+	const float meshFrom[3] = {origin.x, origin.y, origin.z};
+	int meshRejected = 0;
 	HeldWeapon held[8]; int heldCount = 0;
 	const bool ranked = BotConfig::Get().weaponRank == 1;
 	if (ranked) heldCount = Held(actor, held, 8);
@@ -106,6 +111,11 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 		IItem* item = Items()->GetItem(entity->GetId());
 		if (Suitable(item) && (!primaryOnly || IsPrimary(item)) && !item->GetOwnerId() && static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId()))
 		{
+            if (mesh) // P0: no walk path on the navmesh (roof/catwalk without stairs) -> do not even try
+            {
+                const Vec3 w=entity->GetWorldPos(); const float q[3]={w.x,w.y,w.z};
+                if (!mesh->Reachable(meshFrom,q)) { ++meshRejected; continue; }
+            }
             BotGoalProjection trace;
             if(nav.KnownUnreachable(from,entity->GetWorldPos(),trace)) {++rejected;if(first<0){first=trace.to;firstItem=entity->GetId();firstTrace=trace;firstGoal=entity->GetWorldPos();}continue;}
 			// Prefer a different class, but keep travel cost significant. Stable within a life.
@@ -122,6 +132,7 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 			if (score < best) { best = score; result = entity->GetId(); }
 		}
 	}
+    if(meshRejected) WB_LOG(2,"[WarsBots] GOAL SKIP navmesh kind=weapon actor=%u skipped=%d.",actor.GetEntityId(),meshRejected);
     if(rejected) WB_LOG(2,"[WarsBots] GOAL SKIP unreachable kind=weapon actor=%u id=%u fromScc=%d toScc=%d skipped=%u goal=(%.3f,%.3f,%.3f) toNode=%d toZ=%.3f candidates=%d reachableCandidates=%d",actor.GetEntityId(),firstItem,nav.Component(from),nav.Component(first),rejected,firstGoal.x,firstGoal.y,firstGoal.z,firstTrace.to,firstTrace.toZ,firstTrace.candidates,firstTrace.reachableCandidates);
 	return result;
 }

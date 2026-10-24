@@ -1241,7 +1241,18 @@ if(WARSBOTS_EXPERIMENTAL_SPAWNER)
         Code/CryGame/Bots/BotNav.cpp
         Code/CryGame/Bots/BotSuit.cpp
         Code/CryGame/Bots/BotWeapons.cpp
+        Code/CryGame/Bots/BotNavMesh.cpp
+        Code/CryGame/Bots/BotNavMeshCore.cpp
+        ThirdParty/recastnavigation/Detour/Source/DetourAlloc.cpp
+        ThirdParty/recastnavigation/Detour/Source/DetourAssert.cpp
+        ThirdParty/recastnavigation/Detour/Source/DetourCommon.cpp
+        ThirdParty/recastnavigation/Detour/Source/DetourNavMesh.cpp
+        ThirdParty/recastnavigation/Detour/Source/DetourNavMeshBuilder.cpp
+        ThirdParty/recastnavigation/Detour/Source/DetourNavMeshQuery.cpp
+        ThirdParty/recastnavigation/Detour/Source/DetourNode.cpp
     )
+    # recastnavigation v1.6.0 (MIT, ThirdParty/recastnavigation/License.txt): Detour runtime only, meshes baked offline.
+    target_include_directories(CryGame PRIVATE ThirdParty/recastnavigation/Detour/Include)
     target_compile_definitions(Base PUBLIC WARSBOTS_EXPERIMENTAL_SPAWNER)
 endif()
 
