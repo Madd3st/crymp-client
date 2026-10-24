@@ -222,6 +222,7 @@ def parse_fire_ttk(path, limit=1000):
             if life:
                 target=int(life[2]);finish(target,'lifecycle_boundary',now);targeted_fire.pop(target,None)
                 pending={k:v for k,v in pending.items() if k[0]!=target}
+                last_shot=OrderedDict((k,v) for k,v in last_shot.items() if k[0]!=str(target))
             if 'FIRE TRACE capped' in line:counts['runtime_trace_capped']+=1
             if 'FIRE SHOT ' in line:
                 v=dict(re.findall(r'(\w+)=([^\s]+)',line));projectile=int(v['projectile'])
@@ -245,10 +246,12 @@ def parse_fire_ttk(path, limit=1000):
                         delta=now-prev[0]
                         if 0<=delta<=max(1,180/rpm if rpm>0 else 1) and len(c['intervals'])<4096:
                             c['intervals'].append(delta)
-                        if 0<=clip<prev[1] and len(c['clip_decrements'])<4096:c['clip_decrements'].append(prev[1]-clip)
+                        if 0<=delta<=max(1,180/rpm if rpm>0 else 1) and 0<=clip<prev[1] and len(c['clip_decrements'])<4096:c['clip_decrements'].append(prev[1]-clip)
                     last_shot[key]=(now,clip)
                     if len(last_shot)>4096:last_shot.popitem(last=False)
-                else:counts['shot_callbacks_unknown_replica_state']+=1
+                else:
+                    counts['shot_callbacks_unknown_replica_state']+=1
+                    last_shot.pop((v['shooter'],v['weapon']),None)
                 if projectile:
                     launches[projectile]=(now,int(v['shooter']),int(v['weapon']))
                     if len(launches)>4096:launches.popitem(last=False);counts['launch_context_evictions']+=1

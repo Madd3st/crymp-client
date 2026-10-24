@@ -51,6 +51,14 @@ class FireTTK(unittest.TestCase):
   e=self.parse(text)['episodes'][0]
   self.assertEqual(e['first_observed_targeted_shot_seconds'],2)
   self.assertEqual(e['observed_targeted_fire_to_death_seconds'],.1)
+ def test_clip_context_breaks_on_lifecycle_gap_and_unknown(self):
+  def shot(t,clip,remote=0):
+   return f"{t:.2f} [WarsBots] FIRE SHOT shooter=1 target=20 projectile=99 weapon=10 class=FY71 rpm=640 clip={clip} remote={remote}.\n"
+  text=shot(1,17)+'1.05 [WarsBots] revive result EntityId=1 sameEntity=1 alive=1\n'+shot(1.1,7)
+  text+=shot(5,3)+shot(5.1,2,-1)+shot(5.2,1)
+  r=self.parse(text)
+  self.assertEqual(r['cadence']['FY71']['clip_decrement_values'],[])
+  self.assertIsNone(r['cadence']['FY71']['active_interval_min'])
  def test_old_logs_are_unavailable_and_cap(self):
   self.assertFalse(self.parse('0.10 [WarsBots] Hit after-Lua target=311 health=-1')['available'])
   text=hit(1,'before-Lua',1,100)+hit(1,'after-Lua',1,-5)
