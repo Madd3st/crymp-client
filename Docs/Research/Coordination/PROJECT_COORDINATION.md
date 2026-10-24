@@ -1,6 +1,6 @@
 # WarsBots coordination (maintained by Claude)
 
-Updated 2026-10-24 04:50 MSK. Source of truth for code is GitHub; this file records what
+Updated 2026-10-24 05:20 MSK. Source of truth for code is GitHub; this file records what
 was verified and by which kind of evidence: **src** = source reading, **unit** = offline
 tests, **server** = server logs, **client** = visual check in a real client.
 
@@ -8,7 +8,7 @@ tests, **server** = server logs, **client** = visual check in a real client.
 
 | Branch | SHA | Owner | State |
 | --- | --- | --- | --- |
-| `warsbots/feature/weapon-goals` | `0f338b12` | Codex | active; spectator + P1 regression report pushed 04:13 |
+| `warsbots/feature/weapon-goals` | `b8ddcd22` | Codex | active; trap watchdog (`b3ce761f`, opt-in), route reasons (`b53b3f87`), `wb_nav_export` wbnav/1 (`e4eb64ee`), full hotspot scan (`d4b0854c`, opt-in) |
 | frozen P0 build | `8f0abd5f` | Codex | 4 headless 120 s runs (6/15 bots): no crash, no duplicate shots, 1 round per shot |
 | spectator build | `a6ee9e9e` | Codex | BUILD PASS, C++ + 60 s headless QA PASS; live client scenario NOT run |
 | `warsbots/main` | `caf1a815` | integrator | far behind weapon-goals |
@@ -49,6 +49,17 @@ builds; the spawn-pin defect (Triage F1) is present in `8f0abd5f` too and predat
 | Movement pace | sprint 0–15% of moving time, Armor 72–100%, ~2.5 m/s; owner >4 m/s 41–54% vs bots 0–2% (same LOS channel) | server (`MOVEMENT_BASELINE.md`) |
 | Spawn 195 pin | grounded=0 in 100% of 1298 pinned samples; pockets grounded=1 | server (Triage + Codex owner-spectator6) |
 | Power Struggle | design only | docs |
+
+## Owner playtest Recovery6 (05:00) and first real graph — `../SteelmillTriage/PLAYTEST-2026-10-24-0458.md`
+
+* Spawn 195: human walks (client); bot body frozen 0.45 m above floor, server pos constant (server). Not geometry.
+* Graph (real export): two main SCCs (1714/1536) with no edge between, 51 sinks = 25 % of nodes,
+  13/36 spawns outside both; spawn 195, pits B/C are sinks; SMG 199 is on a no-entry island.
+  90 % of fallbacks are `no_route`, mostly sink/island start or goal (graph + server).
+* Watchdog: 3 self-kills / 7 episodes, levels 1–3 freed 1; pinned 2.8 % (was 4–7 %, different session).
+* Next for Codex: `../SteelmillTriage/CODEX_MESSAGE-2026-10-24-0515.md` (A body-state trace at 195,
+  B reachability before goals, C watchdog shortcut in sinks, D `wb_nav_explain`).
+  Triage accepts Codex's wbnav/1 export as is.
 
 ## Graph reader (2026-10-24)
 

@@ -51,14 +51,15 @@ verdict (improved / no change / regression, with numbers and evidence type: src 
 
 ## Open questions for the owner
 
-- Can a human spawned at (1247.5, 1319.75) walk? (geometry vs bot code)
+- Answered 05:11: a human walks at spawn 195 → bot-side defect (`PLAYTEST-2026-10-24-0458.md`).
 - Is a native self-kill acceptable as the last trap recovery in IA?
 - After `MOVE TRACE` exists: one 10-minute owner session on Steelmill with 6 bots for the baseline.
 
 ## Pending Claude tasks
 
 - Done 2026-10-24: Triage `navgraph.py` reads `warsbots/botnav-graph/1` (validator, fingerprint,
-  memory link, BotNav-exact offline A*). Waits for a real `wb_nav_export` file.
+  memory link, BotNav-exact offline A*). Real export arrived (Codex wbnav/1, converted losslessly); analysis in
+  `Docs/Research/SteelmillTriage/PLAYTEST-2026-10-24-0458.md`, message `CODEX_MESSAGE-2026-10-24-0515.md`.
 
 - After step 2 lands: before/after pace report with `steelmill_triage.py movement`.
 - After the owner's trace session: human baseline and concrete threshold targets.
