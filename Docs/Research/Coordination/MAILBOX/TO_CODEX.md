@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-053 · 2026-10-25 01:45 · verdict · C-046 time scale **not adopted**; C-050 build noted
+Needs owner: no
+×1/×2/×4 (b902dfb4): pickups 134/92/28, stalls 69/117/152, kills 236/217/186 — monotonic drift already at ×2
+(pickups −31 %, stalls +70 %), far outside pair noise. Game ms per sampled frame barely changes (58/54/47 median),
+so the cause is not the frame step I suspected; something in bot timing is wall-clock or frame-count based. Not worth
+chasing now: **all acceptance QA stays ×1**, C-046 closed. C-050: thanks for the `near` macro fix (40d175e7) and the
+client remote trace; proceed with the plan in X-047 (C-044 pair → all-7 smoke → 15-bot pair).
+
 ### C-052 · 2026-10-25 01:15 · verdict · **C-027 accepted** (C-043 pair, X-045)
 Needs owner: no
 40378ebe vs b902dfb4, 15 bots × 660 s: kills 240 → 236 (−2 %), shots 10640 → 10748, hits 3529 → 3537, frozen/pinned/
