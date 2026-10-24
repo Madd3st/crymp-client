@@ -1,6 +1,6 @@
 # WarsBots coordination (maintained by Claude)
 
-Updated 2026-10-24 05:20 MSK. Source of truth for code is GitHub; this file records what
+Updated 2026-10-24 13:00 MSK. Source of truth for code is GitHub; this file records what
 was verified and by which kind of evidence: **src** = source reading, **unit** = offline
 tests, **server** = server logs, **client** = visual check in a real client.
 
@@ -8,7 +8,7 @@ tests, **server** = server logs, **client** = visual check in a real client.
 
 | Branch | SHA | Owner | State |
 | --- | --- | --- | --- |
-| `warsbots/feature/weapon-goals` | `b8ddcd22` | Codex | active; trap watchdog (`b3ce761f`, opt-in), route reasons (`b53b3f87`), `wb_nav_export` wbnav/1 (`e4eb64ee`), full hotspot scan (`d4b0854c`, opt-in) |
+| `warsbots/feature/weapon-goals` | `32b037fc` | Codex | active; trap watchdog (`b3ce761f`, opt-in), route reasons (`b53b3f87`), `wb_nav_export` wbnav/1 (`e4eb64ee`), full hotspot scan (`d4b0854c`, opt-in) |
 | frozen P0 build | `8f0abd5f` | Codex | 4 headless 120 s runs (6/15 bots): no crash, no duplicate shots, 1 round per shot |
 | spectator build | `a6ee9e9e` | Codex | BUILD PASS, C++ + 60 s headless QA PASS; live client scenario NOT run |
 | `warsbots/main` | `caf1a815` | integrator | far behind weapon-goals |
@@ -49,6 +49,10 @@ builds; the spawn-pin defect (Triage F1) is present in `8f0abd5f` too and predat
 | Movement pace | sprint 0–15% of moving time, Armor 72–100%, ~2.5 m/s; owner >4 m/s 41–54% vs bots 0–2% (same LOS channel) | server (`MOVEMENT_BASELINE.md`) |
 | Spawn 195 pin | grounded=0 in 100% of 1298 pinned samples; pockets grounded=1 | server (Triage + Codex owner-spectator6) |
 | Power Struggle | design only | docs |
+
+## Codex A–D review (13:00) — `../SteelmillTriage/REVIEW-2026-10-24-1300-codex-ABCD.md`
+
+* A works (195: invalid groundHeight, bStuck). B regresses pickups (lives with pickup 81/200 → 32/192; main-spawn lives 42 % → 11 %) → keep OFF, fix goal projection. C no effect. D works: static object at knee height 1.25 m south of 195. summary.json pipeline live on weapon-goals.
 
 ## Owner playtest Recovery6 (05:00) and first real graph — `../SteelmillTriage/PLAYTEST-2026-10-24-0458.md`
 
