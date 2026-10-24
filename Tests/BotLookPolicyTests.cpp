@@ -61,6 +61,13 @@ int main()
 		BotLookPolicy p; LookInput in = Base(0); in.speed = 0.f; in.viewYaw = 123.f;
 		LookOutput o = p.Update(in); assert(o.reason == LookReason::Keep && Near(o.yaw, 123.f));
 	}
+	// 8. Path look-ahead: 3 m along an L-shaped path turns the corner.
+	{
+		LookVec pts[] = {{0, 2, 0}, {10, 2, 0}};
+		LookVec a = PathLookAhead({0, 0, 0}, pts, 2, 3.f);
+		assert(std::fabs(a.x - 1.f) < 1e-3f && std::fabs(a.y - 2.f) < 1e-3f);
+		LookVec e = PathLookAhead({0, 0, 0}, pts, 2, 50.f); assert(e.x == 10.f);
+	}
 	std::puts("BotLookPolicyTests OK");
 	return 0;
 }

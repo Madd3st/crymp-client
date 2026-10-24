@@ -134,4 +134,20 @@ private:
 	LookVec m_at;
 };
 
+// Point `ahead` metres further along a path polyline from `pos` (projected onto the nearest segment). BotNav/Detour
+// fill `pts` with the remaining corners (pts[0] = current corner); used to feed LookInput::corner.
+inline LookVec PathLookAhead(const LookVec& pos, const LookVec* pts, int n, float ahead = 3.f)
+{
+	if (n <= 0) return pos;
+	LookVec a = pos; float left = ahead;
+	for (int i = 0; i < n; ++i)
+	{
+		const LookVec& b = pts[i];
+		const float dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z, L = std::sqrt(dx * dx + dy * dy);
+		if (L >= left && L > 1e-4f) { const float f = left / L; return LookVec{a.x + dx * f, a.y + dy * f, a.z + dz * f}; }
+		left -= L; a = b;
+	}
+	return pts[n - 1];
+}
+
 } // namespace WarsBots
