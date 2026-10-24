@@ -130,6 +130,7 @@ private:
 	IGameFramework* m_framework = nullptr;
 	bool m_initialized = false;
 	bool m_levelReady = false;
+    mutable bool m_spawnExcludeLogged=false;
 	bool m_defaultVerbose = false;
 	int m_localTestEnabled = 0;
 	int m_cloakExperimental = 0;
