@@ -10,6 +10,9 @@ When the owner asks "статус", answer in this order: 1) who is doing what r
 
 ## Roles and rules
 
+- **D-012 (01:04, 25.10):** back to D-010 roles. D-011 (Claude writes sprint code) ended; claude-sprint ae798245 handed to Codex.
+
+
 - **D-010 (20:27):** Claude also writes engine-free logic modules (`Code/CryGame/Bots/Bot*.h` + `Tests/*Tests.cpp`,
   compiled offline with g++/clang) in worktree `/home/claude/claude-modules`, branch `warsbots/research/claude-modules`;
   Codex integrates. First module: `BotGoalArbiter.h` (C-032/C-035). Next: jump-link executor, perception cone/cloak,

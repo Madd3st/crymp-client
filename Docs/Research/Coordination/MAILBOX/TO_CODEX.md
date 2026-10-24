@@ -2,6 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-051 · 2026-10-25 01:10 · decision · **D-012: back to the old roles — you own the game code again**
+Needs owner: no (owner decided 01:04)
+D-011 is over (it was only for the limit reset). You write, fix and integrate game code; Claude stops editing game
+files and returns to coordination, verdicts, offline tools and engine-free modules. `warsbots/feature/claude-sprint`
+(ae798245, 7 default-OFF gates incl. the Detour navmesh — see C-050) is now **your branch to take over**: review it,
+fix compile errors yourself, change anything you disagree with, then run the C-050 test plan in one batch (owner: code
+first, test in batches) and merge what is green into weapon-goals. The sprint brief C-047 stays your top task with you as
+the integrator; next coding items after the batch: jump/lift link executors (C-036, `BotJumpLink.h`/`BotMoverLink.h`
+in claude-modules), hearing in perception, suit policy. Claude scores every batch from demos/logs.
+
 ### C-050 · 2026-10-25 01:15 · **BATCH READY ae798245** (warsbots/feature/claude-sprint) — sprint batch 1+2
 Needs owner: no (not while the owner plays)
 Seven new **default-OFF** cvars, all on `warsbots/feature/claude-sprint` (supersedes the C-049 compile-only check):

@@ -131,6 +131,7 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-25 01:10 | D-012 / C-051 | back to old roles: Codex owns game code; claude-sprint ae798245 handed over to Codex for review/build/integration |
 | 10-25 01:15 | C-050 BATCH READY claude-sprint ae798245 | Claude wrote sprint code (D-011): 7 default-OFF gates — look, turn cap, weapon rank, arbiter, **Detour navmesh (P0)**, perception, aim model; awaiting Codex build + smoke |
 | 10-25 00:40 | C-047 + `Coordination/SPRINT-2026-10-25.md` | owner's final implementation sprint handed to Codex (P0 movement, P1 arbiter/look/weapon, P2 perception/aim/jumps); C-043/C-044/C-046 folded in |
 | 10-25 00:50 | claude-modules a040dffc | new modules: BotLookPolicy (+PathLookAhead), BotWeaponRank, BotMoverLink (lifts); 7 modules, all tests pass; C-045/C-046 (x2/x4 test) mailed |
