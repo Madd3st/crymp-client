@@ -1,6 +1,6 @@
 # WarsBots coordination (maintained by Claude)
 
-Updated 2026-10-24 04:25 MSK. Source of truth for code is GitHub; this file records what
+Updated 2026-10-24 04:45 MSK. Source of truth for code is GitHub; this file records what
 was verified and by which kind of evidence: **src** = source reading, **unit** = offline
 tests, **server** = server logs, **client** = visual check in a real client.
 
@@ -15,7 +15,7 @@ tests, **server** = server logs, **client** = visual check in a real client.
 | `warsbots/research/crymp-native-audit` | `47ccfacf` | Claude | done; docs + Tools/CryMPResearch |
 | `warsbots/research/steelmill-lab` | `332a3c8b` | Claude (session 01WT…) | Steelmill AI Lab tools (viewer, mem/log/graph, ML validator); started in parallel, no findings doc yet |
 | `warsbots/research/steelmill-triage` | this branch | Claude (coordinator) | findings from real logs, export contract, triage detectors, this file |
-| `warsbots/research/fps-ai-planning` | planned | Claude | FPS AI research + engine-free planner prototype |
+| `warsbots/research/fps-ai-planning` | `995672b4` | Claude (coordinator) | FPS AI study, decision-layer prototype, A/B contract |
 
 Codex report: `Docs/Experiments/regression-spectator-2026-10-24.md`. Spectator reuses the
 native observer flow (`GetNextSpectatorTarget` → `GetMatchParticipants` on local IA, native F1,
@@ -45,6 +45,8 @@ builds; the spawn-pin defect (Triage F1) is present in `8f0abd5f` too and predat
 | Trap recovery | none after 1.5 s detours fail | server + src (Triage F2) |
 | Map memory | half ignored by hotspots, no decay | src + real .mem (Triage F4) |
 | ML dataset | not bandit-ready | server + src (Triage F5) |
+| Decision stability | 4,579 A→B→A state flips in 48 min, mostly CHASING↔MOVING_TO_WEAPON | server + src (FPSAILab G2) |
+| Movement pace | sprint 0–15% of moving time, Armor 72–100%, ~2.5 m/s | server (owner report confirmed) |
 | Power Struggle | design only | docs |
 
 ## Known risks
@@ -69,8 +71,13 @@ default ON only after a soak shows no regression:
 3. *Logging patch* per `NAV_EXPORT_CONTRACT.md` (reason on NAV fallback, actor on suit/jump).
 4. *`wb_nav_export`* per the contract. Unblocks the graph layer in both Lab and Triage tools and offline replay.
 5. *PickHotspot stride bug* (`i += 2`): iterate all nodes; measure frame cost (it is 10 Hz).
+6. *Upgrade-branch commitment* (G2) behind `wb_upgrade_commit`, A/B per
+   `Docs/Research/FPSAILab/TACTICAL_PLANNER_DESIGN.md` (branch fps-ai-planning).
+7. Movement pace: owner gave Codex a task (04:32). Proposed Claude task: human movement
+   baseline + target distributions, so thresholds are tuned against a human, not by eye.
 
-Deferred until 1–4 are in: stuck decay / edge-level penalties, roof links, any planner.
+Deferred until 1–4 are in: stuck decay / edge-level penalties, roof links, the decision layer
+(Stage 2 in TACTICAL_PLANNER_DESIGN). Full GOAP is not recommended: measured plans are 1–2 steps.
 
 ## Open questions for the owner
 
