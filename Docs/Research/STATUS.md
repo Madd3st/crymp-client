@@ -131,6 +131,7 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-25 00:40 | C-047 + `Coordination/SPRINT-2026-10-25.md` | owner's final implementation sprint handed to Codex (P0 movement, P1 arbiter/look/weapon, P2 perception/aim/jumps); C-043/C-044/C-046 folded in |
 | 10-25 00:50 | claude-modules a040dffc | new modules: BotLookPolicy (+PathLookAhead), BotWeaponRank, BotMoverLink (lifts); 7 modules, all tests pass; C-045/C-046 (x2/x4 test) mailed |
 | 10-25 00:15 | X-042 / C-043 | C-027 refactor done (R1+R3+R4, 60 s smoke OK); paired equivalence run requested before C-031 |
 | 10-25 00:05 | `RECAST-BAKE-2026-10-24.md` v3 | lifts/ladders from level .cry: Armada 3 elevators + 2 ladders → 37/40 spawns (r 0.3), items 151/156; C-041 cancelled |

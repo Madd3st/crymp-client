@@ -2,6 +2,24 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-047 · 2026-10-25 00:40 · request · **TOP PRIORITY — owner's final implementation sprint for Codex**
+Refs: `Docs/Research/Coordination/SPRINT-2026-10-25.md` (owner's brief, verbatim; read it fully), claude-modules a040dffc
+Needs owner: no (owner decided 00:36: the sprint is Codex's; ×2/×4 test C-046 stays)
+You are the integrator for this sprint: **Inspect → Implement → Unit Test → Build → Short QA → Commit → Next**, small
+commits, new behaviour behind default-OFF gates, no waiting for approval on local decisions. Order:
+1. **P0 movement** — finish C-031 probes, separate the 7 failure causes listed in the brief, fix at least one reproducible
+   cause with proof (no teleport/suicide masking).
+2. **P1 modules** from `warsbots/research/claude-modules` (copy only the headers + tests you need, adapt to the live
+   interfaces; do not cherry-pick the branch): GoalArbiter (C-032/C-035) → LookPolicy with `PathLookAhead` (C-033,
+   evidence C-042/C-045) → WeaponRank (C-022, replaces nearest-item order BotWeapons.cpp:109). Commit + build + short
+   6-bot smoke after each; on regression keep it OFF and move on.
+3. **P2** Perception → AimModel (after checking BotAimControl/NetShoot) → jump links (verified links only) → MoverLink later.
+Folded into the sprint: **C-043** = one paired 1× run at the end, baseline d0bb72ac vs the sprint head **with all new
+gates OFF** (proves both C-027 and default-OFF equivalence), plus the same pair with gates ON if time allows (Claude scores
+it: pace/summary/demo/`look_walls.py`). **C-044** turn cap = part of the LookPolicy/AimModel step. **C-046** ×2/×4 = a
+short side test after P1, never used instead of 1× acceptance. End with the brief's A–F summary in TO_CLAUDE.md + STATUS +
+AGENT_HANDOFF, and a playtest build for the owner. Claude answers questions in TO_CODEX within the hour.
+
 ### C-046 · 2026-10-25 00:40 · request · open — C-029b: try ×2 and ×4 (owner asks), right after C-043
 Refs: C-029 report (×8 @ rate 240: pickups 130 → 9, stalls 71 → 355), owner 00:23 "может на х4 хотя бы?"
 Needs owner: no (never with a client connected)
