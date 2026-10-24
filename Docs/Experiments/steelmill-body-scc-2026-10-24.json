@@ -1,0 +1,786 @@
+{
+  "source": "ca198a42",
+  "defaults": "All new runtime flags OFF; experimental build ON",
+  "tests": {
+    "BotPhysicsProbeTests": "PASS",
+    "BotReachabilityTests": "PASS",
+    "BotTrapWatchdogTests": "PASS",
+    "build": "MSVC x64 Release client/server PASS",
+    "default_off_rebuild": "not rerun"
+  },
+  "runs": [
+    {
+      "metadata": {
+        "physics_diagnostics_requested": 1,
+        "observed_seconds": 660.52,
+        "nav_exports": 0,
+        "hotspot_all_nodes_requested": 1,
+        "tag": "candidate-r1-n15",
+        "session": "body-soak-12eaec0f",
+        "progress_requested": -1,
+        "trap_recovery_requested": 1,
+        "fire_diagnostics": false,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 1,
+        "bots": 15,
+        "seconds": 660,
+        "source_sha": "12eaec0fa78cd99334c9ccb0167248a70c5f2117",
+        "server_sha256": "6EC5B3F6EDA1E525152DC22BDF52F4F5E2ED83C20B1B4DBF4AA094E1259BA51E",
+        "client_sha256": "F62FE82D84D4E7EE3629521ED934A5C1198F52B1C8C255AC79E512AFF95D929D",
+        "memory_sha256": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE",
+        "roster": [
+          {
+            "number": 1,
+            "style": "auto",
+            "skill": "beginner"
+          },
+          {
+            "number": 2,
+            "style": "auto",
+            "skill": "normal"
+          },
+          {
+            "number": 3,
+            "style": "auto",
+            "skill": "veteran"
+          },
+          {
+            "number": 4,
+            "style": "auto",
+            "skill": "elite"
+          },
+          {
+            "number": 5,
+            "style": "auto",
+            "skill": "beginner"
+          },
+          {
+            "number": 6,
+            "style": "auto",
+            "skill": "normal"
+          },
+          {
+            "number": 7,
+            "style": "auto",
+            "skill": "veteran"
+          },
+          {
+            "number": 8,
+            "style": "auto",
+            "skill": "elite"
+          },
+          {
+            "number": 9,
+            "style": "auto",
+            "skill": "beginner"
+          },
+          {
+            "number": 10,
+            "style": "auto",
+            "skill": "normal"
+          },
+          {
+            "number": 11,
+            "style": "auto",
+            "skill": "veteran"
+          },
+          {
+            "number": 12,
+            "style": "auto",
+            "skill": "elite"
+          },
+          {
+            "number": 13,
+            "style": "auto",
+            "skill": "beginner"
+          },
+          {
+            "number": 14,
+            "style": "auto",
+            "skill": "normal"
+          },
+          {
+            "number": 15,
+            "style": "auto",
+            "skill": "veteran"
+          }
+        ],
+        "log": "WarsBots-Tactics-body-soak-12eaec0f-candidate-r1-n15.bots.log",
+        "completed": true,
+        "kills": 228
+      },
+      "metrics": {
+        "blocked_percent": 1.76,
+        "pickups_acquired": 98,
+        "weapon_timeouts": 296,
+        "route_fallback_queries": 1904,
+        "median_reported_window_ms": 0.237,
+        "max_single_bot_update_ms": 20.76
+      },
+      "recovery_stages": {
+        "1": 12,
+        "2": 5,
+        "3": 2,
+        "4": 2
+      },
+      "goal_skip_queries": 0,
+      "pinned": {
+        "count": 3,
+        "bot_minutes": 1.8,
+        "live_percent": 1.3,
+        "clusters": [
+          {
+            "pos": [
+              1248.0,
+              1320.0,
+              137
+            ],
+            "events": 3,
+            "seconds": 106.8,
+            "states": {
+              "ATTACKING": 2,
+              "MOVING_TO_WEAPON": 1
+            }
+          }
+        ]
+      },
+      "traps": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "worst": []
+      },
+      "stalls": {
+        "count": 111,
+        "seconds": 772.6,
+        "per_bot_minute": 0.804,
+        "by_state": {
+          "MOVING_TO_WEAPON": 50,
+          "CHASING_ENEMY": 15,
+          "SEARCHING_ENEMY": 45,
+          "SEEKING_WEAPON": 1
+        },
+        "clusters": [
+          {
+            "pos": [
+              1194.0,
+              1290.0,
+              142
+            ],
+            "events": 28,
+            "seconds": 203.8,
+            "states": {
+              "SEARCHING_ENEMY": 28
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "events": 11,
+            "seconds": 62.6,
+            "states": {
+              "MOVING_TO_WEAPON": 9,
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "events": 6,
+            "seconds": 28.2,
+            "states": {
+              "MOVING_TO_WEAPON": 6
+            }
+          },
+          {
+            "pos": [
+              1248.0,
+              1320.0,
+              137
+            ],
+            "events": 5,
+            "seconds": 72.6,
+            "states": {
+              "MOVING_TO_WEAPON": 3,
+              "CHASING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              139
+            ],
+            "events": 5,
+            "seconds": 113.0,
+            "states": {
+              "MOVING_TO_WEAPON": 5
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1374.0,
+              135
+            ],
+            "events": 4,
+            "seconds": 16.1,
+            "states": {
+              "MOVING_TO_WEAPON": 4
+            }
+          },
+          {
+            "pos": [
+              1215.0,
+              1338.0,
+              140
+            ],
+            "events": 3,
+            "seconds": 12.1,
+            "states": {
+              "MOVING_TO_WEAPON": 3
+            }
+          },
+          {
+            "pos": [
+              1314.0,
+              1359.0,
+              146
+            ],
+            "events": 3,
+            "seconds": 20.2,
+            "states": {
+              "MOVING_TO_WEAPON": 2,
+              "CHASING_ENEMY": 1
+            }
+          },
+          {
+            "pos": [
+              1269.0,
+              1290.0,
+              142
+            ],
+            "events": 3,
+            "seconds": 12.1,
+            "states": {
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1329.0,
+              136
+            ],
+            "events": 2,
+            "seconds": 8.0,
+            "states": {
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1353.0,
+              1344.0,
+              147
+            ],
+            "events": 2,
+            "seconds": 12.1,
+            "states": {
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              143
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "CHASING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1290.0,
+              1365.0,
+              136
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2
+            }
+          },
+          {
+            "pos": [
+              1302.0,
+              1359.0,
+              146
+            ],
+            "events": 2,
+            "seconds": 12.0,
+            "states": {
+              "CHASING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              143
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "CHASING_ENEMY": 1,
+              "SEARCHING_ENEMY": 1
+            }
+          }
+        ]
+      },
+      "diagnostics": []
+    },
+    {
+      "metadata": {
+        "reachable_goals_requested": 1,
+        "sink_escape_requested": 1,
+        "explain_nodes": [
+          2733,
+          2873
+        ],
+        "physics_diagnostics_requested": 1,
+        "observed_seconds": 660.01,
+        "nav_exports": 2,
+        "hotspot_all_nodes_requested": 1,
+        "tag": "candidate-r1-n15",
+        "session": "scc-soak-ca198a42",
+        "progress_requested": -1,
+        "trap_recovery_requested": 1,
+        "fire_diagnostics": false,
+        "style_mode": "auto",
+        "skill_rotation_step": 1,
+        "variant": "candidate",
+        "repeat": 1,
+        "bots": 15,
+        "seconds": 660,
+        "source_sha": "ca198a42fe653936470ec76ca22ed6181c0e703e",
+        "server_sha256": "708938F0256F586CDF933A653A19E4C7BDE99016476C374F2871A7F6345F299D",
+        "client_sha256": "F0B19C40FE03F5BB3F678059149DCE1FFB12B6B19A111FDBBD640495C9392C5D",
+        "memory_sha256": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE",
+        "roster": [
+          {
+            "style": "auto",
+            "number": 1,
+            "skill": "beginner"
+          },
+          {
+            "style": "auto",
+            "number": 2,
+            "skill": "normal"
+          },
+          {
+            "style": "auto",
+            "number": 3,
+            "skill": "veteran"
+          },
+          {
+            "style": "auto",
+            "number": 4,
+            "skill": "elite"
+          },
+          {
+            "style": "auto",
+            "number": 5,
+            "skill": "beginner"
+          },
+          {
+            "style": "auto",
+            "number": 6,
+            "skill": "normal"
+          },
+          {
+            "style": "auto",
+            "number": 7,
+            "skill": "veteran"
+          },
+          {
+            "style": "auto",
+            "number": 8,
+            "skill": "elite"
+          },
+          {
+            "style": "auto",
+            "number": 9,
+            "skill": "beginner"
+          },
+          {
+            "style": "auto",
+            "number": 10,
+            "skill": "normal"
+          },
+          {
+            "style": "auto",
+            "number": 11,
+            "skill": "veteran"
+          },
+          {
+            "style": "auto",
+            "number": 12,
+            "skill": "elite"
+          },
+          {
+            "style": "auto",
+            "number": 13,
+            "skill": "beginner"
+          },
+          {
+            "style": "auto",
+            "number": 14,
+            "skill": "normal"
+          },
+          {
+            "style": "auto",
+            "number": 15,
+            "skill": "veteran"
+          }
+        ],
+        "log": "WarsBots-Tactics-scc-soak-ca198a42-candidate-r1-n15.bots.log",
+        "completed": true,
+        "kills": 216
+      },
+      "metrics": {
+        "blocked_percent": 2.22,
+        "pickups_acquired": 42,
+        "weapon_timeouts": 276,
+        "route_fallback_queries": 1510,
+        "median_reported_window_ms": 0.231,
+        "max_single_bot_update_ms": 3.04
+      },
+      "recovery_stages": {
+        "1": 14,
+        "2": 10,
+        "3": 5,
+        "4": 5
+      },
+      "goal_skip_queries": 850,
+      "pinned": {
+        "count": 5,
+        "bot_minutes": 3.2,
+        "live_percent": 2.3,
+        "clusters": [
+          {
+            "pos": [
+              1248.0,
+              1320.0,
+              137
+            ],
+            "events": 5,
+            "seconds": 189.8,
+            "states": {
+              "MOVING_TO_WEAPON": 2,
+              "ATTACKING": 2,
+              "CHASING_ENEMY": 1
+            }
+          }
+        ]
+      },
+      "traps": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "worst": []
+      },
+      "stalls": {
+        "count": 142,
+        "seconds": 920.6,
+        "per_bot_minute": 1.015,
+        "by_state": {
+          "MOVING_TO_WEAPON": 32,
+          "SEARCHING_ENEMY": 85,
+          "CHASING_ENEMY": 25
+        },
+        "clusters": [
+          {
+            "pos": [
+              1194.0,
+              1290.0,
+              142
+            ],
+            "events": 20,
+            "seconds": 90.8,
+            "states": {
+              "SEARCHING_ENEMY": 20
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1365.0,
+              136
+            ],
+            "events": 11,
+            "seconds": 84.8,
+            "states": {
+              "SEARCHING_ENEMY": 11
+            }
+          },
+          {
+            "pos": [
+              1341.0,
+              1347.0,
+              152
+            ],
+            "events": 8,
+            "seconds": 68.6,
+            "states": {
+              "SEARCHING_ENEMY": 8
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1344.0,
+              136
+            ],
+            "events": 5,
+            "seconds": 30.3,
+            "states": {
+              "MOVING_TO_WEAPON": 3,
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1248.0,
+              1320.0,
+              137
+            ],
+            "events": 5,
+            "seconds": 104.9,
+            "states": {
+              "MOVING_TO_WEAPON": 4,
+              "CHASING_ENEMY": 1
+            }
+          },
+          {
+            "pos": [
+              1290.0,
+              1365.0,
+              136
+            ],
+            "events": 4,
+            "seconds": 20.2,
+            "states": {
+              "MOVING_TO_WEAPON": 1,
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "events": 4,
+            "seconds": 16.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2,
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1194.0,
+              1296.0,
+              136
+            ],
+            "events": 4,
+            "seconds": 20.2,
+            "states": {
+              "SEARCHING_ENEMY": 4
+            }
+          },
+          {
+            "pos": [
+              1269.0,
+              1365.0,
+              136
+            ],
+            "events": 4,
+            "seconds": 24.2,
+            "states": {
+              "SEARCHING_ENEMY": 4
+            }
+          },
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "events": 3,
+            "seconds": 12.1,
+            "states": {
+              "MOVING_TO_WEAPON": 3
+            }
+          },
+          {
+            "pos": [
+              1353.0,
+              1335.0,
+              147
+            ],
+            "events": 3,
+            "seconds": 16.2,
+            "states": {
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1335.0,
+              1332.0,
+              151
+            ],
+            "events": 3,
+            "seconds": 14.1,
+            "states": {
+              "CHASING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1314.0,
+              1305.0,
+              143
+            ],
+            "events": 3,
+            "seconds": 26.2,
+            "states": {
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1299.0,
+              1371.0,
+              139
+            ],
+            "events": 2,
+            "seconds": 12.1,
+            "states": {
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1353.0,
+              1332.0,
+              147
+            ],
+            "events": 2,
+            "seconds": 12.1,
+            "states": {
+              "CHASING_ENEMY": 2
+            }
+          }
+        ]
+      },
+      "diagnostics": [
+        "4.50 [WarsBots] NAV SCC ready=1 components=506 largest=1714 second=1536 ms=2.530",
+        "15.09 [WarsBots] NAV explain from=2733 to=2873 candidate=1 storedEdge=0 allowed=0 test=rise sample=0.000 value=2.174 hit=(0.000,0.000,0.000) entity=0 name=none class=static_or_terrain surface=-1 part=-1",
+        "15.09 [WarsBots] NAV explain from=2873 to=2733 candidate=1 storedEdge=1 allowed=1 test=ok sample=0.000 value=0.000 hit=(0.000,0.000,0.000) entity=0 name=none class=static_or_terrain surface=-1 part=-1"
+      ]
+    }
+  ],
+  "ray_smoke": {
+    "reachable_goals_requested": 1,
+    "sink_escape_requested": 1,
+    "explain_nodes": [
+      2871,
+      2874
+    ],
+    "physics_diagnostics_requested": 1,
+    "observed_seconds": 57.8,
+    "nav_exports": 0,
+    "hotspot_all_nodes_requested": 1,
+    "tag": "candidate-r1-n6",
+    "session": "explain-ray-ca198a42",
+    "progress_requested": -1,
+    "trap_recovery_requested": 1,
+    "fire_diagnostics": false,
+    "style_mode": "auto",
+    "skill_rotation_step": 1,
+    "variant": "candidate",
+    "repeat": 1,
+    "bots": 6,
+    "seconds": 60,
+    "source_sha": "ca198a42fe653936470ec76ca22ed6181c0e703e",
+    "server_sha256": "708938F0256F586CDF933A653A19E4C7BDE99016476C374F2871A7F6345F299D",
+    "client_sha256": "F0B19C40FE03F5BB3F678059149DCE1FFB12B6B19A111FDBBD640495C9392C5D",
+    "memory_sha256": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE",
+    "roster": [
+      {
+        "style": "auto",
+        "number": 1,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 2,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 3,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 4,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 5,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 6,
+        "skill": "normal"
+      }
+    ],
+    "log": "WarsBots-Tactics-explain-ray-ca198a42-candidate-r1-n6.bots.log",
+    "completed": true,
+    "kills": 1
+  },
+  "ray_lines": [
+    "15.07 [WarsBots] NAV explain from=2871 to=2874 candidate=1 storedEdge=0 allowed=0 test=clearance sample=0.500 value=0.147 hit=(1245.897,1318.500,136.609) entity=0 name=none class=static_or_terrain surface=140 part=0",
+    "15.07 [WarsBots] NAV explain from=2874 to=2871 candidate=1 storedEdge=0 allowed=0 test=clearance sample=0.500 value=0.619 hit=(1248.132,1318.500,136.576) entity=0 name=none class=static_or_terrain surface=140 part=0"
+  ],
+  "graph": {
+    "schema": "wbnav/1",
+    "nodes": 7633,
+    "edges": 41618,
+    "same_as_d4b0854c": true,
+    "nodes_edges_sha256": "37d36e25ecb0ebb1aaf5146abfe33a6b8eac7ee236e450263081f6f29803b38b"
+  },
+  "matched_build": {
+    "sha": "ca198a42fe653936470ec76ca22ed6181c0e703e",
+    "config": "MSVC x64 Release experimental ON; physics/reachability/sink runtime defaults OFF",
+    "client": "F0B19C40FE03F5BB3F678059149DCE1FFB12B6B19A111FDBBD640495C9392C5D",
+    "server": "708938F0256F586CDF933A653A19E4C7BDE99016476C374F2871A7F6345F299D"
+  }
+}

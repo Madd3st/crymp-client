@@ -1,5 +1,21 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
+## Current: native body diagnostics and gated SCC experiments
+
+Latest built game source **ca198a42**, MSVC x64 Release experimental client/server PASS.
+A baseline15bots660.52s and B/C/D15bots660.01s soak PASS for stability; focused6bots60s
+native ray explain smoke PASS. Pure physics schedule/SCC/watchdog tests PASS.
+**Behavioral promotion withheld:** pickups98->42, stalls111->142 despite fewer
+fallbacks1904->1510 (one RNG-unfixed run/source). New flags remain default OFF.
+Spawn195 native revive defect confirmed, not fixed; no teleports or speed changes.
+wbnav/1 and native graph arrays unchanged. QA stopped; memory restored01F4C7F4...668AE.
+Matched artifacts `build/play-ca198a42/`; installed EXEs untouched; no GUI launched.
+[Report, commands and next isolation test](Experiments/steelmill-body-scc-2026-10-24.md),
+[metrics/hashes](Experiments/steelmill-body-scc-2026-10-24.json).
+Next: isolate weapon vs hotspot filtering/C, investigate native revive contact,
+then human FP/TP check. Do not promote B/C or change speed from these results.
+Research21c4e075 read without merging. Owner recovery6 impressions still pending.
+
 ## Current: recovery and full-hotspot soak passed
 
 Latest built game source **d4b0854c**, MSVC x64 Release experimental client+server PASS.
