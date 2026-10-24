@@ -277,6 +277,13 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		ExecuteIntent(actor,decisionTime); return;
 	}
 	m_testGait=-1;
+    ICVar* qaWeapon=gEnv->pConsole->GetCVar("wb_qa_socom_only");
+    const bool socomQA=qaWeapon && qaWeapon->GetIVal()==1 && bot.CanRunLocalIA();
+    if (socomQA && (!actor.GetCurrentItem() ||
+        strcmp(actor.GetCurrentItem()->GetEntity()->GetClass()->GetName(),"SOCOM") ||
+        !BotWeapons::Current(actor) || !BotWeapons::HasAmmunition(actor,*BotWeapons::Current(actor)))) {
+        m_combat.StopFire();m_intent.move=false;ExecuteIntent(actor,decisionTime);return;
+    }
 	if (!BotWeapons::SelectAvailable(actor))
 	{
 		m_combat.StopFire();
@@ -317,7 +324,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	IActor* enemy = m_combat.FindEnemy(actor, m_now, m_verbose);
 	if (m_now<m_escapeUntil) enemy=nullptr; // A short, sensed-but-not-pursued local escape leg.
 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
-	if ((!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))
+	if (!socomQA && (!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))
 	{
 		if (m_now >= m_nextUpgradeSearch && !m_upgradeTarget)
 		{

@@ -16,6 +16,9 @@
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "CryGame/Bots/BotManager.h"
+#endif
 
 /*
 #define CHECK_OWNER_REQUEST()	\
@@ -204,6 +207,14 @@ void CWeapon::NetZoom(float fov)
 void CWeapon::RequestShoot(IEntityClass* pAmmoType, const Vec3 &pos, const Vec3 &dir, const Vec3 &vel, const Vec3 &hit, float extra, int predictionHandle, uint16 seq, uint8 seqr, bool forceExtended)
 {
 	CActor* pOwner = GetOwnerActor();
+    bool ownedServerBot=false;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    ownedServerBot=gEnv->bServer && pOwner && pOwner->GetChannelId()==0 &&
+        g_pGame->GetBotManager().Owns(pOwner->GetEntityId());
+#endif
+    // Shoot() already spawned the authoritative projectile and consumed ammo.
+    // Broadcast its replica, but do not NetShoot it again on the owning server:
+    // that also consumes ammo and clears the native next-shot timer.
 
 	if ((!pOwner || pOwner->IsClient()) && IsClient())
 	{
@@ -225,12 +236,12 @@ void CWeapon::RequestShoot(IEntityClass* pAmmoType, const Vec3 &pos, const Vec3 
 		if (IsServerSpawn(pAmmoType) || forceExtended)
 		{
 			GetGameObject()->InvokeRMI(CWeapon::ClShoot(), ClShootParams(pos+dir*5.0f, predictionHandle), eRMI_ToAllClients);
-			NetShootEx(pos, dir, vel, hit, extra, predictionHandle);
+			if (!ownedServerBot) NetShootEx(pos, dir, vel, hit, extra, predictionHandle);
 		}
 		else
 		{
 			GetGameObject()->InvokeRMI(CWeapon::ClShoot(), ClShootParams(hit, predictionHandle), eRMI_ToAllClients);
-			NetShoot(hit, predictionHandle);
+			if (!ownedServerBot) NetShoot(hit, predictionHandle);
 		}
 	}
 }

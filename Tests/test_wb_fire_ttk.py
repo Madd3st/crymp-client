@@ -22,10 +22,18 @@ class FireTTK(unittest.TestCase):
   self.assertEqual(e['first_impact_projectile_launch_seconds'],.5)
  def test_revive_censor_and_missing_before(self):
   text=hit(1,'before-Lua',1,100)+hit(1,'after-Lua',1,60)
+  text+=hit(1.5,'before-Lua',1,60)
   text+='2.00 [WarsBots] revive result EntityId=20 sameEntity=1 alive=1\n'
   text+=hit(3,'after-Lua',1,0)
   r=self.parse(text);self.assertEqual(r['episodes'][0]['outcome'],'lifecycle_boundary')
   self.assertIsNone(r['episodes'][0]['impact_to_death_seconds']);self.assertEqual(r['counters']['unmatched_after'],1)
+ def test_invulnerability_and_replica_shots(self):
+  text='0.50 [WarsBots] FIRE SHOT shooter=1 target=20 projectile=99 weapon=10 class=SOCOM remote=1.\n'
+  text+=hit(1,'before-Lua',1,100).replace('actor=1','invulnerable=1 actor=1')+hit(1,'after-Lua',1,100)
+  text+=hit(2,'before-Lua',1,100)+hit(2,'after-Lua',1,0)
+  r=self.parse(text);self.assertEqual(r['counters']['replica_shot_events'],1)
+  self.assertEqual(r['counters']['invulnerable_impacts_excluded'],1)
+  self.assertEqual(r['episodes'][0]['first_impact_seconds'],2)
  def test_old_logs_are_unavailable_and_cap(self):
   self.assertFalse(self.parse('0.10 [WarsBots] Hit after-Lua target=311 health=-1')['available'])
   text=hit(1,'before-Lua',1,100)+hit(1,'after-Lua',1,-5)

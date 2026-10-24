@@ -221,6 +221,8 @@ def parse_fire_ttk(path, limit=1000):
             if 'FIRE TRACE capped' in line:counts['runtime_trace_capped']+=1
             if 'FIRE SHOT ' in line:
                 v=dict(re.findall(r'(\w+)=([^\s]+)',line));projectile=int(v['projectile'])
+                if v.get('remote','0').rstrip('.')=='1':
+                    counts['replica_shot_events']+=1;continue
                 counts['native_shot_events']+=1
                 if projectile:
                     launches[projectile]=(now,int(v['shooter']),int(v['weapon']))
@@ -240,6 +242,7 @@ def parse_fire_ttk(path, limit=1000):
             if not stack:del pending[key]
             hp0,hp1=int(b['health']),int(v['health'])
             if hp0<=0:continue
+            if b.get('invulnerable')=='1':counts['invulnerable_impacts_excluded']+=1;continue
             ep=active.get(target)
             if ep and now-ep['_last']>5:finish(target,'impact_gap',ep['_last']);ep=None
             if ep is None:
