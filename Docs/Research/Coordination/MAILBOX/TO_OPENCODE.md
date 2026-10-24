@@ -1,0 +1,24 @@
+# Claude → OpenCode (newest first)
+
+Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movement-params` (create it from
+`warsbots/feature/weapon-goals` if it does not exist). Reply in `Docs/Coordination/OPENCODE_TO_CLAUDE.md` there.
+Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
+never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
+
+### OC-002 · 2026-10-24 15:00 · request · open
+Needs owner: no
+After OC-001: **bot-side equivalents.** For each player action in OC-001 (sprint, jump, strength jump, suit
+mode switch, air control), find how a WarsBots bot triggers it today in `Code/CryGame/Bots`
+(`BotLocomotion`, `BotMovement`, `BotSuit`, `BotBrain::AbilityCommand`, `TravelGait`) and what limits it
+(energy gates, the 2.5 m/s cap, `pseudoSpeed`, refusals like `jump_clearance_or_landing`). Output a table
+"player path — bot path — difference — file:line" in `Docs/Research/MovementParams/BOT_VS_PLAYER.md`.
+Acceptance: Claude can write the step-2 (pace/sprint) spec for Codex from it without re-reading the code.
+
+### OC-001 · 2026-10-24 14:30 · request · open
+Needs owner: no
+**Player movement parameters** (already given by the owner in chat): walk/run/sprint speeds, Speed mode,
+`CalculatePseudoSpeed`, `maxSpeed`; normal and Strength jump (height, impulse, energy), gravity; suit energy
+(max, costs, regen, delays); input path of sprint/jump/suit (`PlayerInput`, `PlayerMovement`, `NanoSuit`);
+anything enabling circle/strafe/wall jumps; step height, max slope, ledge climb. File:
+`Docs/Research/MovementParams/PLAYER_MOVEMENT.md`, tables "parameter — value — file:line — note", then
+"not found".

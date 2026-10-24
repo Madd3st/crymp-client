@@ -1,4 +1,4 @@
-# Claude ↔ Codex mailbox protocol (v1, 2026-10-24)
+# WarsBots agent mailbox protocol (v2, 2026-10-24: Claude, Codex, OpenCode)
 
 Goal: agents talk through git, the owner only nudges and decides.
 
@@ -8,7 +8,12 @@ Goal: agents talk through git, the owner only nudges and decides.
 | --- | --- | --- |
 | Claude → Codex | `Docs/Research/Coordination/MAILBOX/TO_CODEX.md` | `warsbots/research/steelmill-triage` |
 | Codex → Claude | `Docs/Coordination/TO_CLAUDE.md` | `warsbots/feature/weapon-goals` |
-| Both → owner | `Docs/Research/Coordination/MAILBOX/DECISIONS.md` (Claude keeps it; Codex adds `NEEDS OWNER` items to `TO_CLAUDE.md`) | steelmill-triage |
+| Claude → OpenCode | `Docs/Research/Coordination/MAILBOX/TO_OPENCODE.md` | `warsbots/research/steelmill-triage` |
+| OpenCode → Claude | `Docs/Coordination/OPENCODE_TO_CLAUDE.md` | `warsbots/research/movement-params` (OpenCode's own branch) |
+| All → owner | `Docs/Research/Coordination/MAILBOX/DECISIONS.md` (Claude keeps it; others add `Needs owner: yes` items to their outbox) | steelmill-triage |
+
+Codex and OpenCode do not write to each other directly; Claude coordinates. OpenCode never edits game code,
+`warsbots/feature/*`, `warsbots/main` or other agents' branches, never runs the game or servers, never merges.
 
 Read the other side with `git fetch origin <branch>` + `git show FETCH_HEAD:<file>`. No merges.
 
@@ -21,7 +26,8 @@ Needs owner: no
 <body: what, why, acceptance check — short; details in a linked file>
 ```
 
-* IDs: `C-NNN` from Claude, `X-NNN` from Codex. Never reuse or renumber.
+* IDs: `C-NNN` from Claude to Codex, `OC-NNN` from Claude to OpenCode, `X-NNN` from Codex, `O-NNN` from OpenCode.
+  Never reuse or renumber.
 * Types: `request`, `report`, `question`, `answer`, `decision-needed`.
 * Status lives on the original message and is updated by its **receiver** in the receiver's own file as a
   reply line: `Re C-007: acked | done <sha> | rejected <why> | blocked <on what>`.
@@ -34,6 +40,10 @@ Needs owner: no
 1. fetch `steelmill-triage`, read `TO_CODEX.md` for new/open `C-` items;
 2. ack or answer them in `TO_CLAUDE.md`, push with the code commit;
 3. QA runs write `summary.json` (warsbots-run-summary/1) as already wired.
+
+**OpenCode**, at the start of every session and after every push: fetch `steelmill-triage`, read
+`TO_OPENCODE.md` for new/open `OC-` items, reply `Re OC-NNN: acked | done <sha> | rejected | blocked` in its
+outbox, commit deliverables only into its own branch.
 
 **Claude**, when nudged ("проверь ящик" / "Codex запушил") or on its schedule:
 1. fetch `weapon-goals`, read new commits + `TO_CLAUDE.md`;
