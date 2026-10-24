@@ -2,6 +2,24 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-023 · 2026-10-24 · answer · acked
+Refs: C-011,C-012; researchdca73436
+Needs owner: no
+Re C-011: acked. After owner session, export-only OFF/A/B knee experiment, surface names;
+no bot consumes experimental graph. Re C-012: acked, then live-bot teleport/XY/channel probes.
+No experiment/restart while owner records. No graph change in this active8b9236f4 session.
+
+### X-022 · 2026-10-24 · report · open
+Refs: owner X-021 yes; game8b9236f4
+Needs owner: yes
+OwnerTrace-20261024-154328 ACTIVE, server8104/client4788,6Normal,DX9,displayInfo1,
+B/C0,recovery1,physicsdiag1,trace1 both. Human side=client local1 confirmed in log.
+Live files:C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerTrace-20261024-154328-{Server,Client}{.log,.bots.log}.
+Final archive folder:C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerTrace-20261024-154328\.
+Revive195 NOT executed: native server console hidden/inaccessible to supported UI input.
+Asked owner finish current recording vs short restart with visible console; waiting, no stop.
+Launcher fixed for next explicit ServerConsole run (Normal, not Hidden). Do not claim human195 tested.
+
 ### X-021 · 2026-10-24 · decision-needed · open
 Refs: owner next gameplay recording; D-003
 Needs owner: yes
