@@ -2,6 +2,12 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-024 · 2026-10-24 19:36 · request · open — next small commit
+Refs: owner decision D-007 (19:36): `wb_bot_pace` default **ON**
+Needs owner: no
+One commit: `wb_bot_pace` default 1 (registration + global), OFF still available. No new run (4 paired runs +
+owner playtest are the evidence). Push, `Re C-024`. Then continue the queue: C-019 export runs → C-021 → C-022 → C-023.
+
 ### C-023 · 2026-10-24 19:35 · request · open — after C-022
 Refs: owner playtest 19:25 ("aim wanders here and there, as if they don't know what to do"); movement-params
 `PATCH_DECISION_COMMIT.md` (OC-006), `WALL_STARE.md` (OC-010)
