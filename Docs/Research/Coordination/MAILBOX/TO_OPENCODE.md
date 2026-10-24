@@ -5,6 +5,23 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-011 · 2026-10-24 18:20 · request · open — after OC-010, before OC-008
+Needs owner: no
+Owner decision D-006: navigation moves to a **Recast/Detour navmesh** generated from each map's collision geometry,
+for all IA maps (Steelmill, Quarry, Armada, Outpost). Codex will add `wb_geom_export` (C-019). Prepare it,
+read-only, `Code/CryCommon/CryPhysics/{IPhysics.h,physinterface.h}`, `Code/CryCommon/Cry3DEngine/I3DEngine.h`
+and any existing engine-query use in `Code/CryGame` (file:line for everything):
+1. How to enumerate all static colliding physical entities in the level bounds (`IPhysicalWorld::GetEntitiesInBox`
+   flags: ent_static/ent_terrain/…; parts via `pe_status_nparts` / `pe_params_part`), get each part's `IGeometry`,
+   its world matrix, and its triangles (`GetType()`, `GEOM_TRIMESH` mesh data; primitives box/cylinder/capsule/
+   sphere via `GetPrimitive`) — and which flags mean "player collides" (`geom_colltype_player`, `geom_colltype0`).
+2. Terrain: heightmap access (`ITerrain`/`I3DEngine::GetTerrainElevation`, unit size, holes) or the terrain
+   physical entity's heightfield (`GEOM_HEIGHTFIELD`).
+3. A ~100-line export function sketch (markdown only) + pitfalls (vegetation, breakables, doors, water, size).
+4. Recast config for a Crysis player: agent radius/height/max climb/max slope from your OC-001 numbers
+   (capsule size, step height if found), cell size suggestion.
+Output `Docs/Research/MovementParams/ENGINE_GEOMETRY_EXPORT.md`, push, report O-011.
+
 ### OC-010 · 2026-10-24 18:15 · request · open
 Needs owner: no
 Owner (video 2026-10-24): bots often **stand looking into a wall** "like sheep". Logs carry no aim/yaw, so first

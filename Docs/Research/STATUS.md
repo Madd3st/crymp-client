@@ -1,4 +1,4 @@
-# WarsBots research status (Steelmill) — 2026-10-24 18:10 MSK
+# WarsBots research status — 2026-10-24 18:20 MSK
 
 One page, current truth. Evidence: **src** source · **unit** tests · **server** server logs · **client** owner in
 the client / video · **graph** real BotNav export analysed offline. History lives in git and the journal below.
@@ -30,17 +30,28 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 - Budget rule: Codex = code + runs only; research/review goes to OpenCode/Claude. Wake-up scheduler not enabled
   (each wake burns Codex limit).
 
-## Open, in order
+## Open, in order (D-006, 18:19: all maps, navmesh)
 
-1. ~~Spawn 195 workaround~~ — PASS (C-014/C-017), root cause parked.
-   Rule: >2 h of diagnosis without a fix → workaround + parked ticket.
-2. **Edge audit** — which `Walkable` test cuts flat pairs; 40 candidates (C-006).
-3. **MOVE TRACE** — exact jump heights, sprint/suit timing for the owner and bots.
-4. **Pace / sprint** (C-013, owner's priority right after C-014) — targets from the owner trace.
-5. **Graph repair** — railings/stairs false cuts → drop links → gated strength-jump links. Then re-test B.
-6. **Wall staring** (owner video: bots look into walls) — OC-010 code audit → MOVE TRACE aimYaw/wallDist → fix.
-7. Decision stability (CHASING↔MOVING_TO_WEAPON), later decision layer, cover, circle/wall jumps, Power Struggle.
-8. Bot-code refactor after step 1 closes — audit in `Docs/Research/SteelmillTriage/REFACTOR_AUDIT.md`.
+Goal: bots play correctly on **every IA map** (Steelmill, Quarry, Armada, Outpost; PS later). Map-specific fixes
+only as data (e.g. a bad-spawn list), never code. Acceptance on ≥ 2 maps from now on.
+
+1. ~~Spawn 195 workaround~~ — PASS (C-014/C-017). Generic revive guard stays; the 195 exclusion is Steelmill data.
+2. **Pace / sprint** (C-013 → C-018, Codex now) — targets from the owner trace; map-independent.
+3. **Navmesh (D-006)**: `wb_geom_export` on 4 IA maps (C-019, prep OC-011) → Claude builds Recast navmesh offline
+   → compare with BotNav graph (traps, spawns outside the main part, owner route reproducibility, no_route) →
+   if it wins, bots switch to Detour paths; owner strength-jump/ledge routes from MOVE TRACE added as off-mesh links.
+   Graph repair (C-006/C-011), filter B, sink escape C, most trap-watchdog levels → parked, removed in refactor.
+4. **Wall staring** (owner video) — OC-010 audit → MOVE TRACE aimYaw/wallDist → fix.
+5. Decision stability (CHASING↔MOVING_TO_WEAPON) — `PATCH_DECISION_COMMIT.md`; later utility-AI decision layer.
+6. ML: parameter tuning from paired runs first (after 2–3), decision learning from `episodes.jsonl` later,
+   imitation of the owner last.
+7. Bot-code refactor (REFACTOR_AUDIT) — remove graph-patch flags after the navmesh switch.
+
+## Lessons (2026-10-24)
+
+- We patched symptoms of a broken navigation approach for a day (graph repair, filters, escape, watchdog) because
+  every patch helped a little. Check each fix against "does this work on another map?".
+- Spawn 195: a whole day of diagnosis by three agents; the workaround took one hour. Rule: > 2 h → workaround.
 
 ## Where things are
 

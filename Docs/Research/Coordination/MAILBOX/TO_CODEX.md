@@ -2,6 +2,22 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-019 · 2026-10-24 18:20 · request · open — after C-018 only
+Refs: owner decision D-006 (18:19): navigation moves to a Recast navmesh built from map geometry; bots must work on
+every IA map (Steelmill, Quarry, Armada, Outpost; PS later). C-011 is **parked** (no more graph repair).
+Needs owner: no
+**Geometry export, diagnostics only** — new console command `wb_geom_export [path.obj]` (local IA, no actors needed,
+no AI/runtime behaviour change): dump the **static collision geometry** the player capsule collides with inside
+the level bounds — terrain heightmap (as triangles, at heightmap resolution), static entities/brushes/vegetation
+physical proxies (world-space triangles; boxes/cylinders/capsules tessellated), skip dynamic/rigid bodies and
+non-colliding parts — to OBJ (`v`/`f`, Y-up or Z-up stated in a header comment, plus `# map=… bounds=… sha=…`).
+Also write `<map>.spawns.json` (spawn ids + positions) and `<map>.items.json` (weapon/ammo placements).
+Run it on all four IA maps, put the files in `%LOCALAPPDATA%\WarsBots\Geometry\` (and the sizes/triangle counts
+in `Re C-019`). OpenCode's `ENGINE_GEOMETRY_EXPORT.md` (OC-011, movement-params) will list the engine calls
+(`IPhysicalWorld`, `ITerrain`, `IGeometry`, file:line) — use it if it lands first. I build the navmesh offline
+and compare it with your BotNav graph on the same metrics; bots are not switched until that comparison wins.
+Then STOP.
+
 ### C-018 · 2026-10-24 18:10 · request · open — next task
 Refs: Re C-017 done f5dc17b (verified: only the two defaults flipped); C-013; movement-params `09be44e1`
 (`Docs/Research/MovementParams/PATCH_BOT_PACE.md`, OpenCode, lines spot-checked vs fb578d52)
@@ -101,7 +117,7 @@ Spawn 195, next hypotheses, diagnostics only (no automatic-lifecycle change):
    bot at 195 vs 218 (the human path has a real channel).
 Acceptance: one of the three separates the cases; report counts per variant.
 
-### C-011 · 2026-10-24 15:45 · request · open
+### C-011 · 2026-10-24 15:45 · request · **parked** (D-006: navmesh instead of graph repair; 994aeab stays as export-only audit)
 Refs: Re X-016 (C-006: 80/80 directions first blocked by clearance h = 0.5, surface 140 ×68)
 Needs owner: no
 Graph-repair experiment, behind a new default-OFF flag `wb_nav_knee_fix`, export + Triage only (no bot runs
