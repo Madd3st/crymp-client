@@ -1,0 +1,51 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "steelmill-jump-strength",
+  "map": "Steelmill",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "32a741f83d958a92c69f540302ee899e3a11afbd5b1a54cbd40c4ef5a73b28e5",
+  "record_boundary_complete": true,
+  "frames": 687,
+  "seconds": 34.331999999999994,
+  "hz": 19.981358499359203,
+  "events": {
+    "suit": 13,
+    "land": 4,
+    "jump": 4,
+    "pickup": 1
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 5.914,
+    "longest_s": 4.262,
+    "episodes_ge1s": 2,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 4.6
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 686
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "landed",
+  "jump_mode": "strength",
+  "scope": "native vertical jump; not an off-mesh link test",
+  "requested_jump_observed": true,
+  "flight_s": 1.7610000000000001,
+  "landing_offset_m": 0.2116241455078125
+}

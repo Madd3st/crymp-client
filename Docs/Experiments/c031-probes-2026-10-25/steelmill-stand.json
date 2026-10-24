@@ -1,0 +1,45 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "steelmill-stand",
+  "map": "Steelmill",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "353806379725da40e636a39891eac71081fd9431873c2dede882a1c497d6482f",
+  "record_boundary_complete": true,
+  "frames": 685,
+  "seconds": 34.229,
+  "hz": 19.983055303982002,
+  "events": {
+    "suit": 11,
+    "land": 3,
+    "jump": 2
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 0.11,
+    "longest_s": 0.078,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 33.6
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 684
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "measured"
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "steelmill-pickup-dsg1",
+  "map": "Steelmill",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "ae9b5d33a5c57ebdc212976e3d8baf144f7a364d1751a9750a8736bc182874be",
+  "record_boundary_complete": true,
+  "frames": 689,
+  "seconds": 34.440000000000005,
+  "hz": 19.976771196283387,
+  "events": {
+    "suit": 11,
+    "land": 3,
+    "pickup": 1,
+    "jump": 1
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 0.032,
+    "longest_s": 0.032,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 17.6
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 688
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "not_reached",
+  "expected_item": {
+    "class": "DSG1",
+    "id": 98,
+    "kind": "weapon",
+    "name": "DSG1",
+    "position": [
+      1307.233154296875,
+      1330.6285400390625,
+      159.1136474609375
+    ]
+  },
+  "first_expected_pickup_s": null
+}

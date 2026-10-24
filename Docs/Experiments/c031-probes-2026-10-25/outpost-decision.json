@@ -1,0 +1,46 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "outpost-decision",
+  "map": "Outpost",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "ec95d0db5aa2a0be7ff23e27ab2169071208046dcf4456c3469c616116c29a06",
+  "record_boundary_complete": true,
+  "frames": 626,
+  "seconds": 31.255,
+  "hz": 19.996800511918092,
+  "events": {
+    "suit": 21,
+    "land": 7,
+    "pickup": 2,
+    "jump": 2
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 0.607,
+    "longest_s": 0.331,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 26.7
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 1250
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "measured"
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "steelmill-decision",
+  "map": "Steelmill",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "959e5d978c560bf049f713ba9ce0cf78a0b6c5d81da4fc0767ff0946ff8e30f1",
+  "record_boundary_complete": true,
+  "frames": 687,
+  "seconds": 34.318999999999996,
+  "hz": 19.98892741630001,
+  "events": {
+    "suit": 21,
+    "land": 12,
+    "jump": 4,
+    "pickup": 3,
+    "shot": 63,
+    "hit": 14,
+    "kill": 1,
+    "revive": 1
+  },
+  "aba_count": 45,
+  "stationary_no_target": {
+    "seconds": 0.249,
+    "longest_s": 0.093,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 18.7
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 867
+    },
+    "bot_aim_error_deg": 11.4,
+    "bot_aim_error_samples": 800,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": 10.6,
+    "reaction_s": 0.4,
+    "reactions": 24,
+    "decision_flips_per_bot_min": 39.51,
+    "time_to_primary_s": 2.0,
+    "primaries": 1,
+    "kills_by_weapon": {
+      "FY71": 1
+    }
+  },
+  "runtime_ok": true,
+  "outcome": "measured"
+}

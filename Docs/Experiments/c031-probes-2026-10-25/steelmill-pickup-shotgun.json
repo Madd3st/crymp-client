@@ -1,0 +1,58 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "steelmill-pickup-shotgun",
+  "map": "Steelmill",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "d3b76d78424bd7ecaf237b61f086f92fb07b91965c1d7e4bd48f01bed4264f1d",
+  "record_boundary_complete": true,
+  "frames": 688,
+  "seconds": 34.399,
+  "hz": 19.97151079973255,
+  "events": {
+    "suit": 13,
+    "land": 5,
+    "pickup": 1,
+    "jump": 3
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 1.533,
+    "longest_s": 1.5,
+    "episodes_ge1s": 1,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 38.8
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 687
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "reached",
+  "expected_item": {
+    "class": "Shotgun",
+    "id": 165,
+    "kind": "weapon",
+    "name": "Shotgun4",
+    "position": [
+      1182.537353515625,
+      1288.9840087890625,
+      143.4207000732422
+    ]
+  },
+  "first_expected_pickup_s": 6.46
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "armada-decision",
+  "map": "Armada",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "9ad96940a96d0a8816ee2eda14513ad1caf11f1e3670a05d211ad9b8c6725e6b",
+  "record_boundary_complete": true,
+  "frames": 647,
+  "seconds": 32.343,
+  "hz": 19.973410011439878,
+  "events": {
+    "suit": 16,
+    "land": 11,
+    "pickup": 2,
+    "jump": 1
+  },
+  "aba_count": 2,
+  "stationary_no_target": {
+    "seconds": 15.41,
+    "longest_s": 11.993,
+    "episodes_ge1s": 2,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 9.7
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 1290
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 1.86,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "measured"
+}

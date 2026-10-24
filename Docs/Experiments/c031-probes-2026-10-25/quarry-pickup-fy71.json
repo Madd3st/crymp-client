@@ -1,0 +1,58 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "quarry-pickup-fy71",
+  "map": "Quarry",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "b21bca8a28eec34cc59b19defb9e7a87f22963a0253a63607fefa97b9ce4c404",
+  "record_boundary_complete": true,
+  "frames": 666,
+  "seconds": 33.261,
+  "hz": 19.99338564685367,
+  "events": {
+    "suit": 5,
+    "land": 2,
+    "pickup": 1,
+    "jump": 1
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 0.0,
+    "longest_s": 0.0,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 36.5
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 665
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "not_reached",
+  "expected_item": {
+    "class": "FY71",
+    "id": 189,
+    "kind": "weapon",
+    "name": "FY5",
+    "position": [
+      1470.411376953125,
+      1151.28662109375,
+      158.79100036621094
+    ]
+  },
+  "first_expected_pickup_s": null
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "quarry-decision",
+  "map": "Quarry",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "fe5d4e953cca7bcf10ce6eef94a2e540fa2ff156b89704a8cccf60f5e2d72d24",
+  "record_boundary_complete": true,
+  "frames": 649,
+  "seconds": 32.401,
+  "hz": 19.999382735100767,
+  "events": {
+    "suit": 21,
+    "land": 11,
+    "shot": 63,
+    "hit": 23,
+    "kill": 1,
+    "pickup": 4,
+    "revive": 1,
+    "jump": 3
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 0.067,
+    "longest_s": 0.034,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 22.2
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 612
+    },
+    "bot_aim_error_deg": 4.6,
+    "bot_aim_error_samples": 580,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": 3.6,
+    "reaction_s": 0.9,
+    "reactions": 2,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": 1.6,
+    "primaries": 1,
+    "kills_by_weapon": {
+      "SOCOM": 1
+    }
+  },
+  "runtime_ok": true,
+  "outcome": "measured"
+}

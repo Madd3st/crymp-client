@@ -1,0 +1,57 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "armada-pickup-fy71",
+  "map": "Armada",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "e4932df1c8ed7806e87218def58eea04608498ea16130704e75dd1ecf4f6bd4b",
+  "record_boundary_complete": true,
+  "frames": 647,
+  "seconds": 32.361,
+  "hz": 19.96230029974352,
+  "events": {
+    "suit": 7,
+    "land": 7,
+    "pickup": 1
+  },
+  "aba_count": 1,
+  "stationary_no_target": {
+    "seconds": 8.027,
+    "longest_s": 7.942,
+    "episodes_ge1s": 1,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 15.5
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 646
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 1.86,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "not_reached",
+  "expected_item": {
+    "class": "FY71",
+    "id": 127,
+    "kind": "weapon",
+    "name": "FY11",
+    "position": [
+      1491.31005859375,
+      1315.728271484375,
+      113.42900085449219
+    ]
+  },
+  "first_expected_pickup_s": null
+}

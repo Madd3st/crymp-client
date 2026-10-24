@@ -1,0 +1,58 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "steelmill-pickup-scar",
+  "map": "Steelmill",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "a500021eabec64dd71013627eb4b2698770c51e9cca5a2a2d3fa8c179d0fb334",
+  "record_boundary_complete": true,
+  "frames": 691,
+  "seconds": 34.51,
+  "hz": 19.99420457838308,
+  "events": {
+    "suit": 7,
+    "land": 3,
+    "pickup": 1,
+    "jump": 2
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 0.031,
+    "longest_s": 0.031,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 13.8
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 690
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "reached",
+  "expected_item": {
+    "class": "SCAR",
+    "id": 181,
+    "kind": "weapon",
+    "name": "SCAR6",
+    "position": [
+      1263.1705322265625,
+      1345.1309814453125,
+      137.19500732421875
+    ]
+  },
+  "first_expected_pickup_s": 9.057
+}

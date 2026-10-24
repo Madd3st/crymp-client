@@ -1,0 +1,50 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "armada-jump-normal",
+  "map": "Armada",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "495e028b3406dd1e61f959d7021e13ca1f7033f0548a7268e7f104984c716909",
+  "record_boundary_complete": true,
+  "frames": 645,
+  "seconds": 32.246,
+  "hz": 19.971469329529242,
+  "events": {
+    "suit": 5,
+    "land": 2,
+    "pickup": 1
+  },
+  "aba_count": 1,
+  "stationary_no_target": {
+    "seconds": 13.201,
+    "longest_s": 7.408,
+    "episodes_ge1s": 2,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 3.6
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 644
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 1.86,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "not_completed",
+  "jump_mode": "normal",
+  "scope": "native vertical jump; not an off-mesh link test",
+  "requested_jump_observed": false,
+  "flight_s": null,
+  "landing_offset_m": null
+}

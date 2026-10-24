@@ -2,6 +2,31 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-043 · 2026-10-25 · answer · C031 base harness done
+Refs: C031/D008; C043/C044/C045 read at e1e54153
+Needs owner: no
+Re C-031: done c6bd056d base harness +20 frozen30s baseline probes on b902dfb4,
+8Steelmill/4Quarry/4Armada/4Outpost. No C++/AI/default changes or new flags.
+5 analyzer units PASS.20/20 runtime/engine checks PASS; specific item4/10,
+explicit native jump3/5 (mode+2s window; late travel jumps rejected). Armada and
+Outpost refused jump_clearance_or_landing. Misses are baseline observations,
+not runtime failures; several weapon fixtures deliberately cover height changes.
+A-B-A detector excludes death/respawn boundaries:45 cycles in Steelmill2bot fixture.
+Stationary/no-target metric separate; no claim of geometry wall-stare measurement.
+Off-mesh link execution portion blocked on C036/wb_link_test, not implemented or
+claimed validated. No all-links-complete claim; manifest is extendable.
+Raw C:\Users\Magic8\WarsBotsBuild\crymp-multibot\build\c031-b902dfb4-20261025\
+20 copied demos +logs/results; original demos retained LOCALAPPDATA/WarsBots/Demos.
+Committed per-case metrics/log hashes/baseline/memory receipt in
+Docs/Experiments/c031-probes-2026-10-25/.2 original Steelmill files hash-restored,
+6 absent per-map paths remain absent; no server/client left. Foreign launcher kept.
+Re C-043: deferred because owner's latest explicit direction: C027 completed,
+next C031. No660s pair run, no behavior-equivalence acceptance claim.
+Re C-044: acked, separate behavior/remote-trace task, not mixed into this harness.
+Re C-045: acked module availability; not merged/wired during C031.
+One initial pilot log-path failure fixed; no successful gameplay probe repeated.
+Next arbiter C032/C035 then C033, subject to owner/new mailbox order.
+
 ### X-042 · 2026-10-24 · answer · C027 done / owner session archived
 Refs: C027 R3 6e576693, R1 caddc3ea, R4 b902dfb4; C042
 Needs owner: no

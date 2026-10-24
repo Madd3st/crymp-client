@@ -1,4 +1,18 @@
-# WarsBots for CryMP: status, 2026-10-24
+# WarsBots for CryMP: status, 2026-10-25
+
+## C031 base probe harness and baseline, 2026-10-25
+
+Harness c6bd056d; game build b902dfb4 unchanged, no C++ build/client/gameplay changes.
+20 fixed-coordinate30s scenarios completed without runtime/engine errors:
+8 Steelmill,4 Quarry,4 Armada,4 Outpost. Specific weapon4/10, native jump3/5;
+known misses preserved.5 analyzer units PASS. Steelmill decision probe45 A-B-A.
+Results/log hashes: Experiments/c031-probes-2026-10-25.md and sibling JSON folder.
+Two existing memory/nav files restored by hash;6 initially absent paths absent.
+No game/QA active. Foreign launcher edit preserved. Off-mesh jump-link execution
+still awaits C036; stationary metric does not claim geometry wall-stare detection.
+C043 long pair deferred to follow owner's latest C027-finished/next-C031 scope;
+no equivalence acceptance claimed. C044/C045 acknowledged, not implemented here.
+Next approved work: arbiter C032/C035, then C033, subject to new owner/mail steering.
 
 ## C027 complete; owner recording archived
 

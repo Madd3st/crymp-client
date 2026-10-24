@@ -1,0 +1,324 @@
+{
+  "schema": "warsbots-probe-baseline/1",
+  "harness_sha": "c6bd056d67115fda536a56f932a770438d9feb95",
+  "game_source": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "raw_directory": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c031-b902dfb4-20261025",
+  "manifest_sha256": "95a204df7f12c9fc1594e99bef43320a4c62eea0a458b9f9751287dba7bd45fd",
+  "runtime_ok": 20,
+  "total": 20,
+  "outcomes": {
+    "reached": 4,
+    "not_reached": 6,
+    "landed": 3,
+    "measured": 5,
+    "not_completed": 2
+  },
+  "memory_restored": true,
+  "cases": [
+    {
+      "id": "steelmill-pickup-scar",
+      "map": "Steelmill",
+      "outcome": "reached",
+      "runtime_ok": true,
+      "seconds": 34.51,
+      "hz": 19.994,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.031,
+      "evidence_sha256": {
+        "run.wbdemo": "a500021eabec64dd71013627eb4b2698770c51e9cca5a2a2d3fa8c179d0fb334",
+        "server.bots.log": "5ccc5bb373692dec514c5fbf02a8d02a28e4c9a35731f4fed12f9073307692df",
+        "server.log": "3cf2782cbfd590108e9be3b83641370a5ba6c8af6e8c3d8afdea1d321bb5eedb"
+      }
+    },
+    {
+      "id": "steelmill-pickup-fy71",
+      "map": "Steelmill",
+      "outcome": "not_reached",
+      "runtime_ok": true,
+      "seconds": 34.524,
+      "hz": 19.986,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.082,
+      "evidence_sha256": {
+        "run.wbdemo": "71e8cd0ef75fa0f624a20afd5853f16764367545c3318afc7dda4c07b68fab22",
+        "server.bots.log": "83e7abd49736935a24976dd689f9716dd35bcebb99232117e86ce4b84c6c2622",
+        "server.log": "63826518982a3617185257f1c5fe1bdea73de38459ea7000356249f2e30634de"
+      }
+    },
+    {
+      "id": "steelmill-pickup-shotgun",
+      "map": "Steelmill",
+      "outcome": "reached",
+      "runtime_ok": true,
+      "seconds": 34.399,
+      "hz": 19.972,
+      "aba_count": 0,
+      "stationary_no_target_s": 1.533,
+      "evidence_sha256": {
+        "run.wbdemo": "d3b76d78424bd7ecaf237b61f086f92fb07b91965c1d7e4bd48f01bed4264f1d",
+        "server.bots.log": "98046793c87669e377b146b5313f0482c0ceb2e1584004ff8962d0eb1d6fb98d",
+        "server.log": "c1b5861a353e4e4770c491ca5618d226ccd20c1f3bbbd5ea7c5f4f7250d6ec38"
+      }
+    },
+    {
+      "id": "steelmill-pickup-dsg1",
+      "map": "Steelmill",
+      "outcome": "not_reached",
+      "runtime_ok": true,
+      "seconds": 34.44,
+      "hz": 19.977,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.032,
+      "evidence_sha256": {
+        "run.wbdemo": "ae9b5d33a5c57ebdc212976e3d8baf144f7a364d1751a9750a8736bc182874be",
+        "server.bots.log": "1d19d5c9fd2f8e2b183360a5ba3bd490b43b2402243888a21f94f8f9551deb19",
+        "server.log": "c559dcf0a0ea37e7c6867d3bf32a0430640f12633608ca7758bbf4b4f75e775c"
+      }
+    },
+    {
+      "id": "steelmill-jump-normal",
+      "map": "Steelmill",
+      "outcome": "landed",
+      "runtime_ok": true,
+      "seconds": 34.276,
+      "hz": 19.985,
+      "aba_count": 0,
+      "stationary_no_target_s": 6.967,
+      "evidence_sha256": {
+        "run.wbdemo": "37c45ba01c279886446ea34fa1cf26032f7af1c49a78cb3fc59caff6c9f9e8ea",
+        "server.bots.log": "dff5ab0d86d3c48350db7755c4dc3044109e292a776cc8aee7404e09ca068849",
+        "server.log": "7642b7ca30fd225dbcdbe3ce5793d4af206cddd0d0469a2d12eff020228dde6d"
+      }
+    },
+    {
+      "id": "steelmill-jump-strength",
+      "map": "Steelmill",
+      "outcome": "landed",
+      "runtime_ok": true,
+      "seconds": 34.332,
+      "hz": 19.981,
+      "aba_count": 0,
+      "stationary_no_target_s": 5.914,
+      "evidence_sha256": {
+        "run.wbdemo": "32a741f83d958a92c69f540302ee899e3a11afbd5b1a54cbd40c4ef5a73b28e5",
+        "server.bots.log": "b1d14dfdec4c8a83f36dd7f303dee9a18e8355add490c03e605f9c14afa9aa96",
+        "server.log": "bfa031010f03436311793d1c9fa6ec91ecea12f69f5bbb3b831d9a5eb62d94ee"
+      }
+    },
+    {
+      "id": "steelmill-decision",
+      "map": "Steelmill",
+      "outcome": "measured",
+      "runtime_ok": true,
+      "seconds": 34.319,
+      "hz": 19.989,
+      "aba_count": 45,
+      "stationary_no_target_s": 0.249,
+      "evidence_sha256": {
+        "run.wbdemo": "959e5d978c560bf049f713ba9ce0cf78a0b6c5d81da4fc0767ff0946ff8e30f1",
+        "server.bots.log": "909669454b13c712e98dd62bfe597c34c983f689aaedceaae66db05000d7755f",
+        "server.log": "fc4e00099d946f239e2db1066737aa8d54f1a7c3528af66fddc8fb018907d0af"
+      }
+    },
+    {
+      "id": "steelmill-stand",
+      "map": "Steelmill",
+      "outcome": "measured",
+      "runtime_ok": true,
+      "seconds": 34.229,
+      "hz": 19.983,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.11,
+      "evidence_sha256": {
+        "run.wbdemo": "353806379725da40e636a39891eac71081fd9431873c2dede882a1c497d6482f",
+        "server.bots.log": "9ca90cf8027d450b644b4e84730aec0d0bbc5e5a19bdcb89b17d6c3d7f8a5b0b",
+        "server.log": "eddb88daecae00a8bd70b799a3bf280c4123ebdbc6002e1d448d46fd75008f16"
+      }
+    },
+    {
+      "id": "quarry-pickup-scar",
+      "map": "Quarry",
+      "outcome": "not_reached",
+      "runtime_ok": true,
+      "seconds": 33.258,
+      "hz": 19.995,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.0,
+      "evidence_sha256": {
+        "run.wbdemo": "7df6b11577453e27a0756adef95e7a33d88234600cf0258db70a6d7e0f048cd9",
+        "server.bots.log": "08e6b48ffaeea1df8600a3c0356f328e4fa95be45f46a153dca3de4e2a263201",
+        "server.log": "dad30cb034ae647731defa3143c05ded1d514581dc41d9efb4b45c4db4b9383b"
+      }
+    },
+    {
+      "id": "quarry-pickup-fy71",
+      "map": "Quarry",
+      "outcome": "not_reached",
+      "runtime_ok": true,
+      "seconds": 33.261,
+      "hz": 19.993,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.0,
+      "evidence_sha256": {
+        "run.wbdemo": "b21bca8a28eec34cc59b19defb9e7a87f22963a0253a63607fefa97b9ce4c404",
+        "server.bots.log": "99def703f93bd04db7e9f3b682f11f125ca7e3b24eabe04f1ce3280aa9bfed94",
+        "server.log": "44360ea109a0f3d2e7969c30ea7be8062e89f6ce611faa0480ce936ececbcffa"
+      }
+    },
+    {
+      "id": "quarry-jump-normal",
+      "map": "Quarry",
+      "outcome": "landed",
+      "runtime_ok": true,
+      "seconds": 33.226,
+      "hz": 19.984,
+      "aba_count": 0,
+      "stationary_no_target_s": 6.685,
+      "evidence_sha256": {
+        "run.wbdemo": "3237f63c217dba8b083ea6fd7c1f63aa93e88869290470aef8f542239031f711",
+        "server.bots.log": "c14be37eb30c06b4acb71f6a9e8eda1a08ff9773f2374a8c4f7025dfcbd7f825",
+        "server.log": "9314dd012363844cb24496df1531efd03bc903ddb3340490a822b0d71fda3993"
+      }
+    },
+    {
+      "id": "quarry-decision",
+      "map": "Quarry",
+      "outcome": "measured",
+      "runtime_ok": true,
+      "seconds": 32.401,
+      "hz": 19.999,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.067,
+      "evidence_sha256": {
+        "run.wbdemo": "fe5d4e953cca7bcf10ce6eef94a2e540fa2ff156b89704a8cccf60f5e2d72d24",
+        "server.bots.log": "30e8260e43030d5fdd0fff37c2764e018e4475ec61cb9b9f4fe60ea68307867f",
+        "server.log": "a7fdb12e33c00d60977850837f302a4085a8b37e761299d7ff0b37d82641eac7"
+      }
+    },
+    {
+      "id": "armada-pickup-scar",
+      "map": "Armada",
+      "outcome": "not_reached",
+      "runtime_ok": true,
+      "seconds": 32.258,
+      "hz": 19.964,
+      "aba_count": 1,
+      "stationary_no_target_s": 7.312,
+      "evidence_sha256": {
+        "run.wbdemo": "ca41ff74eb513a19eeee1784e64a0fbef11d47d5413c9056100de4db96919017",
+        "server.bots.log": "28e1ef20180f862c6a9e22c31d148b4e0ab96118211ab95e16ec1c7f725a32fc",
+        "server.log": "7455cc96455592265a565f90660d2b7372a736154d2f9ba022916749cc3db5b0"
+      }
+    },
+    {
+      "id": "armada-pickup-fy71",
+      "map": "Armada",
+      "outcome": "not_reached",
+      "runtime_ok": true,
+      "seconds": 32.361,
+      "hz": 19.962,
+      "aba_count": 1,
+      "stationary_no_target_s": 8.027,
+      "evidence_sha256": {
+        "run.wbdemo": "e4932df1c8ed7806e87218def58eea04608498ea16130704e75dd1ecf4f6bd4b",
+        "server.bots.log": "54592a9b550d991f93065ccdf434de87403e4bceb26d7e4a7a13a7f212a5a88b",
+        "server.log": "7e72439787aeb6479fcb1154d959abcbb2a444194f417952dbed3fab6d934fdd"
+      }
+    },
+    {
+      "id": "armada-jump-normal",
+      "map": "Armada",
+      "outcome": "not_completed",
+      "runtime_ok": true,
+      "seconds": 32.246,
+      "hz": 19.971,
+      "aba_count": 1,
+      "stationary_no_target_s": 13.201,
+      "evidence_sha256": {
+        "run.wbdemo": "495e028b3406dd1e61f959d7021e13ca1f7033f0548a7268e7f104984c716909",
+        "server.bots.log": "c94ec7bd1d3e46adf0598514ea5e95d78fd1097ce1280caa15ab9a20bd914eb0",
+        "server.log": "7c7646d70d2368326147750976b5ddf3e5cac12a90ca5f07dcdc86668c8a40bd"
+      }
+    },
+    {
+      "id": "armada-decision",
+      "map": "Armada",
+      "outcome": "measured",
+      "runtime_ok": true,
+      "seconds": 32.343,
+      "hz": 19.973,
+      "aba_count": 2,
+      "stationary_no_target_s": 15.41,
+      "evidence_sha256": {
+        "run.wbdemo": "9ad96940a96d0a8816ee2eda14513ad1caf11f1e3670a05d211ad9b8c6725e6b",
+        "server.bots.log": "f924bcbe070e18d51784858cefc6d145bff9baf07464c1e99b78d529de177f7e",
+        "server.log": "4a33e2d82511f6864b3928a0f6bef391ea11664a25b44a1bd801e61bd93e30ce"
+      }
+    },
+    {
+      "id": "outpost-pickup-scar",
+      "map": "Outpost",
+      "outcome": "reached",
+      "runtime_ok": true,
+      "seconds": 32.287,
+      "hz": 19.977,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.088,
+      "evidence_sha256": {
+        "run.wbdemo": "a17b2e13d2112c440822150fe5ad0a2695b1ed56a2f591ddb1257cdc2dd587fb",
+        "server.bots.log": "99db99f6bf108eaf9b8972ee094559a7983e29b5b33479f91bbdfa5c13bab305",
+        "server.log": "4a3edc923a1d7fdd6152f986a19e5d01ba6f19f61a922616f0e7b829bd58e36b"
+      }
+    },
+    {
+      "id": "outpost-pickup-fy71",
+      "map": "Outpost",
+      "outcome": "reached",
+      "runtime_ok": true,
+      "seconds": 32.288,
+      "hz": 19.976,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.0,
+      "evidence_sha256": {
+        "run.wbdemo": "46994b36397c0305358a038c4e046d3adbef4d5a9830b30ef34ed405b2b77d3e",
+        "server.bots.log": "aff4b9c715fcc2bf2369a6e9ece06fad4eac259d625d666776c61deef1feea69",
+        "server.log": "ea9249d5cd200f186eef68799e52a403ac44fc7db1a4e806330d0de5dd1f6f92"
+      }
+    },
+    {
+      "id": "outpost-jump-normal",
+      "map": "Outpost",
+      "outcome": "not_completed",
+      "runtime_ok": true,
+      "seconds": 31.4,
+      "hz": 20.0,
+      "aba_count": 0,
+      "stationary_no_target_s": 9.147,
+      "evidence_sha256": {
+        "run.wbdemo": "55490de7ef45ab0d046f82e7499f8442849898b6527606277ca701118e1b4607",
+        "server.bots.log": "048e8cfc6aea2c9f68406731da943f31d874720fc1e06ae91c524fede8dc6800",
+        "server.log": "adb8b3dc0cbff4c81ee9c2f516557c51d3b4c888dc8c29a53c6bf9a8c3cb1d04"
+      }
+    },
+    {
+      "id": "outpost-decision",
+      "map": "Outpost",
+      "outcome": "measured",
+      "runtime_ok": true,
+      "seconds": 31.255,
+      "hz": 19.997,
+      "aba_count": 0,
+      "stationary_no_target_s": 0.607,
+      "evidence_sha256": {
+        "run.wbdemo": "ec95d0db5aa2a0be7ff23e27ab2169071208046dcf4456c3469c616116c29a06",
+        "server.bots.log": "22db386d130e65daab95380723451d097f8d9807a0c62f87fca7b1cca2920708",
+        "server.log": "ce0bc644448bd9bfea994af8a8143aa1fae612fde046407d77db429dedc77728"
+      }
+    }
+  ],
+  "limits": [
+    "one run per scenario; not a performance/skill/equivalence verdict",
+    "native vertical jump only; off-mesh executor C036 deferred",
+    "stationary no-target metric does not prove looking at a physical wall"
+  ]
+}

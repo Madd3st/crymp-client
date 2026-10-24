@@ -1,0 +1,57 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "outpost-pickup-fy71",
+  "map": "Outpost",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "46994b36397c0305358a038c4e046d3adbef4d5a9830b30ef34ed405b2b77d3e",
+  "record_boundary_complete": true,
+  "frames": 646,
+  "seconds": 32.288000000000004,
+  "hz": 19.976461843409314,
+  "events": {
+    "suit": 3,
+    "land": 20,
+    "pickup": 1
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 0.0,
+    "longest_s": 0.0,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 43.1
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 645
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "reached",
+  "expected_item": {
+    "class": "FY71",
+    "id": 55,
+    "kind": "weapon",
+    "name": "FY12",
+    "position": [
+      1051.955322265625,
+      1005.164794921875,
+      158.34054565429688
+    ]
+  },
+  "first_expected_pickup_s": 0.939
+}

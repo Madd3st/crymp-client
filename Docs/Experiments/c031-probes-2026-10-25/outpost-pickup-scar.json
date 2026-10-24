@@ -1,0 +1,58 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "outpost-pickup-scar",
+  "map": "Outpost",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "a17b2e13d2112c440822150fe5ad0a2695b1ed56a2f591ddb1257cdc2dd587fb",
+  "record_boundary_complete": true,
+  "frames": 646,
+  "seconds": 32.287000000000006,
+  "hz": 19.97708055873881,
+  "events": {
+    "suit": 9,
+    "land": 20,
+    "pickup": 1,
+    "jump": 1
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 0.088,
+    "longest_s": 0.088,
+    "episodes_ge1s": 0,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 32.7
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 645
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "reached",
+  "expected_item": {
+    "class": "SCAR",
+    "id": 48,
+    "kind": "weapon",
+    "name": "SCAR2",
+    "position": [
+      1080.765869140625,
+      1021.065185546875,
+      159.74261474609375
+    ]
+  },
+  "first_expected_pickup_s": 0.878
+}

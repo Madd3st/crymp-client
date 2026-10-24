@@ -1,0 +1,53 @@
+{
+  "restored": true,
+  "files": [
+    {
+      "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.mem",
+      "hash": null,
+      "existed": false,
+      "name": "Multiplayer_IA_Armada.mem"
+    },
+    {
+      "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.nav.json",
+      "hash": null,
+      "existed": false,
+      "name": "Multiplayer_IA_Armada.nav.json"
+    },
+    {
+      "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.mem",
+      "hash": null,
+      "existed": false,
+      "name": "Multiplayer_IA_Outpost.mem"
+    },
+    {
+      "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.nav.json",
+      "hash": null,
+      "existed": false,
+      "name": "Multiplayer_IA_Outpost.nav.json"
+    },
+    {
+      "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.mem",
+      "hash": null,
+      "existed": false,
+      "name": "Multiplayer_IA_Quarry.mem"
+    },
+    {
+      "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.nav.json",
+      "hash": null,
+      "existed": false,
+      "name": "Multiplayer_IA_Quarry.nav.json"
+    },
+    {
+      "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+      "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+      "existed": true,
+      "name": "Multiplayer_IA_Steelmill.mem"
+    },
+    {
+      "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+      "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+      "existed": true,
+      "name": "Multiplayer_IA_Steelmill.nav.json"
+    }
+  ]
+}

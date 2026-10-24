@@ -1,0 +1,605 @@
+{
+  "runs": [
+    {
+      "id": "steelmill-pickup-scar",
+      "map": "Steelmill",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-002738-1.wbdemo",
+      "result": "steelmill-pickup-scar/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+          "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+          "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "steelmill-pickup-fy71",
+      "map": "Steelmill",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "not_reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-002814-1.wbdemo",
+      "result": "steelmill-pickup-fy71/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+          "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+          "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "steelmill-pickup-shotgun",
+      "map": "Steelmill",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-002851-1.wbdemo",
+      "result": "steelmill-pickup-shotgun/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+          "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+          "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "steelmill-pickup-dsg1",
+      "map": "Steelmill",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "not_reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-002927-1.wbdemo",
+      "result": "steelmill-pickup-dsg1/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+          "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+          "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "steelmill-jump-normal",
+      "map": "Steelmill",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "landed",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-003004-1.wbdemo",
+      "result": "steelmill-jump-normal/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+          "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+          "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "kind": "jump",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "steelmill-jump-strength",
+      "map": "Steelmill",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "landed",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-003040-1.wbdemo",
+      "result": "steelmill-jump-strength/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+          "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+          "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "kind": "jump",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "steelmill-decision",
+      "map": "Steelmill",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "measured",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-003116-1.wbdemo",
+      "result": "steelmill-decision/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+          "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+          "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "kind": "decision",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "steelmill-stand",
+      "map": "Steelmill",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "measured",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-003153-1.wbdemo",
+      "result": "steelmill-stand/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.mem",
+          "hash": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Steelmill.nav.json",
+          "hash": "6047470BB72EED8AD34869F8ABBB3DF2C66D6FF63B5248FE6A4289B0B2E5D6D7",
+          "existed": true,
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "kind": "stand",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "quarry-pickup-scar",
+      "map": "Quarry",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "not_reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Quarry-20261025-003229-1.wbdemo",
+      "result": "quarry-pickup-scar/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Quarry.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Quarry.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "quarry-pickup-fy71",
+      "map": "Quarry",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "not_reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Quarry-20261025-003304-1.wbdemo",
+      "result": "quarry-pickup-fy71/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Quarry.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Quarry.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "quarry-jump-normal",
+      "map": "Quarry",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "landed",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Quarry-20261025-003338-1.wbdemo",
+      "result": "quarry-jump-normal/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Quarry.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Quarry.nav.json"
+        }
+      ],
+      "kind": "jump",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "quarry-decision",
+      "map": "Quarry",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "measured",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Quarry-20261025-003413-1.wbdemo",
+      "result": "quarry-decision/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Quarry.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Quarry.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Quarry.nav.json"
+        }
+      ],
+      "kind": "decision",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "armada-pickup-scar",
+      "map": "Armada",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "not_reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Armada-20261025-003448-1.wbdemo",
+      "result": "armada-pickup-scar/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Armada.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Armada.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "armada-pickup-fy71",
+      "map": "Armada",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "not_reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Armada-20261025-003523-1.wbdemo",
+      "result": "armada-pickup-fy71/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Armada.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Armada.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "armada-jump-normal",
+      "map": "Armada",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "not_completed",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Armada-20261025-003558-1.wbdemo",
+      "result": "armada-jump-normal/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Armada.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Armada.nav.json"
+        }
+      ],
+      "kind": "jump",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "armada-decision",
+      "map": "Armada",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "measured",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Armada-20261025-003632-1.wbdemo",
+      "result": "armada-decision/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Armada.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Armada.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Armada.nav.json"
+        }
+      ],
+      "kind": "decision",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "outpost-pickup-scar",
+      "map": "Outpost",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Outpost-20261025-003707-1.wbdemo",
+      "result": "outpost-pickup-scar/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Outpost.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Outpost.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "outpost-pickup-fy71",
+      "map": "Outpost",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "reached",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Outpost-20261025-003741-1.wbdemo",
+      "result": "outpost-pickup-fy71/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Outpost.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Outpost.nav.json"
+        }
+      ],
+      "kind": "pickup",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "outpost-jump-normal",
+      "map": "Outpost",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "not_completed",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Outpost-20261025-003815-1.wbdemo",
+      "result": "outpost-jump-normal/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Outpost.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Outpost.nav.json"
+        }
+      ],
+      "kind": "jump",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    },
+    {
+      "id": "outpost-decision",
+      "map": "Outpost",
+      "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+      "server_sha256": "4BF082A0E3D9EEADEBFC450B69F11FADC317D81538464F5E94CEC4E819E6D16D",
+      "fixture_sha256": "95A204DF7F12C9FC1594E99BEF43320A4C62EEA0A458B9F9751287DBA7BD45FD",
+      "seconds": 30,
+      "runtime_ok": true,
+      "outcome": "measured",
+      "engine_errors": [],
+      "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Outpost-20261025-003848-1.wbdemo",
+      "result": "outpost-decision/result.json",
+      "memory": [
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.mem",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Outpost.mem"
+        },
+        {
+          "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory\\Multiplayer_IA_Outpost.nav.json",
+          "hash": null,
+          "existed": false,
+          "name": "Multiplayer_IA_Outpost.nav.json"
+        }
+      ],
+      "kind": "decision",
+      "roster": "normal/universal",
+      "flags": "pace1,guard1,exclude1951,B0,trap1,trace1,demo1/hz20; default other flags"
+    }
+  ],
+  "schema": "warsbots-probe-batch/1"
+}

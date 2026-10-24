@@ -1,0 +1,57 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "armada-pickup-scar",
+  "map": "Armada",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "ca41ff74eb513a19eeee1784e64a0fbef11d47d5413c9056100de4db96919017",
+  "record_boundary_complete": true,
+  "frames": 645,
+  "seconds": 32.257999999999996,
+  "hz": 19.96403992807986,
+  "events": {
+    "suit": 9,
+    "land": 1,
+    "pickup": 1
+  },
+  "aba_count": 1,
+  "stationary_no_target": {
+    "seconds": 7.312,
+    "longest_s": 7.128,
+    "episodes_ge1s": 1,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 15.0
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 644
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 1.86,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "not_reached",
+  "expected_item": {
+    "class": "SCAR",
+    "id": 442,
+    "kind": "weapon",
+    "name": "SCAR2",
+    "position": [
+      1436.0130615234375,
+      1338.80615234375,
+      110.43199920654297
+    ]
+  },
+  "first_expected_pickup_s": null
+}

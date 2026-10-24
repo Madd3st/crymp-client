@@ -1,0 +1,51 @@
+{
+  "schema": "warsbots-probe-result/1",
+  "id": "outpost-jump-normal",
+  "map": "Outpost",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "demo_sha256": "55490de7ef45ab0d046f82e7499f8442849898b6527606277ca701118e1b4607",
+  "record_boundary_complete": true,
+  "frames": 629,
+  "seconds": 31.400000000000002,
+  "hz": 20.0,
+  "events": {
+    "suit": 11,
+    "land": 3,
+    "pickup": 1,
+    "jump": 1
+  },
+  "aba_count": 0,
+  "stationary_no_target": {
+    "seconds": 9.147,
+    "longest_s": 7.594,
+    "episodes_ge1s": 2,
+    "definition": "alive, no target, displacement speed<0.2m/s; not a geometry wall-stare detector"
+  },
+  "metrics": {
+    "aim_wander_deg_s": {
+      "human": null,
+      "bot": 9.3
+    },
+    "aim_wander_samples": {
+      "human": 0,
+      "bot": 628
+    },
+    "bot_aim_error_deg": null,
+    "bot_aim_error_samples": 0,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": null,
+    "reaction_s": null,
+    "reactions": 0,
+    "decision_flips_per_bot_min": 0.0,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {}
+  },
+  "runtime_ok": true,
+  "outcome": "not_completed",
+  "jump_mode": "normal",
+  "scope": "native vertical jump; not an off-mesh link test",
+  "requested_jump_observed": false,
+  "flight_s": null,
+  "landing_offset_m": null
+}
