@@ -18,6 +18,11 @@ holding most spawns (links are one-way).
 | Outpost | 32 → 32 → 33 → **34 / 35** | 100 → 100 → 108 → **115 / 123** | spawns 32 → 35, items 78 → 118 |
 | Armada | 6 → 6 → 6 → **6 / 40** | 25 → 25 → 25 → **26 / 156** | spawns 6 → 39, items 24 → 151 |
 
+> **Update 22:00 (owner):** Armada has one lift; otherwise every point is reachable on foot. So Armada's split is an
+> export problem, not the map: the hangar north wall has no opening ≥ 0.9 m in the collision while rooms behind it
+> hold spawns → doors exported closed (and/or stair/ladder entities). C-041 now asks for a per-part sidecar
+> (class, physics type, surface) to open doors and list ladders + the lift.
+
 ## What this changes
 
 1. **Walk-only: the walk model was too pessimistic on catwalks/stairs** (audit risk 3 confirmed): Steelmill items on

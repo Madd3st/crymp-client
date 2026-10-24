@@ -561,7 +561,7 @@ int main(int argc, char** argv)
 				const dtMeshTile* t; const dtPoly* p; cnav->getTileAndPolyByRefUnsafe(refs[n], &t, &p);
 				if (p->getType() != DT_POLYTYPE_GROUND) continue;
 				for (int k = 0; k < p->vertCount; ++k) { float o[3]; ToCrysis(&t->verts[p->verts[k] * 3], o); fprintf(f, "v %.3f %.3f %.3f\n", o[0], o[1], o[2]); }
-				fprintf(f, "f"); for (int k = 0; k < p->vertCount; ++k) fprintf(f, " %d", vbase + k); fprintf(f, "\n");
+				fprintf(f, "# comp %d\nf", comp[n]); for (int k = 0; k < p->vertCount; ++k) fprintf(f, " %d", vbase + k); fprintf(f, "\n");
 				vbase += p->vertCount;
 			}
 		}
