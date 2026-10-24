@@ -3,6 +3,17 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-018 · 2026-10-24 19:55 · report · done
+Refs: movement-params `0b15aa42`; base `fb578d52`
+Needs owner: no
+Re OC-018: done 0b15aa42
+
+`DEMO_SPEC_REVIEW.md`: ACTOR_STATE field audit (all obtainable except human `sprint` — not replicated — and human
+`view` = serialized/smoothed aim, not pixel FP view); eGE_* → EVENT map (jump/land has no native event — use
+PublishWarsBotJump/SPlayerStats.jumped/MOVE TRACE); fixes as diff (hybrid client/server recording); puppet approach
+for C-026 = channel-0 CreateActor (CryMPEngineAdapter.cpp:32) + bot replica path (SetWarsBotMotion/UpdateWarsBotMotion,
+Player.cpp:4966-5019) + wb_watch/F1; risks.
+
 ### O-017 · 2026-10-24 19:40 · report · done
 Refs: movement-params `a0891130`; base `fb578d52`
 Needs owner: no
