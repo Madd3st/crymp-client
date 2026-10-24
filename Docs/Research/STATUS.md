@@ -20,10 +20,11 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 
 ## Open, in order
 
-1. **Spawn 195 root cause** — native revive path (`spawn:Spawned`, `UpdateAreas`), human `wb_revive_at 195 me` (C-002).
+1. **Spawn 195 workaround** (D-005, C-014): bots skip spawn 195 + revive guard (re-revive if frozen 2 s); root cause parked.
+   Rule: >2 h of diagnosis without a fix → workaround + parked ticket.
 2. **Edge audit** — which `Walkable` test cuts flat pairs; 40 candidates (C-006).
 3. **MOVE TRACE** — exact jump heights, sprint/suit timing for the owner and bots.
-4. **Pace / sprint** — target >4 m/s 35–55 % of moving time (roadmap step 2).
+4. **Pace / sprint** (C-013, owner's priority right after C-014) — targets from the owner trace.
 5. **Graph repair** — railings/stairs false cuts → drop links → gated strength-jump links. Then re-test B.
 6. Decision stability (CHASING↔MOVING_TO_WEAPON), later decision layer, cover, circle/wall jumps, Power Struggle.
 7. Bot-code refactor after step 1 closes — audit in `Docs/Research/SteelmillTriage/REFACTOR_AUDIT.md`.

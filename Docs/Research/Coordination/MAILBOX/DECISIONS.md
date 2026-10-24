@@ -8,3 +8,4 @@ Answer in chat with Claude or Codex as `D-001: yes` etc. Agents record the answe
 | D-002 | May agents promote a flag to default ON by themselves when paired runs show no regression, reporting after the fact? (otherwise each flip waits for you) | yes for diagnostics/logging; no for behaviour changes | **logs/diagnostics yes, behaviour no** (owner, 14:27) |
 | D-003 | 10-minute live session when Codex asks: `wb_revive_at 195 me` (you get revived on spawn 195) + video with `r_displayInfo 1` | yes, when C-002 is ready | **yes** (owner, 14:04) |
 | D-004 | Move WarsBots logs out of OneDrive (sync can lock files being written)? | yes | **yes** (owner, 14:27) |
+| D-005 | Close spawn 195 with a workaround today: bots never revive on 195 + general guard "no movement 2 s after revive → re-revive on another spawn"; root cause parked low priority. Then priority: pace (C-013) before graph (C-011)? | yes | **yes, workaround + guard; pace first** (owner, 16:20) |

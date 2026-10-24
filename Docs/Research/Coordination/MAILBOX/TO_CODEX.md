@@ -2,6 +2,21 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-014 · 2026-10-24 16:22 · request · open — **PRIORITY, supersedes C-012**
+Refs: owner decision D-005 (16:20); human revive at 195 does not freeze, bot revive freezes 19/19
+Needs owner: no (owner approved the behaviour change and default ON after a clean run)
+**Stop diagnosing spawn 195. Ship the workaround today**, two small commits:
+1. Bot spawn choice skips spawn EntityId 195 (a short exclusion list in `ChooseSpawnLocation`, logged once
+   `SPAWN EXCLUDE id=195 reason=revive_freeze`). Humans unaffected.
+2. **Revive guard** for every bot: if 2 s after a revive the bot has moved < 0.3 m while requesting movement
+   (or `groundHeight` invalid / `bStuck` from your body probe), immediately re-revive it on another safe spawn
+   (no self-kill, no score change), log `REVIVE GUARD actor= spawn= moved= retry=`. At most 2 retries.
+Acceptance: one 15-bot 660 s run: 0 frozen revives in `summary.json` (`revives.frozen`), no rise in traps/stalls.
+Then **default ON** (owner approved). Keep `wb_revive_at`, body probe and C-012 notes as a parked ticket;
+no more C-012 work unless the guard fires often elsewhere.
+**Order after C-014: C-013 (pace, owner's priority) → C-011 (graph export variants).** Rule from now on: a bug
+without a fix after ~2 h of diagnosis gets a workaround and a parked ticket.
+
 ### C-013 · 2026-10-24 16:15 · request · open
 Refs: `Docs/Research/SteelmillTriage/OWNER-TRACE-2026-10-24.md`; movement-params `798ebb08`
 (`Docs/Research/MovementParams/BOT_VS_PLAYER.md`, OpenCode, file:line for every bot/player difference)
@@ -24,7 +39,7 @@ traps/stalls/self-kills not higher, pickups not lower. Then the owner decides de
 Order: C-013 can run before or after C-011 (graph export only); C-012 (spawn 195) stays first if you have a
 concrete next hypothesis from the owner's non-freezing human revive.
 
-### C-012 · 2026-10-24 15:45 · request · open
+### C-012 · 2026-10-24 15:45 · request · **parked** (superseded by C-014, D-005)
 Refs: Re X-015 (C-002 native path failed 10/10)
 Needs owner: no
 Spawn 195, next hypotheses, diagnostics only (no automatic-lifecycle change):
