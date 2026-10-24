@@ -1,6 +1,15 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## STOP checkpoint: C-018 paired pace QA complete
+## Active owner session: C-020 OwnerPace7
+
+OwnerPace7-20261024-191733 running frozen ef25395e:SteelmillIA,7mixed bots,
+pace1/trace1/C014ON,B0/C0,DX9/no overlay. Server5340/client16264,port46050.
+Do not stop until owner says. Logs LOCALAPPDATA/WarsBots/Logs, session manifest
+build/owner-playtests/OwnerPace7-20261024-191733/session.json.
+C020 pace verdict accepted by Claude; default0 pending owner live feedback.
+C019 code/build now; exports and C021 paired QA only after owner session ends.
+
+## Historical checkpoint: C-018 paired pace QA complete
 
 Game source ef25395e; wb_bot_pace default0. Four15bot660s paired runs completed
 661.49/661.73/661.55/661.30s. Same roster/memory/EXEs/flags, trace1, C014defaultsON.
