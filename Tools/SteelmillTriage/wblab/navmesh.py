@@ -267,12 +267,13 @@ class WalkModel:
         return len(src)
 
     # -- queries
-    def project(self, x, y, z, up=0.6, down=1.2):
-        """Open (alive) span under a feet position; nearest top within [z-down, z+up], searching 1 cell around."""
+    def project(self, x, y, z, up=0.6, down=1.2, radius=1):
+        """Open (alive) span under a feet position; nearest top within [z-down, z+up], searching `radius` cells around."""
         cs = self.p['cs']; ix = int((x - self.origin[0]) / cs); iy = int((y - self.origin[1]) / cs)
         best, bd = -1, 1e9
-        for ddx in (0, -1, 1):
-            for ddy in (0, -1, 1):
+        rng = range(-radius, radius + 1)
+        for ddx in rng:
+            for ddy in rng:
                 cx, cy = ix + ddx, iy + ddy
                 if not (0 <= cx < self.nx and 0 <= cy < self.ny):
                     continue
@@ -345,7 +346,8 @@ def profile(model, spawns=(), items=(), route=(), route_max_step=15.0):
     def classify(pts):
         out = {'on_mesh': 0, 'main': 0, 'reach_main_only': 0, 'from_main_only': 0, 'island': 0, 'off_mesh': []}
         for pid, x, y, z in pts:
-            s = m.project(x, y, z)
+            # items lie on crates/racks and spawns stand next to walls: allow 1 m sideways, 2 m down
+            s = m.project(x, y, z, up=0.6, down=2.0, radius=max(1, int(round(1.0 / m.p['cs']))))
             if s < 0:
                 out['off_mesh'].append(pid); continue
             out['on_mesh'] += 1
