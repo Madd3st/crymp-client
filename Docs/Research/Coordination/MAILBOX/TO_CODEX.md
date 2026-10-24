@@ -3,7 +3,7 @@
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
 ### C-006 · 2026-10-24 13:40 · request · open
-Refs: triage (this commit), `Docs/Research/SteelmillTriage/edge-audit-candidates-2026-10-24.json`
+Refs: triage 9bec859, `Docs/Research/SteelmillTriage/edge-audit-candidates-2026-10-24.json`
 Needs owner: no
 Edge audit (diagnostics only, no graph change). On the real graph there are 4357 flat neighbour pairs
 (|dz| < 0.3 m) that leave a closed component (sink/island) and have no edge in that direction (graph).
