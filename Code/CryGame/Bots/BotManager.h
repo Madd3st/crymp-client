@@ -105,6 +105,9 @@ private:
 	static void DebugCommand(IConsoleCmdArgs* args);
 	static void SelectCommand(IConsoleCmdArgs* args);
 	static void NavCommand(IConsoleCmdArgs* args);
+    static void WatchCommand(IConsoleCmdArgs* args);
+    static void WatchInfoCommand(IConsoleCmdArgs* args);
+    static void WatchCheckCommand(IConsoleCmdArgs* args);
 	void ResetNav() { m_nav.Reset(); }
 	// Legacy single-bot test commands, now addressed to the selected bot.
 	static void ProbeSpawnCommand(IConsoleCmdArgs* args);

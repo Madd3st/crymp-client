@@ -182,6 +182,14 @@ void PlayerView::ViewPreProcess(SViewParams& viewParams)
 
 	m_viewQuatFinal = m_player.m_viewQuatFinal;
 	m_viewQuat = m_player.m_viewQuat;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    if (m_player.IsWarsBotActor() && m_player.IsFpSpectatorTarget() && !stats.isRagDoll)
+    {
+        // Renderer-local view only: a listen-server observer must not rotate the bot's authority.
+        m_viewQuatFinal = m_viewQuat = Quat::CreateRotationVDir(
+            m_player.m_netAimDirSmooth.GetNormalizedSafe(m_player.m_baseQuat.GetColumn1()));
+    }
+#endif
 
 	m_vFPWeaponOffset = m_player.m_FPWeaponOffset;
 	m_baseQuat = m_player.m_baseQuat;

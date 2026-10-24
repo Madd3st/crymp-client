@@ -1010,7 +1010,13 @@ int CScriptBind_GameRules::GetNextSpectatorTarget(IFunctionHandler* pH, ScriptHa
 			int team = pGameRules->GetTeam((EntityId)playerId.n);
 			if (g_pGame->GetCVars()->g_spectate_TeamOnly == 0 || pGameRules->GetTeamCount() == 0 || team == 0)
 			{
-				pGameRules->GetPlayers(players);
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+                // Native spectator queries may include owned IA actors; channel enumeration stays intact.
+                if (gEnv->bServer && g_pGame->GetBotManager().CanRunLocalIA())
+                    pGameRules->GetMatchParticipants(players);
+                else
+#endif
+                    pGameRules->GetPlayers(players);
 			}
 			else
 			{

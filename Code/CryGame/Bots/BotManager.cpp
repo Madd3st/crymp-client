@@ -4,6 +4,7 @@
 #include "CryGame/Bots/BotManager.h"
 #include "version.h"
 #include "CryGame/Bots/BotCombat.h"
+#include "CryGame/Bots/BotSpectator.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
@@ -18,6 +19,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <cstdio>
 
 namespace WarsBots
 {
@@ -57,6 +59,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
 const char* kCommands[] = {
+	"wb_watch", "wb_watch_info", "wb_watch_check",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
@@ -93,6 +96,9 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->Register("wb_maxbots", &m_maxBots, 6, 0, "Maximum simultaneous WarsBots (1..16, default 6)");
 	console->Register("wb_skill", &m_skill, int(BotSkill::Normal), 0,
 		"Default skill for wb_add: 0 beginner, 1 normal, 2 veteran, 3 elite");
+    console->AddCommand("wb_watch", WatchCommand, 0, "Spectators only: wb_watch list|<botNumber>|next|prev|status|off; native F1 toggles first person");
+    console->AddCommand("wb_watch_info", WatchInfoCommand, 0, "Local IA server only: decisions of bots followed by real spectators");
+    console->AddCommand("wb_watch_check", WatchCheckCommand, 0, "Local IA server/no clients: assert native Lua spectator selection without changing any actor");
 	console->AddCommand("wb_add", AddCommand, 0, "wb_add [count] [beginner|normal|veteran|elite] [style]: add autonomous bots");
 	console->AddCommand("wb_remove", RemoveCommand, 0, "wb_remove <botNumber>: remove one bot (number from wb_list, not EntityId)");
 	console->AddCommand("wb_remove_all", RemoveAllCommand, 0, "Remove every WarsBot");
@@ -466,6 +472,127 @@ void BotManager::StatusReport()
 }
 
 // ---------------------------------------------------------------- commands
+
+void BotManager::WatchCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self();
+    CGameRules* rules=g_pGame ? g_pGame->GetGameRules() : nullptr;
+    CPlayer* viewer=self && self->m_framework ? CPlayer::FromIActor(self->m_framework->GetClientActor()) : nullptr;
+    const bool ia=rules && !std::strcmp(rules->GetEntity()->GetClass()->GetName(),"InstantAction");
+    if (!BotSpectator::CanInspect(gEnv->bClient,ia,viewer && viewer->GetSpectatorMode()!=CActor::eASM_None))
+    {
+        WB_LOG(0,"[WarsBots] WATCH refused: enter native spectator mode on InstantAction first.");
+        return;
+    }
+    std::vector<EntityId> ids;
+    IActorIteratorPtr it=self->m_framework->GetIActorSystem()->CreateActorIterator();
+    while (IActor* actor=it->Next())
+    {
+        CPlayer* player=CPlayer::FromIActor(actor);
+        if (player && BotSpectator::Eligible(player->IsWarsBotActor(),player->GetHealth()>0,
+            player->GetEntity()->IsHidden(),player->GetSpectatorMode()!=CActor::eASM_None))
+            ids.push_back(player->GetEntityId());
+    }
+    std::sort(ids.begin(),ids.end(),[&](EntityId a,EntityId b) {
+        return std::strcmp(gEnv->pEntitySystem->GetEntity(a)->GetName(),gEnv->pEntitySystem->GetEntity(b)->GetName())<0;
+    });
+    const char* op=args->GetArgCount()>1 ? args->GetArg(1) : "status";
+    if (!std::strcmp(op,"off"))
+    {
+        rules->ChangeSpectatorMode(viewer,CActor::eASM_Free,0,false);
+        return;
+    }
+    if (!std::strcmp(op,"list"))
+    {
+        for (EntityId id:ids) WB_LOG(0,"[WarsBots] WATCH %s EntityId=%u",gEnv->pEntitySystem->GetEntity(id)->GetName(),id);
+        WB_LOG(0,"[WarsBots] WATCH live replicated bots=%d",int(ids.size()));
+        return;
+    }
+    if (!std::strcmp(op,"status"))
+    {
+        CPlayer* target=CPlayer::FromIActor(self->m_framework->GetIActorSystem()->GetActor(viewer->GetSpectatorTarget()));
+        if (viewer->GetSpectatorMode()!=CActor::eASM_Follow || !target || !target->IsWarsBotActor())
+        { WB_LOG(0,"[WarsBots] WATCH no followed WarsBot."); return; }
+        IItem* item=target->GetCurrentItem();
+        CNanoSuit* suit=target->GetNanoSuit();
+        WB_LOG(0,"[WarsBots] WATCH %s EntityId=%u FP=%d spectatorHealth=%d weapon=%s suit=%d energy=%.1f (native replicated state; -1 unknown)",
+            target->GetEntity()->GetName(),target->GetEntityId(),viewer->IsFpSpectator()?1:0,viewer->GetSpectatorHealth(),
+            item ? item->GetEntity()->GetClass()->GetName() : "none",suit ? int(suit->GetMode()) : -1,suit ? suit->GetSuitEnergy() : -1.f);
+        return;
+    }
+    EntityId target=0;
+    if (!std::strcmp(op,"next") || !std::strcmp(op,"prev"))
+        target=BotSpectator::Cycle(ids,viewer->GetSpectatorTarget(),!std::strcmp(op,"prev") ? -1 : 1);
+    else
+    {
+        int number=0;
+        if (!ParseInt(op,number) || number<1 || number>kHardLimit)
+        { WB_LOG(0,"[WarsBots] Usage: wb_watch list|1..16|next|prev|status|off"); return; }
+        char name[32];std::snprintf(name,sizeof(name),"WarsBot_%02d",number);
+        for (EntityId id:ids) if (!std::strcmp(gEnv->pEntitySystem->GetEntity(id)->GetName(),name)) target=id;
+    }
+    if (!target) { WB_LOG(0,"[WarsBots] WATCH no eligible live bot."); return; }
+    rules->ChangeSpectatorMode(viewer,CActor::eASM_Follow,target,false); // Existing validated real-observer RMI.
+    WB_LOG(0,"[WarsBots] WATCH requested %s EntityId=%u; native F1 toggles FP.",gEnv->pEntitySystem->GetEntity(target)->GetName(),target);
+}
+
+void BotManager::WatchInfoCommand(IConsoleCmdArgs*)
+{
+    BotManager* self=Self();
+    if (!self || !gEnv->bServer || !self->CanRunLocalIA())
+    { WB_LOG(0,"[WarsBots] WATCH INFO refused: local IA server only."); return; }
+    CGameRules::TPlayers players;g_pGame->GetGameRules()->GetPlayers(players);
+    unsigned count=0;
+    for (EntityId id:players)
+    {
+        CPlayer* viewer=CPlayer::FromIActor(self->m_framework->GetIActorSystem()->GetActor(id));
+        if (!viewer || !viewer->GetChannelId() || !self->m_framework->GetNetChannel(viewer->GetChannelId()) ||
+            viewer->GetSpectatorMode()!=CActor::eASM_Follow) continue;
+        if (BotInstance* bot=self->Find(viewer->GetSpectatorTarget()))
+        {
+            WB_LOG(0,"[WarsBots] WATCH INFO observer=%u follows #%d",id,bot->Number());
+            bot->Status();bot->Brain().Status();++count;
+        }
+    }
+    WB_LOG(0,"[WarsBots] WATCH INFO real observers following owned bots=%u (server console only)",count);
+}
+
+void BotManager::WatchCheckCommand(IConsoleCmdArgs*)
+{
+    BotManager* self=Self();
+    CGameRules* rules=g_pGame ? g_pGame->GetGameRules() : nullptr;
+    CGameRules::TPlayers humans;
+    if (rules) rules->GetPlayers(humans);
+    if (!self || !rules || !gEnv->bServer || !self->CanRunLocalIA() || !humans.empty())
+    { WB_LOG(0,"[WarsBots] WATCH CHECK refused: local IA server without real clients required."); return; }
+    CGameRules::TPlayers players;rules->GetMatchParticipants(players);
+    unsigned checks=0;bool ok=true;
+    for (EntityId query:players)
+    {
+        std::vector<EntityId> eligible;
+        for (EntityId id:players)
+        {
+            CActor* actor=static_cast<CActor*>(self->m_framework->GetIActorSystem()->GetActor(id));
+            if (id!=query && actor && actor->GetHealth()>0 && actor->GetSpectatorMode()==CActor::eASM_None) eligible.push_back(id);
+        }
+        const EntityId next=eligible.empty()?0:eligible.front(), prev=eligible.empty()?0:eligible.back();
+        char script[1024];
+        // Query only: native Lua entity IDs are handles, not ordinary numbers.
+        // Do not turn a channel-0 actor into an observer or invoke a spectator RMI.
+        std::snprintf(script,sizeof(script),
+            "local q=System.GetEntity(%u).id; local n=System.GetEntity(g_gameRules.game:GetNextSpectatorTarget(q,1)); "
+            "local p=System.GetEntity(g_gameRules.game:GetNextSpectatorTarget(q,-1)); "
+            "assert(n==System.GetEntity(%u)); assert(p==System.GetEntity(%u))",query,next,prev);
+        ok=gEnv->pScriptSystem->ExecuteBuffer(script,std::strlen(script),"WarsBots native spectator QA") && ok;
+        checks+=2;
+    }
+    if (players.empty())
+    {
+        const char* script="assert((g_gameRules.game:GetNextSpectatorTarget(0,1) or 0)==0)";
+        ok=gEnv->pScriptSystem->ExecuteBuffer(script,std::strlen(script),"WarsBots empty spectator QA");++checks;
+    }
+    WB_LOG(0,"[WarsBots] WATCH CHECK %s participants=%d assertions=%u; query-only, no observer/channel created",ok?"PASS":"FAIL",int(players.size()),checks);
+}
 
 void BotManager::AddCommand(IConsoleCmdArgs* args)
 {

@@ -1920,6 +1920,14 @@ bool CPlayer::UpdateFpSpectatorView(SViewParams& viewParams)
 	CPlayer* pTarget = CPlayer::FromIActor(GetSpectatorTargetActor());
 	if (pTarget && pTarget->IsFpSpectatorTarget())
 	{
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+        if (pTarget->IsWarsBotActor() && pTarget->m_warsBotPose)
+        {
+            // Bots have no CNetPlayerInput. Reuse the existing replicated pose, never a fake channel.
+            const Vec3 eye = pTarget->GetEntity()->GetWorldPos() + pTarget->GetStanceInfo(pTarget->GetStance())->viewOffset;
+            pTarget->m_netAimDir = (pTarget->m_warsBotAim - eye).GetNormalizedSafe(pTarget->m_baseQuat.GetColumn1());
+        }
+#endif
 		CItem* pItem = static_cast<CItem*>(pTarget->GetCurrentItem(true));
 		CWeapon* pWeapon = pItem ? static_cast<CWeapon*>(pItem->GetIWeapon()) : nullptr;
 
