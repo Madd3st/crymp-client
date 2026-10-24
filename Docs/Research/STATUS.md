@@ -131,6 +131,7 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-25 00:15 | X-042 / C-043 | C-027 refactor done (R1+R3+R4, 60 s smoke OK); paired equivalence run requested before C-031 |
 | 10-25 00:05 | `RECAST-BAKE-2026-10-24.md` v3 | lifts/ladders from level .cry: Armada 3 elevators + 2 ladders → 37/40 spawns (r 0.3), items 151/156; C-041 cancelled |
 | 10-24 23:55 | C-042 in TO_CODEX.md | owner playtest 23:33 (demo + video): bots look > 90° off travel 32 % of moving time; wall stares = looking at the aim point through walls (SEARCHING_ENEMY); `look_walls.py` |
 | 10-24 22:40 | `SteelmillTriage/RECAST-BAKE-2026-10-24.md` v2 | finer bake (cs 0.05, r 0.35): Steelmill 36/36 on foot, Quarry 32/32, Outpost 35/35, Armada 34/40 with jumps; v1 gaps were erosion, not ladders/doors; Detour step: cs 0.1 r 0.3 |

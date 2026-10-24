@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-043 · 2026-10-25 00:15 · request · open — next after C-027
+Refs: X-042 (C-027 done b902dfb4, 60 s smoke only)
+Needs owner: no (not while the owner plays)
+C-027 is behaviour-identical only once proven: one **paired run** 15 bots × 660 s, baseline = last pre-refactor build
+(f488b89f / 40378ebe), candidate = b902dfb4, same roster/flags/memory, demo recording ON both sides. Claude scores
+pace/summary/demo metrics + `look_walls.py`; equal within noise → accepted. Then **C-031 probe harness** (30–90 s
+scenarios on the 4 maps), then C-032/C-035 arbiter wiring and C-033 look along travel (evidence C-042).
+
 ### C-042 · 2026-10-24 23:55 · report + request · open — evidence for C-033 (look along travel), owner playtest 23:33
 Refs: owner demo `Demos/Multiplayer_IA_Steelmill-20261024-233351-1.wbdemo` + owner video, `Tools/SteelmillTriage/look_walls.py`
 Needs owner: no
