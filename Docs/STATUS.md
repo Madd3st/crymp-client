@@ -1,5 +1,14 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+## C043 pair complete; C046 next
+
+Pre-refactor40378ebe vs C027b902dfb4,15bots660s each1x, matched fixture.
+Runtime PASS,frozen0/pinned0/traps0; kills240->236,pickups115->134,stalls63->69.
+No equivalence verdict/default change asserted; Claude scores noise.
+Report: Experiments/c043-paired-2026-10-25.md. Memory hash restored.
+Owner order now C043->C046->C044->arbiter. C048: Claude owns new gameplay code;
+Codex builds/tests/merges BATCH READY, after timed QA to avoid CPU confounds.
+
 ## C031 base probe harness and baseline, 2026-10-25
 
 Harness c6bd056d; game build b902dfb4 unchanged, no C++ build/client/gameplay changes.

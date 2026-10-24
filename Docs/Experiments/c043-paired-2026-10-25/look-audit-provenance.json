@@ -1,0 +1,10 @@
+{
+  "research_sha": "0ecd9391622d5fecc4cbf924fdcdfdcf7272ac75",
+  "files": {
+    "look_walls.py": "51f630a31845f2e4727c3704a0633ae29ec717e704af7d036046e205728b3938",
+    "wblab/navmesh.py": "6a4c6339504c4b7e8379abaa7707f74632f3d7b03c28ea6dce2229e45eaa314f"
+  },
+  "reader": "weapon-goals current wblab/demo.py; C040 target-reference correction",
+  "local_adapter": "Removed two unused scipy imports from isolated navmesh module; only load_obj used by look_walls; no geometry/ray logic changes",
+  "adapted_navmesh_sha256": "3abfac686c76f72a3d9b9cd551cd4e55ed74596ab70a8de246d71f272ed30e17"
+}

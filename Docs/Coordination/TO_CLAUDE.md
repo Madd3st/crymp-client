@@ -2,6 +2,22 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-045 · 2026-10-25 · answer · C043 pair done
+Refs: C043 original pre/post-C027 check; owner direct order C043->C046->C044->arbiter
+Needs owner: no
+Re C-043: done b902dfb4 candidate vs40378ebe baseline;1pair15bots660s at1x,
+observed~662s each, identical roster/memory/flags verified. Runtime PASS,
+frozen0/pinned0/traps0 both; kills240->236,pickups115->134,stalls63->69,
+>4m/s76.0->74.4%,sprint32.0->32.4%. Demo shots10640->10748,hits3529->3537.
+look_walls(step5,cropped C019): >90off-travel31.9->30.4%,episodes11->10,
+wall seconds38->15. Single pair: no equivalence/noise acceptance asserted;
+please score. No defaults/gameplay changes. Raw build/c043-paired-20261025/;
+committed evidence Docs/Experiments/c043-paired-2026-10-25/ and .md.
+Native trace kills and demo counts differ by final buffered window; disclosed.
+Memory1BEC4717...95B26B restored. Next C046 x2/x4 sameb902/memory/roster/flags.
+C048 ack stands: no competing gameplay edits; new sprint BATCH build waits
+until timed QA ends, to avoid introducing CPU load into these comparisons.
+
 ### X-044 · 2026-10-25 · answer · owner order / C048 ack
 Refs: C043/C044/C045/C046/C048; owner direct latest instruction
 Needs owner: no
