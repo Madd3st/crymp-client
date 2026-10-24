@@ -37,8 +37,10 @@ const char* NameOf(BotBrain::State state)
 }
 }
 
-void BotBrain::Change(State state)
+void BotBrain::Change(State state,bool initialize)
 {
+    // Preserve Start's former silent initialization; normal transitions keep their exact effects.
+    if(initialize){m_state=state;return;}
 	if (m_state == state) return;
 	m_progress.Reset();
 	m_state = state;
@@ -177,7 +179,7 @@ bool BotBrain::Start(BotInstance& bot)
 	// Stagger 10 Hz decision frames across bots instead of running all on one frame.
 	m_tick = 0.1f * float(m_number % 10) / 10.0f;
 	m_nextTelemetry = 0;
-	m_state = State::SPAWNING;
+	Change(State::SPAWNING,true);
 	ResetLife();
 	bot.GetActor()->GetGameObject()->EnablePrePhysicsUpdate(ePPU_Always);
 	Change(State::SEEKING_WEAPON);
@@ -220,6 +222,30 @@ void BotBrain::Update(BotInstance& bot, float dt)
     m_actorId=actor.GetEntityId();
 	m_blackboard.Sample(actor,m_now);
 	m_locomotion.Observe(actor,m_blackboard,m_now);
+    UpdateTelemetry(actor);
+    if(UpdateDead(bot,actor,dt))return;
+	m_tick += dt;
+	if (m_tick < 0.1f) return; // Bound entity searches, raycasts and decisions to 10 Hz.
+	const float decisionTime = m_tick;
+    ++m_decisionSerial;
+	m_tick = 0;
+	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
+
+	m_intent=BotIntent();
+	m_intent.aim=actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f);
+    if(UpdateTest(actor,decisionTime))return;
+    const int& qaWeapon=BotConfig::Get().qaSocomOnly;
+    const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
+    if(UpdateWeaponSeek(actor,decisionTime,socomQA))return;
+	IActor* enemy = m_combat.FindEnemy(actor, m_now, m_verbose);
+	if (m_now<m_escapeUntil) enemy=nullptr; // A short, sensed-but-not-pursued local escape leg.
+    if(UpdateUpgrade(bot,actor,enemy,decisionTime,socomQA))return;
+    if(!enemy){UpdateRoam(bot,actor,decisionTime);return;}
+    UpdateCombat(bot,actor,decisionTime);
+}
+
+void BotBrain::UpdateTelemetry(CPlayer& actor)
+{
 	if (m_verbose && m_now >= m_nextTelemetry)
 	{
 		const Vec3 position = actor.GetEntity()->GetWorldPos();
@@ -252,6 +278,11 @@ void BotBrain::Update(BotInstance& bot, float dt)
             m_blackboard.velocity.GetLength2D(),m_blackboard.velocity.Dot(right),heading.Dot(sight),m_blackboard.blocked?1:0);
         m_nextTelemetry = m_now + 2.0f;
 	}
+
+}
+
+bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
+{
 	if (actor.GetHealth() <= 0)
 	{
 		m_trap.Reset(); m_trapStepUntil=0;
@@ -275,17 +306,14 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			}
 			else { Change(State::DEAD); m_deadTime = 0; }
 		}
-		return;
+		return true;
 	}
-	m_tick += dt;
-	if (m_tick < 0.1f) return; // Bound entity searches, raycasts and decisions to 10 Hz.
-	const float decisionTime = m_tick;
-    ++m_decisionSerial;
-	m_tick = 0;
-	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
 
-	m_intent=BotIntent();
-	m_intent.aim=actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f);
+    return false;
+}
+
+bool BotBrain::UpdateTest(CPlayer& actor,float decisionTime)
+{
 	if (m_now<m_testUntil)
 	{
 		if (m_testGait>=0) { m_intent.MoveTo(m_testGoal,m_testStrafe ? m_testLook : m_testGoal+Vec3(0,0,1.4f)); m_intent.gait=static_cast<BotGait>(m_testGait); m_intent.strafe=m_testStrafe!=0; }
@@ -293,15 +321,19 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		if (m_testJump!=BotJump::None) m_intent.suitMode=m_testJump==BotJump::Strength?NANOMODE_STRENGTH:NANOMODE_DEFENSE;
 		else if (m_testGait==int(BotGait::Sprint)) m_intent.suitMode=NANOMODE_SPEED;
 		if (m_now>=m_testJumpAt) m_testJump=BotJump::None; // Consume the command once, including a refused attempt.
-		ExecuteIntent(actor,decisionTime); return;
+		ExecuteIntent(actor,decisionTime); return true;
 	}
 	m_testGait=-1;
-    const int& qaWeapon=BotConfig::Get().qaSocomOnly;
-    const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
+
+    return false;
+}
+
+bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
+{
     if (socomQA && (!actor.GetCurrentItem() ||
         strcmp(actor.GetCurrentItem()->GetEntity()->GetClass()->GetName(),"SOCOM") ||
         !BotWeapons::Current(actor) || !BotWeapons::HasAmmunition(actor,*BotWeapons::Current(actor)))) {
-        m_combat.StopFire();m_intent.move=false;ExecuteIntent(actor,decisionTime);return;
+        m_combat.StopFire();m_intent.move=false;ExecuteIntent(actor,decisionTime);return true;
     }
 	if (!BotWeapons::SelectAvailable(actor))
 	{
@@ -337,11 +369,15 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		}
 		else { m_weaponTarget = 0; m_intent.move=false; Change(State::SEEKING_WEAPON); }
 		ExecuteIntent(actor,decisionTime);
-		return;
+		return true;
 	}
 
-	IActor* enemy = m_combat.FindEnemy(actor, m_now, m_verbose);
-	if (m_now<m_escapeUntil) enemy=nullptr; // A short, sensed-but-not-pursued local escape leg.
+
+    return false;
+}
+
+bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA)
+{
 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
 	if (!socomQA && (!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))
 	{
@@ -382,12 +418,17 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			}
 			else { const Vec3 step=Steer(feet,item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
 			ExecuteIntent(actor,decisionTime);
-			if (bot.GetActor()!=&actor) return;
-			return;
+			if (bot.GetActor()!=&actor) return true;
+			return true;
 		}
 	}
-	if (!enemy)
-	{
+
+    return false;
+}
+
+void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+{
+
 		Change(State::SEARCHING_ENEMY);
 		m_blackboard.enemy=0; m_blackboard.visible=false; m_blackboard.distance=0;
 		const Vec3 feet = actor.GetEntity()->GetWorldPos();
@@ -439,7 +480,11 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		else if (!m_blackboard.blocked) m_blockedSince=0;
 
 		return;
-	}
+
+}
+
+void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
+{
 	const bool visible = m_combat.Visible();
 	const Vec3 destination = m_combat.LastPosition();
 	m_blackboard.enemy=m_combat.Target(); m_blackboard.visible=visible;
@@ -481,6 +526,16 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	}
 	if (visible && distance <= (m_state == State::ATTACKING ? m_profile.holdRange : m_profile.engageRange))
 	{
+        UpdateAttacking(actor,destination,aim,distance,desiredRange);
+    }else{
+        UpdateChasing(actor,destination,aim,distance,visible);
+    }
+    UpdateCombatPost(bot,actor,decisionTime);
+}
+
+void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange)
+{
+
 		// Retreat locally when crowded; obstruction checks still forbid unsafe steps.
 		if (distance < (m_retreating ? m_profile.retreatExit : m_profile.retreatEnter))
 		{
@@ -528,9 +583,12 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			if (m_blackboard.grounded && m_blackboard.energy >= 110.0f && m_now >= m_nextDodge && Rand01() < m_profile.dodgeChance)
 			{ m_intent.jump=BotJump::Strength; m_intent.suitMode=NANOMODE_STRENGTH; m_nextDodge=m_now+4.0f; }
 		}
-	}
-	else
-	{
+
+}
+
+void BotBrain::UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,bool visible)
+{
+
 		Change(State::CHASING_ENEMY);
 		m_intent.MoveTo(Steer(actor.GetEntity()->GetWorldPos(),destination),aim);
 		// A visible target beyond engage range is still shot at while closing in, like a player
@@ -559,7 +617,12 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		if (!visible && distance>12.0f && distance<30.0f && BotSuit::CloakEnabled() && m_blackboard.energy>120.0f)
 		{ m_intent.suitMode=NANOMODE_CLOAK; m_intent.gait=BotGait::Walk; }
 
-	}
+
+}
+
+void BotBrain::UpdateCombatPost(BotInstance& bot,CPlayer& actor,float decisionTime)
+{
+
 	ExecuteIntent(actor,decisionTime);
 	if (bot.GetActor()!=&actor) return;
 	IWeapon* activeWeapon=BotWeapons::Current(actor);
@@ -571,7 +634,9 @@ void BotBrain::Update(BotInstance& bot, float dt)
 		m_combat.AvoidCurrent(m_now,8.0f); m_escapeUntil=m_now+1.5f;
 		m_detour=true; m_patrolUntil=0; m_nextRepath=0;
 	}
+
 }
+
 bool BotBrain::NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect)
 {
 	const int& experiment=BotConfig::Get().progressExperiment;

@@ -8,6 +8,7 @@
 #include "CryGame/Bots/BotTrapWatchdog.h"
 struct IConsoleCmdArgs;
 class CPlayer;
+struct IActor;
 namespace WarsBots
 {
 class BotInstance;
@@ -38,7 +39,18 @@ public:
     const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
 
 private:
-	void Change(State state);
+	void Change(State state,bool initialize=false);
+    void UpdateTelemetry(CPlayer& actor);
+    bool UpdateDead(BotInstance& bot,CPlayer& actor,float dt);
+    bool UpdateTest(CPlayer& actor,float decisionTime);
+    bool UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA);
+    bool UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA);
+    void UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime);
+    void UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime);
+    void UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange);
+    void UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,bool visible);
+    void UpdateCombatPost(BotInstance& bot,CPlayer& actor,float decisionTime);
+
 	void ResetLife();
 	void ExecuteIntent(CPlayer& actor, float dt);
 	bool NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect=false);
