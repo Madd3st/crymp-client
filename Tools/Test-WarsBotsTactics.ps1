@@ -138,7 +138,7 @@ try {
                 if($pace -ge 0){$commands=" +wb_bot_pace $pace"+$commands}
                 $demo=if($variant -eq 'candidate'){$CandidateDemoRecord}else{$BaselineDemoRecord}
                 if($demo -ge 0){$commands=" +wb_demo_record $demo"+$commands}
-                $gates=if($variant -eq 'candidate'){@($CandidateFeatureGates)}else{@($BaselineFeatureGates)}
+                $gates=@(if($variant -eq 'candidate'){$CandidateFeatureGates}else{$BaselineFeatureGates})
                 if($InspectFeatureGates){foreach($name in @('wb_bot_look','wb_bot_turn_cap','wb_bot_weapon_rank','wb_bot_arbiter','wb_bot_navmesh','wb_bot_perception','wb_bot_aim_model')){$commands=" +$name"+$commands}}
                 foreach($name in $gates){$commands=" +$name 1"+$commands}
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}

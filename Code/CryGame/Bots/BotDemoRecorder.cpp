@@ -109,6 +109,13 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
   nlohmann::json flags=nlohmann::json::object();
   const BotConfig& config=BotConfig::Get();
   flags["wb_bot_pace"]=config.botPace;
+  flags["wb_bot_look"]=config.botLook;
+  flags["wb_bot_turn_cap"]=config.botTurnCap;
+  flags["wb_bot_weapon_rank"]=config.weaponRank;
+  flags["wb_bot_arbiter"]=config.goalArbiter;
+  flags["wb_bot_navmesh"]=config.botNavmesh;
+  flags["wb_bot_perception"]=config.botPerception;
+  flags["wb_bot_aim_model"]=config.aimModel;
   flags["wb_spawn_exclude195"]=config.spawnExclude195;
   flags["wb_revive_guard"]=config.reviveGuard;
   flags["wb_trap_recovery"]=config.trapRecovery;
