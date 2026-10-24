@@ -24,6 +24,7 @@ const IntBinding kInts[]={
  {"wb_bot_turn_cap",&BotConfig::botTurnCap,"C-044 per-frame view turn-rate cap by skill (beginner 400 .. elite 900 deg/s) instead of 10 Hz look snaps. 0 OFF default."},
  {"wb_bot_weapon_rank",&BotConfig::weaponRank,"C-022 weapon value by range: pickups by value/distance, hold the best weapon for the fight distance. 0 OFF default."},
  {"wb_bot_arbiter",&BotConfig::goalArbiter,"C-032 goal arbiter: fight/hunt/weapon/roam with commitment windows and hysteresis. 0 OFF default."},
+ {"wb_bot_perception",&BotConfig::botPerception,"C-037 perception: new targets need the 110 deg view cone and time to notice (skill reaction); cloak hides beyond 12 m unless firing. 0 OFF default."},
  {"wb_bot_navmesh",&BotConfig::botNavmesh,"P0 Detour navmesh from %LOCALAPPDATA%/WarsBots/Navmesh/<Level>.navmesh for paths, weapon/roam reachability; BotNav graph fallback. 0 OFF default."},
  {"wb_fire_diagnostics",&BotConfig::fireDiagnostics,"Opt-in shot/hit diagnostics; at most 20000 records per level; default OFF."},
  {"wb_log",&BotConfig::logLevel,"WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file."},

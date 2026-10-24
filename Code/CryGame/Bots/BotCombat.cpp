@@ -6,6 +6,8 @@
 #include "CryGame/Bots/BotAimControl.h"
 #include "CryGame/Bots/BotTargeting.h"
 #include "CryGame/Actors/Actor.h"
+#include "CryGame/Actors/Player/Player.h"
+#include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Game.h"
 #include "CryCommon/CryAction/IActorSystem.h"
 #include "CryCommon/CryAction/IItemSystem.h"
@@ -29,7 +31,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; }
+void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_perception.Reset(); }
 
 void BotCombat::StopFire()
 {
@@ -153,6 +155,15 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 	IActor* best=nullptr;
 	float bestScore=-1e9f, oldScore=-1e9f;
 	m_visibleEnemies=0;
+	// C-037: a new target must be noticed (view cone + time to notice + cloak); the LOS ray alone is not enough.
+	const bool perception=BotConfig::Get().botPerception==1;
+	if (perception)
+	{
+		ObserverState o; o.now=now;
+		const Vec3 eye=Eyes(actor), fwd=movement.eyeDirection.GetNormalizedSafe(actor.GetEntity()->GetWorldRotation().GetColumn1());
+		o.eye=PVec{eye.x,eye.y,eye.z}; o.forward=PVec{fwd.x,fwd.y,fwd.z};
+		m_perception.BeginTick(o);
+	}
 	IActorIteratorPtr iterator=actors->CreateActorIterator();
 	while (IActor* candidate=iterator->Next())
 	{
@@ -162,7 +173,25 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 		if (!(distance<80.0f)) continue; // Also reject non-finite candidate positions.
 		EntityId obstruction=0;
 		// Unlike Observe, this does not overwrite selected-target memory while scanning.
-		if (!Sight(actor,*candidate,obstruction)) continue;
+		const bool los=Sight(actor,*candidate,obstruction);
+		if (perception)
+		{
+			TargetCue cue; cue.id=int(candidate->GetEntityId());
+			const Vec3 chest=AimPoint(*candidate); cue.pos=PVec{chest.x,chest.y,chest.z};
+			cue.losClear=los;
+			CPlayer* player=CPlayer::FromIActor(candidate);
+			CNanoSuit* suit=player ? player->GetNanoSuit() : nullptr;
+			cue.cloaked=suit && suit->IsActive() && suit->GetMode()==NANOMODE_CLOAK;
+			IItem* theirs=candidate->GetCurrentItem();
+			IWeapon* theirWeapon=theirs ? theirs->GetIWeapon() : nullptr;
+			IFireMode* theirMode=theirWeapon ? theirWeapon->GetFireMode(theirWeapon->GetCurrentFireMode()) : nullptr;
+			if (theirMode && theirMode->IsFiring()) cue.sinceShot=0.f; // muzzle flash / gunshot reveals
+			cue.damagedMe=candidate->GetEntityId()==m_retaliator && now<m_retaliatorUntil;
+			const TargetPercept seen=m_perception.Observe(cue);
+			const bool tracked=candidate==old && m_visible; // an acquired, still visible target is kept by LOS
+			if (!seen.visible && !tracked) continue;
+		}
+		else if (!los) continue;
 		++m_visibleEnemies;
 		const bool muzzle=movement.weaponPosition.IsValid() &&
 			(ClearRay(actor,*candidate,movement.weaponPosition,AimPoint(*candidate),obstruction) ||

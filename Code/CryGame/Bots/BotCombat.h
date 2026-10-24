@@ -2,6 +2,7 @@
 #include "CryCommon/CryMath/Cry_Math.h"
 #include "CryCommon/CryEntitySystem/IEntity.h"
 #include "CryGame/Bots/BotProfile.h"
+#include "CryGame/Bots/BotPerception.h"
 class CActor;
 struct IActor;
 namespace WarsBots
@@ -9,7 +10,7 @@ namespace WarsBots
 class BotCombat
 {
 public:
-	void Configure(const BotProfile& profile) { m_profile = profile; m_burst = profile.burst; m_burstGap = profile.burstGap; }
+	void Configure(const BotProfile& profile) { m_profile = profile; m_burst = profile.burst; m_burstGap = profile.burstGap; m_perception.SetReactionTime(profile.reaction); }
 	void Reset();
 	void StopFire();
 	void NotifyDamage(EntityId shooter, float now) { m_retaliator=shooter; m_retaliatorUntil=now+3.0f; }
@@ -37,6 +38,7 @@ public:
 	static unsigned TakeScanCount();
 private:
 	BotProfile m_profile;
+	BotPerception m_perception; // C-037, used only with wb_bot_perception=1
     bool m_preferHead=false;
     float m_nextAimChoice=0;
 	EntityId m_retaliator=0, m_avoid=0;
