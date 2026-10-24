@@ -1,4 +1,4 @@
-# Handoff for the next Claude coordinator session (2026-10-24 19:55 MSK)
+# Handoff for the next Claude coordinator session (updated 2026-10-25 00:10 MSK)
 
 Repo `Madd3st/crymp-client`. Read this, then `../STATUS.md` (current truth) and the mailbox. Do not re-derive
 history. The `warsbots-coordinator` skill (if the owner saved it) carries the same loop.
@@ -43,6 +43,22 @@ history. The `warsbots-coordinator` skill (if the owner saved it) carries the sa
 - Owner video: OCR `r_displayInfo` CamPos at 1 fps; speech-to-text is not available in this workspace.
 - Game folder `E:\Steam\steamapps\common\Crysis\Bin64\_dlss_backup\` holds dgVoodoo/DLSS leftovers moved out
   on 2026-10-24 (client now renders plain DX9).
+
+## Now (00:10, 25.10)
+
+- Codex: C-025 + C-040 done (f488b89f), C-027 refactor in progress (R1 caddc3ea, R4 b902dfb4, checkpoint 87413709);
+  next C-027 R3 + paired run → Claude verdict; then C-033 look-along-travel with evidence C-042.
+- Owner rebooting PC ~00:05; after reboot he tells Codex "продолжай C-027 по почте".
+- OpenCode: Go out of funds; free models reset 03:00; task OC-024 (review recast_bake + movers).
+- Claude done tonight: Recast v1→v3 (`Tools/RecastBake`, verdict `SteelmillTriage/RECAST-BAKE-2026-10-24.md`; Steelmill/
+  Quarry/Outpost 100 %, Armada 37/40 with lifts/ladders from level `.cry` editor scene), C-041 cancelled; demo metrics on
+  owner playtest 23:33 (`look_walls.py`: look > 90° off travel 32 %, stares = aim point through walls → C-042); demo →
+  2D replay (`replay.build_from_demo`, artifact "Steelmill Replay" https://claude.ai/artifact/TdrcTf6yYwuYWgfpmcCXof);
+  wiki pages `Docs/Wiki/` (owner must push them into the GitHub wiki himself: proxy blocks `crymp-client.wiki`);
+  branch cleanup done (old branches → tags `archive/*`, 4 WarsBots branches left).
+- Read access: owner granted `E:\Steam\steamapps\common\Crysis\Game\Levels\Multiplayer\IA` (level .pak/.cry, read only).
+- Local leftovers: `/home/claude/wiki.git` (unpushable wiki clone; commit kept on branch `wiki-pages-local`), `/home/claude/recast`
+  (build + baked meshes, not committed).
 
 ## Pending for Claude (19:55; queue and risks in ../STATUS.md)
 
