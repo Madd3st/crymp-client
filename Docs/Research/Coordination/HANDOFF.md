@@ -57,6 +57,8 @@ verdict (improved / no change / regression, with numbers and evidence type: src 
 
 ## Pending Claude tasks
 
-- Adapt `Tools/SteelmillTriage/wblab/navgraph.py` to `warsbots/botnav-graph/1`.
+- Done 2026-10-24: Triage `navgraph.py` reads `warsbots/botnav-graph/1` (validator, fingerprint,
+  memory link, BotNav-exact offline A*). Waits for a real `wb_nav_export` file.
+
 - After step 2 lands: before/after pace report with `steelmill_triage.py movement`.
 - After the owner's trace session: human baseline and concrete threshold targets.

@@ -5,7 +5,7 @@
 `warsbots/research/steelmill-lab`). It is the single contract to implement: it is more precise
 (per-node `ix, iy, layer`; this file wrongly suggested exporting `Node::column`, which keeps only
 the low 32 bits of `Key(ix, iy)`, i.e. `iy`), and its validator already exists. The Triage
-`navgraph.py` reader will be adapted to that schema instead of `wbnav/1`.
+`navgraph.py` reader now reads that schema only (`wbnav/1` is rejected).
 
 What remains here and is **not** in the Lab contract is the log addendum below; it is part of the
 same small Codex patch.

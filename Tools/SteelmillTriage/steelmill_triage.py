@@ -2,8 +2,8 @@
 """Steelmill Triage: offline inspection of WarsBots map memory, trace logs and (future) graph exports.
 
   steelmill_triage.py mem  <file.mem> [--against older.mem]       memory statistics / growth
-  steelmill_triage.py analyze <run.bots.log>... [--mem f.mem] [--graph nav.json] [--out DIR]
-  steelmill_triage.py graph <nav.json> [--mem f.mem] [--replay run.bots.log]
+  steelmill_triage.py analyze <run.bots.log>... [--mem f.mem] [--graph level.graph.json] [--out DIR]
+  steelmill_triage.py graph <level.graph.json> [--mem f.mem] [--replay run.bots.log]   (warsbots/botnav-graph/1)
   steelmill_triage.py movement <run.bots.log>...                   pace profile, bots vs humans
 
 Read-only: never writes next to its inputs. Stdlib only (Python 3.9+).
@@ -29,9 +29,7 @@ def cmd_mem(a):
 
 def cmd_analyze(a):
     memory = mem.read(a.mem) if a.mem else None
-    graph = navgraph.load(a.graph) if a.graph else None
-    if graph and memory:
-        navgraph.validate(graph.data, memory)
+    graph = navgraph.load(a.graph, memory) if a.graph else None
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     results, payloads = [], []
     for path in a.logs:
@@ -61,19 +59,23 @@ def cmd_analyze(a):
 
 
 def cmd_graph(a):
-    g = navgraph.load(a.file)
     memory = mem.read(a.mem) if a.mem else None
-    if memory: navgraph.validate(g.data, memory)
-    strong = g.components(); weak = g.components(undirected=True)
-    out = dict(nodes=len(g.nodes), edges=len(g.to), one_way_edges=g.one_way_edges(),
-               strong_components=len(strong), largest_strong=len(strong[0]) if strong else 0,
-               weak_components=len(weak), largest_weak=len(weak[0]) if weak else 0,
-               isolated_nodes=sum(1 for c in weak if len(c) == 1))
-    if a.replay:
-        for run in logparse.parse_file(a.replay):
-            counts, _ = navgraph.replay_fallbacks(g, run, memory.stuck if memory else None, limit=a.replay_limit)
-            out.setdefault("fallback_replay", []).append(counts)
+    data = navgraph.read_json(a.file)
+    errors, warnings = navgraph.check(data, memory)
+    out = dict(schema="steelmill-triage-graph/1", file=Path(a.file).name, valid=not errors,
+               errors=errors, warnings_total=len(warnings), warnings=warnings[:20])
+    if not errors:
+        g = navgraph.NavGraph(data)
+        out.update(g.summary())
+        if memory:
+            out["memory_link"] = "OK"
+        if a.replay:
+            for run in logparse.parse_file(a.replay):
+                counts, _ = navgraph.replay_fallbacks(g, run, memory.stuck if memory else None, limit=a.replay_limit)
+                out.setdefault("fallback_replay", []).append(dict(run=run.index, **counts))
     print(json.dumps(out, indent=2))
+    if errors:
+        raise SystemExit(2)
 
 
 def cmd_movement(a):

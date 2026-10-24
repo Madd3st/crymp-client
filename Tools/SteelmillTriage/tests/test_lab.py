@@ -111,17 +111,23 @@ class LogTests(unittest.TestCase):
 
 
 def tiny_graph():
-    # 4 nodes on a line in separate columns (3 m), plus an isolated roof node 1.
-    nodes = [[101.5, 201.5, 0.0, 0], [101.5, 201.5, 8.0, 0], [104.5, 201.5, 0.0, 1], [107.5, 201.5, 0.0, 2]]
-    adj = {0: [2], 1: [], 2: [0, 3], 3: [2]}
-    first, count, to, cost = [], [], [], []
-    for i in range(4):
-        first.append(len(to)); count.append(len(adj[i]))
-        for j in adj[i]: to.append(j); cost.append(3.0)
-    return dict(schema="wbnav/1", level="Test", build=dict(sha="x"),
-                grid=dict(nx=3, ny=1, cell=3.0, min_x=100.0, min_y=200.0),
-                counts=dict(nodes=4, edges=len(to)), nodes=nodes,
-                edges=dict(first=first, count=count, to=to, cost=cost))
+    # warsbots/botnav-graph/1: 3 ground nodes on a line (columns 0..2) plus an isolated roof
+    # node above column 0 (layer 0 = topmost, so the roof is layer 0 and the ground layer 1).
+    nodes = [[0, 101.5, 201.5, 8.0, 0, 0, 0], [1, 101.5, 201.5, 0.0, 0, 0, 1],
+             [2, 104.5, 201.5, 0.0, 1, 0, 0], [3, 107.5, 201.5, 0.0, 2, 0, 0]]
+    edges = [[1, 2, 3.0], [2, 1, 3.0], [2, 3, 3.0], [3, 2, 3.0]]
+    d = dict(schema=navgraph.SCHEMA, fixture=True, level="Test", source="test",
+             build=dict(nx=3, ny=1, cell=3.0, min_x=100.0, min_y=200.0, min_z=-1.0, max_z=10.0, max_layers=5),
+             counts=dict(nodes=4, edges=4, truncated_edge_lists=0),
+             node_columns=list(navgraph.NODE_COLUMNS), nodes=nodes,
+             edge_columns=list(navgraph.EDGE_COLUMNS), edges=edges,
+             memory_compat=dict(nx=3, ny=1, cell=3.0, min_x=100.0, min_y=200.0, count=4))
+    d["fingerprint"] = navgraph.fingerprint(d)
+    return d
+
+
+def broken(mutate):
+    d = tiny_graph(); mutate(d); return navgraph.check(d)[0]
 
 
 class MovementTests(unittest.TestCase):
@@ -148,21 +154,72 @@ class MovementTests(unittest.TestCase):
 
 class GraphTests(unittest.TestCase):
     def test_validate_and_paths(self):
-        d = tiny_graph(); navgraph.validate(d)
+        d = tiny_graph(); r = navgraph.validate(d)
+        self.assertTrue(r["ok"]); self.assertTrue(r["fixture"])
         g = navgraph.NavGraph(d)
         self.assertEqual(g.find_path((101, 201, 0), (107, 201, 0))[0], "ok")
+        self.assertEqual(g.find_path((101, 201, 0), (107, 201, 0))[1], [1, 2, 3])
         self.assertEqual(g.find_path((101, 201, 0), (101, 201, 8))[0], "unreachable")
         self.assertEqual(g.find_path((101, 201, 30), (107, 201, 0))[0], "start_unprojected")
         self.assertEqual(g.find_path((101, 201, 0), (107, 201, 0), budget=1)[0], "budget")
+        self.assertEqual(g.find_path((101, 201, 0), (101.4, 201, 0))[0], "same_node")
         self.assertEqual(len(g.components(undirected=True)), 2)
         self.assertEqual(g.one_way_edges(), 0)
+        self.assertEqual(g.summary()["isolated_nodes"], 1)
 
-    def test_validate_rejects_broken_csr_and_foreign_memory(self):
-        d = tiny_graph(); d["edges"]["first"][2] += 1
-        with self.assertRaises(navgraph.GraphError): navgraph.validate(d)
+    def test_nearest_truncates_like_cpp(self):
+        g = navgraph.NavGraph(tiny_graph())
+        # x = 99.0 is 1 m west of min_x: C++ int(-0.33) = 0 -> column 0, floor() would give -1.
+        self.assertEqual(g.col(99.0, 201.0), (0, 0))
+
+    def test_rejects_contract_violations(self):
+        self.assertTrue(broken(lambda d: d.update(schema="wbnav/1")))
+        self.assertIn("retired", broken(lambda d: d.update(schema="wbnav/1"))[0])
+        self.assertTrue(broken(lambda d: d["nodes"][2].__setitem__(0, 7)))            # id != index
+        self.assertTrue(broken(lambda d: d["nodes"][3].__setitem__(6, 5)))            # layer >= max
+        self.assertTrue(broken(lambda d: d["nodes"][3].__setitem__(4, 1)))            # duplicate slot
+        self.assertTrue(broken(lambda d: d["edges"].append([1, 3, 6.0])))             # Chebyshev 2
+        self.assertTrue(broken(lambda d: d["edges"].insert(0, [3, 2, 3.0])))          # not m_edges order
+        self.assertTrue(broken(lambda d: d["edges"].__setitem__(0, [1, 1, 1.0])))     # self loop
+        self.assertTrue(broken(lambda d: d["counts"].update(edges=9)))
+        self.assertTrue(broken(lambda d: d.update(fingerprint="0" * 64)))
+        self.assertTrue(broken(lambda d: d["memory_compat"].update(count=5)))
+
+    def test_warnings_are_not_errors(self):
+        d = tiny_graph(); d["edges"][0][2] = 3.5; d["fingerprint"] = navgraph.fingerprint(d)
+        err, warn = navgraph.check(d)
+        self.assertEqual(err, []); self.assertTrue(any("3D distance" in w for w in warn))
+
+    def test_memory_link(self):
         with self.assertRaises(navgraph.GraphError): navgraph.validate(tiny_graph(), make_mem(4))
         ok = mem.MapMemory(3, 1, 3.0, 100.0, 200.0, [0.0] * 4, [0.0] * 4, [0.0] * 4)
-        self.assertTrue(navgraph.validate(tiny_graph(), ok))
+        self.assertTrue(navgraph.validate(tiny_graph(), ok)["ok"])
+
+    def test_stuck_penalty_changes_route(self):
+        # Diamond: 0 -> {1, 2} -> 3; penalising node 1 must route via 2.
+        d = tiny_graph()
+        d["build"].update(nx=3, ny=3)
+        d["nodes"] = [[0, 101.5, 201.5, 0.0, 0, 0, 0], [1, 104.5, 201.5, 0.0, 1, 0, 0],
+                      [2, 104.5, 204.5, 0.0, 1, 1, 0], [3, 107.5, 204.5, 0.0, 2, 1, 0]]
+        s2 = 18 ** 0.5
+        d["edges"] = [[0, 1, 3.0], [0, 2, s2], [1, 3, s2], [2, 3, 3.0]]
+        g = navgraph.NavGraph(d)
+        self.assertEqual(g.find_path((101.5, 201.5, 0), (107.5, 204.5, 0), stuck=[0, 6, 0, 0])[1], [0, 2, 3])
+
+    def test_lab_fixture_validates_with_same_fingerprint(self):
+        f = Path(__file__).parent / "fixtures" / "fixture_graph.json"
+        d = navgraph.read_json(f)
+        self.assertEqual(navgraph.check(d)[0], [])
+        self.assertEqual(navgraph.fingerprint(d), d["fingerprint"])
+        s = navgraph.NavGraph(d).summary()
+        self.assertEqual((s["nodes"], s["edges"]), (51, 276))
+
+    def test_gzip_and_size_cap(self):
+        import gzip
+        with tempfile.TemporaryDirectory() as t:
+            p = Path(t) / "g.graph.json.gz"
+            p.write_bytes(gzip.compress(json.dumps(tiny_graph()).encode()))
+            self.assertEqual(len(navgraph.load(p).nodes), 4)
 
 
 class RenderTests(unittest.TestCase):

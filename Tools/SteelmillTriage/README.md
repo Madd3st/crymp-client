@@ -6,7 +6,7 @@ only. Nothing here talks to a running game, and nothing writes next to its input
 ```
 python Tools/SteelmillTriage/steelmill_triage.py mem  "<My Games>/Crysis/WarsBots/Multiplayer_IA_Steelmill.mem" [--against before.mem]
 python Tools/SteelmillTriage/steelmill_triage.py analyze <run.bots.log>... --mem <level.mem> --out lab-out
-python Tools/SteelmillTriage/steelmill_triage.py graph <level.nav.json> --mem <level.mem> --replay <run.bots.log>
+python Tools/SteelmillTriage/steelmill_triage.py graph <level.graph.json> --mem <level.mem> --replay <run.bots.log>
 python -m unittest discover -s Tools/SteelmillTriage/tests
 ```
 
@@ -23,7 +23,12 @@ layers, floor filter, hover details, click a trap row to zoom its floor). Copy l
 | Dataset quality checks (action vs state, unattributed lines) | yes | — |
 | Movement pace by state, sprint/suit/energy, bot vs human through the same LOS channel (`movement`) | yes | human trace (`MOVE TRACE`) for a real baseline |
 | Map viewer: positions, deaths, revives, stalls, pins, fallbacks | yes | — |
-| Graph layer, memory on map, components, one-way edges, offline A* replay | code + synthetic tests only (`wbnav/1`, to be moved to the Lab schema) | graph export per the Lab contract |
+| Graph reader (`warsbots/botnav-graph/1`): contract §4 validation, §5 fingerprint, `memory_compat` vs `.mem`, components, dead ends, vertical classes, offline A* replay of `NAV fallback` | yes, on the Lab fixture + synthetic tests; exit code 2 on an invalid export | a real `wb_nav_export` file (HANDOFF step 4) |
+
+`graph` output: `valid`, `errors`, `warnings`, then the graph summary; with `--mem`, `memory_link: OK`
+means `BotNav::Load` would accept that memory for this graph. Offline `Nearest`/`FindPath` follow
+`BotNav.cpp` line by line (C++ `int()` truncation for the column, strict `<` ties, 6000-expansion cap,
+success as soon as the goal has a parent). The legacy `wbnav/1` schema is rejected.
 
 Limits: positions are telemetry samples, not the walkable surface; `blocked` is BotMovement's
 refusal, not physics contact; offline A* omits the visibility ray in `BotNav::Nearest`, so an

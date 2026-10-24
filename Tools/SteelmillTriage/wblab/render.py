@@ -139,7 +139,7 @@ tbody tr { cursor: pointer } tbody tr:hover { background: var(--mapbg) }
       <span id="zinfo"></span>
     </div>
     <p class="note">World X right, Y up, 3 m BotNav grid. Small dots are sampled live bot positions (every ~2 s), blue low to orange high.
-      Graph layer appears only when a wbnav/1 export is loaded; the .mem file alone has no coordinates.</p>
+      Graph layer appears only when a warsbots/botnav-graph/1 export is loaded; the .mem file alone has no coordinates.</p>
   </div>
   <div class="rail">
     <div class="card"><h2>Summary</h2><div class="kv" id="kv"></div></div>

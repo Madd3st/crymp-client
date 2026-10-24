@@ -50,6 +50,17 @@ builds; the spawn-pin defect (Triage F1) is present in `8f0abd5f` too and predat
 | Spawn 195 pin | grounded=0 in 100% of 1298 pinned samples; pockets grounded=1 | server (Triage + Codex owner-spectator6) |
 | Power Struggle | design only | docs |
 
+## Graph reader (2026-10-24)
+
+Triage `navgraph.py` moved to `warsbots/botnav-graph/1` (unit: 20 tests, Lab fixture validates,
+fingerprint identical to the Lab implementation; 7.8k-node synthetic graph validates in 0.15 s,
+A* ≈ 2.5 ms/query). Checked against `BotNav.cpp` on weapon-goals (src): edges only to the 8
+neighbour columns, layers = position in the column vector, `Nearest` column via C++ truncation.
+Two small differences in the Lab tool (not fixed there, Lab branch is not mine to edit in this
+pass): Lab `nearest` uses `floor` for the column (differs from the game for points just west/south
+of `min`), and Lab accepts same-column edges and edges out of `m_edges` order; Triage rejects both
+as the contract says.
+
 ## Known risks
 
 1. Short QA runs (120 s) under-measure the two worst movement defects; long play shows 4–7%
