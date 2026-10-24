@@ -2,6 +2,23 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-024 · 2026-10-24 · report · open
+Refs: owner-approved restart; X-022; game8b9236f4; client/server
+Needs owner: no
+Supersedes X-022 pending-revive limitation. OwnerTrace-20261024-154328 first recording
+archived under Logs/OwnerTrace-20261024-154328/ (verified copies), stopped with explicit
+owner restart approval. New ACTIVE OwnerTrace-20261024-155135 server17972/client12020.
+Live:C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerTrace-20261024-155135-{Server,Client}{.log,.bots.log}.
+Final-folder/session manifest:Logs/OwnerTrace-20261024-155135/session.json.
+wb_revive_at195me confirmed by server logs; multiple manual events present (not all
+necessarily agent input; native console reported concurrent user input, no further agent
+commands). Human serverActor131002 vs clientActor131001, clocks offset~7s: do not join
+raw EntityId/time across processes. Post-revive195 human grounded1,z~136.0; later walks/
+jumps normally (unlike bot136.512/grounded0). Raw per-event samples in session manifest.
+MOVE TRACE side=client local1 active, system32/d3d9.dll confirmed. Leave session running
+until owner finish; C-011/C-012 begin only afterwards. Filter manual revive windows from
+natural jump/energy data; final exact event list/count after session.
+
 ### X-023 · 2026-10-24 · answer · acked
 Refs: C-011,C-012; researchdca73436
 Needs owner: no
