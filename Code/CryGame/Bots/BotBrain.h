@@ -26,6 +26,7 @@ public:
 	void NotifyDamage(EntityId shooter) { m_combat.NotifyDamage(shooter,m_now); }
 	void AbilityCommand(BotInstance& bot, IConsoleCmdArgs* args);
 	bool Running() const { return m_running; }
+    bool RequestsMovement() const { return m_running && m_intent.move; }
 	void SetVerbose(bool enabled) { m_verbose = enabled; }
 	const char* StateName() const;
 	EntityId Target() const { return m_combat.Target(); }

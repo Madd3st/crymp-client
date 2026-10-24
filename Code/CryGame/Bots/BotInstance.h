@@ -7,6 +7,7 @@
 #include "CryGame/Bots/BotBrain.h"
 #include "CryGame/Bots/BotProfile.h"
 #include "CryGame/Bots/BotPhysicsProbe.h"
+#include "CryGame/Bots/BotReviveGuard.h"
 
 struct HitInfo;
 class CActor;
@@ -59,6 +60,11 @@ public:
 	void ResetProfile() { m_maxUpdateMs = m_totalUpdateMs = 0; m_updateCount = 0; }
 
 private:
+    bool DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRetry);
+    void CheckReviveGuard(float now);
+    BotReviveGuard m_reviveGuard;
+    Vec3 m_guardOrigin=Vec3(0,0,0);
+    std::vector<EntityId> m_guardFailedSpawns;
     bool PhysicsDiagnostics() const;
     void BeginPhysicsProbe(const char* origin);
     void TracePhysics(const char* phase, float elapsed) const;

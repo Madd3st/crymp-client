@@ -53,7 +53,7 @@ public:
 
 	// Spawn point selection shared by initial spawn and revive: safe from other Player
 	// bodies and level geometry; `avoid` is used only when nothing else passes.
-	EntityId ChooseSpawnLocation(EntityId self, EntityId avoid) const;
+	EntityId ChooseSpawnLocation(EntityId self, EntityId avoid, const std::vector<EntityId>* rejected=nullptr) const;
 
 	// Called by BotInstance::Spawn so ownership is visible during IA registration.
 	void Adopt(BotInstance& instance) { m_spawning = &instance; }

@@ -14,6 +14,7 @@
 #include "CryCommon/CryAction/IActorSystem.h"
 #include <cstdio>
 #include <cstring>
+#include <cmath>
 
 namespace WarsBots
 {
@@ -80,6 +81,7 @@ bool BotInstance::Spawn(const Vec3& position)
 
 void BotInstance::Remove()
 {
+    m_reviveGuard.Cancel();
     m_physicsProbe.Cancel();
 	m_brain.Stop(*this);
 	if (!m_entityId)
@@ -110,6 +112,7 @@ void BotInstance::Remove()
 
 void BotInstance::OnEntityDone()
 {
+    m_reviveGuard.Cancel();
     m_physicsProbe.Cancel();
 	if (!m_entityId)
 		return;
@@ -230,6 +233,7 @@ void BotInstance::Update(float dt)
 {
 	const CTimeValue started = gEnv->pTimer->GetAsyncTime();
 	m_brain.Update(*this, dt);
+    CheckReviveGuard(gEnv->pTimer->GetFrameStartTime().GetSeconds());
     CActor* sampled=GetActor();
     if (!PhysicsDiagnostics() || !sampled || sampled->GetHealth()<=0) m_physicsProbe.Cancel();
     else
@@ -258,6 +262,11 @@ void BotInstance::Update(float dt)
 
 bool BotInstance::Revive(EntityId forcedSpawn, float forcedZOffset)
 {
+    return DoRevive(forcedSpawn,forcedZOffset,false);
+}
+
+bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRetry)
+{
 	if (!Owns(m_entityId) || !CanRunLocalIA())
 	{
 		WB_LOG(1, "[WarsBots] #%d revive refused: requires owned actor and open local IA gate.", m_number);
@@ -265,14 +274,14 @@ bool BotInstance::Revive(EntityId forcedSpawn, float forcedZOffset)
 	}
 	CGameRules* rules = g_pGame->GetGameRules();
 	CActor* actor = GetActor();
-	if (!rules || !actor || actor->GetHealth() > 0 || actor->GetChannelId() != 0 || !actor->GetInventory() ||
+	if (!rules || !actor || (!guardRetry && actor->GetHealth()>0) || (guardRetry && actor->GetHealth()<=0) || actor->GetChannelId() != 0 || !actor->GetInventory() ||
 		actor->GetLinkedVehicle() || rules->IsFrozen(m_entityId))
 	{
-		WB_LOG(1, "[WarsBots] #%d revive refused: actor must be a dead, unfrozen Player with inventory and no vehicle.", m_number);
+		WB_LOG(1, "[WarsBots] #%d revive refused: owned actor needs correct life state, inventory, no freeze/vehicle.", m_number);
 		return false;
 	}
 	const EntityId id = m_entityId;
-	const EntityId chosen = forcedSpawn ? forcedSpawn : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation);
+	const EntityId chosen = forcedSpawn ? forcedSpawn : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation,guardRetry?&m_guardFailedSpawns:nullptr);
 	if (!chosen)
 	{
 		WB_LOG(1, "[WarsBots] #%d revive deferred: no safe IA spawn; retry in 5 seconds.", m_number);
@@ -296,7 +305,7 @@ bool BotInstance::Revive(EntityId forcedSpawn, float forcedZOffset)
 	const Ang3 angles(spawn->GetWorldRotation());
 	WB_LOG(2, "[WarsBots] #%d revive requested EntityId=%u spawnId=%u previousSpawn=%u position=(%.3f,%.3f,%.3f).",
 		m_number, id, chosen, m_lastSpawnLocation, position.x, position.y, position.z);
-	rules->RevivePlayer(actor, position, angles, 0, true);
+	rules->RevivePlayer(actor, position, angles, 0, !guardRetry);
     if((hooks&2) && actor->GetEntity()->GetScriptTable())
         WB_LOG(0,"[WarsBots] DEBUG REVIVE UpdateAreas actor=%u called=%d",id,Script::CallMethod(actor->GetEntity()->GetScriptTable(),"UpdateAreas")?1:0);
 
@@ -307,15 +316,48 @@ bool BotInstance::Revive(EntityId forcedSpawn, float forcedZOffset)
 		m_number, id, Owns(id) ? 1 : 0, alive ? 1 : 0, revived ? revived->GetHealth() : -1);
 	if (alive)
 	{
-		BotMatch::EquipLikePlayer(*rules, *revived);
+		if(!guardRetry)BotMatch::EquipLikePlayer(*rules, *revived);
 		m_lastSpawnLocation = chosen;
 		m_lastHealth = revived->GetHealth();
 		m_lastHitShooter = 0;
 		m_killPlayerObserved = false;
         BeginPhysicsProbe("revive");
+        const ICVar* guard=gEnv->pConsole->GetCVar("wb_revive_guard");
+        if(guard && guard->GetIVal()==1){
+            if(!guardRetry)m_guardFailedSpawns.clear();
+            m_guardOrigin=revived->GetEntity()->GetWorldPos();
+            m_reviveGuard.Begin(gEnv->pTimer->GetFrameStartTime().GetSeconds(),!guardRetry);
+        }else m_reviveGuard.Cancel();
 	}
 	return alive;
 }
+void BotInstance::CheckReviveGuard(float now)
+{
+    if(!m_reviveGuard.Pending())return;
+    const ICVar* flag=gEnv->pConsole->GetCVar("wb_revive_guard");
+    CActor* actor=GetActor();
+    if(!flag || flag->GetIVal()!=1 || !CanRunLocalIA() || !Owns(m_entityId) || !m_brain.Running() ||
+        !actor || actor->GetHealth()<=0 || actor->GetLinkedVehicle() || g_pGame->GetGameRules()->IsFrozen(m_entityId))
+    {m_reviveGuard.Cancel();return;}
+    const float moved=(actor->GetEntity()->GetWorldPos()-m_guardOrigin).GetLength();
+    pe_status_living living;bool bad=false;
+    if(IPhysicalEntity* physics=actor->GetEntity()->GetPhysics())
+        if(physics->GetStatus(&living))bad=living.bStuck || !std::isfinite(living.groundHeight) || living.groundHeight< -1e8f;
+    const bool requesting=m_brain.RequestsMovement();
+    const auto result=m_reviveGuard.Check(now,moved,requesting,bad);
+    if(result!=BotReviveGuard::Result::Retry && result!=BotReviveGuard::Result::Exhausted)return;
+    WB_LOG(0,"[WarsBots] REVIVE GUARD actor=%u spawn=%u moved=%.3f retry=%u requesting=%d badBody=%d exhausted=%d",m_entityId,m_lastSpawnLocation,moved,m_reviveGuard.Retries(),requesting?1:0,bad?1:0,result==BotReviveGuard::Result::Exhausted?1:0);
+    if(result==BotReviveGuard::Result::Exhausted)return;
+    m_guardFailedSpawns.push_back(m_lastSpawnLocation);
+    m_brain.Stop(*this);
+    const bool revived=DoRevive(0,.2f,true);
+    if(Owns(m_entityId) && GetActor() && GetActor()->GetHealth()>0){
+        m_brain.Start(*this);
+        if(!revived)m_reviveGuard.Begin(now,false); // At most2 attempts even when no safe point is free.
+    }else m_reviveGuard.Cancel();
+    WB_LOG(0,"[WarsBots] REVIVE GUARD result actor=%u spawn=%u retry=%u revived=%d nativeKill=0",m_entityId,m_lastSpawnLocation,m_reviveGuard.Retries(),revived?1:0);
+}
+
 // Explicit diagnostic relocation, never called by automatic trap recovery.
 bool BotInstance::DebugTeleport(const Vec3& position)
 {
