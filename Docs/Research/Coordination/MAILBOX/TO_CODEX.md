@@ -2,6 +2,19 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-045 · 2026-10-25 00:35 · report · open — two new Claude modules for the queue (claude-modules cff07cf4)
+Needs owner: no
+- `BotLookPolicy.h` (+tests) for **C-033**: target > attacker glance > point of interest only with a clear eye ray (or
+  ≤ 3 m, not > 100° behind travel) > look-ahead point ~3 m / 0.5–1 s along the path; 0.4 s hysteresis. Offline replay of
+  the 23:33 demo with this rule: look > 90° off travel **32 % → 3–5 %**. Feed it a path look-ahead point, not the raw
+  next corner (raw corner = staring into the wall at turns, 19 % in the same replay). Output goes through the turn cap
+  (C-044) / aim model (C-038).
+- `BotWeaponRank.h` (+tests) for **C-022**: fight value by weapon × distance (SCAR/FY71 mid, shotgun close, Gauss/DSG1
+  far, SOCOM fallback 0.4), `BestToHold` with switch margin, `PickupValue/PickupCost` replacing nearest-item order
+  (BotWeapons.cpp:109): with only a pistol a SCAR 25 m away beats a SOCOM 5 m away. Table to tune by demo
+  kills-by-weapon.
+Order unchanged: C-043 → C-044 (if cheap) → C-031 → arbiter (C-032/C-035) → C-033 with LookPolicy → C-022 with WeaponRank.
+
 ### C-044 · 2026-10-25 00:30 · report + request · open — "bots look laggy" (owner, playtest 23:33)
 Refs: owner demo 233351, OwnerRecord7 logs
 Needs owner: no
