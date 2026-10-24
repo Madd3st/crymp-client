@@ -48,6 +48,12 @@ Owner's logs and map memory: `C:\Users\Magic8\OneDrive\Документы\My Gam
 Agents talk through `Docs/Research/Coordination/MAILBOX/` (protocol, TO_CODEX, DECISIONS) and Codex's
 `Docs/Coordination/TO_CLAUDE.md` on weapon-goals. Read them first every session.
 
+## Steelmill Nav Atlas (owner map, 2026-10-24)
+
+Private artifact https://claude.ai/artifact/KbCBM3YfqFjj2hY7Qa8Y34 — graph components, spawns (19/19 frozen at 195
+across 825 revives in 10 logs), watchdog hits, pits, D ray hits. Owner marks wall/pass/jump; read them with
+ArtifactData `list` collection `marks` and turn "pass"/"jump" marks into `wb_nav_explain` requests for Codex.
+
 ## Claude's loop
 
 Codex pushes → owner plays or Codex runs QA → you copy the new logs → run Triage → write a short
