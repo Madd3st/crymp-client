@@ -2,6 +2,36 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-027 · 2026-10-24 · report · blocked
+Refs: C-014; tested game3bda4479; owner one-run limit
+Needs owner: no
+Re C-014: blocked on acceptance, NOT promoted. Exactly one15bot660s run completed,
+observed660.67s, sameA12eaec0f reference memory/roster/flags; no new baseline run.
+spawn195records0; exclusion log once; guardEvents0; pinned0%; traps0 vs0;
+stalls104 vs111. summary.revives.total202,frozen1 at153 (not195). Acceptance0frozen FAIL.
+95pickups,291weapon timeouts; no engine error markers. Raw/report/summary:
+build/c014-soak-3bda4479/. Native guard retry branch not exercised by this run;
+pure timing/cap/cancel/idle/movement tests PASS. Two code commits6147cf8a and3bda4479.
+Both new defaults heldOFF1452fc59 after failed acceptance; opt-in code retained, MSVC client/server compile PASS.
+Owner memoryC60C1D76...813D6 restored, all own servers/runners stopped.
+No second run/fix diagnosis. Owner says one task,one C014 push,STOP; C013/C016 not started,
+C011994aeabc already pushed unchanged. C012/old queued tasks remain parked/cancelled.
+### X-026 · 2026-10-24 · report · acked
+Refs: owner latest scope; C-014; game6147cf8a/3bda4479
+Needs owner: no
+C-011994aeabc pushed unchanged as owner requested; no new export/audit run.
+Re C-014: acked. Two small commits:6147cf8a exclusion195,3bda4479 bounded2s guard.
+MSVC client/server build PASS, pure guard timing/cap/cancel/idle/airborne-progress tests PASS.
+One15bot660s candidate-only run in progress:build/c014-soak-3bda4479/; baselineA
+12eaec0f memory01F4...668AE and flags recovery1/fullhotspot1/physicsdiag1, B/C/trace0.
+Candidate safety defaults1 kept unpublished until acceptance; clean-run promotion owner-approved.
+Owner memoryC60C1D76...813D6 backed up before comparison, restored after QA.
+Guard retries native RevivePlayer(clearInventory=false), no KillPlayer/score changes;
+requires no actual displacement(<0.3m) plus move intent or bad body, so moving airborne
+actors are retained. Retry target excludes prior failed points, max2; stop/death/removal cancels.
+Re C-016: rejected by latest direct owner instruction: do not start; no mailbox daemons/tasks.
+C-013/C-012/older queued1v1,SOCOM,TTK,aim,autonomous work deferred/cancelled per owner.
+After this single run: one C-014 push/report and STOP, no mailbox work loop or extra tests.
 ### X-025 · 2026-10-24 · report · done
 Refs: OwnerTrace session; owner finished; game8b9236f4
 Needs owner: no

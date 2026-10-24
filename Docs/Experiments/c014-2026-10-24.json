@@ -1,0 +1,191 @@
+{
+  "source": "3bda44797ae31576d3036e002de25a3eaf044ba3",
+  "single_run": {
+    "move_trace_requested": 0,
+    "reachable_goals_requested": 0,
+    "sink_escape_requested": 0,
+    "explain_nodes": [],
+    "explain_pairs_path": "",
+    "physics_diagnostics_requested": 1,
+    "observed_seconds": 660.67,
+    "nav_exports": 0,
+    "hotspot_all_nodes_requested": 1,
+    "tag": "candidate-r1-n15",
+    "session": "c014-soak-3bda4479",
+    "progress_requested": -1,
+    "trap_recovery_requested": 1,
+    "fire_diagnostics": false,
+    "style_mode": "auto",
+    "skill_rotation_step": 1,
+    "variant": "candidate",
+    "repeat": 1,
+    "bots": 15,
+    "seconds": 660,
+    "source_sha": "3bda44797ae31576d3036e002de25a3eaf044ba3",
+    "server_sha256": "ADDC1A71909DB46134D5650E9B14ED290875CBE7EF726809FA89CCC294254C16",
+    "client_sha256": "45E76A0AE94BE9805BE3DDE020BE6EBA35764F11C6912FD33947ED719D8EE0E7",
+    "memory_sha256": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE",
+    "roster": [
+      {
+        "style": "auto",
+        "skill": "beginner",
+        "number": 1
+      },
+      {
+        "style": "auto",
+        "skill": "normal",
+        "number": 2
+      },
+      {
+        "style": "auto",
+        "skill": "veteran",
+        "number": 3
+      },
+      {
+        "style": "auto",
+        "skill": "elite",
+        "number": 4
+      },
+      {
+        "style": "auto",
+        "skill": "beginner",
+        "number": 5
+      },
+      {
+        "style": "auto",
+        "skill": "normal",
+        "number": 6
+      },
+      {
+        "style": "auto",
+        "skill": "veteran",
+        "number": 7
+      },
+      {
+        "style": "auto",
+        "skill": "elite",
+        "number": 8
+      },
+      {
+        "style": "auto",
+        "skill": "beginner",
+        "number": 9
+      },
+      {
+        "style": "auto",
+        "skill": "normal",
+        "number": 10
+      },
+      {
+        "style": "auto",
+        "skill": "veteran",
+        "number": 11
+      },
+      {
+        "style": "auto",
+        "skill": "elite",
+        "number": 12
+      },
+      {
+        "style": "auto",
+        "skill": "beginner",
+        "number": 13
+      },
+      {
+        "style": "auto",
+        "skill": "normal",
+        "number": 14
+      },
+      {
+        "style": "auto",
+        "skill": "veteran",
+        "number": 15
+      }
+    ],
+    "log": "WarsBots-Tactics-c014-soak-3bda4479-candidate-r1-n15.bots.log",
+    "completed": true,
+    "kills": 248
+  },
+  "summary": {
+    "schema": "warsbots-run-summary/1",
+    "label": "map=multiplayer/ia/steelmill;bots=15;seconds=660;style=auto;progress_requested=-1;trap_recovery_requested=1;hotspot_all_nodes_requested=1;physics_diagnostics_requested=1;reachable_goals_requested=0;sink_escape_requested=0;fire_diagnostics=False;move_trace_requested=0;roster=1:beginner:auto,2:normal:auto,3:veteran:auto,4:elite:auto,5:beginner:auto,6:normal:auto,7:veteran:auto,8:elite:auto,9:beginner:auto,10:normal:auto,11:veteran:auto,12:elite:auto,13:beginner:auto,14:normal:auto,15:veteran:auto",
+    "log": "WarsBots-Tactics-c014-soak-3bda4479-candidate-r1-n15.bots.log",
+    "log_sha256": "3c7d06f3dbd9820f9641c090e0bc13e91cbdffda16304b43a1b72884e8e63d9b",
+    "build": "v26-92-g3bda4479",
+    "bots": 15,
+    "seconds": 660.7,
+    "live_bot_minutes": 135.8,
+    "spawn195": {
+      "revives": 0,
+      "frozen": 0
+    },
+    "revives": {
+      "total": 202,
+      "frozen": 1,
+      "frozen_spawns": {
+        "153": {
+          "revives": 10,
+          "frozen": 1
+        }
+      }
+    },
+    "watchdog": {
+      "episodes": 8,
+      "at_spawn195": 0,
+      "reached_level": {
+        "1": 8,
+        "2": 2
+      },
+      "self_kills": 0
+    },
+    "pinned_live_percent": 0.0,
+    "traps_ge60s": 0,
+    "stalls": 104,
+    "nav_fallback": {
+      "total": 1731,
+      "per_bot_minute": 12.75,
+      "reasons": {
+        "goal_unprojected": 155,
+        "no_route": 1534,
+        "start_unprojected": 42
+      },
+      "no_route_percent": 88.6
+    },
+    "unreachable_weapon_skips": 144,
+    "goal_skips": {},
+    "pickups": {
+      "total": 95,
+      "lives": 246,
+      "lives_with_pickup": 79,
+      "lives_with_pickup_percent": 32.1
+    },
+    "movement": {
+      "moving_samples": 4274,
+      "over_4ms_percent": 4.1,
+      "native_sprint_percent": 6.4,
+      "median_speed_by_state_max": 2.5
+    },
+    "graph": null
+  },
+  "baseline_source": "12eaec0f",
+  "baseline_memory": "01F4C7F4B894AE2AC492C381487FAC5B539824F83EC76C6F902F428A165668AE",
+  "baseline_traps": 0,
+  "baseline_stalls": 111,
+  "guard_events": [],
+  "exclude_log_count": 1,
+  "spawn195_records": 0,
+  "acceptance": false,
+  "defaults_published_on": false,
+  "metrics": {
+    "pickups_acquired": 95,
+    "weapon_timeouts": 291,
+    "route_fallback_queries": 1731,
+    "median_reported_window_ms": 0.196,
+    "max_single_bot_update_ms": 3.16
+  },
+  "limitations": [
+    "One historical-baseline comparison, no fixed RNG; no broad superiority claim",
+    "Guard retry native branch not exercised if guard_events empty; bounded policy unit PASS",
+    "No C013 C016 or other queued work started"
+  ]
+}

@@ -1,5 +1,15 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
+## STOP checkpoint: C-014 single-run acceptance failed
+
+Owner latest scope overrides mailbox: old queued tasks cancelled; no C013/C016 or auto-loop.
+C011994aeabc pushed unchanged. C014 code6147cf8a/3bda4479 compiled + guard unit PASS.
+Exactly one15bot660s run, observed660.67s, completed/no engine errors: spawn195never used,
+guard0events,pinned0%,traps0,stalls104 vs111 baseline. **revives.frozen1 at153**, so
+acceptance0frozen FAIL. Both new defaults heldOFF; no defaultON promotion or extra run.
+Owner memoryC60C1D76...813D6 restored; all own QA stopped. One final C014 push thenSTOP.
+[Full result/commands/metrics](Experiments/c014-2026-10-24.md). Next work needs owner command.
+
 ## Current: local data, C-006 complete, MOVE TRACE ready
 
 Latest matched game source **8b9236f4**, MSVC x64 Release experimental client/server PASS;
