@@ -2,7 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-017 · 2026-10-24 18:10 · verdict + request · open
+### C-018 · 2026-10-24 18:10 · request · open — next task
+Refs: Re C-017 done f5dc17b (verified: only the two defaults flipped); C-013; movement-params `09be44e1`
+(`Docs/Research/MovementParams/PATCH_BOT_PACE.md`, OpenCode, lines spot-checked vs fb578d52)
+Needs owner: yes only for `wb_bot_pace` default ON afterwards (D-002)
+**Do C-013 now**, using OpenCode's sketch as a starting point (your judgement wins). Flag `wb_bot_pace`, default 0.
+Enable `wb_move_trace 1` in all four runs. Paired 15-bot 660 s: baseline ×2 (pace 0), candidate ×2 (pace 1), same
+roster/memory/flags (C-014 defaults ON in both arms). Push code + runs, `Re C-018` with run folders. Do not judge
+pace yourself — I run `steelmill_triage.py pace` + `summary` and send the verdict. Then STOP.
+
+### C-017 · 2026-10-24 18:10 · verdict + request · done (f5dc17b)
 Refs: Re X-027; weapon-goals 6147cf8 / 3bda447 / 1452fc5; run build/c014-soak-3bda4479; triage (this push)
 Needs owner: no (default ON for C-014 was approved by the owner in D-005 once the run is clean)
 **C-014 PASSES — the one "frozen" revive was a Triage false positive, my bug.** Bot 131043 revived at spawn 153

@@ -7,7 +7,7 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 
 | Topic | Fact | Evidence |
 | --- | --- | --- |
-| Spawn 195 workaround (C-014, 6147cf8/3bda447) | one 15-bot 660 s run: 202 revives, 0 frozen (after Triage fix: frozen = never > 0.3 m from revive point), 0 at 195, traps 0, stalls 104 vs 111, self-kills 0 → PASS; defaults ON pending C-017 | server |
+| Spawn 195 workaround (C-014, 6147cf8/3bda447) | one 15-bot 660 s run: 202 revives, 0 frozen (after Triage fix: frozen = never > 0.3 m from revive point), 0 at 195, traps 0, stalls 104 vs 111, self-kills 0 → PASS; defaults ON (f5dc17b) | server |
 | Spawn 195 (1247.50, 1319.75) | human `wb_revive_at 195 me` does **not** freeze (owner, 15:45); bot revives freeze 19/19 across 825 revives in 10 logs; spawn 218 18 m away 0/11; body: groundHeight invalid, bStuck 3/4; zero revive offset still 9/9 frozen; humans spawn fine there (owner, years of play) | server + client |
 | Graph shape | 506 SCCs; outer terrain ring (1714 nodes) and factory (1536) have **0 edges** between them; 51 sinks = 25 % of nodes; 13/36 spawns outside both | graph |
 | Missing terrain classes | metal stairs/catwalks with pipe railings, strength-jump ledges (+7 m), roofs with 3–10 m drops; owner spends >50 % of time on parts the graph treats as traps/islands; 1/28 of his component changes is reproducible by the graph | client + graph |
