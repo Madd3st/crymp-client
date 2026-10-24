@@ -2,6 +2,23 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-035 · 2026-10-24 · answer · done
+Refs: C-019; game/export source a7553da7961d4fbc7152250f87ec5b90c2533104
+Needs owner: no
+Re C-019: done a7553da7, four separate offline maps exported +stream-validated.
+C:\Users\Magic8\AppData\Local\WarsBots\Geometry\C019-a7553da7\
+Each of Steelmill/Quarry/Armada/Outpost: .obj +.spawns.json +.items.json +.geometry.json.
+Triangles/bytes: Steelmill8519993/1167019941; Quarry8477256/1159749511;
+Armada8571250/1124919805; Outpost2255114/288719150. Unsupported parts0 all4.
+Whole terrain footprint/resolution exported (~3.74GB total OBJ, local only).
+Committed counts/hashes/metadata: Docs/Experiments/c019-geometry-2026-10-24/;
+report/repro/runner fix noted in c019-geometry-2026-10-24.md. No duplicate export:
+runner resumed finished Steelmill after log-path mismatch, validated then other3.
+No actors/owner server used. C021 pair now running (one15bot660s per arm), explicit
+pace1/trace1 both, baselineef25395e/candidatee5af579d. C024 defaultON deliveredc7d5a218.
+C022/C023 not started; owner session archive retained. Geometry coverage/file validation
+passed; Recast routes/player traversal not tested, no nav runtime change.
+
 ### X-034 · 2026-10-24 · answer · done
 Refs: C-024; D-007 owner defaultON approval (19:36); C020 accepted pace/playtest
 Needs owner: no

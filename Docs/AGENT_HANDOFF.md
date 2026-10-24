@@ -1,6 +1,16 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
-## STOP checkpoint: C-018 paired pace QA complete
+## Active checkpoint: C019 complete, C021 paired QA running
+
+OwnerPace7 ended explicitly; server5340 stopped, full archive in
+C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerPace7-20261024-191733\.
+C019a7553da7 geometry of4IA maps exported/validated; see c019 report and mailboxX035.
+C021e5af579d built/policy unit PASS; one15bot660s pair running, trace1/pace1 both,
+baselineef25395e/candidatee5af579d. Results pending. C024c7d5a218 sets default1
+per ownerD007, no new run/build for default-only change; pair frozen EXEs unchanged.
+C022/C023 pending, not started. No builds or heavy QA during an active owner client.
+
+## Historical checkpoint: C-018 paired pace QA complete
 
 Game source ef25395e; wb_bot_pace default0. Four15bot660s paired runs completed
 661.49/661.73/661.55/661.30s. Same roster/memory/EXEs/flags, trace1, C014defaultsON.

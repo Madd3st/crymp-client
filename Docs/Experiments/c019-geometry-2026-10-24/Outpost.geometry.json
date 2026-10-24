@@ -1,0 +1,37 @@
+{
+  "bounds": [
+    [
+      0.0,
+      0.0,
+      -4096.0
+    ],
+    [
+      2048.0,
+      2048.0,
+      4096.0
+    ]
+  ],
+  "build": "v26-100-ga7553da7",
+  "collision_proxy_parts": 2377,
+  "degenerate_skipped": 2,
+  "geometry_types": {
+    "0": 1363,
+    "1": 984,
+    "2": 1,
+    "5": 29
+  },
+  "heightmap_unit": 2,
+  "map": "Multiplayer/IA/Outpost",
+  "parts": 2377,
+  "primitive_segments": 16,
+  "schema": "wbgeometry/1",
+  "sha": "a7553da7961d4fbc7152250f87ec5b90c2533104",
+  "skipped_parts": 0,
+  "static_entities": 2323,
+  "terrain_cells": 1048537,
+  "triangles": 2255114,
+  "units": "metres",
+  "unsupported_parts": 0,
+  "up_axis": "Z",
+  "vertices": 6765342
+}

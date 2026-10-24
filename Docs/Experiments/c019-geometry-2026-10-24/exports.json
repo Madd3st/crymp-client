@@ -1,0 +1,46 @@
+[
+  {
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\Steelmill.obj",
+    "triangles": 8519993,
+    "vertices": 25559979,
+    "bytes": 1167019941,
+    "terrain_cells": 4194273,
+    "unsupported_parts": 0,
+    "source_sha": "a7553da7961d4fbc7152250f87ec5b90c2533104",
+    "obj_sha256": "2423CA54579E31888C71ACB63B2C92489DD8B08DF31BBE19CE4C1C3B1BDAB54D",
+    "map": "Steelmill"
+  },
+  {
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\Quarry.obj",
+    "triangles": 8477256,
+    "vertices": 25431768,
+    "bytes": 1159749511,
+    "terrain_cells": 4194284,
+    "unsupported_parts": 0,
+    "source_sha": "a7553da7961d4fbc7152250f87ec5b90c2533104",
+    "obj_sha256": "345BEB029E63E349A6176BA62FBF46D79499F7E98DD35354FD4B440214BAF83B",
+    "map": "Quarry"
+  },
+  {
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\Armada.obj",
+    "triangles": 8571250,
+    "vertices": 25713750,
+    "bytes": 1124919805,
+    "terrain_cells": 4194304,
+    "unsupported_parts": 0,
+    "source_sha": "a7553da7961d4fbc7152250f87ec5b90c2533104",
+    "obj_sha256": "4432730767488B5A639A7F4F9A6B0024B9C3BA46041E70F7058462E38D7ADEBA",
+    "map": "Armada"
+  },
+  {
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\Outpost.obj",
+    "triangles": 2255114,
+    "vertices": 6765342,
+    "bytes": 288719150,
+    "terrain_cells": 1048537,
+    "unsupported_parts": 0,
+    "source_sha": "a7553da7961d4fbc7152250f87ec5b90c2533104",
+    "obj_sha256": "2CDB2A56A8D3A0B2F39E995B98E093271260EFF7DF687F04E9193F6B996D4A10",
+    "map": "Outpost"
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "bounds": [
+    [
+      0.0,
+      0.0,
+      -4096.0
+    ],
+    [
+      4096.0,
+      4096.0,
+      4096.0
+    ]
+  ],
+  "build": "v26-100-ga7553da7",
+  "collision_proxy_parts": 1325,
+  "degenerate_skipped": 52,
+  "geometry_types": {
+    "0": 457,
+    "1": 856,
+    "2": 1,
+    "5": 11
+  },
+  "heightmap_unit": 2,
+  "map": "Multiplayer/IA/Steelmill",
+  "parts": 1325,
+  "primitive_segments": 16,
+  "schema": "wbgeometry/1",
+  "sha": "a7553da7961d4fbc7152250f87ec5b90c2533104",
+  "skipped_parts": 59,
+  "static_entities": 1259,
+  "terrain_cells": 4194273,
+  "triangles": 8519993,
+  "units": "metres",
+  "unsupported_parts": 0,
+  "up_axis": "Z",
+  "vertices": 25559979
+}
