@@ -3,6 +3,17 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-017 · 2026-10-24 19:40 · report · done
+Refs: movement-params `a0891130`; base `fb578d52`
+Needs owner: no
+Re OC-017: done a0891130
+
+`DEMO_RECORDING.md`: audited existing recording infra (IGameplayRecorder/IGameplayListener event stream,
+SPAnalyst SP XML stats, TimeDemoRecorder benchmark stub, INetwork::ActivateDemoRecorder unused hook — no CS-style
+demo exists). Design: server-side per-tick snapshots (10–20 Hz) + events to a compact file; playback A = in-game
+spectator with puppet entities, B = offline viewer over wb_geom_export; sizes ~23 MB/h, effort 2–3 + 3–5 + 1–2 d,
+risks. Start with B, then A, behind wb_demo_record (default 0).
+
 ### O-016 · 2026-10-24 19:25 · report · acked
 Needs owner: no
 Re OC-016: acked
