@@ -1,112 +1,38 @@
 # WarsBots coordination (maintained by Claude)
 
-Updated 2026-10-24 13:00 MSK. Source of truth for code is GitHub; this file records what
-was verified and by which kind of evidence: **src** = source reading, **unit** = offline
-tests, **server** = server logs, **client** = visual check in a real client.
+Updated 2026-10-24 14:50 MSK. Current truth is `../STATUS.md`; this file keeps branch SHAs and the component
+table. Older versions of this file (with the full history of the day) are in git.
 
-## Branches and verified SHAs
+## Branches
 
 | Branch | SHA | Owner | State |
 | --- | --- | --- | --- |
-| `warsbots/feature/weapon-goals` | `32b037fc` | Codex | active; trap watchdog (`b3ce761f`, opt-in), route reasons (`b53b3f87`), `wb_nav_export` wbnav/1 (`e4eb64ee`), full hotspot scan (`d4b0854c`, opt-in) |
-| frozen P0 build | `8f0abd5f` | Codex | 4 headless 120 s runs (6/15 bots): no crash, no duplicate shots, 1 round per shot |
-| spectator build | `a6ee9e9e` | Codex | BUILD PASS, C++ + 60 s headless QA PASS; live client scenario NOT run |
+| `warsbots/feature/weapon-goals` | `fb578d52` | Codex | active: watchdog, route reasons, nav export, body probes, reachability (B), sink escape (C), nav explain, revive_at/teleport, summary pipeline — all behaviour flags default OFF |
 | `warsbots/main` | `caf1a815` | integrator | far behind weapon-goals |
-| `warsbots/research/crymp-native-audit` | `47ccfacf` | Claude | done; docs + Tools/CryMPResearch |
-| `warsbots/research/steelmill-lab` | `ad34d283` | Claude (session 01WT…) | Steelmill AI Lab: tools, viewer, findings (independently confirms F1–F4), **the** BotNav export contract |
-| `warsbots/research/steelmill-triage` | this branch | Claude (coordinator) | findings from real logs, export contract, triage detectors, this file |
-| `warsbots/research/fps-ai-planning` | `995672b4` | Claude (coordinator) | FPS AI study, decision-layer prototype, A/B contract |
+| `warsbots/research/steelmill-triage` | this branch | Claude | tools, findings, mailbox, coordination |
+| `warsbots/research/fps-ai-planning` | `995672b4` | Claude | FPS AI study, decision-layer prototype, A/B contract |
+| `warsbots/research/crymp-native-audit` | `47ccfacf` | Claude | done |
+| `warsbots/research/steelmill-lab` | `4c8bac9` | Claude | **retired**, merged into Triage; keeps BOTNAV_EXPORT_CONTRACT.md |
 
-Codex report: `Docs/Experiments/regression-spectator-2026-10-24.md`. Spectator reuses the
-native observer flow (`GetNextSpectatorTarget` → `GetMatchParticipants` on local IA, native F1,
-renderer-local FP view from replicated aim), as recommended in the CryMP audit. Independent
-Triage pass over the same four regression logs agrees: no new movement regression versus older
-builds; the spawn-pin defect (Triage F1) is present in `8f0abd5f` too and predates it.
-
-## Current tasks
-
-- **Codex**: regression + Spectator done server-side; waiting for the owner's live client run
-  (manual scenario in Codex's report).
-- **Claude**: two sessions ran Steelmill work in parallel by accident (see branches). Next for the
-  coordinator: FPS AI research → planner prototype. Proposed: Lab session absorbs the triage
-  detectors (pinned/trap/motion-join) into `Tools/SteelmillLab`, then `SteelmillTriage` is retired.
-  No game files, no servers, no merges.
-
-## Component state
+## Components
 
 | Component | State | Evidence |
 | --- | --- | --- |
-| Fire control / NetShoot replay fix | fixed for owned bots, holds at 15 bots | unit + server (Codex); client not checked |
-| Spectator (`wb_watch`, F1) | implemented natively | unit + headless server; client not checked |
-| Aim / head zone | plausible in duels | server, small sample |
-| BotNav build | 7633 nodes / 41618 edges, stable | server |
-| BotNav routing | 15–18 failed queries per bot-minute, 42–62% cross-floor | server (Triage F3) |
-| Movement stuck handling | blind to "accepted but not moving" | server + src (Triage F1) |
-| Trap recovery | none after 1.5 s detours fail | server + src (Triage F2) |
-| Map memory | half ignored by hotspots, no decay | src + real .mem (Triage F4) |
-| ML dataset | not bandit-ready | server + src (Triage F5) |
-| Decision stability | 4,579 A→B→A state flips in 48 min, mostly CHASING↔MOVING_TO_WEAPON | server + src (FPSAILab G2) |
-| Movement pace | sprint 0–15% of moving time, Armor 72–100%, ~2.5 m/s; owner >4 m/s 41–54% vs bots 0–2% (same LOS channel) | server (`MOVEMENT_BASELINE.md`) |
-| Spawn 195 pin | grounded=0 in 100% of 1298 pinned samples; pockets grounded=1 | server (Triage + Codex owner-spectator6) |
+| Fire control / NetShoot replay | fixed for owned bots, holds at 15 bots | unit + server |
+| Spectator (`wb_watch`, F1) | native, works in the owner's client | server + client |
+| Revive | spawn 195 freezes 19/19 (only that point); cause in the bot revive path, not geometry | server + client |
+| BotNav graph | 7633 nodes / 41618 edges; split: outer ring vs factory, 25 % of nodes in sinks; stairs/railings, ledges, roofs missing | graph + client |
+| Routing | `no_route` 90–92 % of fallbacks, from the split graph | server + graph |
+| Trap recovery | watchdog works; only the 45 s self-kill helps in sinks/195 | server |
+| Weapon goals (B) | parked until graph repair | server + graph |
+| Pace | bots 2.5 m/s vs owner 4.3 m/s; sprint rare | server + client |
+| Map memory | half ignored by PickHotspot (fix behind `wb_hotspot_all_nodes`), no decay | src |
+| Decision stability | CHASING↔MOVING_TO_WEAPON flips (4,579 in 48 min) | server |
 | Power Struggle | design only | docs |
 
-## Codex A–D review (13:00) — `../SteelmillTriage/REVIEW-2026-10-24-1300-codex-ABCD.md`
+## Risks
 
-* A works (195: invalid groundHeight, bStuck). B regresses pickups (lives with pickup 81/200 → 32/192; main-spawn lives 42 % → 11 %) → keep OFF, fix goal projection. C no effect. D works: static object at knee height 1.25 m south of 195. summary.json pipeline live on weapon-goals.
-
-## Owner playtest Recovery6 (05:00) and first real graph — `../SteelmillTriage/PLAYTEST-2026-10-24-0458.md`
-
-* Spawn 195: human walks (client); bot body frozen 0.45 m above floor, server pos constant (server). Not geometry.
-* Graph (real export): two main SCCs (1714/1536) with no edge between, 51 sinks = 25 % of nodes,
-  13/36 spawns outside both; spawn 195, pits B/C are sinks; SMG 199 is on a no-entry island.
-  90 % of fallbacks are `no_route`, mostly sink/island start or goal (graph + server).
-* Watchdog: 3 self-kills / 7 episodes, levels 1–3 freed 1; pinned 2.8 % (was 4–7 %, different session).
-* Next for Codex: `../SteelmillTriage/CODEX_MESSAGE-2026-10-24-0515.md` (A body-state trace at 195,
-  B reachability before goals, C watchdog shortcut in sinks, D `wb_nav_explain`).
-  Triage accepts Codex's wbnav/1 export as is.
-
-## Graph reader (2026-10-24)
-
-Triage `navgraph.py` moved to `warsbots/botnav-graph/1` (unit: 20 tests, Lab fixture validates,
-fingerprint identical to the Lab implementation; 7.8k-node synthetic graph validates in 0.15 s,
-A* ≈ 2.5 ms/query). Checked against `BotNav.cpp` on weapon-goals (src): edges only to the 8
-neighbour columns, layers = position in the column vector, `Nearest` column via C++ truncation.
-Two small differences in the Lab tool (not fixed there, Lab branch is not mine to edit in this
-pass): Lab `nearest` uses `floor` for the column (differs from the game for points just west/south
-of `min`), and Lab accepts same-column edges and edges out of `m_edges` order; Triage rejects both
-as the contract says.
-
-## Known risks
-
-1. Short QA runs (120 s) under-measure the two worst movement defects; long play shows 4–7%
-   pinned and up to 23% trapped live time. Regression gates need a ≥10 min soak.
-2. Stuck memory only grows; a bad session permanently biases routes on the owner's file.
-3. Logs lack actor ids on suit/jump lines and failure reasons on route lines.
-
-## Proposed next steps (small, independently testable)
-
-For **Codex**, after the current regression, in this order. Each is a separate commit,
-default ON only after a soak shows no regression:
-
-1. *Progress watchdog* (F1, F2): if a live bot requested movement ≥ 8 s and moved < 0.5 m,
-   escalate: repath → reverse/side step → jump out if `JumpSpace` allows → after 45 s, native
-   self-kill through GameRules so it respawns (log `TRAP RECOVERY level=`). Uses only own
-   position, no enemy knowledge.
-2. *Spawn 195 check* (F1): during the live spectator run, follow a bot revived at (1247.50, 1319.75, 136.45) in FP/TP; also
-   spawn a human there. If geometry: exclude that spawn for bots or nudge revive position.
-   If bot-only: trace `CMovementRequest`/`canMove` there.
-3. *Logging patch* per `NAV_EXPORT_CONTRACT.md` (reason on NAV fallback, actor on suit/jump).
-4. *`wb_nav_export`* per the contract. Unblocks the graph layer in both Lab and Triage tools and offline replay.
-5. *PickHotspot stride bug* (`i += 2`): iterate all nodes; measure frame cost (it is 10 Hz).
-6. *Upgrade-branch commitment* (G2) behind `wb_upgrade_commit`, A/B per
-   `Docs/Research/FPSAILab/TACTICAL_PLANNER_DESIGN.md` (branch fps-ai-planning).
-7. Movement pace: owner gave Codex a task (04:32). Proposed Claude task: human movement
-   baseline + target distributions, so thresholds are tuned against a human, not by eye.
-
-Deferred until 1–4 are in: stuck decay / edge-level penalties, roof links, the decision layer
-(Stage 2 in TACTICAL_PLANNER_DESIGN). Full GOAP is not recommended: measured plans are 1–2 steps.
-
-## Open questions for the owner
-
-- Can you spawn as a human at (1247.5, 1319.75) and walk? That separates geometry from bot code.
-- Is a native self-kill acceptable as the last-resort trap recovery in IA (it changes score)?
+1. Single-run comparisons are noise: paired runs, same roster/memory, ≥2 repeats per arm.
+2. Behaviour flags pile up default OFF; promotion needs the owner (D-002).
+3. Graph repair touches every bot route: needs a paired soak and the owner's eyes before default ON.
+4. One PC runs Codex, servers and owner play; reboots and live sessions stop QA.

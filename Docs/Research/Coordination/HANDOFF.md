@@ -1,76 +1,44 @@
-# Handoff for the next Claude coordinator session (2026-10-24 04:50 MSK)
+# Handoff for the next Claude coordinator session (2026-10-24 14:50 MSK)
 
-Repo `Madd3st/crymp-client`. Read this file, then `PROJECT_COORDINATION.md` next to it. Do not
-re-derive the history; everything below is verified unless marked otherwise.
+Repo `Madd3st/crymp-client`. Read this, then `../STATUS.md` (current truth) and the mailbox. Do not re-derive
+history. The `warsbots-coordinator` skill (if the owner saved it) carries the same loop.
 
-## Roles
+## Roles and rules
 
-- **Owner**: decides, plays, runs live sessions, carries messages between agents.
-- **Codex** (`warsbots/feature/weapon-goals`): owns all game code (C++, GameRules, network,
-  builds, servers, QA runs). Claude never edits these files, never merges, never stops servers.
-- **Claude (you)**: coordinator + offline research. Own branches only:
-  `warsbots/research/steelmill-triage` (tools, findings, this file),
-  `warsbots/research/fps-ai-planning` (FPS AI study, decision-layer prototype).
-- One Claude session at a time. A parallel session produced `warsbots/research/steelmill-lab`
-  (`ad34d283`): its BotNav export contract is the official one; its tools overlap Triage.
+- **Owner**: decides and plays. Answers questions in chat; asks Claude directly ("статус", "Codex запушил",
+  "я поиграл"). Wants short, funny, Russian replies; details go to files.
+- **Codex** (`warsbots/feature/weapon-goals`): all game code, builds, servers, QA. Claude never edits its
+  files, never merges, never starts/stops servers or game processes.
+- **Claude**: coordinator + offline research, writes only in `warsbots/research/steelmill-triage` (and
+  `fps-ai-planning`). `steelmill-lab` is retired (merged here).
+- Owner decisions (MAILBOX/DECISIONS.md): D-001 keep 45 s self-kill; D-002 agents may default-ON
+  logging/diagnostics only, behaviour flags need the owner; D-003 live sessions yes; D-004 logs move out of
+  OneDrive (Codex reports the new path in TO_CLAUDE.md).
 
-## Where things are
+## Loop
 
-| Topic | File |
-| --- | --- |
-| Status, SHAs, risks, next steps | `Docs/Research/Coordination/PROJECT_COORDINATION.md` |
-| Steelmill findings F1–F5 (spawn pin, traps, routes, memory, dataset) | `Docs/Research/SteelmillTriage/FINDINGS-2026-10-24.md` |
-| Movement pace, owner vs bots, `MOVE TRACE` spec | `Docs/Research/SteelmillTriage/MOVEMENT_BASELINE.md` |
-| Log-field addendum for Codex | `Docs/Research/SteelmillTriage/NAV_EXPORT_CONTRACT.md` |
-| Graph export contract (official) | `Docs/Research/SteelmillLab/BOTNAV_EXPORT_CONTRACT.md` on `steelmill-lab` |
-| Offline tools | `Tools/SteelmillTriage/steelmill_triage.py` (`mem`, `analyze`, `movement`, `graph`) |
-| FPS AI study, gaps, planner design, A/B contract, ML options | `Docs/Research/FPSAILab/*` on `fps-ai-planning` |
-| CryMP native audit | `Docs/Research/CryMP/*` on `crymp-native-audit` (`47ccfacf`) |
-| Codex's own reports | `Docs/Experiments/*`, `Docs/STATUS.md`, `Docs/AGENT_HANDOFF.md` on weapon-goals |
+1. `git fetch` weapon-goals: new commits, `Docs/Coordination/TO_CLAUDE.md` (X- messages), `Docs/Experiments/*`.
+2. Stage new logs read-only from the owner PC (current path:
+   `C:\Users\Magic8\OneDrive\Документы\My Games\Crysis\`, until D-004 moves it), run
+   `steelmill_triage.py summary <log> --graph <nav.json> --mem <mem>` (+ `analyze`/`graph --replay`).
+3. Verdict better / same / broke with numbers and evidence type; compare only same-scenario paired runs.
+4. Write C- items in `MAILBOX/TO_CODEX.md`, update `../STATUS.md` and SHAs in `PROJECT_COORDINATION.md`, push.
+5. Chat: 3–6 lines. Questions for the owner go straight into chat (AskUserQuestion), not into files only.
 
-Owner's logs and map memory: `C:\Users\Magic8\OneDrive\Документы\My Games\Crysis\` (`*.bots.log`,
-`WarsBots\Multiplayer_IA_Steelmill.mem`). Copy read-only; a live session may be writing.
+## Assets
 
-## Agreed order of work for Codex (each step separate, gated, soaked ≥10 min before default ON)
+- Steelmill Nav Atlas (private artifact, owner map with minimap underlay and owner marks):
+  https://claude.ai/artifact/KbCBM3YfqFjj2hY7Qa8Y34 — owner marks in ArtifactData collection `marks`.
+- Level facts: `steelmill_triage.py level --pak level.pak --level-xml Steelmill.xml --minimap Steelmill.dds`
+  from `E:\Steam\steamapps\common\Crysis\Game\Levels\Multiplayer\IA\Steelmill\` (copies; outputs contain game
+  assets, never commit them).
+- Owner video: OCR `r_displayInfo` CamPos at 1 fps; speech-to-text is not available in this workspace.
+- Game folder `E:\Steam\steamapps\common\Crysis\Bin64\_dlss_backup\` holds dgVoodoo/DLSS leftovers moved out
+  on 2026-10-24 (client now renders plain DX9).
 
-1. Spawn 195 + traps: diagnose `grounded=0` after revive at (1247.5, 1319.75, 136.45); displacement
-   watchdog with escalation (repath → side step → jump back → last-resort respawn, owner to approve).
-2. Movement pace: sprint far more often (energy gates in `TravelGait`/chase), keep the 2.5 m/s
-   non-sprint cap until the human baseline exists. Target: >4 m/s share while moving 35–55%.
-3. Logging patch: `MOVE TRACE` (humans + bots, 4 Hz, cvar) and NAV fallback `reason=`/`actor=`.
-4. Graph export per the Lab contract.
-5. Upgrade-branch commitment (`CHASING↔MOVING_TO_WEAPON` flips) with the A/B in
-   `TACTICAL_PLANNER_DESIGN.md`; `PickHotspot` `i += 2` fix.
-6. Later: decision layer (`wb_decision`), cover candidates, verified jump links, then PS.
+## Pending for Claude
 
-## Mailbox (since 2026-10-24 13:10)
-
-Agents talk through `Docs/Research/Coordination/MAILBOX/` (protocol, TO_CODEX, DECISIONS) and Codex's
-`Docs/Coordination/TO_CLAUDE.md` on weapon-goals. Read them first every session.
-
-## Steelmill Nav Atlas (owner map, 2026-10-24)
-
-Private artifact https://claude.ai/artifact/KbCBM3YfqFjj2hY7Qa8Y34 — graph components, spawns (19/19 frozen at 195
-across 825 revives in 10 logs), watchdog hits, pits, D ray hits. Owner marks wall/pass/jump; read them with
-ArtifactData `list` collection `marks` and turn "pass"/"jump" marks into `wb_nav_explain` requests for Codex.
-
-## Claude's loop
-
-Codex pushes → owner plays or Codex runs QA → you copy the new logs → run Triage → write a short
-verdict (improved / no change / regression, with numbers and evidence type: src / server / client)
-→ draft the next message for Codex. Keep replies short; put details in files.
-
-## Open questions for the owner
-
-- Answered 05:11: a human walks at spawn 195 → bot-side defect (`PLAYTEST-2026-10-24-0458.md`).
-- Is a native self-kill acceptable as the last trap recovery in IA?
-- After `MOVE TRACE` exists: one 10-minute owner session on Steelmill with 6 bots for the baseline.
-
-## Pending Claude tasks
-
-- Done 2026-10-24: Triage `navgraph.py` reads `warsbots/botnav-graph/1` (validator, fingerprint,
-  memory link, BotNav-exact offline A*). Real export arrived (Codex wbnav/1, converted losslessly); analysis in
-  `Docs/Research/SteelmillTriage/PLAYTEST-2026-10-24-0458.md`, message `CODEX_MESSAGE-2026-10-24-0515.md`.
-
-- After step 2 lands: before/after pace report with `steelmill_triage.py movement`.
-- After the owner's trace session: human baseline and concrete threshold targets.
+- C-006 results → name the false-cut tests → graph-repair spec for Codex.
+- MOVE TRACE lands → owner repeats the 5-minute route → jump heights, sprint timing, pace targets.
+- Step 2 lands → before/after pace report (`movement`, `summary`).
+- After step 1 closes → bot-code refactor plan from `SteelmillTriage/REFACTOR_AUDIT.md`.
