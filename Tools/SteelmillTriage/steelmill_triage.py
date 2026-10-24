@@ -24,6 +24,7 @@ from wblab import summary as runsummary  # noqa: E402
 from wblab import level_data, ml_validate  # noqa: E402
 from wblab import pace  # noqa: E402
 from wblab import navmesh  # noqa: E402
+from wblab import replay  # noqa: E402
 
 
 def cmd_mem(a):
@@ -183,6 +184,18 @@ def cmd_navmesh(a):
     print(json.dumps(res, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o)))
 
 
+def cmd_replay(a):
+    """2D match replay (HTML) from a server .bots.log with MOVE TRACE; optional minimap from Nav Atlas data JSON."""
+    mm = None
+    if a.minimap_json:
+        with open(a.minimap_json, encoding="utf-8") as f:
+            d = json.load(f)
+        mm = d.get("minimap", d)
+    data = replay.build(a.log, label=a.label)
+    replay.render(data, a.out, minimap=mm)
+    print(json.dumps(dict(out=a.out, duration=data["duration"], players=len(data["actors"]), kills=len(data["kills"]))))
+
+
 def cmd_movement(a):
     out = [movement.profile(p) for p in a.logs]
     for o in out:
@@ -217,6 +230,9 @@ def main(argv=None):
     s.add_argument("--radius", type=float, default=0.4); s.add_argument("--height", type=float, default=1.8)
     s.add_argument("--max-drop", type=float, default=4.0); s.add_argument("--slope", type=float, default=45.0)
     s.set_defaults(fn=cmd_navmesh)
+    s = sub.add_parser("replay"); s.add_argument("log"); s.add_argument("--out", required=True)
+    s.add_argument("--minimap-json", help="JSON with a 'minimap' object (uri,row0,col0,kx,ky,start_x,start_y)")
+    s.add_argument("--label"); s.set_defaults(fn=cmd_replay)
     s = sub.add_parser("movement"); s.add_argument("logs", nargs="+"); s.set_defaults(fn=cmd_movement)
     a = p.parse_args(argv)
     a.fn(a)
