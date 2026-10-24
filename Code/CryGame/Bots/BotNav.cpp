@@ -127,7 +127,7 @@ bool BotNav::Walkable(const Vec3& a,const Vec3& b,WalkTrace* trace) const
         if(step< -3.2f)return fail("step_drop",t,step,&hit);
         last=hit.pt.z;
     }
-    if(fabs_tpl(last-b.z)>=.8f)return fail("endpoint",1,fabs_tpl(last-b.z),&hit);
+    if(!(fabs_tpl(last-b.z)<.8f))return fail("endpoint",1,fabs_tpl(last-b.z),&hit);
     return true;
 }
 
