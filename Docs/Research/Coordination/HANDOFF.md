@@ -18,8 +18,10 @@ history. The `warsbots-coordinator` skill (if the owner saved it) carries the sa
 ## Loop
 
 1. `git fetch` weapon-goals: new commits, `Docs/Coordination/TO_CLAUDE.md` (X- messages), `Docs/Experiments/*`.
-2. Stage new logs read-only from the owner PC: since 2026-10-24 14:32 (D-004, X-014)
-   `C:\Users\Magic8\AppData\Local\WarsBots\Logs` and `...\WarsBots\Memory` (map memory, nav exports);
+2. Stage new logs read-only from the owner PC: since 2026-10-24 14:32 (D-004, X-014) Codex writes to
+   `C:\Users\Magic8\AppData\Local\WarsBots\{Logs,Memory}` **as seen by Codex**; Codex is a Store app, so on
+   disk this is `C:\Users\Magic8\AppData\Local\Packages\OpenAI.Codex_2p2nqsd0c76g0\LocalCache\Local\WarsBots\`
+   (connected as its own folder so staging depth is ≤ 7);
    older logs stay in `C:\Users\Magic8\OneDrive\Документы\My Games\Crysis\`. Run
    `steelmill_triage.py summary <log> --graph <nav.json> --mem <mem>` (+ `analyze`/`graph --replay`).
 3. Verdict better / same / broke with numbers and evidence type; compare only same-scenario paired runs.
