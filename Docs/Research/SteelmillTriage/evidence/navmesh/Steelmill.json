@@ -1,0 +1,153 @@
+{
+ "walk": {
+  "params": {
+   "cs": 0.2,
+   "agent_h": 1.8,
+   "agent_r": 0.4,
+   "climb": 0.5,
+   "max_drop": 4.0,
+   "max_slope": 45.0,
+   "merge_gap": 0.25
+  },
+  "walkable_m2": 43237.6,
+  "open_before_erosion_m2": 53659.8,
+  "components": 796,
+  "main_m2": 11940.0,
+  "main_share_pct": 27.6,
+  "sinks": 531,
+  "sink_m2": 25233.8,
+  "two_way_with_main_m2": 11940.0,
+  "spawns": {
+   "on_mesh": 36,
+   "main": 30,
+   "reach_main_only": 0,
+   "from_main_only": 0,
+   "island": 6,
+   "off_mesh": [],
+   "total": 36
+  },
+  "items": {
+   "on_mesh": 107,
+   "main": 9,
+   "reach_main_only": 60,
+   "from_main_only": 0,
+   "island": 38,
+   "off_mesh": [
+    367,
+    65513
+   ],
+   "total": 109
+  },
+  "route": {
+   "samples": 3345,
+   "on_mesh_pct": 89.3,
+   "pairs": 2872,
+   "reproducible_pct": 99.8
+  }
+ },
+ "walk+jump": {
+  "params": {
+   "cs": 0.2,
+   "agent_h": 1.8,
+   "agent_r": 0.4,
+   "climb": 0.5,
+   "max_drop": 4.0,
+   "max_slope": 45.0,
+   "merge_gap": 0.25
+  },
+  "walkable_m2": 43237.6,
+  "open_before_erosion_m2": 53659.8,
+  "components": 681,
+  "main_m2": 12789.7,
+  "main_share_pct": 29.6,
+  "sinks": 398,
+  "sink_m2": 18435.3,
+  "two_way_with_main_m2": 12789.7,
+  "spawns": {
+   "on_mesh": 36,
+   "main": 31,
+   "reach_main_only": 3,
+   "from_main_only": 0,
+   "island": 2,
+   "off_mesh": [],
+   "total": 36
+  },
+  "items": {
+   "on_mesh": 107,
+   "main": 13,
+   "reach_main_only": 84,
+   "from_main_only": 0,
+   "island": 10,
+   "off_mesh": [
+    367,
+    65513
+   ],
+   "total": 109
+  },
+  "route": {
+   "samples": 3345,
+   "on_mesh_pct": 89.3,
+   "pairs": 2872,
+   "reproducible_pct": 100.0
+  },
+  "links": 957
+ },
+ "walk+jump+strength": {
+  "params": {
+   "cs": 0.2,
+   "agent_h": 1.8,
+   "agent_r": 0.4,
+   "climb": 0.5,
+   "max_drop": 4.0,
+   "max_slope": 45.0,
+   "merge_gap": 0.25
+  },
+  "walkable_m2": 43237.6,
+  "open_before_erosion_m2": 53659.8,
+  "components": 242,
+  "main_m2": 20908.3,
+  "main_share_pct": 48.4,
+  "sinks": 208,
+  "sink_m2": 10893.0,
+  "two_way_with_main_m2": 20908.3,
+  "spawns": {
+   "on_mesh": 36,
+   "main": 36,
+   "reach_main_only": 0,
+   "from_main_only": 0,
+   "island": 0,
+   "off_mesh": [],
+   "total": 36
+  },
+  "items": {
+   "on_mesh": 107,
+   "main": 103,
+   "reach_main_only": 1,
+   "from_main_only": 0,
+   "island": 3,
+   "off_mesh": [
+    367,
+    65513
+   ],
+   "total": 109
+  },
+  "route": {
+   "samples": 3345,
+   "on_mesh_pct": 89.3,
+   "pairs": 2872,
+   "reproducible_pct": 100.0
+  },
+  "links": 1615
+ },
+ "png": "/tmp/claude-0/-home-claude/7605cb34-6d25-5ebd-af30-09263261574c/scratchpad/nav/Steelmill.png",
+ "input": {
+  "obj": "/mnt/user-data/uploads/OpenAI.Codex_2p2nqsd0c76g0/LocalCache/Local/WarsBots/Geometry/C019-a7553da7/crop/Steelmill.crop.obj.gz",
+  "vertices": 614487,
+  "triangles": 204829,
+  "spans": 2428034,
+  "columns": [
+   1286,
+   791
+  ]
+ }
+}

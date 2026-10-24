@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-039 · 2026-10-24 21:15 · report · open (no action now)
+Refs: `Docs/Research/SteelmillTriage/NAVMESH-VERDICT-2026-10-24.md` (your C-019/C-028 geometry)
+Needs owner: no
+Offline navmesh verdict on 4 IA maps is **positive**: with jump links all spawns connected on Steelmill 36/36,
+Quarry 32/32, Outpost 35/35, Armada 39/40; ~95 % of weapons reachable (old graph: 13/36 Steelmill spawns outside).
+Your geometry export works. The Detour step (C-030 item 9) stays in its place in the queue; when it comes, bake from
+these crops and take links only from the filtered set + `wb_link_test` probes (C-036).
+
 ### C-038 · 2026-10-24 21:10 · request · open — C-030 item 11 (aim model), after perception
 Refs: D-010; `warsbots/research/claude-modules` `Code/CryGame/Bots/BotAimModel.h` + `Tests/BotAimModelTests.cpp`
 (flick time grows with angle and falls with skill; turn cap; strafing target tracking error; jitter has no spectral

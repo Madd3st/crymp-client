@@ -1,0 +1,126 @@
+{
+ "walk": {
+  "params": {
+   "cs": 0.2,
+   "agent_h": 1.8,
+   "agent_r": 0.4,
+   "climb": 0.5,
+   "max_drop": 4.0,
+   "max_slope": 45.0,
+   "merge_gap": 0.25
+  },
+  "walkable_m2": 34053.7,
+  "open_before_erosion_m2": 41076.1,
+  "components": 1056,
+  "main_m2": 22283.8,
+  "main_share_pct": 65.4,
+  "sinks": 787,
+  "sink_m2": 9777.4,
+  "two_way_with_main_m2": 22283.8,
+  "spawns": {
+   "on_mesh": 32,
+   "main": 28,
+   "reach_main_only": 0,
+   "from_main_only": 0,
+   "island": 4,
+   "off_mesh": [],
+   "total": 32
+  },
+  "items": {
+   "on_mesh": 108,
+   "main": 83,
+   "reach_main_only": 0,
+   "from_main_only": 0,
+   "island": 25,
+   "off_mesh": [],
+   "total": 108
+  }
+ },
+ "walk+jump": {
+  "params": {
+   "cs": 0.2,
+   "agent_h": 1.8,
+   "agent_r": 0.4,
+   "climb": 0.5,
+   "max_drop": 4.0,
+   "max_slope": 45.0,
+   "merge_gap": 0.25
+  },
+  "walkable_m2": 34053.7,
+  "open_before_erosion_m2": 41076.1,
+  "components": 639,
+  "main_m2": 25518.7,
+  "main_share_pct": 74.9,
+  "sinks": 423,
+  "sink_m2": 865.1,
+  "two_way_with_main_m2": 25518.7,
+  "spawns": {
+   "on_mesh": 32,
+   "main": 32,
+   "reach_main_only": 0,
+   "from_main_only": 0,
+   "island": 0,
+   "off_mesh": [],
+   "total": 32
+  },
+  "items": {
+   "on_mesh": 108,
+   "main": 100,
+   "reach_main_only": 8,
+   "from_main_only": 0,
+   "island": 0,
+   "off_mesh": [],
+   "total": 108
+  },
+  "links": 2218
+ },
+ "walk+jump+strength": {
+  "params": {
+   "cs": 0.2,
+   "agent_h": 1.8,
+   "agent_r": 0.4,
+   "climb": 0.5,
+   "max_drop": 4.0,
+   "max_slope": 45.0,
+   "merge_gap": 0.25
+  },
+  "walkable_m2": 34053.7,
+  "open_before_erosion_m2": 41076.1,
+  "components": 372,
+  "main_m2": 30840.4,
+  "main_share_pct": 90.6,
+  "sinks": 337,
+  "sink_m2": 1052.9,
+  "two_way_with_main_m2": 30840.4,
+  "spawns": {
+   "on_mesh": 32,
+   "main": 32,
+   "reach_main_only": 0,
+   "from_main_only": 0,
+   "island": 0,
+   "off_mesh": [],
+   "total": 32
+  },
+  "items": {
+   "on_mesh": 108,
+   "main": 108,
+   "reach_main_only": 0,
+   "from_main_only": 0,
+   "island": 0,
+   "off_mesh": [],
+   "total": 108
+  },
+  "links": 1211
+ },
+ "png": "/tmp/claude-0/-home-claude/7605cb34-6d25-5ebd-af30-09263261574c/scratchpad/nav/Quarry.png",
+ "input": {
+  "obj": "/mnt/user-data/uploads/OpenAI.Codex_2p2nqsd0c76g0/LocalCache/Local/WarsBots/Geometry/C019-a7553da7/crop/Quarry.crop.obj.gz",
+  "vertices": 504264,
+  "triangles": 168088,
+  "spans": 1847275,
+  "columns": [
+   891,
+   1226
+  ]
+ }
+}
