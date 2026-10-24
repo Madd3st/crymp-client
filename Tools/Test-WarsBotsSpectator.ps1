@@ -27,7 +27,7 @@ if(Test-Path $log){throw 'Log already exists.'}
 $p=$null;$joined=$false
 try {
  # No observer is fabricated. Query the registered native binding against real bot entities.
- $commands='+wb_maxbots 6 +wb_watch +wb_watch_info +wb_watch_check +wb_add 3 elite +wb_watch_check +wb_remove 2 +wb_watch_check +wb_remove_all +wb_watch_check +wb_add 1 normal +wb_watch_check +wb_remove_all +wb_add 6 elite +wb_watch_check +wb_fire_diagnostics 1 +wb_debug 1'
+ $commands='+wb_maxbots 6 +wb_watch +wb_watch_info +wb_watch_check +wb_add 1 elite +wb_watch_check +wb_add 2 normal +wb_watch_check +wb_add 3 veteran +wb_watch_check +wb_remove 2 +wb_watch_check after +wb_fire_diagnostics 1 +wb_debug 1'
  $args="-dir `"$game`" -headless -logfile $name +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port 64140 +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 $commands"
  $p=Start-Process -FilePath $exe -ArgumentList $args -WorkingDirectory $game -WindowStyle Hidden -PassThru
  $end=[DateTime]::UtcNow.AddSeconds($Seconds)
@@ -42,7 +42,8 @@ try {
  $text=Get-Content $trace -Raw
  $engine=Get-Content $log -Raw
  $passes=@([regex]::Matches($text,'WATCH CHECK PASS')).Count
- $ok=$passes -eq 6 -and $text -notmatch 'WATCH CHECK FAIL' -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
+ $sequence=@([regex]::Matches($text,'WATCH CHECK PASS participants=(\d+)') | ForEach-Object { $_.Groups[1].Value }) -join ','
+ $ok=$passes -eq 5 -and $sequence -eq '0,1,3,6,5' -and $text -notmatch 'WATCH CHECK FAIL' -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
  @{source_sha=$manifest.sha;server_sha256=$manifest.server;seconds=$Seconds;native_query_passes=$passes;passed=$ok;memory_sha256=$before;client_tested=$false} | ConvertTo-Json | Set-Content (Join-Path $out 'result.json') -Encoding utf8
  if(-not $ok){throw 'Native spectator QA failed; inspect saved logs.'}
  Write-Host "PASS: $passes native query batches; no client/camera test."

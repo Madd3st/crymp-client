@@ -557,7 +557,7 @@ void BotManager::WatchInfoCommand(IConsoleCmdArgs*)
     WB_LOG(0,"[WarsBots] WATCH INFO real observers following owned bots=%u (server console only)",count);
 }
 
-void BotManager::WatchCheckCommand(IConsoleCmdArgs*)
+void BotManager::WatchCheckCommand(IConsoleCmdArgs* args)
 {
     BotManager* self=Self();
     CGameRules* rules=g_pGame ? g_pGame->GetGameRules() : nullptr;
@@ -565,6 +565,13 @@ void BotManager::WatchCheckCommand(IConsoleCmdArgs*)
     if (rules) rules->GetPlayers(humans);
     if (!self || !rules || !gEnv->bServer || !self->CanRunLocalIA() || !humans.empty())
     { WB_LOG(0,"[WarsBots] WATCH CHECK refused: local IA server without real clients required."); return; }
+    if (args && args->GetArgCount()>1 && !std::strcmp(args->GetArg(1),"after"))
+    {
+        // Query again after deferred entity removal has completed. Callback rechecks the gate/clients.
+        const char* script="Script.SetTimer(500,function() System.ExecuteCommand('wb_watch_check') end)";
+        gEnv->pScriptSystem->ExecuteBuffer(script,std::strlen(script),"WarsBots deferred spectator query");
+        return;
+    }
     CGameRules::TPlayers players;rules->GetMatchParticipants(players);
     unsigned checks=0;bool ok=true;
     for (EntityId query:players)
@@ -588,7 +595,7 @@ void BotManager::WatchCheckCommand(IConsoleCmdArgs*)
     }
     if (players.empty())
     {
-        const char* script="assert((g_gameRules.game:GetNextSpectatorTarget(0,1) or 0)==0)";
+        const char* script="assert((g_gameRules.game:GetNextSpectatorTarget(NULL_ENTITY,1) or 0)==0)";
         ok=gEnv->pScriptSystem->ExecuteBuffer(script,std::strlen(script),"WarsBots empty spectator QA");++checks;
     }
     WB_LOG(0,"[WarsBots] WATCH CHECK %s participants=%d assertions=%u; query-only, no observer/channel created",ok?"PASS":"FAIL",int(players.size()),checks);
