@@ -1,0 +1,116 @@
+{
+  "C": 0,
+  "build": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\play-8b9236f4",
+  "trap_recovery": 1,
+  "physics_diagnostics": 1,
+  "bots": 6,
+  "client_log": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.log",
+  "port": 46050,
+  "skill": "normal",
+  "client_arguments": "-dir \"E:/Steam/steamapps/common/Crysis\" -dx9 -logfile \"C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.log\" +r_displayInfo 1 +wb_move_trace 1 +connect 127.0.0.1:46050",
+  "source": "8b9236f48c792871bb8a7db9fb9895114c80ae78",
+  "label": "OwnerTrace-20261024-155135",
+  "move_trace": 1,
+  "server_pid": 17972,
+  "B": 0,
+  "server_log": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Server.log",
+  "client_pid": 12020,
+  "state": "finished",
+  "revive195_confirmed": true,
+  "revive_server_times": [
+    151.62,
+    184.68,
+    196.49,
+    317.97
+  ],
+  "server_human_actor": 131002,
+  "client_human_actor": 131001,
+  "clock_note": "Server/client game times and EntityIds differ; do not join raw IDs across processes",
+  "revive_proof": [
+    {
+      "server_time": 151.62,
+      "first_after": [
+        "152.27 [WarsBots] MOVE TRACE actor=131002 kind=human side=server local=0 t=152.269 sampleDt=0.230 pos=(1247.500,1319.750,136.003) vel=(0.000,0.000,0.000) speed=0.000 vz=0.000 mode=3 energy=200.0 sprint=0 grounded=1 flying=0 jump=0 land=0 takeoffs=0 jumpEdges=0 landEdges=1 jumpTime=145.050 landTime=152.072 peakZ=136.029 health=100",
+        "152.51 [WarsBots] MOVE TRACE actor=131002 kind=human side=server local=0 t=152.510 sampleDt=0.241 pos=(1247.500,1319.750,136.003) vel=(0.000,0.000,0.000) speed=0.000 vz=0.000 mode=3 energy=200.0 sprint=0 grounded=1 flying=0 jump=0 land=0 takeoffs=0 jumpEdges=0 landEdges=0 jumpTime=145.050 landTime=152.072 peakZ=136.003 health=100"
+      ]
+    },
+    {
+      "server_time": 184.68,
+      "first_after": [
+        "185.29 [WarsBots] MOVE TRACE actor=131002 kind=human side=server local=0 t=185.286 sampleDt=0.260 pos=(1247.500,1319.750,135.997) vel=(0.000,0.000,0.000) speed=0.000 vz=0.000 mode=3 energy=200.0 sprint=0 grounded=1 flying=0 jump=0 land=0 takeoffs=0 jumpEdges=0 landEdges=1 jumpTime=-1.000 landTime=185.092 peakZ=136.034 health=100",
+        "185.52 [WarsBots] MOVE TRACE actor=131002 kind=human side=server local=0 t=185.516 sampleDt=0.229 pos=(1247.500,1319.750,135.997) vel=(0.000,0.000,0.000) speed=0.000 vz=0.000 mode=3 energy=200.0 sprint=0 grounded=1 flying=0 jump=0 land=0 takeoffs=0 jumpEdges=0 landEdges=0 jumpTime=-1.000 landTime=185.092 peakZ=135.997 health=100"
+      ]
+    },
+    {
+      "server_time": 196.49,
+      "first_after": [
+        "197.03 [WarsBots] MOVE TRACE actor=131002 kind=human side=server local=0 t=197.025 sampleDt=0.242 pos=(1247.500,1319.750,135.999) vel=(0.000,0.000,0.000) speed=0.000 vz=0.000 mode=3 energy=200.0 sprint=0 grounded=1 flying=0 jump=0 land=0 takeoffs=0 jumpEdges=0 landEdges=1 jumpTime=193.575 landTime=196.852 peakZ=136.096 health=100",
+        "197.28 [WarsBots] MOVE TRACE actor=131002 kind=human side=server local=0 t=197.278 sampleDt=0.252 pos=(1247.500,1319.750,135.999) vel=(0.000,0.000,0.000) speed=0.000 vz=0.000 mode=3 energy=200.0 sprint=0 grounded=1 flying=0 jump=0 land=0 takeoffs=0 jumpEdges=0 landEdges=0 jumpTime=193.575 landTime=196.852 peakZ=135.999 health=100"
+      ]
+    },
+    {
+      "server_time": 317.97,
+      "first_after": [
+        "318.53 [WarsBots] MOVE TRACE actor=131002 kind=human side=server local=0 t=318.533 sampleDt=0.251 pos=(1247.500,1319.750,135.931) vel=(0.000,0.000,0.000) speed=0.000 vz=0.000 mode=3 energy=200.0 sprint=0 grounded=1 flying=0 jump=0 land=0 takeoffs=0 jumpEdges=0 landEdges=1 jumpTime=307.902 landTime=318.345 peakZ=136.108 health=100",
+        "318.78 [WarsBots] MOVE TRACE actor=131002 kind=human side=server local=0 t=318.785 sampleDt=0.252 pos=(1247.500,1319.750,135.931) vel=(0.000,0.000,0.000) speed=0.000 vz=0.000 mode=3 energy=200.0 sprint=0 grounded=1 flying=0 jump=0 land=0 takeoffs=0 jumpEdges=0 landEdges=0 jumpTime=307.902 landTime=318.345 peakZ=135.931 health=100"
+      ]
+    }
+  ],
+  "owner_finished": true,
+  "server_stopped": true,
+  "artifacts": {
+    "OwnerTrace-20261024-155135-Server.log": {
+      "bytes": 183057,
+      "sha256": "38a7b9ad784a2e1495ca66e31d28590572acabc260a07d3d1fdc162df353edf6"
+    },
+    "OwnerTrace-20261024-155135-Server.bots.log": {
+      "bytes": 9814010,
+      "sha256": "052092c4030d4070cafca703e3a6a13ce1f08c022e0e94dff9691854fa288199"
+    },
+    "OwnerTrace-20261024-155135-Client.log": {
+      "bytes": 4928,
+      "sha256": "74ef4ededae02198bf684492bef2f1841a1442b63287e9e69521eec43b23a6ed"
+    },
+    "OwnerTrace-20261024-155135-Client.bots.log": {
+      "bytes": 904287,
+      "sha256": "5bdcf828e99ef2b3382ead35661a4717d68c1da7ab721181ce562936f64e5ca6"
+    }
+  },
+  "revive_server_events": [
+    "151.62 [WarsBots] DEBUG REVIVE human actor=131002 spawnId=195 health=100",
+    "184.68 [WarsBots] DEBUG REVIVE human actor=131002 spawnId=195 health=100",
+    "196.49 [WarsBots] DEBUG REVIVE human actor=131002 spawnId=195 health=100",
+    "317.97 [WarsBots] DEBUG REVIVE human actor=131002 spawnId=195 health=100"
+  ],
+  "metrics": {
+    "Server": {
+      "human_rows": 2086,
+      "first_t": 19.281,
+      "last_t": 577.535,
+      "actors": [
+        65470,
+        131002
+      ],
+      "events": {
+        "takeoffs": 93,
+        "jumpEdges": 60,
+        "landEdges": 101
+      }
+    },
+    "Client": {
+      "human_rows": 2084,
+      "first_t": 12.005,
+      "last_t": 570.493,
+      "actors": [
+        65471,
+        131001
+      ],
+      "events": {
+        "takeoffs": 93,
+        "jumpEdges": 63,
+        "landEdges": 96
+      }
+    }
+  },
+  "graph_provenance": "Pre-session native graph export; geometry arrays unchanged from d4b0854c; final memory snapshot taken after owner session"
+}

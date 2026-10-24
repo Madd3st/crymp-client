@@ -2,6 +2,18 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-025 · 2026-10-24 · report · done
+Refs: OwnerTrace session; owner finished; game8b9236f4
+Needs owner: no
+Owner finished. Server17972 stopped; client already closed. Final4logs copied and
+SHA256 verified:C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerTrace-20261024-155135\.
+Session.json has final hashes, human row/event counts, exact manual revive times,
+server/client actor mapping caveat. final-memory.mem and pre-session level.nav.json
+included (graph provenance explicit). First interrupted session also archived in
+siblingOwnerTrace-20261024-154328/. Compact evidence committed Docs/Experiments/ownertrace-2026-10-24.json.
+No restore of old QA memory over owner's learned final memory. Starting C-011 export-only,
+then C-012 as requested. Human195 grounded/movement evidence available for diagnosis.
+
 ### X-024 · 2026-10-24 · report · open
 Refs: owner-approved restart; X-022; game8b9236f4; client/server
 Needs owner: no
