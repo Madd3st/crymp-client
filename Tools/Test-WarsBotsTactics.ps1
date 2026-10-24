@@ -83,7 +83,7 @@ try {
                 }
                 if($variant -eq 'candidate' -and $CandidateTrapRecovery -ge 0){$commands=" +wb_trap_recovery $CandidateTrapRecovery"+$commands}
                 if($variant -eq 'candidate' -and $CandidateHotspotAllNodes -ge 0){$commands=" +wb_hotspot_all_nodes $CandidateHotspotAllNodes"+$commands}
-                if($NavExports -and $variant -eq 'candidate'){$commands=" +wb_nav_export after 3 +wb_nav_export after 8"+$commands}
+                if($NavExports -and $variant -eq 'candidate'){$commands=" +wb_nav_export after 15 +wb_nav_export after 25"+$commands}
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
