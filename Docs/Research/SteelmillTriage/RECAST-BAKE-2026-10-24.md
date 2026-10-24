@@ -1,4 +1,35 @@
-# Real Recast bake on 4 IA maps (OC-022, done by Claude under D-010) — 2026-10-24 22:10
+# Real Recast bake on 4 IA maps (OC-022, done by Claude under D-010) — 2026-10-24 22:40 (v2)
+
+## v2 result (22:40) — use these numbers
+
+**The first bake (22:10, below) was too coarse.** Cell 0.2 m with radius 0.4 erodes ceil(0.4/0.2) = 2 cells plus
+quantization, so ship doorways and factory stairwells (~0.8–1.0 m clear) vanished. The player stand capsule is
+r 0.4 (Player.cpp:2604 `size = Vec3(0.4, 0.4, 0.3)`), and a real 0.85 m doorway still lets it through. v2: **cell
+0.05 m, radius 0.35**, everything else unchanged. Evidence `evidence/recast/` is v2; v1 moved to `evidence/recast/r04/`.
+
+| Map | Spawns in main: walk → all links | Items two-way: walk → all links | v1 (r 0.4 / cs 0.2) all links |
+| --- | --- | --- | --- |
+| Steelmill | **36 / 36** → 36 / 36 | 54 → **88 / 109** | 32 / 36, 90 |
+| Quarry | 30 → **32 / 32** | 89 → **108 / 108** | 32 / 32, 108 |
+| Outpost | **35 / 35** → 35 / 35 | 117 → **121 / 123** | 34 / 35, 115 |
+| Armada | 19 → **34 / 40** | 72 → **125 / 156** | 6 / 40, 26 |
+
+Corrections to my own 22:10/22:00 claims: Steelmill upper floors are **not** ladders and Armada is **not** closed
+doors — it was the erosion. Removing door-like parts (heuristic, 103 leaves 1.13 × 0.13 × 1.98 m) changed nothing;
+radius 0.3 at cs 0.1 gives the same picture as v2 (Steelmill 36/36, Armada 35/40). Owner (22:00): "Armada has one
+lift, otherwise every point is reachable on foot"; the 6 Armada spawns still outside (294, 465, 152, 417, 441, 373)
+are the candidates for the lift / ladders / steep ship stairs → C-041 narrowed to ladders + lift.
+
+**For the in-game Detour step (C-030 item 9):** bake at cs 0.1, radius 0.3 (Steelmill 9.3k polys, 2.2 MB tiles;
+Armada 3.4k polys, 0.7 MB) — same connectivity as v2 at a quarter of the memory; path following must keep the 0.4 m
+capsule off walls (corridor + steering), and narrow doors get `wb_link_test`-style probes.
+Walk-only items stay low on Steelmill (54/109): most weapons sit on roofs/catwalks reached by jumps — vertical play
+is first-class (D-006), the jump executor (C-036) is not optional.
+
+---
+
+## v1 (22:10, superseded)
+
 
 Tool: `Tools/RecastBake/recast_bake` (recastnavigation **v1.6.0**, MIT, pinned; offline, not game code). Input: the same
 Codex C-019/C-028 cropped collision OBJ as the walk-model verdict. Tiled Detour navmesh, cell 0.2 m / 0.1 m, agent
@@ -47,7 +78,7 @@ holding most spawns (links are one-way).
 ## Files
 
 - Tool: `Tools/RecastBake/` (`recast_bake.cpp`, `CMakeLists.txt` fetches v1.6.0, `render_mesh.py`, README).
-- Evidence: `evidence/recast/<map>.png` (green: main by height, grey: other parts, orange/blue/magenta: drop/jump/
+- Evidence (v1 now in `evidence/recast/r04/`): `evidence/recast/<map>.png` (green: main by height, grey: other parts, orange/blue/magenta: drop/jump/
   Strength links, white/red circles: spawns in/out of main, triangles: items), `<map>.json` (per stage: mesh,
   summary, outside spawns; per point at the last stage), `<map>.links.txt` (generated links, Crysis frame:
   `x0 y0 z0 x1 y1 z1 bidir kind`) — candidates for the Detour step; in-game links still need `wb_link_test` (C-036).

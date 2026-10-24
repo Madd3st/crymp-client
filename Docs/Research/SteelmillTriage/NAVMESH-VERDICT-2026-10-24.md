@@ -3,6 +3,7 @@
 > **Correction 22:10:** the real Recast bake (`RECAST-BAKE-2026-10-24.md`) checks jump arcs against the actual
 > triangles. The "+Strength" numbers below are optimistic (links through walls); Armada stays at **6 / 40**, Steelmill
 > 32 / 36. Walk-only, Recast is much better than this model (Steelmill items 53, not 9). Use the Recast numbers.
+> **v2 22:40** (finer cells): Steelmill 36/36 on foot, Armada 34/40 with jumps — see the Recast verdict.
 
 Input: Codex C-019/C-028 collision export (a7553da / af53f5c), cropped to spawns ∪ items + 120 m; Triage `navmesh`
 (Recast-style walk model: 0.2 m cells, agent r 0.4 / h 1.8, climb 0.5, slope 45°, drops ≤ 4 m; ballistic jump links:
