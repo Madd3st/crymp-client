@@ -88,8 +88,8 @@ public:
 		{
 			// centre of view 1.0 -> cone edge 0.5; near 1.0 -> max range 0.3; moving targets +20 %
 			const float centre = 0.5f + 0.5f * Clamp01((cosAng - halfCos) / (1.f - halfCos));
-			const float near = 1.f - 0.7f * Clamp01((dist - 10.f) / (m_p.maxSight - 10.f));
-			float rate = centre * near * (t.speed > 1.f ? 1.2f : 1.f) / m_p.reactionTime;
+			const float rangeFactor = 1.f - 0.7f * Clamp01((dist - 10.f) / (m_p.maxSight - 10.f));
+			float rate = centre * rangeFactor * (t.speed > 1.f ? 1.2f : 1.f) / m_p.reactionTime;
 			if (t.cloaked && !revealed) rate *= m_p.cloakRate;
 			if (t.sinceShot <= 0.3f) a = a < 0.7f ? 0.7f : a;     // muzzle flash in view
 			a += rate * m_dt;
