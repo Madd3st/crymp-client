@@ -265,6 +265,11 @@ class SummaryTests(unittest.TestCase):
         w = summary.watchdog(W)
         self.assertEqual((w["episodes"], w["at_spawn195"], w["self_kills"]), (2, 1, 1))
         self.assertEqual(w["reached_level"], {"1": 2, "2": 1, "4": 1})
+        P = L[:2] + ["20.0 [WarsBots] REAL PICKUP actor=8 item=5 acquired=1",
+                     "30.0 [WarsBots] #1 revive requested EntityId=8 spawnId=195 previousSpawn=0 position=(1,1,1)."]
+        pk = summary.pickups(P, {195: "sink", 218: "main1"})
+        self.assertEqual((pk["lives"], pk["lives_with_pickup"]), (3, 1))
+        self.assertEqual(pk["by_spawn_kind"]["main"], dict(lives=1, with_pickup=1, percent=100.0))
 
 
 class RenderTests(unittest.TestCase):

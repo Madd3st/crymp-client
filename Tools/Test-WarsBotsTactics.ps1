@@ -90,7 +90,7 @@ try {
                 }
                 if($variant -eq 'candidate' -and $CandidateTrapRecovery -ge 0){$commands=" +wb_trap_recovery $CandidateTrapRecovery"+$commands}
                 if($variant -eq 'candidate' -and $CandidateHotspotAllNodes -ge 0){$commands=" +wb_hotspot_all_nodes $CandidateHotspotAllNodes"+$commands}
-                if($NavExports -and $variant -eq 'candidate'){$commands=" +wb_nav_export after 15 +wb_nav_export after 25"+$commands}
+                if($NavExports){$commands=" +wb_nav_export after 15 +wb_nav_export after 25"+$commands}
                 if($variant -eq 'candidate' -and $CandidatePhysicsDiagnostics -ge 0){$commands=" +wb_physics_diagnostics $CandidatePhysicsDiagnostics"+$commands}
                 if($variant -eq 'candidate' -and $CandidateReachableGoals -ge 0){$commands=" +wb_reachable_goals $CandidateReachableGoals"+$commands}
                 if($variant -eq 'candidate' -and $CandidateSinkEscape -ge 0){$commands=" +wb_sink_escape $CandidateSinkEscape"+$commands}
@@ -112,7 +112,7 @@ try {
                     Start-Sleep -Seconds 5
                     if(Test-Path -LiteralPath $trace){$text=Get-Content -LiteralPath $trace -Raw}
                     if(Test-Path -LiteralPath $log){$engine=Get-Content -LiteralPath $log -Raw}
-                    if($NavExports -and $variant -eq 'candidate' -and $navCaptured -lt 2 -and (Test-Path -LiteralPath $navPath)){
+                    if($NavExports -and $navCaptured -lt 2 -and (Test-Path -LiteralPath $navPath)){
                         $navFile=Get-Item -LiteralPath $navPath
                         if($navFile.LastWriteTimeUtc -gt $navStamp){
                             $navCaptured++;$navStamp=$navFile.LastWriteTimeUtc
@@ -136,9 +136,9 @@ try {
                 $observed=([regex]::Matches($text,'(?m)^([0-9.]+) ') | ForEach-Object {[double]$_.Groups[1].Value} | Measure-Object -Maximum).Maximum
                 $numbers=@([regex]::Matches($text,'#(\d+) created EntityId=') | ForEach-Object {$_.Groups[1].Value} | Sort-Object -Unique)
                 $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
-                if($NavExports -and $variant -eq 'candidate' -and $navCaptured -ne 2){$ok=$false}
+                if($NavExports -and $navCaptured -ne 2){$ok=$false}
                 if($Seconds -ge 660 -and $observed -lt 600){$ok=$false}
-                $run=[ordered]@{reachable_goals_requested=$CandidateReachableGoals;sink_escape_requested=$CandidateSinkEscape;explain_nodes=$ExplainNodes;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $run=[ordered]@{reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{-1});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{-1});explain_nodes=$ExplainNodes;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"

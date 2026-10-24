@@ -1,1 +1,1 @@
-Pinned offline Triage import from warsbots/research/steelmill-triage @31e9394b3f0eab13c67c367a9b336396eb6fdcb5. No branch merge. wbnav/1 unchanged. Summary uses warsbots-run-summary/1; analyze keeps steelmill-triage/1 for HTML/detail. See Docs/Research/SteelmillTriage/SUMMARY_CONTRACT.md. Compare only identical scenarios.
+Scoped offline Triage import through research729a568 (C-005 pickups/goal_skips). No merge. wbnav/1 unchanged. Summary warsbots-run-summary/1; compare only controlled scenarios.

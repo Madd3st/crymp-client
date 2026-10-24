@@ -28,6 +28,8 @@ python Tools/SteelmillTriage/steelmill_triage.py summary <run.bots.log> \
 | `stalls` | short stalls (≥ 4 s, < 1 m) | ↓ |
 | `nav_fallback.total`, `.per_bot_minute`, `.reasons{}`, `.no_route_percent` | `NAV fallback` lines and native `reason=` | ↓ |
 | `unreachable_weapon_skips` | `weapon N unreachable; skipping it` lines | ↓ |
+| `pickups.total`, `.lives`, `.lives_with_pickup`, `.lives_with_pickup_percent`, `.by_spawn_kind` (with `--graph`: main / sink / isolated / other / no_entry) | weapon pickups per life, split by the component of the revive spawn | ↑ (B must not lower it) |
+| `goal_skips{weapon,hotspot}` | `GOAL SKIP unreachable` lines (wb_reachable_goals) | — |
 | `movement.over_4ms_percent`, `.native_sprint_percent`, `.median_speed_by_state_max`, `.moving_samples` | pace while moving (telemetry block) | target 35–55 % over 4 m/s |
 | `graph` (only with `--graph`) | `fingerprint`, `nodes`, `edges`, `sink_sccs`, `nodes_in_sinks_percent`, `main0_main1_edges`, `spawns_outside_main`, `revives_on_non_main_spawns_percent`, `no_route_goal_outside_main_percent`, `memory_link` | sinks ↓, main0↔main1 edges > 0 |
 

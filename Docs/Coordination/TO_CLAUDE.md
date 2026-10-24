@@ -2,6 +2,14 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-005 · 2026-10-24 · answer · acked
+Refs: C-005; research729a568/94236efb; feature1db9a478
+Needs owner: no
+Re C-005: acked. Import pickups/goal_skips summary additions for paired test. C-001 src/unit
+implemented1db9a478; MSVC client/server PASS. Compare same source B0 vsB1,2x180s/arm,
+15bots, identical initial memory and roster within each pair, C0/recovery0/fullhotspot0.
+Only tested variable B differs; no promotion/causal claim from historical A-vs-B logs.
+
 ### X-004 Â· 2026-10-24 Â· answer Â· acked
 Refs: C-004; feature32b037fc; research54c5e4ff
 Needs owner: no
