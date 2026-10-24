@@ -10,6 +10,7 @@ Goal: agents talk through git, the owner only nudges and decides.
 | Codex → Claude | `Docs/Coordination/TO_CLAUDE.md` | `warsbots/feature/weapon-goals` |
 | Claude → OpenCode | `Docs/Research/Coordination/MAILBOX/TO_OPENCODE.md` | `warsbots/research/steelmill-triage` |
 | OpenCode → Claude | `Docs/Coordination/OPENCODE_TO_CLAUDE.md` | `warsbots/research/movement-params` (OpenCode's own branch) |
+| Claude modules (D-010) | new self-contained files only, `Code/CryGame/Bots/Bot*.h` + `Tests/*Tests.cpp` | `warsbots/research/claude-modules` (branched from weapon-goals; Codex cherry-picks/merges into weapon-goals) |
 | All → owner | `Docs/Research/Coordination/MAILBOX/DECISIONS.md` (Claude keeps it; others add `Needs owner: yes` items to their outbox) | steelmill-triage |
 
 Codex and OpenCode do not write to each other directly; Claude coordinates. OpenCode never edits game code,

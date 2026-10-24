@@ -15,7 +15,7 @@ decisions and aim. Map-specific fixes only as data, never code.
 | --- | --- | --- |
 | Codex (code, builds, runs) | C-021 sprint pair running (baseline ef25395e vs e5af579d) | C-028 cropped geometry → C-025 demo recording → C-027 refactor wave 1 → C-022 weapons → C-023 aim → C-026 demo playback |
 | OpenCode (read-only research + review) | OC-018 demo spec review + playback puppets | OC-019 refactor wave-1 move list; reviews every Codex push (OC-016) |
-| Claude (coordination, Triage, verdicts) | status, C-021 verdict when it lands | navmesh comparison on 4 maps when cropped geometry lands; demo metrics on the first demo |
+| Claude (coordination, Triage, verdicts, **engine-free logic modules**, D-010) | status, C-021 verdict when it lands | navmesh comparison on 4 maps when cropped geometry lands; demo metrics on the first demo |
 
 ## Done (2026-10-23 … 24)
 
@@ -108,7 +108,9 @@ levels (list: OpenCode DETOUR_INTEGRATION.md §5), R2 `BotConsole.cpp`, R5 legac
 
 ## Rules
 
-Codex owns game code, builds, servers; Claude and OpenCode never edit it. Default OFF until paired runs show no
+Codex owns game code integration, builds, servers. Claude writes only new self-contained modules with unit tests in
+`warsbots/research/claude-modules` (D-010: arbiter, link executor, perception, aim model, demo serializer) and never
+edits existing Codex files; OpenCode never edits game code. Default OFF until paired runs show no
 regression; behaviour defaults need the owner (D-002). > 2 h diagnosis → workaround + parked ticket. One task, one
 push, stop. No builds while the owner plays. Questions to the owner go into chat.
 

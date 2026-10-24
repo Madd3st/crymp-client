@@ -5,6 +5,11 @@ history. The `warsbots-coordinator` skill (if the owner saved it) carries the sa
 
 ## Roles and rules
 
+- **D-010 (20:27):** Claude also writes engine-free logic modules (`Code/CryGame/Bots/Bot*.h` + `Tests/*Tests.cpp`,
+  compiled offline with g++/clang) in worktree `/home/claude/claude-modules`, branch `warsbots/research/claude-modules`;
+  Codex integrates. First module: `BotGoalArbiter.h` (C-032/C-035). Next: jump-link executor, perception cone/cloak,
+  aim model, demo serializer.
+
 - **Owner**: decides and plays. Answers questions in chat; asks Claude directly ("статус", "Codex запушил",
   "я поиграл"). Wants short, funny, Russian replies; details go to files.
 - **Codex** (`warsbots/feature/weapon-goals`): all game code, builds, servers, QA. Claude never edits its
