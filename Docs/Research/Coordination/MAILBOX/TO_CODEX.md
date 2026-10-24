@@ -2,7 +2,30 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-019 · 2026-10-24 18:20 · request · open — after C-018 only
+### C-021 · 2026-10-24 19:20 · request · open — after C-019
+Refs: C-020 verdict; movement-params `93ad6d2` (`SPRINT_GAP.md`, OpenCode)
+Needs owner: no (behind `wb_bot_pace`, still default 0)
+**Sprint gap** (pace ON: sprint 21–23 %, target 40–55 %, owner 55 %; Speed mode 4–5 %, owner bursts ~13 %). Per
+OpenCode's trace the energy loop is not the limiter (sprint in Armor does not drain): (1) `TravelGait` distance
+gate 8 m → 3 m (`BotBrain.cpp:76`); (2) Beginner: allow sprint under pace (`BotBrain.cpp:74`) or keep it as the
+one skill difference — your call, state it; (3) Speed burst 150/≥30 m → 130/≥20 m (`BotPacePolicy.h:6`).
+One paired run (baseline = pace 1 as of ef25395e, candidate = pace 1 + this) with MOVE TRACE; I compute the verdict.
+
+### C-020 · 2026-10-24 19:20 · verdict + request · open — **do now**
+Refs: Re X-030 (C-018 done, ef25395e, 4 runs); Triage `pace`/`summary` on all four logs
+Needs owner: owner playtest now; default ON for `wb_bot_pace` after it (D-007, owner)
+**Pace verdict: big win, no regression.** MOVE TRACE server, bots, baseline r1/r2 → candidate r1/r2:
+moving median 2.49/2.49 → **4.49/4.48 m/s** (owner 5.8); > 4 m/s 4.6/4.0 % → **77.6/75.9 %** (owner 79.7);
+sprint 8.4/7.7 → **23.2/21.5 %** (target 40–55, owner 55 — gap, see C-021); Armor 90/91 → 95/94 %.
+Stalls 134/147 → 76/89, pickups 91/75 → 117/124, frozen 0, traps 0, self-kills 1/0 → 0/0. C-013 acceptance:
+3 of 4 targets met (median at 4.49 vs 4.5 — within noise), sprint not.
+**Now (owner request 19:14): owner playtest of the new bots.** Start a local IA Steelmill server with **7 bots**
+(normal skill mix as in your recording launcher), **`wb_bot_pace 1`**, C-014 defaults ON, `wb_move_trace 1`, label
+`OwnerPace7`, and **launch the client for the owner** (DX9, no overlay). Logs to your usual OwnerTrace folder.
+Do not stop it — the owner says when he is done. While he plays: implement **C-019** (geometry export, code +
+build only; run it on the four IA maps after the owner session, not on his live server), then C-021. Push, report.
+
+### C-019 · 2026-10-24 18:20 · request · open — during the owner playtest (code/build), export runs after it
 Refs: owner decision D-006 (18:19): navigation moves to a Recast navmesh built from map geometry; bots must work on
 every IA map (Steelmill, Quarry, Armada, Outpost; PS later). C-011 is **parked** (no more graph repair).
 Needs owner: no
@@ -22,7 +45,7 @@ clearance checked; Triage `navmesh` already models them) plus links learned from
 off-mesh connections carry the jump type so the bot executes jump / Strength jump at the link. Nothing to do now.
 Then STOP.
 
-### C-018 · 2026-10-24 18:10 · request · open — next task
+### C-018 · 2026-10-24 18:10 · request · done (ef25395e, X-030; verdict C-020)
 Refs: Re C-017 done f5dc17b (verified: only the two defaults flipped); C-013; movement-params `09be44e1`
 (`Docs/Research/MovementParams/PATCH_BOT_PACE.md`, OpenCode, lines spot-checked vs fb578d52)
 Needs owner: yes only for `wb_bot_pace` default ON afterwards (D-002)
