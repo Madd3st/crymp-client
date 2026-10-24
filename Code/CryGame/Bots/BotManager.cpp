@@ -60,7 +60,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
 const char* kCommands[] = {
-	"wb_watch", "wb_watch_info", "wb_watch_check",
+	"wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
@@ -107,6 +107,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_list", ListCommand, 0, "List bots: number, EntityId, profile, state");
 	console->AddCommand("wb_status", StatusCommand, 0, "Detailed status and per-bot update cost");
 	console->AddCommand("wb_debug", DebugCommand, 0, "wb_debug 0|1: verbose telemetry for all bots");
+	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
 	console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
 	console->AddCommand("wb_select", SelectCommand, 0, "wb_select <botNumber>: target of the legacy wb_bot_*/wb_probe_* commands");
 	console->AddCommand("wb_probe_spawn", ProbeSpawnCommand, 0, "wb_probe_spawn x y z: add one bot without AI");
@@ -661,6 +662,23 @@ void BotManager::DebugCommand(IConsoleCmdArgs* args)
 	{ WB_LOG(0, "[WarsBots] Usage: wb_debug 0|1."); return; }
 	self->m_defaultVerbose = !strcmp(args->GetArg(1), "1");
 	for (BotInstance* bot : self->Ordered()) bot->Brain().SetVerbose(self->m_defaultVerbose);
+}
+
+void BotManager::NavExportCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self();
+    if (!self || !gEnv->bServer || !self->CanRunLocalIA())
+    { WB_LOG(0,"[WarsBots] NAV export refused: local IA server required");return; }
+    if (args->GetArgCount()==3 && !std::strcmp(args->GetArg(1),"after"))
+    {
+        int seconds=0;
+        if (!ParseInt(args->GetArg(2),seconds) || seconds<1 || seconds>30)
+        { WB_LOG(0,"[WarsBots] NAV export delay must be 1..30 seconds");return; }
+        char script[128];std::snprintf(script,sizeof(script),"Script.SetTimer(%d,function() System.ExecuteCommand('wb_nav_export') end)",seconds*1000);
+        gEnv->pScriptSystem->ExecuteBuffer(script,std::strlen(script),"WarsBots delayed graph export");return;
+    }
+    if (args->GetArgCount()>2) { WB_LOG(0,"[WarsBots] Usage: wb_nav_export [path.json] or after <seconds>");return; }
+    self->m_nav.Export(args->GetArgCount()==2?args->GetArg(1):nullptr);
 }
 
 void BotManager::NavCommand(IConsoleCmdArgs*)

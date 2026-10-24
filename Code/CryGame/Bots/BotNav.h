@@ -24,6 +24,7 @@ public:
 	bool Ready() const { return m_phase == Phase::Ready; }
 	Phase GetPhase() const { return m_phase; }
 	void Status() const;
+    bool Export(const char* path=nullptr) const;
 
 	// Path of world points from start to goal (excluding start). False if no route is known.
     struct PathTrace { const char* reason="not_ready"; int from=-1,to=-1,expanded=0; };

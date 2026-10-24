@@ -13,6 +13,8 @@
 #include <filesystem>
 #include <cstring>
 #include <cctype>
+#include "version.h"
+#include "nlohmann/json.hpp"
 
 namespace WarsBots
 {
@@ -269,6 +271,71 @@ std::filesystem::path MemoryPath(const std::string& level)
 	std::filesystem::create_directories(dir, ec);
 	return dir / (safe + ".mem");
 }
+}
+
+bool BotNav::Export(const char* requested) const
+{
+    if (!Ready()) { WB_LOG(0,"[WarsBots] NAV export refused: phase=%d",int(m_phase));return false; }
+    const CTimeValue started=gEnv->pTimer->GetAsyncTime();
+    std::filesystem::path temp;
+    try
+    {
+        const auto memoryPath=MemoryPath(m_level);
+        auto path=requested && *requested ? std::filesystem::u8path(requested) : memoryPath;
+        if (!requested || !*requested) path.replace_extension(".nav.json");
+        if (path.extension()!=L".json") { WB_LOG(0,"[WarsBots] NAV export refused: .json destination required");return false; }
+        // Read fingerprint only. Export never saves/changes the map memory or graph.
+        bool matched=false;
+        if (FILE* f=_wfopen(memoryPath.c_str(),L"rb"))
+        {
+            char magic[8]={};int nx=0,ny=0,n=0;float cell=0,mx=0,my=0;
+            matched=fread(magic,1,8,f)==8 && !memcmp(magic,"WBMEM01",7) &&
+                fread(&nx,4,1,f)==1 && fread(&ny,4,1,f)==1 && fread(&cell,4,1,f)==1 &&
+                fread(&mx,4,1,f)==1 && fread(&my,4,1,f)==1 && fread(&n,4,1,f)==1 &&
+                nx==m_nx && ny==m_ny && cell==m_cell && mx==m_min.x && my==m_min.y && n==int(m_nodes.size());
+            fclose(f);
+        }
+        using nlohmann::json;
+        const auto rounded=[](float x,int digits) { const double scale=digits==2?100.:1000.;return std::round(double(x)*scale)/scale; };
+        json doc={{"schema","wbnav/1"},{"level",m_level},
+            {"build",{{"describe",CRYMP_VERSION_STRING},{"exported_at_game_seconds",gEnv->pTimer->GetFrameStartTime().GetSeconds()}}},
+            {"params",{{"layers",5},{"headroom",1.9},{"max_rise",1.9},{"max_drop",3.2},{"max_step",.75},
+                {"min_normal_z",.7},{"clearance_heights",{.5,1.2,1.75}},{"nearest_radius_columns",2},{"nearest_max_dz",2.5},
+                {"astar_budget",6000},{"margin_xy",40},{"margin_z_below",15},{"margin_z_above",35}}},
+            {"grid",{{"nx",m_nx},{"ny",m_ny},{"cell",m_cell},{"min_x",m_min.x},{"min_y",m_min.y},{"min_z",m_min.z},{"max_z",m_max.z}}},
+            {"water_level",gEnv->p3DEngine?gEnv->p3DEngine->GetWaterLevel():0.f},
+            {"counts",{{"nodes",m_nodes.size()},{"edges",m_edges.size()}}},
+            {"memory",{{"file",memoryPath.filename().u8string()},{"matched",matched}}}};
+        doc["nodes"]=json::array();doc["spawns"]=json::array();
+        auto& edges=doc["edges"];
+        for (const char* key:{"first","count","to","cost"}) edges[key]=json::array();
+        for (const Node& n:m_nodes)
+        {
+            doc["nodes"].push_back({rounded(n.pos.x,2),rounded(n.pos.y,2),rounded(n.pos.z,2),n.column});
+            edges["first"].push_back(n.firstEdge);edges["count"].push_back(n.edgeCount);
+        }
+        for (const Edge& e:m_edges) { edges["to"].push_back(e.to);edges["cost"].push_back(rounded(e.cost,3)); }
+        if (CGameRules* rules=g_pGame->GetGameRules())
+            for (int i=0;i<rules->GetSpawnLocationCount();++i)
+                if (IEntity* spawn=gEnv->pEntitySystem->GetEntity(rules->GetSpawnLocation(i)))
+                { const Vec3 p=spawn->GetWorldPos();doc["spawns"].push_back({spawn->GetId(),rounded(p.x,2),rounded(p.y,2),rounded(p.z,2)}); }
+        const std::string bytes=doc.dump();
+        temp=path;temp+=L".tmp";
+        FILE* f=_wfopen(temp.c_str(),L"wb");
+        if (!f) throw std::runtime_error("cannot open temporary export");
+        const bool written=fwrite(bytes.data(),1,bytes.size(),f)==bytes.size();
+        const bool closed=fclose(f)==0;
+        if (!written || !closed) throw std::runtime_error("incomplete export write");
+        std::filesystem::rename(temp,path); // Atomic replacement; preserve old export if publication fails.
+        WB_LOG(0,"[WarsBots] NAV export: %s nodes=%d edges=%d bytes=%u ms=%.2f",path.u8string().c_str(),NodeCount(),EdgeCount(),unsigned(bytes.size()),
+            (gEnv->pTimer->GetAsyncTime()-started).GetMilliSeconds());
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        std::error_code ignored;if (!temp.empty()) std::filesystem::remove(temp,ignored);
+        WB_LOG(0,"[WarsBots] NAV export failed: %s",e.what());return false;
+    }
 }
 
 void BotNav::ReportStuck(const Vec3& pos, std::uint32_t actor)
