@@ -1,0 +1,18 @@
+{
+  "completed": true,
+  "engine_errors": [],
+  "fire_shot_trace_records": 980,
+  "fire_hit_trace_records": 678,
+  "memory_restored_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+  "no_owner_client_or_server_required": true,
+  "scope": "60s stability smoke only; no paired behavioral equivalence or performance verdict",
+  "source_sha": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+  "frozen_build": "build/play-b902dfb4",
+  "unit_tests_pass": [
+    "BotConfigTests",
+    "BotTrapWatchdogTests",
+    "BotDemoCodecTests",
+    "BotPacePolicyTests",
+    "BotReviveGuardTests"
+  ]
+}

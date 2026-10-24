@@ -1,0 +1,117 @@
+{
+  "owner": {
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Logs\\OwnerRecord7-20261024-233350\\Multiplayer_IA_Steelmill-20261024-233351-1.wbdemo",
+    "sha256": "d238da3fe4d5c07f97ab03ac45bd0b97bac97430e7a0cf89b0fb3008c571563d",
+    "bytes": 11000074,
+    "version": 2,
+    "source": "40378ebe1ea34f2afa452170e40aff9b029b85b1",
+    "complete_record_boundary": true,
+    "frames": 20996,
+    "seconds": 1049.6000000000001,
+    "measured_hz": 20.002858231707314,
+    "records": {
+      "5": 9132,
+      "1": 33,
+      "2": 25,
+      "4": 55465,
+      "6": 55465,
+      "7": 6249,
+      "3": 20996
+    },
+    "events": {
+      "suit": 1050,
+      "land": 489,
+      "pickup": 92,
+      "jump": 161,
+      "hit": 1612,
+      "shot": 5484,
+      "kill": 121,
+      "revive": 123
+    },
+    "metrics": {
+      "aim_wander_deg_s": {
+        "human": 12.7,
+        "bot": 10.8
+      },
+      "aim_wander_samples": {
+        "human": 5945,
+        "bot": 86428
+      },
+      "bot_aim_error_deg": 3.9,
+      "bot_aim_error_samples": 66616,
+      "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+      "bot_brain_aim_error_deg": 0.0,
+      "reaction_s": 0.8,
+      "reactions": 1262,
+      "decision_flips_per_bot_min": 12.23,
+      "time_to_primary_s": 5.6,
+      "primaries": 82,
+      "kills_by_weapon": {
+        "Shotgun": 24,
+        "SOCOM": 34,
+        "FY71": 24,
+        "DSG1": 2,
+        "SCAR": 16,
+        "GaussRifle": 7,
+        "SMG": 8,
+        "Hurricane": 6
+      }
+    }
+  },
+  "probe": {
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261024-235212-1.wbdemo",
+    "sha256": "619d6eb7089e19be462d5032a4fc513a705dac9b050cb10ecc26899da4188c92",
+    "bytes": 1297539,
+    "version": 2,
+    "source": "b902dfb4388c161dd0b33ce1517615b3b9563777",
+    "complete_record_boundary": true,
+    "frames": 1156,
+    "seconds": 57.734,
+    "measured_hz": 20.005542661170193,
+    "records": {
+      "5": 1598,
+      "1": 39,
+      "2": 45,
+      "4": 6750,
+      "6": 6750,
+      "7": 1095,
+      "3": 1156
+    },
+    "events": {
+      "suit": 158,
+      "land": 69,
+      "shot": 976,
+      "pickup": 11,
+      "hit": 340,
+      "jump": 13,
+      "kill": 17,
+      "revive": 14
+    },
+    "metrics": {
+      "aim_wander_deg_s": {
+        "human": null,
+        "bot": 16.3
+      },
+      "aim_wander_samples": {
+        "human": 0,
+        "bot": 5830
+      },
+      "bot_aim_error_deg": 3.6,
+      "bot_aim_error_samples": 12665,
+      "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+      "bot_brain_aim_error_deg": 2.7,
+      "reaction_s": 0.8,
+      "reactions": 250,
+      "decision_flips_per_bot_min": 16.11,
+      "time_to_primary_s": 1.1,
+      "primaries": 1,
+      "kills_by_weapon": {
+        "SOCOM": 10,
+        "Shotgun": 2,
+        "SCAR": 3,
+        "SMG": 1,
+        "FY71": 1
+      }
+    }
+  }
+}

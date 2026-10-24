@@ -34,7 +34,7 @@ for($n=0;$n -lt $BotCount;$n++){
  $roster+=@{number=$n+1;skill=$skill;style='auto'}
  $addCommands+=" +wb_add 1 $skill"
 }
-$args="-dir `"$GameDirectory`" -headless -logfile `"$serverLog`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_maxbots $BotCount +wb_bot_pace $BotPace +wb_spawn_exclude195 1 +wb_revive_guard 1 +wb_reachable_goals 0 +wb_sink_escape 0 +wb_hotspot_all_nodes 0 +wb_trap_recovery 1 +wb_physics_diagnostics 1 +wb_move_trace 1 +wb_debug 1 $addCommands +wb_list"
+$args="-dir `"$GameDirectory`" -headless -logfile `"$serverLog`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_maxbots $BotCount +wb_bot_pace $BotPace +wb_spawn_exclude195 1 +wb_revive_guard 1 +wb_reachable_goals 0 +wb_hotspot_all_nodes 0 +wb_trap_recovery 1 +wb_physics_diagnostics 1 +wb_move_trace 1 +wb_debug 1 $addCommands +wb_list"
 if($ServerConsole){$args=$args.Replace('-headless ','')}
 $serverStyle=if($ServerConsole){'Normal'}else{'Hidden'}
 $server=Start-Process (Join-Path $build 'CryMP-Server64.exe') -ArgumentList $args -WorkingDirectory $GameDirectory -WindowStyle $serverStyle -PassThru

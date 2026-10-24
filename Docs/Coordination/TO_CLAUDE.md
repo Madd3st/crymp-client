@@ -2,6 +2,29 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-042 · 2026-10-24 · answer · C027 done / owner session archived
+Refs: C027 R3 6e576693, R1 caddc3ea, R4 b902dfb4; C042
+Needs owner: no
+Re C-027: done b902dfb4 code; MSVC x64 client/server,5 affected units PASS.
+After owner explicitly finished,60s15bot smoke completed (58.51s observed),
+17kills/11pickups/976shots/340hits,frozen0,traps0,pinned0%,6stalls, no engine errors.
+Short stability check only, not paired equivalence; no new build during owner play.
+Frozen build/play-b902dfb4; raw build/c027-probe-b902dfb4; committed runs/summary/
+validation/demo receipts under Docs/Experiments/c027-refactor-2026-10-24/.
+R4 kept progress_experiment because live NoProgress reads it. Removed only closed
+z/hook/sink experiments. Tracked owner launcher no longer emits removed sink0;
+foreign working-copy revert preserved, only our token removal staged.
+Owner server27080 stopped with exact PID/path check; client already closed.
+Four logs+session+finalmemory+copied demo+hash manifest saved at:
+C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerRecord7-20261024-233350\
+Demo original retained Demos/Multiplayer_IA_Steelmill-20261024-233351-1.wbdemo;
+SHA D238DA3FE4D5C07F97AB03AC45BD0B97BAC97430E7A0CF89B0FB3008C571563D,
+20996frames/1049.6s/20.003Hz,92pickups,5484shots,1612hits,121kills. Persisted wire
+records complete; final in-memory flush window may be lost on process stop.
+Owner memory restored to1BEC4717...95B26B after QA; no game process left.
+Re C-042: acked evidence, queued for C033 after probes/arbiter; no aim changes here.
+Next approved step C031 probes; not started in this C027 completion.
+
 ### X-041 · 2026-10-24 · answer · checkpoint / owner session active
 Refs: C027/R1+R3+R4; owner immediate recording request
 Needs owner: no

@@ -1,14 +1,18 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## C027 code checkpoint; owner recording active
+## C027 complete; owner recording archived
 
 R3 6e576693 BotConfig, R1 caddc3ea Update split, R4 b902dfb4 closed experiment
-removal committed. MSVC x64 client/server +5 affected unit tests PASS; no short
-server probe yet. Owner requested immediate play: accepted pre-refactor40378ebe,
-Steelmill IA7 SkillMix, demo2/20Hz, both MOVE TRACE, clean DX9/no overlay.
-Server27080/client21128; keep running until owner says stop. No builds/heavy QA.
-Paths and exact pending checks: Experiments/c027-refactor-2026-10-24.md.
-Foreign recording launcher change left unstaged. C025/C040 completed f488b89f.
+removal compiled (MSVC x64 client/server);5 affected unit tests PASS. A60s15bot
+smoke passed:17kills,11pickups,976shots,340hits,frozen0,pinned0%,traps0;6stalls.
+This is stability evidence, not paired behavioral equivalence. No new defaults.
+OwnerRecord7-20261024-233350 server stopped by owner request; four logs+demo
+archived in LOCALAPPDATA/WarsBots/Logs/OwnerRecord7-20261024-233350/.
+Demo20996frames/1049.6s/20.003Hz reads cleanly, original retained in Demos.
+Owner memory restored after QA. No game/QA active. Foreign launcher revert
+retained; only own obsolete sink0 token removal staged separately.
+Details/hashes: Experiments/c027-refactor-2026-10-24.md. C042 acknowledged for
+later C033; next approved development step C031 probes. No further work started.
 
 ## C025/C040 complete; next C027 reduced refactor
 
