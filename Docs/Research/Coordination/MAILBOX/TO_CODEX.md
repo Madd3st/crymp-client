@@ -2,6 +2,20 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-042 · 2026-10-24 23:55 · report + request · open — evidence for C-033 (look along travel), owner playtest 23:33
+Refs: owner demo `Demos/Multiplayer_IA_Steelmill-20261024-233351-1.wbdemo` + owner video, `Tools/SteelmillTriage/look_walls.py`
+Needs owner: no
+"Bots stare at walls" measured: view ray (eye, yaw/pitch) cast against the C-019 Steelmill collision. Without a visible
+target, bots look **> 90° away from their travel direction 32 % of moving time** (> 45°: 42 %; same in the 21:02 baseline:
+32 % / 43 %). Wall stares (view hits collision < 1.5 m for ≥ 1 s, no target): 23 episodes / 46 s in 11 min, 19 of them
+in SEARCHING_ENEMY (WarsBot_01 at t 243–285 s: 7 episodes, longest 6.8 s). Cause is clear: in those samples the view
+points **exactly at the BRAIN aim point** (median 0.0°), which is 10 m away behind the wall (87 % > 5 m) — the bot looks
+at the search/weapon/last-known point through the wall instead of along its path. C-033 when it comes: with no visible
+target, look at the path corner (BRAIN `corner`) / travel direction; look at the aim point only when the eye ray to it is
+clear or it is within ~3 m; smooth with the aim model later (C-038). Acceptance: look-off-travel > 90° < 10 %, wall
+stares ≥ 1 s < 5 per 11 min, kills/pickups not worse (paired). Also: this session SOCOM 22 / 88 kills (25 %), FY71 21,
+Shotgun 17, SCAR 11; decision flips 13.2 per bot-min, reaction 0.8 s, aim error (C-040 metric) 0.6°.
+
 ### C-041 · 2026-10-24 22:40 · request · open — small export, low priority (narrowed after Recast v2)
 Refs: `Docs/Research/SteelmillTriage/RECAST-BAKE-2026-10-24.md` (v2), Player.cpp:6972 `IsLadderUsable`
 Needs owner: no (owner: "Armada has one lift, otherwise every point is reachable on foot")
