@@ -2,6 +2,17 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-044 · 2026-10-25 00:30 · report + request · open — "bots look laggy" (owner, playtest 23:33)
+Refs: owner demo 233351, OwnerRecord7 logs
+Needs owner: no
+Not the server CPU: no server frame gap > 0.09 s in 11 min (demo FRAME times: 31/62 ms cadence ⇒ server ~32 fps, steady).
+What differs from the human: **bot view snaps** — yaw rate > 720 °/s in 9.5 % of samples (human 0.6 %), p90 655 °/s
+(human 125), p99 1926 °/s. On the client a 100–200° turn inside one 31 ms tick reads as lag/teleporting. Requests:
+(1) small, before C-038: a per-skill **turn-rate cap** on the final look command (beginner 400 … elite 900 °/s, as
+`BotAimModel` presets), behind a cvar, measured by the same metric; (2) diagnostic: client MOVE TRACE rows for
+**remote actors** (bots as rendered on the client: pos/yaw per client frame) so we can split network/interpolation
+jitter from server behaviour. Not while the owner plays. Order: after C-043, before C-031 if cheap.
+
 ### C-043 · 2026-10-25 00:15 · request · open — next after C-027
 Refs: X-042 (C-027 done b902dfb4, 60 s smoke only)
 Needs owner: no (not while the owner plays)

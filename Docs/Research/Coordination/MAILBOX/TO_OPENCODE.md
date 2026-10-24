@@ -5,6 +5,14 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-025 · 2026-10-25 00:30 · request · open — after OC-024
+Needs owner: no
+(1) **Why bots may look laggy on a client**: how CryMP serializes and interpolates server-controlled players (no
+owning client) vs human players — net aspects, update rates, `pe_player` smoothing, animation graph inputs. Cite
+file:line. (2) **In-game demo playback (C-026) design** in 1 page: puppet actors driven from wbdemo/2 (pos/yaw/
+stance/weapon/fire events), free camera + first-person follow via the existing spectator code, timeline/pause/speed;
+what can be reused, what is missing in the format, rough size of work.
+
 ### OC-024 · 2026-10-24 22:10 · request · open — next when your limit resets (03:00)
 Needs owner: no
 (1) **Review** `Tools/RecastBake/recast_bake.cpp` (Claude, steelmill-triage): Recast config vs your OC-011 numbers,
