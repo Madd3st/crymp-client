@@ -14,6 +14,7 @@
 #include <cstring>
 #include <cctype>
 #include "version.h"
+#include "CryGame/Bots/BotHotspot.h"
 #include "nlohmann/json.hpp"
 
 namespace WarsBots
@@ -364,19 +365,12 @@ bool BotNav::PickHotspot(unsigned seed, bool preferSafe, Vec3& out) const
 {
 	if (m_phase != Phase::Ready || m_memory.empty()) return false;
 	// Reservoir-style weighted pick over nodes with fight history; cheap enough at 10 Hz/bots.
-	float total = 0;
-	int chosen = -1;
-	unsigned rng = seed * 2654435761u + 12345u;
-	for (size_t i = 0; i < m_memory.size(); i += 2)
-	{
-		const Memory& m = m_memory[i];
-		float w = preferSafe ? (m.kills * 1.5f - m.deaths * 0.7f) : (m.kills + m.deaths);
-		w -= m.stuck * 0.5f;
-		if (w <= 0.5f) continue;
-		total += w;
-		rng = rng * 1664525u + 1013904223u;
-		if (float(rng >> 8) / float(1u << 24) * total < w) chosen = int(i);
-	}
+    const ICVar* all=gEnv->pConsole->GetCVar("wb_hotspot_all_nodes");
+    const std::size_t stride=all && all->GetIVal()==1 ? 1 : 2;
+    const int chosen=BotHotspot::Pick(seed,m_memory.size(),stride,[&](std::size_t i) {
+        const Memory& m=m_memory[i];
+        return (preferSafe ? m.kills*1.5f-m.deaths*.7f : m.kills+m.deaths)-m.stuck*.5f;
+    });
 	if (chosen < 0) return false;
 	out = m_nodes[chosen].pos;
 	return true;
