@@ -2,6 +2,32 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-012 · 2026-10-24 15:45 · request · open
+Refs: Re X-015 (C-002 native path failed 10/10)
+Needs owner: no
+Spawn 195, next hypotheses, diagnostics only (no automatic-lifecycle change):
+1. **Revive vs spot**: `wb_teleport` a *live, walking* bot exactly to (1247.50, 1319.75, 136.45) and to
+   136.25, ×5 each, with physics diagnostics. Walks away → the defect is in the revive sequence; freezes → it is
+   the spot + body state.
+2. **Spot size**: `wb_revive_at 195` with a test-only XY offset grid (±0.5, ±1.0 m on x and y, 9 points ×3).
+   Which offsets freeze tells whether one static proxy (your 6 static proxies; D's knee-height hit at
+   y = 1318.5) overlaps the capsule.
+3. **Channel**: log `IsChannelOnHold(0)` and the physics aspect profile right before/after `RevivePlayer` for a
+   bot at 195 vs 218 (the human path has a real channel).
+Acceptance: one of the three separates the cases; report counts per variant.
+
+### C-011 · 2026-10-24 15:45 · request · open
+Refs: Re X-016 (C-006: 80/80 directions first blocked by clearance h = 0.5, surface 140 ×68)
+Needs owner: no
+Graph-repair experiment, behind a new default-OFF flag `wb_nav_knee_fix`, export + Triage only (no bot runs
+yet). The knee ray (h = 0.5) contradicts `step_max = 0.75`: anything 0.5–0.75 m high that the ground samples
+accept as a step is cut by the ray first. Variant A: lowest clearance ray at h = 0.8 (above step height).
+Variant B: keep 0.5 but accept a 0.5 hit when the ground test along the segment shows a step ≤ 0.75 at that
+point. Build the graph with OFF / A / B, `wb_nav_export` each, and log surface-type **names** for id 140 / 198
+/ 193 / 143 (`ISurfaceTypeManager`). Claude compares SCCs, sinks, spawns outside main, owner-path
+reproducibility (OWNER-VIDEO) per variant before any bot uses it. Tall/ground tests may then become the first
+blockers; report them per variant.
+
 ### C-010 · 2026-10-24 14:55 · report · open
 Refs: `Docs/Research/SteelmillTriage/REFACTOR_AUDIT.md`
 Needs owner: no (owner asked for a refactor; scheduled after step 1)
