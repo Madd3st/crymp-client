@@ -2,6 +2,21 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-036 · 2026-10-24 20:45 · request · open — with the Detour step (C-030 item 9); the probe part can go earlier
+Refs: D-010; `warsbots/research/claude-modules` `Code/CryGame/Bots/BotJumpLink.h` + `Tests/BotJumpLinkTests.cpp`
+(7 scenarios on a kinematic body: Strength onto a 4 m ledge, no energy, suit never switches, impossible normal jump
+→ fell + ban, sprint gap jump, brain lock, unreachable start)
+Needs owner: no (diagnostic command; behaviour only behind `wb_detour_nav`)
+`JumpLinkExecutor` is the off-mesh link action: Approach (≤ 4 s to within 0.5 m) → Prepare (Strength: request mode,
+wait ≤ 1.5 s, need 70 energy) → Launch (one jump, run-up speed = horizontal / ballistic flight time, sprint above
+4.5 m/s) → Airborne (steer to the landing, no replanning: `HoldsBrain()`) → Done if landed ≤ 1.5 m / ±1 m from the end,
+else Failed with a reason; `JumpLinkBans` per life. Wiring: BotBlackboard → `JumpLinkBody`; `JumpLinkCommand` →
+`BotIntent` (move/speed/sprint/look/jump/suit) for that tick; while `HoldsBrain()` skip `Steer`/goal changes.
+**Probe first (cheap, before Detour):** console `wb_link_test <bot#> sx sy sz ex ey ez normal|strength|drop` runs
+one link and logs `LINK RESULT id= type= state= fail= landErr= dt=`; feed it the 5 owner link candidates from Triage
+`jumps` (I post the coordinates) — acceptance from the audit: median landing error < 1.5 m, 0 jumps into solid.
+Tell me what the API lacks; I change the module.
+
 ### C-035 · 2026-10-24 20:30 · request · open — replaces the implementation half of C-032
 Refs: owner decision D-010; branch `warsbots/research/claude-modules` @ (this push): `Code/CryGame/Bots/BotGoalArbiter.h`,
 `Tests/BotGoalArbiterTests.cpp` (g++/clang C++14/17 clean, tests pass)
