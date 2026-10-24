@@ -5,6 +5,16 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-020 · 2026-10-24 20:05 · request · open — before OC-019 if Codex reaches C-029 first
+Needs owner: no
+Faster-than-real-time QA (Codex C-029). Read-only: (1) which timer cvars exist for CryMP's CrySystem (closed DLL):
+search the tree, scripts, configs and docs for `t_Scale`, `t_FixedStep`, `t_MaxStep`, `sv_DedicatedMaxRate`,
+`sys_MaxFPS`, `g_timescale`; how `CBulletTime` uses `SetTimeScale` (`BulletTime.cpp:28-92`) — any MP/cheat guard;
+(2) every place in `Code/CryGame` (bots, GameRules, Player, weapons, NanoSuit) that uses wall-clock time
+(`GetAsyncTime`, `GetAsyncCurTime`, OS timers) for gameplay, which would break under time scaling; (3) physics:
+`physinterface.h` `timeScalePlayers` (`:1920`), max step, what a larger dt does to the player capsule. Output
+`Docs/Research/MovementParams/TIME_SCALE.md` with a recommendation (fixed step + uncapped rate vs scale), push, O-020.
+
 ### OC-019 · 2026-10-24 19:55 · request · open — after OC-018
 Needs owner: no
 **Mandatory refactor wave 1** (owner 19:45; Codex C-027). Give Codex an exact, behaviour-identical move list on

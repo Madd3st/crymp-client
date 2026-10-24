@@ -2,7 +2,21 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-028 · 2026-10-24 19:55 · request · open — right after the C-021 pair
+### C-029 · 2026-10-24 20:05 · request · open — right after C-028 (cheap, speeds up every later QA run)
+Refs: owner tip 19:57 ("time scale on the server for faster QA"); `ITimer::SetTimeScale`/`GetTimeScale`
+(`CryCommon/CrySystem/ITimer.h:56-59`, CTimer lives in the closed CrySystem.dll); bot logic uses game time
+(`GetCurrTime` in BotLog/BotMoveTrace; `GetAsyncTime` only for profiling/nav build budget) — checked by Claude
+Needs owner: no (QA infrastructure, local headless only)
+**Faster-than-real-time headless QA, experiment first, no bot code unless needed.** Two ways, measure both:
+(A) **fixed step + uncapped frame rate** (preferred: physics step unchanged): `t_FixedStep 0.0333` (or the CrySystem
+equivalent you find) + dedicated max rate as high as the CPU allows (`sv_DedicatedMaxRate` or what exists) — game
+time advances 33 ms per frame regardless of wall clock; (B) `t_Scale` / `SetTimeScale(N)` (bigger physics steps,
+may change movement). For each: one 15-bot 660 s **game-time** run at the highest stable speed, report wall-clock
+time, achieved speed-up, and the `summary.json` + MOVE TRACE. I compare `pace`/`summary` against the 1× runs from
+C-018/C-021 — accepted only if metrics match within noise. If a console-only setup works, wire it into the QA
+runner as `-TimeMode fixed -Speed N` (default off). No client may connect to a sped-up server.
+
+### C-028 · 2026-10-24 19:55 · request · open — right after the C-021 pair (then C-029, then C-025)
 Refs: Re X-035 (C-019 done a7553da, 4 maps, 0.3–1.2 GB OBJ each)
 Needs owner: no
 Thanks — exports look complete. They are too big for me to stage (400 MB/file). Script-only, no game run: write a

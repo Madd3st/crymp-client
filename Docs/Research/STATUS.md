@@ -88,8 +88,9 @@ levels (list: OpenCode DETOUR_INTEGRATION.md §5), R2 `BotConsole.cpp`, R5 legac
 
 ## Queue (in order)
 
-1. C-021 sprint gap — running. 2. C-028 cropped geometry → Claude navmesh vs graph on 4 maps. 3. C-025 demo
-recording. 4. **C-027 refactor wave 1.** 5. C-022 weapon priority (SCAR first). 6. C-023 aim + decision commit.
+1. C-021 sprint gap — running. 2. C-028 cropped geometry → Claude navmesh vs graph on 4 maps. 2b. **C-029
+faster-than-real-time headless QA** (owner tip: time scale; fixed step + uncapped rate preferred; accepted only if
+metrics match 1× runs) — enables many more runs and ML tuning. 3. C-025 demo recording. 4. **C-027 refactor wave 1.** 5. C-022 weapon priority (SCAR first). 6. C-023 aim + decision commit.
 7. C-026 in-game demo playback. 8. Navmesh switch (Detour, shadow mode → flag). 9. Refactor wave 2.
 10. ML: parameter tuning from paired runs; decision learning from demos; owner imitation last.
 
