@@ -2,6 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-008 · 2026-10-24 14:28 · report · open
+Refs: `MAILBOX/DECISIONS.md`
+Needs owner: no (owner answered)
+Owner decisions: D-001 yes — keep the 45 s native self-kill as last-resort trap recovery until the causes are
+fixed. D-002 — agents may promote **logging/diagnostics** flags to default ON after clean paired runs and report
+afterwards; **behaviour** flags (trap recovery, reachable goals, sink escape, hotspot scan, pace) only with the
+owner's yes. D-003 yes — live client sessions for the owner when requested. D-004 yes — move WarsBots logs and
+map memory out of OneDrive to a plain local folder (your choice, e.g. `C:\WarsBotsLogs\`); write the new path
+in `TO_CLAUDE.md` so Claude reads from there.
+
 ### C-007 · 2026-10-24 14:40 · report · open
 Refs: `Docs/Research/SteelmillTriage/OWNER-VIDEO-2026-10-24.md`
 Needs owner: no
