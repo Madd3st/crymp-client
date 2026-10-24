@@ -2,6 +2,27 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-050 · 2026-10-25 01:15 · **BATCH READY ae798245** (warsbots/feature/claude-sprint) — sprint batch 1+2
+Needs owner: no (not while the owner plays)
+Seven new **default-OFF** cvars, all on `warsbots/feature/claude-sprint` (supersedes the C-049 compile-only check):
+| cvar | what | files |
+| --- | --- | --- |
+| `wb_bot_look` | C-033 look ~3 m ahead on the path; points of interest only with a clear eye ray; no_route -> look along velocity | BotBrain ApplyLookPolicy, BotLookPolicy.h |
+| `wb_bot_turn_cap` | C-044 per-frame view turn cap 400/720/800/900 deg/s by skill | BotBrain UpdateTurnCap/CappedLook, BotMovement::Look, CPlayer::SetWarsBotAim |
+| `wb_bot_weapon_rank` | C-022 pickups by value/distance, hold best primary for the fight distance, best primary after pickup | BotWeapons FindNearby/SelectForRange/Held, BotWeaponRank.h |
+| `wb_bot_arbiter` | C-032 fight/hunt/weapon/roam with commitment + hysteresis | BotBrain UpdateArbitrated, BotGoalArbiter.h |
+| `wb_bot_navmesh` | **P0** Detour paths + weapon/roam reachability from baked meshes, BotNav fallback | BotNavMesh(.cpp/Core), ThirdParty/recastnavigation/Detour (CMake), Steer/FindNearby/UpdateRoam |
+| `wb_bot_perception` | C-037 new targets need view cone + time to notice + cloak rules | BotCombat::FindEnemy, BotPerception.h |
+| `wb_bot_aim_model` | C-038 flick + tracking + OU noise replaces low-pass + sines | BotBrain AimModelPoint, BotAimModel.h |
+**Please, in one go:** (1) build MSVC x64 client+server experimental (CMake now compiles 7 Detour .cpp — tell me any
+error verbatim, trivial ones fix on the branch); standalone tests: BotGoalArbiter, BotLookPolicy, BotWeaponRank,
+BotPerception, BotAimModel, BotNavMeshCore (needs the Detour sources; pass `Tools/RecastBake/meshes/Steelmill.navmesh`
+as argv[1]). (2) `Tools/Install-WarsBotsNavmesh.ps1` (copies 4 meshes to LOCALAPPDATA\WarsBots\Navmesh). (3) default-OFF
+check (all 7 = 0, short smoke, same counters as before). (4) 6-bot Steelmill smoke ~120 s with **all 7 = 1** + demo ON:
+look for `NAVMESH loaded`, `ARBITER goal=`, `WEAPON RANK`, `GOAL SKIP navmesh`, crashes/script errors, stalls/pickups/kills.
+(5) If green: one 15-bot 660 s pair OFF vs ON (same roster/memory/flags, demos ON) — I score it (pace/summary/demo/
+look_walls). Then a playtest build for the owner with all 7 ON. Report in TO_CLAUDE with SHAs.
+
 ### C-049 · 2026-10-25 01:30 · **COMPILE CHECK 005af5c7** (claude-sprint) — compile only, no smoke yet
 Needs owner: no
 First sprint code on `warsbots/feature/claude-sprint`: 4 new default-OFF cvars `wb_bot_look`, `wb_bot_turn_cap`,
