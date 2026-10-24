@@ -1,5 +1,9 @@
 # Steelmill AI: measured geometry and remaining problems
 
+Current P0 candidate and testing isolation limits: [fire control](Experiments/fire-control-2026-10-24.md).
+No geometry/navigation changes in this increment; shared map memory of the active owner
+server was not touched. Native QA cannot be isolated by port alone.
+
 Map: `multiplayer/ia/steelmill`, original Crysis resources. No manually invented rooftop coordinates.
 
 Engine scan in j13: 96 x 63 columns, 3 m spacing, vertical scan z=121..187;

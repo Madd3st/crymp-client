@@ -8,9 +8,19 @@ trained combat policy. No new ML dependency or training work runs in the game th
 Memory validation, decay, topology fingerprint and an explicit reset command remain work.
 Do not treat existing counters as contextual-bandit training data.
 
+## P0 diagnostic extension, 2026-10-24
+
+[P0 fire-control evidence](Experiments/fire-control-2026-10-24.md): existing exporter
+now has additive bounded TTK diagnostics with actual shots, effective HP, separate
+Armor energy and contributor accounting. These authoritative outcome records are not
+model features; hidden state/after-impact knowledge must not leak into future actions.
+Old logs remain unavailable for full TTK. Action propensity, dataset split and asynchronous
+logging still need work before training; no bandit model implemented.
+
 ## Reproducible record
 
-Use existing `Tools/ClaudeQA` headless Steelmill runner. Keep source SHA, server/client
+Use the SHA-guarded `Tools/Test-WarsBotsTactics.ps1` only with isolated resources.
+Do not use the old multibot build runner for weapon-goals. Keep source SHA, server/client
 SHA256 from `build/multibot-on/claude-build.json`, durations, bot counts/profiles, log hashes
 and initial map memory snapshot. Never overwrite a user's running EXE.
 

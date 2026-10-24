@@ -1,5 +1,22 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-23)
 
+## Current P0 candidate: fire control and TTK instrumentation, 2026-10-24
+
+Game source **`2fcb4c0f`**, MSVC x64 Release experimental client/server BUILD PASS;
+UNIT TEST PASS (C++ fire policy + 7 Python tests). Single/pump trigger cadence now
+uses actual native fire mode/RPM and human limits; current automatic burst intervals
+preserved. Opt-in `wb_fire_diagnostics=0` records actual shots/actor impacts with a
+20,000-event cap when enabled. Existing exporter has additive TTK/Armor/multi-shooter
+analysis, not invented timings from old logs. See [P0 evidence](Experiments/fire-control-2026-10-24.md).
+
+Frozen **unplayed candidate** `build/play-2fcb4c0f/`; owner-tested baseline remains
+`build/play-5e8daa65/`. SERVER QA/1v1 and CLIENT/VISUAL NOT RUN: owner server PID150204
+is still active and shares USER/map memory. No process, active EXE or map memory
+changed by this iteration; different ports alone do not provide isolation.
+Default-OFF build not repeated. No measured native cadence/TTK improvement claimed.
+P0 remains open: native 1v1 validation, aim settling/head selection, then spectator.
+No map exporter, ML, PS gate or large refactor implemented in this increment.
+
 ## Power Struggle planning, 2026-10-24
 
 [PS design](POWER_STRUGGLE_DESIGN.md) records source evidence, proposed IBotGameMode /
@@ -11,7 +28,7 @@ Server remains running; logs copied locally. No skill-superiority or human TTK c
 Previous 6-Normal logs archived locally in `build/owner-playtests/normal6-20261023/`.
 Counts differ (6 Normal vs 11 Elite), so this is not a controlled skill comparison.
 
-## Current checkpoint: tactical profiles and target utility (2026-10-23)
+## Previous checkpoint: tactical profiles and target utility (2026-10-23)
 
 Branch [`warsbots/feature/weapon-goals`](https://github.com/Madd3st/crymp-client/tree/warsbots/feature/weapon-goals).
 Latest built game source **`5e8daa65`**, MSVC 19.44 x64 Release experimental

@@ -1,0 +1,45 @@
+{
+  "source_sha": "2fcb4c0f7d0c827cfa1b504757d5452176099ed5",
+  "baseline_source": "5e8daa65",
+  "server_sha256": "D42E929DE6E0B5758692F6775468BE6EF4189BE7A4F328B4E6C99D352ED3EB6E",
+  "client_sha256": "AF131A55C1913D0CB493C75D6F0B386B85BF4A4CA2AD61FF0CAE1B437F3B43CA",
+  "build": "MSVC x64 Release experimental ON PASS",
+  "unit_cpp": "BotFireControlTests PASS (assertions enabled)",
+  "unit_python": "7 exporter tests PASS, ResourceWarning treated as error",
+  "server_qa": "NOT RUN: owner server PID150204 active, shared USER alias/map memory; no proven isolation",
+  "visual": "NOT RUN",
+  "before_after_native_cadence_or_ttk": "NOT MEASURED; no claimed runtime improvement",
+  "legacy_review": {
+    "source_sha": "5e8daa65",
+    "scope": "archived owner match plus unattended tail; actor identity human/bot not inferred",
+    "counts": {
+      "paired_hits_on_living_actor": 3943,
+      "negative_health_after": 316
+    },
+    "minimum_health_after": -640,
+    "examples": [
+      {
+        "before": 100,
+        "after": -638,
+        "base_damage": 350.0,
+        "target": "196525",
+        "shooter": "130979"
+      },
+      {
+        "before": 100,
+        "after": -640,
+        "base_damage": 350.0,
+        "target": "131007",
+        "shooter": "130979"
+      }
+    ]
+  },
+  "new_ttk_available_in_legacy_log": false,
+  "limits": {
+    "runtime_diagnostic_records_per_level": 20000,
+    "diagnostics_default": 0,
+    "ttk_rows_per_run": 1000,
+    "pending_pairs": 4096,
+    "projectile_launch_context": 4096
+  }
+}
