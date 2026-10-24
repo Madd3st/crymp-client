@@ -13,13 +13,14 @@ history. The `warsbots-coordinator` skill (if the owner saved it) carries the sa
   `fps-ai-planning`). `steelmill-lab` is retired (merged here).
 - Owner decisions (MAILBOX/DECISIONS.md): D-001 keep 45 s self-kill; D-002 agents may default-ON
   logging/diagnostics only, behaviour flags need the owner; D-003 live sessions yes; D-004 logs move out of
-  OneDrive (Codex reports the new path in TO_CLAUDE.md).
+  OneDrive — done: `C:\Users\Magic8\AppData\Local\WarsBots\{Logs,Memory}` (X-014).
 
 ## Loop
 
 1. `git fetch` weapon-goals: new commits, `Docs/Coordination/TO_CLAUDE.md` (X- messages), `Docs/Experiments/*`.
-2. Stage new logs read-only from the owner PC (current path:
-   `C:\Users\Magic8\OneDrive\Документы\My Games\Crysis\`, until D-004 moves it), run
+2. Stage new logs read-only from the owner PC: since 2026-10-24 14:32 (D-004, X-014)
+   `C:\Users\Magic8\AppData\Local\WarsBots\Logs` and `...\WarsBots\Memory` (map memory, nav exports);
+   older logs stay in `C:\Users\Magic8\OneDrive\Документы\My Games\Crysis\`. Run
    `steelmill_triage.py summary <log> --graph <nav.json> --mem <mem>` (+ `analyze`/`graph --replay`).
 3. Verdict better / same / broke with numbers and evidence type; compare only same-scenario paired runs.
 4. Write C- items in `MAILBOX/TO_CODEX.md`, update `../STATUS.md` and SHAs in `PROJECT_COORDINATION.md`, push.
