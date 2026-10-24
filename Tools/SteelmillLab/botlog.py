@@ -68,6 +68,8 @@ LOOP_NET_M = 1.5
 APPROACH_GAIN_M = 1.0   # must get at least this much closer over the window
 STILL_SPEED = 0.15      # m/s treated as standing still
 JOIN_TARGET_S = 1.5     # max time offset when joining another bot's position
+TRAP_RADIUS_M = 1.5     # "trapped": never leaves this circle ...
+TRAP_S = 20.0           # ... for at least this long while requesting movement
 
 
 def dist(a, b):
@@ -128,6 +130,8 @@ class Analysis:
         self.last_t = t
         if "[WarsBots" not in line:
             return
+        if "FIXTURE log" in line:
+            self.meta["fixture"] = True
         for name in ("telemetry", "tactic", "decision", "heading", "physics", "intent"):
             mm = RX[name].search(line)
             if mm:
@@ -319,6 +323,29 @@ class Analysis:
                 tracks.append(cur)
             for tr in tracks:
                 self.windows(key, seg, tr, pos_at, fallbacks.get(key, []))
+                self.trapped(key, seg, tr, fallbacks.get(key, []))
+
+    def trapped(self, key, seg, tr, fallbacks):
+        """Long confinement: alive, wanting to move, never leaving a TRAP_RADIUS_M circle for TRAP_S."""
+        i = 0
+        while i < len(tr):
+            anchor = tr[i]["pos"]
+            j = i
+            while j + 1 < len(tr) and dist(tr[j + 1]["pos"], anchor) <= TRAP_RADIUS_M:
+                j += 1
+            span = tr[j]["t"] - tr[i]["t"]
+            w = tr[i:j + 1]
+            if span >= TRAP_S and sum(x["requested"] > 0 for x in w) >= 0.8 * len(w):
+                fails = sum(1 for f in fallbacks if tr[i]["t"] <= f["t"] <= tr[j]["t"])
+                self.event("trapped", tr[i]["t"], int(key.split(":")[1]), "inferred", anchor,
+                           t_end=tr[j]["t"], duration=round(span, 1), samples=len(w),
+                           blocked_share=round(sum(x["blocked"] for x in w) / len(w), 3),
+                           astar_failures_during=fails, states=sorted({x["state"] for x in w}),
+                           ended_by="track end (death/removal/log end)" if j == len(tr) - 1 else "moved away")
+                self.events[-1]["segment"] = int(seg)
+                i = j + 1
+            else:
+                i += 1
 
     def windows(self, key, seg, tr, pos_at, fallbacks):
         i = 0
@@ -391,8 +418,14 @@ class Analysis:
             summary["share_blocked"] = round(sum(x["blocked"] for x in moving) / len(moving), 4)
         fails = collections.Counter(tuple(round(c / 3) * 3 for c in e["goal"]) for e in self.events
                                     if e["type"] == "astar_failed")
+        traps = sorted((e for e in self.events if e["type"] == "trapped"), key=lambda e: -e["duration"])
+        summary["trapped_total_seconds"] = round(sum(e["duration"] for e in traps), 1)
+        summary["longest_trapped"] = [dict(bot=e["bot"], t=e["t"], duration=e["duration"], pos=e["pos"],
+                                           blocked_share=e["blocked_share"], astar_failures=e["astar_failures_during"],
+                                           ended_by=e["ended_by"]) for e in traps[:10]]
         summary["top_failed_goals_3m"] = [dict(goal=list(g), count=c) for g, c in fails.most_common(15)]
-        return dict(schema="steelmill-lab/botlog/1", source=source, sha256=sha, meta=self.meta,
+        return dict(schema="steelmill-lab/botlog/1", fixture=bool(self.meta.get("fixture")), source=source,
+                    sha256=sha, meta=self.meta,
                     thresholds=dict(window_s=WINDOW_S, gap_s=GAP_S, stall_path_m=STALL_PATH_M,
                                     loop_path_m=LOOP_PATH_M, loop_net_m=LOOP_NET_M,
                                     approach_gain_m=APPROACH_GAIN_M, still_speed=STILL_SPEED),
@@ -433,6 +466,7 @@ def main(argv=None):
               f"A*fail={c.get('astar_failed', 0)} unreachable={c.get('weapon_unreachable', 0)} "
               f"stuck_reported={c.get('stuck_reported', 0)} stall_unblocked={c.get('stall_unblocked', 0)} "
               f"stall_blocked={c.get('stall_blocked', 0)} loop={c.get('loop_suspect', 0)} "
+              f"trapped={c.get('trapped', 0)}/{r['summary']['trapped_total_seconds']}s "
               f"chase_no_approach={c.get('chase_no_approach', 0)} fallback_no_approach={c.get('fallback_no_approach', 0)} "
               f"unblocked_no_motion_share={r['summary'].get('share_unblocked_no_motion')}")
     return 0

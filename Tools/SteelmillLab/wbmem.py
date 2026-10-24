@@ -131,16 +131,18 @@ def link_graph(parsed, graph):
     nodes = graph.get("nodes", [])
     if len(nodes) != h["count"]:
         problems.append(f"node count: memory {h['count']} != graph {len(nodes)}")
+    if graph.get("schema") != "warsbots/botnav-graph/1":
+        problems.append(f"unsupported graph schema {graph.get('schema')!r}")
     for i, node in enumerate(nodes[:h["count"]]):
-        if node.get("id") != i:
-            problems.append(f"graph node at index {i} has id {node.get('id')} (ids must equal BotNav order)")
+        if node[0] != i:
+            problems.append(f"graph node at index {i} has id {node[0]} (ids must equal BotNav order)")
             break
     if problems:
         return dict(linked=False, problems=problems)
     out = []
     for node, (s, k, d) in zip(nodes, parsed["records"]):
         if s or k or d:
-            out.append(dict(id=node["id"], pos=node["pos"], stuck=s, kills=k, deaths=d))
+            out.append(dict(id=node[0], pos=node[1:4], layer=node[6], stuck=s, kills=k, deaths=d))
     return dict(linked=True, problems=[], nodes_with_memory=out)
 
 

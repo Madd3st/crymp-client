@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steelmill Viewer</title>
+<style>
+:root{--bg:#14161a;--panel:#1d2026;--line:#323741;--text:#e6e8eb;--dim:#9aa1ab;--accent:#5fb3ff;--warn:#ff5a5a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.35 system-ui,Segoe UI,Arial,sans-serif}
+#app{display:grid;grid-template-columns:300px 1fr 300px;height:100vh}
+aside{background:var(--panel);overflow:auto;padding:10px;border-right:1px solid var(--line)}
+aside.right{border-right:0;border-left:1px solid var(--line)}
+h1{font-size:15px;margin:0 0 6px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin:14px 0 6px;border-top:1px solid var(--line);padding-top:10px}
+label{display:flex;align-items:center;gap:6px;margin:3px 0;cursor:pointer}
+select,input[type=number]{background:#111318;color:var(--text);border:1px solid var(--line);border-radius:4px;padding:3px 5px;width:100%}
+input[type=number]{width:80px}
+input[type=range]{width:100%}
+button{background:#2a2f38;color:var(--text);border:1px solid var(--line);border-radius:4px;padding:3px 7px;cursor:pointer;margin:2px 2px 2px 0}
+button:hover{border-color:var(--accent)}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sw{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none}
+.hollow{background:transparent!important;border:2px solid}
+#stage{position:relative;overflow:hidden}
+canvas{display:block;width:100%;height:100%;cursor:grab}
+canvas.drag{cursor:grabbing}
+#hud{position:absolute;left:8px;bottom:8px;background:#000a;padding:4px 8px;border-radius:4px;font:12px ui-monospace,Consolas,monospace;pointer-events:none}
+#banner{position:absolute;left:0;right:0;top:0;background:var(--warn);color:#fff;font-weight:700;text-align:center;padding:4px;display:none}
+#drop{position:absolute;inset:0;border:3px dashed var(--accent);display:none;align-items:center;justify-content:center;font-size:18px;background:#0008}
+pre{white-space:pre-wrap;word-break:break-word;font:11px ui-monospace,Consolas,monospace;background:#111318;padding:6px;border-radius:4px;max-height:45vh;overflow:auto}
+.files div{color:var(--dim);font-size:12px}
+.botlist{max-height:180px;overflow:auto;border:1px solid var(--line);border-radius:4px;padding:4px}
+.small{color:var(--dim);font-size:11px}
+table{border-collapse:collapse;width:100%}td{padding:1px 3px;border-bottom:1px solid var(--line);font-size:12px}td:last-child{text-align:right}
+@media (max-width:900px){#app{grid-template-columns:1fr;grid-template-rows:auto 60vh auto;height:auto}aside{border:0}}
+</style>
+</head>
+<body>
+<div id="app">
+<aside>
+  <h1>Steelmill Viewer</h1>
+  <div class="small">WarsBots AI Lab · offline · only logged/extracted data is drawn</div>
+  <h2>Data</h2>
+  <input type="file" id="files" multiple accept=".json,.png,.jpg">
+  <div class="small">Drop map / movement / graph / mem-report JSON or a minimap PNG.</div>
+  <div class="files" id="fileList"></div>
+  <h2>View</h2>
+  <label>Orientation <select id="orient">
+    <option value="minimap">Minimap (engine HUD: right=+Y, down=+X)</option>
+    <option value="world">World (right=+X, up=+Y)</option></select></label>
+  <label><input type="checkbox" id="bg" checked> Minimap background</label>
+  <label>Opacity <input type="range" id="bgOpacity" min="0" max="1" step="0.05" value="0.75"></label>
+  <button id="fit">Fit to data</button>
+  <h2>Height (z)</h2>
+  <div class="row">min <input type="number" id="zmin" step="0.5"> max <input type="number" id="zmax" step="0.5"></div>
+  <div class="row" id="zPresets"></div>
+  <h2>Layers</h2>
+  <div id="layers"></div>
+  <h2>Run</h2>
+  <select id="run"></select>
+  <div class="row"><button id="allBots">All bots</button><button id="noBots">None</button></div>
+  <div class="botlist" id="bots"></div>
+  <div class="small">Time window (s)</div>
+  <div class="row">from <input type="number" id="t0" step="1"> to <input type="number" id="t1" step="1"></div>
+  <input type="range" id="tSlider" min="0" max="1000" value="1000">
+  <div class="small">slider = window end; window length = (to − from)</div>
+</aside>
+<div id="stage">
+  <canvas id="cv"></canvas>
+  <div id="banner"></div>
+  <div id="hud">—</div>
+  <div id="drop">Drop files to load</div>
+</div>
+<aside class="right">
+  <h2 style="border:0;margin-top:0;padding-top:0">Inspector</h2>
+  <div class="small">Click a marker. Filled = confirmed by the log/engine, ring = inferred.</div>
+  <pre id="inspect">nothing selected</pre>
+  <h2>Visible counts</h2>
+  <table id="counts"></table>
+  <h2>Sources</h2>
+  <pre id="sources">—</pre>
+</div>
+</div>
+<script src="data.js" onerror="void 0"></script>
+<script>
+"use strict";
+const LAYERS = [
+  ["spawns","Spawn points (mission)","#4caf50","confirmed"],
+  ["items","Weapons / ammo (mission)","#ffd54f","confirmed"],
+  ["routes","Bot routes (telemetry 2 s)","#5fb3ff","confirmed"],
+  ["astar_failed","A* failed: goal","#ff7043","confirmed"],
+  ["astar_lines","A* failed: start→goal lines","#ff704366","confirmed"],
+  ["weapon_unreachable","Weapon unreachable (10 s)","#ff4081","confirmed"],
+  ["stuck_reported","Stuck reported (ReportStuck)","#e53935","confirmed"],
+  ["stall_unblocked","Stall: wants move, NOT blocked","#ff1744","inferred"],
+  ["stall_blocked","Stall: wants move, blocked","#ab47bc","inferred"],
+  ["trapped","Trapped ≥20 s within 1.5 m","#ff00ff","inferred"],
+  ["loop_suspect","Loop suspect","#00e5ff","inferred"],
+  ["chase_no_approach","Chase: no approach","#ffab40","inferred"],
+  ["fallback_no_approach","Straight fallback: no approach","#ffee58","inferred"],
+  ["kill","Kills (killer position)","#76ff03","inferred"],
+  ["death","Deaths (victim position)","#9e9e9e","inferred"],
+  ["pickup","Pickups","#c6ff00","confirmed"],
+  ["graph_nodes","Graph nodes (export)","#90caf9","confirmed"],
+  ["graph_edges","Graph edges (export)","#90caf933","confirmed"],
+  ["mem","Map memory (needs linked graph)","#f44336","confirmed"],
+];
+const DEFAULT_ON = new Set(["spawns","items","routes","weapon_unreachable","stuck_reported","stall_unblocked","trapped","kill","death","graph_nodes","graph_edges","mem"]);
+const S = {map:null, runs:[], graph:null, mem:null, img:null, files:[], layer:{}, bots:new Set(), run:0,
+  view:{cx:0, cy:0, scale:2}, z:[-1e9,1e9], t:[0,1e9], picks:[], sel:null};
+LAYERS.forEach(l=>S.layer[l[0]]=DEFAULT_ON.has(l[0]));
+const $=id=>document.getElementById(id);
+const cv=$("cv"), ctx=cv.getContext("2d");
+const PALETTE=["#5fb3ff","#ff8a65","#81c784","#ba68c8","#ffd54f","#4dd0e1","#f06292","#aed581","#9575cd","#ffb74d","#4db6ac","#e57373","#7986cb","#dce775","#a1887f","#90a4ae"];
+
+// ---------------------------------------------------------------- data loading
+function ingest(obj, name){
+  const schema = obj.schema||"";
+  if (schema.startsWith("steelmill-lab/map")) S.map=obj;
+  else if (schema.startsWith("steelmill-lab/botlog")) { obj._name=name; S.runs.push(obj); }
+  else if (schema.startsWith("warsbots/botnav-graph")) S.graph=obj;
+  else if (obj.header && obj.header.magic==="WBMEM01") S.mem=obj;
+  else if (obj.runs) { (obj.runs||[]).forEach((r,i)=>ingest(r, r._name||name+"#"+i)); if(obj.map) ingest(obj.map,"map"); if(obj.graph) ingest(obj.graph,"graph"); if(obj.mem) ingest(obj.mem,"mem"); return; }
+  else { S.files.push(name+" (unknown schema, ignored)"); return; }
+  S.files.push(name+(obj.fixture?"  [FIXTURE]":""));
+}
+function loadEmbedded(){
+  const d = window.LAB_DATA;
+  if (!d) return;
+  if (d.map) ingest(d.map,"map: "+(d.map.provenance?.mission||"map"));
+  (d.runs||[]).forEach(r=>ingest(r,r._name||"run"));
+  if (d.graph) ingest(d.graph,"graph");
+  if (d.mem) ingest(d.mem,"mem report");
+  if (d.minimap) loadImage(d.minimap);
+  else if (d.map && d.map.minimap_png && d.map.minimap_png.file) loadImage(d.map.minimap_png.file);
+}
+function loadImage(src){ const im=new Image(); im.onload=()=>{S.img=im; draw();}; im.onerror=()=>{S.files.push("minimap image not found: "+src); refreshUI();}; im.src=src; }
+async function loadFiles(list){
+  for (const f of list){
+    if (/\.(png|jpe?g)$/i.test(f.name)) { loadImage(URL.createObjectURL(f)); S.files.push(f.name+" (minimap image)"); continue; }
+    try { ingest(JSON.parse(await f.text()), f.name); } catch(e){ S.files.push(f.name+": "+e.message); }
+  }
+  refreshUI(); fit(); draw();
+}
+$("files").onchange=e=>loadFiles(e.target.files);
+const stage=$("stage");
+stage.ondragover=e=>{e.preventDefault(); $("drop").style.display="flex";};
+stage.ondragleave=()=>$("drop").style.display="none";
+stage.ondrop=e=>{e.preventDefault(); $("drop").style.display="none"; loadFiles(e.dataTransfer.files);};
+
+// ---------------------------------------------------------------- transforms
+function toView(x,y){ // world -> abstract plane (a,b), b grows downward on screen
+  return $("orient").value==="minimap" ? [y, x] : [x, -y];
+}
+function fromView(a,b){ return $("orient").value==="minimap" ? [b, a] : [a, -b]; }
+function w2s(x,y){ const [a,b]=toView(x,y); return [(a-S.view.cx)*S.view.scale+cv.width/2, (b-S.view.cy)*S.view.scale+cv.height/2]; }
+function s2w(sx,sy){ const a=(sx-cv.width/2)/S.view.scale+S.view.cx, b=(sy-cv.height/2)/S.view.scale+S.view.cy; return fromView(a,b); }
+function inZ(z){ return z==null || (z>=S.z[0] && z<=S.z[1]); }
+function inT(t){ return t>=S.t[0] && t<=S.t[1]; }
+
+function fit(){
+  const pts=[];
+  if (S.map) S.map.spawns.forEach(s=>pts.push(s.pos));
+  if (S.graph) S.graph.nodes.forEach(n=>pts.push([n[1],n[2]]));
+  const r=S.runs[S.run]; if (r) r.tracks.forEach(tr=>tr.samples.forEach(s=>pts.push([s[1],s[2]])));
+  if (!pts.length) return;
+  let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;
+  pts.forEach(p=>{const [a,b]=toView(p[0],p[1]); a0=Math.min(a0,a);a1=Math.max(a1,a);b0=Math.min(b0,b);b1=Math.max(b1,b);});
+  S.view.cx=(a0+a1)/2; S.view.cy=(b0+b1)/2;
+  S.view.scale=Math.min(cv.width/Math.max(20,a1-a0+30), cv.height/Math.max(20,b1-b0+30));
+}
+
+// ---------------------------------------------------------------- drawing
+function dot(x,y,z,r,color,hollow,obj,kind){
+  if (!inZ(z)) return false;
+  const [sx,sy]=w2s(x,y);
+  if (sx<-20||sy<-20||sx>cv.width+20||sy>cv.height+20) return false;
+  ctx.beginPath(); ctx.arc(sx,sy,r,0,Math.PI*2);
+  if (hollow){ ctx.strokeStyle=color; ctx.lineWidth=2; ctx.stroke(); }
+  else { ctx.fillStyle=color; ctx.fill(); }
+  if (obj) S.picks.push({sx,sy,obj,kind});
+  return true;
+}
+function draw(){
+  const dpr=window.devicePixelRatio||1;
+  const w=stage.clientWidth*dpr, h=stage.clientHeight*dpr;
+  if (cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; }
+  ctx.fillStyle="#0d0f12"; ctx.fillRect(0,0,cv.width,cv.height);
+  S.picks=[]; const counts={};
+  const bump=k=>counts[k]=(counts[k]||0)+1;
+  // background minimap, engine mapping (CHUDRadar::GetPosOnMap): u from Y, v from X
+  const mm=S.map&&S.map.minimap;
+  if ($("bg").checked && S.img && mm){
+    ctx.save(); ctx.globalAlpha=+$("bgOpacity").value;
+    const p00=w2s(mm.start_x,mm.start_y), pU=w2s(mm.start_x,mm.end_y), pV=w2s(mm.end_x,mm.start_y);
+    // affine: image (u,v) in pixels -> screen. u axis follows +Y, v axis follows +X
+    const W=S.img.width, H=S.img.height;
+    ctx.setTransform((pU[0]-p00[0])/W,(pU[1]-p00[1])/W,(pV[0]-p00[0])/H,(pV[1]-p00[1])/H,p00[0],p00[1]);
+    ctx.drawImage(S.img,0,0); ctx.restore();
+  }
+  // graph
+  const g=S.graph;
+  if (g){
+    if (S.layer.graph_edges){ ctx.strokeStyle="rgba(144,202,249,.22)"; ctx.lineWidth=1; ctx.beginPath();
+      for (const [a,b] of g.edges){ const na=g.nodes[a], nb=g.nodes[b]; if(!inZ(na[3])||!inZ(nb[3])) continue;
+        const p=w2s(na[1],na[2]), q=w2s(nb[1],nb[2]); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); bump("graph_edges"); }
+      ctx.stroke(); }
+    if (S.layer.graph_nodes) for (const n of g.nodes){ if (dot(n[1],n[2],n[3],2.2,LAYER_COLOR(n[6]),false,{graph_node:n,columns:g.node_columns},"graph_nodes")) bump("graph_nodes"); }
+    if (S.layer.mem && S.mem && S.mem.graph_link && S.mem.graph_link.linked)
+      for (const m of S.mem.graph_link.nodes_with_memory){ const r=2+Math.min(8,Math.sqrt(m.stuck+m.kills+m.deaths));
+        if (dot(m.pos[0],m.pos[1],m.pos[2],r,m.stuck>0?"#f44336":"#ffeb3b",true,m,"mem")) bump("mem"); }
+  }
+  // mission data
+  if (S.map){
+    if (S.layer.spawns) S.map.spawns.forEach(s=>{ if(dot(s.pos[0],s.pos[1],s.pos[2],5,"#4caf50",false,Object.assign({type:"SpawnPoint"},s),"spawns")) bump("spawns"); });
+    if (S.layer.items) S.map.items.forEach(i=>{ const c=i.class==="CustomAmmoPickup"?"#bdbdbd":"#ffd54f";
+      if(dot(i.pos[0],i.pos[1],i.pos[2],i.class==="CustomAmmoPickup"?2.5:4,c,false,i,"items")) bump("items"); });
+  }
+  // run data
+  const r=S.runs[S.run];
+  if (r){
+    if (S.layer.routes) r.tracks.forEach((tr,ti)=>{
+      if (!S.bots.has(tr.bot)) return;
+      const col=PALETTE[ti%PALETTE.length]; ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.beginPath(); let pen=false, last=null;
+      for (const s of tr.samples){
+        const ok=inT(s[0])&&inZ(s[3])&&s[5]>0;
+        if (!ok||(last&&s[0]-last>3.5)){ pen=false; if(!ok) continue; }
+        const [sx,sy]=w2s(s[1],s[2]);
+        if (pen) ctx.lineTo(sx,sy); else ctx.moveTo(sx,sy);
+        pen=true; last=s[0]; bump("routes");
+        S.picks.push({sx,sy,obj:{bot:tr.bot,slot:tr.slot,profile:tr.style+"/"+tr.skill,sample:Object.fromEntries(tr.columns.map((c,i)=>[c,s[i]]))},kind:"routes"});
+      }
+      ctx.stroke();
+    });
+    for (const e of r.events){
+      if (!inT(e.t)) continue;
+      if (e.bot && !S.bots.has(e.bot) && e.type!=="created") continue;
+      const L=e.type;
+      if (L==="astar_failed"){
+        if (S.layer.astar_lines && inZ(e.goal[2])){ const p=w2s(e.pos[0],e.pos[1]), q=w2s(e.goal[0],e.goal[1]);
+          ctx.strokeStyle="rgba(255,112,67,.25)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); ctx.stroke(); }
+        if (S.layer.astar_failed && dot(e.goal[0],e.goal[1],e.goal[2],3,"#ff7043",false,e,L)) bump(L);
+        continue;
+      }
+      if (!S.layer[L]) continue;
+      const def=LAYERS.find(l=>l[0]===L); if(!def) continue;
+      let p=e.pos;
+      if (L==="weapon_unreachable" && e.item_pos) p=e.item_pos;
+      if (!p) { bump(L+" (no position)"); continue; }
+      const rad=L==="kill"||L==="death"?3.5:L==="trapped"?Math.min(14,5+Math.sqrt(e.duration||0)/2):4.5;
+      if (dot(p[0],p[1],p[2],rad,def[2],e.confidence==="inferred",e,L)) bump(L);
+    }
+  }
+  // scale bar
+  const metres=[1,2,5,10,20,50,100,200].find(m=>m*S.view.scale>80)||200;
+  ctx.fillStyle="#fff"; ctx.fillRect(16,cv.height-40,metres*S.view.scale,3);
+  ctx.font=`${12*(window.devicePixelRatio||1)}px system-ui`; ctx.fillText(metres+" m",16,cv.height-46);
+  // highlight selection
+  if (S.sel){ ctx.strokeStyle="#fff"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(S.sel.sx,S.sel.sy,9,0,Math.PI*2); ctx.stroke(); }
+  $("counts").innerHTML=Object.entries(counts).sort().map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join("")||"<tr><td>nothing visible</td></tr>";
+}
+function LAYER_COLOR(l){ return ["#90caf9","#a5d6a7","#ffcc80","#ef9a9a","#ce93d8"][l]||"#fff"; }
+
+// ---------------------------------------------------------------- interaction
+let drag=null;
+cv.onmousedown=e=>{drag={x:e.clientX,y:e.clientY,cx:S.view.cx,cy:S.view.cy,moved:false}; cv.classList.add("drag");};
+window.onmouseup=e=>{ if(drag&&!drag.moved) pick(e); drag=null; cv.classList.remove("drag"); };
+window.onmousemove=e=>{
+  const rect=cv.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  const [x,y]=s2w((e.clientX-rect.left)*dpr,(e.clientY-rect.top)*dpr);
+  $("hud").textContent=`x ${x.toFixed(1)}  y ${y.toFixed(1)}  ·  zoom ${S.view.scale.toFixed(2)} px/m`;
+  if(!drag) return;
+  const dx=(e.clientX-drag.x)*dpr, dy=(e.clientY-drag.y)*dpr;
+  if (Math.abs(dx)+Math.abs(dy)>3) drag.moved=true;
+  S.view.cx=drag.cx-dx/S.view.scale; S.view.cy=drag.cy-dy/S.view.scale; draw();
+};
+cv.onwheel=e=>{ e.preventDefault(); const rect=cv.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  const sx=(e.clientX-rect.left)*dpr, sy=(e.clientY-rect.top)*dpr;
+  const a=(sx-cv.width/2)/S.view.scale+S.view.cx, b=(sy-cv.height/2)/S.view.scale+S.view.cy;
+  S.view.scale=Math.max(.05,Math.min(80,S.view.scale*(e.deltaY<0?1.2:1/1.2)));
+  S.view.cx=a-(sx-cv.width/2)/S.view.scale; S.view.cy=b-(sy-cv.height/2)/S.view.scale; draw(); };
+function pick(e){
+  const rect=cv.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  const x=(e.clientX-rect.left)*dpr, y=(e.clientY-rect.top)*dpr;
+  let best=null, bd=10*dpr;
+  for (const p of S.picks){ const d=Math.hypot(p.sx-x,p.sy-y); if(d<bd){bd=d;best=p;} }
+  S.sel=best; $("inspect").textContent=best?(best.kind+"\n"+JSON.stringify(best.obj,null,1)):"nothing selected"; draw();
+}
+window.onresize=draw;
+
+// ---------------------------------------------------------------- UI
+function refreshUI(){
+  $("fileList").innerHTML=S.files.map(f=>`<div>• ${f}</div>`).join("");
+  const fx=[S.map,S.graph,S.mem,...S.runs].filter(Boolean).filter(d=>d.fixture);
+  const b=$("banner"); b.style.display=fx.length?"block":"none";
+  b.textContent=fx.length?"FIXTURE DATA — synthetic test data, NOT the real Steelmill map":"";
+  $("layers").innerHTML=LAYERS.map(([k,name,c,conf])=>`<label><input type="checkbox" data-l="${k}" ${S.layer[k]?"checked":""}>
+    <span class="sw ${conf==="inferred"?"hollow":""}" style="background:${c};border-color:${c}"></span>${name}</label>`).join("");
+  document.querySelectorAll("[data-l]").forEach(i=>i.onchange=()=>{S.layer[i.dataset.l]=i.checked; draw();});
+  $("run").innerHTML=S.runs.map((r,i)=>`<option value="${i}">${(r._name||r.source||"run").replace(/\.movement\.json$/,"")}</option>`).join("")||"<option>— no movement data —</option>";
+  $("run").value=S.run; selectRun(S.run,false);
+  const zs=new Set(); if(S.map) S.map.spawns.forEach(s=>zs.add(Math.round(s.pos[2])));
+  const presets=[["all",-1e9,1e9],["≤138",-1e9,138],["138–141",138,141],["141–145",141,145],["≥145",145,1e9]];
+  $("zPresets").innerHTML=presets.map(([n,a,b])=>`<button data-z="${a},${b}">${n}</button>`).join("");
+  document.querySelectorAll("[data-z]").forEach(btn=>btn.onclick=()=>{const [a,b]=btn.dataset.z.split(",").map(Number); setZ(a,b);});
+  const src=[]; if(S.map) src.push("map: "+JSON.stringify(S.map.provenance,null,1));
+  S.runs.forEach(r=>src.push((r._name||"run")+": sha256 "+(r.sha256||"?").slice(0,16)+"…"));
+  if(S.graph) src.push("graph: "+(S.graph.level||"")+(S.graph.fixture?" [FIXTURE]":""));
+  if(S.mem) src.push("mem: sha256 "+(S.mem.sha256||"").slice(0,16)+"… nodes "+S.mem.header.count+(S.mem.graph_link&&S.mem.graph_link.linked?" (linked)":" (NOT linked: positions unknown)"));
+  $("sources").textContent=src.join("\n")||"—";
+}
+function setZ(a,b){ S.z=[a,b]; $("zmin").value=a>-1e8?a:""; $("zmax").value=b<1e8?b:""; draw(); }
+$("zmin").oninput=()=>{S.z[0]=$("zmin").value===""?-1e9:+$("zmin").value; draw();};
+$("zmax").oninput=()=>{S.z[1]=$("zmax").value===""?1e9:+$("zmax").value; draw();};
+function selectRun(i,doFit=true){
+  S.run=+i||0; const r=S.runs[S.run];
+  S.bots=new Set(r?r.tracks.map(t=>t.bot):[]);
+  let tmax=0; if(r) r.tracks.forEach(t=>t.samples.forEach(s=>tmax=Math.max(tmax,s[0])));
+  S.tmax=tmax||1; S.t=[0,S.tmax]; $("t0").value=0; $("t1").value=Math.ceil(S.tmax); $("tSlider").value=1000;
+  $("bots").innerHTML=r?r.tracks.map((t,ti)=>`<label><input type="checkbox" data-b="${t.bot}" checked><span class="sw" style="background:${PALETTE[ti%PALETTE.length]}"></span>#${t.slot??"?"} ${t.entity} ${t.style||""}/${t.skill||""} <span class="small">(${t.samples.length})</span></label>`).join(""):"";
+  document.querySelectorAll("[data-b]").forEach(c=>c.onchange=()=>{c.checked?S.bots.add(c.dataset.b):S.bots.delete(c.dataset.b); draw();});
+  if (doFit) fit(); draw();
+}
+$("run").onchange=e=>selectRun(e.target.value);
+$("allBots").onclick=()=>{document.querySelectorAll("[data-b]").forEach(c=>{c.checked=true;S.bots.add(c.dataset.b);}); draw();};
+$("noBots").onclick=()=>{document.querySelectorAll("[data-b]").forEach(c=>{c.checked=false;S.bots.delete(c.dataset.b);}); draw();};
+function timeFromInputs(){ S.t=[+$("t0").value||0, +$("t1").value||S.tmax]; draw(); }
+$("t0").oninput=timeFromInputs; $("t1").oninput=timeFromInputs;
+$("tSlider").oninput=()=>{ const len=Math.max(1,(+$("t1").value)-(+$("t0").value)); const end=S.tmax*$("tSlider").value/1000;
+  S.t=[Math.max(0,end-len),end]; draw(); };
+$("orient").onchange=()=>{fit(); draw();};
+$("bg").onchange=draw; $("bgOpacity").oninput=draw; $("fit").onclick=()=>{fit(); draw();};
+
+loadEmbedded(); refreshUI(); requestAnimationFrame(()=>{fit(); draw();});
+</script>
+</body>
+</html>
