@@ -1,4 +1,6 @@
 #include "PortIncludes.h"
+#include "CryGame/Bots/BotManager.h"
+#include "CryGame/Game.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Actors/Actor.h"
@@ -79,6 +81,9 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 	float best = 1e10f;
 	// Proximity query instead of iterating every entity: matters with 10-16 bots searching.
 	const Vec3 origin = actor.GetEntity()->GetWorldPos();
+    const BotNav& nav=g_pGame->GetBotManager().Nav();
+    const int from=nav.GoalFilterEnabled()?nav.NodeAt(origin):-1;
+    unsigned rejected=0;int first=-1;EntityId firstItem=0;
 	SEntityProximityQuery query;
 	query.box = AABB(origin - Vec3(radius, radius, 12.0f), origin + Vec3(radius, radius, 12.0f));
 	gEnv->pEntitySystem->QueryProximity(query);
@@ -95,6 +100,8 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 		IItem* item = Items()->GetItem(entity->GetId());
 		if (Suitable(item) && (!primaryOnly || IsPrimary(item)) && !item->GetOwnerId() && static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId()))
 		{
+            int to=-1;
+            if(nav.KnownUnreachable(from,entity->GetWorldPos(),to)) {++rejected;if(first<0){first=to;firstItem=entity->GetId();}continue;}
 			// Prefer a different class, but keep travel cost significant. Stable within a life.
 			unsigned hash = entity->GetId()*1664525u + life*1013904223u;
 			hash ^= hash >> 16;
@@ -102,6 +109,7 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 			if (score < best) { best = score; result = entity->GetId(); }
 		}
 	}
+    if(rejected) WB_LOG(2,"[WarsBots] GOAL SKIP unreachable kind=weapon actor=%u id=%u fromScc=%d toScc=%d skipped=%u",actor.GetEntityId(),firstItem,nav.Component(from),nav.Component(first),rejected);
 	return result;
 }
 

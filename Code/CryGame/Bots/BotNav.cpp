@@ -37,6 +37,7 @@ bool Clear(const Vec3& from, const Vec3& to)
 void BotNav::Reset()
 {
 	m_phase = Phase::Idle;
+    m_reachability.Reset();m_componentsAttempted=false;
 	if (m_dirty) Save();
 	m_nodes.clear(); m_edges.clear(); m_pending.clear(); m_columns.clear(); m_memory.clear();
 	m_level.clear(); m_dirty = false; m_events = 0; m_saveTimer = 0;
@@ -361,24 +362,51 @@ void BotNav::ReportDeath(const Vec3& pos)
 	if (id >= 0) { m_memory[id].deaths += 1.0f; m_dirty = true; ++m_events; }
 }
 
-bool BotNav::PickHotspot(unsigned seed, bool preferSafe, Vec3& out) const
+bool BotNav::PickHotspot(unsigned seed, bool preferSafe, Vec3& out, const Vec3* from, std::uint32_t actor) const
 {
 	if (m_phase != Phase::Ready || m_memory.empty()) return false;
 	// Reservoir-style weighted pick over nodes with fight history; cheap enough at 10 Hz/bots.
     const ICVar* all=gEnv->pConsole->GetCVar("wb_hotspot_all_nodes");
     const std::size_t stride=all && all->GetIVal()==1 ? 1 : 2;
+    const int fromNode=from && GoalFilterEnabled()?NodeAt(*from):-1;
+    unsigned skipped=0;int first=-1;
     const int chosen=BotHotspot::Pick(seed,m_memory.size(),stride,[&](std::size_t i) {
         const Memory& m=m_memory[i];
-        return (preferSafe ? m.kills*1.5f-m.deaths*.7f : m.kills+m.deaths)-m.stuck*.5f;
+        const float w=(preferSafe ? m.kills*1.5f-m.deaths*.7f : m.kills+m.deaths)-m.stuck*.5f;
+        if(w>.5f && fromNode>=0 && !m_reachability.Reaches(fromNode,int(i))){++skipped;if(first<0)first=int(i);return 0.f;}
+        return w;
     });
+    if(skipped) WB_LOG(2,"[WarsBots] GOAL SKIP unreachable kind=hotspot actor=%u id=%d fromScc=%d toScc=%d skipped=%u",actor,first,Component(fromNode),Component(first),skipped);
 	if (chosen < 0) return false;
 	out = m_nodes[chosen].pos;
 	return true;
 }
 
+bool BotNav::GoalFilterEnabled() const
+{
+    const ICVar* flag=gEnv->pConsole->GetCVar("wb_reachable_goals");
+    return flag && flag->GetIVal()==1 && m_reachability.Ready();
+}
+bool BotNav::KnownUnreachable(int from,const Vec3& goal,int& to) const
+{
+    to=-1;if(!GoalFilterEnabled() || from<0)return false;
+    to=NodeAt(goal);return to>=0 && !m_reachability.Reaches(from,to);
+}
 void BotNav::Tick(float dt)
 {
 	if (m_phase != Phase::Ready) return;
+    const ICVar* filter=gEnv->pConsole->GetCVar("wb_reachable_goals");
+    const ICVar* escape=gEnv->pConsole->GetCVar("wb_sink_escape");
+    if(!m_componentsAttempted && ((filter && filter->GetIVal()==1) || (escape && escape->GetIVal()==1)))
+    {
+        m_componentsAttempted=true;const CTimeValue start=gEnv->pTimer->GetAsyncTime();
+        std::vector<std::vector<int>> graph(m_nodes.size());
+        for(std::size_t i=0;i<m_nodes.size();++i)for(unsigned e=m_nodes[i].firstEdge;e<m_nodes[i].firstEdge+m_nodes[i].edgeCount;++e)graph[i].push_back(m_edges[e].to);
+        const bool ok=m_reachability.Build(graph);std::vector<int> sizes;
+        for(int c=0;c<m_reachability.Count();++c)sizes.push_back(m_reachability.Size(c));
+        std::sort(sizes.rbegin(),sizes.rend());
+        WB_LOG(1,"[WarsBots] NAV SCC ready=%d components=%d largest=%d second=%d ms=%.3f",ok?1:0,m_reachability.Count(),sizes.empty()?0:sizes[0],sizes.size()<2?0:sizes[1],(gEnv->pTimer->GetAsyncTime()-start).GetMilliSeconds());
+    }
 	m_saveTimer += dt;
 	if (m_dirty && m_saveTimer > 120.0f) { Save(); m_saveTimer = 0; }
 }

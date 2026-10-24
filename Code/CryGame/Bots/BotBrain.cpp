@@ -391,7 +391,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 			Vec3 hotspot(0,0,0);
 			bool picked = false;
 			const bool safe = m_profile.style == BotStyle::Marksman || m_profile.style == BotStyle::Defender;
-			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot) &&
+			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot, &feet, actor.GetEntityId()) &&
 				(hotspot - feet).GetLengthSquared2D() > 64.0f)
 			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; picked = true; }
 			else if (count && !m_detour)

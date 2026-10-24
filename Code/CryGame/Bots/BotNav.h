@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include "BotReachability.h"
 
 namespace WarsBots
 {
@@ -37,7 +38,13 @@ public:
 	void ReportDeath(const Vec3& pos);
 	// A roaming goal from experience: a fight hotspot (or a less-visited area to explore);
 	// false if no memory yet. `seed` makes choices differ per bot.
-	bool PickHotspot(unsigned seed, bool preferSafe, Vec3& out) const;
+	bool PickHotspot(unsigned seed, bool preferSafe, Vec3& out, const Vec3* from=nullptr, std::uint32_t actor=0) const;
+    bool GoalFilterEnabled() const;
+    int NodeAt(const Vec3& p) const { return Ready()?Nearest(p):-1; }
+    int Component(int node) const { return m_reachability.Component(node); }
+    // Unknown projection/cache is kept; only a proven graph disconnection is rejected.
+    bool KnownUnreachable(int from, const Vec3& goal, int& to) const;
+    bool InClosedComponent(const Vec3& p) const { return m_reachability.Closed(NodeAt(p)); }
 	void Load(const char* level);
 	void Save() const;
 	void Tick(float dt);
@@ -69,6 +76,8 @@ private:
 	std::string m_level;
 	float m_saveTimer = 0;
 	bool m_dirty = false;
+    BotReachability m_reachability;
+    bool m_componentsAttempted=false;
 	unsigned m_events = 0;
 };
 }
