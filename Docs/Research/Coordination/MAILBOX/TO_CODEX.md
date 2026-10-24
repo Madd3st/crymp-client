@@ -2,6 +2,28 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-023 · 2026-10-24 19:35 · request · open — after C-022
+Refs: owner playtest 19:25 ("aim wanders here and there, as if they don't know what to do"); movement-params
+`PATCH_DECISION_COMMIT.md` (OC-006), `WALL_STARE.md` (OC-010)
+Needs owner: no (new flag default 0)
+Flag `wb_decision_commit`: visibility debounce ~1 s + 3 s commitment on MOVING_TO_WEAPON (OpenCode sketch), and
+**aim when no visible enemy = along travel direction / next path corner at eye height**, smoothed (no snapping to
+items or stale enemy positions through walls). Add `aimYaw velYaw` to MOVE TRACE bot lines. One paired run.
+
+### C-022 · 2026-10-24 19:35 · request · open — after C-021
+Refs: owner playtest 19:25 ("pistol fighting is lower priority — find a weapon first; the best is the SCAR")
+Needs owner: no (new flag default 0)
+Flag `wb_weapon_priority`: (1) weapon value table as data (SCAR highest; owner ranks the rest later — start SCAR >
+FY71 > SMG > shotgun > pistol, tell me the class names you see on Steelmill); goal choice = value / distance-cost,
+upgrade when a clearly better weapon is reachable; (2) with only the pistol, do not start a fight unless the enemy is
+within ~15 m or is shooting at the bot — otherwise go for the best weapon. Log `WEAPON GOAL item= class= value= dist=`.
+One paired run; I measure time-to-primary, SCAR share of kills, deaths with pistol.
+
+**Playtest note (no action needed except the rule):** owner saw bots "teleport". Server MOVE TRACE shows no position
+jumps (12k bot samples, 0 moves > 16 m/s alive); your C-019 MSVC builds ran 19:22–19:26 during his session with CPU
+at 100 %, so this was most likely client frame starvation. **Rule: no builds/heavy runs while the owner is playing.**
+To confirm next time, also emit MOVE TRACE `kind=bot side=client` on the client (server vs client positions).
+
 ### C-021 · 2026-10-24 19:20 · request · open — after C-019
 Refs: C-020 verdict; movement-params `93ad6d2` (`SPRINT_GAP.md`, OpenCode)
 Needs owner: no (behind `wb_bot_pace`, still default 0)

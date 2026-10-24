@@ -15,6 +15,7 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 | Watchdog (`wb_trap_recovery`) | 15/16 episodes in non-main components; levels 1–3 free a bot only in the main component; 45 s self-kill is the only exit at 195 (owner: keep, D-001) | server |
 | Weapon filter B (`wb_reachable_goals`) | lowers pickups; of 255 skips 51 % projection errors (fixed in 1db9a47), 49 % "unreachable" only because the graph is wrong → parked until graph repair | server + graph + level |
 | Sink escape C (`wb_sink_escape`) | no measurable effect yet | server |
+| Owner playtest OwnerPace7 (19:17, 7 bots, pace ON) | bots feel livelier and stronger; aim wanders/indecision; pistol fights too eager (wants SCAR first); "teleports" — server trace clean, Codex MSVC builds at 100 % CPU during the session → client starvation (rule: no builds during owner play). Live: median 4.49 m/s, >4 m/s 76 %, sprint 31 %, 45 revives 0 frozen | client + server |
 | Pace ON (`wb_bot_pace`, C-018 ef25395e, 2+2 paired runs) | median 2.49→4.48 m/s, >4 m/s 4→76 %, sprint 8→22 % (gap), stalls 134/147→76/89, pickups 91/75→117/124, frozen 0, traps 0 → win, no regression; default ON = D-007 after owner playtest | server |
 | Pace (owner MOVE TRACE) | owner moving median 5.0–5.7 m/s, >4 m/s 70–77 %, sprint 46–54 %, Armor 84–87 %, Speed-mode bursts to 13 m/s, Strength ledge climbs +4–5 m per jump; bots 2.5 m/s, >4 m/s 4–10 %, sprint 7–17 % | client trace + server |
 | Player movement (src, OpenCode OC-001 @ 981bd134, spot-checked) | MP stance run `maxSpeed 4.5` m/s, sprint ×1.5 = 6.75, Speed mode up to ~10–14.7 m/s short bursts; jump 1.0 m, Strength jump 4.7 m (70 energy); energy 200, regen 10/s, sprint drain 50/s; air control 0.9; wall jump impulse 600. **Bots are capped at 2.5 m/s — slower than a human running without sprint** | src |
@@ -49,7 +50,10 @@ only as data (e.g. a bad-spawn list), never code. Acceptance on ≥ 2 maps from 
 5. Decision stability (CHASING↔MOVING_TO_WEAPON) — `PATCH_DECISION_COMMIT.md`; later utility-AI decision layer.
 6. ML: parameter tuning from paired runs first (after 2–3), decision learning from `episodes.jsonl` later,
    imitation of the owner last.
-7. Bot-code refactor (REFACTOR_AUDIT) — remove graph-patch flags after the navmesh switch.
+7. **Demo recording / replay** (owner, 19:26): Claude builds a 2D replay viewer from logs now; OC-017 researches
+   CryEngine recording facilities; in-game replay later (Codex).
+8. Weapon priority (SCAR first, avoid pistol fights) C-022; aim/decision commit C-023.
+9. Bot-code refactor (REFACTOR_AUDIT) — remove graph-patch flags after the navmesh switch.
 
 ## Lessons (2026-10-24)
 

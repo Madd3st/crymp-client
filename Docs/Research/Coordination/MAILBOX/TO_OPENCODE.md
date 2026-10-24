@@ -5,6 +5,17 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-017 · 2026-10-24 19:35 · request · open — after OC-015
+Needs owner: no
+Owner wants **demo recording and playback** like Counter-Strike: record a match (bots vs bots/owner) and replay it,
+watch any player. Read-only research in the CryMP tree (`Code/CryAction`, `Code/CryGame`, CryCommon headers): what
+exists already — `CTimeDemoRecorder` / `record`/`demo` console commands, `IGameplayRecorder`/`IGameplayListener`,
+any killcam / "recording system", network message capture, `CDemoRecorder` remnants — file:line, what each records
+(camera only? all entities? events?) and whether MP/CryMP can use it. Then a design for our own: per-tick entity
+snapshots (pos, rot/aim, stance, weapon, health, suit mode, shots, hits, kills) at 10–20 Hz to a compact file on the
+server + a playback path (A: in-game spectator replay with puppet entities; B: offline viewer from the same file),
+sizes, effort, risks. `Docs/Research/MovementParams/DEMO_RECORDING.md`, push, report O-017.
+
 ### OC-016 · 2026-10-24 19:20 · request · open — standing
 Needs owner: no
 **Reviewer for every Codex push** (weapon-goals): next expected C-019 (`wb_geom_export`) and C-021 (sprint gap).
