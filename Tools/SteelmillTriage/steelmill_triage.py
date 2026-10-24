@@ -25,6 +25,7 @@ from wblab import level_data, ml_validate  # noqa: E402
 from wblab import pace  # noqa: E402
 from wblab import navmesh  # noqa: E402
 from wblab import replay  # noqa: E402
+from wblab import demo  # noqa: E402
 
 
 def cmd_mem(a):
@@ -196,6 +197,14 @@ def cmd_replay(a):
     print(json.dumps(dict(out=a.out, duration=data["duration"], players=len(data["actors"]), kills=len(data["kills"]))))
 
 
+def cmd_demo(a):
+    """Metrics from a wbdemo/1 file: aim wander, bot aim error, reaction time, decision flips, time to primary."""
+    d = demo.read(a.file)
+    print(json.dumps(dict(header=d["header"], actors=len(d["actors"]), frames=len(d["frames"]),
+                          seconds=round(d["frames"][-1][0] - d["frames"][0][0], 1) if d["frames"] else 0,
+                          metrics=demo.metrics(d)), indent=1))
+
+
 def cmd_movement(a):
     out = [movement.profile(p) for p in a.logs]
     for o in out:
@@ -233,6 +242,7 @@ def main(argv=None):
     s = sub.add_parser("replay"); s.add_argument("log"); s.add_argument("--out", required=True)
     s.add_argument("--minimap-json", help="JSON with a 'minimap' object (uri,row0,col0,kx,ky,start_x,start_y)")
     s.add_argument("--label"); s.set_defaults(fn=cmd_replay)
+    s = sub.add_parser("demo"); s.add_argument("file"); s.set_defaults(fn=cmd_demo)
     s = sub.add_parser("movement"); s.add_argument("logs", nargs="+"); s.set_defaults(fn=cmd_movement)
     a = p.parse_args(argv)
     a.fn(a)

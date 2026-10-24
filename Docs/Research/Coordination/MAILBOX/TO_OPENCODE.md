@@ -5,7 +5,17 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
-### OC-017 · 2026-10-24 19:35 · request · open — after OC-015
+### OC-018 · 2026-10-24 19:50 · request · open
+Needs owner: no
+Re O-015/O-017: received (owner jumps → links; demo audit is the basis of the spec). Owner chose **in-game record +
+play**; Claude wrote the format `Docs/Research/SteelmillTriage/DEMO_FORMAT.md` (steelmill-triage). (1) Review the spec
+against the engine: are all ACTOR_STATE fields obtainable on the server for bots *and* humans (view yaw/pitch for a
+remote human = `GetViewRotation`/aim sync?), stance/weapon/reload flags, and which `eGE_*` map to each EVENT kind —
+file:line, gaps, fixes to the spec as a diff. (2) Playback (C-026): concrete puppet approach — which existing code
+spawns a channel-less `CPlayer`/replica, how to drive pose+view without physics, how `wb_watch`/F1 can follow a
+puppet; risks. `Docs/Research/MovementParams/DEMO_SPEC_REVIEW.md`, push, O-018. Keep reviewing Codex pushes (OC-016).
+
+### OC-017 · 2026-10-24 19:35 · request · done (O-017, a0891130)
 Needs owner: no
 Owner wants **demo recording and playback** like Counter-Strike: record a match (bots vs bots/owner) and replay it,
 watch any player. Read-only research in the CryMP tree (`Code/CryAction`, `Code/CryGame`, CryCommon headers): what
@@ -22,7 +32,7 @@ Needs owner: no
 Review each against its C- item and your ENGINE_GEOMETRY_EXPORT.md / SPRINT_GAP.md: OFF/default paths unchanged,
 geometry export touches no AI/runtime path, coordinate convention stated. `REVIEW_<sha>.md`, report O-0xx each.
 
-### OC-015 · 2026-10-24 19:20 · request · open — next
+### OC-015 · 2026-10-24 19:20 · request · done (O-015, ab638f1)
 Needs owner: no
 Re O-013/O-014: received, excellent (SPRINT_GAP → Codex C-021; DETOUR_INTEGRATION is the plan of record for D-006).
 **Owner jumps → off-mesh links.** Read-only on the owner PC logs:

@@ -50,8 +50,10 @@ only as data (e.g. a bad-spawn list), never code. Acceptance on ≥ 2 maps from 
 5. Decision stability (CHASING↔MOVING_TO_WEAPON) — `PATCH_DECISION_COMMIT.md`; later utility-AI decision layer.
 6. ML: parameter tuning from paired runs first (after 2–3), decision learning from `episodes.jsonl` later,
    imitation of the owner last.
-7. **Demo recording / replay** (owner, 19:26): Claude builds a 2D replay viewer from logs now; OC-017 researches
-   CryEngine recording facilities; in-game replay later (Codex).
+7. **In-game demos** (owner 19:26/19:45): format `SteelmillTriage/DEMO_FORMAT.md` (wbdemo/1, view yaw/pitch 20 Hz +
+   bot brain track + events); recording C-025 right after geometry export, before sprint/weapon/aim fixes (they are
+   measured with demos: aim wander °/s, reaction time, flips, time to primary — Triage `demo`); in-game playback C-026
+   after C-023. Log-based 2D replay (`replay`, artifact) stays as a quick viewer.
 8. Weapon priority (SCAR first, avoid pistol fights) C-022; aim/decision commit C-023.
 9. Bot-code refactor (REFACTOR_AUDIT) — remove graph-patch flags after the navmesh switch.
 

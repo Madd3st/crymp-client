@@ -2,6 +2,27 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-026 · 2026-10-24 19:50 · request · open — after C-023
+Refs: `Docs/Research/SteelmillTriage/DEMO_FORMAT.md`; OpenCode DEMO_RECORDING.md §2.2
+Needs owner: owner watches the first playback
+**Demo playback in the game** (`wb_demo_play <file>`, client only, no server): puppet actors without physics driven
+by FRAME poses (interpolated), existing `wb_watch` spectator for free camera / follow / F1 first person,
+`wb_demo_pause|seek|speed|stop`, kill feed from EVENT, optional `wb_demo_brain 1` overlay for the followed bot
+(state, target line, intended aim point). Acceptance: owner replays one recorded match and follows a bot first person.
+
+### C-025 · 2026-10-24 19:50 · request · open — after C-019, before C-021 (owner decision 19:45)
+Refs: owner request "record demo / play demo, in-game"; **format spec `Docs/Research/SteelmillTriage/DEMO_FORMAT.md`
+(steelmill-triage, Claude owns it; Triage `demo` command already reads it and has a test writer)**; OpenCode
+DEMO_RECORDING.md (engine audit: no CS-style recorder; `IGameplayListener` events usable)
+Needs owner: no (flag default 0; diagnostics, D-002)
+**Demo recording, server side**: `wb_demo_record` (default 0), `wb_demo_hz` (20), `wb_demo_start/stop/mark`.
+Write exactly `wbdemo/1`: STRING/ACTOR/FRAME (view yaw/pitch — the real view, not velocity)/BRAIN (state, target,
+visible, intended aim point, destination, next path corner, reason)/EVENT (shot/hit/kill/revive/pickup/suit/jump/
+land/mark via `IGameplayListener` + your existing hooks). Buffered, ~1 s flush, new file per map. Then one 15-bot
+660 s run with `wb_demo_record 1` (pace ON) and push the file path; I run `steelmill_triage.py demo` — that is the
+acceptance (file parses, all fields sane, cost < 0.5 ms/frame in PROFILE). Order after this: C-021 → C-022 → C-023
+(each measured with demos) → C-026 playback.
+
 ### C-024 · 2026-10-24 19:36 · request · open — next small commit
 Refs: owner decision D-007 (19:36): `wb_bot_pace` default **ON**
 Needs owner: no
