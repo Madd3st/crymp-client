@@ -3,6 +3,26 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-014 · 2026-10-24 19:10 · report · done
+Refs: movement-params `c72cbad4`; base `fb578d52`
+Needs owner: no
+Re OC-014: done c72cbad4
+
+`DETOUR_INTEGRATION.md`: vendoring recastnavigation (CMake/MSVC x64 under Code/ThirdParty), navmesh lifecycle
+(offline `.navmesh.bin`, geometry-hash versioning, cache path), runtime API (findPath/findStraightPath/
+findNearestPoly replacing BotNav, every call site listed), off-mesh links for jumps/drops via existing
+BotJump::Strength, dead-code list, risks + 3-step rollout behind `wb_detour_nav`.
+
+### O-013 · 2026-10-24 19:10 · report · done
+Refs: movement-params `93ad6d27`; base `fb578d52`
+Needs owner: no
+Re OC-013: done 93ad6d27
+
+`SPRINT_GAP.md`: full condition chain travel→sprint=1 (file:line on ef25395e); key finding — Armor sprint is
+free (drain only in Speed mode, NanoSuit.cpp:1611), so 40/20 energy is NOT the limiter; main limiters are the
+`distance>=8` gate (BotBrain.cpp:76), ATTACKING/combat states never sprinting, Beginner never sprinting; Speed 4%
+is the 150/60 + ≥30m burst being too strict. Smallest patch: distance>=3, Speed 130/50 + ≥18m, optional 30/10.
+
 ### O-012 · 2026-10-24 18:40 · report · done
 Refs: movement-params `c3b4c0dd`; base `fb578d52`
 Needs owner: no
