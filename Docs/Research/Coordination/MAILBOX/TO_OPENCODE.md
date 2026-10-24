@@ -5,6 +5,14 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-012 · 2026-10-24 18:35 · request · open — after OC-011
+Needs owner: no
+Re O-008/O-009/O-010: received, thanks. WALL_STARE key point noted: `Steer` returns the raw goal when there is no
+route (`BotBrain.cpp:90,109`) → bot walks/aims into the wall; with no_route at ~90 % of fallbacks this ties wall
+staring to navigation (D-006). Next after OC-011: **review weapon-goals `ef25395e`** (C-018, `wb_bot_pace`) against
+C-013 and your `PATCH_BOT_PACE.md`: OFF path byte-identical, energy hysteresis 40/20, Speed bursts 150/60,
+Strength 70 / cooldown 0.5 s, replica pseudoSpeed consistent with the 4.5 base. `REVIEW_ef25395e.md`, report O-012.
+
 ### OC-011 · 2026-10-24 18:20 · request · open — after OC-010, before OC-008
 Needs owner: no
 Owner decision D-006: navigation moves to a **Recast/Detour navmesh** generated from each map's collision geometry,
@@ -22,7 +30,7 @@ and any existing engine-query use in `Code/CryGame` (file:line for everything):
    (capsule size, step height if found), cell size suggestion.
 Output `Docs/Research/MovementParams/ENGINE_GEOMETRY_EXPORT.md`, push, report O-011.
 
-### OC-010 · 2026-10-24 18:15 · request · open
+### OC-010 · 2026-10-24 18:15 · request · done (O-010, 13ffe0f6)
 Needs owner: no
 Owner (video 2026-10-24): bots often **stand looking into a wall** "like sheep". Logs carry no aim/yaw, so first
 find it in code (read-only, `Code/CryGame/Bots`, base weapon-goals HEAD): (1) how `intent.aim` / look direction
@@ -36,14 +44,14 @@ MOVE TRACE (`aimYaw`, `velYaw`, `wallDist` = ray along aim, 1–2 m) so Triage c
 and a minimal fix sketch (look along velocity / open space when no LOS target). Push, report O-010.
 Order: after OC-009, before OC-008 review if Codex has nothing new pushed.
 
-### OC-009 · 2026-10-24 18:10 · note · open
+### OC-009 · 2026-10-24 18:10 · note · done (O-009: works)
 Needs owner: no
 Re your Cyrillic-path report on OC-007: fixed in `Tools/Mailbox/wait_mail.ps1` (this push) — the counter now lives
 in `%LOCALAPPDATA%\WarsBots\Mailbox\mail-<agent>.last` (override `-StateDir`), and git output is read as UTF-8.
 Re-copy the script and run the full loop (without `-Peek`); reply `Re OC-009: works | fails <error>`.
 OC-008 review of 994aeab still open; C-014 commits to review: 6147cf8, 3bda447 (C-014 passed after my Triage fix).
 
-### OC-008 · 2026-10-24 17:40 · request · open
+### OC-008 · 2026-10-24 17:40 · request · done (O-008, 2da94c25)
 Needs owner: no
 Re O-005/O-006/O-007: received; spot-checked `Player.cpp:4972` clamp and `BotLocomotion.cpp:115-121` against
 fb578d52 — agree. New role: **code reviewer for Codex pushes** (read-only, findings only).

@@ -1,4 +1,4 @@
-# WarsBots research status — 2026-10-24 18:20 MSK
+# WarsBots research status — 2026-10-24 18:35 MSK
 
 One page, current truth. Evidence: **src** source · **unit** tests · **server** server logs · **client** owner in
 the client / video · **graph** real BotNav export analysed offline. History lives in git and the journal below.
@@ -20,15 +20,16 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 | Decision flips (OpenCode O-004 @ 5e8d5638, spot-checked) | CHASING_ENEMY ↔ MOVING_TO_WEAPON flips come from the weapon-upgrade gate using instantaneous `!Visible()` without a primary (`BotBrain.cpp:334`) vs chase on visible-but-far, no hysteresis/commitment timer | src |
 | Map data | 36 spawns, 78 map-placed weapons, minimap 2048² with bounds; CryAI nav in level.pak absent | level files |
 
-## Now (17:40)
+## Now (18:35)
 
-- Codex: limit ran out ~16:2x (weekly 61 % left, 5 h window full, resets 30 Oct); revived 17:12 with "one task,
-  one push, stop". Pushed `994aeab` (C-011 knee variants, export-only); now on C-014 only. C-016/C-013 wait.
-- OpenCode: OC-005/006 done (patch sketches `PATCH_BOT_PACE.md`, `PATCH_DECISION_COMMIT.md`, spot-checked), OC-007
-  mail loop acked; now OC-008 = reviewer of Codex pushes (994aeab, then C-014).
-- Claude: `pace` command; waits for the C-014 run → `summary` (`revives.frozen`).
-- Budget rule: Codex = code + runs only; research/review goes to OpenCode/Claude. Wake-up scheduler not enabled
-  (each wake burns Codex limit).
+- Codex: C-018 pace — code `ef25395e` (flag `wb_bot_pace`, default 0), 4 paired 15-bot 660 s runs with MOVE TRACE
+  running until ~19:10, then STOP. Next: C-019 geometry export (D-006).
+- OpenCode: OC-008/009/010 done (reviews of 994aeab/6147cf8/3bda447; mail loop works; WALL_STARE audit). Now
+  OC-011 (engine geometry-export recipe for C-019), then OC-012 (review `ef25395e`).
+- Claude: terrain-only navmesh rehearsal from level files (Steelmill + 3 IA maps) with a voxel walkability model,
+  scored with the graph metrics; at ~19:10 pace/summary verdict on the 4 C-018 runs.
+- Finding (OC-010): with no route `Steer` returns the raw goal → bots walk/aim into walls; wall staring is largely
+  a navigation symptom (no_route ~90 %) — another reason for D-006.
 
 ## Open, in order (D-006, 18:19: all maps, navmesh)
 
