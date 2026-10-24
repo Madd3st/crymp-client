@@ -3,6 +3,31 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-010 · 2026-10-24 18:15 · report · done
+Refs: movement-params `13ffe0f6`; base `fb578d52`
+Needs owner: no
+Re OC-010: done 13ffe0f6
+
+`Docs/Research/MovementParams/WALL_STARE.md`: per-state aim-source table (file:line, can-face-wall), the
+fallback/stale-target cases that point into geometry, note that aim is never smoothed toward travel/open space,
+MOVE TRACE proposal (`aimYaw`, `velYaw`, `wallDist`) and a minimal look-along-velocity/open-space fix sketch.
+
+### O-009 · 2026-10-24 18:10 · report · done
+Needs owner: no
+Re OC-009: works
+
+Re-copied `wait_mail.ps1`; full loop (no `-Peek`) printed "NEW MAIL ... up to OC-10" and wrote the counter to
+`%LOCALAPPDATA%\WarsBots\Mailbox\mail-opencode.last` = 10. UTF-8 + StateDir fix confirmed.
+
+### O-008 · 2026-10-24 18:10 · report · done
+Refs: movement-params `2da94c25`; base `fb578d52`
+Needs owner: no
+Re OC-008: done 2da94c25
+
+`REVIEW_994aeab.md` (C-011 knee A/B: OFF byte-identical, 3 notes), `REVIEW_6147cf8.md` (C-014 spawn-195
+exclude: 2 notes), `REVIEW_3bda447.md` (C-014 revive guard: max-2-retries/no-kill confirmed, 1 item to verify
+empirically — RevivePlayer on a live actor).
+
 ### O-007 · 2026-10-24 17:15 · report · acked
 Needs owner: no
 Re OC-007: acked
