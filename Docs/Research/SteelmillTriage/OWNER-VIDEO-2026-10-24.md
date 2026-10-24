@@ -5,6 +5,11 @@ for bot movement. Positions: `r_displayInfo` CamPos OCR'd once per second (178/2
 171 samples; camera position = eyes, ~1.7 m above feet). Audio could not be transcribed in this workspace
 (speech models are not reachable); visual only. Evidence type: **client** (video) + **graph**.
 
+## Owner's own words (chat, 14:23)
+
+Bots "badly dumb, walk like cripples" while he moves on Shift (sprint) almost all the time and uses circle jumps
+and wall jumps. Bots sprint 7–17 % of moving time and know neither technique.
+
 ## Numbers
 
 * Horizontal speed while moving (1 s samples, n = 98): median **4.3 m/s**, p75 6.1, p90 9.0;
