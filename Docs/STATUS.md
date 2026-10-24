@@ -1,15 +1,14 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## C021 pair complete; next C028→C025→C027→C022→C023→C026
+## C028 complete; next C029→C025→C027→C022→C023→C026
 
-C019 four maps exported+validated, local Geometry/C019-a7553da7/; C024defaultON.
-C021e5af579d one15bot660s pair completed vs ef25395e, pace1/trace1 both,
-same roster/memory/flags. Frozen0,traps0 both; selfkills1 each; stalls78→71,
-pickups119→130. Claude/owner decides sprint verdict. Owner memory restored,
-QA stopped. See Docs/Experiments/c021-sprint-2026-10-24.md +data directory.
-Owner session archive: LOCALAPPDATA/WarsBots/Logs/OwnerPace7-20261024-191733/.
-Next offline C028 crop, then demos, mandatory behaviour-identical refactor wave1,
-weapons, aim, playback. Flag exits required. No builds/heavy QA during owner play.
+C021 pair completed/d175fd7e, verdict Claude pending; QA stopped/memory restored.
+C028 offline crop complete:4maps, gzip3.4–4.4MB, header/SHA preserved,120m marker
+padding. Local Geometry/C019-a7553da7/crop/, metadata in Experiments/c028 JSON.
+Unit boundary/parser tests +actual gzip/indices/counts/bbox validation PASS.
+C024pace defaultON; C019 full geometry remains unchanged/local.
+New C029 QA acceleration experiment received before demo. No owner game active.
+No builds/heavy QA during owner play; new flags must state their exit.
 
 ## Historical checkpoint: C-018 paired pace QA complete
 

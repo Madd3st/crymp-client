@@ -1,0 +1,74 @@
+[
+  {
+    "source": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\Steelmill.obj",
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\crop\\Steelmill.crop.obj.gz",
+    "source_sha256": "2423ca54579e31888c71acb63b2c92489dd8b08df31bbe19ce4c1c3b1bdab54d",
+    "bounds_xy": [
+      1041.25,
+      1165.0,
+      1488.375,
+      1513.3260498046875
+    ],
+    "source_triangles": 8519993,
+    "triangles": 204829,
+    "vertices": 614487,
+    "bytes": 3867809,
+    "sha256": "3f2d5d41399849c3d29f3b4bce2f467343664f29a83cba5e93b074fea9cd0f6a",
+    "map": "Steelmill",
+    "padding": 120
+  },
+  {
+    "source": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\Quarry.obj",
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\crop\\Quarry.crop.obj.gz",
+    "source_sha256": "345beb029e63e349a6176ba62fbf46d79499f7e98dd35354fd4b440214baf83b",
+    "bounds_xy": [
+      1250.8499755859375,
+      927.171142578125,
+      1618.504150390625,
+      1361.8927001953125
+    ],
+    "source_triangles": 8477256,
+    "triangles": 168088,
+    "vertices": 504264,
+    "bytes": 3426700,
+    "sha256": "4de66ba98c933110155adfc8f182a429c59b1680536811df6a1226c834242071",
+    "map": "Quarry",
+    "padding": 120
+  },
+  {
+    "source": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\Armada.obj",
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\crop\\Armada.crop.obj.gz",
+    "source_sha256": "4432730767488b5a639a7f4f9a6b0024b9c3ba46041e70f7058462e38d7adeba",
+    "bounds_xy": [
+      1283.273193359375,
+      1185.25,
+      1651.7369384765625,
+      1501.75
+    ],
+    "source_triangles": 8571250,
+    "triangles": 239284,
+    "vertices": 717852,
+    "bytes": 3978469,
+    "sha256": "85e45c3e11e0a7374469001447a3df242868516da961bd1c9f295e00a75e5fe9",
+    "map": "Armada",
+    "padding": 120
+  },
+  {
+    "source": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\Outpost.obj",
+    "path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Geometry\\C019-a7553da7\\crop\\Outpost.crop.obj.gz",
+    "source_sha256": "2cdb2a56a8d3a0b2f39e995b98e093271260eff7df687f04e9193f6b996d4a10",
+    "bounds_xy": [
+      928.5050048828125,
+      777.85888671875,
+      1259.9056396484375,
+      1155.328857421875
+    ],
+    "source_triangles": 2255114,
+    "triangles": 221042,
+    "vertices": 663126,
+    "bytes": 4364538,
+    "sha256": "c5b1d17f8b4371437dbc0dce1c83a0a0ba824f0588588779bb39279c32a05b56",
+    "map": "Outpost",
+    "padding": 120
+  }
+]

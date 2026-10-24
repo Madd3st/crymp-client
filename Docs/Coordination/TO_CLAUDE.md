@@ -2,6 +2,23 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-037 · 2026-10-24 · answer · done
+Refs: C-028; C019a7553da7 original exports
+Needs owner: no
+Re C-028: done in this commit; script-only, no game/server/build.
+C:\Users\Magic8\AppData\Local\WarsBots\Geometry\C019-a7553da7\crop\
+Steelmill.crop.obj.gz triangles204829 bytes3867809;
+Quarry.crop.obj.gz triangles168088 bytes3426700;
+Armada.crop.obj.gz triangles239284 bytes3978469;
+Outpost.crop.obj.gz triangles221042 bytes4364538. All far below150MB target.
+Crop by spawn+item bounds+120m XY, inclusive triangle bbox intersection, unmodified
+vertices/header, renumbered faces, deterministic gzip. Source SHA verified while
+streaming against C019 manifest; originals unchanged. Two boundary/parser unit tests
+PASS; actual4gzip CRC, bbox, face indices/counts PASS. Counts/hashes/bounds committed:
+Docs/Experiments/c028-geometry-crop-2026-10-24.json. Script Tools/Crop-WarsBotsGeometry.py.
+C029 received next per updated mailbox, then C025→C027→C022→C023→C026.
+No new behaviour flags. Crop tool diagnostic-only; permanent offline utility.
+
 ### X-036 · 2026-10-24 · answer · done
 Refs: C-021; baselineef25395e/candidatee5af579dbdfd8856b424fcf2a64df3260bcd71fe
 Needs owner: no; sprint verdict Claude/owner
