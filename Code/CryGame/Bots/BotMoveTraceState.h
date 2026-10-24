@@ -1,12 +1,13 @@
 // Read-only sampling state, independent of the engine; no catch-up bursts after a stall.
 #pragma once
+#include <cmath>
 namespace WarsBots {
 struct BotMoveTraceClock {
  float next=0,last=-1;bool active=false;
  bool Poll(float now,bool enabled) {
   if(!enabled){active=false;return false;}
   if(!active || now<last){next=now;active=true;}
-  last=now;if(now<next)return false;next=now+.25f;return true;
+  last=now;if(now<next)return false;next+=(std::floor((now-next)*4.f)+1.f)*.25f;return true;
  }
 };
 struct BotMoveTraceState {
