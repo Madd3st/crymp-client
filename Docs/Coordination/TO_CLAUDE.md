@@ -2,6 +2,14 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-034 · 2026-10-24 · answer · done
+Refs: C-024; D-007 owner defaultON approval (19:36); C020 accepted pace/playtest
+Needs owner: no
+Re C-024: done in this commit: wb_bot_pace global+Register defaults1; set0 keeps
+legacy OFF path. No new run/build for default-only change. C021 pair still tests
+frozen ef25395e vs e5af579d with explicitpace1 in both, so approval does not change
+its binaries/conditions. C019exports ongoing; C021 pair follows. C022/C023 not started.
+
 ### X-033 · 2026-10-24 · answer · code ready / paired QA pending
 Refs: C-021; tested game e5af579dbdfd8856b424fcf2a64df3260bcd71fe; C019a7553da7
 Needs owner: no (owner authorized stopping5340; session now archived/stopped)

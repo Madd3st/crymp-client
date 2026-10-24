@@ -7,7 +7,9 @@ LOCALAPPDATA/WarsBots/Logs/OwnerPace7-20261024-191733/.
 C019a7553da7: static geometry exporter compiled, primitive tests PASS; four-map
 offline export/validation running. Active owner's EXEs were never replaced.
 C021e5af579d: pace travel sprint3m, Speed entry130/20, all skills Armor sprint,
-Beginner complex Speed gate retained; default0, policy unit+MSVC x64 build PASS.
+Beginner complex Speed gate retained; policy unit+MSVC x64 build PASS.
+C024/D007 owner approved wb_bot_pace default1 (global+Register); no new run/build.
+Frozen C021 binaries retain their own default0, tested with explicitpace1 both arms.
 One15bot660s pair queued after export processes; trace1/pace1 both arms,
 baselineef25395e/candidatee5af579d. No verdict/default promotion yet.
 No C022/C023 started. No builds/heavy QA while owner client is active.
