@@ -47,7 +47,7 @@ def load_obj(path, up='z'):
     return v, np.asarray(fs, dtype=np.int64).reshape(-1, 3)
 
 
-def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None, zmin=None):
+def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None, zmin=None, grid=None):
     """Barycentric point samples of every triangle; returns xyz (n,3) float32 and walkable flag per sample."""
     a, b, c = v[f[:, 0]], v[f[:, 1]], v[f[:, 2]]
     if bounds is not None:
@@ -84,19 +84,46 @@ def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None, zmin=None):
     edge = np.maximum(np.maximum(np.linalg.norm(b - a, axis=1), np.linalg.norm(c - b, axis=1)),
                       np.linalg.norm(a - c, axis=1))
     steps = np.maximum(1, np.ceil(edge / spacing)).astype(np.int64)
-    pts, flags = [], []
+    if grid is None:
+        pts, flags = [], []
+        for k in np.unique(steps):
+            sel = steps == k
+            i, j = np.meshgrid(np.arange(k + 1), np.arange(k + 1), indexing='ij')
+            m = (i + j) <= k
+            u = (i[m] / k)[None, :, None]; w = (j[m] / k)[None, :, None]
+            A, B, C = a[sel][:, None, :], b[sel][:, None, :], c[sel][:, None, :]
+            p = A + u * (B - A) + w * (C - A)
+            pts.append(p.reshape(-1, 3).astype(np.float32))
+            flags.append(np.repeat(walk[sel], p.shape[1]))
+        if not pts:
+            return np.zeros((0, 3), np.float32), np.zeros(0, bool)
+        return np.concatenate(pts), np.concatenate(flags)
+    # streaming rasterisation: batches of <= ~3 M samples, de-duplicated per (column, 5 cm z bin, walkable)
+    x0, y0, cs, nx, ny = grid
+    zbase = float(min(a[:, 2].min(), b[:, 2].min(), c[:, 2].min())) - 1.0 if len(a) else 0.0
+    keys = []
     for k in np.unique(steps):
-        sel = steps == k
+        sel = np.flatnonzero(steps == k)
         i, j = np.meshgrid(np.arange(k + 1), np.arange(k + 1), indexing='ij')
         m = (i + j) <= k
-        u = (i[m] / k)[None, :, None]; w = (j[m] / k)[None, :, None]
-        A, B, C = a[sel][:, None, :], b[sel][:, None, :], c[sel][:, None, :]
-        p = A + u * (B - A) + w * (C - A)
-        pts.append(p.reshape(-1, 3).astype(np.float32))
-        flags.append(np.repeat(walk[sel], p.shape[1]))
-    if not pts:
-        return np.zeros((0, 3), np.float32), np.zeros(0, bool)
-    return np.concatenate(pts), np.concatenate(flags)
+        u = (i[m] / k).astype(np.float32)[None, :, None]; w = (j[m] / k).astype(np.float32)[None, :, None]
+        P = u.shape[1]
+        per = max(1, 3_000_000 // P)
+        for s0 in range(0, len(sel), per):
+            idx = sel[s0:s0 + per]
+            A = a[idx].astype(np.float32)[:, None, :]; B = b[idx].astype(np.float32)[:, None, :]; C = c[idx].astype(np.float32)[:, None, :]
+            p = (A + u * (B - A) + w * (C - A)).reshape(-1, 3)
+            wk = np.repeat(walk[idx], P)
+            ix = np.floor((p[:, 0] - x0) / cs).astype(np.int64); iy = np.floor((p[:, 1] - y0) / cs).astype(np.int64)
+            inb = (ix >= 0) & (ix < nx) & (iy >= 0) & (iy < ny)
+            col = iy[inb] * nx + ix[inb]
+            zq = np.round((p[inb, 2] - zbase) / 0.05).astype(np.int64)
+            keys.append(np.unique((col * 65536 + zq) * 2 + wk[inb]))
+    if not keys:
+        return np.zeros(0, np.int64), np.zeros(0, np.float32), np.zeros(0, bool)
+    key = np.unique(np.concatenate(keys))
+    wk = (key & 1).astype(bool); key >>= 1
+    return key // 65536, ((key % 65536) * 0.05 + zbase).astype(np.float32), wk
 
 
 # ----------------------------------------------------------------------------------------------- model
@@ -106,15 +133,13 @@ class WalkModel:
     def __init__(self, v, f, bounds=None, zmax=None, zmin=None, **kw):
         self.p = dict(DEFAULTS, **kw)
         cs = self.p['cs']
-        pts, wk = _samples(v, f, cs * 0.7, math.cos(math.radians(self.p['max_slope'])), bounds, zmax, zmin)
         if bounds is None:
-            lo, hi = pts[:, :2].min(0), pts[:, :2].max(0)
+            lo, hi = v[:, :2].min(0), v[:, :2].max(0)
             bounds = ((float(lo[0]), float(lo[1])), (float(hi[0]), float(hi[1])))
         (x0, y0), (x1, y1) = bounds
         self.origin = np.array([x0, y0]); self.nx = int((x1 - x0) / cs) + 1; self.ny = int((y1 - y0) / cs) + 1
-        ix = np.floor((pts[:, 0] - x0) / cs).astype(np.int64); iy = np.floor((pts[:, 1] - y0) / cs).astype(np.int64)
-        inb = (ix >= 0) & (ix < self.nx) & (iy >= 0) & (iy < self.ny)
-        col = (iy * self.nx + ix)[inb]; z = pts[inb, 2]; wk = wk[inb]
+        col, z, wk = _samples(v, f, cs * 0.7, math.cos(math.radians(self.p['max_slope'])), bounds, zmax, zmin,
+                              grid=(x0, y0, cs, self.nx, self.ny))
         order = np.lexsort((z, col)); col, z, wk = col[order], z[order], wk[order]
         brk = np.ones(len(z), bool)
         brk[1:] = (col[1:] != col[:-1]) | ((z[1:] - z[:-1]) > self.p['merge_gap'])
