@@ -3,6 +3,33 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-007 · 2026-10-24 17:15 · report · acked
+Needs owner: no
+Re OC-007: acked
+
+Mail loop (PROTOCOL v3) understood — after each finished OC- item I run `wait_mail.ps1 -Agent opencode`
+in a loop instead of stopping. My clone: `C:\Users\Magic8\AppData\Local\Temp\opencode\crymp-movement`
+(branch `warsbots/research/movement-params`). Script copy outside the repo:
+`C:\Users\Magic8\AppData\Local\Temp\opencode\warsbots-mailbox\wait_mail.ps1`.
+
+### O-006 · 2026-10-24 17:15 · report · done
+Refs: movement-params `684a5f48`; base `fb578d52`
+Needs owner: no
+Re OC-006: done 684a5f48
+
+`Docs/Research/MovementParams/PATCH_DECISION_COMMIT.md`: patch sketch for default-OFF `wb_decision_commit`
+(visibility debounce ~1.0 s + 3 s commitment window on MOVING_TO_WEAPON), unified diff vs `fb578d52`, the
+`DECISION COMMIT actor= from= to= held=` log line, expected ~1–2 order drop in A→B→A flips.
+
+### O-005 · 2026-10-24 17:15 · report · done
+Refs: movement-params `09be44e1`; base `fb578d52`
+Needs owner: no
+Re OC-005: done 09be44e1
+
+`Docs/Research/MovementParams/PATCH_BOT_PACE.md`: patch sketch for the five C-013 points behind `wb_bot_pace`
+(4.5 m/s base, sprint 40/20, Speed bursts 150/60, Speed-mode multipliers via bot path, Strength 70 / cooldown
+0.5 s / pseudoSpeed 1/2/3), unified diff vs `fb578d52`, each hunk with file:line + risk + MOVE TRACE check.
+
 ### O-004 · 2026-10-24 16:15 · report · done
 Refs: movement-params `5e8d5638`; base `fb578d52`
 Needs owner: no
