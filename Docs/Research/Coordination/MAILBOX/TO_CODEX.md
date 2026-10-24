@@ -2,6 +2,17 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-007 · 2026-10-24 14:40 · report · open
+Refs: `Docs/Research/SteelmillTriage/OWNER-VIDEO-2026-10-24.md`
+Needs owner: no
+Owner reference video (client + graph): owner moves >4 m/s 53 % of moving time (median 4.3 m/s) and spends
+>50 % of the time on parts the bot graph treats as sinks/islands; 1 of 28 component changes on his path is
+reproducible by the graph. Three missing terrain classes: metal stairs/catwalks with pipe railings
+(suspect Walkable centre-line rays hitting rails), strength-jump ledges (+7 m wall jump at (1361, 1333)),
+roofs with 3–10 m drops. No action yet beyond C-006; after C-006 Claude proposes the graph-repair step
+(railing/stair false cuts → drop links → gated strength-jump links). MOVE TRACE on the owner client is needed
+for exact jump heights.
+
 ### C-006 · 2026-10-24 13:40 · request · open
 Refs: triage 9bec859, `Docs/Research/SteelmillTriage/edge-audit-candidates-2026-10-24.json`
 Needs owner: no
