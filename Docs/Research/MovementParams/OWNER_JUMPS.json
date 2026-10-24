@@ -1,0 +1,2664 @@
+{
+  "jumps": [
+    {
+      "type": "normal",
+      "takeoff": [
+        1274.806,
+        1299.064,
+        141.928
+      ],
+      "landing": [
+        1270.834,
+        1296.2,
+        141.963
+      ],
+      "dz": 0.035,
+      "dist": 4.897,
+      "peak": 0.874,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 65471,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1368.162,
+        1336.557,
+        147.139
+      ],
+      "landing": [
+        1368.162,
+        1339.75,
+        150.666
+      ],
+      "dz": 3.527,
+      "dist": 3.193,
+      "peak": 2.344,
+      "mode": 1,
+      "energyDrop": 69.8,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1358.946,
+        1338.459,
+        150.666
+      ],
+      "landing": [
+        1346.17,
+        1336.504,
+        151.317
+      ],
+      "dz": 0.651,
+      "dist": 12.925,
+      "peak": 3.582,
+      "mode": 1,
+      "energyDrop": 66.7,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1334.227,
+        1339.225,
+        152.036
+      ],
+      "landing": [
+        1330.362,
+        1338.638,
+        149.985
+      ],
+      "dz": -2.051,
+      "dist": 3.909,
+      "peak": 0.0,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1332.495,
+        1336.656,
+        149.985
+      ],
+      "landing": [
+        1338.164,
+        1331.043,
+        151.94
+      ],
+      "dz": 1.955,
+      "dist": 7.978,
+      "peak": 3.578,
+      "mode": 1,
+      "energyDrop": 69.8,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1338.119,
+        1330.502,
+        152.004
+      ],
+      "landing": [
+        1334.812,
+        1330.654,
+        147.638
+      ],
+      "dz": -4.366,
+      "dist": 3.31,
+      "peak": 0.0,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1334.812,
+        1330.654,
+        147.638
+      ],
+      "landing": [
+        1333.823,
+        1331.222,
+        146.608
+      ],
+      "dz": -1.03,
+      "dist": 1.141,
+      "peak": 0.0,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1333.739,
+        1335.594,
+        146.607
+      ],
+      "landing": [
+        1333.832,
+        1338.979,
+        144.54
+      ],
+      "dz": -2.067,
+      "dist": 3.386,
+      "peak": 0.0,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1333.739,
+        1341.271,
+        143.013
+      ],
+      "landing": [
+        1332.237,
+        1333.383,
+        138.529
+      ],
+      "dz": -4.484,
+      "dist": 8.03,
+      "peak": 0.713,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1331.782,
+        1331.924,
+        138.533
+      ],
+      "landing": [
+        1336.01,
+        1328.419,
+        138.533
+      ],
+      "dz": 0.0,
+      "dist": 5.492,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1344.64,
+        1319.092,
+        138.56
+      ],
+      "landing": [
+        1344.137,
+        1317.32,
+        141.625
+      ],
+      "dz": 3.065,
+      "dist": 1.842,
+      "peak": 2.787,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1344.172,
+        1314.181,
+        141.625
+      ],
+      "landing": [
+        1345.038,
+        1312.799,
+        141.773
+      ],
+      "dz": 0.148,
+      "dist": 1.631,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1343.741,
+        1311.598,
+        141.625
+      ],
+      "landing": [
+        1345.422,
+        1306.563,
+        138.372
+      ],
+      "dz": -3.253,
+      "dist": 5.308,
+      "peak": 0.0,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1346.509,
+        1309.5,
+        138.562
+      ],
+      "landing": [
+        1347.699,
+        1311.127,
+        139.007
+      ],
+      "dz": 0.445,
+      "dist": 2.016,
+      "peak": 0.87,
+      "mode": 3,
+      "energyDrop": -3.2,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1294.503,
+        1294.816,
+        143.211
+      ],
+      "landing": [
+        1277.3,
+        1302.602,
+        141.953
+      ],
+      "dz": -1.258,
+      "dist": 18.883,
+      "peak": 3.58,
+      "mode": 1,
+      "energyDrop": 67.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1274.164,
+        1310.134,
+        141.967
+      ],
+      "landing": [
+        1267.238,
+        1303.428,
+        136.002
+      ],
+      "dz": -5.965,
+      "dist": 9.641,
+      "peak": 1.122,
+      "mode": 3,
+      "energyDrop": 14.9,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1360.54,
+        1304.13,
+        138.524
+      ],
+      "landing": [
+        1360.341,
+        1314.66,
+        138.526
+      ],
+      "dz": 0.002,
+      "dist": 10.532,
+      "peak": 0.88,
+      "mode": 0,
+      "energyDrop": 15.7,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1367.378,
+        1332.526,
+        138.56
+      ],
+      "landing": [
+        1364.322,
+        1335.636,
+        147.139
+      ],
+      "dz": 8.579,
+      "dist": 4.36,
+      "peak": 9.648,
+      "mode": 1,
+      "energyDrop": 68.2,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1347.704,
+        1336.144,
+        151.363
+      ],
+      "landing": [
+        1338.449,
+        1338.297,
+        151.363
+      ],
+      "dz": 0.0,
+      "dist": 9.502,
+      "peak": 0.874,
+      "mode": 0,
+      "energyDrop": 14.9,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1336.845,
+        1338.278,
+        151.363
+      ],
+      "landing": [
+        1328.634,
+        1342.547,
+        149.875
+      ],
+      "dz": -1.488,
+      "dist": 9.254,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1327.013,
+        1343.177,
+        149.985
+      ],
+      "landing": [
+        1319.658,
+        1346.907,
+        149.985
+      ],
+      "dz": 0.0,
+      "dist": 8.247,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1319.658,
+        1346.907,
+        149.985
+      ],
+      "landing": [
+        1316.335,
+        1349.871,
+        150.379
+      ],
+      "dz": 0.394,
+      "dist": 4.453,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -3.1,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1316.365,
+        1351.485,
+        150.379
+      ],
+      "landing": [
+        1311.165,
+        1365.0,
+        146.11
+      ],
+      "dz": -4.269,
+      "dist": 14.481,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1312.986,
+        1372.49,
+        146.11
+      ],
+      "landing": [
+        1316.03,
+        1375.626,
+        145.593
+      ],
+      "dz": -0.517,
+      "dist": 4.37,
+      "peak": 0.872,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1316.718,
+        1381.837,
+        145.49
+      ],
+      "landing": [
+        1315.977,
+        1393.903,
+        141.559
+      ],
+      "dz": -3.931,
+      "dist": 12.089,
+      "peak": 0.76,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1314.913,
+        1388.703,
+        141.559
+      ],
+      "landing": [
+        1313.639,
+        1382.518,
+        141.39
+      ],
+      "dz": -0.169,
+      "dist": 6.315,
+      "peak": 0.874,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1313.639,
+        1382.518,
+        141.39
+      ],
+      "landing": [
+        1309.184,
+        1378.226,
+        138.678
+      ],
+      "dz": -2.712,
+      "dist": 6.186,
+      "peak": 0.01,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1308.794,
+        1377.312,
+        138.678
+      ],
+      "landing": [
+        1312.4,
+        1378.218,
+        138.678
+      ],
+      "dz": 0.0,
+      "dist": 3.718,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -3.2,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1312.338,
+        1355.173,
+        138.499
+      ],
+      "landing": [
+        1368.015,
+        1335.163,
+        147.139
+      ],
+      "dz": 8.64,
+      "dist": 59.164,
+      "peak": 8.792,
+      "mode": 3,
+      "energyDrop": -25.1,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1359.436,
+        1335.89,
+        147.139
+      ],
+      "landing": [
+        1353.657,
+        1336.87,
+        147.139
+      ],
+      "dz": 0.0,
+      "dist": 5.862,
+      "peak": 3.768,
+      "mode": 1,
+      "energyDrop": 69.8,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1356.329,
+        1336.954,
+        147.139
+      ],
+      "landing": [
+        1350.204,
+        1339.24,
+        151.31
+      ],
+      "dz": 4.171,
+      "dist": 6.538,
+      "peak": 5.883,
+      "mode": 1,
+      "energyDrop": 67.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1338.846,
+        1338.537,
+        151.363
+      ],
+      "landing": [
+        1330.518,
+        1343.006,
+        149.968
+      ],
+      "dz": -1.395,
+      "dist": 9.451,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1316.34,
+        1351.873,
+        150.379
+      ],
+      "landing": [
+        1313.945,
+        1363.966,
+        146.11
+      ],
+      "dz": -4.269,
+      "dist": 12.328,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1305.983,
+        1356.614,
+        146.245
+      ],
+      "landing": [
+        1306.131,
+        1352.935,
+        144.363
+      ],
+      "dz": -1.882,
+      "dist": 3.682,
+      "peak": 0.0,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1312.485,
+        1359.683,
+        146.11
+      ],
+      "landing": [
+        1316.33,
+        1352.628,
+        150.171
+      ],
+      "dz": 4.061,
+      "dist": 8.035,
+      "peak": 3.573,
+      "mode": 1,
+      "energyDrop": 70.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1316.415,
+        1329.364,
+        150.379
+      ],
+      "landing": [
+        1316.516,
+        1316.345,
+        148.436
+      ],
+      "dz": -1.943,
+      "dist": 13.019,
+      "peak": 0.873,
+      "mode": 0,
+      "energyDrop": 2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1316.516,
+        1316.345,
+        148.436
+      ],
+      "landing": [
+        1316.51,
+        1315.63,
+        149.23
+      ],
+      "dz": 0.794,
+      "dist": 0.715,
+      "peak": 0.911,
+      "mode": 0,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1317.473,
+        1317.008,
+        148.25
+      ],
+      "landing": [
+        1317.261,
+        1315.492,
+        149.75
+      ],
+      "dz": 1.5,
+      "dist": 1.531,
+      "peak": 0.994,
+      "mode": 0,
+      "energyDrop": 12.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1316.986,
+        1315.284,
+        149.75
+      ],
+      "landing": [
+        1314.192,
+        1303.457,
+        148.25
+      ],
+      "dz": -1.5,
+      "dist": 12.153,
+      "peak": 0.873,
+      "mode": 0,
+      "energyDrop": 16.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1314.192,
+        1303.457,
+        148.25
+      ],
+      "landing": [
+        1304.283,
+        1301.969,
+        138.951
+      ],
+      "dz": -9.299,
+      "dist": 10.02,
+      "peak": 1.579,
+      "mode": 0,
+      "energyDrop": 10.8,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1243.893,
+        1294.786,
+        141.957
+      ],
+      "landing": [
+        1233.791,
+        1297.328,
+        141.931
+      ],
+      "dz": -0.026,
+      "dist": 10.417,
+      "peak": 0.872,
+      "mode": 0,
+      "energyDrop": 13.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1233.424,
+        1303.764,
+        141.943
+      ],
+      "landing": [
+        1233.508,
+        1306.532,
+        144.832
+      ],
+      "dz": 2.889,
+      "dist": 2.769,
+      "peak": 2.332,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1234.022,
+        1307.582,
+        144.832
+      ],
+      "landing": [
+        1227.749,
+        1313.169,
+        143.91
+      ],
+      "dz": -0.922,
+      "dist": 8.4,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 40.8,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1225.33,
+        1317.348,
+        144.63
+      ],
+      "landing": [
+        1224.277,
+        1321.723,
+        147.426
+      ],
+      "dz": 2.796,
+      "dist": 4.5,
+      "peak": 2.834,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1222.566,
+        1324.02,
+        146.732
+      ],
+      "landing": [
+        1223.058,
+        1333.544,
+        148.761
+      ],
+      "dz": 2.029,
+      "dist": 9.537,
+      "peak": 3.49,
+      "mode": 1,
+      "energyDrop": 69.8,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1222.993,
+        1334.01,
+        148.905
+      ],
+      "landing": [
+        1227.893,
+        1340.056,
+        144.152
+      ],
+      "dz": -4.753,
+      "dist": 7.782,
+      "peak": 0.872,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1229.004,
+        1340.609,
+        144.249
+      ],
+      "landing": [
+        1230.43,
+        1344.263,
+        144.87
+      ],
+      "dz": 0.621,
+      "dist": 3.922,
+      "peak": 0.879,
+      "mode": 1,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1230.43,
+        1344.263,
+        144.87
+      ],
+      "landing": [
+        1231.732,
+        1349.077,
+        141.198
+      ],
+      "dz": -3.672,
+      "dist": 4.987,
+      "peak": 0.059,
+      "mode": 1,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1232.476,
+        1349.789,
+        141.081
+      ],
+      "landing": [
+        1233.529,
+        1364.17,
+        136.022
+      ],
+      "dz": -5.059,
+      "dist": 14.419,
+      "peak": 0.846,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1227.294,
+        1359.438,
+        136.001
+      ],
+      "landing": [
+        1222.027,
+        1361.631,
+        136.001
+      ],
+      "dz": 0.0,
+      "dist": 5.705,
+      "peak": 0.873,
+      "mode": 0,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1220.748,
+        1362.289,
+        136.001
+      ],
+      "landing": [
+        1215.036,
+        1361.962,
+        136.003
+      ],
+      "dz": 0.002,
+      "dist": 5.721,
+      "peak": 0.873,
+      "mode": 0,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1215.036,
+        1361.962,
+        136.003
+      ],
+      "landing": [
+        1211.333,
+        1364.814,
+        139.014
+      ],
+      "dz": 3.011,
+      "dist": 4.674,
+      "peak": 2.579,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1211.333,
+        1364.814,
+        139.014
+      ],
+      "landing": [
+        1205.707,
+        1364.828,
+        139.006
+      ],
+      "dz": -0.008,
+      "dist": 5.626,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -3.1,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1205.707,
+        1364.828,
+        139.006
+      ],
+      "landing": [
+        1202.648,
+        1357.231,
+        138.978
+      ],
+      "dz": -0.028,
+      "dist": 8.19,
+      "peak": 0.881,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1202.648,
+        1357.231,
+        138.978
+      ],
+      "landing": [
+        1191.536,
+        1359.224,
+        135.801
+      ],
+      "dz": -3.177,
+      "dist": 11.289,
+      "peak": 1.141,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1193.372,
+        1356.567,
+        136.001
+      ],
+      "landing": [
+        1194.497,
+        1361.283,
+        136.088
+      ],
+      "dz": 0.087,
+      "dist": 4.848,
+      "peak": 0.906,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1203.203,
+        1367.831,
+        136.097
+      ],
+      "landing": [
+        1208.575,
+        1366.543,
+        137.126
+      ],
+      "dz": 1.029,
+      "dist": 5.524,
+      "peak": 0.892,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1212.098,
+        1366.664,
+        137.23
+      ],
+      "landing": [
+        1216.769,
+        1370.705,
+        136.001
+      ],
+      "dz": -1.229,
+      "dist": 6.176,
+      "peak": 0.873,
+      "mode": 0,
+      "energyDrop": 11.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1216.769,
+        1370.705,
+        136.001
+      ],
+      "landing": [
+        1227.038,
+        1366.585,
+        135.994
+      ],
+      "dz": -0.007,
+      "dist": 11.065,
+      "peak": 0.874,
+      "mode": 0,
+      "energyDrop": 16.5,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1227.038,
+        1366.585,
+        135.994
+      ],
+      "landing": [
+        1234.163,
+        1364.458,
+        136.055
+      ],
+      "dz": 0.061,
+      "dist": 7.436,
+      "peak": 0.881,
+      "mode": 0,
+      "energyDrop": 17.2,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1234.163,
+        1364.458,
+        136.055
+      ],
+      "landing": [
+        1235.86,
+        1359.208,
+        136.831
+      ],
+      "dz": 0.776,
+      "dist": 5.517,
+      "peak": 0.844,
+      "mode": 0,
+      "energyDrop": 15.7,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1266.645,
+        1354.506,
+        136.001
+      ],
+      "landing": [
+        1264.215,
+        1357.848,
+        135.993
+      ],
+      "dz": -0.008,
+      "dist": 4.132,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 25.8,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1264.215,
+        1357.848,
+        135.993
+      ],
+      "landing": [
+        1261.088,
+        1362.244,
+        136.056
+      ],
+      "dz": 0.063,
+      "dist": 5.395,
+      "peak": 0.881,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1260.021,
+        1364.782,
+        136.063
+      ],
+      "landing": [
+        1260.004,
+        1365.21,
+        136.055
+      ],
+      "dz": -0.008,
+      "dist": 0.428,
+      "peak": 0.873,
+      "mode": 1,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1257.036,
+        1370.832,
+        136.001
+      ],
+      "landing": [
+        1257.023,
+        1370.829,
+        135.994
+      ],
+      "dz": -0.007,
+      "dist": 0.013,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1235.659,
+        1324.212,
+        136.002
+      ],
+      "landing": [
+        1231.267,
+        1312.577,
+        136.056
+      ],
+      "dz": 0.054,
+      "dist": 12.436,
+      "peak": 0.872,
+      "mode": 0,
+      "energyDrop": 22.8,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1231.267,
+        1312.577,
+        136.056
+      ],
+      "landing": [
+        1223.801,
+        1311.749,
+        135.989
+      ],
+      "dz": -0.067,
+      "dist": 7.512,
+      "peak": 0.884,
+      "mode": 0,
+      "energyDrop": 12.6,
+      "actor": 131007,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-154328-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1247.274,
+        1319.694,
+        136.002
+      ],
+      "landing": [
+        1247.098,
+        1325.578,
+        136.002
+      ],
+      "dz": 0.0,
+      "dist": 5.887,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 65471,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1247.098,
+        1325.578,
+        136.002
+      ],
+      "landing": [
+        1241.511,
+        1329.563,
+        136.002
+      ],
+      "dz": 0.0,
+      "dist": 6.863,
+      "peak": 1.1,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 65471,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1242.138,
+        1328.675,
+        136.002
+      ],
+      "landing": [
+        1246.179,
+        1320.245,
+        136.05
+      ],
+      "dz": 0.048,
+      "dist": 9.349,
+      "peak": 0.926,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 65471,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1208.276,
+        1309.925,
+        136.174
+      ],
+      "landing": [
+        1221.633,
+        1308.108,
+        135.993
+      ],
+      "dz": -0.181,
+      "dist": 13.48,
+      "peak": 0.739,
+      "mode": 0,
+      "energyDrop": 16.5,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1246.38,
+        1336.7,
+        136.002
+      ],
+      "landing": [
+        1183.0,
+        1295.25,
+        141.969
+      ],
+      "dz": 5.967,
+      "dist": 75.731,
+      "peak": 6.078,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1194.129,
+        1297.693,
+        140.831
+      ],
+      "landing": [
+        1209.32,
+        1305.072,
+        136.001
+      ],
+      "dz": -4.83,
+      "dist": 16.888,
+      "peak": 0.348,
+      "mode": 0,
+      "energyDrop": 13.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1289.636,
+        1353.192,
+        136.001
+      ],
+      "landing": [
+        1292.851,
+        1351.884,
+        137.148
+      ],
+      "dz": 1.147,
+      "dist": 3.471,
+      "peak": 0.872,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1216.188,
+        1367.909,
+        136.001
+      ],
+      "landing": [
+        1222.966,
+        1361.289,
+        135.989
+      ],
+      "dz": -0.012,
+      "dist": 9.474,
+      "peak": 0.875,
+      "mode": 0,
+      "energyDrop": 14.9,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1245.302,
+        1324.125,
+        136.062
+      ],
+      "landing": [
+        1318.031,
+        1393.326,
+        138.56
+      ],
+      "dz": 2.498,
+      "dist": 100.391,
+      "peak": 2.673,
+      "mode": 3,
+      "energyDrop": -200.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1319.932,
+        1391.642,
+        138.56
+      ],
+      "landing": [
+        1247.5,
+        1319.75,
+        135.997
+      ],
+      "dz": -2.563,
+      "dist": 102.053,
+      "peak": -2.11,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1320.1,
+        1389.192,
+        138.56
+      ],
+      "landing": [
+        1314.381,
+        1379.841,
+        138.678
+      ],
+      "dz": 0.118,
+      "dist": 10.961,
+      "peak": 0.874,
+      "mode": 0,
+      "energyDrop": 18.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1306.558,
+        1378.707,
+        138.678
+      ],
+      "landing": [
+        1298.227,
+        1375.221,
+        138.702
+      ],
+      "dz": 0.024,
+      "dist": 9.031,
+      "peak": 0.874,
+      "mode": 0,
+      "energyDrop": 10.2,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1298.227,
+        1375.221,
+        138.702
+      ],
+      "landing": [
+        1247.5,
+        1319.75,
+        135.994
+      ],
+      "dz": -2.708,
+      "dist": 75.168,
+      "peak": -2.252,
+      "mode": 3,
+      "energyDrop": -35.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1247.337,
+        1331.995,
+        136.002
+      ],
+      "landing": [
+        1242.2,
+        1330.563,
+        135.892
+      ],
+      "dz": -0.11,
+      "dist": 5.333,
+      "peak": 0.897,
+      "mode": 3,
+      "energyDrop": -3.2,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1242.487,
+        1322.609,
+        136.002
+      ],
+      "landing": [
+        1246.473,
+        1320.117,
+        136.002
+      ],
+      "dz": 0.0,
+      "dist": 4.701,
+      "peak": 1.1,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1242.788,
+        1319.189,
+        136.002
+      ],
+      "landing": [
+        1237.867,
+        1317.413,
+        136.064
+      ],
+      "dz": 0.062,
+      "dist": 5.232,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1211.882,
+        1311.258,
+        136.996
+      ],
+      "landing": [
+        1210.166,
+        1309.159,
+        136.066
+      ],
+      "dz": -0.93,
+      "dist": 2.711,
+      "peak": 0.0,
+      "mode": 3,
+      "energyDrop": 56.5,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1240.896,
+        1334.965,
+        136.002
+      ],
+      "landing": [
+        1246.07,
+        1339.349,
+        136.002
+      ],
+      "dz": 0.0,
+      "dist": 6.782,
+      "peak": 3.578,
+      "mode": 1,
+      "energyDrop": 67.5,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1245.689,
+        1341.837,
+        136.061
+      ],
+      "landing": [
+        1250.118,
+        1346.899,
+        136.057
+      ],
+      "dz": -0.004,
+      "dist": 6.726,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1245.059,
+        1335.967,
+        136.063
+      ],
+      "landing": [
+        1244.262,
+        1331.884,
+        136.864
+      ],
+      "dz": 0.801,
+      "dist": 4.16,
+      "peak": 0.814,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1234.476,
+        1332.21,
+        136.062
+      ],
+      "landing": [
+        1220.839,
+        1333.137,
+        136.002
+      ],
+      "dz": -0.06,
+      "dist": 13.668,
+      "peak": 3.578,
+      "mode": 1,
+      "energyDrop": 67.5,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1209.736,
+        1334.421,
+        136.001
+      ],
+      "landing": [
+        1200.212,
+        1333.249,
+        139.077
+      ],
+      "dz": 3.076,
+      "dist": 9.596,
+      "peak": 3.579,
+      "mode": 1,
+      "energyDrop": 64.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1197.052,
+        1333.501,
+        139.036
+      ],
+      "landing": [
+        1189.893,
+        1328.611,
+        136.01
+      ],
+      "dz": -3.026,
+      "dist": 8.67,
+      "peak": 0.82,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1189.893,
+        1328.611,
+        136.01
+      ],
+      "landing": [
+        1192.727,
+        1322.292,
+        135.992
+      ],
+      "dz": -0.018,
+      "dist": 6.925,
+      "peak": 0.928,
+      "mode": 3,
+      "energyDrop": -1.6,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1192.727,
+        1322.292,
+        135.992
+      ],
+      "landing": [
+        1189.198,
+        1316.262,
+        136.057
+      ],
+      "dz": 0.065,
+      "dist": 6.987,
+      "peak": 0.882,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1189.446,
+        1314.524,
+        135.999
+      ],
+      "landing": [
+        1194.352,
+        1310.492,
+        135.998
+      ],
+      "dz": -0.001,
+      "dist": 6.35,
+      "peak": 0.876,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1195.792,
+        1310.601,
+        136.0
+      ],
+      "landing": [
+        1200.343,
+        1310.979,
+        136.83
+      ],
+      "dz": 0.83,
+      "dist": 4.567,
+      "peak": 0.875,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1202.226,
+        1308.157,
+        136.068
+      ],
+      "landing": [
+        1208.323,
+        1308.034,
+        136.09
+      ],
+      "dz": 0.022,
+      "dist": 6.098,
+      "peak": 0.885,
+      "mode": 3,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1208.515,
+        1306.628,
+        136.03
+      ],
+      "landing": [
+        1214.378,
+        1307.76,
+        135.998
+      ],
+      "dz": -0.032,
+      "dist": 5.971,
+      "peak": 0.861,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1220.101,
+        1308.576,
+        136.002
+      ],
+      "landing": [
+        1225.693,
+        1307.298,
+        138.549
+      ],
+      "dz": 2.547,
+      "dist": 5.736,
+      "peak": 3.58,
+      "mode": 1,
+      "energyDrop": 68.2,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1225.693,
+        1307.298,
+        138.549
+      ],
+      "landing": [
+        1228.599,
+        1300.31,
+        141.503
+      ],
+      "dz": 2.954,
+      "dist": 7.568,
+      "peak": 3.58,
+      "mode": 1,
+      "energyDrop": 67.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1239.611,
+        1305.996,
+        141.928
+      ],
+      "landing": [
+        1245.633,
+        1312.267,
+        139.069
+      ],
+      "dz": -2.859,
+      "dist": 8.694,
+      "peak": 2.977,
+      "mode": 1,
+      "energyDrop": 67.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1245.615,
+        1313.906,
+        139.073
+      ],
+      "landing": [
+        1247.284,
+        1319.191,
+        136.002
+      ],
+      "dz": -3.071,
+      "dist": 5.542,
+      "peak": 0.872,
+      "mode": 3,
+      "energyDrop": -3.2,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1246.64,
+        1320.009,
+        136.002
+      ],
+      "landing": [
+        1247.044,
+        1319.739,
+        135.999
+      ],
+      "dz": -0.003,
+      "dist": 0.486,
+      "peak": 0.494,
+      "mode": 3,
+      "energyDrop": -3.1,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1247.044,
+        1319.739,
+        135.999
+      ],
+      "landing": [
+        1247.648,
+        1319.153,
+        136.002
+      ],
+      "dz": 0.003,
+      "dist": 0.842,
+      "peak": 0.496,
+      "mode": 3,
+      "energyDrop": -3.1,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1247.648,
+        1319.153,
+        136.001
+      ],
+      "landing": [
+        1246.816,
+        1321.453,
+        135.995
+      ],
+      "dz": -0.006,
+      "dist": 2.446,
+      "peak": 0.837,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1246.69,
+        1320.004,
+        136.0
+      ],
+      "landing": [
+        1247.648,
+        1319.153,
+        135.996
+      ],
+      "dz": -0.004,
+      "dist": 1.281,
+      "peak": 0.483,
+      "mode": 3,
+      "energyDrop": -1.6,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1247.648,
+        1319.153,
+        135.996
+      ],
+      "landing": [
+        1247.274,
+        1319.258,
+        136.002
+      ],
+      "dz": 0.006,
+      "dist": 0.388,
+      "peak": 0.412,
+      "mode": 3,
+      "energyDrop": -2.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1244.753,
+        1320.614,
+        136.053
+      ],
+      "landing": [
+        1245.039,
+        1317.352,
+        136.066
+      ],
+      "dz": 0.013,
+      "dist": 3.275,
+      "peak": 1.049,
+      "mode": 1,
+      "energyDrop": 67.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1246.125,
+        1323.971,
+        136.002
+      ],
+      "landing": [
+        1242.75,
+        1328.607,
+        136.002
+      ],
+      "dz": 0.0,
+      "dist": 5.734,
+      "peak": 0.886,
+      "mode": 3,
+      "energyDrop": -3.1,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1246.862,
+        1319.746,
+        136.002
+      ],
+      "landing": [
+        1246.373,
+        1319.745,
+        136.002
+      ],
+      "dz": 0.0,
+      "dist": 0.489,
+      "peak": 0.367,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1246.373,
+        1319.745,
+        136.002
+      ],
+      "landing": [
+        1246.266,
+        1322.684,
+        136.002
+      ],
+      "dz": 0.0,
+      "dist": 2.941,
+      "peak": 0.872,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1247.346,
+        1319.347,
+        136.002
+      ],
+      "landing": [
+        1247.431,
+        1319.215,
+        136.001
+      ],
+      "dz": -0.001,
+      "dist": 0.157,
+      "peak": 0.429,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1246.906,
+        1320.365,
+        136.002
+      ],
+      "landing": [
+        1241.072,
+        1323.464,
+        136.002
+      ],
+      "dz": 0.0,
+      "dist": 6.606,
+      "peak": 0.894,
+      "mode": 3,
+      "energyDrop": 65.9,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1233.433,
+        1330.206,
+        136.002
+      ],
+      "landing": [
+        1368.375,
+        1312.875,
+        138.557
+      ],
+      "dz": 2.555,
+      "dist": 136.05,
+      "peak": 2.748,
+      "mode": 3,
+      "energyDrop": -200.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1352.657,
+        1302.127,
+        138.532
+      ],
+      "landing": [
+        1340.145,
+        1302.318,
+        138.533
+      ],
+      "dz": 0.001,
+      "dist": 12.513,
+      "peak": 3.581,
+      "mode": 1,
+      "energyDrop": 69.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1340.145,
+        1302.318,
+        138.533
+      ],
+      "landing": [
+        1327.856,
+        1298.753,
+        138.424
+      ],
+      "dz": -0.109,
+      "dist": 12.796,
+      "peak": 3.581,
+      "mode": 1,
+      "energyDrop": 65.1,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1265.982,
+        1295.131,
+        141.957
+      ],
+      "landing": [
+        1253.9,
+        1297.663,
+        135.938
+      ],
+      "dz": -6.019,
+      "dist": 12.344,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1252.399,
+        1302.93,
+        136.002
+      ],
+      "landing": [
+        1249.983,
+        1308.282,
+        139.094
+      ],
+      "dz": 3.092,
+      "dist": 5.872,
+      "peak": 3.578,
+      "mode": 1,
+      "energyDrop": 70.6,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1250.157,
+        1308.397,
+        139.094
+      ],
+      "landing": [
+        1241.837,
+        1307.338,
+        143.089
+      ],
+      "dz": 3.995,
+      "dist": 8.387,
+      "peak": 3.575,
+      "mode": 1,
+      "energyDrop": 70.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1241.837,
+        1307.338,
+        143.089
+      ],
+      "landing": [
+        1239.138,
+        1303.363,
+        141.928
+      ],
+      "dz": -1.161,
+      "dist": 4.805,
+      "peak": 0.0,
+      "mode": 1,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1217.604,
+        1303.833,
+        138.198
+      ],
+      "landing": [
+        1211.611,
+        1311.116,
+        136.996
+      ],
+      "dz": -1.202,
+      "dist": 9.432,
+      "peak": 0.529,
+      "mode": 0,
+      "energyDrop": 8.6,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1203.461,
+        1312.248,
+        136.996
+      ],
+      "landing": [
+        1188.441,
+        1316.721,
+        136.062
+      ],
+      "dz": -0.934,
+      "dist": 15.672,
+      "peak": 0.873,
+      "mode": 0,
+      "energyDrop": 16.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1288.47,
+        1356.408,
+        136.007
+      ],
+      "landing": [
+        1295.116,
+        1362.522,
+        138.678
+      ],
+      "dz": 2.671,
+      "dist": 9.031,
+      "peak": 3.808,
+      "mode": 1,
+      "energyDrop": 69.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1298.973,
+        1373.184,
+        138.664
+      ],
+      "landing": [
+        1301.654,
+        1368.534,
+        145.888
+      ],
+      "dz": 7.224,
+      "dist": 5.368,
+      "peak": 9.614,
+      "mode": 1,
+      "energyDrop": 67.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1301.157,
+        1360.196,
+        146.11
+      ],
+      "landing": [
+        1298.385,
+        1350.285,
+        148.25
+      ],
+      "dz": 2.14,
+      "dist": 10.291,
+      "peak": 3.58,
+      "mode": 1,
+      "energyDrop": 66.6,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1295.902,
+        1338.947,
+        148.348
+      ],
+      "landing": [
+        1290.494,
+        1336.179,
+        148.279
+      ],
+      "dz": -0.069,
+      "dist": 6.075,
+      "peak": 0.874,
+      "mode": 3,
+      "energyDrop": -3.1,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1284.589,
+        1337.886,
+        149.078
+      ],
+      "landing": [
+        1367.949,
+        1297.693,
+        138.56
+      ],
+      "dz": -10.518,
+      "dist": 92.544,
+      "peak": 0.366,
+      "mode": 0,
+      "energyDrop": -2.3,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1353.117,
+        1300.648,
+        138.51
+      ],
+      "landing": [
+        1348.239,
+        1298.407,
+        141.21
+      ],
+      "dz": 2.7,
+      "dist": 5.368,
+      "peak": 3.584,
+      "mode": 1,
+      "energyDrop": 67.5,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1347.086,
+        1298.423,
+        141.214
+      ],
+      "landing": [
+        1340.319,
+        1292.905,
+        143.178
+      ],
+      "dz": 1.964,
+      "dist": 8.732,
+      "peak": 3.586,
+      "mode": 1,
+      "energyDrop": -2.6,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1313.85,
+        1293.517,
+        143.211
+      ],
+      "landing": [
+        1312.635,
+        1293.609,
+        143.211
+      ],
+      "dz": 0.0,
+      "dist": 1.218,
+      "peak": 3.581,
+      "mode": 1,
+      "energyDrop": 67.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "strength",
+      "takeoff": [
+        1313.177,
+        1293.636,
+        143.211
+      ],
+      "landing": [
+        1302.68,
+        1302.171,
+        144.493
+      ],
+      "dz": 1.282,
+      "dist": 13.529,
+      "peak": 3.58,
+      "mode": 1,
+      "energyDrop": 65.1,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1298.253,
+        1306.916,
+        146.556
+      ],
+      "landing": [
+        1285.734,
+        1302.227,
+        141.403
+      ],
+      "dz": -5.153,
+      "dist": 13.368,
+      "peak": 1.027,
+      "mode": 0,
+      "energyDrop": 18.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1282.804,
+        1304.709,
+        141.943
+      ],
+      "landing": [
+        1276.634,
+        1310.872,
+        141.967
+      ],
+      "dz": 0.024,
+      "dist": 8.721,
+      "peak": 0.897,
+      "mode": 0,
+      "energyDrop": 19.4,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "normal",
+      "takeoff": [
+        1275.289,
+        1302.049,
+        141.928
+      ],
+      "landing": [
+        1274.35,
+        1297.188,
+        141.919
+      ],
+      "dz": -0.009,
+      "dist": 4.951,
+      "peak": 0.873,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    },
+    {
+      "type": "drop",
+      "takeoff": [
+        1235.338,
+        1301.678,
+        141.953
+      ],
+      "landing": [
+        1167.975,
+        1312.385,
+        135.987
+      ],
+      "dz": -5.966,
+      "dist": 68.209,
+      "peak": -5.578,
+      "mode": 3,
+      "energyDrop": 0.0,
+      "actor": 131001,
+      "source": "C:\\Users\\Magic8\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\WarsBots\\Logs\\OwnerTrace-20261024-155135-Client.bots.log"
+    }
+  ]
+}
