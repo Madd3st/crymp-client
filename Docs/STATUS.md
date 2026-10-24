@@ -1,14 +1,15 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## C028 complete; next C029→C025→C027→C022→C023→C026
+## C029 experiment complete; next C025→C027→C022→C023→C026
 
-C021 pair completed/d175fd7e, verdict Claude pending; QA stopped/memory restored.
-C028 offline crop complete:4maps, gzip3.4–4.4MB, header/SHA preserved,120m marker
-padding. Local Geometry/C019-a7553da7/crop/, metadata in Experiments/c028 JSON.
-Unit boundary/parser tests +actual gzip/indices/counts/bbox validation PASS.
-C024pace defaultON; C019 full geometry remains unchanged/local.
-New C029 QA acceleration experiment received before demo. No owner game active.
-No builds/heavy QA during owner play; new flags must state their exit.
+C0284gzip crops3.4–4.4MB available Geometry/C019-a7553da7/crop/, af53f5cc.
+C029fixed-step absent; API scale8 technically ran but behaviour differs badly
+(pickups130→9,stalls71→355). Not adopted; later acceptance QA stays1x.
+See Experiments/c029-time-2026-10-24.md; time scope explicitly post-spawn loop,
+future stopwatch corrected. Source1586e504, diagnostic-only/default-off QA mode.
+C021 pair verdict pending Claude, results d175fd7e; C024pace defaultON.
+No active owner/QA processes, memory restored. Next demo recording C025.
+New flags require exit; no builds/heavy QA during owner play.
 
 ## Historical checkpoint: C-018 paired pace QA complete
 

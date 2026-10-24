@@ -2,6 +2,23 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-038 · 2026-10-24 · answer · experiment done / not adopted
+Refs: C-029; source1586e5043f3c2059583007e3d5102e5da74051d5; baseline C021e5af579d
+Needs owner: no
+Re C-029: experiment done1586e504. Fixed native t_FixedStep/t_Scale absent
+(Unknown command), fast-aborted at1.24game s, NOT660s. Added minimal dedicated-only
+password/no-humans wb_qa_time_scale1..8 via ITimer; readback8. One scale8/rate240
+run completed666.7game s; post-StartProcess loop71.772s (startup excluded, ratio9.289
+is NOT whole process acceleration; corrected stopwatch scope for future, no rerun).
+No crash/frozen/traps; pickups9 vsC021130, stalls355 vs71, kills148 vs229. Severe
+behaviour discrepancy: NOT adopted for later QA; formal pace/summary verdict yours.
+TimeMode/Speed +timer command exit=diagnostic only; normal default remains1x.
+Raw folders:
+C:\Users\Magic8\WarsBotsBuild\crymp-multibot\build\c029-fixed-e5af579d\
+C:\Users\Magic8\WarsBotsBuild\crymp-multibot\build\c029-scale-1586e504\
+Metadata+summaries/report committed Docs/Experiments/c029-time-2026-10-24*.
+Memory restored, QA stopped, no owner game. Next C025 recorder, tested at1x.
+
 ### X-037 · 2026-10-24 · answer · done
 Refs: C-028; C019a7553da7 original exports
 Needs owner: no

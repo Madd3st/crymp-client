@@ -144,13 +144,13 @@ try {
                     $password=[guid]::NewGuid().ToString('N')
                     $rate=[math]::Round(30*$Speed)
                     $scale=$Speed.ToString([Globalization.CultureInfo]::InvariantCulture)
-                    $timeCommands=if($TimeMode -eq 'fixed'){" +t_FixedStep 0.033333 +t_Scale 1 +sv_DedicatedMaxRate $rate"}else{" +wb_qa_time_scale $scale +sv_DedicatedMaxRate 30"}
+                    $timeCommands=if($TimeMode -eq 'fixed'){" +t_FixedStep 0.033333 +t_Scale 1 +sv_DedicatedMaxRate $rate"}else{" +wb_qa_time_scale $scale +sv_DedicatedMaxRate $rate"}
                     $timeCommands=" +sv_password $password"+$timeCommands
                 }
                 $args="-dir `"$game`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $port +sv_gamerules InstantAction +map multiplayer/ia/steelmill +wb_probe_local_test 1 +wb_debug 1 +wb_maxbots $bots$commands$timeCommands +wb_list"
                 Write-Host "START $tag sha=$($v.manifest.sha) memory=$memoryHash"
-                $p=Start-Process -FilePath $v.exe -ArgumentList $args -WorkingDirectory $game -WindowStyle Hidden -PassThru
                 $wallWatch=[Diagnostics.Stopwatch]::StartNew()
+                $p=Start-Process -FilePath $v.exe -ArgumentList $args -WorkingDirectory $game -WindowStyle Hidden -PassThru
                 $deadline=[DateTime]::UtcNow.AddSeconds($(if($TimeMode -eq 'wall'){$Seconds}else{$Seconds*2}))
                 $gameObserved=0.;$timeError=''
 

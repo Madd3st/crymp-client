@@ -1,0 +1,167 @@
+{
+  "time_measurement_scope": "post_StartProcess loop (startup excluded; future harness corrected)",
+  "run": {
+    "time_mode": "fixed",
+    "requested_speed": 8.0,
+    "wall_seconds": 2.0544035,
+    "game_seconds": 1.24,
+    "speedup": 0.6035815262191678,
+    "time_error": "Native timer/rate CVar unavailable",
+    "bot_pace_requested": 1,
+    "fixed_roster": true,
+    "move_trace_requested": 1,
+    "reachable_goals_requested": 0,
+    "sink_escape_requested": 0,
+    "explain_nodes": [],
+    "explain_pairs_path": "",
+    "physics_diagnostics_requested": 1,
+    "observed_seconds": 1.24,
+    "nav_exports": 0,
+    "hotspot_all_nodes_requested": 0,
+    "tag": "candidate-r1-n15",
+    "session": "c029-fixed-e5af579d",
+    "progress_requested": -1,
+    "trap_recovery_requested": 1,
+    "fire_diagnostics": false,
+    "style_mode": "auto",
+    "skill_rotation_step": 1,
+    "variant": "candidate",
+    "repeat": 1,
+    "bots": 15,
+    "seconds": 660,
+    "source_sha": "e5af579dbdfd8856b424fcf2a64df3260bcd71fe",
+    "server_sha256": "DC86B26FC3553CA4F1D5F6722902A27B143649FA4DFB7E48B7E01708879E06AF",
+    "client_sha256": "30A1DFBF642CDFF8D85F724C2143CBBB43B830D466A5F3064379B732188EBF60",
+    "memory_sha256": "FCF65076F2BF13D7150517871208878DB35196A5D967F8408124C6370722756A",
+    "roster": [
+      {
+        "style": "auto",
+        "number": 1,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 2,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 3,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 4,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 5,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 6,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 7,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 8,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 9,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 10,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 11,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 12,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 13,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 14,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 15,
+        "skill": "veteran"
+      }
+    ],
+    "log": "WarsBots-Tactics-c029-fixed-e5af579d-candidate-r1-n15.bots.log",
+    "completed": false,
+    "kills": 0
+  },
+  "summary": {
+    "schema": "warsbots-run-summary/1",
+    "label": "map=multiplayer/ia/steelmill;bots=15;seconds=660;style=auto;progress_requested=-1;trap_recovery_requested=1;hotspot_all_nodes_requested=0;physics_diagnostics_requested=1;reachable_goals_requested=0;sink_escape_requested=0;fire_diagnostics=False;move_trace_requested=1;bot_pace_requested=1;time_mode=fixed;requested_speed=8;roster=1:beginner:auto,2:normal:auto,3:veteran:auto,4:elite:auto,5:beginner:auto,6:normal:auto,7:veteran:auto,8:elite:auto,9:beginner:auto,10:normal:auto,11:veteran:auto,12:elite:auto,13:beginner:auto,14:normal:auto,15:veteran:auto",
+    "log": "WarsBots-Tactics-c029-fixed-e5af579d-candidate-r1-n15.bots.log",
+    "log_sha256": "0d738c00888eddd410133472674e9c155f29f62c1389bdf2b08a18cf2ca7be27",
+    "build": "v26-101-ge5af579d",
+    "bots": 15,
+    "seconds": 1.2,
+    "live_bot_minutes": null,
+    "spawn195": {
+      "revives": 0,
+      "frozen": 0
+    },
+    "revives": {
+      "total": 0,
+      "frozen": 0,
+      "frozen_spawns": {}
+    },
+    "watchdog": {
+      "episodes": 0,
+      "at_spawn195": 0,
+      "reached_level": {},
+      "self_kills": 0
+    },
+    "pinned_live_percent": null,
+    "traps_ge60s": 0,
+    "stalls": 0,
+    "nav_fallback": {
+      "total": 0,
+      "per_bot_minute": null,
+      "reasons": {},
+      "no_route_percent": null
+    },
+    "unreachable_weapon_skips": 0,
+    "goal_skips": {},
+    "pickups": {
+      "total": 0,
+      "lives": 0,
+      "lives_with_pickup": 0,
+      "lives_with_pickup_percent": null
+    },
+    "movement": {
+      "moving_samples": 0,
+      "over_4ms_percent": null,
+      "native_sprint_percent": null,
+      "median_speed_by_state_max": null
+    },
+    "graph": null
+  },
+  "raw_directory": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c029-fixed-e5af579d"
+}
