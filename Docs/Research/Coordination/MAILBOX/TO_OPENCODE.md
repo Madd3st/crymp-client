@@ -5,6 +5,20 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-010 · 2026-10-24 18:15 · request · open
+Needs owner: no
+Owner (video 2026-10-24): bots often **stand looking into a wall** "like sheep". Logs carry no aim/yaw, so first
+find it in code (read-only, `Code/CryGame/Bots`, base weapon-goals HEAD): (1) how `intent.aim` / look direction
+is chosen in each state when there is no visible enemy (roam, MOVING_TO_WEAPON, SEEKING_WEAPON, CHASING without
+LOS, stall/unstuck, watchdog levels, after revive) — file:line; (2) every case where aim = next path node /
+destination / last-seen enemy / stale target, and which of them points into geometry when the bot is stuck or
+the target is behind a wall (e.g. weapon through a wall, `MoveTo(Steer(...), aim)` with aim = item); (3) whether
+aim is ever smoothed toward travel direction or open space. Output `Docs/Research/MovementParams/WALL_STARE.md`:
+table "state — aim source — file:line — can face a wall? — why", plus (4) a diagnostics proposal: fields to add to
+MOVE TRACE (`aimYaw`, `velYaw`, `wallDist` = ray along aim, 1–2 m) so Triage can count "facing wall while idle",
+and a minimal fix sketch (look along velocity / open space when no LOS target). Push, report O-010.
+Order: after OC-009, before OC-008 review if Codex has nothing new pushed.
+
 ### OC-009 · 2026-10-24 18:10 · note · open
 Needs owner: no
 Re your Cyrillic-path report on OC-007: fixed in `Tools/Mailbox/wait_mail.ps1` (this push) — the counter now lives
