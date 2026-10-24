@@ -13,6 +13,9 @@ History:
 #include "CryCommon/CrySystem/ISystem.h"
 #include "CryGame/Game.h"
 #include "Weapon.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "CryGame/Bots/BotManager.h"
+#endif
 #include "CryGame/Actors/Player/Player.h"
 #include "CryGame/HUD/HUD.h"
 #include "CryGame/HUD/HUDRadar.h"
@@ -49,6 +52,9 @@ bool CWeapon::m_listenerCacheInUse = false;
 //------------------------------------------------------------------------
 void CWeapon::OnShoot(EntityId shooterId, EntityId ammoId, IEntityClass* pAmmoType, const Vec3 &pos, const Vec3 &dir, const Vec3&vel)
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+    if (gEnv->bServer) g_pGame->GetBotManager().TraceShot(GetEntity()->GetId(),shooterId,ammoId);
+#endif
 	BROADCAST_WEAPON_EVENT(OnShoot, (this, shooterId, ammoId, pAmmoType, pos, dir, vel));
 
 	//FIXME:quick temporary solution

@@ -8,6 +8,9 @@
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Actor.h"
+#include "CryGame/Actors/Player/Player.h"
+#include "CryGame/Actors/Player/NanoSuit.h"
+#include "CryCommon/CryAction/IWeapon.h"
 #include <algorithm>
 #include <cerrno>
 #include <cmath>
@@ -19,6 +22,12 @@ namespace WarsBots
 namespace
 {
 int g_progressExperiment=0;
+int g_fireDiagnostics=0, g_fireBudget=20000;
+bool FireTrace() {
+    if (!g_fireDiagnostics || !gEnv->bServer || g_fireBudget<=0) return false;
+    if (--g_fireBudget==0) WB_LOG(1,"[WarsBots] FIRE TRACE capped; remaining episode context incomplete.");
+    return true;
+}
 bool ParseCoordinate(const char* text, float& value)
 {
 	if (!text || !*text)
@@ -50,7 +59,7 @@ const char* kCommands[] = {
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment" };
+const char* kVariables[] = { "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics" };
 }
 
 BotManager* BotManager::Self()
@@ -75,6 +84,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->Register("wb_bot_cloak_experimental", &m_cloakExperimental, 0, 0, "Experimental bot cloak, defaults OFF");
 	console->Register("wb_progress_experiment", &g_progressExperiment, 0, 0,
 		"Experimental stationary-combat recovery: 0 OFF (default), 1 ON; local IA bots only.");
+    console->Register("wb_fire_diagnostics", &g_fireDiagnostics, 0, 0, "Opt-in shot/hit diagnostics; at most 20000 records per level; default OFF.");
 	console->Register("wb_log", &m_logLevel, 1, 0, "WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file.");
 	console->Register("wb_maxbots", &m_maxBots, 6, 0, "Maximum simultaneous WarsBots (1..16, default 6)");
 	console->Register("wb_skill", &m_skill, int(BotSkill::Normal), 0,
@@ -162,6 +172,31 @@ void BotManager::TraceHit(const char* phase, const HitInfo& hit)
 	WB_LOG(2, "[WarsBots] Hit %s target=%u shooter=%u name=%s weapon=%u damage=%.3f health=%d botTarget=%d botShooter=%d.",
 		phase, hit.targetId, hit.shooterId, shooterEntity ? shooterEntity->GetName() : "<none>", hit.weaponId,
 		hit.damage, actor ? actor->GetHealth() : -1, target ? target->Number() : 0, shooter ? shooter->Number() : 0);
+    if (actor && FireTrace()) {
+        CNanoSuit* suit=CPlayer::GetNanoSuit(static_cast<CActor*>(actor));
+        CGameRules* rules=g_pGame->GetGameRules();
+        ISurfaceType* surface=rules?rules->GetHitMaterial(hit.material):nullptr;
+        const char* material=surface?surface->GetName():nullptr;
+        IItem* item=m_framework->GetIItemSystem()->GetItem(hit.weaponId);
+        const float distance=shooterEntity?(shooterEntity->GetWorldPos()-actor->GetEntity()->GetWorldPos()).GetLength():-1;
+        const bool human=actor->GetChannelId()>0 && m_framework->GetNetChannel(actor->GetChannelId());
+        WB_LOG(2,"[WarsBots] FIRE HIT phase=%s target=%u shooter=%u projectile=%u weapon=%u class=%s actor=1 human=%d health=%d suit=%d energy=%.2f distance=%.2f material=%d head=%d part=%d damage=%.3f.",
+            phase,hit.targetId,hit.shooterId,hit.projectileId,hit.weaponId,item?item->GetEntity()->GetClass()->GetName():"unknown",
+            human?1:0,actor->GetHealth(),suit?int(suit->GetMode()):-1,suit?suit->GetSuitEnergy():-1,
+            distance,hit.material,material && std::strstr(material,"head")?1:0,hit.partId,hit.damage);
+    }
+}
+
+void BotManager::TraceShot(EntityId weaponId, EntityId shooter, EntityId projectile)
+{
+    BotInstance* bot=Find(shooter);
+    if (!bot || !FireTrace()) return;
+    IItem* item=m_framework->GetIItemSystem()->GetItem(weaponId);
+    IWeapon* weapon=item?item->GetIWeapon():nullptr;
+    IFireMode* mode=weapon?weapon->GetFireMode(weapon->GetCurrentFireMode()):nullptr;
+    WB_LOG(2,"[WarsBots] FIRE SHOT shooter=%u target=%u projectile=%u weapon=%u class=%s mode=%s rpm=%.2f clip=%d.",
+        shooter,bot->Brain().Target(),projectile,item?item->GetEntityId():0,
+        item?item->GetEntity()->GetClass()->GetName():"unknown",mode?mode->GetType():"unknown",mode?mode->GetFireRate():0,mode?mode->GetAmmoCount():-1);
 }
 
 void BotManager::TraceKill(EntityId targetId, EntityId shooterId, bool killerEventEmitted)
@@ -358,7 +393,7 @@ void BotManager::OnPostUpdate(float dt)
 
 void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
 void BotManager::OnLoadingStart(ILevelInfo*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
-void BotManager::OnLoadingComplete(ILevel*) { m_levelReady = true; }
+void BotManager::OnLoadingComplete(ILevel*) { m_levelReady = true; g_fireBudget=20000; }
 void BotManager::OnLoadingError(ILevelInfo*, const char*) { EndLevel(); m_nav.Reset(); }
 void BotManager::OnLoadGame(ILoadGame*) { EndLevel(); m_nav.Reset(); }
 void BotManager::OnLevelEnd(const char*) { EndLevel(); m_nav.Reset(); }

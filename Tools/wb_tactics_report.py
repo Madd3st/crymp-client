@@ -191,6 +191,84 @@ def parse(path, emit):
     return result
 
 
+def parse_fire_ttk(path, limit=1000):
+    """Additive diagnostic schema. Actor-only, effective HP; never model inputs.
+
+    TTK starts at first registered impact, not detection or the first attempted shot.
+    Projectile launch latency is separate and only reported on an exact logged ID join.
+    """
+    from collections import OrderedDict, Counter
+    pending={}; launches=OrderedDict(); active={}; result=[]; counts=Counter()
+    def finish(target, reason, now):
+        ep=active.pop(target,None)
+        if ep is None:return
+        ep['end_seconds']=now;ep['outcome']=reason
+        ep['impact_to_death_seconds']=round(now-ep['first_impact_seconds'],4) if reason=='death' else None
+        ep['observed_contributors']=sorted(ep.pop('_contributors'))
+        recent=ep.pop('_recent')
+        ep['contributors_last_second']=sorted({shooter for t,shooter in recent if now-t<=1})
+        if len(result)<limit:result.append(ep)
+        else:counts['episode_cap_drops']+=1
+    now=0.0
+    with path.open(encoding='utf-8',errors='replace') as source:
+        for line in source:
+            ts=re.match(r'([0-9.]+) ',line)
+            if ts:now=float(ts[1])
+            life=re.search(r'(ENTITY_EVENT_DONE EntityId=|revive result EntityId=)(\d+)',line)
+            if life:
+                target=int(life[2]);finish(target,'lifecycle_boundary',now)
+                pending={k:v for k,v in pending.items() if k[0]!=target}
+            if 'FIRE TRACE capped' in line:counts['runtime_trace_capped']+=1
+            if 'FIRE SHOT ' in line:
+                v=dict(re.findall(r'(\w+)=([^\s]+)',line));projectile=int(v['projectile'])
+                counts['native_shot_events']+=1
+                if projectile:
+                    launches[projectile]=(now,int(v['shooter']),int(v['weapon']))
+                    if len(launches)>4096:launches.popitem(last=False);counts['launch_context_evictions']+=1
+                continue
+            if 'FIRE HIT ' not in line:continue
+            v={k:x.rstrip('.') for k,x in re.findall(r'(\w+)=([^\s]+)',line)}
+            if v.get('actor')!='1':continue
+            target,shooter,projectile,weapon=[int(v[k]) for k in ['target','shooter','projectile','weapon']]
+            key=(target,shooter,projectile,weapon)
+            if v['phase']=='before-Lua':
+                if sum(map(len,pending.values()))>=4096:pending.clear();counts['pending_context_drops']+=1
+                pending.setdefault(key,[]).append((now,v));continue
+            stack=pending.get(key)
+            if not stack:counts['unmatched_after']+=1;continue
+            before_time,b=stack.pop()
+            if not stack:del pending[key]
+            hp0,hp1=int(b['health']),int(v['health'])
+            if hp0<=0:continue
+            ep=active.get(target)
+            if ep and now-ep['_last']>5:finish(target,'impact_gap',ep['_last']);ep=None
+            if ep is None:
+                ep=dict(target=target,human=b.get('human')=='1',first_impact_seconds=before_time,
+                    hp_at_first_impact=hp0,hp_lost=0,armor_energy_spent=0.0,registered_hits=0,
+                    head_hits=0,weapons=[],first_distance=float(b['distance']),first_suit=int(b['suit']),
+                    minimum_health_after=hp1,first_impact_projectile_launch_seconds=None,
+                    observation_source='authoritative_actor_damage_diagnostics_not_policy_features',
+                    _contributors=set(),_recent=[],_last=now)
+                launch=launches.get(projectile)
+                if launch and launch[1:]==(shooter,weapon) and launch[0]<=before_time:
+                    ep['first_impact_projectile_launch_seconds']=launch[0]
+                active[target]=ep
+            ep['_last']=now;ep['_contributors'].add(shooter)
+            ep['_recent']=[(t,s) for t,s in ep['_recent'] if now-t<=1]+[(now,shooter)]
+            ep['registered_hits']+=1;ep['head_hits']+=int(v['head'])
+            ep['hp_lost']+=max(0,min(hp0,hp0-hp1))
+            if int(b['suit'])==3:ep['armor_energy_spent']+=max(0,float(b['energy'])-float(v['energy']))
+            if b['class'] not in ep['weapons']:ep['weapons'].append(b['class'])
+            ep['minimum_health_after']=min(ep['minimum_health_after'],hp1)
+            if hp1<=0:finish(target,'death',now)
+    for target in list(active):finish(target,'log_end',now)
+    for ep in result:ep.pop('_last',None)
+    counts['pending_before_at_end']=sum(map(len,pending.values()))
+    return dict(schema=1,available=bool(counts['native_shot_events'] or result),
+                definition='first registered actor impact to lethal impact; censored otherwise',
+                missing_first_shots=True,counters=dict(counts),episodes=result)
+
+
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('runs',type=Path)
@@ -236,7 +314,7 @@ def main():
             for n,actor,x,y,z in re.findall(r'#(\d+) created EntityId=(\d+).*position=\(([-\d.]+), ([-\d.]+), ([-\d.]+)\)',raw):
                 spawns.setdefault(int(n),dict(number=int(n),actor=int(actor),position=[float(x),float(y),float(z)]))
             metrics['initial_spawns']=[spawns[n] for n in sorted(spawns)]
-            result.append(dict(metadata=run,metrics=metrics,skills=parse(path,emit)))
+            result.append(dict(metadata=run,metrics=metrics,skills=parse(path,emit),fire_diagnostics=parse_fire_ttk(path)))
     args.output.write_text(json.dumps(dict(schema=2,runs=result,episode_rows=rows,
         episode_bytes=written,episode_limit_reached=truncated),indent=2)+'\n',encoding='utf-8')
     print(f'{len(result)} runs; {rows} episodes; {written} bytes; capped={truncated}')

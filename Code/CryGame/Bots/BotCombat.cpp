@@ -2,6 +2,7 @@
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotWeapons.h"
+#include "CryGame/Bots/BotFireControl.h"
 #include "CryGame/Bots/BotTargeting.h"
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Game.h"
@@ -207,15 +208,19 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 	Vec3 direction = (shotPoint - state.weaponPosition).GetNormalizedSafe(FORWARD_DIRECTION);
 	if (direction.Dot(state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)) < 0.96f)
 	{ StopFire(); return false; }
-	if (m_firingWeapon && now >= m_burstEnd) StopFire();
+	IFireMode* mode=weapon->GetFireMode(weapon->GetCurrentFireMode());
+    auto fire=BotFireControl::Plan(mode?mode->GetType():nullptr,mode?mode->GetFireRate():0,
+        m_profile.reaction,m_burst,m_burstGap,mode?mode->GetSpinUpTime():0);
+    if (m_firingWeapon && (now >= m_burstEnd || m_firingWeapon!=actor.GetCurrentItem()->GetEntityId())) StopFire();
 	if (!m_firingWeapon && now >= m_nextBurst && weapon->CanFire())
 	{
 		m_firingWeapon = actor.GetCurrentItem()->GetEntityId();
-		m_burstEnd = now + m_burst;
-		m_nextBurst = now + m_burstGap;
+		m_burstEnd = now + fire.holdSeconds;
+		m_nextBurst = now + fire.startInterval;
 		m_lastBurstRequest=now;
 		weapon->StartFire();
-		if (verbose) WB_LOG(2, "[WarsBots] Stock weapon burst requested weapon=%u target=%u.", m_firingWeapon, target.GetEntityId());
+        if (fire.pulse) StopFire(); // release the native trigger; no repeated single-frame spam
+		if (verbose) WB_LOG(2, "[WarsBots] Stock weapon burst requested weapon=%u target=%u.", actor.GetCurrentItem()->GetEntityId(), target.GetEntityId());
 	}
 	return m_firingWeapon != 0;
 }

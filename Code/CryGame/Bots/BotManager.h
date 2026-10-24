@@ -15,6 +15,7 @@ struct IGameFramework;
 
 struct IConsoleCmdArgs;
 struct HitInfo;
+struct IWeapon;
 #endif
 
 namespace WarsBots
@@ -39,6 +40,7 @@ public:
 	bool IsCreatingActor(const char* entityName) const;
 	bool IsOwnedProjectileHit(const HitInfo& hit) const;
 	void TraceHit(const char* phase, const HitInfo& hit);
+    void TraceShot(EntityId weaponId, EntityId shooter, EntityId projectile);
 	void TraceKill(EntityId targetId, EntityId shooterId, bool killerEventEmitted);
 
 	bool CanRunLocalIA() const;
