@@ -8,6 +8,7 @@ struct IGameFramework;
 #include "CryCommon/CryEntitySystem/IEntitySystem.h"
 #include "CryGame/Bots/BotInstance.h"
 #include "CryGame/Bots/BotNav.h"
+#include "CryGame/Bots/BotMoveTrace.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -146,6 +147,7 @@ private:
 	float m_nextProfileLog = 0;
 	float m_clock = 0;
 	BotNav m_nav;
+    BotMoveTrace m_moveTrace;
 };
 #endif
 }

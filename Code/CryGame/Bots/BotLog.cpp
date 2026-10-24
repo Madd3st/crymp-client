@@ -18,6 +18,7 @@ namespace
 FILE* g_trace = nullptr;
 bool g_traceTried = false;
 unsigned g_unflushed = 0;
+float g_lastFlush = 0;
 
 void OpenTrace()
 {
@@ -47,8 +48,9 @@ void Log(int level, const char* format, ...)
 	if (g_trace)
 	{
 		// Full timeline (every level), timestamped, for Tools/wb_log_report.py.
-		fprintf(g_trace, "%.2f %s\n", gEnv->pTimer ? gEnv->pTimer->GetCurrTime() : 0.0f, buffer);
-		if (level <= kLogEvent || ++g_unflushed >= 64) { fflush(g_trace); g_unflushed = 0; }
+		const float now=gEnv->pTimer ? gEnv->pTimer->GetCurrTime() : 0.f;
+        fprintf(g_trace, "%.2f %s\n", now, buffer);
+        if(level<=kLogEvent || ++g_unflushed>=64 || now-g_lastFlush>=1.f){fflush(g_trace);g_unflushed=0;g_lastFlush=now;}
 	}
 }
 }

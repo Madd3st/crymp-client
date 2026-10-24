@@ -17,6 +17,7 @@ param(
     [switch]$FireDiagnostics,
     [ValidateRange(-1,1)][int]$CandidateTrapRecovery=-1,
     [ValidateRange(-1,1)][int]$CandidatePhysicsDiagnostics=-1,
+    [ValidateRange(-1,1)][int]$CandidateMoveTrace=-1,
     [ValidateRange(-1,1)][int]$CandidateReachableGoals=-1,
     [ValidateRange(-1,1)][int]$CandidateSinkEscape=-1,
     [int[]]$ExplainNodes=@(),
@@ -94,6 +95,7 @@ try {
                 if($variant -eq 'candidate' -and $CandidateTrapRecovery -ge 0){$commands=" +wb_trap_recovery $CandidateTrapRecovery"+$commands}
                 if($variant -eq 'candidate' -and $CandidateHotspotAllNodes -ge 0){$commands=" +wb_hotspot_all_nodes $CandidateHotspotAllNodes"+$commands}
                 if($NavExports){$commands=" +wb_nav_export after 15 +wb_nav_export after 25"+$commands}
+                if($variant -eq 'candidate' -and $CandidateMoveTrace -ge 0){$commands=" +wb_move_trace $CandidateMoveTrace"+$commands}
                 if($variant -eq 'candidate' -and $CandidatePhysicsDiagnostics -ge 0){$commands=" +wb_physics_diagnostics $CandidatePhysicsDiagnostics"+$commands}
                 if($variant -eq 'candidate' -and $CandidateReachableGoals -ge 0){$commands=" +wb_reachable_goals $CandidateReachableGoals"+$commands}
                 if($variant -eq 'candidate' -and $CandidateSinkEscape -ge 0){$commands=" +wb_sink_escape $CandidateSinkEscape"+$commands}
@@ -152,7 +154,7 @@ try {
                 if($NavExports -and $navCaptured -ne 2){$ok=$false}
                 if($ExplainPairsPath -and ([regex]::Matches($text,'NAV explain from=')).Count -ne 80){$ok=$false}
                 if($Seconds -ge 660 -and $observed -lt 600){$ok=$false}
-                $run=[ordered]@{reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{-1});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{-1});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $run=[ordered]@{move_trace_requested=$(if($variant -eq 'candidate'){$CandidateMoveTrace}else{-1});reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{-1});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{-1});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"

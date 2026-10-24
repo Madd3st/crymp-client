@@ -1233,6 +1233,7 @@ if(WARSBOTS_EXPERIMENTAL_SPAWNER)
         Code/CryGame/Bots/BotInstance.cpp
         Code/CryGame/Bots/BotManager.cpp
         Code/CryGame/Bots/BotTargeting.cpp
+        Code/CryGame/Bots/BotMoveTrace.cpp
         Code/CryGame/Bots/BotMovement.cpp
         Code/CryGame/Bots/BotNav.cpp
         Code/CryGame/Bots/BotSuit.cpp

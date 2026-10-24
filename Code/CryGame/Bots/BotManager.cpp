@@ -29,6 +29,7 @@ namespace
 int g_progressExperiment=0;
 int g_trapRecovery=0;
 int g_physicsDiagnostics=0;
+int g_moveTrace=0;
 float g_reviveZTest=-2.f;
 int g_reviveHooksTest=0;
 int g_reachableGoals=0;
@@ -73,7 +74,7 @@ const char* kCommands[] = {
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_revive_z_test", "wb_revive_hooks_test", "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
+const char* kVariables[] = { "wb_move_trace", "wb_revive_z_test", "wb_revive_hooks_test", "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
 }
 
 BotManager* BotManager::Self()
@@ -101,6 +102,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->Register("wb_reachable_goals", &g_reachableGoals, 0, 0, "Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF.");
     console->Register("wb_revive_z_test", &g_reviveZTest, -2.f, 0, "Manual revive only: -2 legacy0.2 default; 0 or0.2 explicit; -1 native selector offset for same spawn.");
     console->Register("wb_revive_hooks_test", &g_reviveHooksTest, 0, 0, "Manual BOT revive only: bit1 Spawned, bit2 UpdateAreas; default0; no automatic lifecycle change.");
+    console->Register("wb_move_trace", &g_moveTrace, 0, 0, "Opt-in4Hz human/bot motion trace, frame-latched jumps/landings; IA only, default OFF,200000line cap.");
     console->Register("wb_physics_diagnostics", &g_physicsDiagnostics, 0, 0, "Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF.");
     console->Register("wb_trap_recovery", &g_trapRecovery, 0, 0, "Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak.");
 	console->Register("wb_progress_experiment", &g_progressExperiment, 0, 0,
@@ -405,6 +407,7 @@ void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)
 
 void BotManager::OnPostUpdate(float dt)
 {
+    m_moveTrace.Update(m_framework,*this);
 	// Restore outside the action-event callback, once the reset level is usable again.
 	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
 	if (m_bots.empty()) return;
@@ -423,11 +426,11 @@ void BotManager::OnPostUpdate(float dt)
 }
 
 void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
-void BotManager::OnLoadingStart(ILevelInfo*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
+void BotManager::OnLoadingStart(ILevelInfo*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); m_moveTrace.Reset(); }
 void BotManager::OnLoadingComplete(ILevel*) { m_levelReady = true; g_fireBudget=20000; }
 void BotManager::OnLoadingError(ILevelInfo*, const char*) { EndLevel(); m_nav.Reset(); }
 void BotManager::OnLoadGame(ILoadGame*) { EndLevel(); m_nav.Reset(); }
-void BotManager::OnLevelEnd(const char*) { EndLevel(); m_nav.Reset(); }
+void BotManager::OnLevelEnd(const char*) { EndLevel(); m_nav.Reset(); m_moveTrace.Reset(); }
 
 void BotManager::OnActionEvent(const SActionEvent& event)
 {
