@@ -256,7 +256,7 @@ void BotInstance::Update(float dt)
 	++m_updateCount;
 }
 
-bool BotInstance::Revive()
+bool BotInstance::Revive(EntityId forcedSpawn)
 {
 	if (!Owns(m_entityId) || !CanRunLocalIA())
 	{
@@ -272,12 +272,17 @@ bool BotInstance::Revive()
 		return false;
 	}
 	const EntityId id = m_entityId;
-	const EntityId chosen = m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation);
+	const EntityId chosen = forcedSpawn ? forcedSpawn : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation);
 	if (!chosen)
 	{
 		WB_LOG(1, "[WarsBots] #%d revive deferred: no safe IA spawn; retry in 5 seconds.", m_number);
 		return false; // Safer than reviving inside geometry or another player.
 	}
+    if (forcedSpawn) {
+        bool registered=false;
+        for(int i=0;i<rules->GetSpawnLocationCount();++i) registered |= rules->GetSpawnLocation(i)==forcedSpawn;
+        if(!registered)return false;
+    }
 	IEntity* spawn = gEnv->pEntitySystem->GetEntity(chosen);
 	if (!spawn) return false;
 	const Vec3 position = spawn->GetWorldPos() + Vec3(0,0,0.2f);
@@ -302,4 +307,22 @@ bool BotInstance::Revive()
 	}
 	return alive;
 }
+// Explicit diagnostic relocation, never called by automatic trap recovery.
+bool BotInstance::DebugTeleport(const Vec3& position)
+{
+    CActor* actor=GetActor();
+    if(!CanRunLocalIA() || !Owns(m_entityId) || !actor || actor->GetChannelId()!=0 ||
+        actor->GetHealth()<=0 || actor->GetLinkedVehicle() || !position.IsValid() ||
+        g_pGame->GetGameRules()->IsFrozen(m_entityId)) return false;
+    const bool running=AIEnabled();
+    if(running)m_brain.Stop(*this);
+    const CActor::MoveParams params(position,actor->GetEntity()->GetWorldRotation());
+    // MovePlayer addresses a real client channel; channel-zero bots need broadcast.
+    actor->GetGameObject()->InvokeRMI(CActor::ClMoveTo(),params,eRMI_ToAllClients|eRMI_NoLocalCalls);
+    actor->GetEntity()->SetWorldTM(Matrix34::Create(Vec3(1,1,1),params.rot,params.pos));
+    WB_LOG(0,"[WarsBots] DEBUG TELEPORT actor=%u bot=%d position=(%.3f,%.3f,%.3f) manual=1",m_entityId,m_number,position.x,position.y,position.z);
+    if(running)m_brain.Start(*this);
+    return true;
+}
+
 }

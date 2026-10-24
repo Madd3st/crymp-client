@@ -4,6 +4,7 @@
 #include "CryGame/Bots/BotManager.h"
 #include "version.h"
 #include "CryGame/Bots/BotCombat.h"
+#include "CryGame/Bots/BotMatch.h"
 #include "CryGame/Bots/BotSpectator.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
 #include "CryGame/Game.h"
@@ -64,7 +65,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
 const char* kCommands[] = {
-	"wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export", "wb_nav_explain",
+	"wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
@@ -115,6 +116,8 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_list", ListCommand, 0, "List bots: number, EntityId, profile, state");
 	console->AddCommand("wb_status", StatusCommand, 0, "Detailed status and per-bot update cost");
 	console->AddCommand("wb_debug", DebugCommand, 0, "wb_debug 0|1: verbose telemetry for all bots");
+    console->AddCommand("wb_revive_at",ReviveAtCommand,0,"wb_revive_at <spawnEntityId> [botNumber|me]: manual native kill/revive; selected bot by default; local IA only");
+    console->AddCommand("wb_teleport",TeleportCommand,0,"wb_teleport <botNumber> x y z: manual owned live bot relocation; local IA only");
 	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
 	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
 	console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
@@ -671,6 +674,67 @@ void BotManager::DebugCommand(IConsoleCmdArgs* args)
 	{ WB_LOG(0, "[WarsBots] Usage: wb_debug 0|1."); return; }
 	self->m_defaultVerbose = !strcmp(args->GetArg(1), "1");
 	for (BotInstance* bot : self->Ordered()) bot->Brain().SetVerbose(self->m_defaultVerbose);
+}
+
+void BotManager::TeleportCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self(); int number=0; Vec3 position(0,0,0);
+    if(!self || !self->CanRunLocalIA()) {WB_LOG(0,"[WarsBots] DEBUG TELEPORT refused: local IA gate closed");return;}
+    if(!args || args->GetArgCount()!=5 || !ParseInt(args->GetArg(1),number) || !ParsePosition(args,2,position))
+    {WB_LOG(0,"[WarsBots] Usage: wb_teleport <botNumber> x y z");return;}
+    BotInstance* bot=self->ByNumber(number);
+    if(!bot || !bot->DebugTeleport(position))WB_LOG(0,"[WarsBots] DEBUG TELEPORT refused: owned live unfrozen bot without vehicle required");
+}
+
+void BotManager::ReviveAtCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self();int spawnNumber=0,number=0;
+    if(!self || !self->CanRunLocalIA()) {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: local IA gate closed");return;}
+    if(!args || (args->GetArgCount()!=2 && args->GetArgCount()!=3) || !ParseInt(args->GetArg(1),spawnNumber) || spawnNumber<=0)
+    {WB_LOG(0,"[WarsBots] Usage: wb_revive_at <spawnEntityId> [botNumber|me]");return;}
+    CGameRules* rules=g_pGame->GetGameRules();bool registered=false;
+    for(int i=0;i<rules->GetSpawnLocationCount();++i)registered |= rules->GetSpawnLocation(i)==EntityId(spawnNumber);
+    IEntity* spawn=registered?gEnv->pEntitySystem->GetEntity(EntityId(spawnNumber)):nullptr;
+    if(!spawn){WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: spawnId=%d not registered",spawnNumber);return;}
+    BotInstance* bot=nullptr;CActor* actor=nullptr;
+    if(args->GetArgCount()==3 && !std::strcmp(args->GetArg(2),"me")) {
+        actor=static_cast<CActor*>(self->m_framework->GetClientActor());
+        if(!actor) { // Dedicated console has no caller: accept only one unambiguous real player.
+            CGameRules::TPlayers players;rules->GetPlayers(players);
+            for(EntityId id:players) {
+                CActor* candidate=static_cast<CActor*>(self->m_framework->GetIActorSystem()->GetActor(id));
+                if(candidate && candidate->GetChannelId()>0) {
+                    if(actor){WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: me ambiguous on dedicated server");return;}
+                    actor=candidate;
+                }
+            }
+        }
+        if(actor && (self->Find(actor->GetEntityId()) || actor->GetChannelId()<=0))actor=nullptr;
+    } else {
+        if(args->GetArgCount()==2)bot=self->Selected();
+        else if(ParseInt(args->GetArg(2),number))bot=self->ByNumber(number);
+        actor=bot?bot->GetActor():nullptr;
+    }
+    if(!actor || !actor->GetInventory() || actor->GetLinkedVehicle() || rules->IsFrozen(actor->GetEntityId()) ||
+        actor->GetSpectatorMode()!=CActor::eASM_None || (bot && !bot->Owns(actor->GetEntityId())))
+    {WB_LOG(0,"[WarsBots] DEBUG REVIVE refused: non-spectator actor with inventory, no vehicle/freeze required");return;}
+    const EntityId id=actor->GetEntityId();
+    const Vec3 position=spawn->GetWorldPos()+Vec3(0,0,0.2f); const Ang3 angles(spawn->GetWorldRotation());
+    const bool running=bot && bot->AIEnabled();
+    if(running)bot->Brain().Stop(*bot);
+    WB_LOG(0,"[WarsBots] DEBUG REVIVE actor=%u bot=%d spawnId=%d manual=1 nativeKill=%d",id,bot?bot->Number():0,spawnNumber,actor->GetHealth()>0?1:0);
+    if(actor->GetHealth()>0)rules->KillPlayer(actor,false,true,id,0,float(actor->GetHealth()),0,0,Vec3(0,0,0));
+    // Kill callbacks may remove an entity; never use a stale actor pointer.
+    CActor* current=static_cast<CActor*>(self->m_framework->GetIActorSystem()->GetActor(id));
+    if(current && current==actor && current->GetHealth()<=0) {
+        if(bot)bot->Revive(EntityId(spawnNumber));
+        else {
+            rules->RevivePlayer(current,position,angles,rules->GetTeam(id),true);
+            BotMatch::EquipLikePlayer(*rules,*current);
+            WB_LOG(0,"[WarsBots] DEBUG REVIVE human actor=%u spawnId=%d health=%d",id,spawnNumber,current->GetHealth());
+        }
+    }
+    if(running && bot->Owns(id))bot->Brain().Start(*bot);
 }
 
 void BotManager::NavExplainCommand(IConsoleCmdArgs* args)
