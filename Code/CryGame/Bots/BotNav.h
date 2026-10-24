@@ -21,6 +21,8 @@ public:
 	void Reset();
 	// Starts a build if the level has spawn points; safe to call every frame.
 	void Begin();
+    bool StartAudit(int variant);
+    bool AuditOnly() const { return m_auditOnly; }
 	// Spends up to budgetMs building; returns true while work remains.
 	bool Step(float budgetMs);
 	bool Ready() const { return m_phase == Phase::Ready; }
@@ -81,6 +83,7 @@ private:
 	bool m_dirty = false;
     BotReachability m_reachability;
     bool m_componentsAttempted=false;
+    bool m_auditOnly=false;int m_kneeVariant=0;
 	unsigned m_events = 0;
 };
 }

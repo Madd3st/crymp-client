@@ -106,6 +106,7 @@ private:
 	static void DebugCommand(IConsoleCmdArgs* args);
 	static void SelectCommand(IConsoleCmdArgs* args);
 	static void NavCommand(IConsoleCmdArgs* args);
+    static void NavAuditCommand(IConsoleCmdArgs* args);
     static void NavExportCommand(IConsoleCmdArgs* args);
     static void NavExplainCommand(IConsoleCmdArgs* args);
     static void ReviveAtCommand(IConsoleCmdArgs* args);

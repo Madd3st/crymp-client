@@ -30,6 +30,7 @@ int g_progressExperiment=0;
 int g_trapRecovery=0;
 int g_physicsDiagnostics=0;
 int g_moveTrace=0;
+int g_navKneeFix=0;
 float g_reviveZTest=-2.f;
 int g_reviveHooksTest=0;
 int g_reachableGoals=0;
@@ -67,14 +68,14 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 	return args->GetArgCount() >= first + 3 && ParseCoordinate(args->GetArg(first), position.x) &&
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
-const char* kCommands[] = {
+const char* kCommands[] = { "wb_nav_audit",
 	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
-const char* kVariables[] = { "wb_move_trace", "wb_revive_z_test", "wb_revive_hooks_test", "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
+const char* kVariables[] = { "wb_nav_knee_fix", "wb_move_trace", "wb_revive_z_test", "wb_revive_hooks_test", "wb_sink_escape", "wb_reachable_goals", "wb_physics_diagnostics", "wb_hotspot_all_nodes", "wb_trap_recovery", "wb_probe_local_test", "wb_bot_cloak_experimental", "wb_maxbots", "wb_skill", "wb_log", "wb_progress_experiment", "wb_fire_diagnostics", "wb_qa_socom_only" };
 }
 
 BotManager* BotManager::Self()
@@ -102,6 +103,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->Register("wb_reachable_goals", &g_reachableGoals, 0, 0, "Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF.");
     console->Register("wb_revive_z_test", &g_reviveZTest, -2.f, 0, "Manual revive only: -2 legacy0.2 default; 0 or0.2 explicit; -1 native selector offset for same spawn.");
     console->Register("wb_revive_hooks_test", &g_reviveHooksTest, 0, 0, "Manual BOT revive only: bit1 Spawned, bit2 UpdateAreas; default0; no automatic lifecycle change.");
+    console->Register("wb_nav_knee_fix", &g_navKneeFix, 0, 0, "Export-only audit requested variant:0 OFF,1 knee0.8,2 conditional step; latched by wb_nav_audit; never normal AI.");
     console->Register("wb_move_trace", &g_moveTrace, 0, 0, "Opt-in4Hz human/bot motion trace, frame-latched jumps/landings; IA only, default OFF,200000line cap.");
     console->Register("wb_physics_diagnostics", &g_physicsDiagnostics, 0, 0, "Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF.");
     console->Register("wb_trap_recovery", &g_trapRecovery, 0, 0, "Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak.");
@@ -127,7 +129,8 @@ void BotManager::Initialize(IGameFramework* framework)
     console->AddCommand("wb_teleport",TeleportCommand,0,"wb_teleport <botNumber> x y z: manual owned live bot relocation; local IA only");
 	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
 	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
-	console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
+	console->AddCommand("wb_nav_audit",NavAuditCommand,0,"Local IA/no actors: build export-only graph using knee variant; stop resets to ordinary graph");
+    console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
 	console->AddCommand("wb_select", SelectCommand, 0, "wb_select <botNumber>: target of the legacy wb_bot_*/wb_probe_* commands");
 	console->AddCommand("wb_probe_spawn", ProbeSpawnCommand, 0, "wb_probe_spawn x y z: add one bot without AI");
 	console->AddCommand("wb_probe_remove", ProbeRemoveCommand, 0, "Remove the selected bot");
@@ -309,6 +312,7 @@ BotInstance* BotManager::Selected() const
 
 BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyle* style, bool startAI)
 {
+    if(m_nav.AuditOnly()){WB_LOG(0,"[WarsBots] Add refused: export-only NAV AUDIT active");return nullptr;}
 	if (!CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_localTestEnabled, true))
 		return nullptr;
 	if (Count() >= MaxBots())
@@ -410,6 +414,7 @@ void BotManager::OnPostUpdate(float dt)
     m_moveTrace.Update(m_framework,*this);
 	// Restore outside the action-event callback, once the reset level is usable again.
 	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
+    if(m_nav.AuditOnly()){if(CanRunLocalIA()){m_nav.Begin();m_nav.Step(2.f);}return;}
 	if (m_bots.empty()) return;
 	// Navigation graph is built lazily once bots exist, a few ms per frame; geometry survives
 	// IA game resets, so only level changes discard it.
@@ -814,6 +819,16 @@ void BotManager::NavExportCommand(IConsoleCmdArgs* args)
     }
     if (args->GetArgCount()>2) { WB_LOG(0,"[WarsBots] Usage: wb_nav_export [path.json] or after <seconds>");return; }
     self->m_nav.Export(args->GetArgCount()==2?args->GetArg(1):nullptr);
+}
+
+void BotManager::NavAuditCommand(IConsoleCmdArgs* args)
+{
+ BotManager* self=Self();if(!self || !self->CanRunLocalIA())return;
+ CGameRules::TPlayers players;g_pGame->GetGameRules()->GetPlayers(players);
+ if(self->Count() || !players.empty()){WB_LOG(0,"[WarsBots] NAV AUDIT refused: no bots/players allowed");return;}
+ if(args->GetArgCount()==2 && !std::strcmp(args->GetArg(1),"stop")){self->m_nav.Reset();return;}
+ if(args->GetArgCount()!=1)return;
+ self->m_nav.StartAudit(g_navKneeFix);
 }
 
 void BotManager::NavCommand(IConsoleCmdArgs*)

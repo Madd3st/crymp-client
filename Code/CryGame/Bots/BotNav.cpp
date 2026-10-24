@@ -15,6 +15,8 @@
 #include <cctype>
 #include "version.h"
 #include "CryGame/Bots/BotHotspot.h"
+#include "CryGame/Bots/BotKneePolicy.h"
+#include "CryCommon/Cry3DEngine/ISurfaceType.h"
 #include "CryGame/Bots/BotDataPath.h"
 #include "nlohmann/json.hpp"
 
@@ -42,7 +44,21 @@ void BotNav::Reset()
 	if (m_dirty) Save();
 	m_nodes.clear(); m_edges.clear(); m_pending.clear(); m_columns.clear(); m_memory.clear();
 	m_level.clear(); m_dirty = false; m_events = 0; m_saveTimer = 0;
+    m_auditOnly=false;m_kneeVariant=0;
 	m_cursor = 0; m_buildMs = 0; m_queries = 0;
+}
+
+bool BotNav::StartAudit(int variant)
+{
+ if(variant<0 || variant>2)return false;
+ Reset();m_auditOnly=true;m_kneeVariant=variant;
+ WB_LOG(0,"[WarsBots] NAV AUDIT variant=%d exportOnly=1",variant);
+ if(gEnv->p3DEngine && gEnv->p3DEngine->GetMaterialManager())
+  for(int id:{140,198,193,143}){
+   ISurfaceType* surface=gEnv->p3DEngine->GetMaterialManager()->GetSurfaceTypeManager()->GetSurfaceType(id);
+   WB_LOG(0,"[WarsBots] NAV SURFACE id=%d name=%s",id,surface?surface->GetName():"unknown");
+  }
+ return true;
 }
 
 void BotNav::Begin()
@@ -113,10 +129,22 @@ bool BotNav::Walkable(const Vec3& a,const Vec3& b,WalkTrace* trace) const
     if(rise>1.9f)return fail("rise",0,rise,nullptr);
     if(rise< -3.2f)return fail("drop",0,rise,nullptr);
     ray_hit hit;
-    for(float h:{.5f,1.2f,1.75f})
+    for(float h:{KneeRayHeight(m_kneeVariant),1.2f,1.75f})
     {
         const Vec3 start=a+Vec3(0,0,h),end=b+Vec3(0,0,h+max(0.f,rise));
-        if(RayHit(start,end-start,hit))return fail("clearance",h,hit.dist,&hit);
+        if(RayHit(start,end-start,hit)) {
+            bool step=false;
+            if(m_kneeVariant==2 && h==.5f){
+                const Vec3 delta=b-a;const float length2=delta.GetLengthSquared2D();
+                const float t=length2>0?clamp_tpl(((hit.pt.x-a.x)*delta.x+(hit.pt.y-a.y)*delta.y)/length2,0.f,1.f):0.f;
+                const Vec3 base=a+delta*t;
+                const Vec3 inside=hit.pt+Vec3(delta.x,delta.y,0).GetNormalizedSafe(Vec3(0,0,0))*.05f;
+                ray_hit ground;
+                if(RayHit(Vec3(inside.x,inside.y,max(a.z,b.z)+1.f),Vec3(0,0,-(fabs_tpl(rise)+4.5f)),ground))
+                    step=ground.pCollider==hit.pCollider && KneeHitIsStep(m_kneeVariant,ground.pt.z-base.z,ground.pt.z-hit.pt.z,ground.n.z);
+            }
+            if(!step)return fail("clearance",h,hit.dist,&hit);
+        }
     }
     float last=a.z;
     for(float t:{.25f,.5f,.75f,1.f})
@@ -246,6 +274,7 @@ bool BotNav::FindPath(const Vec3& start, const Vec3& goal, std::vector<Vec3>& pa
 {
     PathTrace local;PathTrace& info=trace?*trace:local;info=PathTrace();
 	path.clear();
+    if(m_auditOnly){info.reason="audit_only";return false;}
 	if (m_phase != Phase::Ready) return false;
 	++m_queries;
 	const int from = Nearest(start), to = Nearest(goal);
@@ -318,6 +347,7 @@ bool BotNav::Export(const char* requested) const
         const auto memoryPath=MemoryPath(m_level);
         auto path=requested && *requested ? std::filesystem::u8path(requested) : memoryPath;
         if (!requested || !*requested) path.replace_extension(".nav.json");
+        if((!requested || !*requested) && m_auditOnly)path.replace_filename(memoryPath.stem().wstring()+L".audit-"+std::to_wstring(m_kneeVariant)+L".nav.json");
         if (path.extension()!=L".json") { WB_LOG(0,"[WarsBots] NAV export refused: .json destination required");return false; }
         // Read fingerprint only. Export never saves/changes the map memory or graph.
         bool matched=false;
@@ -397,6 +427,7 @@ void BotNav::ReportDeath(const Vec3& pos)
 
 bool BotNav::PickHotspot(unsigned seed, bool preferSafe, Vec3& out, const Vec3* from, std::uint32_t actor) const
 {
+    if(m_auditOnly)return false;
 	if (m_phase != Phase::Ready || m_memory.empty()) return false;
 	// Reservoir-style weighted pick over nodes with fight history; cheap enough at 10 Hz/bots.
     const ICVar* all=gEnv->pConsole->GetCVar("wb_hotspot_all_nodes");
@@ -481,6 +512,7 @@ void BotNav::Load(const char* level)
 
 void BotNav::Save() const
 {
+    if(m_auditOnly)return;
 	if (m_level.empty() || m_memory.empty()) return;
 	const std::filesystem::path path = MemoryPath(m_level);
 	FILE* f = _wfopen(path.c_str(), L"wb");
