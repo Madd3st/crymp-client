@@ -124,6 +124,28 @@ def tiny_graph():
                 edges=dict(first=first, count=count, to=to, cost=cost))
 
 
+class MovementTests(unittest.TestCase):
+    def test_states_and_like_for_like(self):
+        from wblab import movement
+        lines = []
+        for i in range(4):
+            t = f"{10 + i:.2f}"
+            lines += [f"{t} [WarsBots] AI telemetry EntityId=7 state=CHASING_ENEMY pos=(0.00, 0.00, 0.00) health=100 weapon=1 ammo=5 target=9.",
+                      f"{t} [WarsBots] ABILITY PHYSICS: speed=4.00 vz=0.00 grounded=1 sprint={i % 2} mode=0 energy=150.0 active=1 clients=1.",
+                      f"{t} [WarsBots] MOTION INTENT: gait=2 strafe=0 requestedBase=2.50 actual=4.00 lateral=0.00 facingDot=1.00 blocked=0."]
+        lines += ["1.00 [WarsBots] Bot 7 acquired enemy id=5 name=Nomad kind=human.",
+                  "2.00 [WarsBots] LOS blocked target=5 obstruction=0 eyes=(0,0,0) chest=(0.00,0.00,1.00) sample=2.00.",
+                  "2.50 [WarsBots] LOS blocked target=5 obstruction=0 eyes=(0,0,0) chest=(2.50,0.00,1.00) sample=2.50.",
+                  "2.00 [WarsBots] LOS blocked target=7 obstruction=0 eyes=(0,0,0) chest=(0.00,0.00,1.00) sample=2.00.",
+                  "3.00 [WarsBots] LOS blocked target=7 obstruction=0 eyes=(0,0,0) chest=(1.00,0.00,1.00) sample=3.00."]
+        states, _ = movement.bot_states(lines)
+        self.assertEqual(states["CHASING_ENEMY"]["native_sprint_percent"], 50.0)
+        self.assertEqual(states["CHASING_ENEMY"]["suit_mode_percent"], {"Speed": 100})
+        lfl = movement.los_speeds(lines)
+        self.assertEqual(lfl["humans"]["Nomad"]["median"], 5.0)
+        self.assertEqual(lfl["bots"]["median"], 1.0)
+
+
 class GraphTests(unittest.TestCase):
     def test_validate_and_paths(self):
         d = tiny_graph(); navgraph.validate(d)

@@ -1,6 +1,6 @@
 # WarsBots coordination (maintained by Claude)
 
-Updated 2026-10-24 04:45 MSK. Source of truth for code is GitHub; this file records what
+Updated 2026-10-24 04:50 MSK. Source of truth for code is GitHub; this file records what
 was verified and by which kind of evidence: **src** = source reading, **unit** = offline
 tests, **server** = server logs, **client** = visual check in a real client.
 
@@ -13,7 +13,7 @@ tests, **server** = server logs, **client** = visual check in a real client.
 | spectator build | `a6ee9e9e` | Codex | BUILD PASS, C++ + 60 s headless QA PASS; live client scenario NOT run |
 | `warsbots/main` | `caf1a815` | integrator | far behind weapon-goals |
 | `warsbots/research/crymp-native-audit` | `47ccfacf` | Claude | done; docs + Tools/CryMPResearch |
-| `warsbots/research/steelmill-lab` | `332a3c8b` | Claude (session 01WT…) | Steelmill AI Lab tools (viewer, mem/log/graph, ML validator); started in parallel, no findings doc yet |
+| `warsbots/research/steelmill-lab` | `ad34d283` | Claude (session 01WT…) | Steelmill AI Lab: tools, viewer, findings (independently confirms F1–F4), **the** BotNav export contract |
 | `warsbots/research/steelmill-triage` | this branch | Claude (coordinator) | findings from real logs, export contract, triage detectors, this file |
 | `warsbots/research/fps-ai-planning` | `995672b4` | Claude (coordinator) | FPS AI study, decision-layer prototype, A/B contract |
 
@@ -46,7 +46,8 @@ builds; the spawn-pin defect (Triage F1) is present in `8f0abd5f` too and predat
 | Map memory | half ignored by hotspots, no decay | src + real .mem (Triage F4) |
 | ML dataset | not bandit-ready | server + src (Triage F5) |
 | Decision stability | 4,579 A→B→A state flips in 48 min, mostly CHASING↔MOVING_TO_WEAPON | server + src (FPSAILab G2) |
-| Movement pace | sprint 0–15% of moving time, Armor 72–100%, ~2.5 m/s | server (owner report confirmed) |
+| Movement pace | sprint 0–15% of moving time, Armor 72–100%, ~2.5 m/s; owner >4 m/s 41–54% vs bots 0–2% (same LOS channel) | server (`MOVEMENT_BASELINE.md`) |
+| Spawn 195 pin | grounded=0 in 100% of 1298 pinned samples; pockets grounded=1 | server (Triage + Codex owner-spectator6) |
 | Power Struggle | design only | docs |
 
 ## Known risks

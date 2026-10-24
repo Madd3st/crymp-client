@@ -21,8 +21,9 @@ layers, floor filter, hover details, click a trap row to zoom its floor). Copy l
 | Stall / pinned / trap detection with blocked-vs-moving split | yes | 2 s telemetry limits resolution |
 | NAV fallback profile (distance, floor change, hot goals/starts) | yes | failure reason not logged |
 | Dataset quality checks (action vs state, unattributed lines) | yes | — |
+| Movement pace by state, sprint/suit/energy, bot vs human through the same LOS channel (`movement`) | yes | human trace (`MOVE TRACE`) for a real baseline |
 | Map viewer: positions, deaths, revives, stalls, pins, fallbacks | yes | — |
-| Graph layer, memory on map, components, one-way edges, offline A* replay | code + synthetic tests only | `wb_nav_export` ([contract](../../Docs/Research/SteelmillTriage/NAV_EXPORT_CONTRACT.md)) |
+| Graph layer, memory on map, components, one-way edges, offline A* replay | code + synthetic tests only (`wbnav/1`, to be moved to the Lab schema) | graph export per the Lab contract |
 
 Limits: positions are telemetry samples, not the walkable surface; `blocked` is BotMovement's
 refusal, not physics contact; offline A* omits the visibility ray in `BotNav::Nearest`, so an

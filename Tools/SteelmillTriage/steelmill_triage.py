@@ -4,6 +4,7 @@
   steelmill_triage.py mem  <file.mem> [--against older.mem]       memory statistics / growth
   steelmill_triage.py analyze <run.bots.log>... [--mem f.mem] [--graph nav.json] [--out DIR]
   steelmill_triage.py graph <nav.json> [--mem f.mem] [--replay run.bots.log]
+  steelmill_triage.py movement <run.bots.log>...                   pace profile, bots vs humans
 
 Read-only: never writes next to its inputs. Stdlib only (Python 3.9+).
 """
@@ -15,7 +16,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from wblab import analysis, logparse, mem, navgraph, render  # noqa: E402
+from wblab import analysis, logparse, mem, movement, navgraph, render  # noqa: E402
 
 
 def cmd_mem(a):
@@ -75,6 +76,13 @@ def cmd_graph(a):
     print(json.dumps(out, indent=2))
 
 
+def cmd_movement(a):
+    out = [movement.profile(p) for p in a.logs]
+    for o in out:
+        o["log"] = Path(o["log"]).name
+    print(json.dumps(dict(schema="steelmill-triage-movement/1", runs=out), indent=2))
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -84,6 +92,7 @@ def main(argv=None):
     s.set_defaults(fn=cmd_analyze)
     s = sub.add_parser("graph"); s.add_argument("file"); s.add_argument("--mem"); s.add_argument("--replay")
     s.add_argument("--replay-limit", type=int, default=20000); s.set_defaults(fn=cmd_graph)
+    s = sub.add_parser("movement"); s.add_argument("logs", nargs="+"); s.set_defaults(fn=cmd_movement)
     a = p.parse_args(argv)
     a.fn(a)
 
