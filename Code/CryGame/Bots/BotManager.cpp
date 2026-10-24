@@ -2,6 +2,7 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotManager.h"
+#include "CryGame/Bots/BotGeometryExport.h"
 #include "version.h"
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotMatch.h"
@@ -72,7 +73,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
 const char* kCommands[] = { "wb_nav_audit",
-	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_nav_export", "wb_nav_explain",
+	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
@@ -134,6 +135,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->AddCommand("wb_revive_at",ReviveAtCommand,0,"wb_revive_at <spawnEntityId> [botNumber|me]: manual native kill/revive; selected bot by default; local IA only");
     console->AddCommand("wb_teleport",TeleportCommand,0,"wb_teleport <botNumber> x y z: manual owned live bot relocation; local IA only");
 	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
+    console->AddCommand("wb_geom_export",GeometryExportCommand,0,"Offline local IA/no actors: static collision OBJ + spawn/item JSON; optional path.obj");
 	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
 	console->AddCommand("wb_nav_audit",NavAuditCommand,0,"Local IA/no actors: build export-only graph using knee variant; stop resets to ordinary graph");
     console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
@@ -813,6 +815,16 @@ void BotManager::NavExplainCommand(IConsoleCmdArgs* args)
     if(args->GetArgCount()!=3 || !ParseInt(args->GetArg(1),from) || !ParseInt(args->GetArg(2),to))
     {WB_LOG(0,"[WarsBots] Usage: wb_nav_explain <fromNode> <toNode>");return;}
     self->m_nav.Explain(from,to);
+}
+
+void BotManager::GeometryExportCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self();CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+    CGameRules::TPlayers humans;if(rules)rules->GetPlayers(humans);
+    if(!self || !gEnv->bServer || !self->CanRunLocalIA() || self->Count()!=0 || !humans.empty())
+    {WB_LOG(0,"[WarsBots] GEOM export refused: offline local IA/no bots or real players required");return;}
+    if(!args || args->GetArgCount()>2){WB_LOG(0,"[WarsBots] Usage: wb_geom_export [path.obj]");return;}
+    ExportLevelGeometry(args->GetArgCount()==2?args->GetArg(1):nullptr);
 }
 
 void BotManager::NavExportCommand(IConsoleCmdArgs* args)

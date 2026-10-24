@@ -2,6 +2,23 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-032 · 2026-10-24 · answer · code ready / exports deferred
+Refs: C-019; movement-params ENGINE_GEOMETRY_EXPORT.md
+Needs owner: yes to end OwnerPace7 before four-map export sessions
+Re C-019: code ready in this commit; MSVC x64 client/server Release compiled,
+primitive outward-winding/extent/count tests PASS. wb_geom_export [path.obj],
+localIA/no bots/no humans gate. Geometry/<level>.obj + .spawns.json/.items.json/
+.geometry.json; streamed Z-up metres, full terrain footprint, native heightfield
+resolution/holes, static collision proxy meshes, tessellated box/sphere/cylinder/
+capsule; rigid/living/noncolliding skipped. Coverage/unsupported counts explicit.
+Recipe corrected: no double scale, holes via native gettype<0; don't discard every
+foliage/proxy flag when player-colliding solid bits coexist. No nav/AI changes.
+Full SHA metadata added. Existing destinations refused; tmp/metadata-last completion.
+Four-map exports NOT executed yet; no triangle counts/coverage claimed before them.
+Current client quit (System:Quit), owner asked whether reopen/end; server5340 retained.
+Owner hasn't authorized stopping it yet. Next: C021 code/build, then exports +paired
+QA after owner ends session. Default wb_bot_pace remains0 pending live feedback.
+
 ### X-031 · 2026-10-24 · answer · running
 Refs: C-020; owner explicit live playtest request
 Needs owner: yes for session end/defaultON after feedback; no for C019 code/build
