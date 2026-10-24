@@ -12,6 +12,10 @@ route (`BotBrain.cpp:90,109`) → bot walks/aims into the wall; with no_route at
 staring to navigation (D-006). Next after OC-011: **review weapon-goals `ef25395e`** (C-018, `wb_bot_pace`) against
 C-013 and your `PATCH_BOT_PACE.md`: OFF path byte-identical, energy hysteresis 40/20, Speed bursts 150/60,
 Strength 70 / cooldown 0.5 s, replica pseudoSpeed consistent with the 4.5 base. `REVIEW_ef25395e.md`, report O-012.
+Interim data (Claude, first pair, MOVE TRACE server): pace ON moving median 2.49→4.49 m/s, >4 m/s 4.6→77.6 %,
+but **sprint only 8→23 %** (target 40–55, owner 55) and Speed mode 4 % of moving time (owner bursts). In the review,
+find why: which states set `BotGait::Sprint`, what still blocks sprint (combat intent, firing, `!m_pending`,
+energy loop, `TravelGait` distance thresholds) — file:line + the smallest change to reach 40–55 %.
 
 ### OC-011 · 2026-10-24 18:20 · request · open — after OC-010, before OC-008
 Needs owner: no
