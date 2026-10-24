@@ -1,0 +1,515 @@
+{
+  "schema": "warsbots-probes/1",
+  "coordinate_source": "C019 measured map entities; z offset0.2 same as default revive",
+  "sources": {
+    "Steelmill": {
+      "spawns_sha256": "3379357d537e672bcada81773ed43324dfa518e2e31b60d6962bca1a1eab2cf3",
+      "items_sha256": "4e11337515adcd6c60bcd90b45a9a89a650d4a845ba346114ae8f67df407dcf6",
+      "export_build": "a7553da7"
+    },
+    "Quarry": {
+      "spawns_sha256": "81d5e2260b2aa04424a164d69691bf189b73305516e06d0cafc019c60695dec6",
+      "items_sha256": "1ce51f51941ef9c4fc89b702b91885d772ed8125d6f561dc9fecba3a9fc8be8b",
+      "export_build": "a7553da7"
+    },
+    "Armada": {
+      "spawns_sha256": "5cd8159124562c516cc3c0dad8533c632c3428deebbb71786085d5c4a98d21b7",
+      "items_sha256": "9e3ba88b5aeb5c437ef12538c90559e18302a21ec2bb56b769de6374f3cf5360",
+      "export_build": "a7553da7"
+    },
+    "Outpost": {
+      "spawns_sha256": "fda3cda51c24afc7950543bfcad4e2ce001b7771e826b58f1e0dfc0c177f3b50",
+      "items_sha256": "20ea1cf331a4acd6c4121916cc3ac56540012aad2b921031152c37f2da544428",
+      "export_build": "a7553da7"
+    }
+  },
+  "cases": [
+    {
+      "id": "steelmill-pickup-scar",
+      "map": "Steelmill",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1267.375,
+            1339.375,
+            136.45
+          ],
+          "spawn_id": 85
+        }
+      ],
+      "expected_item": {
+        "class": "SCAR",
+        "id": 181,
+        "kind": "weapon",
+        "name": "SCAR6",
+        "position": [
+          1263.1705322265625,
+          1345.1309814453125,
+          137.19500732421875
+        ]
+      },
+      "source_distance_m": 7.128
+    },
+    {
+      "id": "steelmill-pickup-fy71",
+      "map": "Steelmill",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1341.506591796875,
+            1296.5843505859375,
+            138.95
+          ],
+          "spawn_id": 87
+        }
+      ],
+      "expected_item": {
+        "class": "FY71",
+        "id": 95,
+        "kind": "weapon",
+        "name": "FY5",
+        "position": [
+          1346.151123046875,
+          1294.2088623046875,
+          144.39114379882812
+        ]
+      },
+      "source_distance_m": 5.217
+    },
+    {
+      "id": "steelmill-pickup-shotgun",
+      "map": "Steelmill",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1183.125,
+            1285.0,
+            142.33761901855468
+          ],
+          "spawn_id": 243
+        }
+      ],
+      "expected_item": {
+        "class": "Shotgun",
+        "id": 165,
+        "kind": "weapon",
+        "name": "Shotgun4",
+        "position": [
+          1182.537353515625,
+          1288.9840087890625,
+          143.4207000732422
+        ]
+      },
+      "source_distance_m": 4.027
+    },
+    {
+      "id": "steelmill-pickup-dsg1",
+      "map": "Steelmill",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1333.375,
+            1346.125,
+            150.325
+          ],
+          "spawn_id": 104
+        }
+      ],
+      "expected_item": {
+        "class": "DSG1",
+        "id": 98,
+        "kind": "weapon",
+        "name": "DSG1",
+        "position": [
+          1307.233154296875,
+          1330.6285400390625,
+          159.1136474609375
+        ]
+      },
+      "source_distance_m": 30.39
+    },
+    {
+      "id": "steelmill-jump-normal",
+      "map": "Steelmill",
+      "seconds": 30,
+      "kind": "jump",
+      "jump_mode": "normal",
+      "bots": [
+        {
+          "position": [
+            1290.125,
+            1362.375,
+            136.325
+          ],
+          "spawn_id": 289
+        }
+      ],
+      "scope": "native vertical jump; off-mesh execution pending C036"
+    },
+    {
+      "id": "steelmill-jump-strength",
+      "map": "Steelmill",
+      "seconds": 30,
+      "kind": "jump",
+      "jump_mode": "strength",
+      "bots": [
+        {
+          "position": [
+            1290.125,
+            1362.375,
+            136.325
+          ],
+          "spawn_id": 289
+        }
+      ],
+      "scope": "native vertical jump; off-mesh execution pending C036"
+    },
+    {
+      "id": "steelmill-decision",
+      "map": "Steelmill",
+      "seconds": 30,
+      "kind": "decision",
+      "bots": [
+        {
+          "position": [
+            1290.125,
+            1362.375,
+            136.325
+          ],
+          "spawn_id": 289
+        },
+        {
+          "position": [
+            1298.75,
+            1362.125,
+            138.95
+          ],
+          "spawn_id": 238
+        }
+      ],
+      "scope": "unforced A-B-A baseline; no requirement for combat engagement"
+    },
+    {
+      "id": "steelmill-stand",
+      "map": "Steelmill",
+      "seconds": 30,
+      "kind": "stand",
+      "bots": [
+        {
+          "position": [
+            1290.125,
+            1362.375,
+            136.325
+          ],
+          "spawn_id": 289
+        }
+      ],
+      "scope": "stationary no-target duration; geometry wall stare separate C042"
+    },
+    {
+      "id": "quarry-pickup-scar",
+      "map": "Quarry",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1385.0411376953125,
+            1163.570068359375,
+            152.55557556152343
+          ],
+          "spawn_id": 112
+        }
+      ],
+      "expected_item": {
+        "class": "SCAR",
+        "id": 109,
+        "kind": "weapon",
+        "name": "SCAR9",
+        "position": [
+          1388.2940673828125,
+          1166.1483154296875,
+          158.65768432617188
+        ]
+      },
+      "source_distance_m": 4.151
+    },
+    {
+      "id": "quarry-pickup-fy71",
+      "map": "Quarry",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1467.1468505859375,
+            1151.7659912109375,
+            158.08029479980468
+          ],
+          "spawn_id": 286
+        }
+      ],
+      "expected_item": {
+        "class": "FY71",
+        "id": 189,
+        "kind": "weapon",
+        "name": "FY5",
+        "position": [
+          1470.411376953125,
+          1151.28662109375,
+          158.79100036621094
+        ]
+      },
+      "source_distance_m": 3.3
+    },
+    {
+      "id": "quarry-jump-normal",
+      "map": "Quarry",
+      "seconds": 30,
+      "kind": "jump",
+      "jump_mode": "normal",
+      "bots": [
+        {
+          "position": [
+            1498.504150390625,
+            1152.4078369140625,
+            153.03766174316405
+          ],
+          "spawn_id": 267
+        }
+      ],
+      "scope": "native vertical jump; off-mesh execution pending C036"
+    },
+    {
+      "id": "quarry-decision",
+      "map": "Quarry",
+      "seconds": 30,
+      "kind": "decision",
+      "bots": [
+        {
+          "position": [
+            1498.504150390625,
+            1152.4078369140625,
+            153.03766174316405
+          ],
+          "spawn_id": 267
+        },
+        {
+          "position": [
+            1494.8741455078125,
+            1127.612548828125,
+            154.15695495605468
+          ],
+          "spawn_id": 136
+        }
+      ],
+      "scope": "unforced A-B-A baseline; no requirement for combat engagement"
+    },
+    {
+      "id": "armada-pickup-scar",
+      "map": "Armada",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1433.625,
+            1341.0,
+            114.075
+          ],
+          "spawn_id": 244
+        }
+      ],
+      "expected_item": {
+        "class": "SCAR",
+        "id": 442,
+        "kind": "weapon",
+        "name": "SCAR2",
+        "position": [
+          1436.0130615234375,
+          1338.80615234375,
+          110.43199920654297
+        ]
+      },
+      "source_distance_m": 3.243
+    },
+    {
+      "id": "armada-pickup-fy71",
+      "map": "Armada",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1493.25,
+            1318.5,
+            118.075
+          ],
+          "spawn_id": 503
+        }
+      ],
+      "expected_item": {
+        "class": "FY71",
+        "id": 127,
+        "kind": "weapon",
+        "name": "FY11",
+        "position": [
+          1491.31005859375,
+          1315.728271484375,
+          113.42900085449219
+        ]
+      },
+      "source_distance_m": 3.383
+    },
+    {
+      "id": "armada-jump-normal",
+      "map": "Armada",
+      "seconds": 30,
+      "kind": "jump",
+      "jump_mode": "normal",
+      "bots": [
+        {
+          "position": [
+            1498.5,
+            1313.375,
+            124.075
+          ],
+          "spawn_id": 191
+        }
+      ],
+      "scope": "native vertical jump; off-mesh execution pending C036"
+    },
+    {
+      "id": "armada-decision",
+      "map": "Armada",
+      "seconds": 30,
+      "kind": "decision",
+      "bots": [
+        {
+          "position": [
+            1498.5,
+            1313.375,
+            124.075
+          ],
+          "spawn_id": 191
+        },
+        {
+          "position": [
+            1504.0,
+            1316.75,
+            118.075
+          ],
+          "spawn_id": 157
+        }
+      ],
+      "scope": "unforced A-B-A baseline; no requirement for combat engagement"
+    },
+    {
+      "id": "outpost-pickup-scar",
+      "map": "Outpost",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1083.79150390625,
+            1021.086669921875,
+            159.1484405517578
+          ],
+          "spawn_id": 262
+        }
+      ],
+      "expected_item": {
+        "class": "SCAR",
+        "id": 48,
+        "kind": "weapon",
+        "name": "SCAR2",
+        "position": [
+          1080.765869140625,
+          1021.065185546875,
+          159.74261474609375
+        ]
+      },
+      "source_distance_m": 3.026
+    },
+    {
+      "id": "outpost-pickup-fy71",
+      "map": "Outpost",
+      "seconds": 30,
+      "kind": "pickup",
+      "bots": [
+        {
+          "position": [
+            1055.4180908203125,
+            1005.2183227539062,
+            157.7921630859375
+          ],
+          "spawn_id": 99
+        }
+      ],
+      "expected_item": {
+        "class": "FY71",
+        "id": 55,
+        "kind": "weapon",
+        "name": "FY12",
+        "position": [
+          1051.955322265625,
+          1005.164794921875,
+          158.34054565429688
+        ]
+      },
+      "source_distance_m": 3.463
+    },
+    {
+      "id": "outpost-jump-normal",
+      "map": "Outpost",
+      "seconds": 30,
+      "kind": "jump",
+      "jump_mode": "normal",
+      "bots": [
+        {
+          "position": [
+            1070.752197265625,
+            961.0908203125,
+            158.7580139160156
+          ],
+          "spawn_id": 134
+        }
+      ],
+      "scope": "native vertical jump; off-mesh execution pending C036"
+    },
+    {
+      "id": "outpost-decision",
+      "map": "Outpost",
+      "seconds": 30,
+      "kind": "decision",
+      "bots": [
+        {
+          "position": [
+            1070.752197265625,
+            961.0908203125,
+            158.7580139160156
+          ],
+          "spawn_id": 134
+        },
+        {
+          "position": [
+            1053.7447509765625,
+            955.14892578125,
+            159.47780151367186
+          ],
+          "spawn_id": 76
+        }
+      ],
+      "scope": "unforced A-B-A baseline; no requirement for combat engagement"
+    }
+  ]
+}
