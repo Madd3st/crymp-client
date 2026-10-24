@@ -42,15 +42,17 @@ def lives_from_log(path):
     """death/revive/done times per actor and kill lines, from a bots.log."""
     deaths, revives, kills = collections.defaultdict(list), collections.defaultdict(list), []
     hits = collections.defaultdict(list)   # (shooter, target) -> times of accepted hits
+    killers = {}                           # (victim, time) -> last hit shooter
     t = 0.0
     with open(path, encoding="utf-8", errors="replace") as f:
         for line in f:
             m = re.match(r"([\d.]+) ", line)
             if m:
                 t = float(m[1])
-            m = re.search(r"death observed EntityId=(\d+)", line)
+            m = re.search(r"death observed EntityId=(\d+) health=-?\d+ lastHitShooter=(\d+)", line)
             if m:
                 deaths[int(m[1])].append(t)
+                killers[(int(m[1]), t)] = int(m[2])
             m = re.search(r"revive result EntityId=(\d+).*alive=1", line)
             if m:
                 revives[int(m[1])].append(t)
@@ -60,7 +62,7 @@ def lives_from_log(path):
             m = re.search(r"Hit after-Lua target=(\d+) shooter=(\d+)", line)
             if m:
                 hits[(int(m[2]), int(m[1]))].append(t)
-    return deaths, revives, kills, hits
+    return deaths, revives, kills, hits, killers
 
 
 def validate(rows, logs=None):
@@ -136,7 +138,7 @@ def validate(rows, logs=None):
                 flag("E_overlapping_episodes_same_actor", i1, f"rows {i0},{i1}")
     if logs:
         for run, path in logs.items():
-            deaths, revives, kills, hits = lives_from_log(path)
+            deaths, revives, kills, hits, killers = lives_from_log(path)
             kill_set = collections.defaultdict(list)
             for t, s, v in kills:
                 kill_set[(s, v)].append(t)
@@ -155,8 +157,12 @@ def validate(rows, logs=None):
                     pair_hits = hits.get((r["actor"], r["target"]), []) + hits.get((r["target"], r["actor"]), [])
                     if any(r["start_seconds"] - 1e-6 <= t < fs for t in pair_hits):
                         flag("W_context_sampled_after_first_hit", i)
-                if r["outcome"] == "death" and not any(abs(t - r["end_seconds"]) < 0.05 for t in deaths.get(r["actor"], [])):
-                    flag("E_death_outcome_without_death_line", i)
+                if r["outcome"] == "death":
+                    match = [t for t in deaths.get(r["actor"], []) if abs(t - r["end_seconds"]) < 0.05]
+                    if not match:
+                        flag("E_death_outcome_without_death_line", i)
+                    elif killers.get((r["actor"], match[0])) != r["target"]:
+                        flag("W_death_caused_by_other_than_target", i, killers.get((r["actor"], match[0])))
     return issues, examples, rowflags
 
 

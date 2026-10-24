@@ -39,6 +39,7 @@ def main(argv=None):
     ap.add_argument("--out", type=Path, default=Path("build/steelmill-lab/out"))
     ap.add_argument("--viewer-runs", default="*", help="glob of movement runs to embed in the viewer")
     ap.add_argument("--max-embed-mb", type=float, default=40.0)
+    ap.add_argument("--single-file", action="store_true", help="also write one self-contained HTML")
     a = ap.parse_args(argv)
     src, out = a.sources, a.out
     out.mkdir(parents=True, exist_ok=True)
@@ -115,6 +116,26 @@ def main(argv=None):
     (viewer / "data.js").write_text("window.LAB_DATA=" + json.dumps(payload, separators=(",", ":")) + ";\n",
                                     encoding="utf-8")
     print(f"[viewer] {viewer / 'index.html'} ({len(payload['runs'])} runs embedded, {used / 1e6:.1f} MB)")
+    if a.single_file:
+        # One portable HTML: data and a JPEG minimap inlined (still local-only, game-derived).
+        import base64
+        import io
+        html = (HERE / "viewer" / "steelmill_viewer.html").read_text(encoding="utf-8")
+        if payload["minimap"]:
+            try:
+                from PIL import Image
+                buf = io.BytesIO()
+                Image.open(viewer / "minimap.png").convert("RGB").save(buf, "JPEG", quality=82)
+                payload["minimap"] = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+            except Exception as exc:
+                print(f"[viewer] minimap not inlined: {exc}")
+                payload["minimap"] = None
+        blob = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
+        html = html.replace('<script src="data.js" onerror="void 0"></script>',
+                            "<script>window.LAB_DATA=" + blob + ";</script>")
+        target = viewer / "steelmill_viewer_bundle.html"
+        target.write_text(html, encoding="utf-8")
+        print(f"[viewer] single file: {target} ({target.stat().st_size / 1e6:.1f} MB)")
     return 0
 
 

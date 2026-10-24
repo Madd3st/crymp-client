@@ -36,6 +36,17 @@ def load(path):
     return data
 
 
+def fingerprint(g):
+    """SHA-256 over the canonical node/edge text of BOTNAV_EXPORT_CONTRACT.md section 5."""
+    import hashlib
+    h = hashlib.sha256()
+    for n in g["nodes"]:
+        h.update(("%d %.3f %.3f %.3f %d %d %d\n" % tuple(n)).encode())
+    for a, c, cost in g["edges"]:
+        h.update(("%d %d %.4f\n" % (a, c, cost)).encode())
+    return h.hexdigest()
+
+
 def validate(g):
     """Return (errors, warnings). Errors make the graph unusable for memory linking."""
     err, warn = [], []
@@ -110,6 +121,9 @@ def validate(g):
         if len(err) > 50:
             err.append("too many errors; stopping")
             return err, warn
+    fp = g.get("fingerprint")
+    if fp and len(fp) == 64 and fp != fingerprint(g):
+        err.append("fingerprint does not match nodes/edges")
     counts = g.get("counts")
     if counts and (counts.get("nodes") != n or counts.get("edges") != len(edges)):
         err.append(f"counts header {counts} disagrees with arrays ({n}, {len(edges)})")
@@ -299,9 +313,13 @@ def fixture():
                     stairs = {(1, 2), (2, 2)}  # stairs between (1,2) ground and (2,2) upper floor
                     if abs(zc - za) < .1 or ((ix, iy) in stairs and (ix + dx, iy + dy) in stairs):
                         edges.append([a, c, round(math.dist(nodes[a][1:4], nodes[c][1:4]), 4)])
-    return dict(schema=SCHEMA, fixture=True, level="FIXTURE/two_floor_building", source="navgraph.py fixture()",
-                build=b, node_columns=NODE_COLUMNS, edge_columns=EDGE_COLUMNS, nodes=nodes, edges=edges,
-                counts=dict(nodes=len(nodes), edges=len(edges)))
+    g = dict(schema=SCHEMA, fixture=True, level="FIXTURE/two_floor_building", source="navgraph.py fixture()",
+             build=b, node_columns=NODE_COLUMNS, edge_columns=EDGE_COLUMNS, nodes=nodes, edges=edges,
+             counts=dict(nodes=len(nodes), edges=len(edges), truncated_edge_lists=0),
+             memory_compat=dict(nx=b["nx"], ny=b["ny"], cell=b["cell"], min_x=b["min_x"], min_y=b["min_y"],
+                                count=len(nodes)))
+    g["fingerprint"] = fingerprint(g)
+    return g
 
 
 def main(argv=None):

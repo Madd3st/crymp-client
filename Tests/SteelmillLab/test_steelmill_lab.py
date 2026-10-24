@@ -129,6 +129,9 @@ class NavGraphTests(unittest.TestCase):
         self.assertIn("id 99", text)
         self.assertIn("non-adjacent", text)
         self.assertIn("self loop", text)
+        tampered = json.loads(json.dumps(self.g))
+        tampered["nodes"][0][3] += 0.5
+        self.assertIn("fingerprint does not match nodes/edges", navgraph.validate(tampered)[0])
         bad2 = dict(self.g, schema="other")
         self.assertTrue(navgraph.validate(bad2)[0])
 
@@ -257,6 +260,9 @@ class MlValidateTests(unittest.TestCase):
             self.assertEqual(issues["E_crosses_life_boundary"], 1)
             self.assertEqual(issues["E_kill_outcome_without_kill_line"], 1)
             self.assertEqual(issues["W_context_sampled_after_first_hit"], 1)
+            rows[0].update(outcome="death", end_seconds=5.0, target=9)
+            issues, _, _ = ml_validate.validate(rows, {"s:a": log})
+            self.assertEqual(issues["W_death_caused_by_other_than_target"], 1)
 
 
 if __name__ == "__main__":
