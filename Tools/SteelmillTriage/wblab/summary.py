@@ -51,6 +51,36 @@ def revives(lines):
     return {sp: dict(revives=n, frozen=f) for sp, (n, f) in per.items()}
 
 
+_PICK = re.compile(r"REAL PICKUP actor=(\d+) item=\d+ acquired=1")
+
+
+def pickups(lines, spawn_kind=None):
+    """Lives (revive to next revive) with >= 1 weapon pickup; optional split by spawn component kind."""
+    lives = {}; done = Counter(); with_pick = Counter(); total = 0
+    def close(a):
+        k = lives[a][0]; done[k] += 1; with_pick[k] += lives[a][1]
+    for ln in lines:
+        r = _REVIVE.search(ln)
+        if r:
+            a = r.group(1)
+            if a in lives: close(a)
+            sp = int(r.group(2))
+            k = (spawn_kind or {}).get(sp, "all")
+            if k.startswith("main"): k = "main"
+            lives[a] = [k, 0]; continue
+        m = _PICK.search(ln)
+        if m:
+            total += 1
+            if m.group(1) in lives: lives[m.group(1)][1] = 1
+    for a in list(lives): close(a)
+    n = sum(done.values()); w = sum(with_pick.values())
+    out = dict(total=total, lives=n, lives_with_pickup=w, lives_with_pickup_percent=_pct(w, n))
+    if spawn_kind:
+        out["by_spawn_kind"] = {k: dict(lives=done[k], with_pickup=with_pick[k], percent=_pct(with_pick[k], done[k]))
+                                for k in sorted(done)}
+    return out
+
+
 def watchdog(lines):
     """Episodes = level-1 events; level reached; self-kills; episodes at spawn 195."""
     eps = 0; at195 = 0; levels = Counter(); kills = 0
@@ -101,6 +131,8 @@ def build(log_path, graph=None, memory=None, label=None):
         nav_fallback=dict(total=fb_total, per_bot_minute=s.get("nav_fallback", {}).get("per_bot_minute"),
                           reasons=dict(reasons), no_route_percent=_pct(reasons.get("no_route", 0), sum(reasons.values()))),
         unreachable_weapon_skips=sum(s.get("unreachable_weapons", {}).values()),
+        goal_skips=dict(Counter(m.group(1) for ln in lines for m in [re.search(r"GOAL SKIP unreachable kind=(\w+)", ln)] if m)),
+        pickups=pickups(lines),
         movement=dict(moving_samples=moving,
                       over_4ms_percent=round(over4 / moving, 1) if moving else None,
                       native_sprint_percent=round(sprint / moving, 1) if moving else None,
@@ -115,6 +147,7 @@ def build(log_path, graph=None, memory=None, label=None):
         sid, kind = graph._scc
         sp_kind = {r[0]: kind(sid[graph.nearest(r[1:4])]) for r in (graph.data.get("spawns") or [])
                    if graph.nearest(r[1:4]) >= 0}
+        out["pickups"] = pickups(lines, sp_kind)
         on_bad = sum(v["revives"] for k, v in rv.items() if k in sp_kind and not sp_kind[k].startswith("main"))
         out["graph"] = dict(fingerprint=graph.data.get("fingerprint"), nodes=len(graph.nodes), edges=len(graph.to),
                             sink_sccs=prof["sink_sccs"], nodes_in_sinks_percent=_pct(prof["nodes_in_sinks"], len(graph.nodes)),

@@ -2,6 +2,13 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-005 · 2026-10-24 13:05 · report · open
+Refs: triage (this commit)
+Needs owner: no
+`summary.json` now has `pickups` (lives with >= 1 pickup, split by spawn component with `--graph`) and
+`goal_skips`. Re-import Triage at this SHA for the C-001 comparison. Reference: A 12eaec0f main-spawn
+lives 41.3 %, B ca198a42 10.0 % (server + graph). Acceptance for the B fix: main-spawn rate not below A.
+
 ### C-004 · 2026-10-24 13:10 · request · open
 Refs: triage 03e6567
 Needs owner: no
