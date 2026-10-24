@@ -1,0 +1,2235 @@
+{
+  "schema": "steelmill-triage/1",
+  "memory": {
+    "fingerprint": {
+      "nx": 96,
+      "ny": 63,
+      "cell": 3.0,
+      "min_x": 1121.25,
+      "min_y": 1245.0,
+      "count": 7633
+    },
+    "columns": 6048,
+    "nodes_per_column": 1.262,
+    "totals": {
+      "stuck": 319.0,
+      "kills": 1472.0,
+      "deaths": 1490.0
+    },
+    "nodes_with": {
+      "stuck": 49,
+      "kills": 650,
+      "deaths": 656
+    },
+    "stuck_at_cap": 6,
+    "stuck_at_full_penalty": 19,
+    "max_route_multiplier": 4.6,
+    "top_stuck": [
+      [
+        2158,
+        20.0
+      ],
+      [
+        3464,
+        20.0
+      ],
+      [
+        3577,
+        20.0
+      ],
+      [
+        4004,
+        20.0
+      ],
+      [
+        4323,
+        20.0
+      ],
+      [
+        4327,
+        20.0
+      ],
+      [
+        3709,
+        16.0
+      ],
+      [
+        3594,
+        15.0
+      ],
+      [
+        4018,
+        15.0
+      ],
+      [
+        3875,
+        13.0
+      ],
+      [
+        2109,
+        12.0
+      ],
+      [
+        2008,
+        11.0
+      ],
+      [
+        2156,
+        10.0
+      ],
+      [
+        2638,
+        10.0
+      ],
+      [
+        3457,
+        10.0
+      ]
+    ],
+    "hotspot_audit": {
+      "fight": {
+        "eligible_nodes": 861,
+        "visible_to_PickHotspot": 431,
+        "weight_ignored_percent": 51.3
+      },
+      "safe": {
+        "eligible_nodes": 520,
+        "visible_to_PickHotspot": 276,
+        "weight_ignored_percent": 46.0
+      }
+    }
+  },
+  "runs": [
+    {
+      "run": 0,
+      "build": "v26-96-gef25395e",
+      "seconds": 661.5,
+      "bots": 15,
+      "resets": 1,
+      "profiles": [
+        "assault/elite",
+        "assault/normal",
+        "defender/beginner",
+        "defender/veteran",
+        "flanker/elite",
+        "flanker/normal",
+        "hunter/elite",
+        "hunter/normal",
+        "marksman/beginner",
+        "marksman/veteran",
+        "universal/beginner",
+        "universal/veteran"
+      ],
+      "nav": {
+        "nodes": 7633,
+        "edges": 41618
+      },
+      "grid_from_log": {
+        "nx": 96,
+        "ny": 63,
+        "cell": 3.0,
+        "zmin": 121.0,
+        "zmax": 187.0
+      },
+      "memory_loaded": {
+        "level": "Multiplayer/IA/Steelmill",
+        "stuck": 319.0,
+        "kills": 1472.0,
+        "deaths": 1490.0
+      },
+      "telemetry_period_s": 2.019999999999982,
+      "live_bot_minutes": 135.6,
+      "events": {
+        "spawn": 30,
+        "telemetry": 4935,
+        "tactic": 4935,
+        "ability": 4935,
+        "motion": 4935,
+        "profile": 67,
+        "los_blocked": 1263,
+        "pickup": 91,
+        "nav_fallback": 2265,
+        "withdraw": 187,
+        "kill": 244,
+        "death": 244,
+        "unreachable": 269,
+        "revive": 242,
+        "reset": 1,
+        "weapon_cancel": 16,
+        "chase_abandon": 3
+      },
+      "stalls": {
+        "count": 134,
+        "seconds": 870.6,
+        "per_bot_minute": 0.988,
+        "by_state": {
+          "MOVING_TO_WEAPON": 56,
+          "CHASING_ENEMY": 29,
+          "SEARCHING_ENEMY": 49
+        },
+        "clusters": [
+          {
+            "pos": [
+              1194.0,
+              1290.0,
+              142
+            ],
+            "events": 12,
+            "seconds": 58.4,
+            "states": {
+              "SEARCHING_ENEMY": 12
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "events": 9,
+            "seconds": 50.4,
+            "states": {
+              "MOVING_TO_WEAPON": 9
+            }
+          },
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "events": 8,
+            "seconds": 40.3,
+            "states": {
+              "MOVING_TO_WEAPON": 8
+            }
+          },
+          {
+            "pos": [
+              1266.0,
+              1290.0,
+              142
+            ],
+            "events": 6,
+            "seconds": 26.2,
+            "states": {
+              "SEARCHING_ENEMY": 6
+            }
+          },
+          {
+            "pos": [
+              1269.0,
+              1290.0,
+              142
+            ],
+            "events": 6,
+            "seconds": 28.2,
+            "states": {
+              "SEARCHING_ENEMY": 6
+            }
+          },
+          {
+            "pos": [
+              1353.0,
+              1338.0,
+              148
+            ],
+            "events": 6,
+            "seconds": 141.1,
+            "states": {
+              "MOVING_TO_WEAPON": 6
+            }
+          },
+          {
+            "pos": [
+              1353.0,
+              1335.0,
+              147
+            ],
+            "events": 3,
+            "seconds": 16.1,
+            "states": {
+              "SEARCHING_ENEMY": 2,
+              "CHASING_ENEMY": 1
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1332.0,
+              139
+            ],
+            "events": 3,
+            "seconds": 18.1,
+            "states": {
+              "CHASING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1308.0,
+              1302.0,
+              143
+            ],
+            "events": 3,
+            "seconds": 16.1,
+            "states": {
+              "MOVING_TO_WEAPON": 1,
+              "CHASING_ENEMY": 1,
+              "SEARCHING_ENEMY": 1
+            }
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              143
+            ],
+            "events": 3,
+            "seconds": 16.1,
+            "states": {
+              "SEARCHING_ENEMY": 2,
+              "CHASING_ENEMY": 1
+            }
+          },
+          {
+            "pos": [
+              1335.0,
+              1332.0,
+              151
+            ],
+            "events": 3,
+            "seconds": 24.2,
+            "states": {
+              "CHASING_ENEMY": 2,
+              "MOVING_TO_WEAPON": 1
+            }
+          },
+          {
+            "pos": [
+              1320.0,
+              1335.0,
+              144
+            ],
+            "events": 3,
+            "seconds": 38.2,
+            "states": {
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1332.0,
+              1335.0,
+              150
+            ],
+            "events": 2,
+            "seconds": 12.1,
+            "states": {
+              "CHASING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1302.0,
+              1368.0,
+              146
+            ],
+            "events": 2,
+            "seconds": 10.0,
+            "states": {
+              "CHASING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1302.0,
+              1359.0,
+              146
+            ],
+            "events": 2,
+            "seconds": 8.0,
+            "states": {
+              "MOVING_TO_WEAPON": 1,
+              "CHASING_ENEMY": 1
+            }
+          }
+        ]
+      },
+      "pinned": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "clusters": []
+      },
+      "traps": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "worst": []
+      },
+      "oscillations": {
+        "count": 1,
+        "per_bot_minute": 0.007,
+        "by_state": {
+          "SEARCHING_ENEMY": 1
+        },
+        "clusters": [
+          {
+            "pos": [
+              1266.0,
+              1290.0,
+              142
+            ],
+            "events": 1,
+            "seconds": 6.0,
+            "states": {
+              "SEARCHING_ENEMY": 1
+            }
+          }
+        ]
+      },
+      "nav_fallback": {
+        "counts": {
+          "total": 2265,
+          "3_to_7.5m": 180,
+          "under_3m": 90,
+          "dz_over_2.5": 1465,
+          "7.5_to_40m": 1301,
+          "over_40m": 694
+        },
+        "top_goals": [
+          {
+            "pos": [
+              1203.0,
+              1329.0,
+              137
+            ],
+            "queries": 108
+          },
+          {
+            "pos": [
+              1212.0,
+              1353.0,
+              145
+            ],
+            "queries": 68
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              144
+            ],
+            "queries": 64
+          },
+          {
+            "pos": [
+              1224.0,
+              1332.0,
+              149
+            ],
+            "queries": 62
+          },
+          {
+            "pos": [
+              1332.0,
+              1341.0,
+              151
+            ],
+            "queries": 62
+          },
+          {
+            "pos": [
+              1323.0,
+              1341.0,
+              140
+            ],
+            "queries": 61
+          },
+          {
+            "pos": [
+              1287.0,
+              1353.0,
+              137
+            ],
+            "queries": 60
+          },
+          {
+            "pos": [
+              1296.0,
+              1374.0,
+              140
+            ],
+            "queries": 49
+          },
+          {
+            "pos": [
+              1191.0,
+              1299.0,
+              137
+            ],
+            "queries": 49
+          },
+          {
+            "pos": [
+              1302.0,
+              1368.0,
+              146
+            ],
+            "queries": 47
+          },
+          {
+            "pos": [
+              1197.0,
+              1368.0,
+              137
+            ],
+            "queries": 42
+          },
+          {
+            "pos": [
+              1287.0,
+              1329.0,
+              137
+            ],
+            "queries": 41
+          }
+        ],
+        "top_starts": [
+          {
+            "pos": [
+              1353.0,
+              1338.0,
+              148
+            ],
+            "queries": 87
+          },
+          {
+            "pos": [
+              1302.0,
+              1368.0,
+              146
+            ],
+            "queries": 51
+          },
+          {
+            "pos": [
+              1194.0,
+              1290.0,
+              142
+            ],
+            "queries": 45
+          },
+          {
+            "pos": [
+              1302.0,
+              1362.0,
+              146
+            ],
+            "queries": 43
+          },
+          {
+            "pos": [
+              1302.0,
+              1371.0,
+              146
+            ],
+            "queries": 41
+          },
+          {
+            "pos": [
+              1266.0,
+              1290.0,
+              142
+            ],
+            "queries": 38
+          },
+          {
+            "pos": [
+              1302.0,
+              1359.0,
+              146
+            ],
+            "queries": 36
+          },
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "queries": 33
+          },
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              143
+            ],
+            "queries": 32
+          },
+          {
+            "pos": [
+              1269.0,
+              1290.0,
+              142
+            ],
+            "queries": 31
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "queries": 30
+          },
+          {
+            "pos": [
+              1320.0,
+              1335.0,
+              144
+            ],
+            "queries": 30
+          }
+        ],
+        "per_bot_minute": 16.7
+      },
+      "unreachable_weapons": {
+        "199": 21,
+        "161": 17,
+        "287": 14,
+        "280": 14,
+        "263": 11,
+        "393128": 9,
+        "224": 8,
+        "273": 7,
+        "95": 7,
+        "196571": 7
+      },
+      "occupancy": {
+        "columns_visited": 952,
+        "columns_total": 6048,
+        "multi_floor_columns": 129
+      },
+      "dataset": {
+        "samples": 4935,
+        "actions": {
+          "SEEKING_WEAPON": 40,
+          "MOVING_TO_WEAPON": 1130,
+          "ATTACKING": 975,
+          "CHASING_ENEMY": 1409,
+          "SEARCHING_ENEMY": 690,
+          "withdraw": 237,
+          "DEAD": 454
+        },
+        "action_equals_state_percent": 95.2,
+        "with_target": 3403,
+        "target_visible_percent": 82.5,
+        "unknown_actor_rows": 0,
+        "withdraw_events": 187,
+        "unattributed_lines": {
+          "BOT SUIT": 1275,
+          "BOT ACTION": 1278,
+          "Stock weapon burst": 6441,
+          "ACTION REFUSED": 190,
+          "JUMP TAKEOFF": 149,
+          "JUMP LANDING": 145
+        },
+        "issues": [
+          "TACTIC SAMPLE action= is the FSM state name, not a chosen tactical action; no alternatives or propensities are logged, so off-policy bandit evaluation is impossible from these rows.",
+          "samples are emitted while DEAD; they must be dropped or marked as non-decisions.",
+          "BOT SUIT / JUMP / SPRINT / burst lines carry no actor id (9478 lines); per-bot suit and jump features cannot be joined. MOTION INTENT and ABILITY PHYSICS are joined by adjacency to the preceding telemetry line."
+        ]
+      },
+      "log": "WarsBots-Tactics-c018-paired-ef25395e-baseline-r1-n15.bots.log",
+      "log_sha256": "1b74f15e2c5befe0b1379e94b622414c2bfa6070fd147d433610386389dbcb9a"
+    },
+    {
+      "run": 0,
+      "build": "v26-96-gef25395e",
+      "seconds": 661.3,
+      "bots": 15,
+      "resets": 1,
+      "profiles": [
+        "assault/elite",
+        "assault/normal",
+        "defender/beginner",
+        "defender/veteran",
+        "flanker/elite",
+        "flanker/normal",
+        "hunter/elite",
+        "hunter/normal",
+        "marksman/beginner",
+        "marksman/veteran",
+        "universal/beginner",
+        "universal/veteran"
+      ],
+      "nav": {
+        "nodes": 7633,
+        "edges": 41618
+      },
+      "grid_from_log": {
+        "nx": 96,
+        "ny": 63,
+        "cell": 3.0,
+        "zmin": 121.0,
+        "zmax": 187.0
+      },
+      "memory_loaded": {
+        "level": "Multiplayer/IA/Steelmill",
+        "stuck": 319.0,
+        "kills": 1472.0,
+        "deaths": 1490.0
+      },
+      "telemetry_period_s": 2.0100000000000193,
+      "live_bot_minutes": 140.0,
+      "events": {
+        "spawn": 30,
+        "telemetry": 4935,
+        "tactic": 4935,
+        "ability": 4935,
+        "motion": 4935,
+        "profile": 66,
+        "los_blocked": 1278,
+        "pickup": 76,
+        "nav_fallback": 2233,
+        "withdraw": 156,
+        "kill": 213,
+        "death": 213,
+        "unreachable": 342,
+        "revive": 210,
+        "reset": 1,
+        "weapon_cancel": 17,
+        "chase_abandon": 1
+      },
+      "stalls": {
+        "count": 147,
+        "seconds": 793.6,
+        "per_bot_minute": 1.05,
+        "by_state": {
+          "MOVING_TO_WEAPON": 84,
+          "SEEKING_WEAPON": 1,
+          "CHASING_ENEMY": 23,
+          "SEARCHING_ENEMY": 39
+        },
+        "clusters": [
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "events": 11,
+            "seconds": 62.5,
+            "states": {
+              "MOVING_TO_WEAPON": 11
+            }
+          },
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              143
+            ],
+            "events": 8,
+            "seconds": 58.3,
+            "states": {
+              "CHASING_ENEMY": 5,
+              "MOVING_TO_WEAPON": 1,
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1269.0,
+              1290.0,
+              142
+            ],
+            "events": 7,
+            "seconds": 42.2,
+            "states": {
+              "SEARCHING_ENEMY": 7
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "events": 7,
+            "seconds": 32.3,
+            "states": {
+              "MOVING_TO_WEAPON": 7
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1344.0,
+              136
+            ],
+            "events": 6,
+            "seconds": 32.2,
+            "states": {
+              "MOVING_TO_WEAPON": 6
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1365.0,
+              136
+            ],
+            "events": 5,
+            "seconds": 30.2,
+            "states": {
+              "MOVING_TO_WEAPON": 5
+            }
+          },
+          {
+            "pos": [
+              1353.0,
+              1347.0,
+              147
+            ],
+            "events": 4,
+            "seconds": 22.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2,
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              143
+            ],
+            "events": 4,
+            "seconds": 16.1,
+            "states": {
+              "SEARCHING_ENEMY": 1,
+              "CHASING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1317.0,
+              1332.0,
+              148
+            ],
+            "events": 3,
+            "seconds": 14.1,
+            "states": {
+              "CHASING_ENEMY": 2,
+              "MOVING_TO_WEAPON": 1
+            }
+          },
+          {
+            "pos": [
+              1224.0,
+              1332.0,
+              136
+            ],
+            "events": 3,
+            "seconds": 14.1,
+            "states": {
+              "MOVING_TO_WEAPON": 3
+            }
+          },
+          {
+            "pos": [
+              1194.0,
+              1290.0,
+              142
+            ],
+            "events": 3,
+            "seconds": 12.1,
+            "states": {
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1200.0,
+              1299.0,
+              138
+            ],
+            "events": 3,
+            "seconds": 18.1,
+            "states": {
+              "MOVING_TO_WEAPON": 3
+            }
+          },
+          {
+            "pos": [
+              1353.0,
+              1335.0,
+              147
+            ],
+            "events": 3,
+            "seconds": 12.1,
+            "states": {
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1359.0,
+              1335.0,
+              147
+            ],
+            "events": 3,
+            "seconds": 22.2,
+            "states": {
+              "CHASING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1191.0,
+              1299.0,
+              142
+            ],
+            "events": 2,
+            "seconds": 8.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2
+            }
+          }
+        ]
+      },
+      "pinned": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "clusters": []
+      },
+      "traps": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "worst": []
+      },
+      "oscillations": {
+        "count": 0,
+        "per_bot_minute": 0.0,
+        "by_state": {},
+        "clusters": []
+      },
+      "nav_fallback": {
+        "counts": {
+          "total": 2233,
+          "3_to_7.5m": 176,
+          "under_3m": 115,
+          "dz_over_2.5": 1325,
+          "7.5_to_40m": 1313,
+          "over_40m": 629
+        },
+        "top_goals": [
+          {
+            "pos": [
+              1203.0,
+              1329.0,
+              137
+            ],
+            "queries": 129
+          },
+          {
+            "pos": [
+              1287.0,
+              1353.0,
+              137
+            ],
+            "queries": 86
+          },
+          {
+            "pos": [
+              1323.0,
+              1341.0,
+              140
+            ],
+            "queries": 86
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              144
+            ],
+            "queries": 77
+          },
+          {
+            "pos": [
+              1212.0,
+              1353.0,
+              145
+            ],
+            "queries": 66
+          },
+          {
+            "pos": [
+              1191.0,
+              1299.0,
+              137
+            ],
+            "queries": 62
+          },
+          {
+            "pos": [
+              1170.0,
+              1332.0,
+              137
+            ],
+            "queries": 59
+          },
+          {
+            "pos": [
+              1332.0,
+              1341.0,
+              151
+            ],
+            "queries": 59
+          },
+          {
+            "pos": [
+              1287.0,
+              1329.0,
+              137
+            ],
+            "queries": 53
+          },
+          {
+            "pos": [
+              1239.0,
+              1314.0,
+              137
+            ],
+            "queries": 51
+          },
+          {
+            "pos": [
+              1197.0,
+              1368.0,
+              137
+            ],
+            "queries": 51
+          },
+          {
+            "pos": [
+              1224.0,
+              1332.0,
+              149
+            ],
+            "queries": 44
+          }
+        ],
+        "top_starts": [
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              143
+            ],
+            "queries": 59
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              143
+            ],
+            "queries": 59
+          },
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "queries": 48
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "queries": 43
+          },
+          {
+            "pos": [
+              1293.0,
+              1365.0,
+              136
+            ],
+            "queries": 43
+          },
+          {
+            "pos": [
+              1269.0,
+              1290.0,
+              142
+            ],
+            "queries": 35
+          },
+          {
+            "pos": [
+              1308.0,
+              1302.0,
+              143
+            ],
+            "queries": 32
+          },
+          {
+            "pos": [
+              1161.0,
+              1344.0,
+              136
+            ],
+            "queries": 27
+          },
+          {
+            "pos": [
+              1302.0,
+              1368.0,
+              146
+            ],
+            "queries": 27
+          },
+          {
+            "pos": [
+              1353.0,
+              1335.0,
+              147
+            ],
+            "queries": 23
+          },
+          {
+            "pos": [
+              1290.0,
+              1365.0,
+              136
+            ],
+            "queries": 20
+          },
+          {
+            "pos": [
+              1359.0,
+              1335.0,
+              147
+            ],
+            "queries": 20
+          }
+        ],
+        "per_bot_minute": 15.94
+      },
+      "unreachable_weapons": {
+        "199": 26,
+        "287": 16,
+        "196556": 15,
+        "280": 11,
+        "161": 10,
+        "163": 10,
+        "458710": 10,
+        "65386": 10,
+        "458628": 10,
+        "253": 9
+      },
+      "occupancy": {
+        "columns_visited": 974,
+        "columns_total": 6048,
+        "multi_floor_columns": 124
+      },
+      "dataset": {
+        "samples": 4935,
+        "actions": {
+          "SEEKING_WEAPON": 40,
+          "MOVING_TO_WEAPON": 1390,
+          "ATTACKING": 1117,
+          "CHASING_ENEMY": 1213,
+          "SEARCHING_ENEMY": 576,
+          "withdraw": 193,
+          "DEAD": 406
+        },
+        "action_equals_state_percent": 96.1,
+        "with_target": 3341,
+        "target_visible_percent": 81.4,
+        "unknown_actor_rows": 0,
+        "withdraw_events": 156,
+        "unattributed_lines": {
+          "BOT SUIT": 1167,
+          "BOT ACTION": 1187,
+          "Stock weapon burst": 6506,
+          "JUMP TAKEOFF": 127,
+          "ACTION REFUSED": 190,
+          "JUMP LANDING": 127
+        },
+        "issues": [
+          "TACTIC SAMPLE action= is the FSM state name, not a chosen tactical action; no alternatives or propensities are logged, so off-policy bandit evaluation is impossible from these rows.",
+          "samples are emitted while DEAD; they must be dropped or marked as non-decisions.",
+          "BOT SUIT / JUMP / SPRINT / burst lines carry no actor id (9304 lines); per-bot suit and jump features cannot be joined. MOTION INTENT and ABILITY PHYSICS are joined by adjacency to the preceding telemetry line."
+        ]
+      },
+      "log": "WarsBots-Tactics-c018-paired-ef25395e-baseline-r2-n15.bots.log",
+      "log_sha256": "fbc42407441a9064dd597dcf9ec3fb33b12cde78c58031b42b4b5eb7ee5fd76f"
+    },
+    {
+      "run": 0,
+      "build": "v26-96-gef25395e",
+      "seconds": 661.7,
+      "bots": 15,
+      "resets": 1,
+      "profiles": [
+        "assault/elite",
+        "assault/normal",
+        "defender/beginner",
+        "defender/veteran",
+        "flanker/elite",
+        "flanker/normal",
+        "hunter/elite",
+        "hunter/normal",
+        "marksman/beginner",
+        "marksman/veteran",
+        "universal/beginner",
+        "universal/veteran"
+      ],
+      "nav": {
+        "nodes": 7633,
+        "edges": 41618
+      },
+      "grid_from_log": {
+        "nx": 96,
+        "ny": 63,
+        "cell": 3.0,
+        "zmin": 121.0,
+        "zmax": 187.0
+      },
+      "memory_loaded": {
+        "level": "Multiplayer/IA/Steelmill",
+        "stuck": 319.0,
+        "kills": 1472.0,
+        "deaths": 1490.0
+      },
+      "telemetry_period_s": 2.019999999999982,
+      "live_bot_minutes": 137.3,
+      "events": {
+        "spawn": 30,
+        "telemetry": 4935,
+        "tactic": 4935,
+        "ability": 4935,
+        "motion": 4935,
+        "profile": 67,
+        "los_blocked": 1562,
+        "pickup": 119,
+        "nav_fallback": 1740,
+        "withdraw": 163,
+        "kill": 228,
+        "death": 228,
+        "unreachable": 263,
+        "revive": 223,
+        "weapon_cancel": 21,
+        "reset": 1,
+        "chase_abandon": 3
+      },
+      "stalls": {
+        "count": 76,
+        "seconds": 380.9,
+        "per_bot_minute": 0.554,
+        "by_state": {
+          "CHASING_ENEMY": 12,
+          "MOVING_TO_WEAPON": 37,
+          "SEARCHING_ENEMY": 27
+        },
+        "clusters": [
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "events": 7,
+            "seconds": 36.3,
+            "states": {
+              "MOVING_TO_WEAPON": 6,
+              "SEARCHING_ENEMY": 1
+            }
+          },
+          {
+            "pos": [
+              1353.0,
+              1338.0,
+              147
+            ],
+            "events": 3,
+            "seconds": 14.1,
+            "states": {
+              "MOVING_TO_WEAPON": 1,
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1224.0,
+              1332.0,
+              136
+            ],
+            "events": 3,
+            "seconds": 16.1,
+            "states": {
+              "MOVING_TO_WEAPON": 3
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1344.0,
+              136
+            ],
+            "events": 3,
+            "seconds": 16.1,
+            "states": {
+              "MOVING_TO_WEAPON": 3
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1374.0,
+              135
+            ],
+            "events": 3,
+            "seconds": 14.1,
+            "states": {
+              "MOVING_TO_WEAPON": 3
+            }
+          },
+          {
+            "pos": [
+              1290.0,
+              1365.0,
+              136
+            ],
+            "events": 3,
+            "seconds": 12.1,
+            "states": {
+              "MOVING_TO_WEAPON": 3
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1365.0,
+              136
+            ],
+            "events": 3,
+            "seconds": 16.2,
+            "states": {
+              "MOVING_TO_WEAPON": 1,
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1239.0,
+              1290.0,
+              141
+            ],
+            "events": 3,
+            "seconds": 12.1,
+            "states": {
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1269.0,
+              1290.0,
+              142
+            ],
+            "events": 3,
+            "seconds": 12.1,
+            "states": {
+              "SEARCHING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "events": 2,
+            "seconds": 10.0,
+            "states": {
+              "MOVING_TO_WEAPON": 2
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1326.0,
+              136
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1185.0,
+              1290.0,
+              142
+            ],
+            "events": 2,
+            "seconds": 12.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2
+            }
+          },
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              139
+            ],
+            "events": 2,
+            "seconds": 18.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2
+            }
+          },
+          {
+            "pos": [
+              1257.0,
+              1290.0,
+              142
+            ],
+            "events": 2,
+            "seconds": 12.1,
+            "states": {
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1356.0,
+              1338.0,
+              147
+            ],
+            "events": 1,
+            "seconds": 4.0,
+            "states": {
+              "CHASING_ENEMY": 1
+            }
+          }
+        ]
+      },
+      "pinned": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "clusters": []
+      },
+      "traps": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "worst": []
+      },
+      "oscillations": {
+        "count": 0,
+        "per_bot_minute": 0.0,
+        "by_state": {},
+        "clusters": []
+      },
+      "nav_fallback": {
+        "counts": {
+          "total": 1740,
+          "under_3m": 122,
+          "dz_over_2.5": 1015,
+          "over_40m": 427,
+          "7.5_to_40m": 1033,
+          "3_to_7.5m": 158
+        },
+        "top_goals": [
+          {
+            "pos": [
+              1203.0,
+              1329.0,
+              137
+            ],
+            "queries": 93
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              144
+            ],
+            "queries": 73
+          },
+          {
+            "pos": [
+              1287.0,
+              1353.0,
+              137
+            ],
+            "queries": 50
+          },
+          {
+            "pos": [
+              1170.0,
+              1332.0,
+              137
+            ],
+            "queries": 43
+          },
+          {
+            "pos": [
+              1323.0,
+              1341.0,
+              140
+            ],
+            "queries": 43
+          },
+          {
+            "pos": [
+              1239.0,
+              1314.0,
+              137
+            ],
+            "queries": 43
+          },
+          {
+            "pos": [
+              1212.0,
+              1353.0,
+              145
+            ],
+            "queries": 42
+          },
+          {
+            "pos": [
+              1224.0,
+              1332.0,
+              149
+            ],
+            "queries": 42
+          },
+          {
+            "pos": [
+              1296.0,
+              1374.0,
+              140
+            ],
+            "queries": 40
+          },
+          {
+            "pos": [
+              1287.0,
+              1329.0,
+              137
+            ],
+            "queries": 39
+          },
+          {
+            "pos": [
+              1347.0,
+              1347.0,
+              152
+            ],
+            "queries": 38
+          },
+          {
+            "pos": [
+              1356.0,
+              1299.0,
+              140
+            ],
+            "queries": 37
+          }
+        ],
+        "top_starts": [
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "queries": 44
+          },
+          {
+            "pos": [
+              1293.0,
+              1365.0,
+              136
+            ],
+            "queries": 40
+          },
+          {
+            "pos": [
+              1239.0,
+              1290.0,
+              141
+            ],
+            "queries": 36
+          },
+          {
+            "pos": [
+              1161.0,
+              1344.0,
+              136
+            ],
+            "queries": 33
+          },
+          {
+            "pos": [
+              1293.0,
+              1374.0,
+              135
+            ],
+            "queries": 31
+          },
+          {
+            "pos": [
+              1284.0,
+              1365.0,
+              136
+            ],
+            "queries": 30
+          },
+          {
+            "pos": [
+              1269.0,
+              1365.0,
+              136
+            ],
+            "queries": 27
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              143
+            ],
+            "queries": 21
+          },
+          {
+            "pos": [
+              1290.0,
+              1365.0,
+              136
+            ],
+            "queries": 19
+          },
+          {
+            "pos": [
+              1359.0,
+              1335.0,
+              147
+            ],
+            "queries": 19
+          },
+          {
+            "pos": [
+              1353.0,
+              1338.0,
+              147
+            ],
+            "queries": 19
+          },
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              139
+            ],
+            "queries": 18
+          }
+        ],
+        "per_bot_minute": 12.67
+      },
+      "unreachable_weapons": {
+        "287": 16,
+        "262066": 11,
+        "262020": 10,
+        "224": 9,
+        "273": 8,
+        "133": 8,
+        "280": 8,
+        "263": 8,
+        "212": 7,
+        "196500": 7
+      },
+      "occupancy": {
+        "columns_visited": 1057,
+        "columns_total": 6048,
+        "multi_floor_columns": 144
+      },
+      "dataset": {
+        "samples": 4935,
+        "actions": {
+          "SEEKING_WEAPON": 37,
+          "MOVING_TO_WEAPON": 967,
+          "ATTACKING": 1925,
+          "CHASING_ENEMY": 919,
+          "SEARCHING_ENEMY": 445,
+          "withdraw": 202,
+          "DEAD": 440
+        },
+        "action_equals_state_percent": 95.9,
+        "with_target": 3862,
+        "target_visible_percent": 82.4,
+        "unknown_actor_rows": 0,
+        "withdraw_events": 163,
+        "unattributed_lines": {
+          "BOT SUIT": 723,
+          "BOT ACTION": 2516,
+          "Stock weapon burst": 8453,
+          "JUMP TAKEOFF": 154,
+          "JUMP LANDING": 151,
+          "ACTION REFUSED": 115
+        },
+        "issues": [
+          "TACTIC SAMPLE action= is the FSM state name, not a chosen tactical action; no alternatives or propensities are logged, so off-policy bandit evaluation is impossible from these rows.",
+          "samples are emitted while DEAD; they must be dropped or marked as non-decisions.",
+          "BOT SUIT / JUMP / SPRINT / burst lines carry no actor id (12112 lines); per-bot suit and jump features cannot be joined. MOTION INTENT and ABILITY PHYSICS are joined by adjacency to the preceding telemetry line."
+        ]
+      },
+      "log": "WarsBots-Tactics-c018-paired-ef25395e-candidate-r1-n15.bots.log",
+      "log_sha256": "d1d34e1a70170816a67851daba2c1756e7f67335a1d4824986a9e0155d8f0fe3"
+    },
+    {
+      "run": 0,
+      "build": "v26-96-gef25395e",
+      "seconds": 661.5,
+      "bots": 15,
+      "resets": 1,
+      "profiles": [
+        "assault/elite",
+        "assault/normal",
+        "defender/beginner",
+        "defender/veteran",
+        "flanker/elite",
+        "flanker/normal",
+        "hunter/elite",
+        "hunter/normal",
+        "marksman/beginner",
+        "marksman/veteran",
+        "universal/beginner",
+        "universal/veteran"
+      ],
+      "nav": {
+        "nodes": 7633,
+        "edges": 41618
+      },
+      "grid_from_log": {
+        "nx": 96,
+        "ny": 63,
+        "cell": 3.0,
+        "zmin": 121.0,
+        "zmax": 187.0
+      },
+      "memory_loaded": {
+        "level": "Multiplayer/IA/Steelmill",
+        "stuck": 319.0,
+        "kills": 1472.0,
+        "deaths": 1490.0
+      },
+      "telemetry_period_s": 2.019999999999982,
+      "live_bot_minutes": 136.3,
+      "events": {
+        "spawn": 30,
+        "telemetry": 4935,
+        "tactic": 4935,
+        "ability": 4935,
+        "motion": 4935,
+        "profile": 67,
+        "los_blocked": 1461,
+        "pickup": 127,
+        "withdraw": 182,
+        "kill": 233,
+        "death": 233,
+        "nav_fallback": 1906,
+        "revive": 228,
+        "weapon_cancel": 20,
+        "unreachable": 256,
+        "reset": 1,
+        "chase_abandon": 3
+      },
+      "stalls": {
+        "count": 89,
+        "seconds": 411.6,
+        "per_bot_minute": 0.653,
+        "by_state": {
+          "MOVING_TO_WEAPON": 58,
+          "SEARCHING_ENEMY": 23,
+          "CHASING_ENEMY": 8
+        },
+        "clusters": [
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "events": 8,
+            "seconds": 34.3,
+            "states": {
+              "MOVING_TO_WEAPON": 8
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1365.0,
+              136
+            ],
+            "events": 8,
+            "seconds": 36.2,
+            "states": {
+              "MOVING_TO_WEAPON": 8
+            }
+          },
+          {
+            "pos": [
+              1194.0,
+              1290.0,
+              142
+            ],
+            "events": 6,
+            "seconds": 32.3,
+            "states": {
+              "SEARCHING_ENEMY": 6
+            }
+          },
+          {
+            "pos": [
+              1293.0,
+              1374.0,
+              135
+            ],
+            "events": 4,
+            "seconds": 20.2,
+            "states": {
+              "MOVING_TO_WEAPON": 4
+            }
+          },
+          {
+            "pos": [
+              1290.0,
+              1365.0,
+              136
+            ],
+            "events": 4,
+            "seconds": 20.1,
+            "states": {
+              "MOVING_TO_WEAPON": 4
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "events": 4,
+            "seconds": 20.2,
+            "states": {
+              "MOVING_TO_WEAPON": 4
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1344.0,
+              136
+            ],
+            "events": 4,
+            "seconds": 16.2,
+            "states": {
+              "MOVING_TO_WEAPON": 4
+            }
+          },
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              143
+            ],
+            "events": 3,
+            "seconds": 16.1,
+            "states": {
+              "CHASING_ENEMY": 3
+            }
+          },
+          {
+            "pos": [
+              1185.0,
+              1290.0,
+              142
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2
+            }
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              137
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2
+            }
+          },
+          {
+            "pos": [
+              1362.0,
+              1332.0,
+              139
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "MOVING_TO_WEAPON": 2
+            }
+          },
+          {
+            "pos": [
+              1290.0,
+              1323.0,
+              136
+            ],
+            "events": 2,
+            "seconds": 8.0,
+            "states": {
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1284.0,
+              1335.0,
+              140
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1311.0,
+              1305.0,
+              143
+            ],
+            "events": 2,
+            "seconds": 8.1,
+            "states": {
+              "SEARCHING_ENEMY": 2
+            }
+          },
+          {
+            "pos": [
+              1308.0,
+              1302.0,
+              143
+            ],
+            "events": 2,
+            "seconds": 10.1,
+            "states": {
+              "CHASING_ENEMY": 1,
+              "SEARCHING_ENEMY": 1
+            }
+          }
+        ]
+      },
+      "pinned": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "clusters": []
+      },
+      "traps": {
+        "count": 0,
+        "bot_minutes": 0.0,
+        "live_percent": 0.0,
+        "worst": []
+      },
+      "oscillations": {
+        "count": 0,
+        "per_bot_minute": 0.0,
+        "by_state": {},
+        "clusters": []
+      },
+      "nav_fallback": {
+        "counts": {
+          "total": 1906,
+          "under_3m": 109,
+          "dz_over_2.5": 1082,
+          "7.5_to_40m": 1062,
+          "3_to_7.5m": 176,
+          "over_40m": 559
+        },
+        "top_goals": [
+          {
+            "pos": [
+              1203.0,
+              1329.0,
+              137
+            ],
+            "queries": 113
+          },
+          {
+            "pos": [
+              1212.0,
+              1353.0,
+              145
+            ],
+            "queries": 88
+          },
+          {
+            "pos": [
+              1170.0,
+              1332.0,
+              137
+            ],
+            "queries": 73
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              144
+            ],
+            "queries": 59
+          },
+          {
+            "pos": [
+              1287.0,
+              1353.0,
+              137
+            ],
+            "queries": 57
+          },
+          {
+            "pos": [
+              1296.0,
+              1374.0,
+              140
+            ],
+            "queries": 54
+          },
+          {
+            "pos": [
+              1191.0,
+              1299.0,
+              137
+            ],
+            "queries": 47
+          },
+          {
+            "pos": [
+              1287.0,
+              1329.0,
+              137
+            ],
+            "queries": 40
+          },
+          {
+            "pos": [
+              1299.0,
+              1347.0,
+              140
+            ],
+            "queries": 37
+          },
+          {
+            "pos": [
+              1269.0,
+              1290.0,
+              143
+            ],
+            "queries": 36
+          },
+          {
+            "pos": [
+              1197.0,
+              1368.0,
+              137
+            ],
+            "queries": 36
+          },
+          {
+            "pos": [
+              1182.0,
+              1290.0,
+              143
+            ],
+            "queries": 34
+          }
+        ],
+        "top_starts": [
+          {
+            "pos": [
+              1293.0,
+              1365.0,
+              136
+            ],
+            "queries": 54
+          },
+          {
+            "pos": [
+              1194.0,
+              1290.0,
+              142
+            ],
+            "queries": 48
+          },
+          {
+            "pos": [
+              1290.0,
+              1365.0,
+              136
+            ],
+            "queries": 44
+          },
+          {
+            "pos": [
+              1206.0,
+              1332.0,
+              136
+            ],
+            "queries": 43
+          },
+          {
+            "pos": [
+              1311.0,
+              1302.0,
+              143
+            ],
+            "queries": 40
+          },
+          {
+            "pos": [
+              1308.0,
+              1302.0,
+              143
+            ],
+            "queries": 38
+          },
+          {
+            "pos": [
+              1161.0,
+              1341.0,
+              136
+            ],
+            "queries": 37
+          },
+          {
+            "pos": [
+              1305.0,
+              1302.0,
+              143
+            ],
+            "queries": 32
+          },
+          {
+            "pos": [
+              1161.0,
+              1344.0,
+              136
+            ],
+            "queries": 30
+          },
+          {
+            "pos": [
+              1260.0,
+              1290.0,
+              142
+            ],
+            "queries": 28
+          },
+          {
+            "pos": [
+              1293.0,
+              1374.0,
+              135
+            ],
+            "queries": 26
+          },
+          {
+            "pos": [
+              1269.0,
+              1365.0,
+              136
+            ],
+            "queries": 26
+          }
+        ],
+        "per_bot_minute": 13.99
+      },
+      "unreachable_weapons": {
+        "199": 22,
+        "280": 15,
+        "224": 12,
+        "273": 11,
+        "327893": 10,
+        "287": 8,
+        "327596": 7,
+        "261961": 7,
+        "302": 7,
+        "263": 6
+      },
+      "occupancy": {
+        "columns_visited": 1107,
+        "columns_total": 6048,
+        "multi_floor_columns": 157
+      },
+      "dataset": {
+        "samples": 4935,
+        "actions": {
+          "SEEKING_WEAPON": 42,
+          "MOVING_TO_WEAPON": 1031,
+          "ATTACKING": 1726,
+          "CHASING_ENEMY": 970,
+          "SEARCHING_ENEMY": 489,
+          "withdraw": 230,
+          "DEAD": 447
+        },
+        "action_equals_state_percent": 95.3,
+        "with_target": 3723,
+        "target_visible_percent": 82.7,
+        "unknown_actor_rows": 0,
+        "withdraw_events": 182,
+        "unattributed_lines": {
+          "BOT ACTION": 2500,
+          "BOT SUIT": 785,
+          "Stock weapon burst": 7772,
+          "JUMP TAKEOFF": 156,
+          "JUMP LANDING": 153,
+          "ACTION REFUSED": 96
+        },
+        "issues": [
+          "TACTIC SAMPLE action= is the FSM state name, not a chosen tactical action; no alternatives or propensities are logged, so off-policy bandit evaluation is impossible from these rows.",
+          "samples are emitted while DEAD; they must be dropped or marked as non-decisions.",
+          "BOT SUIT / JUMP / SPRINT / burst lines carry no actor id (11462 lines); per-bot suit and jump features cannot be joined. MOTION INTENT and ABILITY PHYSICS are joined by adjacency to the preceding telemetry line."
+        ]
+      },
+      "log": "WarsBots-Tactics-c018-paired-ef25395e-candidate-r2-n15.bots.log",
+      "log_sha256": "661929045918e7b10d29969563b3abf21d72715c0157c4d429e583441b20a297"
+    }
+  ]
+}

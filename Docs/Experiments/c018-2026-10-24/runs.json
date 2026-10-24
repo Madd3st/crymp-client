@@ -1,0 +1,434 @@
+[
+  {
+    "bot_pace_requested": 0,
+    "fixed_roster": true,
+    "move_trace_requested": 1,
+    "reachable_goals_requested": 0,
+    "sink_escape_requested": 0,
+    "explain_nodes": [],
+    "explain_pairs_path": "",
+    "physics_diagnostics_requested": 1,
+    "observed_seconds": 661.49,
+    "nav_exports": 2,
+    "hotspot_all_nodes_requested": 0,
+    "tag": "baseline-r1-n15",
+    "session": "c018-paired-ef25395e",
+    "progress_requested": -1,
+    "trap_recovery_requested": 1,
+    "fire_diagnostics": false,
+    "style_mode": "auto",
+    "skill_rotation_step": 1,
+    "variant": "baseline",
+    "repeat": 1,
+    "bots": 15,
+    "seconds": 660,
+    "source_sha": "ef25395eeb9cc85cc1ae54d07407fe01ff0c7e31",
+    "server_sha256": "FA9EA006A747BF0DAA422778F5B17554154375F20B550B5F7803AF55C3212669",
+    "client_sha256": "426D1DF813E857A73299D080D8D8DA58013359296D27E77573B6ACB9166D7E11",
+    "memory_sha256": "C60C1D767CF0CCE04F9C20937835294AB0E6EAD8547DA2F89A52A0BA2EC813D6",
+    "roster": [
+      {
+        "style": "auto",
+        "number": 1,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 2,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 3,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 4,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 5,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 6,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 7,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 8,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 9,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 10,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 11,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 12,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 13,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 14,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 15,
+        "skill": "veteran"
+      }
+    ],
+    "log": "WarsBots-Tactics-c018-paired-ef25395e-baseline-r1-n15.bots.log",
+    "completed": true,
+    "kills": 244
+  },
+  {
+    "bot_pace_requested": 1,
+    "fixed_roster": true,
+    "move_trace_requested": 1,
+    "reachable_goals_requested": 0,
+    "sink_escape_requested": 0,
+    "explain_nodes": [],
+    "explain_pairs_path": "",
+    "physics_diagnostics_requested": 1,
+    "observed_seconds": 661.73,
+    "nav_exports": 2,
+    "hotspot_all_nodes_requested": 0,
+    "tag": "candidate-r1-n15",
+    "session": "c018-paired-ef25395e",
+    "progress_requested": -1,
+    "trap_recovery_requested": 1,
+    "fire_diagnostics": false,
+    "style_mode": "auto",
+    "skill_rotation_step": 1,
+    "variant": "candidate",
+    "repeat": 1,
+    "bots": 15,
+    "seconds": 660,
+    "source_sha": "ef25395eeb9cc85cc1ae54d07407fe01ff0c7e31",
+    "server_sha256": "FA9EA006A747BF0DAA422778F5B17554154375F20B550B5F7803AF55C3212669",
+    "client_sha256": "426D1DF813E857A73299D080D8D8DA58013359296D27E77573B6ACB9166D7E11",
+    "memory_sha256": "C60C1D767CF0CCE04F9C20937835294AB0E6EAD8547DA2F89A52A0BA2EC813D6",
+    "roster": [
+      {
+        "style": "auto",
+        "number": 1,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 2,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 3,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 4,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 5,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 6,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 7,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 8,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 9,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 10,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 11,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 12,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 13,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 14,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 15,
+        "skill": "veteran"
+      }
+    ],
+    "log": "WarsBots-Tactics-c018-paired-ef25395e-candidate-r1-n15.bots.log",
+    "completed": true,
+    "kills": 228
+  },
+  {
+    "bot_pace_requested": 1,
+    "fixed_roster": true,
+    "move_trace_requested": 1,
+    "reachable_goals_requested": 0,
+    "sink_escape_requested": 0,
+    "explain_nodes": [],
+    "explain_pairs_path": "",
+    "physics_diagnostics_requested": 1,
+    "observed_seconds": 661.55,
+    "nav_exports": 2,
+    "hotspot_all_nodes_requested": 0,
+    "tag": "candidate-r2-n15",
+    "session": "c018-paired-ef25395e",
+    "progress_requested": -1,
+    "trap_recovery_requested": 1,
+    "fire_diagnostics": false,
+    "style_mode": "auto",
+    "skill_rotation_step": 1,
+    "variant": "candidate",
+    "repeat": 2,
+    "bots": 15,
+    "seconds": 660,
+    "source_sha": "ef25395eeb9cc85cc1ae54d07407fe01ff0c7e31",
+    "server_sha256": "FA9EA006A747BF0DAA422778F5B17554154375F20B550B5F7803AF55C3212669",
+    "client_sha256": "426D1DF813E857A73299D080D8D8DA58013359296D27E77573B6ACB9166D7E11",
+    "memory_sha256": "C60C1D767CF0CCE04F9C20937835294AB0E6EAD8547DA2F89A52A0BA2EC813D6",
+    "roster": [
+      {
+        "style": "auto",
+        "number": 1,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 2,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 3,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 4,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 5,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 6,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 7,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 8,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 9,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 10,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 11,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 12,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 13,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 14,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 15,
+        "skill": "veteran"
+      }
+    ],
+    "log": "WarsBots-Tactics-c018-paired-ef25395e-candidate-r2-n15.bots.log",
+    "completed": true,
+    "kills": 233
+  },
+  {
+    "bot_pace_requested": 0,
+    "fixed_roster": true,
+    "move_trace_requested": 1,
+    "reachable_goals_requested": 0,
+    "sink_escape_requested": 0,
+    "explain_nodes": [],
+    "explain_pairs_path": "",
+    "physics_diagnostics_requested": 1,
+    "observed_seconds": 661.3,
+    "nav_exports": 2,
+    "hotspot_all_nodes_requested": 0,
+    "tag": "baseline-r2-n15",
+    "session": "c018-paired-ef25395e",
+    "progress_requested": -1,
+    "trap_recovery_requested": 1,
+    "fire_diagnostics": false,
+    "style_mode": "auto",
+    "skill_rotation_step": 1,
+    "variant": "baseline",
+    "repeat": 2,
+    "bots": 15,
+    "seconds": 660,
+    "source_sha": "ef25395eeb9cc85cc1ae54d07407fe01ff0c7e31",
+    "server_sha256": "FA9EA006A747BF0DAA422778F5B17554154375F20B550B5F7803AF55C3212669",
+    "client_sha256": "426D1DF813E857A73299D080D8D8DA58013359296D27E77573B6ACB9166D7E11",
+    "memory_sha256": "C60C1D767CF0CCE04F9C20937835294AB0E6EAD8547DA2F89A52A0BA2EC813D6",
+    "roster": [
+      {
+        "style": "auto",
+        "number": 1,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 2,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 3,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 4,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 5,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 6,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 7,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 8,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 9,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 10,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 11,
+        "skill": "veteran"
+      },
+      {
+        "style": "auto",
+        "number": 12,
+        "skill": "elite"
+      },
+      {
+        "style": "auto",
+        "number": 13,
+        "skill": "beginner"
+      },
+      {
+        "style": "auto",
+        "number": 14,
+        "skill": "normal"
+      },
+      {
+        "style": "auto",
+        "number": 15,
+        "skill": "veteran"
+      }
+    ],
+    "log": "WarsBots-Tactics-c018-paired-ef25395e-baseline-r2-n15.bots.log",
+    "completed": true,
+    "kills": 213
+  }
+]

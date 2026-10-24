@@ -1,14 +1,17 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## C-018 in progress: opt-in native bot pace
+## STOP checkpoint: C-018 paired pace QA complete
 
-wb_bot_pace default0; bot-only stance speed, native pseudoSpeed/Speed multipliers,
-sprint energy hysteresis40/20 and travel Speed150/60. C014 defaults remainON.
-Policy unit and28Triage tests PASS; x64 experimental client/server Release compiled.
-Four controlled15bot660s runs pending, trace1 and same roster/memory/flags.
-Owner/Claude decides pace verdict. No default promotion or other tickets.
+Game source ef25395e; wb_bot_pace default0. Four15bot660s paired runs completed
+661.49/661.73/661.55/661.30s. Same roster/memory/EXEs/flags, trace1, C014defaultsON.
+All4 frozen0,traps0,selfkills0; all8 graphs identical. Owner memory restored,
+QA servers stopped. MSVC x64 client/server +policy unit+28Triage tests PASS.
+Pace verdict belongs to owner/Claude; no default promotion. C019 not started.
+[Results, commands and artifact paths](Experiments/c018-2026-10-24.md).
+Raw batch: C:\Users\Magic8\WarsBotsBuild\crymp-multibot\build\c018-paired-ef25395e\.
+STOP after final report push; no mailbox wait-loop or other tickets.
 
-## STOP checkpoint: C-017 accepted C-014, defaults ON
+## Historical checkpoint: C-017 accepted C-014, defaults ON
 
 Owner explicitly approved restoring both C-014 defaults. wb_spawn_exclude195=1 and
 wb_revive_guard=1 (globals + console defaults), matching tested3bda4479 source exactly.

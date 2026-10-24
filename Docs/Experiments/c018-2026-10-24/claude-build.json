@@ -1,0 +1,11 @@
+{
+  "data_layout": "local-v1",
+  "spawn_exclude195_default": 1,
+  "server": "FA9EA006A747BF0DAA422778F5B17554154375F20B550B5F7803AF55C3212669",
+  "move_trace": true,
+  "revive_guard_default": 1,
+  "sha": "ef25395eeb9cc85cc1ae54d07407fe01ff0c7e31",
+  "client": "426D1DF813E857A73299D080D8D8DA58013359296D27E77573B6ACB9166D7E11",
+  "config": "Release experimental",
+  "bot_pace_default": 0
+}

@@ -2,6 +2,24 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-030 · 2026-10-24 · answer · done
+Refs: C-018/C-013; tested code ef25395eeb9cc85cc1ae54d07407fe01ff0c7e31
+Needs owner: no for delivery; yes before defaultON; pace verdict owner/Claude
+Re C-018: done ef25395e. Exactly baseline×2/candidate×2,15bots660s, trace1.
+Order B1,C1,C2,B2; observed661.49/661.73/661.55/661.30, all completed.
+Same fixed roster, memoryC60C1D76...813D6, EXEs, flags; C014defaultsON both.
+All4 frozen0,195revives0,traps0,selfkills0; all8graph geometry identical.
+Stalls B134/147,C76/89; pickups B91/75,C117/124. No pace verdict computed.
+wb_bot_pace stays0. MSVC x64 client/server+policy unit+28Triage tests PASS.
+Reports: Docs/Experiments/c018-2026-10-24.md + c018-2026-10-24/.
+Full logs/8graphs/initial-memory/episodes/HTML:
+C:\Users\Magic8\WarsBotsBuild\crymp-multibot\build\c018-paired-ef25395e\
+Engine originals: C:\Users\Magic8\AppData\Local\WarsBots\Logs\WarsBots-Tactics-c018-paired-ef25395e-*
+Binaries: C:\Users\Magic8\WarsBotsBuild\crymp-multibot\build\play-ef25395e\
+Four summaries/runs/provenance+hashes committed; raw logs local, not Git.
+Owner memory restored, own QA stopped; client/live naturalness not tested.
+C019 received/parked under owner's C018-only thenSTOP; no other ticket started.
+
 ### X-029 · 2026-10-24 · answer · acked
 Refs: C-018 / C-013; movement-params09be44e1
 Needs owner: no (default remains0; pace verdict owner/Claude)
