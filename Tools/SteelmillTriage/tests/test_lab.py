@@ -173,8 +173,7 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(g.col(99.0, 201.0), (0, 0))
 
     def test_rejects_contract_violations(self):
-        self.assertTrue(broken(lambda d: d.update(schema="wbnav/1")))
-        self.assertIn("converted", broken(lambda d: d.update(schema="wbnav/1"))[0])
+        self.assertTrue(broken(lambda d: d.update(schema="wbnav/9")))
         self.assertTrue(broken(lambda d: d["nodes"][2].__setitem__(0, 7)))            # id != index
         self.assertTrue(broken(lambda d: d["nodes"][3].__setitem__(6, 5)))            # layer >= max
         self.assertTrue(broken(lambda d: d["nodes"][3].__setitem__(4, 1)))            # duplicate slot
@@ -221,6 +220,9 @@ class GraphTests(unittest.TestCase):
                       params=dict(layers=5), counts=dict(nodes=4, edges=4),
                       nodes=[[n[1], n[2], n[3], n[5]] for n in d["nodes"]],
                       edges=dict(first=[0, 0, 1, 3], count=[0, 1, 2, 1], to=[2, 1, 3, 2], cost=[3.0] * 4))
+        raw = json.loads(json.dumps(legacy))
+        self.assertEqual(navgraph.check(raw)[0], [])          # raw wbnav/1 dict is upgraded in place
+        self.assertEqual(raw["schema"], navgraph.SCHEMA)
         up = navgraph.from_wbnav1(legacy)
         self.assertEqual(up["nodes"], d["nodes"]); self.assertEqual(up["edges"], d["edges"])
         self.assertEqual(navgraph.check(up)[0], [])
@@ -243,6 +245,26 @@ class GraphTests(unittest.TestCase):
             p = Path(t) / "g.graph.json.gz"
             p.write_bytes(gzip.compress(json.dumps(tiny_graph()).encode()))
             self.assertEqual(len(navgraph.load(p).nodes), 4)
+
+
+class SummaryTests(unittest.TestCase):
+    def test_frozen_revive_and_watchdog(self):
+        from wblab import summary
+        L = ["10.00 [WarsBots] #1 revive requested EntityId=7 spawnId=195 previousSpawn=0 position=(1247.500,1319.750,136.450).",
+             "10.00 [WarsBots] #2 revive requested EntityId=8 spawnId=218 previousSpawn=0 position=(1247.500,1338.125,136.450)."]
+        for i in range(8):
+            t = 10.5 + 2 * i
+            L.append(f"{t:.2f} [WarsBots] AI telemetry EntityId=7 state=ATTACKING pos=(1247.50, 1319.75, 136.51) health=100 weapon=1 ammo=5 target=0.")
+            L.append(f"{t:.2f} [WarsBots] AI telemetry EntityId=8 state=MOVING pos=({1247.5 + i:.2f}, 1338.13, 136.05) health=100 weapon=1 ammo=5 target=0.")
+        self.assertEqual(summary.revives(L), {195: dict(revives=1, frozen=1), 218: dict(revives=1, frozen=0)})
+        W = ["18.1 [WarsBots] TRAP RECOVERY level=1 actor=7 age=8.01 pos=(1247.50,1319.75,136.51) blocked=0 speed=0.00 grounded=0.",
+             "26.1 [WarsBots] TRAP RECOVERY level=2 actor=7 age=16.01 pos=(1247.50,1319.75,136.51) blocked=0 speed=0.00 grounded=0.",
+             "55.1 [WarsBots] TRAP RECOVERY level=4 actor=7 age=45.01 pos=(1247.50,1319.75,136.51) blocked=0 speed=0.00 grounded=0.",
+             "55.1 [WarsBots] TRAP RECOVERY level=4 actor=7 nativeSelfKill=1 health=0.",
+             "90.0 [WarsBots] TRAP RECOVERY level=1 actor=9 age=8.00 pos=(1300.00,1300.00,140.00) blocked=1 speed=0.00 grounded=1."]
+        w = summary.watchdog(W)
+        self.assertEqual((w["episodes"], w["at_spawn195"], w["self_kills"]), (2, 1, 1))
+        self.assertEqual(w["reached_level"], {"1": 2, "2": 1, "4": 1})
 
 
 class RenderTests(unittest.TestCase):

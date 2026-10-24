@@ -5,6 +5,7 @@
   steelmill_triage.py analyze <run.bots.log>... [--mem f.mem] [--graph level.graph.json] [--out DIR]
   steelmill_triage.py graph <level.graph.json> [--mem f.mem] [--replay run.bots.log]   (warsbots/botnav-graph/1)
   steelmill_triage.py movement <run.bots.log>...                   pace profile, bots vs humans
+  steelmill_triage.py summary <run.bots.log> [--graph g.json] [--mem f.mem] [--out summary.json]   (warsbots-run-summary/1)
 
 Read-only: never writes next to its inputs. Stdlib only (Python 3.9+).
 """
@@ -17,6 +18,7 @@ from pathlib import Path
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wblab import analysis, logparse, mem, movement, navgraph, render  # noqa: E402
+from wblab import summary as runsummary  # noqa: E402
 
 
 def cmd_mem(a):
@@ -81,6 +83,16 @@ def cmd_graph(a):
         raise SystemExit(2)
 
 
+def cmd_summary(a):
+    memory = mem.read(a.mem) if a.mem else None
+    graph = navgraph.load(a.graph, memory) if a.graph else None
+    out = runsummary.build(a.log, graph, memory, a.label)
+    text = json.dumps(out, indent=2) + "\n"
+    if a.out:
+        Path(a.out).write_text(text, encoding="utf-8")
+    print(text, end="")
+
+
 def cmd_movement(a):
     out = [movement.profile(p) for p in a.logs]
     for o in out:
@@ -97,6 +109,8 @@ def main(argv=None):
     s.set_defaults(fn=cmd_analyze)
     s = sub.add_parser("graph"); s.add_argument("file"); s.add_argument("--mem"); s.add_argument("--replay")
     s.add_argument("--replay-limit", type=int, default=20000); s.set_defaults(fn=cmd_graph)
+    s = sub.add_parser("summary"); s.add_argument("log"); s.add_argument("--graph"); s.add_argument("--mem")
+    s.add_argument("--label"); s.add_argument("--out"); s.set_defaults(fn=cmd_summary)
     s = sub.add_parser("movement"); s.add_argument("logs", nargs="+"); s.set_defaults(fn=cmd_movement)
     a = p.parse_args(argv)
     a.fn(a)
