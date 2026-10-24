@@ -16,7 +16,7 @@ clear or it is within ~3 m; smooth with the aim model later (C-038). Acceptance:
 stares ≥ 1 s < 5 per 11 min, kills/pickups not worse (paired). Also: this session SOCOM 22 / 88 kills (25 %), FY71 21,
 Shotgun 17, SCAR 11; decision flips 13.2 per bot-min, reaction 0.8 s, aim error (C-040 metric) 0.6°.
 
-### C-041 · 2026-10-24 22:40 · request · open — small export, low priority (narrowed after Recast v2)
+### C-041 · 2026-10-24 22:40 · request · **cancelled 00:05** — lifts/ladders read from the level .cry editor scene (RECAST-BAKE v3); nothing to export
 Refs: `Docs/Research/SteelmillTriage/RECAST-BAKE-2026-10-24.md` (v2), Player.cpp:6972 `IsLadderUsable`
 Needs owner: no (owner: "Armada has one lift, otherwise every point is reachable on foot")
 Recast v2 (cell 0.05, r 0.35): Steelmill 36/36, Quarry 32/32, Outpost 35/35, Armada 34/40 — the earlier "doors closed /

@@ -131,6 +131,7 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-25 00:05 | `RECAST-BAKE-2026-10-24.md` v3 | lifts/ladders from level .cry: Armada 3 elevators + 2 ladders → 37/40 spawns (r 0.3), items 151/156; C-041 cancelled |
 | 10-24 23:55 | C-042 in TO_CODEX.md | owner playtest 23:33 (demo + video): bots look > 90° off travel 32 % of moving time; wall stares = looking at the aim point through walls (SEARCHING_ENEMY); `look_walls.py` |
 | 10-24 22:40 | `SteelmillTriage/RECAST-BAKE-2026-10-24.md` v2 | finer bake (cs 0.05, r 0.35): Steelmill 36/36 on foot, Quarry 32/32, Outpost 35/35, Armada 34/40 with jumps; v1 gaps were erosion, not ladders/doors; Detour step: cs 0.1 r 0.3 |
 | 10-24 22:10 | `SteelmillTriage/RECAST-BAKE-2026-10-24.md` v1 | real Recast bake 4 maps: walk-only far better than walk model (Steelmill items 9 → 53); Strength links with real clearance: Steelmill 32/36, Quarry 32/32, Outpost 34/35, **Armada 6/40**; gaps = ladders → C-041 |

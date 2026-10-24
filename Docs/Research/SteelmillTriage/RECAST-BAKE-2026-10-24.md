@@ -1,6 +1,21 @@
 # Real Recast bake on 4 IA maps (OC-022, done by Claude under D-010) — 2026-10-24 22:40 (v2)
 
-## v2 result (22:40) — use these numbers
+## v3 (00:05) — lifts and ladders from the level's editor scene
+
+The installed levels ship their editor scene (`<Map>.cry` → `level.editor_xml`, read-only copy). `Tools/RecastBake/level_movers.py`
+lists Elevator / ElevatorSwitch entities and ladder / stairs brushes (`evidence/recast/movers.json`):
+Armada **3 elevators** (two carrier lifts, hangar 110 m ↔ flight deck 121 m, `fFloorHeight` 11; one island lift
+`Elevator_WES` 117.75 ↔ 122.5) + 9 switches, 2 ladders (`ladder_h`, `ladder_armada_a`), 39 stair brushes; Steelmill 4
+ladders (water tower / chimney), Quarry 4 (tanks), Outpost 3 (scaffolding). `mover_links.py` turns them into two-way
+off-mesh links between the mesh levels next to each object (`evidence/recast/Armada.movers.txt`, 7 links; `Elevator_right`
+found no platform level yet).
+
+Armada with lift/ladder links (cs 0.05): walk + lifts/ladders **19 → 29 / 40**; + jumps 34 / 40; with **r 0.3: 37 / 40**,
+items 151 / 156 (r 0.25: 38 / 40). The last 2–3 spawns sit on 5–6 m² pockets (spawn corners). → Armada is solved by
+data; **C-041 is no longer needed** (only the lift *use* — press switch, wait, ride — is new bot behaviour, with C-036).
+Detour step: bake at r 0.3 (cs 0.1 or finer on Armada), add mover links.
+
+## v2 result (22:40)
 
 **The first bake (22:10, below) was too coarse.** Cell 0.2 m with radius 0.4 erodes ceil(0.4/0.2) = 2 cells plus
 quantization, so ship doorways and factory stairwells (~0.8–1.0 m clear) vanished. The player stand capsule is

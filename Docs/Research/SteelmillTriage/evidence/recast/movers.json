@@ -1,0 +1,1235 @@
+{
+ "Armada": [
+  {
+   "kind": "Ladder",
+   "name": "Object4",
+   "pos": [
+    1413.375,
+    1339.75,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,0.70710701",
+   "geometry": "objects/library/props/ladders/ladder_h.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs125",
+   "pos": [
+    1503.5,
+    1330.4399,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_275z80",
+   "pos": [
+    1495.53,
+    1314.375,
+    125.125
+   ],
+   "rotate": "2.3841901e-007,0,0,1",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_137,5z_handrail.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "ladder_d3",
+   "pos": [
+    1492.75,
+    1315.375,
+    121.0
+   ],
+   "rotate": "0.70710683,0,0,0.70710671",
+   "geometry": "objects/library/props/ladders/ladder_armada_a.cgf"
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_right_down1",
+   "pos": [
+    1475.125,
+    1323.875,
+    110.0
+   ],
+   "rotate": "-2.682209e-007,-2.3832331e-010,-6.9388939e-018,1",
+   "geometry": ""
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_275z58",
+   "pos": [
+    1503.5,
+    1317.595,
+    121.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_275zb.cgf"
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_left_up1",
+   "pos": [
+    1474.625,
+    1366.5,
+    121.0
+   ],
+   "rotate": "0.70710659,0,0,0.70710701",
+   "geometry": ""
+  },
+  {
+   "kind": "Elevator",
+   "name": "Elevator_right",
+   "pos": [
+    1468.75,
+    1322.625,
+    108.75
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "",
+   "nFloorCount": "2",
+   "fFloorHeight": "11",
+   "nInitialFloor": "0",
+   "bAutomatic": "0",
+   "objModel": "Objects/Library/Architecture/Aircraftcarrier/lift3.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs121",
+   "pos": [
+    1443.5,
+    1354.78,
+    110.0
+   ],
+   "rotate": "0.70710701,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_375z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairwell_opening4",
+   "pos": [
+    1505.25,
+    1313.125,
+    126.75
+   ],
+   "rotate": null,
+   "geometry": "objects/library/architecture/submarine/stairs/stairwell_opening500x200y.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_collision_extension_12,5z3",
+   "pos": [
+    1507.25,
+    1312.375,
+    126.5
+   ],
+   "rotate": "0.70710689,0,0,0.70710671",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\stairs_collision_extension_12,5z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs128",
+   "pos": [
+    1520.75,
+    1355.25,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z_handrail.cgf"
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_right_down",
+   "pos": [
+    1458.625,
+    1323.875,
+    110.0
+   ],
+   "rotate": "-2.682209e-007,-2.3832331e-010,-6.9388939e-018,1",
+   "geometry": ""
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_left_up2",
+   "pos": [
+    1450.125,
+    1366.5,
+    121.0
+   ],
+   "rotate": "0.70710659,0,0,0.70710701",
+   "geometry": ""
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_275z77",
+   "pos": [
+    1493.0,
+    1316.875,
+    123.75
+   ],
+   "rotate": "1,0,0,-2.8312201e-007",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_137,5z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs123",
+   "pos": [
+    1443.5,
+    1329.97,
+    110.0
+   ],
+   "rotate": "0.70710701,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_375z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs135",
+   "pos": [
+    1509.75,
+    1358.75,
+    110.0
+   ],
+   "rotate": "0.70710695,0,0,0.70710659",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z.cgf"
+  },
+  {
+   "kind": "Elevator",
+   "name": "Elevator_left",
+   "pos": [
+    1463.75,
+    1363.125,
+    108.75
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "",
+   "nFloorCount": "2",
+   "fFloorHeight": "11",
+   "nInitialFloor": "0",
+   "bAutomatic": "0",
+   "objModel": "Objects/Library/Architecture/Aircraftcarrier/lift4.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs96",
+   "pos": [
+    1498.5,
+    1312.25,
+    117.875
+   ],
+   "rotate": "0.70710659,0,0,0.70710701",
+   "geometry": "Objects/Library/Architecture/Aircraftcarrier/stairs/stairs_300z.cgf"
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_WES_upper",
+   "pos": [
+    1489.0,
+    1319.25,
+    118.75
+   ],
+   "rotate": "1,-2.0816682e-017,2.3832331e-010,2.5331974e-007",
+   "geometry": ""
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs132",
+   "pos": [
+    1497.75,
+    1356.6899,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs126",
+   "pos": [
+    1497.75,
+    1355.25,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z.cgf"
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_WES_lower",
+   "pos": [
+    1489.0,
+    1319.25,
+    114.0
+   ],
+   "rotate": "1,-2.0816682e-017,2.3832331e-010,2.5331974e-007",
+   "geometry": ""
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs122",
+   "pos": [
+    1443.5,
+    1330.0,
+    110.0
+   ],
+   "rotate": "0.70710701,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_375z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_collision_extension_12,5z2",
+   "pos": [
+    1513.25,
+    1316.0,
+    117.625
+   ],
+   "rotate": "0.70710689,0,0,0.70710671",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\stairs_collision_extension_12,5z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs130",
+   "pos": [
+    1507.0,
+    1316.0,
+    113.0
+   ],
+   "rotate": "0.70710695,0,0,0.70710659",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_462,5z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs129",
+   "pos": [
+    1520.75,
+    1355.25,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairwell_opening3",
+   "pos": [
+    1511.25,
+    1316.75,
+    117.75
+   ],
+   "rotate": null,
+   "geometry": "objects/library/architecture/submarine/stairs/stairwell_opening500x200y.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "aircraftcarrier_whiteboxing1579",
+   "pos": [
+    1417.895,
+    1319.84,
+    116.54
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/hull_rear_2_stairs.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs124",
+   "pos": [
+    1503.5,
+    1329.0,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_collision_extension_12,5z1",
+   "pos": [
+    1502.75,
+    1312.25,
+    120.875
+   ],
+   "rotate": "0.70710689,0,0,0.70710671",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\stairs_collision_extension_12,5z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "floor_400x400y16882",
+   "pos": [
+    1426.875,
+    1332.187,
+    113.75
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\stairs_275z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairwell_opening5",
+   "pos": [
+    1512.0,
+    1359.5,
+    113.0
+   ],
+   "rotate": null,
+   "geometry": "objects/library/architecture/submarine/stairs/stairwell_opening500x200y.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs133",
+   "pos": [
+    1520.75,
+    1356.6899,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs134",
+   "pos": [
+    1507.0,
+    1316.03,
+    113.0
+   ],
+   "rotate": "0.70710695,0,0,0.70710659",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_462,5z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs120",
+   "pos": [
+    1443.5,
+    1356.25,
+    110.0
+   ],
+   "rotate": "0.70710701,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_375z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs136",
+   "pos": [
+    1509.75,
+    1357.3108,
+    110.0
+   ],
+   "rotate": "0.70710695,0,0,0.70710659",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_275z67",
+   "pos": [
+    1503.25,
+    1312.375,
+    123.75
+   ],
+   "rotate": "0.70710659,0,0,0.70710701",
+   "geometry": "Objects/Library/Architecture/Aircraftcarrier/stairs/stairs_275z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "floor_400x400y16880",
+   "pos": [
+    1426.875,
+    1330.75,
+    113.75
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\stairs_275z.cgf"
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_left_down",
+   "pos": [
+    1453.5,
+    1361.875,
+    110.0
+   ],
+   "rotate": "1,0,2.3832331e-010,2.9802322e-007",
+   "geometry": ""
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs131",
+   "pos": [
+    1503.5,
+    1329.0,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z_handrail.cgf"
+  },
+  {
+   "kind": "Elevator",
+   "name": "Elevator_WES",
+   "pos": [
+    1489.75,
+    1319.0,
+    117.75
+   ],
+   "rotate": "0.70710659,0,0,0.70710701",
+   "geometry": "",
+   "nFloorCount": "2",
+   "fFloorHeight": "4.75",
+   "nInitialFloor": "1",
+   "bAutomatic": "0",
+   "objModel": "Objects/Library/Architecture/Aircraftcarrier/weapons_elevator.cgf"
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_right_up",
+   "pos": [
+    1477.75,
+    1316.875,
+    121.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": ""
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_275z78",
+   "pos": [
+    1497.0,
+    1314.375,
+    125.125
+   ],
+   "rotate": "2.3841901e-007,0,0,1",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_137,5z.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairwell_opening2",
+   "pos": [
+    1501.125,
+    1313.0,
+    121.0
+   ],
+   "rotate": null,
+   "geometry": "objects/library/architecture/submarine/stairs/stairwell_opening425x200y.cgf"
+  },
+  {
+   "kind": "ElevatorSwitch",
+   "name": "ElevatorSwitch_left_down1",
+   "pos": [
+    1470.0,
+    1361.875,
+    110.0
+   ],
+   "rotate": "1,0,2.3832331e-010,2.9802322e-007",
+   "geometry": ""
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_275z64",
+   "pos": [
+    1503.5,
+    1319.032,
+    121.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\stairs_275z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_275z72",
+   "pos": [
+    1503.25,
+    1312.375,
+    123.75
+   ],
+   "rotate": "0.70710659,0,0,0.70710701",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\stairs_275z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "island_stairs_1-2_2",
+   "pos": [
+    1515.38,
+    1312.0,
+    129.5
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\island_stairs_1-2_1.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs_275z79",
+   "pos": [
+    1494.47,
+    1316.875,
+    123.75
+   ],
+   "rotate": "1,0,0,-2.8312201e-007",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_137,5z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs89",
+   "pos": [
+    1498.5,
+    1312.25,
+    117.875
+   ],
+   "rotate": "0.70710659,0,0,0.70710701",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\stairs\\stairs_300z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "stairs127",
+   "pos": [
+    1497.75,
+    1355.25,
+    110.0
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_300z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "areasign61",
+   "pos": [
+    1506.625,
+    1358.5,
+    112.25
+   ],
+   "rotate": "-5.9624301e-009,0,0,1",
+   "geometry": "Objects\\Library\\Architecture\\Aircraftcarrier\\props\\signs\\stairwellGREEN_glow_sign.cgf"
+  }
+ ],
+ "Steelmill": [
+  {
+   "kind": "Ladder",
+   "name": "water_tower_ladder_brokenb2",
+   "pos": [
+    1288.0808,
+    1336.8713,
+    168.51881
+   ],
+   "rotate": "0.15643454,0,0,0.9876883",
+   "geometry": "objects/library/architecture/watchtowers/water_tower_ladder_brokena.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_stair_b6",
+   "pos": [
+    1203.0,
+    1291.0,
+    141.75
+   ],
+   "rotate": "-2.9802299e-008,0,0,1",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_b.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_a171",
+   "pos": [
+    1366.9866,
+    1311.0,
+    143.11525
+   ],
+   "rotate": "0.70710659,0,0,-0.70710701",
+   "geometry": "objects/library/architecture/concrete structure/concrete_structure_stair_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_stair_b1",
+   "pos": [
+    1284.25,
+    1314.88,
+    142.25
+   ],
+   "rotate": "0.70710701,0,0,0.70710701",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_b.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_stair_a2",
+   "pos": [
+    1337.0,
+    1290.0007,
+    143.0
+   ],
+   "rotate": "-2.9802299e-008,0,0,1",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_stair_a5",
+   "pos": [
+    1203.0,
+    1291.0,
+    141.75
+   ],
+   "rotate": "-2.9802299e-008,0,0,1",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_a180",
+   "pos": [
+    1292.0,
+    1291.5,
+    143.19
+   ],
+   "rotate": "1,0,0,3.5998801e-007",
+   "geometry": "objects/library/architecture/harbour/concrete_base/concrete_stair.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_a167",
+   "pos": [
+    1292.0,
+    1294.5,
+    143.19
+   ],
+   "rotate": "1,0,0,3.5998801e-007",
+   "geometry": "objects/library/architecture/harbour/concrete_base/concrete_stair.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_stair_b3",
+   "pos": [
+    1337.0,
+    1290.0,
+    143.0
+   ],
+   "rotate": "-2.9802299e-008,0,0,1",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_b.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_a98",
+   "pos": [
+    1292.0,
+    1296.0,
+    143.19
+   ],
+   "rotate": "1,0,0,3.5998801e-007",
+   "geometry": "objects/library/architecture/harbour/concrete_base/concrete_stair.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_a168",
+   "pos": [
+    1292.0,
+    1293.0,
+    143.19
+   ],
+   "rotate": "1,0,0,3.5998801e-007",
+   "geometry": "objects/library/architecture/harbour/concrete_base/concrete_stair.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "water_tower2",
+   "pos": [
+    1222.3616,
+    1334.7147,
+    135.03607
+   ],
+   "rotate": "0.70710689,0,0,0.70710671",
+   "geometry": "Objects\\library\\architecture\\watchtowers\\water_tower_ladder.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "grid59",
+   "pos": [
+    1290.375,
+    1341.0,
+    174.125
+   ],
+   "rotate": "0.92385703,0.0064498428,-0.0026716127,-0.38267413",
+   "geometry": "objects/library/architecture/multiplayer/indbuild_1/chimney_ladder_upper.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "water_tower_ladder_brokenb4",
+   "pos": [
+    1286.5148,
+    1341.3358,
+    148.4072
+   ],
+   "rotate": "0.90244788,0.015752286,0.0075134523,0.43044543",
+   "geometry": "objects/library/architecture/multiplayer/indbuild_1/chimney_ladder_lower.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "concrete_structure_stair_b2",
+   "pos": [
+    1284.25,
+    1344.88,
+    142.25
+   ],
+   "rotate": "0.70710701,0,0,0.70710701",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_b.cgf"
+  }
+ ],
+ "Quarry": [
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x53",
+   "pos": [
+    1487.01,
+    1155.41,
+    154.035
+   ],
+   "rotate": "1,0,0,4.8428802e-007",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x49",
+   "pos": [
+    1398.76,
+    1099.88,
+    157.21001
+   ],
+   "rotate": "0.819152,0,0,-0.57357597",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x46",
+   "pos": [
+    1401.9301,
+    1102.86,
+    158.784
+   ],
+   "rotate": "0.83867055,0,0,-0.54463911",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x43",
+   "pos": [
+    1402.13,
+    1103.4301,
+    161.522
+   ],
+   "rotate": "0.57357597,0,0,0.819152",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x38",
+   "pos": [
+    1483.92,
+    1159.42,
+    157.11301
+   ],
+   "rotate": "0.70710701,0,0,0.70710701",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x33",
+   "pos": [
+    1403.23,
+    1106.28,
+    162.925
+   ],
+   "rotate": "0.83867103,0,0,-0.54463899",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "processing_facility_stair_a3",
+   "pos": [
+    1391.38,
+    1183.4,
+    151.759
+   ],
+   "rotate": "0.83388585,0,0,0.55193698",
+   "geometry": "objects/library/architecture/nodule/buildings/process_tower_separated/processing_facility_stair_b.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "processing_facility_stair_a2",
+   "pos": [
+    1440.97,
+    1114.42,
+    151.759
+   ],
+   "rotate": "0.82903743,0,0,-0.55919313",
+   "geometry": "objects/library/architecture/nodule/buildings/process_tower_separated/processing_facility_stair_b.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "crusher_structure_stairs_a3",
+   "pos": [
+    1416.1899,
+    1188.5601,
+    152.16299
+   ],
+   "rotate": "0.82903743,0,0,-0.55919313",
+   "geometry": "Objects\\library\\architecture\\concrete structure\\crusher_structure_stairs_a.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "container_tank37",
+   "pos": [
+    1444.3021,
+    1126.5493,
+    158.38388
+   ],
+   "rotate": "0.82903743,0,0,-0.55919313",
+   "geometry": "objects/library/props/ladders/ladder_d.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x37",
+   "pos": [
+    1483.92,
+    1160.48,
+    157.108
+   ],
+   "rotate": "0.70710701,0,0,0.70710701",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "crusher_structure_stairs_a2",
+   "pos": [
+    1423.4,
+    1170.7,
+    152.265
+   ],
+   "rotate": "0.55919224,0,0,0.82903802",
+   "geometry": "Objects\\library\\architecture\\concrete structure\\crusher_structure_stairs_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "indbuild_193",
+   "pos": [
+    1469.0015,
+    1171.7456,
+    151.884
+   ],
+   "rotate": "0.98162717,0,0,0.19080894",
+   "geometry": "objects/library/architecture/nodule/buildings/process_tower_separated/processing_facility_stair_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x48",
+   "pos": [
+    1401.03,
+    1099.6899,
+    157.21001
+   ],
+   "rotate": "0.57357597,0,0,0.819152",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "container_tank36",
+   "pos": [
+    1458.4399,
+    1097.0,
+    152.21884
+   ],
+   "rotate": "0.82903743,0,0,-0.55919313",
+   "geometry": "objects/library/props/ladders/ladder_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "crusher_structure_stairs_a1",
+   "pos": [
+    1431.1899,
+    1151.4301,
+    152.16299
+   ],
+   "rotate": "0.82903761,0,0,-0.5591929",
+   "geometry": "Objects\\library\\architecture\\concrete structure\\crusher_structure_stairs_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "processing_facility_stair_a1",
+   "pos": [
+    1485.1801,
+    1161.4301,
+    151.884
+   ],
+   "rotate": "0.98162717,0,0,0.19080895",
+   "geometry": "Objects\\library\\Architecture\\Nodule\\buildings\\process_tower_separated\\processing_facility_stair_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x52",
+   "pos": [
+    1486.9399,
+    1157.53,
+    155.48599
+   ],
+   "rotate": "1,0,0,4.8428802e-007",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "container_tank38",
+   "pos": [
+    1379.9622,
+    1177.0599,
+    158.23454
+   ],
+   "rotate": "0.97992468,0,0,-0.19936799",
+   "geometry": "objects/library/props/ladders/ladder_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "processing_facility_stair_a5",
+   "pos": [
+    1451.2999,
+    1130.6024,
+    151.759
+   ],
+   "rotate": "0.82903755,0,0,-0.55919296",
+   "geometry": "objects/library/architecture/nodule/buildings/process_tower_separated/processing_facility_stair_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "processing_facility_stair_a4",
+   "pos": [
+    1446.2772,
+    1091.5575,
+    151.759
+   ],
+   "rotate": "-0.19080876,0,0,0.98162723",
+   "geometry": "objects/library/architecture/nodule/buildings/process_tower_separated/processing_facility_stair_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x34",
+   "pos": [
+    1405.13,
+    1107.22,
+    164.37601
+   ],
+   "rotate": "0.83867055,0,0,-0.54463911",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "crusher_structure_stairs_b2",
+   "pos": [
+    1425.3254,
+    1173.5127,
+    161.27699
+   ],
+   "rotate": "0.55919349,0,0,0.82903719",
+   "geometry": "Objects\\library\\architecture\\concrete structure\\crusher_structure_stairs_b.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "processing_facility_stair_a8",
+   "pos": [
+    1412.959,
+    1225.6689,
+    152.03
+   ],
+   "rotate": "0.97992468,0,0,-0.19936793",
+   "geometry": "objects/library/architecture/nodule/buildings/process_tower_separated/processing_facility_stair_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x45",
+   "pos": [
+    1403.8506,
+    1103.8069,
+    160.235
+   ],
+   "rotate": "0.83867055,0,0,-0.54463911",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "processing_facility_stair_a7",
+   "pos": [
+    1485.1801,
+    1161.4301,
+    151.884
+   ],
+   "rotate": "0.98162717,0,0,0.19080895",
+   "geometry": "objects/library/architecture/nodule/buildings/process_tower_separated/processing_facility_stair_d.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x50",
+   "pos": [
+    1485.86,
+    1157.53,
+    155.48599
+   ],
+   "rotate": "1,0,0,4.8428802e-007",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "crusher_structure_stairs_b3",
+   "pos": [
+    1427.804,
+    1152.1237,
+    161.20229
+   ],
+   "rotate": "0.55919349,0,0,0.82903719",
+   "geometry": "Objects\\library\\architecture\\concrete structure\\crusher_structure_stairs_b.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "crusher_structure_stairs_b1",
+   "pos": [
+    1412.8052,
+    1189.2687,
+    161.20757
+   ],
+   "rotate": "0.55919349,0,0,0.82903719",
+   "geometry": "Objects\\library\\architecture\\concrete structure\\crusher_structure_stairs_b.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "container_tank34",
+   "pos": [
+    1400.4688,
+    1230.4475,
+    152.6449
+   ],
+   "rotate": "0.83388579,0,0,0.55193698",
+   "geometry": "objects/library/props/ladders/ladder_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "processing_facility_stair_a6",
+   "pos": [
+    1372.6299,
+    1179.262,
+    151.759
+   ],
+   "rotate": "0.83388579,0,0,0.55193704",
+   "geometry": "objects/library/architecture/nodule/buildings/process_tower_separated/processing_facility_stair_c.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "pier_wooden_1600x51",
+   "pos": [
+    1485.95,
+    1155.41,
+    154.035
+   ],
+   "rotate": "1,0,0,4.8428802e-007",
+   "geometry": "objects/library/architecture/village/floor/stairs_wooden_140_100_a.cgf"
+  }
+ ],
+ "Outpost": [
+  {
+   "kind": "Stairs",
+   "name": "guardhouse41",
+   "pos": [
+    1119.894,
+    1001.0707,
+    163.625
+   ],
+   "rotate": "0.9238795,0,0,-0.38268346",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_a.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "scaffolding_platform_4x50",
+   "pos": [
+    1048.0309,
+    948.51392,
+    162.00079
+   ],
+   "rotate": "1,0,0,-2.6077032e-008",
+   "geometry": "objects/library/architecture/mine/scaffolding/scaffolding_ladder_small.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "greensign_stairsdown2",
+   "pos": [
+    1071.7052,
+    970.90265,
+    155.39786
+   ],
+   "rotate": null,
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_306,25z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "guardhouse8",
+   "pos": [
+    1111.515,
+    936.64575,
+    163.375
+   ],
+   "rotate": "-4.4703501e-008,0,0,1",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "greensign_stairsdown1",
+   "pos": [
+    1070.2052,
+    970.90265,
+    155.39786
+   ],
+   "rotate": null,
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_306,25z.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "scaffolding_platform_4x8",
+   "pos": [
+    1050.4341,
+    943.17462,
+    159.00082
+   ],
+   "rotate": "0.70710671,0,0,-0.70710683",
+   "geometry": "objects/library/architecture/mine/scaffolding/scaffolding_ladder_small.cgf"
+  },
+  {
+   "kind": "Ladder",
+   "name": "scaffolding_platform_4x37",
+   "pos": [
+    1049.3306,
+    946.17468,
+    160.50079
+   ],
+   "rotate": "-4.3711388e-008,-0,0,1",
+   "geometry": "objects/library/architecture/mine/scaffolding/scaffolding_ladder_small.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "greensign_stairsdown3",
+   "pos": [
+    1070.2522,
+    970.90265,
+    155.39786
+   ],
+   "rotate": null,
+   "geometry": "objects/library/architecture/aircraftcarrier/stairs/stairs_306,25z_handrail.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "guardhouse42",
+   "pos": [
+    1130.5007,
+    1011.6773,
+    163.625
+   ],
+   "rotate": "-0.38268337,0,0,0.92387956",
+   "geometry": "Objects\\Library\\Architecture\\concrete structure\\concrete_structure_stair_a.cgf"
+  },
+  {
+   "kind": "Stairs",
+   "name": "portacabin3",
+   "pos": [
+    1114.875,
+    973.5,
+    159.87494
+   ],
+   "rotate": null,
+   "geometry": "Objects\\Library\\Architecture\\portacabin\\portacabin_stairs.cgf"
+  }
+ ]
+}
