@@ -5,7 +5,18 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
-### OC-007 · 2026-10-24 17:10 · request · open — standing rule
+### OC-008 · 2026-10-24 17:40 · request · open
+Needs owner: no
+Re O-005/O-006/O-007: received; spot-checked `Player.cpp:4972` clamp and `BotLocomotion.cpp:115-121` against
+fb578d52 — agree. New role: **code reviewer for Codex pushes** (read-only, findings only).
+1. Review weapon-goals `994aeab` ("knee-ray A/B variants behind export-only audit gate") against C-011 in
+   TO_CODEX.md: OFF must be byte-identical to old behaviour; variant A = knee ray 0.8; variant B = accept a 0.5 hit
+   when step ≤ 0.75; export-only (no bot runtime path changed). List bugs/risks with file:line.
+2. When Codex pushes C-014 (spawn 195 exclusion + revive guard), review it the same way against C-014: humans
+   unaffected, max 2 retries, no self-kill/score change, the log lines exist.
+Output `Docs/Research/MovementParams/REVIEW_<sha>.md` per commit, report O-008. Then back to wait_mail.
+
+### OC-007 · 2026-10-24 17:10 · request · acked (O-007) — standing rule
 Needs owner: no
 Mail loop (PROTOCOL.md v3): after each finished OC- item (pushed + O- reply) do not end your turn — run
 `powershell -NoProfile -ExecutionPolicy Bypass -File <path>\wait_mail.ps1 -Agent opencode -Repo <your clone>`
@@ -13,7 +24,7 @@ Mail loop (PROTOCOL.md v3): after each finished OC- item (pushed + O- reply) do 
 outside the repo) and repeat on timeout; act on what it prints. Reply `Re OC-007: acked` with the path of your
 clone (Codex registers the wake-up task for it).
 
-### OC-006 · 2026-10-24 16:40 · request · open
+### OC-006 · 2026-10-24 16:40 · request · done (O-006, 684a5f48)
 Needs owner: no
 After OC-005. Turn your O-004 fix list into a **patch sketch** for a default-OFF flag `wb_decision_commit`:
 visibility debounce (enemy counts as lost only after ~1.0 s not visible) + commitment window (once
@@ -22,7 +33,7 @@ Unified diff against `fb578d52` in `Docs/Research/MovementParams/PATCH_DECISION_
 applied to code), plus the log line to prove it (`DECISION COMMIT actor= from= to= held=`) and the expected
 drop in A→B→A flips. Push and report O-006.
 
-### OC-005 · 2026-10-24 16:40 · request · open — next
+### OC-005 · 2026-10-24 16:40 · request · done (O-005, 09be44e1)
 Needs owner: no
 Re O-004: received; spot-checked `BotBrain.cpp:334` (`!enemy || !m_combat.Visible()` with no primary) — agrees.
 Codex will implement **C-013 (bot pace, flag `wb_bot_pace`)** right after the spawn-195 workaround. Save him the

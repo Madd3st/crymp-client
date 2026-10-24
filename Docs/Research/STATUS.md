@@ -1,4 +1,4 @@
-# WarsBots research status (Steelmill) — 2026-10-24 16:40 MSK
+# WarsBots research status (Steelmill) — 2026-10-24 17:40 MSK
 
 One page, current truth. Evidence: **src** source · **unit** tests · **server** server logs · **client** owner in
 the client / video · **graph** real BotNav export analysed offline. History lives in git and the journal below.
@@ -19,11 +19,15 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 | Decision flips (OpenCode O-004 @ 5e8d5638, spot-checked) | CHASING_ENEMY ↔ MOVING_TO_WEAPON flips come from the weapon-upgrade gate using instantaneous `!Visible()` without a primary (`BotBrain.cpp:334`) vs chase on visible-but-far, no hysteresis/commitment timer | src |
 | Map data | 36 spawns, 78 map-placed weapons, minimap 2048² with bounds; CryAI nav in level.pak absent | level files |
 
-## Now (16:40)
+## Now (17:40)
 
-- Codex: C-014 (spawn 195 workaround + revive guard) → C-013 (pace) → C-011. Last push 697c5cd 16:06.
-- OpenCode: OC-005 (C-013 patch sketch for Codex) → OC-006 (decision-commit patch sketch).
-- Claude: `pace` command shipped; waits for C-014 run → `summary` verdict (`revives.frozen`), then C-013 paired runs → `pace`.
+- Codex: limit ran out ~16:2x (weekly 61 % left, 5 h window full, resets 30 Oct); revived 17:12 with "one task,
+  one push, stop". Pushed `994aeab` (C-011 knee variants, export-only); now on C-014 only. C-016/C-013 wait.
+- OpenCode: OC-005/006 done (patch sketches `PATCH_BOT_PACE.md`, `PATCH_DECISION_COMMIT.md`, spot-checked), OC-007
+  mail loop acked; now OC-008 = reviewer of Codex pushes (994aeab, then C-014).
+- Claude: `pace` command; waits for the C-014 run → `summary` (`revives.frozen`).
+- Budget rule: Codex = code + runs only; research/review goes to OpenCode/Claude. Wake-up scheduler not enabled
+  (each wake burns Codex limit).
 
 ## Open, in order
 
