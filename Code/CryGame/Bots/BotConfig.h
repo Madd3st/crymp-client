@@ -28,6 +28,7 @@ struct BotConfig {
  int weaponRank=0;    // C-022 weapon value for pickup/hold, default OFF
  int goalArbiter=0;   // C-032 goal arbiter with commitment/hysteresis, default OFF
  int botPerception=0; // P2 C-037 view cone, time to notice, cloak (BotPerception.h), default OFF
+ int aimModel=0;     // P2 C-038 human aim: saccade + tracking + filtered noise (BotAimModel.h), default OFF
  int botNavmesh=0;    // P0 Detour navmesh paths/reachability (Tools/RecastBake meshes), default OFF
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);

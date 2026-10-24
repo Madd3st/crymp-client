@@ -8,6 +8,7 @@
 #include "CryGame/Bots/BotTrapWatchdog.h"
 #include "CryGame/Bots/BotLookPolicy.h"
 #include "CryGame/Bots/BotGoalArbiter.h"
+#include "CryGame/Bots/BotAimModel.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 struct IActor;
@@ -68,6 +69,11 @@ private:
 	bool m_lookValid = false;
 	GoalArbiter m_arbiter;
 	float m_nextRangeSelect = 0;
+	BotAimModel m_aimModel;
+	bool m_aimModelInit = false;
+	EntityId m_aimModelTarget = 0;
+	float m_prevTargetYaw = 0, m_prevTargetPitch = 0;
+	Vec3 AimModelPoint(CPlayer& actor, const Vec3& observed, float distance, float dt);
 	bool NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect=false);
 	BotProgress m_progress;
     bool RecoverTrap(CPlayer& actor);

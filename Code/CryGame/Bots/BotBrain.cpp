@@ -174,7 +174,7 @@ void BotBrain::ResetLife()
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
 	m_retreating = false;
-	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0;
+	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_aimModelInit = false; m_aimModelTarget = 0;
 	m_weaponSearchStarted = m_now;
 	m_nextSearch = m_now;
 	m_deadTime = 0;
@@ -527,12 +527,16 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
         m_trackedAim=movement.eyePosition+movement.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)*max(1.f,distance);
         m_trackedTarget=m_combat.Target();m_trackedSelection=m_combat.SelectedAt();
     }
+    if (BotConfig::Get().aimModel==1) aim=AimModelPoint(actor,aim,distance,decisionTime); // C-038
+    else
+    {
     // Track only the last observed/cached point. No velocity extrapolation or hidden query.
     m_trackedAim+=(aim-m_trackedAim)*BotAimControl::Alpha(m_profile,decisionTime);
     aim=m_trackedAim;
     const float error=BotAimControl::ErrorRadius(m_profile,distance);
 	const float t = m_now + m_phase;
 	aim += Vec3(sinf(t * 2.7f), cosf(t * 1.9f), sinf(t * 1.3f) * 0.3f) * error;
+    }
 	IItem* held=actor.GetCurrentItem();
 	const float desiredRange=m_profile.WeaponRange(held?held->GetEntity()->GetClass()->GetName():nullptr,m_life+unsigned(m_number));
 	const bool disadvantage=m_profile.retreatHealth>0 && (m_blackboard.health<=m_profile.retreatHealth ||
@@ -867,6 +871,47 @@ Vec3 BotBrain::CappedLook(CPlayer& actor) const
 	if (!m_lookValid) return m_intent.aim;
 	const Vec3 eye=actor.GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
 	return eye+m_lookDir*max(2.0f,(m_intent.aim-eye).GetLength());
+}
+
+// C-038 aim model (BotAimModel.h): flick to a new target with a Fitts-like duration and an end error, then track with
+// lag + partial lead, plus Ornstein-Uhlenbeck hand noise - instead of a low-pass filter plus fixed 2.7/1.9/1.3 Hz sines
+// (the "ellipse" the owner saw as aim wandering). Uses only the observed/cached aim point (no hidden query).
+Vec3 BotBrain::AimModelPoint(CPlayer& actor,const Vec3& observed,float distance,float dt)
+{
+	SMovementState movement; actor.GetMovementController()->GetMovementState(movement);
+	const Vec3 eye=movement.eyePosition;
+	const Vec3 d=observed-eye;
+	const float h=sqrtf(d.x*d.x+d.y*d.y);
+	const float yaw=RAD2DEG(atan2f(d.x,d.y)), pitch=RAD2DEG(atan2f(d.z,max(0.01f,h)));
+	if (!m_aimModelInit)
+	{
+		const int skill=m_profile.skill==BotSkill::Beginner?0:m_profile.skill==BotSkill::Veteran?2:m_profile.skill==BotSkill::Elite?3:1;
+		m_aimModel=BotAimModel(AimSkillPreset(skill),0x9E3779B9u*unsigned(m_number+1)+m_life);
+		const Vec3 v=movement.eyeDirection.GetNormalizedSafe(actor.GetEntity()->GetWorldRotation().GetColumn1());
+		m_aimModel.SetView(RAD2DEG(atan2f(v.x,v.y)),RAD2DEG(asin_tpl(clamp_tpl(v.z,-1.0f,1.0f))));
+		m_aimModelInit=true; m_aimModelTarget=0;
+	}
+	if (m_aimModelTarget!=m_combat.Target())
+	{
+		// New target: the flick starts from where the bot really looks now, not from a stale model view.
+		const Vec3 v=movement.eyeDirection.GetNormalizedSafe(actor.GetEntity()->GetWorldRotation().GetColumn1());
+		m_aimModel.SetView(RAD2DEG(atan2f(v.x,v.y)),RAD2DEG(asin_tpl(clamp_tpl(v.z,-1.0f,1.0f))));
+	}
+	AimInput in;
+	in.dt=max(0.02f,dt);
+	in.hasTarget=m_combat.Target()!=0;
+	in.targetId=int(m_combat.Target());
+	in.targetYaw=yaw; in.targetPitch=pitch;
+	if (m_aimModelTarget==m_combat.Target())
+	{
+		in.targetYawRate=BotAimModel::Wrap(yaw-m_prevTargetYaw)/in.dt;
+		in.targetPitchRate=(pitch-m_prevTargetPitch)/in.dt;
+	}
+	in.targetSizeDeg=RAD2DEG(atan2f(0.45f,max(1.0f,distance)));
+	m_aimModelTarget=m_combat.Target(); m_prevTargetYaw=yaw; m_prevTargetPitch=pitch;
+	const AimOutput o=m_aimModel.Update(in);
+	const float ry=DEG2RAD(o.yaw), rp=DEG2RAD(o.pitch);
+	return eye+Vec3(sinf(ry)*cosf(rp),cosf(ry)*cosf(rp),sinf(rp))*max(1.0f,d.GetLength());
 }
 
 // C-032 goal arbiter (BotGoalArbiter.h): one decision per tick with commitment windows, so CHASING_ENEMY and
