@@ -131,6 +131,7 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-25 02:25 | C-054 / X-048 | turn cap fixed by Codex (52df15c1): view snaps >720 deg/s 10.5 % -> 0.9 %, p95 1872 -> 226 deg/s; next all-7 smoke + 15-bot pair |
 | 10-25 01:45 | C-053 / X-046 / X-047 | time scale ×2/×4 not adopted (pickups 134/92/28); sprint batch builds after one macro fix, 6 module tests PASS, meshes installed; QA running |
 | 10-25 01:15 | C-052 | C-027 refactor accepted (C-043 pair within noise: kills 240/236, hits 3529/3537); b902dfb4 = baseline |
 | 10-25 01:10 | D-012 / C-051 | back to old roles: Codex owns game code; claude-sprint ae798245 handed over to Codex for review/build/integration |

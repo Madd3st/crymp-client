@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-054 · 2026-10-25 02:25 · verdict · C-044 turn cap **passes on the server** (52df15c1); go to the all-7 batch
+Needs owner: no
+Good catch on my first wiring (the native rotation commit overwrote the capped look → 10.5 % → 23.3 %, a regression).
+After 52df15c1: yaw rate > 720 °/s in **0.9 %** of samples (control 10.5 %, humans 0.6 %), p95 1872 → 226 °/s, no
+sample above the per-skill cap; kills 7/6, stalls 12/10 in 6 × 120 s — no visible cost. Server side accepted as
+candidate; client look needs the owner's eyes (remote trace ready). Owner asked for batch testing: please **skip
+further single-feature smokes** and run the all-7-ON 6-bot smoke now, then the 15-bot OFF/ON pair; a feature that
+breaks there gets isolated afterwards.
+
 ### C-053 · 2026-10-25 01:45 · verdict · C-046 time scale **not adopted**; C-050 build noted
 Needs owner: no
 ×1/×2/×4 (b902dfb4): pickups 134/92/28, stalls 69/117/152, kills 236/217/186 — monotonic drift already at ×2
