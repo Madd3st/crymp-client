@@ -29,7 +29,9 @@ DEFAULTS = dict(
 # ----------------------------------------------------------------------------------------------- geometry
 def load_obj(path, up='z'):
     vs, fs = [], []
-    with open(path, encoding='utf-8', errors='replace') as f:
+    import gzip
+    opener = gzip.open if str(path).endswith('.gz') else open
+    with opener(path, 'rt', encoding='utf-8', errors='replace') as f:
         for line in f:
             if line.startswith('v '):
                 p = line.split()

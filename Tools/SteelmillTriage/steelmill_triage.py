@@ -143,7 +143,7 @@ def _points(path, key):
     rows = d.get(key, []) if isinstance(d, dict) else d
     out = []
     for r in rows:
-        p = r.get("pos") or [r.get("x"), r.get("y"), r.get("z")]
+        p = r.get("pos") or r.get("position") or [r.get("x"), r.get("y"), r.get("z")]
         out.append((r.get("id"), float(p[0]), float(p[1]), float(p[2])))
     return out
 
