@@ -37,3 +37,15 @@ success as soon as the goal has a parent). The legacy `wbnav/1` schema is reject
 Limits: positions are telemetry samples, not the walkable surface; `blocked` is BotMovement's
 refusal, not physics contact; offline A* omits the visibility ray in `BotNav::Nearest`, so an
 offline "ok" for an in-game failure points at that ray or at memory penalties.
+
+## navmesh (D-006)
+
+`python steelmill_triage.py navmesh <geometry.obj> [--bounds x0,y0,x1,y1] [--points map.json | --spawns s.json --items i.json]
+[--trace <MOVE TRACE logs>] [--png top.png] [--cs 0.3 --climb 0.5 --radius 0.4 --height 1.8 --max-drop 4 --slope 45]`
+
+Recast-style walkability model built offline from exported collision geometry (C-019 `wb_geom_export`): span
+heightfield, slope + clearance, climb links, one-way drops, radius erosion, SCCs. Prints the same questions the
+BotNav graph is judged by — main-part share, sinks, spawns/items by class (main / reach-main-only / from-main-only /
+island / off-mesh) and the owner route: on-mesh % and reproducible % of consecutive samples. PNG: green two-way with
+main, orange drop-off only, red no way back, grey isolated. Evaluation model only; the game links real Recast/Detour.
+~8 s for a 400×300 m map at 0.3 m cells.

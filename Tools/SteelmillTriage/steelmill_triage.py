@@ -23,6 +23,7 @@ from wblab import analysis, logparse, mem, movement, navgraph, render  # noqa: E
 from wblab import summary as runsummary  # noqa: E402
 from wblab import level_data, ml_validate  # noqa: E402
 from wblab import pace  # noqa: E402
+from wblab import navmesh  # noqa: E402
 
 
 def cmd_mem(a):
@@ -130,6 +131,50 @@ def cmd_pace(a):
                 print("    C-013 " + ("PASS" if ok else "FAIL") + ": " + "; ".join(notes))
 
 
+def _points(path, key):
+    """(id, x, y, z) from a level_data map JSON (spawns/items with pos) or a C-019 <map>.spawns/items.json."""
+    if not path:
+        return []
+    with open(path, encoding="utf-8") as f:
+        d = json.load(f)
+    rows = d.get(key, []) if isinstance(d, dict) else d
+    out = []
+    for r in rows:
+        p = r.get("pos") or [r.get("x"), r.get("y"), r.get("z")]
+        out.append((r.get("id"), float(p[0]), float(p[1]), float(p[2])))
+    return out
+
+
+def cmd_navmesh(a):
+    """Recast-style walkability model from exported geometry (OBJ) + the graph metrics (D-006)."""
+    v, f = navmesh.load_obj(a.obj, up=a.up)
+    bounds = None
+    if a.bounds:
+        x0, y0, x1, y1 = (float(t) for t in a.bounds.split(","))
+        bounds = ((x0, y0), (x1, y1))
+    m = navmesh.WalkModel(v, f, bounds=bounds, cs=a.cs, climb=a.climb, agent_r=a.radius,
+                          agent_h=a.height, max_drop=a.max_drop, max_slope=a.slope)
+    route = []
+    for log in a.trace or []:
+        with open(log, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if "MOVE TRACE" in line and "kind=human" in line and "health=0" not in line:
+                    try:
+                        t = float(line.split(" t=")[1].split()[0])
+                        x, y, z = (float(c) for c in line.split(" pos=(")[1].split(")")[0].split(","))
+                        route.append((t, x, y, z))
+                    except (IndexError, ValueError):
+                        pass
+    res = navmesh.profile(m, spawns=_points(a.points or a.spawns, "spawns"),
+                          items=_points(a.points or a.items, "items"), route=route)
+    if a.png:
+        navmesh.render_png(m, a.png, spawns=_points(a.points or a.spawns, "spawns"), route=route)
+        res["png"] = a.png
+    res["input"] = dict(obj=a.obj, vertices=int(len(v)), triangles=int(len(f)), spans=int(len(m.col)),
+                        columns=[m.nx, m.ny])
+    print(json.dumps(res, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o)))
+
+
 def cmd_movement(a):
     out = [movement.profile(p) for p in a.logs]
     for o in out:
@@ -155,6 +200,14 @@ def main(argv=None):
     s.set_defaults(fn=cmd_episodes)
     s = sub.add_parser("pace"); s.add_argument("logs", nargs="+"); s.add_argument("--side", default="server")
     s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_pace)
+    s = sub.add_parser("navmesh"); s.add_argument("obj"); s.add_argument("--up", default="z")
+    s.add_argument("--bounds", help="x0,y0,x1,y1"); s.add_argument("--points", help="level_data map JSON")
+    s.add_argument("--spawns"); s.add_argument("--items"); s.add_argument("--trace", nargs="*")
+    s.add_argument("--png", help="top-view PNG of the walk model")
+    s.add_argument("--cs", type=float, default=0.3); s.add_argument("--climb", type=float, default=0.5)
+    s.add_argument("--radius", type=float, default=0.4); s.add_argument("--height", type=float, default=1.8)
+    s.add_argument("--max-drop", type=float, default=4.0); s.add_argument("--slope", type=float, default=45.0)
+    s.set_defaults(fn=cmd_navmesh)
     s = sub.add_parser("movement"); s.add_argument("logs", nargs="+"); s.set_defaults(fn=cmd_movement)
     a = p.parse_args(argv)
     a.fn(a)
