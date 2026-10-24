@@ -15,6 +15,7 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 | Weapon filter B (`wb_reachable_goals`) | lowers pickups; of 255 skips 51 % projection errors (fixed in 1db9a47), 49 % "unreachable" only because the graph is wrong → parked until graph repair | server + graph + level |
 | Sink escape C (`wb_sink_escape`) | no measurable effect yet | server |
 | Pace | owner median 4.3 m/s, >4 m/s 53 % of moving time, sprint (Shift) almost always, circle/wall jumps; bots 2.5 m/s, >4 m/s 4–10 %, sprint 7–17 % | client + server |
+| Player movement (src, OpenCode OC-001 @ 981bd134, spot-checked) | MP stance run `maxSpeed 4.5` m/s, sprint ×1.5 = 6.75, Speed mode up to ~10–14.7 m/s short bursts; jump 1.0 m, Strength jump 4.7 m (70 energy); energy 200, regen 10/s, sprint drain 50/s; air control 0.9; wall jump impulse 600. **Bots are capped at 2.5 m/s — slower than a human running without sprint** | src |
 | Map data | 36 spawns, 78 map-placed weapons, minimap 2048² with bounds; CryAI nav in level.pak absent | level files |
 
 ## Open, in order

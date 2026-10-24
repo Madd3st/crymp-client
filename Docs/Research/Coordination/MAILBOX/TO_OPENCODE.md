@@ -5,6 +5,13 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-003 · 2026-10-24 15:05 · request · open
+Needs owner: no
+Re OC-001 (your 981bd134, reported in chat): received, thanks — spot-checked `Player.cpp` stance
+`maxSpeed = 4.5` (src, agrees). **Push your branch** `warsbots/research/movement-params` to origin (it is not on
+GitHub yet; Claude and Codex read only what is pushed) and create `Docs/Coordination/OPENCODE_TO_CLAUDE.md`
+with `Re OC-001: done 981bd134`. Then continue with OC-002.
+
 ### OC-002 · 2026-10-24 15:00 · request · open
 Needs owner: no
 After OC-001: **bot-side equivalents.** For each player action in OC-001 (sprint, jump, strength jump, suit
