@@ -2,6 +2,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$GameDirectory,
+    [ValidateRange(1024,49151)][int]$Port=46040,
     [Parameter(Mandatory)][string]$BaselineDirectory,
     [Parameter(Mandatory)][string]$CandidateDirectory,
     [ValidateRange(60,1800)][int]$Seconds=120,
@@ -19,6 +20,7 @@ param(
     [ValidateRange(-1,1)][int]$CandidateReachableGoals=-1,
     [ValidateRange(-1,1)][int]$CandidateSinkEscape=-1,
     [int[]]$ExplainNodes=@(),
+    [string]$ExplainPairsPath='',
     [ValidateRange(-1,1)][int]$CandidateHotspotAllNodes=-1,
     [switch]$NavExports,
     [ValidateSet("auto","universal")][string]$Style="auto",
@@ -40,7 +42,7 @@ $profile=Join-Path $env:LOCALAPPDATA 'WarsBots/Logs'
 $dataMemory=Join-Path $env:LOCALAPPDATA 'WarsBots/Memory'
 $memory=Join-Path $dataMemory 'Multiplayer_IA_Steelmill.mem'
 $backup=Join-Path $out 'initial-memory.mem'
-$port=64140
+$port=$Port
 $sessionTag=(Split-Path $out -Leaf) -replace '[^A-Za-z0-9_-]','_' 
 function Servers { @(Get-Process -Name 'CryMP-Server64' -ErrorAction SilentlyContinue | Where-Object { -not $_.HasExited }) }
 if ((Servers).Count) { throw 'An existing CryMP server is active; refusing shared-memory QA.' }
@@ -99,6 +101,16 @@ try {
                     if($ExplainNodes.Count -ne 2 -or $ExplainNodes[0] -lt 0 -or $ExplainNodes[1] -lt 0){throw 'ExplainNodes requires two nonnegative node IDs'}
                     $commands=" +wb_nav_explain after 15 $($ExplainNodes[0]) $($ExplainNodes[1])"+$commands
                 }
+                if($ExplainPairsPath) {
+                    $pairs=@(Get-Content -LiteralPath $ExplainPairsPath -Raw | ConvertFrom-Json)
+                    if($pairs.Count -ne 40){throw 'C-006 fixture requires exactly40 pairs'}
+                    foreach($pair in $pairs){
+                        if($pair.frm -isnot [long] -and $pair.frm -isnot [int]){throw 'Invalid from node'}
+                        if($pair.to -isnot [long] -and $pair.to -isnot [int]){throw 'Invalid to node'}
+                        if($pair.frm -lt 0 -or $pair.to -lt 0){throw 'Negative node'}
+                        $commands=" +wb_nav_explain after 15 $($pair.frm) $($pair.to)"+$commands
+                    }
+                }
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
@@ -138,8 +150,9 @@ try {
                 $numbers=@([regex]::Matches($text,'#(\d+) created EntityId=') | ForEach-Object {$_.Groups[1].Value} | Sort-Object -Unique)
                 $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
                 if($NavExports -and $navCaptured -ne 2){$ok=$false}
+                if($ExplainPairsPath -and ([regex]::Matches($text,'NAV explain from=')).Count -ne 80){$ok=$false}
                 if($Seconds -ge 660 -and $observed -lt 600){$ok=$false}
-                $run=[ordered]@{reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{-1});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{-1});explain_nodes=$ExplainNodes;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $run=[ordered]@{reachable_goals_requested=$(if($variant -eq 'candidate'){$CandidateReachableGoals}else{-1});sink_escape_requested=$(if($variant -eq 'candidate'){$CandidateSinkEscape}else{-1});explain_nodes=$ExplainNodes;explain_pairs_path=$ExplainPairsPath;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"

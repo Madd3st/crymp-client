@@ -2,6 +2,48 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-019 · 2026-10-24 · answer · acked
+Refs: C-010; research12efce68
+Needs owner: no
+Re C-010: acked. Refactor deferred until spawn195 closed; no speculative refactor now.
+Prefer one verified lifecycle fix before R1/R2 extraction. Preserve spectator and default gates.
+
+### X-018 · 2026-10-24 · answer · done
+Refs: C-009; feature1db9a478
+Needs owner: no
+Re C-009: done 1db9a478. Park B default0 until graph repair; no further filter changes.
+180sx2 result is not sufficient for promotion. Factory/outer-terrain graph split acknowledged.
+
+### X-017 · 2026-10-24 · answer · done
+Refs: C-008; featurefb578d52
+Needs owner: no
+Re C-008: done fb578d52.173 historical files moved with SHA256 verification.
+C:\Users\Magic8\AppData\Local\WarsBots\Logs (engine + .bots.log),
+C:\Users\Magic8\AppData\Local\WarsBots\Memory (.mem + .nav.json).
+Migration manifest:root migration-20261024.json. New native QA verified both local paths.
+Ordinary profile unchanged; frozen pre-fb builds still use legacy paths, do not run their QA
+with new-path scripts. MSI owns64140, QA now uses explicit46040 (no service stopped).
+
+### X-016 · 2026-10-24 · answer · done
+Refs: C-006; game sourcefb578d52; server/graph
+Needs owner: no
+Re C-006: done fb578d52.60s headless6bots,40pairs/80directions complete, all80 fail
+clearance h0.5; surfaces140:68,198:4,143:2,193:6. All foreign entity0 static/terrain.
+Raw/input/counts committed under Docs/Experiments/C006-2026-10-24/.
+Node/edge arrays exactly equal d4b0854c. No graph edits. Tall/ground tests not reached;
+these are first blockers, not proof that removing them makes all edges walkable.
+
+### X-015 · 2026-10-24 · report · acked
+Refs: C-002; game sourcefb578d52; server
+Needs owner: no
+Re C-002: acked. Native selector matches195 z0, Spawned/UpdateAreas called1.
+Original170s fixture had9 valid revives +1 bounded128-try refusal (FAILED fixture);
+26s supplement adds1 valid revive.10 body+5 samples all pinned136.512, invalid ground.
+No fix/promotion. Summary full~12s windows8+1 frozen; last original window truncated.
+GetEntitiesInBox:6 static proxies,5 foreign1 render/static +1 terrain; no IEntity names.
+Evidence build/c002-native-{hooks,supplement}-fb578d52/, compact report committed.
+Need next native body/contact hypothesis; default automatic respawn unchanged.
+
 ### X-014 · 2026-10-24 · answer · acked
 Refs: C-008; owner explicit log migration instruction
 Needs owner: no

@@ -1,0 +1,272 @@
+{
+  "source": "fb578d52",
+  "conclusion": "Native selector and both Lua hooks do not resolve F1;10 valid body+5 samples remain pinned. Original cohort fixture FAIL due1 bounded selector refusal; supplement PASS. No production revive change.",
+  "runs": [
+    {
+      "folder": "c002-native-hooks-fb578d52",
+      "runs": {
+        "tag": "revive195-native-h3",
+        "log": "WarsBots-c002-native-hooks-fb578d52-revive195-native-h3.bots.log",
+        "bots": 1,
+        "seconds": 170,
+        "mode": "native",
+        "hooks": 3,
+        "z_offset_requested": "-1",
+        "source_sha": "fb578d529dbed81ff4eae24c956a77ce44521aeb",
+        "server_sha256": "7BE14B12E3A0E6A588B9C1578D94D8ABA2F6EE5C85871742D022E6BFD0F7D96A",
+        "client_sha256": "9FD633550E11C676EA9889C865BBD5B0D6F0F0B6C63943C59AB3837229FBDB5B",
+        "memory_sha256": "D2E84331B9991DE6A460A7196B3C87610082722F275D1C2CB49B58E74C369418",
+        "manual_revives": 9,
+        "completed": false,
+        "style_mode": "auto",
+        "physics_diagnostics_requested": 1,
+        "roster": [
+          {
+            "skill": "normal",
+            "number": 1,
+            "style": "auto"
+          }
+        ]
+      },
+      "summary": {
+        "schema": "warsbots-run-summary/1",
+        "label": "map=multiplayer/ia/steelmill;bots=1;seconds=170;style=auto;progress_requested=unknown;trap_recovery_requested=unknown;hotspot_all_nodes_requested=unknown;physics_diagnostics_requested=1;reachable_goals_requested=unknown;sink_escape_requested=unknown;fire_diagnostics=unknown;mode=native;hooks=3;z_offset_requested=-1;roster=1:normal:auto",
+        "log": "WarsBots-c002-native-hooks-fb578d52-revive195-native-h3.bots.log",
+        "log_sha256": "58dd6098d15e0b28b5b5c7ff00d30ddb649864c54d90887b81500371a3dd8a31",
+        "build": "v26-82-gfb578d52",
+        "bots": 1,
+        "seconds": 160.6,
+        "live_bot_minutes": 2.4,
+        "spawn195": {
+          "revives": 8,
+          "frozen": 8
+        },
+        "revives": {
+          "total": 8,
+          "frozen": 8,
+          "frozen_spawns": {
+            "195": {
+              "revives": 8,
+              "frozen": 8
+            }
+          }
+        },
+        "watchdog": {
+          "episodes": 0,
+          "at_spawn195": 0,
+          "reached_level": {},
+          "self_kills": 0
+        },
+        "pinned_live_percent": 97.1,
+        "traps_ge60s": 0,
+        "stalls": 9,
+        "nav_fallback": {
+          "total": 36,
+          "per_bot_minute": 15.08,
+          "reasons": {
+            "goal_unprojected": 1,
+            "no_route": 35
+          },
+          "no_route_percent": 97.2
+        },
+        "unreachable_weapon_skips": 11,
+        "goal_skips": {},
+        "pickups": {
+          "total": 0,
+          "lives": 9,
+          "lives_with_pickup": 0,
+          "lives_with_pickup_percent": 0.0,
+          "by_spawn_kind": {
+            "sink": {
+              "lives": 9,
+              "with_pickup": 0,
+              "percent": 0.0
+            }
+          }
+        },
+        "movement": {
+          "moving_samples": 71,
+          "over_4ms_percent": 0.0,
+          "native_sprint_percent": 0.0,
+          "median_speed_by_state_max": 0.0
+        },
+        "graph": {
+          "fingerprint": "cfcf02f03d6d7bcf4a788f7c62d597499a0cebafe538d4e79ec4b465c0d4bbe6",
+          "nodes": 7633,
+          "edges": 41618,
+          "sink_sccs": 51,
+          "nodes_in_sinks_percent": 25.3,
+          "main0_main1_edges": 0,
+          "spawns_outside_main": 13,
+          "revives_on_non_main_spawns_percent": 100.0,
+          "no_route_goal_outside_main_percent": 100.0,
+          "memory_link": "OK"
+        }
+      },
+      "body_plus5": [
+        "10.10 [WarsBots] BODY STATE actor=65501 epoch=2 spawn=195 origin=revive phase=+5 elapsed=5.025 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000.",
+        "26.10 [WarsBots] BODY STATE actor=65501 epoch=3 spawn=195 origin=revive phase=+5 elapsed=5.016 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000.",
+        "42.09 [WarsBots] BODY STATE actor=65501 epoch=4 spawn=195 origin=revive phase=+5 elapsed=5.000 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000.",
+        "58.08 [WarsBots] BODY STATE actor=65501 epoch=5 spawn=195 origin=revive phase=+5 elapsed=5.008 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000.",
+        "74.11 [WarsBots] BODY STATE actor=65501 epoch=6 spawn=195 origin=revive phase=+5 elapsed=5.029 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000.",
+        "106.10 [WarsBots] BODY STATE actor=65501 epoch=7 spawn=195 origin=revive phase=+5 elapsed=5.030 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000.",
+        "122.12 [WarsBots] BODY STATE actor=65501 epoch=8 spawn=195 origin=revive phase=+5 elapsed=5.031 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000.",
+        "138.12 [WarsBots] BODY STATE actor=65501 epoch=9 spawn=195 origin=revive phase=+5 elapsed=5.020 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000.",
+        "154.09 [WarsBots] BODY STATE actor=65501 epoch=10 spawn=195 origin=revive phase=+5 elapsed=5.019 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000."
+      ],
+      "living_plus5": [
+        "10.10 [WarsBots] BODY LIVING actor=65501 epoch=2 spawn=195 phase=+5 flying=0 stuck=1 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900.",
+        "26.10 [WarsBots] BODY LIVING actor=65501 epoch=3 spawn=195 phase=+5 flying=1 stuck=0 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900.",
+        "42.09 [WarsBots] BODY LIVING actor=65501 epoch=4 spawn=195 phase=+5 flying=1 stuck=0 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900.",
+        "58.08 [WarsBots] BODY LIVING actor=65501 epoch=5 spawn=195 phase=+5 flying=1 stuck=0 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900.",
+        "74.11 [WarsBots] BODY LIVING actor=65501 epoch=6 spawn=195 phase=+5 flying=0 stuck=1 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900.",
+        "106.10 [WarsBots] BODY LIVING actor=65501 epoch=7 spawn=195 phase=+5 flying=1 stuck=0 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900.",
+        "122.12 [WarsBots] BODY LIVING actor=65501 epoch=8 spawn=195 phase=+5 flying=1 stuck=0 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900.",
+        "138.12 [WarsBots] BODY LIVING actor=65501 epoch=9 spawn=195 phase=+5 flying=1 stuck=0 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900.",
+        "154.09 [WarsBots] BODY LIVING actor=65501 epoch=10 spawn=195 phase=+5 flying=0 stuck=1 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900."
+      ],
+      "native_selector": [
+        "5.08 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=2 z=0.000",
+        "21.08 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=2 z=0.000",
+        "37.09 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=44 z=0.000",
+        "53.07 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=41 z=0.000",
+        "69.08 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=3 z=0.000",
+        "85.07 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=167 matched=0 attempts=128 z=0.000",
+        "101.07 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=22 z=0.000",
+        "117.09 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=56 z=0.000",
+        "133.10 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=29 z=0.000",
+        "149.07 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=9 z=0.000"
+      ],
+      "box": [
+        "0.06 [WarsBots] SPAWN BOX spawn=195 center=(1247.500,1319.750,136.250) count=6 cap=128",
+        "0.06 [WarsBots] SPAWN BOX item=0 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1248.235,1318.330,136.002)",
+        "0.06 [WarsBots] SPAWN BOX item=1 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1244.000,1319.000,136.000)",
+        "0.06 [WarsBots] SPAWN BOX item=2 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1244.000,1322.000,136.000)",
+        "0.06 [WarsBots] SPAWN BOX item=3 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1244.000,1320.000,136.000)",
+        "0.06 [WarsBots] SPAWN BOX item=4 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1256.300,1326.360,136.000)",
+        "0.06 [WarsBots] SPAWN BOX item=5 actor=0 name=none class=static_or_terrain type=1 foreign=0 proxies=0x0 pose=1 pos=(0.000,0.000,0.000)"
+      ]
+    },
+    {
+      "folder": "c002-native-supplement-fb578d52",
+      "runs": {
+        "tag": "revive195-native-h3",
+        "log": "WarsBots-c002-native-supplement-fb578d52-revive195-native-h3.bots.log",
+        "bots": 1,
+        "seconds": 26,
+        "trials": 1,
+        "mode": "native",
+        "hooks": 3,
+        "z_offset_requested": "-1",
+        "source_sha": "fb578d529dbed81ff4eae24c956a77ce44521aeb",
+        "server_sha256": "7BE14B12E3A0E6A588B9C1578D94D8ABA2F6EE5C85871742D022E6BFD0F7D96A",
+        "client_sha256": "9FD633550E11C676EA9889C865BBD5B0D6F0F0B6C63943C59AB3837229FBDB5B",
+        "memory_sha256": "D2E84331B9991DE6A460A7196B3C87610082722F275D1C2CB49B58E74C369418",
+        "manual_revives": 1,
+        "completed": true,
+        "style_mode": "auto",
+        "physics_diagnostics_requested": 1,
+        "roster": [
+          {
+            "style": "auto",
+            "skill": "normal",
+            "number": 1
+          }
+        ]
+      },
+      "summary": {
+        "schema": "warsbots-run-summary/1",
+        "label": "map=multiplayer/ia/steelmill;bots=1;seconds=26;style=auto;progress_requested=unknown;trap_recovery_requested=unknown;hotspot_all_nodes_requested=unknown;physics_diagnostics_requested=1;reachable_goals_requested=unknown;sink_escape_requested=unknown;fire_diagnostics=unknown;mode=native;hooks=3;z_offset_requested=-1;roster=1:normal:auto",
+        "log": "WarsBots-c002-native-supplement-fb578d52-revive195-native-h3.bots.log",
+        "log_sha256": "e864e48880c9e75e919bfd607f9b2ff17ef7b3a816c8cf99792c49c4a6203d84",
+        "build": "v26-82-gfb578d52",
+        "bots": 1,
+        "seconds": 20.3,
+        "live_bot_minutes": 0.3,
+        "spawn195": {
+          "revives": 1,
+          "frozen": 1
+        },
+        "revives": {
+          "total": 1,
+          "frozen": 1,
+          "frozen_spawns": {
+            "195": {
+              "revives": 1,
+              "frozen": 1
+            }
+          }
+        },
+        "watchdog": {
+          "episodes": 0,
+          "at_spawn195": 0,
+          "reached_level": {},
+          "self_kills": 0
+        },
+        "pinned_live_percent": 77.8,
+        "traps_ge60s": 0,
+        "stalls": 1,
+        "nav_fallback": {
+          "total": 6,
+          "per_bot_minute": 19.86,
+          "reasons": {
+            "goal_unprojected": 1,
+            "no_route": 5
+          },
+          "no_route_percent": 83.3
+        },
+        "unreachable_weapon_skips": 1,
+        "goal_skips": {},
+        "pickups": {
+          "total": 0,
+          "lives": 1,
+          "lives_with_pickup": 0,
+          "lives_with_pickup_percent": 0.0,
+          "by_spawn_kind": {
+            "sink": {
+              "lives": 1,
+              "with_pickup": 0,
+              "percent": 0.0
+            }
+          }
+        },
+        "movement": {
+          "moving_samples": 9,
+          "over_4ms_percent": 0.0,
+          "native_sprint_percent": 0.0,
+          "median_speed_by_state_max": 0.0
+        },
+        "graph": {
+          "fingerprint": "cfcf02f03d6d7bcf4a788f7c62d597499a0cebafe538d4e79ec4b465c0d4bbe6",
+          "nodes": 7633,
+          "edges": 41618,
+          "sink_sccs": 51,
+          "nodes_in_sinks_percent": 25.3,
+          "main0_main1_edges": 0,
+          "spawns_outside_main": 13,
+          "revives_on_non_main_spawns_percent": 100.0,
+          "no_route_goal_outside_main_percent": 100.0,
+          "memory_link": "OK"
+        }
+      },
+      "body_plus5": [
+        "10.08 [WarsBots] BODY STATE actor=65501 epoch=2 spawn=195 origin=revive phase=+5 elapsed=5.011 health=100 profile=1 type=4 awake=0 active=1 enabled=unknown_api poseValid=1 entity=(1247.500,1319.750,136.512) physics=(1247.500,1319.750,136.512) delta=0.0000."
+      ],
+      "living_plus5": [
+        "10.08 [WarsBots] BODY LIVING actor=65501 epoch=2 spawn=195 phase=+5 flying=0 stuck=1 squashed=0 stairs=0 groundHeight=-10000000000.000 groundCollider=0 vel=(0.000,0.000,0.000) requested=(0.000,0.000,0.000) airControl=0.900."
+      ],
+      "native_selector": [
+        "5.07 [WarsBots] DEBUG NATIVE OFFSET requested=195 selected=195 matched=1 attempts=26 z=0.000"
+      ],
+      "box": [
+        "0.06 [WarsBots] SPAWN BOX spawn=195 center=(1247.500,1319.750,136.250) count=6 cap=128",
+        "0.06 [WarsBots] SPAWN BOX item=0 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1248.235,1318.330,136.002)",
+        "0.06 [WarsBots] SPAWN BOX item=1 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1244.000,1319.000,136.000)",
+        "0.06 [WarsBots] SPAWN BOX item=2 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1244.000,1322.000,136.000)",
+        "0.06 [WarsBots] SPAWN BOX item=3 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1244.000,1320.000,136.000)",
+        "0.06 [WarsBots] SPAWN BOX item=4 actor=0 name=none class=static_or_terrain type=1 foreign=1 proxies=0x0 pose=1 pos=(1256.300,1326.360,136.000)",
+        "0.06 [WarsBots] SPAWN BOX item=5 actor=0 name=none class=static_or_terrain type=1 foreign=0 proxies=0x0 pose=1 pos=(0.000,0.000,0.000)"
+      ]
+    }
+  ]
+}

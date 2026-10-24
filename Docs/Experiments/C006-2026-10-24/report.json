@@ -1,0 +1,1621 @@
+{
+  "pairs": 40,
+  "directions": 80,
+  "allowed": 0,
+  "failed_by_criterion": {
+    "clearance h=0.5": 80
+  },
+  "failed_by_surface": {
+    "140": 68,
+    "198": 4,
+    "143": 2,
+    "193": 6
+  },
+  "failed_by_entity": {
+    "0|none|static_or_terrain": 80
+  },
+  "records": [
+    {
+      "frm": 4568,
+      "to": 4565,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.277,
+      "hit": [
+        1350.473,
+        1354.5,
+        139.111
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4565,
+      "to": 4568,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.724,
+      "hit": [
+        1350.473,
+        1354.5,
+        139.144
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4557,
+      "to": 4436,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.348,
+      "hit": [
+        1335.504,
+        1354.254,
+        139.081
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4436,
+      "to": 4557,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.293,
+      "hit": [
+        1334.371,
+        1353.121,
+        139.083
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4433,
+      "to": 4305,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.525,
+      "hit": [
+        1321.964,
+        1349.714,
+        139.07
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 198,
+      "part": 0
+    },
+    {
+      "frm": 4305,
+      "to": 4433,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.717,
+      "hit": [
+        1321.964,
+        1349.714,
+        139.078
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 198,
+      "part": 0
+    },
+    {
+      "frm": 4287,
+      "to": 4142,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.051,
+      "hit": [
+        1287.007,
+        1347.757,
+        136.584
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 143,
+      "part": 0
+    },
+    {
+      "frm": 4142,
+      "to": 4287,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.193,
+      "hit": [
+        1287.007,
+        1347.757,
+        136.568
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 143,
+      "part": 0
+    },
+    {
+      "frm": 4005,
+      "to": 4143,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.099,
+      "hit": [
+        1289.266,
+        1343.984,
+        136.551
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4143,
+      "to": 4005,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.144,
+      "hit": [
+        1289.266,
+        1343.984,
+        136.551
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3999,
+      "to": 3839,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 4.117,
+      "hit": [
+        1281.84,
+        1339.59,
+        136.673
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3839,
+      "to": 3999,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.127,
+      "hit": [
+        1281.84,
+        1339.59,
+        136.612
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3701,
+      "to": 3697,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.809,
+      "hit": [
+        1298.944,
+        1336.5,
+        139.164
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3697,
+      "to": 3701,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.193,
+      "hit": [
+        1298.941,
+        1336.5,
+        139.127
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2623,
+      "to": 2489,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.472,
+      "hit": [
+        1299.417,
+        1312.167,
+        139.121
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2489,
+      "to": 2623,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.774,
+      "hit": [
+        1299.417,
+        1312.167,
+        139.105
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2486,
+      "to": 2365,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.817,
+      "hit": [
+        1286.468,
+        1308.218,
+        136.671
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 198,
+      "part": 0
+    },
+    {
+      "frm": 2365,
+      "to": 2486,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.431,
+      "hit": [
+        1286.468,
+        1308.218,
+        136.611
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 198,
+      "part": 0
+    },
+    {
+      "frm": 1781,
+      "to": 1934,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.959,
+      "hit": [
+        1320.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1934,
+      "to": 1781,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.283,
+      "hit": [
+        1320.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1779,
+      "to": 1932,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.959,
+      "hit": [
+        1317.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1932,
+      "to": 1779,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.283,
+      "hit": [
+        1317.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1777,
+      "to": 1930,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.424,
+      "hit": [
+        1313.743,
+        1292.507,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1930,
+      "to": 1777,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.819,
+      "hit": [
+        1313.743,
+        1292.507,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1775,
+      "to": 1928,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.959,
+      "hit": [
+        1311.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1928,
+      "to": 1775,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.283,
+      "hit": [
+        1311.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1773,
+      "to": 1926,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.959,
+      "hit": [
+        1308.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1926,
+      "to": 1773,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.283,
+      "hit": [
+        1308.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4771,
+      "to": 4661,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.706,
+      "hit": [
+        1293.251,
+        1360.001,
+        136.688
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4661,
+      "to": 4771,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.538,
+      "hit": [
+        1293.251,
+        1360.001,
+        136.728
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3730,
+      "to": 3595,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.397,
+      "hit": [
+        1353.75,
+        1334.103,
+        139.082
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3595,
+      "to": 3730,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.603,
+      "hit": [
+        1353.75,
+        1334.103,
+        139.082
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2771,
+      "to": 2638,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.583,
+      "hit": [
+        1317.75,
+        1313.917,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2638,
+      "to": 2771,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.417,
+      "hit": [
+        1317.75,
+        1313.917,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2596,
+      "to": 2456,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.703,
+      "hit": [
+        1244.546,
+        1311.296,
+        136.653
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2456,
+      "to": 2596,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.54,
+      "hit": [
+        1244.546,
+        1311.296,
+        136.625
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2339,
+      "to": 2449,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.963,
+      "hit": [
+        1230.951,
+        1309.299,
+        136.76
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2449,
+      "to": 2339,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.284,
+      "hit": [
+        1230.951,
+        1309.299,
+        136.671
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2338,
+      "to": 2229,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.866,
+      "hit": [
+        1233.138,
+        1305.888,
+        142.503
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 193,
+      "part": 0
+    },
+    {
+      "frm": 2229,
+      "to": 2338,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.377,
+      "hit": [
+        1233.138,
+        1305.888,
+        142.517
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 193,
+      "part": 0
+    },
+    {
+      "frm": 1922,
+      "to": 1767,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.523,
+      "hit": [
+        1302.38,
+        1294.13,
+        143.761
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 193,
+      "part": 0
+    },
+    {
+      "frm": 1767,
+      "to": 1922,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.084,
+      "hit": [
+        1301.224,
+        1292.974,
+        143.761
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 193,
+      "part": 0
+    },
+    {
+      "frm": 1915,
+      "to": 1764,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.088,
+      "hit": [
+        1295.98,
+        1293.73,
+        143.761
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 193,
+      "part": 0
+    },
+    {
+      "frm": 1764,
+      "to": 1915,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.154,
+      "hit": [
+        1295.98,
+        1293.73,
+        143.761
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 193,
+      "part": 0
+    },
+    {
+      "frm": 1769,
+      "to": 1920,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.959,
+      "hit": [
+        1302.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1920,
+      "to": 1769,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.283,
+      "hit": [
+        1302.072,
+        1292.178,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3302,
+      "to": 3165,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.807,
+      "hit": [
+        1299.181,
+        1326.931,
+        139.142
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3165,
+      "to": 3302,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.439,
+      "hit": [
+        1299.181,
+        1326.931,
+        139.116
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2370,
+      "to": 2368,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.37,
+      "hit": [
+        1294.381,
+        1306.5,
+        136.618
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2368,
+      "to": 2370,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.653,
+      "hit": [
+        1294.403,
+        1306.5,
+        136.596
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2256,
+      "to": 2366,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.663,
+      "hit": [
+        1290.282,
+        1303.968,
+        136.65
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2366,
+      "to": 2256,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.585,
+      "hit": [
+        1290.282,
+        1303.968,
+        136.742
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4146,
+      "to": 4144,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.458,
+      "hit": [
+        1291.292,
+        1345.5,
+        136.551
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4144,
+      "to": 4146,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.542,
+      "hit": [
+        1291.292,
+        1345.5,
+        136.551
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4006,
+      "to": 4144,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.966,
+      "hit": [
+        1293.067,
+        1343.183,
+        136.551
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 4144,
+      "to": 4006,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.144,
+      "hit": [
+        1292.266,
+        1343.984,
+        136.551
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3558,
+      "to": 3425,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.482,
+      "hit": [
+        1282.996,
+        1331.746,
+        136.625
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3425,
+      "to": 3558,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.762,
+      "hit": [
+        1282.996,
+        1331.746,
+        136.588
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2344,
+      "to": 2237,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.641,
+      "hit": [
+        1240.203,
+        1306.047,
+        136.603
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2237,
+      "to": 2344,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.392,
+      "hit": [
+        1241.059,
+        1305.191,
+        136.616
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3431,
+      "to": 3297,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.706,
+      "hit": [
+        1296.251,
+        1330.001,
+        136.574
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3297,
+      "to": 3431,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.747,
+      "hit": [
+        1294.278,
+        1328.028,
+        136.606
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2236,
+      "to": 2131,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.853,
+      "hit": [
+        1241.059,
+        1302.191,
+        136.63
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2131,
+      "to": 2236,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.392,
+      "hit": [
+        1241.059,
+        1302.191,
+        136.591
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2159,
+      "to": 2050,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.063,
+      "hit": [
+        1305.705,
+        1300.455,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2050,
+      "to": 2159,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 4.179,
+      "hit": [
+        1305.705,
+        1300.455,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1938,
+      "to": 1936,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.749,
+      "hit": [
+        1322.001,
+        1294.5,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 1936,
+      "to": 1938,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.251,
+      "hit": [
+        1322.001,
+        1294.5,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2754,
+      "to": 2617,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.706,
+      "hit": [
+        1293.251,
+        1315.001,
+        136.642
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2617,
+      "to": 2754,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.538,
+      "hit": [
+        1293.251,
+        1315.001,
+        136.682
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3733,
+      "to": 3596,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.031,
+      "hit": [
+        1357.607,
+        1334.357,
+        139.086
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3596,
+      "to": 3733,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.212,
+      "hit": [
+        1357.607,
+        1334.357,
+        139.08
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2379,
+      "to": 2274,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.711,
+      "hit": [
+        1313.667,
+        1304.583,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2274,
+      "to": 2379,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.358,
+      "hit": [
+        1313.79,
+        1304.46,
+        139.11
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3593,
+      "to": 3460,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.206,
+      "hit": [
+        1349.19,
+        1331.94,
+        139.082
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 3460,
+      "to": 3593,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.036,
+      "hit": [
+        1349.19,
+        1331.94,
+        139.082
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2863,
+      "to": 2725,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 2.403,
+      "hit": [
+        1229.449,
+        1316.801,
+        136.552
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2725,
+      "to": 2863,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 1.84,
+      "hit": [
+        1229.449,
+        1316.801,
+        136.552
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2460,
+      "to": 2346,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 0.525,
+      "hit": [
+        1248.379,
+        1309.129,
+        136.646
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    },
+    {
+      "frm": 2346,
+      "to": 2460,
+      "candidate": 1,
+      "stored_edge": 0,
+      "allowed": 0,
+      "test": "clearance",
+      "sample": 0.5,
+      "value": 3.514,
+      "hit": [
+        1248.234,
+        1308.984,
+        136.643
+      ],
+      "entity": 0,
+      "name": "none",
+      "entity_class": "static_or_terrain",
+      "surface": 140,
+      "part": 0
+    }
+  ],
+  "source": "fb578d52",
+  "fixture": "build/c006-edges-fb578d52"
+}

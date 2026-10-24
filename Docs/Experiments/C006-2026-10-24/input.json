@@ -1,0 +1,602 @@
+[
+ {
+  "frm": 2460,
+  "to": 2346,
+  "fromKind": "sink",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 72,
+  "reverse": false,
+  "dz": 0.03,
+  "pos": [
+   1248.8,
+   1309.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 2863,
+  "to": 2725,
+  "fromKind": "sink",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 58,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1227.8,
+   1318.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 3593,
+  "to": 3460,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 34,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1350.8,
+   1333.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 2379,
+  "to": 2274,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 28,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1311.8,
+   1306.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 3733,
+  "to": 3596,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 17,
+  "reverse": false,
+  "dz": 0.01,
+  "pos": [
+   1359.8,
+   1336.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 2754,
+  "to": 2617,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 7,
+  "reverse": false,
+  "dz": -0.05,
+  "pos": [
+   1293.8,
+   1315.5,
+   136.2
+  ]
+ },
+ {
+  "frm": 1938,
+  "to": 1936,
+  "fromKind": "sink",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 6,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1323.8,
+   1294.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 2159,
+  "to": 2050,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 6,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1305.8,
+   1300.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 2236,
+  "to": 2131,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 6,
+  "reverse": false,
+  "dz": 0.09,
+  "pos": [
+   1239.8,
+   1303.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 3431,
+  "to": 3297,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 5,
+  "reverse": false,
+  "dz": 0.07,
+  "pos": [
+   1296.8,
+   1330.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 2344,
+  "to": 2237,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 4,
+  "reverse": false,
+  "dz": -0.05,
+  "pos": [
+   1239.8,
+   1306.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 3558,
+  "to": 3425,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 4,
+  "reverse": false,
+  "dz": 0.06,
+  "pos": [
+   1284.8,
+   1333.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 4006,
+  "to": 4144,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 4,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1293.8,
+   1342.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 4146,
+  "to": 4144,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 4,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1293.8,
+   1345.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 2256,
+  "to": 2366,
+  "fromKind": "sink",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 3,
+  "reverse": false,
+  "dz": -0.11,
+  "pos": [
+   1290.8,
+   1303.5,
+   136.2
+  ]
+ },
+ {
+  "frm": 2370,
+  "to": 2368,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 3,
+  "reverse": false,
+  "dz": 0.03,
+  "pos": [
+   1296.8,
+   1306.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 3302,
+  "to": 3165,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 3,
+  "reverse": false,
+  "dz": 0.14,
+  "pos": [
+   1299.8,
+   1327.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 1769,
+  "to": 1920,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1302.8,
+   1291.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 1915,
+  "to": 1764,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1296.8,
+   1294.5,
+   143.3
+  ]
+ },
+ {
+  "frm": 1922,
+  "to": 1767,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1302.8,
+   1294.5,
+   143.3
+  ]
+ },
+ {
+  "frm": 2338,
+  "to": 2229,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": -0.02,
+  "pos": [
+   1233.8,
+   1306.5,
+   142.0
+  ]
+ },
+ {
+  "frm": 2339,
+  "to": 2449,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": 0.1,
+  "pos": [
+   1233.8,
+   1306.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 2596,
+  "to": 2456,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": 0.07,
+  "pos": [
+   1245.8,
+   1312.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 2771,
+  "to": 2638,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1317.8,
+   1315.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 3730,
+  "to": 3595,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1353.8,
+   1336.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 4771,
+  "to": 4661,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 2,
+  "reverse": false,
+  "dz": -0.05,
+  "pos": [
+   1293.8,
+   1360.5,
+   136.2
+  ]
+ },
+ {
+  "frm": 1773,
+  "to": 1926,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1308.8,
+   1291.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 1775,
+  "to": 1928,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1311.8,
+   1291.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 1777,
+  "to": 1930,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1314.8,
+   1291.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 1779,
+  "to": 1932,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1317.8,
+   1291.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 1781,
+  "to": 1934,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1320.8,
+   1291.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 2486,
+  "to": 2365,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.14,
+  "pos": [
+   1287.8,
+   1309.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 2623,
+  "to": 2489,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.14,
+  "pos": [
+   1299.8,
+   1312.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 3701,
+  "to": 3697,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.14,
+  "pos": [
+   1299.8,
+   1336.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 3999,
+  "to": 3839,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.06,
+  "pos": [
+   1284.8,
+   1342.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 4005,
+  "to": 4143,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.0,
+  "pos": [
+   1290.8,
+   1342.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 4287,
+  "to": 4142,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": 0.07,
+  "pos": [
+   1287.8,
+   1348.5,
+   136.1
+  ]
+ },
+ {
+  "frm": 4433,
+  "to": 4305,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": -0.02,
+  "pos": [
+   1323.8,
+   1351.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 4557,
+  "to": 4436,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": -0.01,
+  "pos": [
+   1335.8,
+   1354.5,
+   138.6
+  ]
+ },
+ {
+  "frm": 4568,
+  "to": 4565,
+  "fromKind": "isolated",
+  "toKind": "main1",
+  "toScc": 1536,
+  "fromScc": 1,
+  "reverse": false,
+  "dz": -0.03,
+  "pos": [
+   1350.8,
+   1354.5,
+   138.6
+  ]
+ }
+]
