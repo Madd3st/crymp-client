@@ -16,6 +16,9 @@ param(
     [switch]$FireDiagnostics,
     [ValidateRange(-1,1)][int]$CandidateTrapRecovery=-1,
     [ValidateRange(-1,1)][int]$CandidatePhysicsDiagnostics=-1,
+    [ValidateRange(-1,1)][int]$CandidateReachableGoals=-1,
+    [ValidateRange(-1,1)][int]$CandidateSinkEscape=-1,
+    [int[]]$ExplainNodes=@(),
     [ValidateRange(-1,1)][int]$CandidateHotspotAllNodes=-1,
     [switch]$NavExports,
     [ValidateSet("auto","universal")][string]$Style="auto",
@@ -86,6 +89,12 @@ try {
                 if($variant -eq 'candidate' -and $CandidateHotspotAllNodes -ge 0){$commands=" +wb_hotspot_all_nodes $CandidateHotspotAllNodes"+$commands}
                 if($NavExports -and $variant -eq 'candidate'){$commands=" +wb_nav_export after 15 +wb_nav_export after 25"+$commands}
                 if($variant -eq 'candidate' -and $CandidatePhysicsDiagnostics -ge 0){$commands=" +wb_physics_diagnostics $CandidatePhysicsDiagnostics"+$commands}
+                if($variant -eq 'candidate' -and $CandidateReachableGoals -ge 0){$commands=" +wb_reachable_goals $CandidateReachableGoals"+$commands}
+                if($variant -eq 'candidate' -and $CandidateSinkEscape -ge 0){$commands=" +wb_sink_escape $CandidateSinkEscape"+$commands}
+                if($ExplainNodes.Count){
+                    if($ExplainNodes.Count -ne 2 -or $ExplainNodes[0] -lt 0 -or $ExplainNodes[1] -lt 0){throw 'ExplainNodes requires two nonnegative node IDs'}
+                    $commands=" +wb_nav_explain after 15 $($ExplainNodes[0]) $($ExplainNodes[1])"+$commands
+                }
                 if($FireDiagnostics){$commands=" +wb_fire_diagnostics 1"+$commands}
                 $progress=if($variant -eq 'candidate'){$CandidateProgress}else{$BaselineProgress}
                 if($progress -ge 0){$commands=" +wb_progress_experiment $progress"+$commands}
@@ -126,7 +135,7 @@ try {
                 $ok=-not $early -and $numbers.Count -eq $bots -and $text -match 'NAV ready' -and $engine -notmatch 'CRASH DETECTED|Lua Error|Script Error|\[Error\]'
                 if($NavExports -and $variant -eq 'candidate' -and $navCaptured -ne 2){$ok=$false}
                 if($Seconds -ge 660 -and $observed -lt 600){$ok=$false}
-                $run=[ordered]@{physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
+                $run=[ordered]@{reachable_goals_requested=$CandidateReachableGoals;sink_escape_requested=$CandidateSinkEscape;explain_nodes=$ExplainNodes;physics_diagnostics_requested=$(if($variant -eq 'candidate'){$CandidatePhysicsDiagnostics}else{-1});observed_seconds=$observed;nav_exports=$navCaptured;hotspot_all_nodes_requested=$(if($variant -eq 'candidate'){$CandidateHotspotAllNodes}else{-1});tag=$tag;session=$sessionTag;progress_requested=$progress;trap_recovery_requested=$(if($variant -eq 'candidate'){$CandidateTrapRecovery}else{-1});fire_diagnostics=[bool]$FireDiagnostics;style_mode=$Style;skill_rotation_step=$SkillRotationStep;variant=$variant;repeat=$repeat+1;bots=$bots;seconds=$Seconds;source_sha=$v.manifest.sha;server_sha256=$v.manifest.server;client_sha256=$v.manifest.client;memory_sha256=$memoryHash;roster=$roster;log=[IO.Path]::GetFileName($trace);completed=$ok;kills=([regex]::Matches($text,'combat kill')).Count}
                 $runs+=$run
                 $runs | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath (Join-Path $out 'runs.json') -Encoding UTF8
                 Write-Host "END $tag completed=$ok kills=$($run.kills)"
