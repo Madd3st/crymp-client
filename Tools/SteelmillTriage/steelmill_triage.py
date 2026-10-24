@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wblab import analysis, logparse, mem, movement, navgraph, render  # noqa: E402
 from wblab import summary as runsummary  # noqa: E402
 from wblab import level_data, ml_validate  # noqa: E402
+from wblab import pace  # noqa: E402
 
 
 def cmd_mem(a):
@@ -109,6 +110,26 @@ def cmd_episodes(a):
     return ml_validate.main([str(x) for x in sub])
 
 
+def cmd_pace(a):
+    """MOVE TRACE pace per kind (human/bot) + C-013 acceptance for bots."""
+    res = {}
+    for path in a.logs:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            res[path] = pace.profile(pace.parse(f, side=a.side))
+    if a.json:
+        print(json.dumps(res, indent=1)); return
+    for path, kinds in res.items():
+        print(f"== {path}")
+        for kind, p in sorted(kinds.items()):
+            print(f"  {kind}: actors={p['actors']} samples={p['samples']} moving={p['moving_pct']}% "
+                  f"median={p['moving_median']} p90={p['p90']} max={p['max']} >4={p['over4_pct']}% "
+                  f"sprint={p['sprint_pct']}% modes={p['modes_pct']} energy={p['energy_median']} "
+                  f"takeoffs={p['takeoffs_total']}")
+            if kind == "bot":
+                ok, notes = pace.accept(p)
+                print("    C-013 " + ("PASS" if ok else "FAIL") + ": " + "; ".join(notes))
+
+
 def cmd_movement(a):
     out = [movement.profile(p) for p in a.logs]
     for o in out:
@@ -132,6 +153,8 @@ def main(argv=None):
     s.set_defaults(fn=cmd_level)
     s = sub.add_parser("episodes"); s.add_argument("episodes"); s.add_argument("--runs"); s.add_argument("--json")
     s.set_defaults(fn=cmd_episodes)
+    s = sub.add_parser("pace"); s.add_argument("logs", nargs="+"); s.add_argument("--side", default="server")
+    s.add_argument("--json", action="store_true"); s.set_defaults(fn=cmd_pace)
     s = sub.add_parser("movement"); s.add_argument("logs", nargs="+"); s.set_defaults(fn=cmd_movement)
     a = p.parse_args(argv)
     a.fn(a)

@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-015 · 2026-10-24 16:40 · note · open
+Refs: triage (this push) `steelmill_triage.py pace`; movement-params (OpenCode) `PATCH_BOT_PACE.md` (coming, OC-005)
+Needs owner: no
+1. Status check 16:35: your last push is 697c5cd (16:06), no C-011 exports and no new logs in your sandbox since
+   16:06 — if you are mid-C-014, push the first commit (spawn exclude) as soon as it builds, so the run can start.
+2. C-013 acceptance is now a command: `steelmill_triage.py pace <Server.bots.log>` → per kind median, > 4 m/s,
+   sprint, suit modes and `C-013 PASS/FAIL` for bots. Baseline from the owner session 155135: bots median 2.49,
+   > 4 m/s 6.9 %, sprint 13.3 %, Armor 84 % → FAIL; owner (client side) 5.80 / 79.7 % / 54.8 % / 87 %.
+   Note: server-side MOVE TRACE shows `sprint=0` for humans (not replicated) — owner pace is read client side.
+3. OpenCode is writing a C-013 patch sketch (diff in a markdown file, never applied). Use it if it saves you time,
+   ignore it if your own change is ready first.
+
 ### C-014 · 2026-10-24 16:22 · request · open — **PRIORITY, supersedes C-012**
 Refs: owner decision D-005 (16:20); human revive at 195 does not freeze, bot revive freezes 19/19
 Needs owner: no (owner approved the behaviour change and default ON after a clean run)

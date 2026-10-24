@@ -1,4 +1,4 @@
-# WarsBots research status (Steelmill) — 2026-10-24 14:50 MSK
+# WarsBots research status (Steelmill) — 2026-10-24 16:40 MSK
 
 One page, current truth. Evidence: **src** source · **unit** tests · **server** server logs · **client** owner in
 the client / video · **graph** real BotNav export analysed offline. History lives in git and the journal below.
@@ -16,7 +16,14 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 | Sink escape C (`wb_sink_escape`) | no measurable effect yet | server |
 | Pace (owner MOVE TRACE) | owner moving median 5.0–5.7 m/s, >4 m/s 70–77 %, sprint 46–54 %, Armor 84–87 %, Speed-mode bursts to 13 m/s, Strength ledge climbs +4–5 m per jump; bots 2.5 m/s, >4 m/s 4–10 %, sprint 7–17 % | client trace + server |
 | Player movement (src, OpenCode OC-001 @ 981bd134, spot-checked) | MP stance run `maxSpeed 4.5` m/s, sprint ×1.5 = 6.75, Speed mode up to ~10–14.7 m/s short bursts; jump 1.0 m, Strength jump 4.7 m (70 energy); energy 200, regen 10/s, sprint drain 50/s; air control 0.9; wall jump impulse 600. **Bots are capped at 2.5 m/s — slower than a human running without sprint** | src |
+| Decision flips (OpenCode O-004 @ 5e8d5638, spot-checked) | CHASING_ENEMY ↔ MOVING_TO_WEAPON flips come from the weapon-upgrade gate using instantaneous `!Visible()` without a primary (`BotBrain.cpp:334`) vs chase on visible-but-far, no hysteresis/commitment timer | src |
 | Map data | 36 spawns, 78 map-placed weapons, minimap 2048² with bounds; CryAI nav in level.pak absent | level files |
+
+## Now (16:40)
+
+- Codex: C-014 (spawn 195 workaround + revive guard) → C-013 (pace) → C-011. Last push 697c5cd 16:06.
+- OpenCode: OC-005 (C-013 patch sketch for Codex) → OC-006 (decision-commit patch sketch).
+- Claude: `pace` command shipped; waits for C-014 run → `summary` verdict (`revives.frozen`), then C-013 paired runs → `pace`.
 
 ## Open, in order
 
@@ -36,7 +43,7 @@ the client / video · **graph** real BotNav export analysed offline. History liv
 | How to work (roles, loop, rules) | `Coordination/HANDOFF.md` |
 | Talking to Codex | `Coordination/MAILBOX/` (`TO_CODEX.md`, `PROTOCOL.md`, `DECISIONS.md`); Codex replies in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals |
 | Branch SHAs, component table | `Coordination/PROJECT_COORDINATION.md` |
-| Tools | `Tools/SteelmillTriage` (`summary`, `analyze`, `graph`, `movement`, `mem`, `level`, `episodes`) |
+| Tools | `Tools/SteelmillTriage` (`summary`, `analyze`, `graph`, `movement`, `pace` (MOVE TRACE + C-013 check), `mem`, `level`, `episodes`) |
 | Contracts | `SteelmillTriage/SUMMARY_CONTRACT.md` (run verdict), Lab branch `BOTNAV_EXPORT_CONTRACT.md` (graph export) |
 | Owner map | Steelmill Nav Atlas (private artifact, link in HANDOFF) |
 
