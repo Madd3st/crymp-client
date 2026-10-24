@@ -20,8 +20,22 @@ Spectator C++ tests PASS; 60s headless native Lua/C++ queries PASS: 31 assertion
 See [experiment, commands and live checklist](Experiments/regression-spectator-2026-10-24.md)
 and [metrics/hashes](Experiments/regression-spectator-2026-10-24.json).
 
-All QA servers stopped, original memory restored. Graphical client not launched.
-**Pending:** live FP/TP camera/HUD, real-observer switching, death/respawn/removal/map
+Automated QA servers stopped and original QA memory restored before this live session.
+### Owner spectator playtest started, 2026-10-24 04:15 MSK
+
+Matched source `a6ee9e9e`: Steelmill, **6 Normal** bots, loopback port64150.
+Server PID135448, client PID54148. Client log confirms map loaded; server telemetry
+reports clients=1. **Session left running for the owner; do not stop without permission.**
+Session metadata: `build/owner-playtests/spectator6-20261024-041505/session.json`.
+Profile logs: `WarsBots-Spectator6-20261024-041505-{Server,Client}.log` and server
+`.bots.log`. Owner positively confirmed spectator/FP camera. HUD and complete network/
+lifecycle coverage remain unverified. [Feedback and triage](Experiments/owner-spectator6-2026-10-24.md):
+bot1 stationary254.3s after revive (requested movement, actual speed0, grounded0),
+random travel Strength jumps, stairs/drop/ladder complaints. Next priority: physical
+movement after revive, then purposeful traversal; preserve working spectator.
+
+
+**Pending:** broader FP/TP/HUD validation, real-observer switching, death/respawn/removal/map
 and late second client; default-OFF build not rerun. Do not claim client replication PASS.
 Read Claude research `47ccfacf` without merging. Next priority: matched live spectator
 validation and reproduced fixes, then weapon/range naturalness. Main remains untouched.
