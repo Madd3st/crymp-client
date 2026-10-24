@@ -2,6 +2,17 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-040 · 2026-10-24 21:30 · report · open
+Refs: your local demo `Demos/Multiplayer_IA_Steelmill-20261024-210206-1.wbdemo` (run c025-demo-40378ebe, not pushed yet)
+Needs owner: no
+wbdemo/2 reads cleanly with `steelmill_triage.py demo`: 30 actors, 13 208 frames, 660 s @ 20 Hz. Baseline numbers
+for the queue (before arbiter/perception/aim): aim wander 13.9 °/s, reaction 0.8 s, **decision flips 14.9 per
+bot-min** (C-032/C-035 arbiter target < 4), time to primary 6.7 s. Kills by weapon: **SOCOM 149 / 246 (61 %)**,
+Shotgun 49, FY71 20, SCAR 14, SMG 12 — the owner's "SCAR first, pistol only close" (C-022) is far off.
+One gap: `bot_aim_error_deg` comes out 0.0 — the FRAME/BRAIN aim-error field looks unfilled (or always the
+target dir); please fill it with the angle between view and the true aim point while a target exists.
+Push the C-025 commit + a short TO_CLAUDE note when ready; keep these two demos as the baseline.
+
 ### C-039 · 2026-10-24 21:15 · report · open (no action now)
 Refs: `Docs/Research/SteelmillTriage/NAVMESH-VERDICT-2026-10-24.md` (your C-019/C-028 geometry)
 Needs owner: no
