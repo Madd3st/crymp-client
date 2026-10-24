@@ -1,12 +1,15 @@
-"""Reader, test writer and metrics for WarsBots demos (`wbdemo/1`, Docs/Research/SteelmillTriage/DEMO_FORMAT.md)."""
+"""Reader, test writer and metrics for WarsBots demos (`wbdemo/2`; v1 drafts still readable), DEMO_FORMAT.md."""
 import json
 import math
 import struct
 from statistics import median
 
 MAGIC = b'WBDM'
-STATE = struct.Struct('<IfffhhBBBBBHI')          # 31 bytes
-BRAIN = struct.Struct('<IIHIB3f3f3fH')
+STATE1 = struct.Struct('<IfffhhBBBBBHI')         # v1, 31 bytes
+STATE = struct.Struct('<IfffhhBBBBBHIH')         # v2, 33 bytes (+ peak_yaw_cdeg)
+BRAIN1 = struct.Struct('<IIHIB3f3f3fH')
+BRAIN = struct.Struct('<IIHIB3f3f3fHBBI')
+INTENT = struct.Struct('<II2fBBBBIIH')
 EVENT = struct.Struct('<IBIIf3f')
 EV = {1: 'shot', 2: 'hit', 3: 'kill', 4: 'revive', 5: 'pickup', 6: 'drop', 7: 'suit', 8: 'jump', 9: 'land', 10: 'mark'}
 F_ALIVE, F_SPRINT, F_GROUND, F_FIRING = 1, 2, 4, 8
@@ -21,7 +24,9 @@ def read(path):
         raise ValueError('not a wbdemo file')
     ver, hlen = struct.unpack_from('<HI', b, 4)
     header = json.loads(b[10:10 + hlen].decode('utf-8'))
-    d = dict(version=ver, header=header, strings={0: ''}, actors={}, frames=[], brain=[], events=[])
+    d = dict(version=ver, header=header, strings={0: ''}, actors={}, frames=[], brain=[], events=[], intents=[], inv=[])
+    st = STATE if ver >= 2 else STATE1
+    br = BRAIN if ver >= 2 else BRAIN1
     o = 10 + hlen
     while o + 3 <= len(b):
         typ, ln = struct.unpack_from('<BH', b, o); o += 3
@@ -37,17 +42,29 @@ def read(path):
                                              profile=d['strings'].get(pi, '')))
         elif typ == 3:
             t, n = struct.unpack_from('<IB', p)
-            rows = [STATE.unpack_from(p, 5 + k * STATE.size) for k in range(n)]
+            rows = [st.unpack_from(p, 5 + k * st.size) + ((0,) if st is STATE1 else ()) for k in range(n)]
             d['frames'].append((t / 1000.0, rows))
         elif typ == 4:
-            r = BRAIN.unpack_from(p)
+            r = br.unpack_from(p)
             d['brain'].append(dict(t=r[0] / 1000.0, id=r[1], state=d['strings'].get(r[2], ''), target=r[3],
                                    visible=bool(r[4]), aim=r[5:8], dest=r[8:11], corner=r[11:14],
-                                   reason=d['strings'].get(r[14], '')))
+                                   reason=d['strings'].get(r[14], ''),
+                                   visible_count=r[15] if len(r) > 15 else None,
+                                   in_cone=bool(r[16] & 1) if len(r) > 16 else None,
+                                   target_cloaked=bool(r[16] & 2) if len(r) > 16 else None,
+                                   last_attacker=r[17] if len(r) > 17 else None))
         elif typ == 5:
             t, kind, a, other, val, x, y, z = EVENT.unpack_from(p)
             d['events'].append(dict(t=t / 1000.0, kind=EV.get(kind, str(kind)), actor=a, other=other, value=val,
                                     pos=(x, y, z)))
+        elif typ == 6:
+            r = INTENT.unpack_from(p)
+            d['intents'].append(dict(t=r[0] / 1000.0, id=r[1], move=r[2:4], gait=r[4], jump=r[5], suit=r[6],
+                                     fire=r[7], target=r[8], link=r[9], reason=d['strings'].get(r[10], '')))
+        elif typ == 7:
+            t, aid, n = struct.unpack_from('<IIB', p)
+            items = [struct.unpack_from('<HHH', p, 9 + 6 * k) for k in range(n)]
+            d['inv'].append(dict(t=t / 1000.0, id=aid, items=[(d['strings'].get(c, ''), cl, rs) for c, cl, rs in items]))
     return d
 
 
@@ -56,7 +73,7 @@ class Writer:
     def __init__(self, path, header):
         self.f = open(path, 'wb'); self.s = {}
         h = json.dumps(header).encode()
-        self.f.write(MAGIC + struct.pack('<HI', 1, len(h)) + h)
+        self.f.write(MAGIC + struct.pack('<HI', 2, len(h)) + h)
 
     def _rec(self, typ, payload):
         self.f.write(struct.pack('<BH', typ, len(payload)) + payload)
@@ -79,12 +96,21 @@ class Writer:
         body = b''.join(STATE.pack(s['id'], s['x'], s['y'], s['z'], int(round(((s.get('yaw', 0) + 180.0) % 360.0 - 180.0) * 100)),
                                    int(round(s.get('pitch', 0) * 100)), s.get('stance', 0), s.get('flags', 5),
                                    s.get('mode', 3), s.get('energy', 200), s.get('health', 100),
-                                   self.sid(s.get('weapon', '')), s.get('weapon_id', 0)) for s in states)
+                                   self.sid(s.get('weapon', '')), s.get('weapon_id', 0),
+                                   int(round(s.get('peak', 0) * 100))) for s in states)
         self._rec(3, struct.pack('<IB', int(t * 1000), len(states)) + body)
 
-    def brain(self, t, aid, state, target=0, visible=False, aim=(0, 0, 0), dest=(0, 0, 0), corner=(0, 0, 0), reason=''):
+    def brain(self, t, aid, state, target=0, visible=False, aim=(0, 0, 0), dest=(0, 0, 0), corner=(0, 0, 0), reason='',
+              visible_count=0, in_cone=False, cloaked=False, last_attacker=0):
         self._rec(4, BRAIN.pack(int(t * 1000), aid, self.sid(state), target, int(visible), *aim, *dest, *corner,
-                                self.sid(reason)))
+                                self.sid(reason), visible_count, int(in_cone) | (int(cloaked) << 1), last_attacker))
+
+    def intent(self, t, aid, move=(0, 0), gait=1, jump=0, suit=255, fire=0, target=0, link=0, reason=''):
+        self._rec(6, INTENT.pack(int(t * 1000), aid, *move, gait, jump, suit, fire, target, link, self.sid(reason)))
+
+    def inv(self, t, aid, items):
+        body = b''.join(struct.pack('<HHH', self.sid(c), cl, rs) for c, cl, rs in items)
+        self._rec(7, struct.pack('<IIB', int(t * 1000), aid, len(items)) + body)
 
     def event(self, t, kind, actor, other=0, value=0.0, pos=(0, 0, 0)):
         k = {v: k for k, v in EV.items()}[kind]
@@ -92,6 +118,54 @@ class Writer:
 
     def close(self):
         self.f.close()
+
+
+def merge_client(server, client, search=5.0, step=0.05):
+    """Replace the owner's yaw/pitch/sprint/peak in `server` with the client sidecar, aligned by position.
+
+    The client clock differs from the server's; find the offset (±search s) that minimises the mean XY distance
+    between the client's own FRAME positions and the same actor's server positions."""
+    if not client['frames']:
+        return server, None
+    cid = client['frames'][0][1][0][0]
+    cpos = [(t, r[0][1], r[0][2]) for t, r in client['frames']]
+    # server actor = the human whose positions match best (ids differ between server and client)
+    humans = [a for a, v in server['actors'].items() if v['kind'] == 'human']
+    best = (1e18, None, None)
+    for hid in humans:
+        spos = [(t, r[1], r[2]) for t, rows in server['frames'] for r in rows if r[0] == hid]
+        if not spos:
+            continue
+        st = [x[0] for x in spos]
+        import bisect
+        k = -search
+        while k <= search + 1e-9:
+            err = n = 0
+            for t, x, y in cpos[::10]:
+                i = bisect.bisect_left(st, t + k)
+                if 0 <= i < len(spos):
+                    err += (spos[i][1] - x) ** 2 + (spos[i][2] - y) ** 2; n += 1
+            if n and err / n < best[0]:
+                best = (err / n, hid, k)
+            k += step
+    _, hid, off = best
+    if hid is None:
+        return server, None
+    import bisect
+    ct = [t for t, _, _ in cpos]
+    out = []
+    for t, rows in server['frames']:
+        new = []
+        for r in rows:
+            if r[0] == hid:
+                i = bisect.bisect_left(ct, t - off)
+                if 0 <= i < len(ct) and abs(ct[i] - (t - off)) <= 0.1:
+                    c = client['frames'][i][1][0]
+                    r = r[:4] + (c[4], c[5]) + r[6:7] + ((r[7] & ~F_SPRINT) | (c[7] & F_SPRINT),) + r[8:13] + (c[13],)
+            new.append(r)
+        out.append((t, new))
+    server = dict(server, frames=out)
+    return server, dict(actor=hid, client_actor=cid, offset_s=round(off, 2), rms_m=round(best[0] ** 0.5, 2))
 
 
 # ------------------------------------------------------------------------------------------------ metrics

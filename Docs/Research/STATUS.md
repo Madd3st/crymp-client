@@ -31,7 +31,7 @@ decisions and aim. Map-specific fixes only as data, never code.
 | Research (OpenCode) | player vs bot movement params, decision-flip root cause, wall-stare root cause, sprint gap, engine geometry API, Detour integration plan, demo engine audit, owner jumps → links, reviews of every Codex push | src |
 | Process | mailbox (C-/OC-/X-/O- items), decisions file (D-001…D-007), mail loop for OpenCode, owner questions in chat | — |
 
-## External audit (Fable 5.1, 20:05)
+## External audit (Grok 4.7, 20:05)
 
 Agreed and adopted (D-008): navmesh right, but links need an executor state and filtering; bots see everyone within
 80 m with no view cone or cloak check (`BotCombat.cpp:142–166`, verified) — perception before aim polish; goal arbiter,

@@ -5,7 +5,7 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
-### OC-023 · 2026-10-24 20:10 · request · open
+### OC-023 · 2026-10-24 20:10 · request · **done by Claude** (OpenCode limit): Triage `jumps` — edge-paired, ballistic/teleport filter; 2 logs: 119 jumps, 116 kept (78 normal, 38 Strength), 3 rejected (multi-stage climbs), 5 link candidates
 Needs owner: no
 **Filter owner jumps** (external audit: OWNER_JUMPS has "jumps" of 59 m and 76 m — 4 Hz sample gaps / revive
 teleports, e.g. take-off (1246.4,1336.7) is spawn 195 where the owner used `wb_revive_at`). Keep a jump only if
@@ -13,7 +13,7 @@ horizontal distance ≤ ballistic reach for its dz (normal v0 4.43, Strength 9.6
 event within ±1 s, and mark clusters (≥ 2 independent take-offs within 2 m → candidate link). Update the script and
 `OWNER_JUMPS.json` (+ `rejected` list with reasons). Push, O-023.
 
-### OC-022 · 2026-10-24 20:10 · request · open
+### OC-022 · 2026-10-24 20:10 · request · open — **next when your limit resets**
 Needs owner: no
 **Real Recast bake as an offline tool** (not game code, not the game): on the owner PC, build recastnavigation (MIT,
 a pinned release tag) with CMake + MSVC into a tool folder outside the game tree, and write a tiny CLI (or use its
@@ -23,7 +23,7 @@ player capsule size from the physics proxy if you can find it), and writes the *
 poly count, area, regions. Steelmill first, then the other three. If building is not possible in your sandbox, say
 why. Push the CLI source to your branch (not the binaries/meshes); report O-022 with output paths.
 
-### OC-021 · 2026-10-24 20:10 · request · open — next (Codex C-025 waits for it)
+### OC-021 · 2026-10-24 20:10 · request · **done by Claude** (OpenCode limit): `wbdemo/2` frozen in DEMO_FORMAT.md, parser + client merge
 Needs owner: no
 **Freeze `wbdemo/2`** from the external audit + your DEMO_SPEC_REVIEW: as a diff to
 `Docs/Research/SteelmillTriage/DEMO_FORMAT.md`: (1) yaw in [-18000, 18000) cdeg (done by Claude); (2) record `INTENT`
@@ -34,7 +34,7 @@ style, navmesh hash, flags; `t_ms` = game time; (7) **hybrid**: the server write
 writes its own view/sprint lines into a sidecar `.wbdemo.client` merged by Triage — which client hooks. Mark fields
 Codex must not drop. Push, O-021. Claude merges it into the spec and updates the Triage parser.
 
-### OC-020 · 2026-10-24 20:05 · request · open — before OC-019 if Codex reaches C-029 first
+### OC-020 · 2026-10-24 20:05 · request · done (O-020, b6fe9f9)
 Needs owner: no
 Faster-than-real-time QA (Codex C-029). Read-only: (1) which timer cvars exist for CryMP's CrySystem (closed DLL):
 search the tree, scripts, configs and docs for `t_Scale`, `t_FixedStep`, `t_MaxStep`, `sv_DedicatedMaxRate`,
@@ -44,7 +44,7 @@ search the tree, scripts, configs and docs for `t_Scale`, `t_FixedStep`, `t_MaxS
 `physinterface.h` `timeScalePlayers` (`:1920`), max step, what a larger dt does to the player capsule. Output
 `Docs/Research/MovementParams/TIME_SCALE.md` with a recommendation (fixed step + uncapped rate vs scale), push, O-020.
 
-### OC-019 · 2026-10-24 19:55 · request · open — after OC-018
+### OC-019 · 2026-10-24 19:55 · request · done (O-019, b203f34)
 Needs owner: no
 **Mandatory refactor wave 1** (owner 19:45; Codex C-027). Give Codex an exact, behaviour-identical move list on
 weapon-goals HEAD: (1) every `wb_*` cvar: registration site, every read (file:line), which reads are per-tick
@@ -56,7 +56,7 @@ formats Triage parses today (do not change those). `Docs/Research/MovementParams
 Project state (full: steelmill-triage `Docs/Research/STATUS.md`): pace ON, spawn 195 closed, geometry exported,
 navmesh comparison next, demos C-025/C-026, your reviews continue (OC-016).
 
-### OC-018 · 2026-10-24 19:50 · request · open
+### OC-018 · 2026-10-24 19:50 · request · done (O-018, DEMO_SPEC_REVIEW.md)
 Needs owner: no
 Re O-015/O-017: received (owner jumps → links; demo audit is the basis of the spec). Owner chose **in-game record +
 play**; Claude wrote the format `Docs/Research/SteelmillTriage/DEMO_FORMAT.md` (steelmill-triage). (1) Review the spec

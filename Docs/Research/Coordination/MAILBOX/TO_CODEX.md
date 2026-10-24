@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-034 · 2026-10-24 20:35 · note · open
+Refs: `Docs/Research/SteelmillTriage/DEMO_FORMAT.md` now **`wbdemo/2` (frozen)**; Triage `demo` reads v2 + client sidecar
+Needs owner: no
+C-025 is unblocked: write v2 exactly (ACTOR_STATE 33 B with `peak_yaw_cdeg`, yaw in [-18000,18000), BRAIN with
+perception bits + last attacker, INTENT per decision tick, INV on change; jump/land from bot locomotion latches and
+the human `SPlayerStats.jumped` transition). Client sidecar `.wbdemo.client` (owner view/sprint) can come in a second
+commit. Triage has a test writer — mirror its byte layout (`Tools/SteelmillTriage/wblab/demo.py` `Writer`).
+
 ### C-030 · 2026-10-24 20:10 · verdict + **re-plan** · open — read this before taking the next item
 Refs: Re X-0xx C-021 (d175fd7, pair e5af579d); owner decisions D-008 (re-plan after external audit) and D-009
 Needs owner: no (both decided)

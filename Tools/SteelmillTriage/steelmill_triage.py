@@ -26,6 +26,7 @@ from wblab import pace  # noqa: E402
 from wblab import navmesh  # noqa: E402
 from wblab import replay  # noqa: E402
 from wblab import demo  # noqa: E402
+from wblab import jumps as ownerjumps  # noqa: E402
 
 
 def cmd_mem(a):
@@ -200,9 +201,30 @@ def cmd_replay(a):
 def cmd_demo(a):
     """Metrics from a wbdemo/1 file: aim wander, bot aim error, reaction time, decision flips, time to primary."""
     d = demo.read(a.file)
-    print(json.dumps(dict(header=d["header"], actors=len(d["actors"]), frames=len(d["frames"]),
+    merged = None
+    if a.client:
+        d, merged = demo.merge_client(d, demo.read(a.client))
+    print(json.dumps(dict(header=d["header"], client_merge=merged, actors=len(d["actors"]), frames=len(d["frames"]),
                           seconds=round(d["frames"][-1][0] - d["frames"][0][0], 1) if d["frames"] else 0,
                           metrics=demo.metrics(d)), indent=1))
+
+
+def cmd_jumps(a):
+    """Owner jumps from MOVE TRACE human lines, ballistic/teleport filter, link candidates (clusters >= 2)."""
+    allj = []
+    for path in a.logs:
+        allj += ownerjumps.extract(ownerjumps.samples(path, side=a.side))
+    kept = [j for j in allj if j["keep"]]
+    res = dict(total=len(allj), kept=len(kept), rejected=len(allj) - len(kept),
+               by_kind={k: sum(1 for j in kept if j["kind"] == k) for k in ("normal", "strength", "drop")},
+               link_candidates=sum(1 for j in kept if j.get("link_candidate")),
+               rejected_list=[j for j in allj if not j["keep"]][:40], kept_list=kept)
+    if a.out:
+        with open(a.out, "w", encoding="utf-8") as f:
+            json.dump(res, f, indent=1)
+    print(json.dumps({k: v for k, v in res.items() if not k.endswith("_list")}, indent=1))
+    for j in res["rejected_list"][:12]:
+        print("  rejected", j["t"], j["kind"], j["dist"], j["dz"], "; ".join(j["reasons"]))
 
 
 def cmd_movement(a):
@@ -242,7 +264,10 @@ def main(argv=None):
     s = sub.add_parser("replay"); s.add_argument("log"); s.add_argument("--out", required=True)
     s.add_argument("--minimap-json", help="JSON with a 'minimap' object (uri,row0,col0,kx,ky,start_x,start_y)")
     s.add_argument("--label"); s.set_defaults(fn=cmd_replay)
-    s = sub.add_parser("demo"); s.add_argument("file"); s.set_defaults(fn=cmd_demo)
+    s = sub.add_parser("demo"); s.add_argument("file"); s.add_argument("--client", help="owner .wbdemo.client sidecar")
+    s.set_defaults(fn=cmd_demo)
+    s = sub.add_parser("jumps"); s.add_argument("logs", nargs="+"); s.add_argument("--side", default="client")
+    s.add_argument("--out"); s.set_defaults(fn=cmd_jumps)
     s = sub.add_parser("movement"); s.add_argument("logs", nargs="+"); s.set_defaults(fn=cmd_movement)
     a = p.parse_args(argv)
     a.fn(a)
