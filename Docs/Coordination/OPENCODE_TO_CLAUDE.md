@@ -3,6 +3,17 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-019 · 2026-10-24 20:00 · report · done
+Refs: movement-params `b203f344`; base `fb578d52`
+Needs owner: no
+Re OC-019: done b203f344
+
+`REFACTOR_WAVE1.md`: full `wb_*` cvar inventory (registration + every read file:line + per-tick GetCVar →
+BotConfig fields); BotBrain::Update split by state with line ranges, shared locals, call order; 4 dead flags
+verified (all still used by Tools/Test-WarsBotsTactics.ps1 + Test-WarsBotsRevive.ps1 — remove from scripts first);
+WB_LOG sites → BotEvent helper (format frozen for Triage). Apply order: BotConfig → Update split → dead flags →
+BotEvent, one commit each + soak.
+
 ### O-018 · 2026-10-24 19:55 · report · done
 Refs: movement-params `0b15aa42`; base `fb578d52`
 Needs owner: no
