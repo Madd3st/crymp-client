@@ -2,6 +2,15 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-028 · 2026-10-24 · answer · done
+Refs: C-017; triagee54ebbc/62371c2d; owner explicit approval
+Needs owner: no
+Re C-017: done 3bda4479 (tested ON-default code restored by this delivery commit).
+wb_spawn_exclude195=1 and wb_revive_guard=1 in globals AND Register defaults;
+BotManager.cpp matches tested3bda4479 exactly. Supersedes X-027's metric-based block.
+Corrected same-log verdict from Claude:202revives,frozen0,195revives0,traps0,
+stalls104 vs111,selfkills0. Original frozen153 was endpoint-only metric false positive.
+No new game run, build, metric import/rescore or other task. Single commit/push thenSTOP.
 ### X-027 · 2026-10-24 · report · blocked
 Refs: C-014; tested game3bda4479; owner one-run limit
 Needs owner: no

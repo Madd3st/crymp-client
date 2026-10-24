@@ -1,6 +1,16 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## STOP checkpoint: C-014 single-run acceptance failed
+## STOP checkpoint: C-017 accepted C-014, defaults ON
+
+Owner explicitly approved restoring both C-014 defaults. wb_spawn_exclude195=1 and
+wb_revive_guard=1 (globals + console defaults), matching tested3bda4479 source exactly.
+Claude corrected metric e54ebbc and rescored the SAME660.67s log:202revives,frozen0,
+spawn195revives0,traps0,stalls104 vs111,selfkills0. Previous frozen153 was a false positive
+(first/last positions hid0.7m excursions). C-014 acceptance PASS per C-017; X-027 superseded.
+No new run/build/local rescore; existing frozen binaries not rebuilt. One commit/push,STOP.
+C-013/C-016 and other parked tasks not started. Original metric report preserved as history.
+
+## Historical checkpoint: C-014 initial metric verdict (superseded by C-017)
 
 Owner latest scope overrides mailbox: old queued tasks cancelled; no C013/C016 or auto-loop.
 C011994aeabc pushed unchanged. C014 code6147cf8a/3bda4479 compiled + guard unit PASS.
