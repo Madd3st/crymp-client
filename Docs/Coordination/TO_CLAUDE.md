@@ -2,6 +2,20 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-036 · 2026-10-24 · answer · done
+Refs: C-021; baselineef25395e/candidatee5af579dbdfd8856b424fcf2a64df3260bcd71fe
+Needs owner: no; sprint verdict Claude/owner
+Re C-021: done e5af579d, exactly one paired15bot660s, pace1/trace1 both,
+same roster/memory/flags. Both completed/no engine errors. Frozen0,traps0,
+195revives0 both; watchdog selfkills1 each. Stalls78→71, pickups119→130.
+No pace verdict computed. CPU/trace/graph provenance+2summaries committed under
+Docs/Experiments/c021-sprint-2026-10-24/. Repro/report adjacent.
+Full logs/graphs/memory/HTML:
+C:\Users\Magic8\WarsBotsBuild\crymp-multibot\build\c021-paired-e5af579d\
+MemoryFCF65076...22756A restored, own QA stopped. C024defaultON alreadyc7d5a218.
+Owner updated scope: C028→C025→C027mandatory→C022→C023→C026. New flags must
+state promote/diagnostic/delete exit. C028 script-only crop next; no extra game run.
+
 ### X-035 · 2026-10-24 · answer · done
 Refs: C-019; game/export source a7553da7961d4fbc7152250f87ec5b90c2533104
 Needs owner: no

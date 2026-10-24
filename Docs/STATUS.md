@@ -1,19 +1,15 @@
 # WarsBots for CryMP: status, 2026-10-24
 
-## C-019 exports / C-021 paired QA in progress
+## C021 pair complete; next C028→C025→C027→C022→C023→C026
 
-OwnerPace7 ended explicitly; server5340 stopped, logs+memory archived under
-LOCALAPPDATA/WarsBots/Logs/OwnerPace7-20261024-191733/.
-C019a7553da7: exporter compiled/tests PASS; all4 maps exported+stream-validated.
-Local Geometry/C019-a7553da7/, counts/hashes in Docs/Experiments/c019-geometry-2026-10-24/.
-Owner EXEs were never replaced.
-C021e5af579d: pace travel sprint3m, Speed entry130/20, all skills Armor sprint,
-Beginner complex Speed gate retained; policy unit+MSVC x64 build PASS.
-C024/D007 owner approved wb_bot_pace default1 (global+Register); no new run/build.
-Frozen C021 binaries retain their own default0, tested with explicitpace1 both arms.
-One15bot660s pair running after exports; trace1/pace1 both arms,
-baselineef25395e/candidatee5af579d. No verdict/default promotion yet.
-No C022/C023 started. No builds/heavy QA while owner client is active.
+C019 four maps exported+validated, local Geometry/C019-a7553da7/; C024defaultON.
+C021e5af579d one15bot660s pair completed vs ef25395e, pace1/trace1 both,
+same roster/memory/flags. Frozen0,traps0 both; selfkills1 each; stalls78→71,
+pickups119→130. Claude/owner decides sprint verdict. Owner memory restored,
+QA stopped. See Docs/Experiments/c021-sprint-2026-10-24.md +data directory.
+Owner session archive: LOCALAPPDATA/WarsBots/Logs/OwnerPace7-20261024-191733/.
+Next offline C028 crop, then demos, mandatory behaviour-identical refactor wave1,
+weapons, aim, playback. Flag exits required. No builds/heavy QA during owner play.
 
 ## Historical checkpoint: C-018 paired pace QA complete
 

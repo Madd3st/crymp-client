@@ -1,14 +1,15 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-24)
 
-## Active checkpoint: C019 complete, C021 paired QA running
+## C021 pair complete; next C028→C025→C027→C022→C023→C026
 
-OwnerPace7 ended explicitly; server5340 stopped, full archive in
-C:\Users\Magic8\AppData\Local\WarsBots\Logs\OwnerPace7-20261024-191733\.
-C019a7553da7 geometry of4IA maps exported/validated; see c019 report and mailboxX035.
-C021e5af579d built/policy unit PASS; one15bot660s pair running, trace1/pace1 both,
-baselineef25395e/candidatee5af579d. Results pending. C024c7d5a218 sets default1
-per ownerD007, no new run/build for default-only change; pair frozen EXEs unchanged.
-C022/C023 pending, not started. No builds or heavy QA during an active owner client.
+C019 four maps exported+validated, local Geometry/C019-a7553da7/; C024defaultON.
+C021e5af579d one15bot660s pair completed vs ef25395e, pace1/trace1 both,
+same roster/memory/flags. Frozen0,traps0 both; selfkills1 each; stalls78→71,
+pickups119→130. Claude/owner decides sprint verdict. Owner memory restored,
+QA stopped. See Docs/Experiments/c021-sprint-2026-10-24.md +data directory.
+Owner session archive: LOCALAPPDATA/WarsBots/Logs/OwnerPace7-20261024-191733/.
+Next offline C028 crop, then demos, mandatory behaviour-identical refactor wave1,
+weapons, aim, playback. Flag exits required. No builds/heavy QA during owner play.
 
 ## Historical checkpoint: C-018 paired pace QA complete
 
