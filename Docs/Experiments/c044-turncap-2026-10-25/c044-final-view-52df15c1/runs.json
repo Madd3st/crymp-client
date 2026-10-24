@@ -1,0 +1,73 @@
+{
+  "feature_gates": [
+    "wb_bot_turn_cap"
+  ],
+  "inspect_feature_gates": true,
+  "demo_record_requested": 1,
+  "time_mode": "wall",
+  "requested_speed": 1.0,
+  "wall_seconds": 120.2435039,
+  "game_seconds": 118.95,
+  "speedup": 0.9892426296802218,
+  "time_error": "",
+  "bot_pace_requested": 1,
+  "fixed_roster": true,
+  "move_trace_requested": 1,
+  "reachable_goals_requested": 0,
+  "explain_nodes": [],
+  "explain_pairs_path": "",
+  "physics_diagnostics_requested": 1,
+  "observed_seconds": 118.95,
+  "nav_exports": 2,
+  "hotspot_all_nodes_requested": 0,
+  "tag": "candidate-r1-n6",
+  "session": "c044-final-view-52df15c1",
+  "progress_requested": 0,
+  "trap_recovery_requested": 1,
+  "fire_diagnostics": true,
+  "style_mode": "auto",
+  "skill_rotation_step": 1,
+  "variant": "candidate",
+  "repeat": 1,
+  "bots": 6,
+  "seconds": 120,
+  "source_sha": "52df15c1355aa042a36c2186948ac2c07846f88e",
+  "server_sha256": "7042E80CBC0B483A2AECF358AD4C7702296FF9A431B555C5361B20A20BEE25DC",
+  "client_sha256": "28F7357C1AB59FBD1BA0002DE5737D74BC207D8D3B595962F8F785EBD9956BA4",
+  "memory_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+  "roster": [
+    {
+      "style": "auto",
+      "skill": "beginner",
+      "number": 1
+    },
+    {
+      "style": "auto",
+      "skill": "normal",
+      "number": 2
+    },
+    {
+      "style": "auto",
+      "skill": "veteran",
+      "number": 3
+    },
+    {
+      "style": "auto",
+      "skill": "elite",
+      "number": 4
+    },
+    {
+      "style": "auto",
+      "skill": "beginner",
+      "number": 5
+    },
+    {
+      "style": "auto",
+      "skill": "normal",
+      "number": 6
+    }
+  ],
+  "log": "WarsBots-Tactics-c044-final-view-52df15c1-candidate-r1-n6.bots.log",
+  "completed": true,
+  "kills": 7
+}

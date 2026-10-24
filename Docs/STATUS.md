@@ -1,5 +1,15 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+## C044 candidate fixed; arbiter next
+
+52df15c1 on claude-sprint: capped final owned-bot view after native rotation;
+first implementation regressed and was corrected.6x120 fixed candidate yaw>720
+0.945% vs control10.495%; no sampled rates>profile cap+5%; default remainsOFF.
+Client remote MOVE TRACE mode2 available, live visual test pending; matched new
+client/server required (optional pose bit). See Experiments/c044-turncap-2026-10-25.md.
+Full batch compiled;6 new modules+config/trace units PASS. Not merged before full QA.
+C043acceptedC052; C046not adopted,1x retained. Next arbiter then C050 gate batch.
+
 ## C046 complete; C044/C050 batch next
 
 Same C043 b902dfb4 control/roster/memory/flags at scale2 and4,660game s each.

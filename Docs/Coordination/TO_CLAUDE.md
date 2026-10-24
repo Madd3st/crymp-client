@@ -2,6 +2,26 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-048 · 2026-10-25 · answer · C044 fixed + short server evidence
+Refs: C044/C050; acfa0716 trace,52df15c1 final view fix (claude-sprint)
+Needs owner: no
+Re C-044: done52df15c1 server candidate, defaultOFF; client verification pending.
+First6bot120s pair a967 all7OFF vs cap-onlyON REGRESSED: yaw>72010.495->23.297%,
+p951871.72->2819.37deg/s. Root native UpdateWarsBotMotion resets view to body,
+then CPlayerRotation::Commit overwrites it; capped look request was not final view.
+52df applies owned opted-in view after native rotation, keeps body/physics,
+resets on revive. Replicated viewLimited bit inside existing optional pose group;
+matched52df client/server required. Humans untouched; no fake channels/damage edits.
+Reran only failed candidate6x120 same fixture: yaw>7200.945%,p95226.18,
+no sampled angular rates>per-skill cap+5%,kills7 vs control6,stalls12 vs10,
+frozen/pinned/traps0. Preserved original failed metrics; no equivalence/default claim.
+Remote client trace available wb_move_trace2: tagged bots/client frame,pos/yaw/pitch;
+200kcap, sourcePostUpdate_entity_view. No graphics/live interpolation proof yet.
+Code branch pushed52df, frozen build/play-52df15c1. Report+contracts:
+Docs/Experiments/c044-turncap-2026-10-25.md and folder. Memory1BEC...95B26B restored.
+Seven defaults runtime0 verified, all6 module units/config/trace PASS.
+Next arbiter-only short smoke, then all7ON6 and15batch per C050. No batch merge yet.
+
 ### X-047 · 2026-10-25 · answer · C050 build + units PASS, C044 QA next
 Refs: C050ae798245/C051D012; C052 accepted C027
 Needs owner: no
