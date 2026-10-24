@@ -70,6 +70,24 @@ class NavmeshTests(unittest.TestCase):
         self.assertEqual(p['route']['on_mesh_pct'], 100.0)
         self.assertLess(p['route']['reproducible_pct'], 100.0)
 
+    def test_jumps(self):
+        v, f = navmesh.load_obj(world().obj())
+        m = navmesh.WalkModel(v, f, bounds=((-1, -1), (31, 21)), cs=0.25)
+        spawns = [(2, 22, 10, -2.0), (3, 6, 6, 1.0)]
+        m.add_jumps('jump', v0=4.43, vh=4.5)                   # 1 m apex: neither the 1 m crate nor the 2 m pit
+        self.assertEqual(navmesh.profile(m, spawns=spawns)['spawns']['main'], 0)
+        n = m.add_jumps('strength', v0=9.60, vh=4.5)           # 4.7 m apex: both
+        self.assertGreater(n, 0)
+        self.assertEqual(navmesh.profile(m, spawns=spawns)['spawns']['main'], 2)
+
+    def test_strength_jump_clears_3m_wall_not_6m(self):
+        for wall, expect in ((3.0, 2), (6.0, 1)):
+            m = Mesh(); m.floor(0, 0, 10, 10, 0); m.floor(10.5, 0, 20, 10, 0); m.box(10, 0, 10.5, 10, 0, wall)
+            v, f = navmesh.load_obj(m.obj())
+            w = navmesh.WalkModel(v, f, bounds=((-1, -1), (21, 11)), cs=0.25)
+            w.add_jumps('strength', v0=9.60, vh=4.5)
+            self.assertEqual(navmesh.profile(w, spawns=[(1, 5, 5, 0), (2, 15, 5, 0)])['spawns']['main'], expect, wall)
+
     def test_wall_column_not_walkable_under_clearance(self):
         self.assertEqual(self.m.project(15, 19.8, 0), -1)    # inside the 3 m wall
 

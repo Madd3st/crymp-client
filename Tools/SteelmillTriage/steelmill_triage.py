@@ -165,8 +165,16 @@ def cmd_navmesh(a):
                         route.append((t, x, y, z))
                     except (IndexError, ValueError):
                         pass
-    res = navmesh.profile(m, spawns=_points(a.points or a.spawns, "spawns"),
-                          items=_points(a.points or a.items, "items"), route=route)
+    sp, it = _points(a.points or a.spawns, "spawns"), _points(a.points or a.items, "items")
+    res = navmesh.profile(m, spawns=sp, items=it, route=route)
+    if not a.no_jumps:
+        # Crysis is vertical: compare walk-only with normal jumps and Strength jumps added
+        # (v0 4.43 / 9.60 m/s, PlayerMovement.cpp:1134,1150-1170; horizontal speed = run 4.5 m/s by default)
+        res = {"walk": res}
+        n = m.add_jumps("jump", v0=4.43, vh=a.jump_vh)
+        res["walk+jump"] = dict(navmesh.profile(m, spawns=sp, items=it, route=route), links=n)
+        n = m.add_jumps("strength", v0=9.60, vh=a.jump_vh)
+        res["walk+jump+strength"] = dict(navmesh.profile(m, spawns=sp, items=it, route=route), links=n)
     if a.png:
         navmesh.render_png(m, a.png, spawns=_points(a.points or a.spawns, "spawns"), route=route)
         res["png"] = a.png
@@ -203,7 +211,8 @@ def main(argv=None):
     s = sub.add_parser("navmesh"); s.add_argument("obj"); s.add_argument("--up", default="z")
     s.add_argument("--bounds", help="x0,y0,x1,y1"); s.add_argument("--points", help="level_data map JSON")
     s.add_argument("--spawns"); s.add_argument("--items"); s.add_argument("--trace", nargs="*")
-    s.add_argument("--png", help="top-view PNG of the walk model")
+    s.add_argument("--png", help="top-view PNG of the walk model (with all links)")
+    s.add_argument("--no-jumps", action="store_true"); s.add_argument("--jump-vh", type=float, default=4.5)
     s.add_argument("--cs", type=float, default=0.3); s.add_argument("--climb", type=float, default=0.5)
     s.add_argument("--radius", type=float, default=0.4); s.add_argument("--height", type=float, default=1.8)
     s.add_argument("--max-drop", type=float, default=4.0); s.add_argument("--slope", type=float, default=45.0)

@@ -16,6 +16,10 @@ Run it on all four IA maps, put the files in `%LOCALAPPDATA%\WarsBots\Geometry\`
 in `Re C-019`). OpenCode's `ENGINE_GEOMETRY_EXPORT.md` (OC-011, movement-params) will list the engine calls
 (`IPhysicalWorld`, `ITerrain`, `IGeometry`, file:line) — use it if it lands first. I build the navmesh offline
 and compare it with your BotNav graph on the same metrics; bots are not switched until that comparison wins.
+Design note (owner, 18:41 — Crysis is vertical, players and bots must jump): the in-game navmesh will carry
+**auto-generated ballistic jump links** (normal jump v0 4.43 m/s, Strength jump v0 9.60 m/s + 70 energy, arc
+clearance checked; Triage `navmesh` already models them) plus links learned from owner MOVE TRACE jumps; Detour
+off-mesh connections carry the jump type so the bot executes jump / Strength jump at the link. Nothing to do now.
 Then STOP.
 
 ### C-018 · 2026-10-24 18:10 · request · open — next task

@@ -174,11 +174,83 @@ class WalkModel:
             a, b = rep[self.drops[:, 0]], rep[self.drops[:, 1]]
             keep = (a >= 0) & (b >= 0) & (a != b)
             src.append(a[keep]); dst.append(b[keep])
-        src = np.concatenate(src) if src else np.zeros(0, np.int64)
-        dst = np.concatenate(dst) if dst else np.zeros(0, np.int64)
+        self.base_src = np.concatenate(src) if src else np.zeros(0, np.int64)
+        self.base_dst = np.concatenate(dst) if dst else np.zeros(0, np.int64)
+        self.links = {}
+        self._rebuild()
+
+    def _rebuild(self):
+        n = len(self.col)
+        src = [self.base_src] + [l[0] for l in self.links.values()]
+        dst = [self.base_dst] + [l[1] for l in self.links.values()]
+        src, dst = np.concatenate(src), np.concatenate(dst)
         self.adj = csr_matrix((np.ones(len(src), np.int8), (src, dst)), shape=(n, n))
         _, self.scc = connected_components(self.adj, directed=True, connection='strong')
         self.scc = np.where(self.alive, self.scc, -1)
+
+    # -- jump links (Crysis is vertical: players and bots must jump)
+    def add_jumps(self, name, v0, vh, energy_note='', stride=2, dirs=16, step=0.6, apex_margin=0.3):
+        """One-way ballistic links between alive spans in different SCCs.
+
+        v0: take-off vertical speed (normal jump 4.43 m/s -> 1.0 m apex; Strength 9.60 m/s -> 4.7 m apex,
+        PlayerMovement.cpp:1134,1150-1170); vh: horizontal speed at take-off (run 4.5, sprint 6.75 m/s).
+        A link exists when the landing is below the apex minus a margin, within the horizontal reach for that
+        height, and no solid span blocks the capsule along the arc."""
+        g = 9.81; cs = self.p['cs']; H = self.p['agent_h']
+        apex = v0 * v0 / (2 * g)
+        cx_all = self.col % self.nx; cy_all = self.col // self.nx
+        take = np.flatnonzero(self.alive & (cx_all % stride == 0) & (cy_all % stride == 0))
+        # longest reach: landing max_drop below take-off
+        tmax = (v0 + math.sqrt(v0 * v0 + 2 * g * self.p['max_drop'])) / g
+        rmax = vh * tmax
+        src_out, dst_out = [], []
+        z0 = self.zmax[take]; x0 = cx_all[take]; y0 = cy_all[take]; scc0 = self.scc[take]
+        ang = np.arange(dirs) * 2 * math.pi / dirs
+        for a in ang:
+            ux, uy = math.cos(a), math.sin(a)
+            for dist in np.arange(step, rmax + 1e-6, step):
+                tx = np.round(x0 + ux * dist / cs).astype(np.int64); ty = np.round(y0 + uy * dist / cs).astype(np.int64)
+                inb = (tx >= 0) & (tx < self.nx) & (ty >= 0) & (ty < self.ny)
+                tcol = np.where(inb, ty * self.nx + tx, 0)
+                s0 = self.cstart[tcol]; s1 = self.cend[tcol]
+                maxk = int((s1 - s0)[inb].max()) if inb.any() else 0
+                for k in range(maxk):
+                    j = s0 + k; ok = inb & (j < s1)
+                    jj = np.where(ok, j, 0)
+                    ok &= self.alive[jj] & (self.scc[jj] != scc0)
+                    if not ok.any():
+                        continue
+                    dz = self.zmax[jj] - z0
+                    ok &= dz <= apex - apex_margin
+                    ok &= dz >= -self.p['max_drop']
+                    # flight time to reach dz on the descending branch; horizontal reach must cover dist
+                    disc = np.maximum(v0 * v0 - 2 * g * dz, 0)
+                    T = (v0 + np.sqrt(disc)) / g
+                    ok &= vh * T >= dist
+                    if not ok.any():
+                        continue
+                    idx = np.flatnonzero(ok)
+                    # arc clearance: sample the straight horizontal path at the time the agent passes it
+                    clear = np.ones(len(idx), bool)
+                    nsamp = max(2, int(math.ceil(dist / (cs * 0.7))))
+                    for frac in (np.arange(1, nsamp) / nsamp):
+                        d = dist * frac; t = d / vh
+                        zf = z0[idx] + v0 * t - 0.5 * g * t * t
+                        px = np.round(x0[idx] + ux * d / cs).astype(np.int64); py = np.round(y0[idx] + uy * d / cs).astype(np.int64)
+                        c = py * self.nx + px
+                        a0 = self.cstart[c]; a1 = self.cend[c]
+                        for kk in range(int((a1 - a0).max()) if len(c) else 0):
+                            q = a0 + kk; qq = np.where(q < a1, q, 0); has = q < a1
+                            # a solid span overlapping the capsule [zf+0.1, zf+H-0.4] blocks the arc
+                            hit = has & (self.zmin[qq] < zf + H - 0.4) & (self.zmax[qq] > zf + 0.1)
+                            clear &= ~hit
+                    idx = idx[clear]
+                    src_out.append(take[idx]); dst_out.append(jj[idx])
+        src = np.concatenate(src_out) if src_out else np.zeros(0, np.int64)
+        dst = np.concatenate(dst_out) if dst_out else np.zeros(0, np.int64)
+        self.links[name] = (src, dst)
+        self._rebuild()
+        return len(src)
 
     # -- queries
     def project(self, x, y, z, up=0.6, down=1.2):

@@ -40,7 +40,9 @@ only as data (e.g. a bad-spawn list), never code. Acceptance on ≥ 2 maps from 
 2. **Pace / sprint** (C-013 → C-018, Codex now) — targets from the owner trace; map-independent.
 3. **Navmesh (D-006)**: `wb_geom_export` on 4 IA maps (C-019, prep OC-011) → Claude builds Recast navmesh offline
    → compare with BotNav graph (traps, spawns outside the main part, owner route reproducibility, no_route) →
-   if it wins, bots switch to Detour paths; owner strength-jump/ledge routes from MOVE TRACE added as off-mesh links.
+   if it wins, bots switch to Detour paths. Vertical play is first-class: auto-generated ballistic jump links
+   (normal 1.0 m apex, Strength 4.7 m apex / 70 energy, arc clearance) + owner MOVE TRACE jumps as off-mesh links;
+   Triage `navmesh` reports walk / +jump / +Strength so the value of jumps is measured per map.
    Graph repair (C-006/C-011), filter B, sink escape C, most trap-watchdog levels → parked, removed in refactor.
 4. **Wall staring** (owner video) — OC-010 audit → MOVE TRACE aimYaw/wallDist → fix.
 5. Decision stability (CHASING↔MOVING_TO_WEAPON) — `PATCH_DECISION_COMMIT.md`; later utility-AI decision layer.
