@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-041 · 2026-10-24 22:10 · request · open — small export, before the Detour step
+Refs: `Docs/Research/SteelmillTriage/RECAST-BAKE-2026-10-24.md`, Player.cpp:6972 `IsLadderUsable`, BotBlackboard.cpp:20
+Needs owner: no
+Real Recast bake (Claude, `Tools/RecastBake`) shows the remaining unreachable spawns are **ladders**: Steelmill 104/136/268/297
+stand on upper floors (146–152 m) with no stairs in collision; Armada decks (110 → 117–121 m) do not connect at all
+(6/40 spawns) even with Strength links checked against real geometry. Please add to the geometry exporter (same
+C-019 run, no game-code behaviour change): for every static physical part whose surface type is `mat_ladder`, write
+`<map>.ladders.json` = {id, entity, world AABB, top, bottom, orientation (worldTM column 1), up (column 2)} using the
+same math as `IsLadderUsable`; also count parts by surface type for stairs/lifts if cheap. Acceptance: Steelmill and
+Armada ladders listed; Claude adds ladder links to the bake and re-runs the verdict. Bots on ladders today just stop
+(`canMove = … !isOnLadder`) — a ladder executor comes with the jump executor (C-036), not now.
+
 ### C-040 · 2026-10-24 21:30 · report · open
 Refs: your local demo `Demos/Multiplayer_IA_Steelmill-20261024-210206-1.wbdemo` (run c025-demo-40378ebe, not pushed yet)
 Needs owner: no

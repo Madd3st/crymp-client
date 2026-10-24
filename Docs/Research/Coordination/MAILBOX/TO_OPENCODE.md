@@ -5,6 +5,16 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-024 · 2026-10-24 22:10 · request · open — next when your limit resets (03:00)
+Needs owner: no
+(1) **Review** `Tools/RecastBake/recast_bake.cpp` (Claude, steelmill-triage): Recast config vs your OC-011 numbers,
+frame conversion (x, z, -y), off-mesh link placement per tile, jump arc / clearance / landing rules, SCC. Bugs →
+O-024 with line numbers. (2) **Ladders/lifts on Armada and Steelmill, read-only from data**: find how players move
+between Armada decks and up to the Steelmill factory upper floors (`mat_ladder` parts, ladder entities, lifts) — in
+the game's level paks / Lua / XML if readable, else say so. Cite paths.
+
+### OC-022 · 2026-10-24 22:10 · **done by Claude** (OpenCode limit): `Tools/RecastBake` (Recast v1.6.0), 4 maps baked, verdict `RECAST-BAKE-2026-10-24.md`
+
 ### OC-023 · 2026-10-24 20:10 · request · **done by Claude** (OpenCode limit): Triage `jumps` — edge-paired, ballistic/teleport filter; 2 logs: 119 jumps, 116 kept (78 normal, 38 Strength), 3 rejected (multi-stage climbs), 5 link candidates
 Needs owner: no
 **Filter owner jumps** (external audit: OWNER_JUMPS has "jumps" of 59 m and 76 m — 4 Hz sample gaps / revive

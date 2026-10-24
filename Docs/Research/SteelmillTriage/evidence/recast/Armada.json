@@ -1,0 +1,5473 @@
+{
+ "walk": {
+  "mesh": {
+   "tiles": 41,
+   "tiles_grid": [
+    12,
+    4
+   ],
+   "polys": 1902,
+   "max_tile_polys": 241,
+   "components": 241,
+   "area_m2": 45139,
+   "main_area_m2": 4095,
+   "two_way_area_m2": 4095,
+   "offmesh_links": 0,
+   "generated": {
+    "drop": 0,
+    "jump": 0,
+    "strength": 0
+   }
+  },
+  "summary": {
+   "spawns": 40,
+   "spawns_on_mesh": 40,
+   "spawns_in_main": 6,
+   "spawns_two_way": 6,
+   "items": 156,
+   "items_on_mesh": 156,
+   "items_two_way": 25,
+   "items_reachable": 25
+  },
+  "outside_spawns": [
+   {
+    "kind": "spawn",
+    "id": 191,
+    "pos": [
+     1498.5,
+     1313.38,
+     123.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 92,
+    "comp_area": 30
+   },
+   {
+    "kind": "spawn",
+    "id": 71,
+    "pos": [
+     1514.5,
+     1357.75,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 158,
+    "comp_area": 37
+   },
+   {
+    "kind": "spawn",
+    "id": 383,
+    "pos": [
+     1506.0,
+     1361.38,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 226,
+    "comp_area": 178
+   },
+   {
+    "kind": "spawn",
+    "id": 479,
+    "pos": [
+     1487.62,
+     1363.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 190,
+    "comp_area": 120
+   },
+   {
+    "kind": "spawn",
+    "id": 244,
+    "pos": [
+     1433.62,
+     1341.0,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 213,
+    "comp_area": 290
+   },
+   {
+    "kind": "spawn",
+    "id": 294,
+    "pos": [
+     1415.75,
+     1355.5,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 210,
+    "comp_area": 1
+   },
+   {
+    "kind": "spawn",
+    "id": 394,
+    "pos": [
+     1421.25,
+     1330.0,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 213,
+    "comp_area": 290
+   },
+   {
+    "kind": "spawn",
+    "id": 206,
+    "pos": [
+     1422.62,
+     1326.88,
+     116.62
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 135,
+    "comp_area": 29
+   },
+   {
+    "kind": "spawn",
+    "id": 446,
+    "pos": [
+     1416.25,
+     1331.25,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 199,
+    "comp_area": 80
+   },
+   {
+    "kind": "spawn",
+    "id": 161,
+    "pos": [
+     1417.0,
+     1331.25,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 208,
+    "comp_area": 495
+   },
+   {
+    "kind": "spawn",
+    "id": 96,
+    "pos": [
+     1509.0,
+     1317.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 89,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 445,
+    "pos": [
+     1424.25,
+     1349.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 208,
+    "comp_area": 495
+   },
+   {
+    "kind": "spawn",
+    "id": 317,
+    "pos": [
+     1431.75,
+     1349.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 196,
+    "comp_area": 47
+   },
+   {
+    "kind": "spawn",
+    "id": 451,
+    "pos": [
+     1524.12,
+     1311.62,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 235,
+    "comp_area": 27261
+   },
+   {
+    "kind": "spawn",
+    "id": 395,
+    "pos": [
+     1524.75,
+     1319.38,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 235,
+    "comp_area": 27261
+   },
+   {
+    "kind": "spawn",
+    "id": 465,
+    "pos": [
+     1433.25,
+     1331.12,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 128,
+    "comp_area": 32
+   },
+   {
+    "kind": "spawn",
+    "id": 495,
+    "pos": [
+     1497.0,
+     1320.75,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 106,
+    "comp_area": 80
+   },
+   {
+    "kind": "spawn",
+    "id": 138,
+    "pos": [
+     1495.25,
+     1368.5,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 226,
+    "comp_area": 178
+   },
+   {
+    "kind": "spawn",
+    "id": 174,
+    "pos": [
+     1520.38,
+     1313.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 57,
+    "comp_area": 28
+   },
+   {
+    "kind": "spawn",
+    "id": 403,
+    "pos": [
+     1513.88,
+     1313.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 54,
+    "comp_area": 22
+   },
+   {
+    "kind": "spawn",
+    "id": 110,
+    "pos": [
+     1509.38,
+     1357.5,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 158,
+    "comp_area": 37
+   },
+   {
+    "kind": "spawn",
+    "id": 304,
+    "pos": [
+     1483.12,
+     1305.25,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 23,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 404,
+    "pos": [
+     1530.75,
+     1305.25,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 23,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 503,
+    "pos": [
+     1493.25,
+     1318.5,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 102,
+    "comp_area": 142
+   },
+   {
+    "kind": "spawn",
+    "id": 392,
+    "pos": [
+     1513.0,
+     1309.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 52,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 301,
+    "pos": [
+     1494.62,
+     1323.38,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 107,
+    "comp_area": 67
+   },
+   {
+    "kind": "spawn",
+    "id": 152,
+    "pos": [
+     1478.62,
+     1355.5,
+     113.5
+    ],
+    "on_mesh": true,
+    "snap_m": 0.14,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 176,
+    "comp_area": 2
+   },
+   {
+    "kind": "spawn",
+    "id": 157,
+    "pos": [
+     1504.0,
+     1316.75,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 102,
+    "comp_area": 142
+   },
+   {
+    "kind": "spawn",
+    "id": 163,
+    "pos": [
+     1507.62,
+     1381.75,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 235,
+    "comp_area": 27261
+   },
+   {
+    "kind": "spawn",
+    "id": 417,
+    "pos": [
+     1523.75,
+     1319.88,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 60,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 441,
+    "pos": [
+     1520.0,
+     1308.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 60,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 373,
+    "pos": [
+     1531.12,
+     1319.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 60,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 153,
+    "pos": [
+     1512.75,
+     1314.88,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 52,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 423,
+    "pos": [
+     1503.75,
+     1324.5,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 107,
+    "comp_area": 67
+   }
+  ]
+ },
+ "+drop": {
+  "mesh": {
+   "tiles": 41,
+   "tiles_grid": [
+    12,
+    4
+   ],
+   "polys": 1902,
+   "max_tile_polys": 241,
+   "components": 239,
+   "area_m2": 45139,
+   "main_area_m2": 4095,
+   "two_way_area_m2": 4095,
+   "offmesh_links": 58,
+   "generated": {
+    "drop": 58,
+    "jump": 0,
+    "strength": 0
+   }
+  },
+  "summary": {
+   "spawns": 40,
+   "spawns_on_mesh": 40,
+   "spawns_in_main": 6,
+   "spawns_two_way": 6,
+   "items": 156,
+   "items_on_mesh": 156,
+   "items_two_way": 25,
+   "items_reachable": 25
+  },
+  "outside_spawns": [
+   {
+    "kind": "spawn",
+    "id": 191,
+    "pos": [
+     1498.5,
+     1313.38,
+     123.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 90,
+    "comp_area": 30
+   },
+   {
+    "kind": "spawn",
+    "id": 71,
+    "pos": [
+     1514.5,
+     1357.75,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 148,
+    "comp_area": 37
+   },
+   {
+    "kind": "spawn",
+    "id": 383,
+    "pos": [
+     1506.0,
+     1361.38,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 221,
+    "comp_area": 178
+   },
+   {
+    "kind": "spawn",
+    "id": 479,
+    "pos": [
+     1487.62,
+     1363.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 181,
+    "comp_area": 120
+   },
+   {
+    "kind": "spawn",
+    "id": 244,
+    "pos": [
+     1433.62,
+     1341.0,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 209,
+    "comp_area": 290
+   },
+   {
+    "kind": "spawn",
+    "id": 294,
+    "pos": [
+     1415.75,
+     1355.5,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 206,
+    "comp_area": 1
+   },
+   {
+    "kind": "spawn",
+    "id": 394,
+    "pos": [
+     1421.25,
+     1330.0,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 209,
+    "comp_area": 290
+   },
+   {
+    "kind": "spawn",
+    "id": 206,
+    "pos": [
+     1422.62,
+     1326.88,
+     116.62
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 130,
+    "comp_area": 29
+   },
+   {
+    "kind": "spawn",
+    "id": 446,
+    "pos": [
+     1416.25,
+     1331.25,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 195,
+    "comp_area": 80
+   },
+   {
+    "kind": "spawn",
+    "id": 161,
+    "pos": [
+     1417.0,
+     1331.25,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 204,
+    "comp_area": 495
+   },
+   {
+    "kind": "spawn",
+    "id": 96,
+    "pos": [
+     1509.0,
+     1317.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 87,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 445,
+    "pos": [
+     1424.25,
+     1349.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 204,
+    "comp_area": 495
+   },
+   {
+    "kind": "spawn",
+    "id": 317,
+    "pos": [
+     1431.75,
+     1349.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 188,
+    "comp_area": 47
+   },
+   {
+    "kind": "spawn",
+    "id": 451,
+    "pos": [
+     1524.12,
+     1311.62,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 230,
+    "comp_area": 27261
+   },
+   {
+    "kind": "spawn",
+    "id": 395,
+    "pos": [
+     1524.75,
+     1319.38,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 230,
+    "comp_area": 27261
+   },
+   {
+    "kind": "spawn",
+    "id": 465,
+    "pos": [
+     1433.25,
+     1331.12,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 125,
+    "comp_area": 32
+   },
+   {
+    "kind": "spawn",
+    "id": 495,
+    "pos": [
+     1497.0,
+     1320.75,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 105,
+    "comp_area": 80
+   },
+   {
+    "kind": "spawn",
+    "id": 138,
+    "pos": [
+     1495.25,
+     1368.5,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 221,
+    "comp_area": 178
+   },
+   {
+    "kind": "spawn",
+    "id": 174,
+    "pos": [
+     1520.38,
+     1313.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 55,
+    "comp_area": 28
+   },
+   {
+    "kind": "spawn",
+    "id": 403,
+    "pos": [
+     1513.88,
+     1313.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 51,
+    "comp_area": 22
+   },
+   {
+    "kind": "spawn",
+    "id": 110,
+    "pos": [
+     1509.38,
+     1357.5,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 148,
+    "comp_area": 37
+   },
+   {
+    "kind": "spawn",
+    "id": 304,
+    "pos": [
+     1483.12,
+     1305.25,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 22,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 404,
+    "pos": [
+     1530.75,
+     1305.25,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 22,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 503,
+    "pos": [
+     1493.25,
+     1318.5,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 101,
+    "comp_area": 142
+   },
+   {
+    "kind": "spawn",
+    "id": 392,
+    "pos": [
+     1513.0,
+     1309.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 49,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 301,
+    "pos": [
+     1494.62,
+     1323.38,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 106,
+    "comp_area": 67
+   },
+   {
+    "kind": "spawn",
+    "id": 152,
+    "pos": [
+     1478.62,
+     1355.5,
+     113.5
+    ],
+    "on_mesh": true,
+    "snap_m": 0.14,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 167,
+    "comp_area": 2
+   },
+   {
+    "kind": "spawn",
+    "id": 157,
+    "pos": [
+     1504.0,
+     1316.75,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 101,
+    "comp_area": 142
+   },
+   {
+    "kind": "spawn",
+    "id": 163,
+    "pos": [
+     1507.62,
+     1381.75,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 230,
+    "comp_area": 27261
+   },
+   {
+    "kind": "spawn",
+    "id": 417,
+    "pos": [
+     1523.75,
+     1319.88,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 58,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 441,
+    "pos": [
+     1520.0,
+     1308.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 58,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 373,
+    "pos": [
+     1531.12,
+     1319.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 58,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 153,
+    "pos": [
+     1512.75,
+     1314.88,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 49,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 423,
+    "pos": [
+     1503.75,
+     1324.5,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 106,
+    "comp_area": 67
+   }
+  ]
+ },
+ "+jump": {
+  "mesh": {
+   "tiles": 41,
+   "tiles_grid": [
+    12,
+    4
+   ],
+   "polys": 1902,
+   "max_tile_polys": 241,
+   "components": 171,
+   "area_m2": 45139,
+   "main_area_m2": 4431,
+   "two_way_area_m2": 4431,
+   "offmesh_links": 314,
+   "generated": {
+    "drop": 58,
+    "jump": 256,
+    "strength": 0
+   }
+  },
+  "summary": {
+   "spawns": 40,
+   "spawns_on_mesh": 40,
+   "spawns_in_main": 6,
+   "spawns_two_way": 6,
+   "items": 156,
+   "items_on_mesh": 156,
+   "items_two_way": 25,
+   "items_reachable": 25
+  },
+  "outside_spawns": [
+   {
+    "kind": "spawn",
+    "id": 191,
+    "pos": [
+     1498.5,
+     1313.38,
+     123.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 67,
+    "comp_area": 30
+   },
+   {
+    "kind": "spawn",
+    "id": 71,
+    "pos": [
+     1514.5,
+     1357.75,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 106,
+    "comp_area": 37
+   },
+   {
+    "kind": "spawn",
+    "id": 383,
+    "pos": [
+     1506.0,
+     1361.38,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 152,
+    "comp_area": 178
+   },
+   {
+    "kind": "spawn",
+    "id": 479,
+    "pos": [
+     1487.62,
+     1363.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 126,
+    "comp_area": 120
+   },
+   {
+    "kind": "spawn",
+    "id": 244,
+    "pos": [
+     1433.62,
+     1341.0,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 143,
+    "comp_area": 290
+   },
+   {
+    "kind": "spawn",
+    "id": 294,
+    "pos": [
+     1415.75,
+     1355.5,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 138,
+    "comp_area": 1
+   },
+   {
+    "kind": "spawn",
+    "id": 394,
+    "pos": [
+     1421.25,
+     1330.0,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 143,
+    "comp_area": 290
+   },
+   {
+    "kind": "spawn",
+    "id": 206,
+    "pos": [
+     1422.62,
+     1326.88,
+     116.62
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 144,
+    "comp_area": 29
+   },
+   {
+    "kind": "spawn",
+    "id": 446,
+    "pos": [
+     1416.25,
+     1331.25,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 134,
+    "comp_area": 80
+   },
+   {
+    "kind": "spawn",
+    "id": 161,
+    "pos": [
+     1417.0,
+     1331.25,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 139,
+    "comp_area": 495
+   },
+   {
+    "kind": "spawn",
+    "id": 96,
+    "pos": [
+     1509.0,
+     1317.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 64,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 445,
+    "pos": [
+     1424.25,
+     1349.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 139,
+    "comp_area": 495
+   },
+   {
+    "kind": "spawn",
+    "id": 317,
+    "pos": [
+     1431.75,
+     1349.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 128,
+    "comp_area": 47
+   },
+   {
+    "kind": "spawn",
+    "id": 451,
+    "pos": [
+     1524.12,
+     1311.62,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 157,
+    "comp_area": 27322
+   },
+   {
+    "kind": "spawn",
+    "id": 395,
+    "pos": [
+     1524.75,
+     1319.38,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 157,
+    "comp_area": 27322
+   },
+   {
+    "kind": "spawn",
+    "id": 465,
+    "pos": [
+     1433.25,
+     1331.12,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 95,
+    "comp_area": 32
+   },
+   {
+    "kind": "spawn",
+    "id": 495,
+    "pos": [
+     1497.0,
+     1320.75,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 80,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 138,
+    "pos": [
+     1495.25,
+     1368.5,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 152,
+    "comp_area": 178
+   },
+   {
+    "kind": "spawn",
+    "id": 174,
+    "pos": [
+     1520.38,
+     1313.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 42,
+    "comp_area": 28
+   },
+   {
+    "kind": "spawn",
+    "id": 403,
+    "pos": [
+     1513.88,
+     1313.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 38,
+    "comp_area": 22
+   },
+   {
+    "kind": "spawn",
+    "id": 110,
+    "pos": [
+     1509.38,
+     1357.5,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 106,
+    "comp_area": 37
+   },
+   {
+    "kind": "spawn",
+    "id": 304,
+    "pos": [
+     1483.12,
+     1305.25,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 12,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 404,
+    "pos": [
+     1530.75,
+     1305.25,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 12,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 503,
+    "pos": [
+     1493.25,
+     1318.5,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 77,
+    "comp_area": 142
+   },
+   {
+    "kind": "spawn",
+    "id": 392,
+    "pos": [
+     1513.0,
+     1309.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 34,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 301,
+    "pos": [
+     1494.62,
+     1323.38,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 81,
+    "comp_area": 67
+   },
+   {
+    "kind": "spawn",
+    "id": 152,
+    "pos": [
+     1478.62,
+     1355.5,
+     113.5
+    ],
+    "on_mesh": true,
+    "snap_m": 0.14,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 121,
+    "comp_area": 2
+   },
+   {
+    "kind": "spawn",
+    "id": 157,
+    "pos": [
+     1504.0,
+     1316.75,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 77,
+    "comp_area": 142
+   },
+   {
+    "kind": "spawn",
+    "id": 163,
+    "pos": [
+     1507.62,
+     1381.75,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 157,
+    "comp_area": 27322
+   },
+   {
+    "kind": "spawn",
+    "id": 417,
+    "pos": [
+     1523.75,
+     1319.88,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 44,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 441,
+    "pos": [
+     1520.0,
+     1308.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 44,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 373,
+    "pos": [
+     1531.12,
+     1319.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 44,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 153,
+    "pos": [
+     1512.75,
+     1314.88,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 34,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 423,
+    "pos": [
+     1503.75,
+     1324.5,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 81,
+    "comp_area": 67
+   }
+  ]
+ },
+ "+strength": {
+  "mesh": {
+   "tiles": 41,
+   "tiles_grid": [
+    12,
+    4
+   ],
+   "polys": 1902,
+   "max_tile_polys": 241,
+   "components": 118,
+   "area_m2": 45139,
+   "main_area_m2": 4595,
+   "two_way_area_m2": 4595,
+   "offmesh_links": 476,
+   "generated": {
+    "drop": 58,
+    "jump": 256,
+    "strength": 162
+   }
+  },
+  "summary": {
+   "spawns": 40,
+   "spawns_on_mesh": 40,
+   "spawns_in_main": 6,
+   "spawns_two_way": 6,
+   "items": 156,
+   "items_on_mesh": 156,
+   "items_two_way": 26,
+   "items_reachable": 26
+  },
+  "outside_spawns": [
+   {
+    "kind": "spawn",
+    "id": 191,
+    "pos": [
+     1498.5,
+     1313.38,
+     123.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 50,
+    "comp_area": 30
+   },
+   {
+    "kind": "spawn",
+    "id": 71,
+    "pos": [
+     1514.5,
+     1357.75,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 76,
+    "comp_area": 37
+   },
+   {
+    "kind": "spawn",
+    "id": 383,
+    "pos": [
+     1506.0,
+     1361.38,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 109,
+    "comp_area": 178
+   },
+   {
+    "kind": "spawn",
+    "id": 479,
+    "pos": [
+     1487.62,
+     1363.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 91,
+    "comp_area": 120
+   },
+   {
+    "kind": "spawn",
+    "id": 244,
+    "pos": [
+     1433.62,
+     1341.0,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 102,
+    "comp_area": 290
+   },
+   {
+    "kind": "spawn",
+    "id": 294,
+    "pos": [
+     1415.75,
+     1355.5,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 99,
+    "comp_area": 1
+   },
+   {
+    "kind": "spawn",
+    "id": 394,
+    "pos": [
+     1421.25,
+     1330.0,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 102,
+    "comp_area": 290
+   },
+   {
+    "kind": "spawn",
+    "id": 206,
+    "pos": [
+     1422.62,
+     1326.88,
+     116.62
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 103,
+    "comp_area": 29
+   },
+   {
+    "kind": "spawn",
+    "id": 446,
+    "pos": [
+     1416.25,
+     1331.25,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 100,
+    "comp_area": 575
+   },
+   {
+    "kind": "spawn",
+    "id": 161,
+    "pos": [
+     1417.0,
+     1331.25,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 100,
+    "comp_area": 575
+   },
+   {
+    "kind": "spawn",
+    "id": 96,
+    "pos": [
+     1509.0,
+     1317.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 48,
+    "comp_area": 50
+   },
+   {
+    "kind": "spawn",
+    "id": 445,
+    "pos": [
+     1424.25,
+     1349.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 100,
+    "comp_area": 575
+   },
+   {
+    "kind": "spawn",
+    "id": 317,
+    "pos": [
+     1431.75,
+     1349.0,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 92,
+    "comp_area": 47
+   },
+   {
+    "kind": "spawn",
+    "id": 451,
+    "pos": [
+     1524.12,
+     1311.62,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 113,
+    "comp_area": 29184
+   },
+   {
+    "kind": "spawn",
+    "id": 395,
+    "pos": [
+     1524.75,
+     1319.38,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 113,
+    "comp_area": 29184
+   },
+   {
+    "kind": "spawn",
+    "id": 465,
+    "pos": [
+     1433.25,
+     1331.12,
+     113.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 72,
+    "comp_area": 32
+   },
+   {
+    "kind": "spawn",
+    "id": 495,
+    "pos": [
+     1497.0,
+     1320.75,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 61,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 138,
+    "pos": [
+     1495.25,
+     1368.5,
+     110.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 109,
+    "comp_area": 178
+   },
+   {
+    "kind": "spawn",
+    "id": 174,
+    "pos": [
+     1520.38,
+     1313.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 29,
+    "comp_area": 28
+   },
+   {
+    "kind": "spawn",
+    "id": 403,
+    "pos": [
+     1513.88,
+     1313.5,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 25,
+    "comp_area": 22
+   },
+   {
+    "kind": "spawn",
+    "id": 110,
+    "pos": [
+     1509.38,
+     1357.5,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 76,
+    "comp_area": 37
+   },
+   {
+    "kind": "spawn",
+    "id": 304,
+    "pos": [
+     1483.12,
+     1305.25,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 113,
+    "comp_area": 29184
+   },
+   {
+    "kind": "spawn",
+    "id": 404,
+    "pos": [
+     1530.75,
+     1305.25,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 113,
+    "comp_area": 29184
+   },
+   {
+    "kind": "spawn",
+    "id": 503,
+    "pos": [
+     1493.25,
+     1318.5,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 60,
+    "comp_area": 142
+   },
+   {
+    "kind": "spawn",
+    "id": 392,
+    "pos": [
+     1513.0,
+     1309.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 24,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 301,
+    "pos": [
+     1494.62,
+     1323.38,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 62,
+    "comp_area": 67
+   },
+   {
+    "kind": "spawn",
+    "id": 152,
+    "pos": [
+     1478.62,
+     1355.5,
+     113.5
+    ],
+    "on_mesh": true,
+    "snap_m": 0.14,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 87,
+    "comp_area": 2
+   },
+   {
+    "kind": "spawn",
+    "id": 157,
+    "pos": [
+     1504.0,
+     1316.75,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 60,
+    "comp_area": 142
+   },
+   {
+    "kind": "spawn",
+    "id": 163,
+    "pos": [
+     1507.62,
+     1381.75,
+     121.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 113,
+    "comp_area": 29184
+   },
+   {
+    "kind": "spawn",
+    "id": 417,
+    "pos": [
+     1523.75,
+     1319.88,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 31,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 441,
+    "pos": [
+     1520.0,
+     1308.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 31,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 373,
+    "pos": [
+     1531.12,
+     1319.62,
+     117.88
+    ],
+    "on_mesh": true,
+    "snap_m": 0.11,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 31,
+    "comp_area": 174
+   },
+   {
+    "kind": "spawn",
+    "id": 153,
+    "pos": [
+     1512.75,
+     1314.88,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 24,
+    "comp_area": 92
+   },
+   {
+    "kind": "spawn",
+    "id": 423,
+    "pos": [
+     1503.75,
+     1324.5,
+     113.12
+    ],
+    "on_mesh": true,
+    "snap_m": 0.06,
+    "main": false,
+    "two_way": false,
+    "reach": false,
+    "comp": 62,
+    "comp_area": 67
+   }
+  ]
+ },
+ "input": {
+  "obj": "/mnt/user-data/uploads/OpenAI.Codex_2p2nqsd0c76g0/LocalCache/Local/WarsBots/Geometry/C019-a7553da7/crop/Armada.crop.obj.gz",
+  "triangles": 177329,
+  "dropped_by_z": 61955,
+  "bounds_crysis": [
+   1399.6,
+   1302.6,
+   101.9,
+   1687.4,
+   1389.7,
+   165.2
+  ]
+ },
+ "params": {
+  "cs": 0.2,
+  "ch": 0.1,
+  "radius": 0.4,
+  "height": 1.8,
+  "climb": 0.5,
+  "slope": 45.0,
+  "tile": 128,
+  "min_region": 2,
+  "partition": "watershed",
+  "recast": "v1.6.0"
+ },
+ "points": [
+  {
+   "kind": "spawn",
+   "id": 191,
+   "pos": [
+    1498.5,
+    1313.38,
+    123.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 50,
+   "comp_area": 30
+  },
+  {
+   "kind": "spawn",
+   "id": 523,
+   "pos": [
+    1437.0,
+    1354.12,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "spawn",
+   "id": 71,
+   "pos": [
+    1514.5,
+    1357.75,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "spawn",
+   "id": 383,
+   "pos": [
+    1506.0,
+    1361.38,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 109,
+   "comp_area": 178
+  },
+  {
+   "kind": "spawn",
+   "id": 479,
+   "pos": [
+    1487.62,
+    1363.0,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 91,
+   "comp_area": 120
+  },
+  {
+   "kind": "spawn",
+   "id": 244,
+   "pos": [
+    1433.62,
+    1341.0,
+    113.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "spawn",
+   "id": 294,
+   "pos": [
+    1415.75,
+    1355.5,
+    113.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 99,
+   "comp_area": 1
+  },
+  {
+   "kind": "spawn",
+   "id": 394,
+   "pos": [
+    1421.25,
+    1330.0,
+    113.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "spawn",
+   "id": 206,
+   "pos": [
+    1422.62,
+    1326.88,
+    116.62
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 103,
+   "comp_area": 29
+  },
+  {
+   "kind": "spawn",
+   "id": 446,
+   "pos": [
+    1416.25,
+    1331.25,
+    113.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "spawn",
+   "id": 161,
+   "pos": [
+    1417.0,
+    1331.25,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "spawn",
+   "id": 96,
+   "pos": [
+    1509.0,
+    1317.5,
+    121.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 48,
+   "comp_area": 50
+  },
+  {
+   "kind": "spawn",
+   "id": 445,
+   "pos": [
+    1424.25,
+    1349.0,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "spawn",
+   "id": 317,
+   "pos": [
+    1431.75,
+    1349.0,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 92,
+   "comp_area": 47
+  },
+  {
+   "kind": "spawn",
+   "id": 451,
+   "pos": [
+    1524.12,
+    1311.62,
+    121.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "spawn",
+   "id": 395,
+   "pos": [
+    1524.75,
+    1319.38,
+    121.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "spawn",
+   "id": 465,
+   "pos": [
+    1433.25,
+    1331.12,
+    113.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 72,
+   "comp_area": 32
+  },
+  {
+   "kind": "spawn",
+   "id": 495,
+   "pos": [
+    1497.0,
+    1320.75,
+    113.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 61,
+   "comp_area": 92
+  },
+  {
+   "kind": "spawn",
+   "id": 131,
+   "pos": [
+    1511.75,
+    1355.0,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "spawn",
+   "id": 522,
+   "pos": [
+    1482.38,
+    1348.88,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "spawn",
+   "id": 138,
+   "pos": [
+    1495.25,
+    1368.5,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 109,
+   "comp_area": 178
+  },
+  {
+   "kind": "spawn",
+   "id": 251,
+   "pos": [
+    1529.12,
+    1351.25,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "spawn",
+   "id": 174,
+   "pos": [
+    1520.38,
+    1313.5,
+    121.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 29,
+   "comp_area": 28
+  },
+  {
+   "kind": "spawn",
+   "id": 346,
+   "pos": [
+    1528.88,
+    1329.25,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "spawn",
+   "id": 403,
+   "pos": [
+    1513.88,
+    1313.5,
+    121.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 25,
+   "comp_area": 22
+  },
+  {
+   "kind": "spawn",
+   "id": 110,
+   "pos": [
+    1509.38,
+    1357.5,
+    113.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "spawn",
+   "id": 304,
+   "pos": [
+    1483.12,
+    1305.25,
+    117.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "spawn",
+   "id": 404,
+   "pos": [
+    1530.75,
+    1305.25,
+    117.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "spawn",
+   "id": 503,
+   "pos": [
+    1493.25,
+    1318.5,
+    117.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 60,
+   "comp_area": 142
+  },
+  {
+   "kind": "spawn",
+   "id": 392,
+   "pos": [
+    1513.0,
+    1309.62,
+    117.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 24,
+   "comp_area": 92
+  },
+  {
+   "kind": "spawn",
+   "id": 301,
+   "pos": [
+    1494.62,
+    1323.38,
+    113.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 62,
+   "comp_area": 67
+  },
+  {
+   "kind": "spawn",
+   "id": 182,
+   "pos": [
+    1437.38,
+    1330.38,
+    110.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "spawn",
+   "id": 152,
+   "pos": [
+    1478.62,
+    1355.5,
+    113.5
+   ],
+   "on_mesh": true,
+   "snap_m": 0.14,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 87,
+   "comp_area": 2
+  },
+  {
+   "kind": "spawn",
+   "id": 157,
+   "pos": [
+    1504.0,
+    1316.75,
+    117.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 60,
+   "comp_area": 142
+  },
+  {
+   "kind": "spawn",
+   "id": 163,
+   "pos": [
+    1507.62,
+    1381.75,
+    121.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "spawn",
+   "id": 417,
+   "pos": [
+    1523.75,
+    1319.88,
+    117.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "spawn",
+   "id": 441,
+   "pos": [
+    1520.0,
+    1308.62,
+    117.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "spawn",
+   "id": 373,
+   "pos": [
+    1531.12,
+    1319.62,
+    117.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "spawn",
+   "id": 153,
+   "pos": [
+    1512.75,
+    1314.88,
+    113.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 24,
+   "comp_area": 92
+  },
+  {
+   "kind": "spawn",
+   "id": 423,
+   "pos": [
+    1503.75,
+    1324.5,
+    113.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 62,
+   "comp_area": 67
+  },
+  {
+   "kind": "item",
+   "id": 72,
+   "pos": [
+    1446.31,
+    1355.81,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.75,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 75,
+   "pos": [
+    1411.56,
+    1330.23,
+    114.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.7,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 79,
+   "pos": [
+    1431.07,
+    1338.44,
+    116.93
+   ],
+   "on_mesh": true,
+   "snap_m": 0.74,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 86,
+   "pos": [
+    1509.81,
+    1315.44,
+    121.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.68,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 48,
+   "comp_area": 50
+  },
+  {
+   "kind": "item",
+   "id": 100,
+   "pos": [
+    1511.81,
+    1356.98,
+    113.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.67,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "item",
+   "id": 120,
+   "pos": [
+    1527.19,
+    1311.33,
+    118.17
+   ],
+   "on_mesh": true,
+   "snap_m": 0.68,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 127,
+   "pos": [
+    1491.31,
+    1315.73,
+    113.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.6,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 61,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 165,
+   "pos": [
+    1520.94,
+    1329.02,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.6,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 190,
+   "pos": [
+    1423.07,
+    1338.81,
+    114.17
+   ],
+   "on_mesh": true,
+   "snap_m": 0.69,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 196,
+   "pos": [
+    1514.81,
+    1355.8,
+    110.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.59,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 198,
+   "pos": [
+    1403.27,
+    1348.07,
+    110.57
+   ],
+   "on_mesh": true,
+   "snap_m": 1.17,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 200,
+   "pos": [
+    1495.0,
+    1316.78,
+    133.53
+   ],
+   "on_mesh": true,
+   "snap_m": 1.16,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 65,
+   "comp_area": 555
+  },
+  {
+   "kind": "item",
+   "id": 230,
+   "pos": [
+    1505.57,
+    1314.25,
+    113.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.5,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 24,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 255,
+   "pos": [
+    1509.21,
+    1378.77,
+    121.86
+   ],
+   "on_mesh": true,
+   "snap_m": 1.01,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 264,
+   "pos": [
+    1497.31,
+    1358.94,
+    110.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.43,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 109,
+   "comp_area": 178
+  },
+  {
+   "kind": "item",
+   "id": 277,
+   "pos": [
+    1521.43,
+    1311.2,
+    121.85
+   ],
+   "on_mesh": true,
+   "snap_m": 1.15,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 283,
+   "pos": [
+    1419.32,
+    1325.52,
+    116.93
+   ],
+   "on_mesh": true,
+   "snap_m": 0.67,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 103,
+   "comp_area": 29
+  },
+  {
+   "kind": "item",
+   "id": 299,
+   "pos": [
+    1514.96,
+    1336.08,
+    112.35
+   ],
+   "on_mesh": true,
+   "snap_m": 0.04,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 314,
+   "pos": [
+    1414.01,
+    1346.49,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.7,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 318,
+   "pos": [
+    1510.96,
+    1317.65,
+    121.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.69,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 25,
+   "comp_area": 22
+  },
+  {
+   "kind": "item",
+   "id": 323,
+   "pos": [
+    1496.18,
+    1318.14,
+    126.93
+   ],
+   "on_mesh": true,
+   "snap_m": 0.6,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 51,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 326,
+   "pos": [
+    1431.57,
+    1335.4,
+    114.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.72,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 72,
+   "comp_area": 32
+  },
+  {
+   "kind": "item",
+   "id": 330,
+   "pos": [
+    1424.79,
+    1351.31,
+    110.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.59,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 332,
+   "pos": [
+    1430.15,
+    1335.28,
+    114.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.7,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 338,
+   "pos": [
+    1495.81,
+    1326.94,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.68,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 364,
+   "pos": [
+    1497.69,
+    1319.31,
+    118.17
+   ],
+   "on_mesh": true,
+   "snap_m": 0.67,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 60,
+   "comp_area": 142
+  },
+  {
+   "kind": "item",
+   "id": 370,
+   "pos": [
+    1531.5,
+    1309.06,
+    118.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.72,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 0,
+   "comp_area": 16
+  },
+  {
+   "kind": "item",
+   "id": 379,
+   "pos": [
+    1408.35,
+    1333.49,
+    110.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.58,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 384,
+   "pos": [
+    1406.74,
+    1353.93,
+    122.15
+   ],
+   "on_mesh": true,
+   "snap_m": 0.16,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 398,
+   "pos": [
+    1479.27,
+    1352.91,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.62,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 407,
+   "pos": [
+    1421.9,
+    1340.41,
+    114.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.68,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 97,
+   "comp_area": 29
+  },
+  {
+   "kind": "item",
+   "id": 434,
+   "pos": [
+    1480.32,
+    1359.0,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.63,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 91,
+   "comp_area": 120
+  },
+  {
+   "kind": "item",
+   "id": 438,
+   "pos": [
+    1515.27,
+    1313.4,
+    118.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.6,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 24,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 440,
+   "pos": [
+    1486.69,
+    1364.03,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.72,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 91,
+   "comp_area": 120
+  },
+  {
+   "kind": "item",
+   "id": 442,
+   "pos": [
+    1436.01,
+    1338.81,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.67,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 452,
+   "pos": [
+    1515.85,
+    1316.56,
+    121.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.64,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 29,
+   "comp_area": 28
+  },
+  {
+   "kind": "item",
+   "id": 456,
+   "pos": [
+    1434.78,
+    1351.91,
+    110.44
+   ],
+   "on_mesh": true,
+   "snap_m": 0.68,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 92,
+   "comp_area": 47
+  },
+  {
+   "kind": "item",
+   "id": 460,
+   "pos": [
+    1498.15,
+    1322.6,
+    113.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.73,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 62,
+   "comp_area": 67
+  },
+  {
+   "kind": "item",
+   "id": 462,
+   "pos": [
+    1502.52,
+    1315.29,
+    124.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.74,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 50,
+   "comp_area": 30
+  },
+  {
+   "kind": "item",
+   "id": 467,
+   "pos": [
+    1486.06,
+    1310.3,
+    118.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.62,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 5,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 498,
+   "pos": [
+    1516.57,
+    1310.9,
+    118.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.74,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 501,
+   "pos": [
+    1481.6,
+    1351.23,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.73,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 507,
+   "pos": [
+    1509.77,
+    1356.97,
+    110.43
+   ],
+   "on_mesh": true,
+   "snap_m": 0.78,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "item",
+   "id": 519,
+   "pos": [
+    1498.7,
+    1320.25,
+    121.85
+   ],
+   "on_mesh": true,
+   "snap_m": 1.04,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 531,
+   "pos": [
+    1492.57,
+    1308.39,
+    118.18
+   ],
+   "on_mesh": true,
+   "snap_m": 0.69,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 60,
+   "comp_area": 142
+  },
+  {
+   "kind": "item",
+   "id": 540,
+   "pos": [
+    1431.2,
+    1338.29,
+    117.23
+   ],
+   "on_mesh": true,
+   "snap_m": 1.02,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 549,
+   "pos": [
+    1509.92,
+    1315.7,
+    121.73
+   ],
+   "on_mesh": true,
+   "snap_m": 0.96,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 48,
+   "comp_area": 50
+  },
+  {
+   "kind": "item",
+   "id": 558,
+   "pos": [
+    1516.41,
+    1311.05,
+    118.48
+   ],
+   "on_mesh": true,
+   "snap_m": 1.09,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 559,
+   "pos": [
+    1502.73,
+    1315.53,
+    124.55
+   ],
+   "on_mesh": true,
+   "snap_m": 1.18,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 50,
+   "comp_area": 30
+  },
+  {
+   "kind": "item",
+   "id": 574,
+   "pos": [
+    1499.51,
+    1320.0,
+    121.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.62,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 585,
+   "pos": [
+    1487.18,
+    1313.66,
+    114.0
+   ],
+   "on_mesh": true,
+   "snap_m": 1.22,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 42,
+   "comp_area": 33
+  },
+  {
+   "kind": "item",
+   "id": 587,
+   "pos": [
+    1526.87,
+    1311.21,
+    118.48
+   ],
+   "on_mesh": true,
+   "snap_m": 1.05,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 589,
+   "pos": [
+    1430.36,
+    1335.55,
+    114.55
+   ],
+   "on_mesh": true,
+   "snap_m": 1.0,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 597,
+   "pos": [
+    1486.35,
+    1364.23,
+    110.8
+   ],
+   "on_mesh": true,
+   "snap_m": 1.03,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 91,
+   "comp_area": 120
+  },
+  {
+   "kind": "item",
+   "id": 598,
+   "pos": [
+    1431.34,
+    1338.33,
+    116.72
+   ],
+   "on_mesh": true,
+   "snap_m": 0.72,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 604,
+   "pos": [
+    1422.11,
+    1340.67,
+    114.55
+   ],
+   "on_mesh": true,
+   "snap_m": 1.04,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 97,
+   "comp_area": 29
+  },
+  {
+   "kind": "item",
+   "id": 605,
+   "pos": [
+    1481.39,
+    1350.97,
+    110.8
+   ],
+   "on_mesh": true,
+   "snap_m": 1.01,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 607,
+   "pos": [
+    1509.82,
+    1378.76,
+    121.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.71,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 613,
+   "pos": [
+    1516.41,
+    1311.14,
+    118.48
+   ],
+   "on_mesh": true,
+   "snap_m": 1.09,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 619,
+   "pos": [
+    1446.01,
+    1355.92,
+    110.23
+   ],
+   "on_mesh": true,
+   "snap_m": 0.64,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 622,
+   "pos": [
+    1430.6,
+    1350.8,
+    110.89
+   ],
+   "on_mesh": true,
+   "snap_m": 1.17,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 92,
+   "comp_area": 47
+  },
+  {
+   "kind": "item",
+   "id": 627,
+   "pos": [
+    1510.02,
+    1356.76,
+    110.8
+   ],
+   "on_mesh": true,
+   "snap_m": 1.01,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "item",
+   "id": 628,
+   "pos": [
+    1486.37,
+    1310.42,
+    117.98
+   ],
+   "on_mesh": true,
+   "snap_m": 0.7,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 5,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 630,
+   "pos": [
+    1515.49,
+    1313.64,
+    118.55
+   ],
+   "on_mesh": true,
+   "snap_m": 1.0,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 24,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 631,
+   "pos": [
+    1531.74,
+    1309.35,
+    118.55
+   ],
+   "on_mesh": true,
+   "snap_m": 1.1,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 0,
+   "comp_area": 16
+  },
+  {
+   "kind": "item",
+   "id": 632,
+   "pos": [
+    1512.14,
+    1356.82,
+    113.23
+   ],
+   "on_mesh": true,
+   "snap_m": 0.68,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "item",
+   "id": 635,
+   "pos": [
+    1497.41,
+    1319.42,
+    118.48
+   ],
+   "on_mesh": true,
+   "snap_m": 0.97,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 60,
+   "comp_area": 142
+  },
+  {
+   "kind": "item",
+   "id": 641,
+   "pos": [
+    1422.96,
+    1339.18,
+    114.47
+   ],
+   "on_mesh": true,
+   "snap_m": 0.97,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 642,
+   "pos": [
+    1431.45,
+    1335.68,
+    113.98
+   ],
+   "on_mesh": true,
+   "snap_m": 0.69,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 72,
+   "comp_area": 32
+  },
+  {
+   "kind": "item",
+   "id": 646,
+   "pos": [
+    1491.64,
+    1315.57,
+    113.23
+   ],
+   "on_mesh": true,
+   "snap_m": 0.75,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 61,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 648,
+   "pos": [
+    1435.83,
+    1339.16,
+    110.22
+   ],
+   "on_mesh": true,
+   "snap_m": 0.71,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 649,
+   "pos": [
+    1517.72,
+    1316.21,
+    121.75
+   ],
+   "on_mesh": true,
+   "snap_m": 1.01,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 29,
+   "comp_area": 28
+  },
+  {
+   "kind": "item",
+   "id": 654,
+   "pos": [
+    1411.32,
+    1336.58,
+    111.0
+   ],
+   "on_mesh": true,
+   "snap_m": 1.26,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 657,
+   "pos": [
+    1492.23,
+    1308.2,
+    117.97
+   ],
+   "on_mesh": true,
+   "snap_m": 0.67,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 60,
+   "comp_area": 142
+  },
+  {
+   "kind": "item",
+   "id": 659,
+   "pos": [
+    1493.93,
+    1367.41,
+    111.0
+   ],
+   "on_mesh": true,
+   "snap_m": 1.24,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 109,
+   "comp_area": 178
+  },
+  {
+   "kind": "item",
+   "id": 662,
+   "pos": [
+    1431.29,
+    1338.29,
+    117.23
+   ],
+   "on_mesh": true,
+   "snap_m": 1.01,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 663,
+   "pos": [
+    1531.36,
+    1312.84,
+    118.75
+   ],
+   "on_mesh": true,
+   "snap_m": 1.21,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 667,
+   "pos": [
+    1514.54,
+    1355.92,
+    110.73
+   ],
+   "on_mesh": true,
+   "snap_m": 0.88,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 668,
+   "pos": [
+    1434.98,
+    1352.16,
+    110.8
+   ],
+   "on_mesh": true,
+   "snap_m": 0.99,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 92,
+   "comp_area": 47
+  },
+  {
+   "kind": "item",
+   "id": 670,
+   "pos": [
+    1408.62,
+    1333.35,
+    110.73
+   ],
+   "on_mesh": true,
+   "snap_m": 0.89,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 671,
+   "pos": [
+    1510.77,
+    1317.89,
+    121.8
+   ],
+   "on_mesh": true,
+   "snap_m": 1.13,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 25,
+   "comp_area": 22
+  },
+  {
+   "kind": "item",
+   "id": 676,
+   "pos": [
+    1414.32,
+    1346.56,
+    110.23
+   ],
+   "on_mesh": true,
+   "snap_m": 0.72,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 680,
+   "pos": [
+    1418.97,
+    1325.33,
+    116.72
+   ],
+   "on_mesh": true,
+   "snap_m": 0.77,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 103,
+   "comp_area": 29
+  },
+  {
+   "kind": "item",
+   "id": 681,
+   "pos": [
+    1480.65,
+    1358.83,
+    110.23
+   ],
+   "on_mesh": true,
+   "snap_m": 0.6,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 91,
+   "comp_area": 120
+  },
+  {
+   "kind": "item",
+   "id": 682,
+   "pos": [
+    1424.92,
+    1351.58,
+    110.73
+   ],
+   "on_mesh": true,
+   "snap_m": 0.9,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 687,
+   "pos": [
+    1516.45,
+    1311.18,
+    117.98
+   ],
+   "on_mesh": true,
+   "snap_m": 0.81,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 691,
+   "pos": [
+    1496.14,
+    1326.82,
+    110.23
+   ],
+   "on_mesh": true,
+   "snap_m": 0.73,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 692,
+   "pos": [
+    1497.6,
+    1358.83,
+    110.73
+   ],
+   "on_mesh": true,
+   "snap_m": 0.75,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 109,
+   "comp_area": 178
+  },
+  {
+   "kind": "item",
+   "id": 693,
+   "pos": [
+    1520.62,
+    1328.82,
+    110.23
+   ],
+   "on_mesh": true,
+   "snap_m": 0.63,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 697,
+   "pos": [
+    1515.71,
+    1316.27,
+    121.22
+   ],
+   "on_mesh": true,
+   "snap_m": 0.86,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 29,
+   "comp_area": 28
+  },
+  {
+   "kind": "item",
+   "id": 699,
+   "pos": [
+    1521.64,
+    1311.56,
+    121.83
+   ],
+   "on_mesh": true,
+   "snap_m": 1.12,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 710,
+   "pos": [
+    1505.25,
+    1314.07,
+    113.23
+   ],
+   "on_mesh": true,
+   "snap_m": 0.67,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 24,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 711,
+   "pos": [
+    1496.52,
+    1318.29,
+    126.73
+   ],
+   "on_mesh": true,
+   "snap_m": 0.8,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 51,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 712,
+   "pos": [
+    1508.14,
+    1378.88,
+    121.82
+   ],
+   "on_mesh": true,
+   "snap_m": 1.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 713,
+   "pos": [
+    1406.65,
+    1355.71,
+    122.12
+   ],
+   "on_mesh": true,
+   "snap_m": 0.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 717,
+   "pos": [
+    1479.48,
+    1353.15,
+    110.8
+   ],
+   "on_mesh": true,
+   "snap_m": 0.96,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 719,
+   "pos": [
+    1411.9,
+    1330.07,
+    113.97
+   ],
+   "on_mesh": true,
+   "snap_m": 0.54,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 720,
+   "pos": [
+    1498.39,
+    1322.39,
+    113.8
+   ],
+   "on_mesh": true,
+   "snap_m": 1.06,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 62,
+   "comp_area": 67
+  },
+  {
+   "kind": "item",
+   "id": 65475,
+   "pos": [
+    1431.07,
+    1338.42,
+    117.05
+   ],
+   "on_mesh": true,
+   "snap_m": 0.83,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 65476,
+   "pos": [
+    1431.07,
+    1338.41,
+    117.27
+   ],
+   "on_mesh": true,
+   "snap_m": 0.98,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 102,
+   "comp_area": 290
+  },
+  {
+   "kind": "item",
+   "id": 65477,
+   "pos": [
+    1511.81,
+    1356.95,
+    113.55
+   ],
+   "on_mesh": true,
+   "snap_m": 0.76,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "item",
+   "id": 65478,
+   "pos": [
+    1511.81,
+    1356.79,
+    113.38
+   ],
+   "on_mesh": true,
+   "snap_m": 0.75,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "item",
+   "id": 65479,
+   "pos": [
+    1520.94,
+    1329.0,
+    110.54
+   ],
+   "on_mesh": true,
+   "snap_m": 0.68,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65480,
+   "pos": [
+    1520.94,
+    1328.79,
+    110.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.77,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65481,
+   "pos": [
+    1509.77,
+    1356.88,
+    110.87
+   ],
+   "on_mesh": true,
+   "snap_m": 1.11,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 76,
+   "comp_area": 37
+  },
+  {
+   "kind": "item",
+   "id": 65482,
+   "pos": [
+    1479.48,
+    1352.91,
+    110.29
+   ],
+   "on_mesh": true,
+   "snap_m": 0.73,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65483,
+   "pos": [
+    1408.35,
+    1333.31,
+    110.49
+   ],
+   "on_mesh": true,
+   "snap_m": 0.76,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 65484,
+   "pos": [
+    1421.99,
+    1340.41,
+    114.61
+   ],
+   "on_mesh": true,
+   "snap_m": 1.05,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 97,
+   "comp_area": 29
+  },
+  {
+   "kind": "item",
+   "id": 65485,
+   "pos": [
+    1424.97,
+    1351.31,
+    110.49
+   ],
+   "on_mesh": true,
+   "snap_m": 0.78,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 65486,
+   "pos": [
+    1515.83,
+    1316.56,
+    121.53
+   ],
+   "on_mesh": true,
+   "snap_m": 0.72,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 29,
+   "comp_area": 28
+  },
+  {
+   "kind": "item",
+   "id": 65487,
+   "pos": [
+    1515.75,
+    1316.6,
+    121.87
+   ],
+   "on_mesh": true,
+   "snap_m": 0.99,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 29,
+   "comp_area": 28
+  },
+  {
+   "kind": "item",
+   "id": 65488,
+   "pos": [
+    1486.06,
+    1310.32,
+    118.3
+   ],
+   "on_mesh": true,
+   "snap_m": 0.72,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 5,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 65489,
+   "pos": [
+    1486.06,
+    1310.39,
+    118.86
+   ],
+   "on_mesh": true,
+   "snap_m": 1.21,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 5,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 65490,
+   "pos": [
+    1486.06,
+    1310.49,
+    118.13
+   ],
+   "on_mesh": true,
+   "snap_m": 0.67,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 5,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 65491,
+   "pos": [
+    1502.62,
+    1315.28,
+    124.61
+   ],
+   "on_mesh": true,
+   "snap_m": 1.1,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 50,
+   "comp_area": 30
+  },
+  {
+   "kind": "item",
+   "id": 65492,
+   "pos": [
+    1502.73,
+    1315.28,
+    124.04
+   ],
+   "on_mesh": true,
+   "snap_m": 0.85,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 50,
+   "comp_area": 30
+  },
+  {
+   "kind": "item",
+   "id": 65493,
+   "pos": [
+    1411.56,
+    1330.2,
+    114.3
+   ],
+   "on_mesh": true,
+   "snap_m": 0.79,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 65494,
+   "pos": [
+    1411.56,
+    1330.04,
+    114.13
+   ],
+   "on_mesh": true,
+   "snap_m": 0.78,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 65495,
+   "pos": [
+    1494.85,
+    1316.57,
+    133.57
+   ],
+   "on_mesh": true,
+   "snap_m": 1.32,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 65,
+   "comp_area": 555
+  },
+  {
+   "kind": "item",
+   "id": 65496,
+   "pos": [
+    1491.31,
+    1315.7,
+    113.55
+   ],
+   "on_mesh": true,
+   "snap_m": 0.7,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 61,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 65497,
+   "pos": [
+    1491.31,
+    1315.64,
+    114.11
+   ],
+   "on_mesh": true,
+   "snap_m": 1.19,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 61,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 65498,
+   "pos": [
+    1491.31,
+    1315.54,
+    113.38
+   ],
+   "on_mesh": true,
+   "snap_m": 0.73,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 61,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 65499,
+   "pos": [
+    1496.18,
+    1318.17,
+    127.05
+   ],
+   "on_mesh": true,
+   "snap_m": 0.7,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 51,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 65500,
+   "pos": [
+    1496.18,
+    1318.33,
+    126.88
+   ],
+   "on_mesh": true,
+   "snap_m": 0.71,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 51,
+   "comp_area": 21
+  },
+  {
+   "kind": "item",
+   "id": 65501,
+   "pos": [
+    1531.7,
+    1309.06,
+    118.04
+   ],
+   "on_mesh": true,
+   "snap_m": 0.76,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 0,
+   "comp_area": 16
+  },
+  {
+   "kind": "item",
+   "id": 65502,
+   "pos": [
+    1414.02,
+    1346.47,
+    110.54
+   ],
+   "on_mesh": true,
+   "snap_m": 0.78,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 65503,
+   "pos": [
+    1414.17,
+    1346.33,
+    110.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.89,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  },
+  {
+   "kind": "item",
+   "id": 65504,
+   "pos": [
+    1516.55,
+    1310.9,
+    118.3
+   ],
+   "on_mesh": true,
+   "snap_m": 0.83,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 65505,
+   "pos": [
+    1516.54,
+    1310.9,
+    118.53
+   ],
+   "on_mesh": true,
+   "snap_m": 0.99,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 31,
+   "comp_area": 174
+  },
+  {
+   "kind": "item",
+   "id": 65506,
+   "pos": [
+    1434.88,
+    1351.91,
+    110.87
+   ],
+   "on_mesh": true,
+   "snap_m": 1.04,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 92,
+   "comp_area": 47
+  },
+  {
+   "kind": "item",
+   "id": 65507,
+   "pos": [
+    1435.99,
+    1338.81,
+    110.54
+   ],
+   "on_mesh": true,
+   "snap_m": 0.75,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65508,
+   "pos": [
+    1435.79,
+    1338.81,
+    110.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.78,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65509,
+   "pos": [
+    1509.11,
+    1378.78,
+    121.86
+   ],
+   "on_mesh": true,
+   "snap_m": 1.02,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 65510,
+   "pos": [
+    1509.19,
+    1379.0,
+    121.86
+   ],
+   "on_mesh": true,
+   "snap_m": 1.17,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 65511,
+   "pos": [
+    1514.81,
+    1355.98,
+    110.49
+   ],
+   "on_mesh": true,
+   "snap_m": 0.77,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65512,
+   "pos": [
+    1446.31,
+    1355.84,
+    110.55
+   ],
+   "on_mesh": true,
+   "snap_m": 0.83,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65513,
+   "pos": [
+    1446.34,
+    1355.9,
+    110.81
+   ],
+   "on_mesh": true,
+   "snap_m": 1.05,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65514,
+   "pos": [
+    1481.5,
+    1351.23,
+    110.86
+   ],
+   "on_mesh": true,
+   "snap_m": 1.08,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65515,
+   "pos": [
+    1406.6,
+    1353.79,
+    122.15
+   ],
+   "on_mesh": true,
+   "snap_m": 0.17,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 65516,
+   "pos": [
+    1498.8,
+    1320.19,
+    121.85
+   ],
+   "on_mesh": true,
+   "snap_m": 1.09,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 65517,
+   "pos": [
+    1498.58,
+    1320.09,
+    121.85
+   ],
+   "on_mesh": true,
+   "snap_m": 1.09,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 65518,
+   "pos": [
+    1492.56,
+    1308.36,
+    118.29
+   ],
+   "on_mesh": true,
+   "snap_m": 0.78,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 60,
+   "comp_area": 142
+  },
+  {
+   "kind": "item",
+   "id": 65519,
+   "pos": [
+    1492.56,
+    1308.16,
+    118.17
+   ],
+   "on_mesh": true,
+   "snap_m": 0.88,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 60,
+   "comp_area": 142
+  },
+  {
+   "kind": "item",
+   "id": 65520,
+   "pos": [
+    1495.81,
+    1326.92,
+    110.55
+   ],
+   "on_mesh": true,
+   "snap_m": 0.77,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65521,
+   "pos": [
+    1495.81,
+    1326.85,
+    111.11
+   ],
+   "on_mesh": true,
+   "snap_m": 1.24,
+   "main": true,
+   "two_way": true,
+   "reach": true,
+   "comp": 93,
+   "comp_area": 4595
+  },
+  {
+   "kind": "item",
+   "id": 65522,
+   "pos": [
+    1521.32,
+    1311.26,
+    121.85
+   ],
+   "on_mesh": true,
+   "snap_m": 1.19,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 65523,
+   "pos": [
+    1520.8,
+    1311.46,
+    121.85
+   ],
+   "on_mesh": true,
+   "snap_m": 1.32,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 65524,
+   "pos": [
+    1521.53,
+    1311.37,
+    121.85
+   ],
+   "on_mesh": true,
+   "snap_m": 1.19,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 113,
+   "comp_area": 29184
+  },
+  {
+   "kind": "item",
+   "id": 65525,
+   "pos": [
+    1419.31,
+    1325.49,
+    117.04
+   ],
+   "on_mesh": true,
+   "snap_m": 0.74,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 103,
+   "comp_area": 29
+  },
+  {
+   "kind": "item",
+   "id": 65526,
+   "pos": [
+    1419.31,
+    1325.29,
+    116.92
+   ],
+   "on_mesh": true,
+   "snap_m": 0.77,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 103,
+   "comp_area": 29
+  },
+  {
+   "kind": "item",
+   "id": 65527,
+   "pos": [
+    1431.55,
+    1335.4,
+    114.3
+   ],
+   "on_mesh": true,
+   "snap_m": 0.82,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 72,
+   "comp_area": 32
+  },
+  {
+   "kind": "item",
+   "id": 65528,
+   "pos": [
+    1480.32,
+    1358.97,
+    110.54
+   ],
+   "on_mesh": true,
+   "snap_m": 0.71,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 91,
+   "comp_area": 120
+  },
+  {
+   "kind": "item",
+   "id": 65529,
+   "pos": [
+    1480.28,
+    1358.9,
+    110.87
+   ],
+   "on_mesh": true,
+   "snap_m": 1.01,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 91,
+   "comp_area": 120
+  },
+  {
+   "kind": "item",
+   "id": 65530,
+   "pos": [
+    1505.56,
+    1314.22,
+    113.54
+   ],
+   "on_mesh": true,
+   "snap_m": 0.59,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 24,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 65531,
+   "pos": [
+    1505.56,
+    1314.02,
+    113.42
+   ],
+   "on_mesh": true,
+   "snap_m": 0.63,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 24,
+   "comp_area": 92
+  },
+  {
+   "kind": "item",
+   "id": 65532,
+   "pos": [
+    1403.4,
+    1348.51,
+    110.6
+   ],
+   "on_mesh": true,
+   "snap_m": 1.18,
+   "main": false,
+   "two_way": false,
+   "reach": false,
+   "comp": 100,
+   "comp_area": 575
+  }
+ ]
+}

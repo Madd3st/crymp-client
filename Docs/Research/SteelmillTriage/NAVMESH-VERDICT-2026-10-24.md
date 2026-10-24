@@ -1,5 +1,9 @@
 # Offline navmesh verdict on 4 IA maps (D-006 step 1) — 2026-10-24 21:10
 
+> **Correction 22:10:** the real Recast bake (`RECAST-BAKE-2026-10-24.md`) checks jump arcs against the actual
+> triangles. The "+Strength" numbers below are optimistic (links through walls); Armada stays at **6 / 40**, Steelmill
+> 32 / 36. Walk-only, Recast is much better than this model (Steelmill items 53, not 9). Use the Recast numbers.
+
 Input: Codex C-019/C-028 collision export (a7553da / af53f5c), cropped to spawns ∪ items + 120 m; Triage `navmesh`
 (Recast-style walk model: 0.2 m cells, agent r 0.4 / h 1.8, climb 0.5, slope 45°, drops ≤ 4 m; ballistic jump links:
 normal v0 4.43 m/s, Strength 9.60 m/s, arc clearance), level ceiling removed (`--zmax`: Steelmill has collision planes

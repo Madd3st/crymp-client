@@ -14,8 +14,8 @@ decisions and aim. Map-specific fixes only as data, never code.
 | Agent | Now | Next |
 | --- | --- | --- |
 | Codex (code, builds, runs) | C-021 sprint pair running (baseline ef25395e vs e5af579d) | C-028 cropped geometry → C-025 demo recording → C-027 refactor wave 1 → C-022 weapons → C-023 aim → C-026 demo playback |
-| OpenCode (read-only research + review) | OC-018 demo spec review + playback puppets | OC-019 refactor wave-1 move list; reviews every Codex push (OC-016) |
-| Claude (coordination, Triage, verdicts, **engine-free logic modules**, D-010) | status, C-021 verdict when it lands | navmesh comparison on 4 maps when cropped geometry lands; demo metrics on the first demo |
+| OpenCode (read-only research + review) | out of limits until 03:00 (Go and free tier) | OC-024 review recast_bake + ladders in data; reviews every Codex push (OC-016) |
+| Claude (coordination, Triage, verdicts, **engine-free logic modules**, D-010) | Recast bake done (OC-022 taken over) | ladder links when C-041 lands; demo metrics on every new demo |
 
 ## Done (2026-10-23 … 24)
 
@@ -131,6 +131,8 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-24 22:10 | `SteelmillTriage/RECAST-BAKE-2026-10-24.md` | real Recast bake 4 maps: walk-only far better than walk model (Steelmill items 9 → 53); Strength links with real clearance: Steelmill 32/36, Quarry 32/32, Outpost 34/35, **Armada 6/40**; gaps = ladders → C-041 |
+| 10-24 21:30 | C-040 in TO_CODEX.md | first wbdemo/2 read OK; baseline: SOCOM 61 % of kills, 14.9 decision flips/bot-min, reaction 0.8 s |
 | 10-24 19:50 | `SteelmillTriage/DEMO_FORMAT.md` | in-game demo format |
 | 10-24 19:25 | owner playtest OwnerPace7 | pace ON feels right; aim wander; SCAR first; "teleports" = CPU |
 | 10-24 19:20 | C-020 in TO_CODEX.md | pace verdict (4 paired runs) |
