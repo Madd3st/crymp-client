@@ -43,6 +43,11 @@ Owner's logs and map memory: `C:\Users\Magic8\OneDrive\Документы\My Gam
    `TACTICAL_PLANNER_DESIGN.md`; `PickHotspot` `i += 2` fix.
 6. Later: decision layer (`wb_decision`), cover candidates, verified jump links, then PS.
 
+## Mailbox (since 2026-10-24 13:10)
+
+Agents talk through `Docs/Research/Coordination/MAILBOX/` (protocol, TO_CODEX, DECISIONS) and Codex's
+`Docs/Coordination/TO_CLAUDE.md` on weapon-goals. Read them first every session.
+
 ## Claude's loop
 
 Codex pushes → owner plays or Codex runs QA → you copy the new logs → run Triage → write a short
