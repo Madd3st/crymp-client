@@ -47,13 +47,16 @@ def load_obj(path, up='z'):
     return v, np.asarray(fs, dtype=np.int64).reshape(-1, 3)
 
 
-def _samples(v, f, spacing, cos_slope, bounds=None):
+def _samples(v, f, spacing, cos_slope, bounds=None, zmax=None):
     """Barycentric point samples of every triangle; returns xyz (n,3) float32 and walkable flag per sample."""
     a, b, c = v[f[:, 0]], v[f[:, 1]], v[f[:, 2]]
     if bounds is not None:
         (x0, y0), (x1, y1) = bounds
         lo = np.minimum(np.minimum(a, b), c); hi = np.maximum(np.maximum(a, b), c)
         keep = (hi[:, 0] >= x0) & (lo[:, 0] <= x1) & (hi[:, 1] >= y0) & (lo[:, 1] <= y1)
+        a, b, c = a[keep], b[keep], c[keep]
+    if zmax is not None:                                       # drop level ceilings / sky colliders
+        keep = np.minimum(np.minimum(a[:, 2], b[:, 2]), c[:, 2]) <= zmax
         a, b, c = a[keep], b[keep], c[keep]
     n = np.cross(b - a, c - a)
     ln = np.linalg.norm(n, axis=1)
@@ -82,10 +85,10 @@ def _samples(v, f, spacing, cos_slope, bounds=None):
 class WalkModel:
     """Spans = solid vertical intervals per (ix, iy) column; open spans = walkable tops with clearance."""
 
-    def __init__(self, v, f, bounds=None, **kw):
+    def __init__(self, v, f, bounds=None, zmax=None, **kw):
         self.p = dict(DEFAULTS, **kw)
         cs = self.p['cs']
-        pts, wk = _samples(v, f, cs * 0.7, math.cos(math.radians(self.p['max_slope'])), bounds)
+        pts, wk = _samples(v, f, cs * 0.7, math.cos(math.radians(self.p['max_slope'])), bounds, zmax)
         if bounds is None:
             lo, hi = pts[:, :2].min(0), pts[:, :2].max(0)
             bounds = ((float(lo[0]), float(lo[1])), (float(hi[0]), float(hi[1])))
@@ -306,6 +309,14 @@ def profile(model, spawns=(), items=(), route=(), route_max_step=15.0):
     cond = m.condensation(); cache = {}
     comps = np.flatnonzero(sizes)
     main = int(np.argmax(sizes)) if alive.any() else -1
+    if spawns:                                   # main part = the component holding most spawns, not the biggest area
+        votes = {}
+        for _, x, y, z in spawns:
+            sp = m.project(x, y, z)
+            if sp >= 0:
+                votes[int(m.scc[sp])] = votes.get(int(m.scc[sp]), 0) + 1
+        if votes:
+            main = max(votes, key=votes.get)
     sinks = [c for c in comps if not cond.get(int(c)) and c != main]
     # main reach: everything reachable from main and everything that can reach main
     fwd = m.reach(main, cond, cache)

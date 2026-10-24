@@ -73,12 +73,12 @@ class NavmeshTests(unittest.TestCase):
     def test_jumps(self):
         v, f = navmesh.load_obj(world().obj())
         m = navmesh.WalkModel(v, f, bounds=((-1, -1), (31, 21)), cs=0.25)
-        spawns = [(2, 22, 10, -2.0), (3, 6, 6, 1.0)]
+        spawns = [(1, 2, 2, 0), (5, 26, 2, 0), (2, 22, 10, -2.0), (3, 6, 6, 1.0)]
         m.add_jumps('jump', v0=4.43, vh=4.5)                   # 1 m apex: neither the 1 m crate nor the 2 m pit
-        self.assertEqual(navmesh.profile(m, spawns=spawns)['spawns']['main'], 0)
+        self.assertEqual(navmesh.profile(m, spawns=spawns)['spawns']['main'], 2)
         n = m.add_jumps('strength', v0=9.60, vh=4.5)           # 4.7 m apex: both
         self.assertGreater(n, 0)
-        self.assertEqual(navmesh.profile(m, spawns=spawns)['spawns']['main'], 2)
+        self.assertEqual(navmesh.profile(m, spawns=spawns)['spawns']['main'], 4)
 
     def test_strength_jump_clears_3m_wall_not_6m(self):
         for wall, expect in ((3.0, 2), (6.0, 1)):
