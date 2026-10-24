@@ -1,0 +1,1939 @@
+{
+  "schema": 1,
+  "baseline_firefix_sha": "9e4a0cb5",
+  "aim_sha": "8f0abd5f",
+  "original_candidate_sha": "2fcb4c0f",
+  "comparison": "two Elite/Universal owned bots; native SOCOM/ammo/Armor; measured matching initial spawns; native subsequent random respawns; first-life comparison separated",
+  "groups": {
+    "p0-socom-fixed": [
+      {
+        "metadata": {
+          "log": "WarsBots-p0-socom-fixed-r1.bots.log",
+          "seconds": 60,
+          "repeat": 1,
+          "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+          "tag": "candidate-r1-n2",
+          "source_sha": "9e4a0cb59c27db83b1da8f2a95426132e21af5c3",
+          "completed": true,
+          "variant": "candidate",
+          "bots": 2,
+          "fixture": "SOCOM only, native ammo/armor; free movement; subsequent respawns native random",
+          "server_sha256": "04D87BB260E34A185524B7EDA9CDBDA4457B13C56102AF38C0B9D5C75683BE5A",
+          "session": "p0-socom-fixed",
+          "roster": [
+            {
+              "skill": "elite",
+              "style": "universal",
+              "number": 1
+            },
+            {
+              "skill": "elite",
+              "style": "universal",
+              "number": 2
+            }
+          ]
+        },
+        "engine_sha256": "6d65a4467f74c74cc8a01ad8248f735d36ec96cd2934953e5904652eaca9be1c",
+        "trace_sha256": "a6b5063ddb27a2ef2705e241f97630a9fb0f28826e559022241a9f99798c7792",
+        "metrics": {
+          "log": "WarsBots-p0-socom-fixed-r1.bots.log",
+          "log_sha256": "a6b5063ddb27a2ef2705e241f97630a9fb0f28826e559022241a9f99798c7792",
+          "observed_seconds": 55.7,
+          "telemetry_samples": 58,
+          "state_samples": {
+            "SEEKING_WEAPON": 4,
+            "CHASING_ENEMY": 2,
+            "ATTACKING": 3,
+            "DEAD": 3,
+            "SEARCHING_ENEMY": 46
+          },
+          "state_percent": {
+            "SEEKING_WEAPON": 6.9,
+            "CHASING_ENEMY": 3.45,
+            "ATTACKING": 5.17,
+            "DEAD": 5.17,
+            "SEARCHING_ENEMY": 79.31
+          },
+          "moving_samples": 50,
+          "blocked_percent": 6.0,
+          "pickups_acquired": 0,
+          "weapon_timeouts": 0,
+          "route_fallback_queries": 7,
+          "frequent_fallback_goals": [
+            {
+              "position": [
+                1206.33,
+                1366.62,
+                136.12
+              ],
+              "queries": 5
+            },
+            {
+              "position": [
+                1317.73,
+                1359.93,
+                150.38
+              ],
+              "queries": 2
+            }
+          ],
+          "weapon_cancel_unavailable": 0,
+          "weapon_cancel_no_route": 0,
+          "strength_takeoffs": 0,
+          "strength_landings": 0,
+          "jump_clearance_refusals": 0,
+          "kills": 1,
+          "deaths": 1,
+          "revives_alive": 1,
+          "max_reported_avg_ms": 0.1,
+          "worst_reported_frame_ms": 0.86,
+          "crash_marker": false,
+          "median_reported_window_ms": 0.023,
+          "profile_windows": 6,
+          "progress_experiment_states": [
+            0
+          ],
+          "max_single_bot_update_ms": 0.86,
+          "observed_profiles": [
+            {
+              "number": 1,
+              "style": "universal",
+              "skill": "elite"
+            },
+            {
+              "number": 2,
+              "style": "universal",
+              "skill": "elite"
+            }
+          ],
+          "initial_spawns": [
+            {
+              "number": 1,
+              "actor": 65501,
+              "position": [
+                1224.98,
+                1331.85,
+                136.2
+              ]
+            },
+            {
+              "number": 2,
+              "actor": 65496,
+              "position": [
+                1242.72,
+                1331.76,
+                136.2
+              ]
+            }
+          ]
+        },
+        "fire": {
+          "schema": 1,
+          "available": true,
+          "cadence": {
+            "SOCOM": {
+              "shots": 17,
+              "active_interval_samples": 13,
+              "active_interval_min": 0.24,
+              "active_interval_median": 0.25,
+              "clip_decrement_values": [
+                1
+              ]
+            }
+          },
+          "definition": "impact-to-death plus observed intended-target native-fire-to-death; first fire may include misses/protection and is not guaranteed complete",
+          "missing_first_shots": true,
+          "counters": {
+            "native_shot_events": 17,
+            "pending_before_at_end": 0
+          },
+          "episodes": [
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 2.86,
+              "hp_at_first_impact": 100,
+              "hp_lost": 106,
+              "armor_energy_spent": 168.35,
+              "registered_hits": 10,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 12.7,
+              "first_suit": 3,
+              "first_suit_energy": 168.35,
+              "minimum_health_after": -3,
+              "first_impact_projectile_launch_seconds": 2.82,
+              "first_observed_targeted_shot_seconds": 2.82,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 6.25,
+              "outcome": "death",
+              "impact_to_death_seconds": 3.39,
+              "observed_targeted_fire_to_death_seconds": 3.43,
+              "observed_contributors": [
+                65496
+              ],
+              "contributors_last_second": [
+                65496
+              ]
+            },
+            {
+              "target": 65496,
+              "human": false,
+              "first_impact_seconds": 3.22,
+              "hp_at_first_impact": 100,
+              "hp_lost": 0,
+              "armor_energy_spent": 132.02,
+              "registered_hits": 4,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 12.37,
+              "first_suit": 3,
+              "first_suit_energy": 172.02,
+              "minimum_health_after": 100,
+              "first_impact_projectile_launch_seconds": 3.16,
+              "first_observed_targeted_shot_seconds": 2.82,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 31.5,
+              "outcome": "lifecycle_boundary",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65501
+              ],
+              "contributors_last_second": []
+            },
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 27.38,
+              "hp_at_first_impact": 100,
+              "hp_lost": 0,
+              "armor_energy_spent": 102.36000000000001,
+              "registered_hits": 1,
+              "head_hits": 0,
+              "weapons": [
+                "unknown"
+              ],
+              "first_distance": 0.0,
+              "first_suit": 3,
+              "first_suit_energy": 177.36,
+              "minimum_health_after": 100,
+              "first_impact_projectile_launch_seconds": null,
+              "first_observed_targeted_shot_seconds": null,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 31.5,
+              "outcome": "lifecycle_boundary",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65501
+              ],
+              "contributors_last_second": []
+            }
+          ]
+        },
+        "lethal_socom": [
+          {
+            "target": 65501,
+            "human": false,
+            "first_impact_seconds": 2.86,
+            "hp_at_first_impact": 100,
+            "hp_lost": 106,
+            "armor_energy_spent": 168.35,
+            "registered_hits": 10,
+            "head_hits": 0,
+            "weapons": [
+              "SOCOM"
+            ],
+            "first_distance": 12.7,
+            "first_suit": 3,
+            "first_suit_energy": 168.35,
+            "minimum_health_after": -3,
+            "first_impact_projectile_launch_seconds": 2.82,
+            "first_observed_targeted_shot_seconds": 2.82,
+            "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+            "end_seconds": 6.25,
+            "outcome": "death",
+            "impact_to_death_seconds": 3.39,
+            "observed_targeted_fire_to_death_seconds": 3.43,
+            "observed_contributors": [
+              65496
+            ],
+            "contributors_last_second": [
+              65496
+            ]
+          }
+        ]
+      },
+      {
+        "metadata": {
+          "log": "WarsBots-p0-socom-fixed-r2.bots.log",
+          "seconds": 60,
+          "repeat": 2,
+          "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+          "tag": "candidate-r2-n2",
+          "source_sha": "9e4a0cb59c27db83b1da8f2a95426132e21af5c3",
+          "completed": true,
+          "variant": "candidate",
+          "bots": 2,
+          "fixture": "SOCOM only, native ammo/armor; free movement; subsequent respawns native random",
+          "server_sha256": "04D87BB260E34A185524B7EDA9CDBDA4457B13C56102AF38C0B9D5C75683BE5A",
+          "session": "p0-socom-fixed",
+          "roster": [
+            {
+              "skill": "elite",
+              "style": "universal",
+              "number": 1
+            },
+            {
+              "skill": "elite",
+              "style": "universal",
+              "number": 2
+            }
+          ]
+        },
+        "engine_sha256": "19d22933fbca7c5b835ed6bc61bf86dcf783d40f36a282b6abe37a667de5a891",
+        "trace_sha256": "e77c0b7d2bd3ffb61f9616301af69318f8b5618dc02355ea10d46d47998733aa",
+        "metrics": {
+          "log": "WarsBots-p0-socom-fixed-r2.bots.log",
+          "log_sha256": "e77c0b7d2bd3ffb61f9616301af69318f8b5618dc02355ea10d46d47998733aa",
+          "observed_seconds": 57.73,
+          "telemetry_samples": 60,
+          "state_samples": {
+            "SEEKING_WEAPON": 4,
+            "CHASING_ENEMY": 2,
+            "ATTACKING": 4,
+            "DEAD": 2,
+            "SEARCHING_ENEMY": 48
+          },
+          "state_percent": {
+            "SEEKING_WEAPON": 6.67,
+            "CHASING_ENEMY": 3.33,
+            "ATTACKING": 6.67,
+            "DEAD": 3.33,
+            "SEARCHING_ENEMY": 80.0
+          },
+          "moving_samples": 53,
+          "blocked_percent": 3.77,
+          "pickups_acquired": 0,
+          "weapon_timeouts": 0,
+          "route_fallback_queries": 18,
+          "frequent_fallback_goals": [
+            {
+              "position": [
+                1278.75,
+                1342.5,
+                136.05
+              ],
+              "queries": 13
+            },
+            {
+              "position": [
+                1203.1,
+                1293.61,
+                138.17
+              ],
+              "queries": 2
+            },
+            {
+              "position": [
+                1191.88,
+                1293.42,
+                138.17
+              ],
+              "queries": 2
+            },
+            {
+              "position": [
+                1190.18,
+                1301.19,
+                138.17
+              ],
+              "queries": 1
+            }
+          ],
+          "weapon_cancel_unavailable": 0,
+          "weapon_cancel_no_route": 0,
+          "strength_takeoffs": 0,
+          "strength_landings": 0,
+          "jump_clearance_refusals": 1,
+          "kills": 1,
+          "deaths": 1,
+          "revives_alive": 1,
+          "max_reported_avg_ms": 0.08,
+          "worst_reported_frame_ms": 0.89,
+          "crash_marker": false,
+          "median_reported_window_ms": 0.023,
+          "profile_windows": 6,
+          "progress_experiment_states": [
+            0
+          ],
+          "max_single_bot_update_ms": 0.89,
+          "observed_profiles": [
+            {
+              "number": 1,
+              "style": "universal",
+              "skill": "elite"
+            },
+            {
+              "number": 2,
+              "style": "universal",
+              "skill": "elite"
+            }
+          ],
+          "initial_spawns": [
+            {
+              "number": 1,
+              "actor": 65501,
+              "position": [
+                1224.98,
+                1331.85,
+                136.2
+              ]
+            },
+            {
+              "number": 2,
+              "actor": 65496,
+              "position": [
+                1242.72,
+                1331.76,
+                136.2
+              ]
+            }
+          ]
+        },
+        "fire": {
+          "schema": 1,
+          "available": true,
+          "cadence": {
+            "SOCOM": {
+              "shots": 18,
+              "active_interval_samples": 14,
+              "active_interval_min": 0.24,
+              "active_interval_median": 0.245,
+              "clip_decrement_values": [
+                1
+              ]
+            }
+          },
+          "definition": "impact-to-death plus observed intended-target native-fire-to-death; first fire may include misses/protection and is not guaranteed complete",
+          "missing_first_shots": true,
+          "counters": {
+            "native_shot_events": 18,
+            "pending_before_at_end": 0
+          },
+          "episodes": [
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 2.98,
+              "hp_at_first_impact": 100,
+              "hp_lost": 103,
+              "armor_energy_spent": 169.93,
+              "registered_hits": 10,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 12.47,
+              "first_suit": 3,
+              "first_suit_energy": 169.93,
+              "minimum_health_after": -9,
+              "first_impact_projectile_launch_seconds": 2.91,
+              "first_observed_targeted_shot_seconds": 2.91,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 6.77,
+              "outcome": "death",
+              "impact_to_death_seconds": 3.79,
+              "observed_targeted_fire_to_death_seconds": 3.86,
+              "observed_contributors": [
+                65496
+              ],
+              "contributors_last_second": [
+                65496
+              ]
+            },
+            {
+              "target": 65496,
+              "human": false,
+              "first_impact_seconds": 3.11,
+              "hp_at_first_impact": 100,
+              "hp_lost": 21,
+              "armor_energy_spent": 171.25,
+              "registered_hits": 6,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 12.36,
+              "first_suit": 3,
+              "first_suit_energy": 171.25,
+              "minimum_health_after": 79,
+              "first_impact_projectile_launch_seconds": 3.05,
+              "first_observed_targeted_shot_seconds": 3.05,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 31.52,
+              "outcome": "lifecycle_boundary",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65501
+              ],
+              "contributors_last_second": []
+            }
+          ]
+        },
+        "lethal_socom": [
+          {
+            "target": 65501,
+            "human": false,
+            "first_impact_seconds": 2.98,
+            "hp_at_first_impact": 100,
+            "hp_lost": 103,
+            "armor_energy_spent": 169.93,
+            "registered_hits": 10,
+            "head_hits": 0,
+            "weapons": [
+              "SOCOM"
+            ],
+            "first_distance": 12.47,
+            "first_suit": 3,
+            "first_suit_energy": 169.93,
+            "minimum_health_after": -9,
+            "first_impact_projectile_launch_seconds": 2.91,
+            "first_observed_targeted_shot_seconds": 2.91,
+            "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+            "end_seconds": 6.77,
+            "outcome": "death",
+            "impact_to_death_seconds": 3.79,
+            "observed_targeted_fire_to_death_seconds": 3.86,
+            "observed_contributors": [
+              65496
+            ],
+            "contributors_last_second": [
+              65496
+            ]
+          }
+        ]
+      },
+      {
+        "metadata": {
+          "log": "WarsBots-p0-socom-fixed-r3.bots.log",
+          "seconds": 60,
+          "repeat": 3,
+          "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+          "tag": "candidate-r3-n2",
+          "source_sha": "9e4a0cb59c27db83b1da8f2a95426132e21af5c3",
+          "completed": true,
+          "variant": "candidate",
+          "bots": 2,
+          "fixture": "SOCOM only, native ammo/armor; free movement; subsequent respawns native random",
+          "server_sha256": "04D87BB260E34A185524B7EDA9CDBDA4457B13C56102AF38C0B9D5C75683BE5A",
+          "session": "p0-socom-fixed",
+          "roster": [
+            {
+              "skill": "elite",
+              "style": "universal",
+              "number": 1
+            },
+            {
+              "skill": "elite",
+              "style": "universal",
+              "number": 2
+            }
+          ]
+        },
+        "engine_sha256": "b3d28f83aea58cb949aa788e074547fffa4d92b133ae77851b01626cc6e148aa",
+        "trace_sha256": "75b45129685b963a719acfacb51829def708892230ceb24434acf911c5c064d4",
+        "metrics": {
+          "log": "WarsBots-p0-socom-fixed-r3.bots.log",
+          "log_sha256": "75b45129685b963a719acfacb51829def708892230ceb24434acf911c5c064d4",
+          "observed_seconds": 55.79,
+          "telemetry_samples": 58,
+          "state_samples": {
+            "SEEKING_WEAPON": 4,
+            "CHASING_ENEMY": 6,
+            "ATTACKING": 2,
+            "DEAD": 2,
+            "SEARCHING_ENEMY": 44
+          },
+          "state_percent": {
+            "SEEKING_WEAPON": 6.9,
+            "CHASING_ENEMY": 10.34,
+            "ATTACKING": 3.45,
+            "DEAD": 3.45,
+            "SEARCHING_ENEMY": 75.86
+          },
+          "moving_samples": 51,
+          "blocked_percent": 0.0,
+          "pickups_acquired": 0,
+          "weapon_timeouts": 0,
+          "route_fallback_queries": 15,
+          "frequent_fallback_goals": [
+            {
+              "position": [
+                1278.75,
+                1342.5,
+                136.05
+              ],
+              "queries": 12
+            },
+            {
+              "position": [
+                1188.47,
+                1288.12,
+                142.22
+              ],
+              "queries": 2
+            },
+            {
+              "position": [
+                1183.0,
+                1295.25,
+                142.08
+              ],
+              "queries": 1
+            }
+          ],
+          "weapon_cancel_unavailable": 0,
+          "weapon_cancel_no_route": 0,
+          "strength_takeoffs": 1,
+          "strength_landings": 1,
+          "jump_clearance_refusals": 0,
+          "kills": 1,
+          "deaths": 1,
+          "revives_alive": 1,
+          "max_reported_avg_ms": 0.07,
+          "worst_reported_frame_ms": 0.84,
+          "crash_marker": false,
+          "median_reported_window_ms": 0.024,
+          "profile_windows": 6,
+          "progress_experiment_states": [
+            0
+          ],
+          "max_single_bot_update_ms": 0.84,
+          "observed_profiles": [
+            {
+              "number": 1,
+              "style": "universal",
+              "skill": "elite"
+            },
+            {
+              "number": 2,
+              "style": "universal",
+              "skill": "elite"
+            }
+          ],
+          "initial_spawns": [
+            {
+              "number": 1,
+              "actor": 65501,
+              "position": [
+                1224.98,
+                1331.85,
+                136.2
+              ]
+            },
+            {
+              "number": 2,
+              "actor": 65496,
+              "position": [
+                1242.72,
+                1331.76,
+                136.2
+              ]
+            }
+          ]
+        },
+        "fire": {
+          "schema": 1,
+          "available": true,
+          "cadence": {
+            "SOCOM": {
+              "shots": 17,
+              "active_interval_samples": 13,
+              "active_interval_min": 0.24,
+              "active_interval_median": 0.25,
+              "clip_decrement_values": [
+                1
+              ]
+            }
+          },
+          "definition": "impact-to-death plus observed intended-target native-fire-to-death; first fire may include misses/protection and is not guaranteed complete",
+          "missing_first_shots": true,
+          "counters": {
+            "native_shot_events": 17,
+            "pending_before_at_end": 0
+          },
+          "episodes": [
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 3.15,
+              "hp_at_first_impact": 100,
+              "hp_lost": 103,
+              "armor_energy_spent": 171.96,
+              "registered_hits": 10,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 11.75,
+              "first_suit": 3,
+              "first_suit_energy": 171.96,
+              "minimum_health_after": -7,
+              "first_impact_projectile_launch_seconds": 3.12,
+              "first_observed_targeted_shot_seconds": 3.12,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 6.68,
+              "outcome": "death",
+              "impact_to_death_seconds": 3.53,
+              "observed_targeted_fire_to_death_seconds": 3.56,
+              "observed_contributors": [
+                65496
+              ],
+              "contributors_last_second": [
+                65496
+              ]
+            },
+            {
+              "target": 65496,
+              "human": false,
+              "first_impact_seconds": 3.44,
+              "hp_at_first_impact": 100,
+              "hp_lost": 1,
+              "armor_energy_spent": 135.70000000000002,
+              "registered_hits": 4,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 11.63,
+              "first_suit": 3,
+              "first_suit_energy": 174.86,
+              "minimum_health_after": 99,
+              "first_impact_projectile_launch_seconds": 3.38,
+              "first_observed_targeted_shot_seconds": 3.12,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 31.56,
+              "outcome": "lifecycle_boundary",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65501
+              ],
+              "contributors_last_second": []
+            }
+          ]
+        },
+        "lethal_socom": [
+          {
+            "target": 65501,
+            "human": false,
+            "first_impact_seconds": 3.15,
+            "hp_at_first_impact": 100,
+            "hp_lost": 103,
+            "armor_energy_spent": 171.96,
+            "registered_hits": 10,
+            "head_hits": 0,
+            "weapons": [
+              "SOCOM"
+            ],
+            "first_distance": 11.75,
+            "first_suit": 3,
+            "first_suit_energy": 171.96,
+            "minimum_health_after": -7,
+            "first_impact_projectile_launch_seconds": 3.12,
+            "first_observed_targeted_shot_seconds": 3.12,
+            "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+            "end_seconds": 6.68,
+            "outcome": "death",
+            "impact_to_death_seconds": 3.53,
+            "observed_targeted_fire_to_death_seconds": 3.56,
+            "observed_contributors": [
+              65496
+            ],
+            "contributors_last_second": [
+              65496
+            ]
+          }
+        ]
+      }
+    ],
+    "p0-native-auto-fixed": [
+      {
+        "metadata": {
+          "tag": "candidate-r1-n2",
+          "variant": "candidate",
+          "server_sha256": "04D87BB260E34A185524B7EDA9CDBDA4457B13C56102AF38C0B9D5C75683BE5A",
+          "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+          "bots": 2,
+          "seconds": 90,
+          "source_sha": "9e4a0cb59c27db83b1da8f2a95426132e21af5c3",
+          "roster": [
+            {
+              "style": "universal",
+              "skill": "elite",
+              "number": 1
+            },
+            {
+              "style": "assault",
+              "skill": "elite",
+              "number": 2
+            }
+          ],
+          "session": "p0-native-auto-fixed",
+          "completed": true,
+          "log": "WarsBots-p0-native-auto-fixed-r1.bots.log",
+          "fixture": "Mixed; native ammo/armor; free movement; subsequent respawns native random",
+          "repeat": 1
+        },
+        "engine_sha256": "bce13a6fba9088e83e985fa22e29bddc0dd8e02474f9b0f2f08049093505baf3",
+        "trace_sha256": "b97bcc2dddb914babac9f909dbcc55f5b60f319c7adb8fc04cd8a61050ebfbda",
+        "metrics": {
+          "log": "WarsBots-p0-native-auto-fixed-r1.bots.log",
+          "log_sha256": "b97bcc2dddb914babac9f909dbcc55f5b60f319c7adb8fc04cd8a61050ebfbda",
+          "observed_seconds": 85.85,
+          "telemetry_samples": 88,
+          "state_samples": {
+            "SEEKING_WEAPON": 4,
+            "MOVING_TO_WEAPON": 31,
+            "ATTACKING": 6,
+            "CHASING_ENEMY": 5,
+            "DEAD": 3,
+            "SEARCHING_ENEMY": 39
+          },
+          "state_percent": {
+            "SEEKING_WEAPON": 4.55,
+            "MOVING_TO_WEAPON": 35.23,
+            "ATTACKING": 6.82,
+            "CHASING_ENEMY": 5.68,
+            "DEAD": 3.41,
+            "SEARCHING_ENEMY": 44.32
+          },
+          "moving_samples": 78,
+          "blocked_percent": 6.41,
+          "pickups_acquired": 4,
+          "weapon_timeouts": 4,
+          "route_fallback_queries": 21,
+          "frequent_fallback_goals": [
+            {
+              "position": [
+                1225.44,
+                1331.8,
+                149.15
+              ],
+              "queries": 10
+            },
+            {
+              "position": [
+                1203.51,
+                1330.38,
+                137.2
+              ],
+              "queries": 8
+            },
+            {
+              "position": [
+                1197.44,
+                1368.81,
+                137.12
+              ],
+              "queries": 2
+            },
+            {
+              "position": [
+                1278.75,
+                1342.5,
+                136.05
+              ],
+              "queries": 1
+            }
+          ],
+          "weapon_cancel_unavailable": 1,
+          "weapon_cancel_no_route": 0,
+          "strength_takeoffs": 2,
+          "strength_landings": 1,
+          "jump_clearance_refusals": 4,
+          "kills": 1,
+          "deaths": 1,
+          "revives_alive": 1,
+          "max_reported_avg_ms": 0.14,
+          "worst_reported_frame_ms": 0.8,
+          "crash_marker": false,
+          "median_reported_window_ms": 0.025,
+          "profile_windows": 9,
+          "progress_experiment_states": [
+            0
+          ],
+          "max_single_bot_update_ms": 0.8,
+          "observed_profiles": [
+            {
+              "number": 1,
+              "style": "universal",
+              "skill": "elite"
+            },
+            {
+              "number": 2,
+              "style": "assault",
+              "skill": "elite"
+            }
+          ],
+          "initial_spawns": [
+            {
+              "number": 1,
+              "actor": 65501,
+              "position": [
+                1224.98,
+                1331.85,
+                136.2
+              ]
+            },
+            {
+              "number": 2,
+              "actor": 65496,
+              "position": [
+                1242.72,
+                1331.76,
+                136.2
+              ]
+            }
+          ]
+        },
+        "fire": {
+          "schema": 1,
+          "available": true,
+          "cadence": {
+            "SOCOM": {
+              "shots": 11,
+              "active_interval_samples": 7,
+              "active_interval_min": 0.25,
+              "active_interval_median": 0.26,
+              "clip_decrement_values": [
+                1
+              ]
+            },
+            "SCAR": {
+              "shots": 26,
+              "active_interval_samples": 21,
+              "active_interval_min": 0.09,
+              "active_interval_median": 0.1,
+              "clip_decrement_values": [
+                1
+              ]
+            }
+          },
+          "definition": "impact-to-death plus observed intended-target native-fire-to-death; first fire may include misses/protection and is not guaranteed complete",
+          "missing_first_shots": true,
+          "counters": {
+            "native_shot_events": 37,
+            "pending_before_at_end": 0
+          },
+          "episodes": [
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 6.81,
+              "hp_at_first_impact": 100,
+              "hp_lost": 0,
+              "armor_energy_spent": 135.23000000000002,
+              "registered_hits": 3,
+              "head_hits": 0,
+              "weapons": [
+                "SCAR"
+              ],
+              "first_distance": 6.44,
+              "first_suit": 3,
+              "first_suit_energy": 200.0,
+              "minimum_health_after": 100,
+              "first_impact_projectile_launch_seconds": 6.78,
+              "first_observed_targeted_shot_seconds": 6.5,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 12.16,
+              "outcome": "impact_gap",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65496
+              ],
+              "contributors_last_second": [
+                65496
+              ]
+            },
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 17.6,
+              "hp_at_first_impact": 100,
+              "hp_lost": 108,
+              "armor_energy_spent": 90.69,
+              "registered_hits": 6,
+              "head_hits": 0,
+              "weapons": [
+                "SCAR"
+              ],
+              "first_distance": 8.81,
+              "first_suit": 3,
+              "first_suit_energy": 83.34,
+              "minimum_health_after": -13,
+              "first_impact_projectile_launch_seconds": 17.57,
+              "first_observed_targeted_shot_seconds": 6.5,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 22.19,
+              "outcome": "death",
+              "impact_to_death_seconds": 4.59,
+              "observed_targeted_fire_to_death_seconds": 15.69,
+              "observed_contributors": [
+                65496
+              ],
+              "contributors_last_second": [
+                65496
+              ]
+            },
+            {
+              "target": 65496,
+              "human": false,
+              "first_impact_seconds": 6.5,
+              "hp_at_first_impact": 100,
+              "hp_lost": 62,
+              "armor_energy_spent": 221.99,
+              "registered_hits": 9,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 5.33,
+              "first_suit": 3,
+              "first_suit_energy": 200.0,
+              "minimum_health_after": 52,
+              "first_impact_projectile_launch_seconds": 6.47,
+              "first_observed_targeted_shot_seconds": 6.47,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 31.53,
+              "outcome": "lifecycle_boundary",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65501
+              ],
+              "contributors_last_second": []
+            }
+          ]
+        },
+        "lethal_socom": []
+      }
+    ],
+    "p0-socom-aim": [
+      {
+        "metadata": {
+          "roster": [
+            {
+              "number": 1,
+              "skill": "elite",
+              "style": "universal"
+            },
+            {
+              "number": 2,
+              "skill": "elite",
+              "style": "universal"
+            }
+          ],
+          "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+          "log": "WarsBots-p0-socom-aim-r1.bots.log",
+          "source_sha": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+          "completed": true,
+          "server_sha256": "6EF0C0A4D18BAE5F0BE0C61254548829ADC37E3E7C197A024F3A01B214EB9953",
+          "tag": "candidate-r1-n2",
+          "seconds": 60,
+          "bots": 2,
+          "repeat": 1,
+          "fixture": "SOCOM; native ammo/armor; free movement; subsequent respawns native random",
+          "session": "p0-socom-aim",
+          "variant": "candidate"
+        },
+        "engine_sha256": "30622e82f15a703b17e806917ba1004c8d48086ede119f039f383f4b898e254e",
+        "trace_sha256": "9e9bfc5c0b6a744de7921f6c2c08b99d22fac82440149ab8058573796681e664",
+        "metrics": {
+          "log": "WarsBots-p0-socom-aim-r1.bots.log",
+          "log_sha256": "9e9bfc5c0b6a744de7921f6c2c08b99d22fac82440149ab8058573796681e664",
+          "observed_seconds": 57.79,
+          "telemetry_samples": 60,
+          "state_samples": {
+            "SEEKING_WEAPON": 4,
+            "CHASING_ENEMY": 4,
+            "ATTACKING": 2,
+            "DEAD": 3,
+            "SEARCHING_ENEMY": 47
+          },
+          "state_percent": {
+            "SEEKING_WEAPON": 6.67,
+            "CHASING_ENEMY": 6.67,
+            "ATTACKING": 3.33,
+            "DEAD": 5.0,
+            "SEARCHING_ENEMY": 78.33
+          },
+          "moving_samples": 52,
+          "blocked_percent": 0.0,
+          "pickups_acquired": 0,
+          "weapon_timeouts": 0,
+          "route_fallback_queries": 14,
+          "frequent_fallback_goals": [
+            {
+              "position": [
+                1183.0,
+                1295.25,
+                142.08
+              ],
+              "queries": 13
+            },
+            {
+              "position": [
+                1278.75,
+                1342.5,
+                136.05
+              ],
+              "queries": 1
+            }
+          ],
+          "weapon_cancel_unavailable": 0,
+          "weapon_cancel_no_route": 0,
+          "strength_takeoffs": 0,
+          "strength_landings": 0,
+          "jump_clearance_refusals": 0,
+          "kills": 1,
+          "deaths": 1,
+          "revives_alive": 1,
+          "max_reported_avg_ms": 0.11,
+          "worst_reported_frame_ms": 0.83,
+          "crash_marker": false,
+          "median_reported_window_ms": 0.025,
+          "profile_windows": 6,
+          "progress_experiment_states": [
+            0
+          ],
+          "max_single_bot_update_ms": 0.83,
+          "observed_profiles": [
+            {
+              "number": 1,
+              "style": "universal",
+              "skill": "elite"
+            },
+            {
+              "number": 2,
+              "style": "universal",
+              "skill": "elite"
+            }
+          ],
+          "initial_spawns": [
+            {
+              "number": 1,
+              "actor": 65501,
+              "position": [
+                1224.98,
+                1331.85,
+                136.2
+              ]
+            },
+            {
+              "number": 2,
+              "actor": 65496,
+              "position": [
+                1242.72,
+                1331.76,
+                136.2
+              ]
+            }
+          ]
+        },
+        "fire": {
+          "schema": 1,
+          "available": true,
+          "cadence": {
+            "SOCOM": {
+              "shots": 23,
+              "active_interval_samples": 19,
+              "active_interval_min": 0.24,
+              "active_interval_median": 0.25,
+              "clip_decrement_values": [
+                1
+              ]
+            }
+          },
+          "definition": "impact-to-death plus observed intended-target native-fire-to-death; first fire may include misses/protection and is not guaranteed complete",
+          "missing_first_shots": true,
+          "counters": {
+            "native_shot_events": 23,
+            "pending_before_at_end": 0
+          },
+          "episodes": [
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 3.43,
+              "hp_at_first_impact": 100,
+              "hp_lost": 106,
+              "armor_energy_spent": 136.29,
+              "registered_hits": 9,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 11.62,
+              "first_suit": 3,
+              "first_suit_energy": 174.23,
+              "minimum_health_after": -1,
+              "first_impact_projectile_launch_seconds": 3.37,
+              "first_observed_targeted_shot_seconds": 3.12,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 7.88,
+              "outcome": "death",
+              "impact_to_death_seconds": 4.45,
+              "observed_targeted_fire_to_death_seconds": 4.76,
+              "observed_contributors": [
+                65496
+              ],
+              "contributors_last_second": [
+                65496
+              ]
+            },
+            {
+              "target": 65496,
+              "human": false,
+              "first_impact_seconds": 3.43,
+              "hp_at_first_impact": 100,
+              "hp_lost": 0,
+              "armor_energy_spent": 33.22999999999999,
+              "registered_hits": 1,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 11.62,
+              "first_suit": 3,
+              "first_suit_energy": 174.23,
+              "minimum_health_after": 100,
+              "first_impact_projectile_launch_seconds": 3.37,
+              "first_observed_targeted_shot_seconds": 3.12,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 31.56,
+              "outcome": "lifecycle_boundary",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65501
+              ],
+              "contributors_last_second": []
+            }
+          ]
+        },
+        "lethal_socom": [
+          {
+            "target": 65501,
+            "human": false,
+            "first_impact_seconds": 3.43,
+            "hp_at_first_impact": 100,
+            "hp_lost": 106,
+            "armor_energy_spent": 136.29,
+            "registered_hits": 9,
+            "head_hits": 0,
+            "weapons": [
+              "SOCOM"
+            ],
+            "first_distance": 11.62,
+            "first_suit": 3,
+            "first_suit_energy": 174.23,
+            "minimum_health_after": -1,
+            "first_impact_projectile_launch_seconds": 3.37,
+            "first_observed_targeted_shot_seconds": 3.12,
+            "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+            "end_seconds": 7.88,
+            "outcome": "death",
+            "impact_to_death_seconds": 4.45,
+            "observed_targeted_fire_to_death_seconds": 4.76,
+            "observed_contributors": [
+              65496
+            ],
+            "contributors_last_second": [
+              65496
+            ]
+          }
+        ]
+      },
+      {
+        "metadata": {
+          "roster": [
+            {
+              "number": 1,
+              "skill": "elite",
+              "style": "universal"
+            },
+            {
+              "number": 2,
+              "skill": "elite",
+              "style": "universal"
+            }
+          ],
+          "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+          "log": "WarsBots-p0-socom-aim-r2.bots.log",
+          "source_sha": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+          "completed": true,
+          "server_sha256": "6EF0C0A4D18BAE5F0BE0C61254548829ADC37E3E7C197A024F3A01B214EB9953",
+          "tag": "candidate-r2-n2",
+          "seconds": 60,
+          "bots": 2,
+          "repeat": 2,
+          "fixture": "SOCOM; native ammo/armor; free movement; subsequent respawns native random",
+          "session": "p0-socom-aim",
+          "variant": "candidate"
+        },
+        "engine_sha256": "94636c60a0c73bc55b261b98789dd0dbb8a55da22a4cbb18af42f44596511ab9",
+        "trace_sha256": "2452ced5b7aeda48bb7333591cd2af2fd0bfea992fb18036e526077ef1e9ab5d",
+        "metrics": {
+          "log": "WarsBots-p0-socom-aim-r2.bots.log",
+          "log_sha256": "2452ced5b7aeda48bb7333591cd2af2fd0bfea992fb18036e526077ef1e9ab5d",
+          "observed_seconds": 57.76,
+          "telemetry_samples": 60,
+          "state_samples": {
+            "SEEKING_WEAPON": 4,
+            "CHASING_ENEMY": 12,
+            "ATTACKING": 4,
+            "DEAD": 8,
+            "SEARCHING_ENEMY": 32
+          },
+          "state_percent": {
+            "SEEKING_WEAPON": 6.67,
+            "CHASING_ENEMY": 20.0,
+            "ATTACKING": 6.67,
+            "DEAD": 13.33,
+            "SEARCHING_ENEMY": 53.33
+          },
+          "moving_samples": 47,
+          "blocked_percent": 0.0,
+          "pickups_acquired": 0,
+          "weapon_timeouts": 0,
+          "route_fallback_queries": 0,
+          "frequent_fallback_goals": [],
+          "weapon_cancel_unavailable": 0,
+          "weapon_cancel_no_route": 0,
+          "strength_takeoffs": 1,
+          "strength_landings": 1,
+          "jump_clearance_refusals": 0,
+          "kills": 3,
+          "deaths": 3,
+          "revives_alive": 3,
+          "max_reported_avg_ms": 0.09,
+          "worst_reported_frame_ms": 0.92,
+          "crash_marker": false,
+          "median_reported_window_ms": 0.027999999999999997,
+          "profile_windows": 6,
+          "progress_experiment_states": [
+            0
+          ],
+          "max_single_bot_update_ms": 0.92,
+          "observed_profiles": [
+            {
+              "number": 1,
+              "style": "universal",
+              "skill": "elite"
+            },
+            {
+              "number": 2,
+              "style": "universal",
+              "skill": "elite"
+            }
+          ],
+          "initial_spawns": [
+            {
+              "number": 1,
+              "actor": 65501,
+              "position": [
+                1224.98,
+                1331.85,
+                136.2
+              ]
+            },
+            {
+              "number": 2,
+              "actor": 65496,
+              "position": [
+                1242.72,
+                1331.76,
+                136.2
+              ]
+            }
+          ]
+        },
+        "fire": {
+          "schema": 1,
+          "available": true,
+          "cadence": {
+            "SOCOM": {
+              "shots": 76,
+              "active_interval_samples": 69,
+              "active_interval_min": 0.24,
+              "active_interval_median": 0.25,
+              "clip_decrement_values": [
+                1
+              ]
+            }
+          },
+          "definition": "impact-to-death plus observed intended-target native-fire-to-death; first fire may include misses/protection and is not guaranteed complete",
+          "missing_first_shots": true,
+          "counters": {
+            "native_shot_events": 76,
+            "pending_before_at_end": 0
+          },
+          "episodes": [
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 3.84,
+              "hp_at_first_impact": 100,
+              "hp_lost": 106,
+              "armor_energy_spent": 178.83,
+              "registered_hits": 11,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 12.15,
+              "first_suit": 3,
+              "first_suit_energy": 178.83,
+              "minimum_health_after": -12,
+              "first_impact_projectile_launch_seconds": 3.78,
+              "first_observed_targeted_shot_seconds": 2.71,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 7.58,
+              "outcome": "death",
+              "impact_to_death_seconds": 3.74,
+              "observed_targeted_fire_to_death_seconds": 4.87,
+              "observed_contributors": [
+                65496
+              ],
+              "contributors_last_second": [
+                65496
+              ]
+            },
+            {
+              "target": 65496,
+              "human": false,
+              "first_impact_seconds": 3.48,
+              "hp_at_first_impact": 100,
+              "hp_lost": 0,
+              "armor_energy_spent": 132.38,
+              "registered_hits": 4,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 12.34,
+              "first_suit": 3,
+              "first_suit_energy": 175.15,
+              "minimum_health_after": 100,
+              "first_impact_projectile_launch_seconds": 3.41,
+              "first_observed_targeted_shot_seconds": 2.84,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 31.52,
+              "outcome": "lifecycle_boundary",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65501
+              ],
+              "contributors_last_second": []
+            },
+            {
+              "target": 131037,
+              "human": false,
+              "first_impact_seconds": 35.88,
+              "hp_at_first_impact": 100,
+              "hp_lost": 103,
+              "armor_energy_spent": 152.86,
+              "registered_hits": 10,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 38.41,
+              "first_suit": 3,
+              "first_suit_energy": 152.86,
+              "minimum_health_after": -4,
+              "first_impact_projectile_launch_seconds": 35.74,
+              "first_observed_targeted_shot_seconds": 35.74,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 39.11,
+              "outcome": "death",
+              "impact_to_death_seconds": 3.23,
+              "observed_targeted_fire_to_death_seconds": 3.37,
+              "observed_contributors": [
+                131032
+              ],
+              "contributors_last_second": [
+                131032
+              ]
+            },
+            {
+              "target": 131032,
+              "human": false,
+              "first_impact_seconds": 45.63,
+              "hp_at_first_impact": 100,
+              "hp_lost": 106,
+              "armor_energy_spent": 92.15,
+              "registered_hits": 8,
+              "head_hits": 1,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 32.67,
+              "first_suit": 3,
+              "first_suit_energy": 92.15,
+              "minimum_health_after": -24,
+              "first_impact_projectile_launch_seconds": 45.53,
+              "first_observed_targeted_shot_seconds": 45.04,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 48.39,
+              "outcome": "death",
+              "impact_to_death_seconds": 2.76,
+              "observed_targeted_fire_to_death_seconds": 3.35,
+              "observed_contributors": [
+                131037
+              ],
+              "contributors_last_second": [
+                131037
+              ]
+            },
+            {
+              "target": 131037,
+              "human": false,
+              "first_impact_seconds": 45.29,
+              "hp_at_first_impact": 100,
+              "hp_lost": 0,
+              "armor_energy_spent": 123.0,
+              "registered_hits": 4,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 34.32,
+              "first_suit": 3,
+              "first_suit_energy": 200.0,
+              "minimum_health_after": 100,
+              "first_impact_projectile_launch_seconds": 45.16,
+              "first_observed_targeted_shot_seconds": 44.66,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 57.76,
+              "outcome": "log_end",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                131032
+              ],
+              "contributors_last_second": []
+            }
+          ]
+        },
+        "lethal_socom": [
+          {
+            "target": 65501,
+            "human": false,
+            "first_impact_seconds": 3.84,
+            "hp_at_first_impact": 100,
+            "hp_lost": 106,
+            "armor_energy_spent": 178.83,
+            "registered_hits": 11,
+            "head_hits": 0,
+            "weapons": [
+              "SOCOM"
+            ],
+            "first_distance": 12.15,
+            "first_suit": 3,
+            "first_suit_energy": 178.83,
+            "minimum_health_after": -12,
+            "first_impact_projectile_launch_seconds": 3.78,
+            "first_observed_targeted_shot_seconds": 2.71,
+            "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+            "end_seconds": 7.58,
+            "outcome": "death",
+            "impact_to_death_seconds": 3.74,
+            "observed_targeted_fire_to_death_seconds": 4.87,
+            "observed_contributors": [
+              65496
+            ],
+            "contributors_last_second": [
+              65496
+            ]
+          },
+          {
+            "target": 131037,
+            "human": false,
+            "first_impact_seconds": 35.88,
+            "hp_at_first_impact": 100,
+            "hp_lost": 103,
+            "armor_energy_spent": 152.86,
+            "registered_hits": 10,
+            "head_hits": 0,
+            "weapons": [
+              "SOCOM"
+            ],
+            "first_distance": 38.41,
+            "first_suit": 3,
+            "first_suit_energy": 152.86,
+            "minimum_health_after": -4,
+            "first_impact_projectile_launch_seconds": 35.74,
+            "first_observed_targeted_shot_seconds": 35.74,
+            "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+            "end_seconds": 39.11,
+            "outcome": "death",
+            "impact_to_death_seconds": 3.23,
+            "observed_targeted_fire_to_death_seconds": 3.37,
+            "observed_contributors": [
+              131032
+            ],
+            "contributors_last_second": [
+              131032
+            ]
+          },
+          {
+            "target": 131032,
+            "human": false,
+            "first_impact_seconds": 45.63,
+            "hp_at_first_impact": 100,
+            "hp_lost": 106,
+            "armor_energy_spent": 92.15,
+            "registered_hits": 8,
+            "head_hits": 1,
+            "weapons": [
+              "SOCOM"
+            ],
+            "first_distance": 32.67,
+            "first_suit": 3,
+            "first_suit_energy": 92.15,
+            "minimum_health_after": -24,
+            "first_impact_projectile_launch_seconds": 45.53,
+            "first_observed_targeted_shot_seconds": 45.04,
+            "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+            "end_seconds": 48.39,
+            "outcome": "death",
+            "impact_to_death_seconds": 2.76,
+            "observed_targeted_fire_to_death_seconds": 3.35,
+            "observed_contributors": [
+              131037
+            ],
+            "contributors_last_second": [
+              131037
+            ]
+          }
+        ]
+      },
+      {
+        "metadata": {
+          "roster": [
+            {
+              "number": 1,
+              "skill": "elite",
+              "style": "universal"
+            },
+            {
+              "number": 2,
+              "skill": "elite",
+              "style": "universal"
+            }
+          ],
+          "memory_sha256": "69D8D9A6FF960269F16A0C2F3B25A4A84981860BD77325119D1C4C14BCDF4735",
+          "log": "WarsBots-p0-socom-aim-r3.bots.log",
+          "source_sha": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+          "completed": true,
+          "server_sha256": "6EF0C0A4D18BAE5F0BE0C61254548829ADC37E3E7C197A024F3A01B214EB9953",
+          "tag": "candidate-r3-n2",
+          "seconds": 60,
+          "bots": 2,
+          "repeat": 3,
+          "fixture": "SOCOM; native ammo/armor; free movement; subsequent respawns native random",
+          "session": "p0-socom-aim",
+          "variant": "candidate"
+        },
+        "engine_sha256": "7ed120a9113158c610eb0d43a3f68162e0d927dcd9902edc87f4a4161fc5a332",
+        "trace_sha256": "0c6c1a2881ae1bfb17fde84c6ae40d7ae611643cf8ad18905654dea7f699c537",
+        "metrics": {
+          "log": "WarsBots-p0-socom-aim-r3.bots.log",
+          "log_sha256": "0c6c1a2881ae1bfb17fde84c6ae40d7ae611643cf8ad18905654dea7f699c537",
+          "observed_seconds": 55.8,
+          "telemetry_samples": 58,
+          "state_samples": {
+            "SEEKING_WEAPON": 4,
+            "CHASING_ENEMY": 2,
+            "ATTACKING": 4,
+            "DEAD": 3,
+            "SEARCHING_ENEMY": 45
+          },
+          "state_percent": {
+            "SEEKING_WEAPON": 6.9,
+            "CHASING_ENEMY": 3.45,
+            "ATTACKING": 6.9,
+            "DEAD": 5.17,
+            "SEARCHING_ENEMY": 77.59
+          },
+          "moving_samples": 50,
+          "blocked_percent": 2.0,
+          "pickups_acquired": 0,
+          "weapon_timeouts": 0,
+          "route_fallback_queries": 0,
+          "frequent_fallback_goals": [],
+          "weapon_cancel_unavailable": 0,
+          "weapon_cancel_no_route": 0,
+          "strength_takeoffs": 2,
+          "strength_landings": 2,
+          "jump_clearance_refusals": 0,
+          "kills": 1,
+          "deaths": 1,
+          "revives_alive": 1,
+          "max_reported_avg_ms": 0.07,
+          "worst_reported_frame_ms": 0.84,
+          "crash_marker": false,
+          "median_reported_window_ms": 0.025,
+          "profile_windows": 6,
+          "progress_experiment_states": [
+            0
+          ],
+          "max_single_bot_update_ms": 0.84,
+          "observed_profiles": [
+            {
+              "number": 1,
+              "style": "universal",
+              "skill": "elite"
+            },
+            {
+              "number": 2,
+              "style": "universal",
+              "skill": "elite"
+            }
+          ],
+          "initial_spawns": [
+            {
+              "number": 1,
+              "actor": 65501,
+              "position": [
+                1224.98,
+                1331.85,
+                136.2
+              ]
+            },
+            {
+              "number": 2,
+              "actor": 65496,
+              "position": [
+                1242.72,
+                1331.76,
+                136.2
+              ]
+            }
+          ]
+        },
+        "fire": {
+          "schema": 1,
+          "available": true,
+          "cadence": {
+            "SOCOM": {
+              "shots": 28,
+              "active_interval_samples": 24,
+              "active_interval_min": 0.24,
+              "active_interval_median": 0.25,
+              "clip_decrement_values": [
+                1
+              ]
+            }
+          },
+          "definition": "impact-to-death plus observed intended-target native-fire-to-death; first fire may include misses/protection and is not guaranteed complete",
+          "missing_first_shots": true,
+          "counters": {
+            "native_shot_events": 28,
+            "pending_before_at_end": 0
+          },
+          "episodes": [
+            {
+              "target": 65501,
+              "human": false,
+              "first_impact_seconds": 3.81,
+              "hp_at_first_impact": 100,
+              "hp_lost": 103,
+              "armor_energy_spent": 153.95999999999998,
+              "registered_hits": 9,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 11.79,
+              "first_suit": 3,
+              "first_suit_energy": 178.14,
+              "minimum_health_after": 0,
+              "first_impact_projectile_launch_seconds": 3.74,
+              "first_observed_targeted_shot_seconds": 3.01,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 7.46,
+              "outcome": "death",
+              "impact_to_death_seconds": 3.65,
+              "observed_targeted_fire_to_death_seconds": 4.45,
+              "observed_contributors": [
+                65496
+              ],
+              "contributors_last_second": [
+                65496
+              ]
+            },
+            {
+              "target": 65496,
+              "human": false,
+              "first_impact_seconds": 3.32,
+              "hp_at_first_impact": 100,
+              "hp_lost": 9,
+              "armor_energy_spent": 149.07999999999998,
+              "registered_hits": 5,
+              "head_hits": 0,
+              "weapons": [
+                "SOCOM"
+              ],
+              "first_distance": 12.23,
+              "first_suit": 3,
+              "first_suit_energy": 173.26,
+              "minimum_health_after": 91,
+              "first_impact_projectile_launch_seconds": 3.26,
+              "first_observed_targeted_shot_seconds": 2.91,
+              "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+              "end_seconds": 31.61,
+              "outcome": "lifecycle_boundary",
+              "impact_to_death_seconds": null,
+              "observed_targeted_fire_to_death_seconds": null,
+              "observed_contributors": [
+                65501
+              ],
+              "contributors_last_second": []
+            }
+          ]
+        },
+        "lethal_socom": [
+          {
+            "target": 65501,
+            "human": false,
+            "first_impact_seconds": 3.81,
+            "hp_at_first_impact": 100,
+            "hp_lost": 103,
+            "armor_energy_spent": 153.95999999999998,
+            "registered_hits": 9,
+            "head_hits": 0,
+            "weapons": [
+              "SOCOM"
+            ],
+            "first_distance": 11.79,
+            "first_suit": 3,
+            "first_suit_energy": 178.14,
+            "minimum_health_after": 0,
+            "first_impact_projectile_launch_seconds": 3.74,
+            "first_observed_targeted_shot_seconds": 3.01,
+            "observation_source": "authoritative_actor_damage_diagnostics_not_policy_features",
+            "end_seconds": 7.46,
+            "outcome": "death",
+            "impact_to_death_seconds": 3.65,
+            "observed_targeted_fire_to_death_seconds": 4.45,
+            "observed_contributors": [
+              65496
+            ],
+            "contributors_last_second": [
+              65496
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "errors": [],
+  "initial_spawns_match": [
+    true,
+    true,
+    true
+  ],
+  "first_encounters": {
+    "p0-socom-fixed": {
+      "impact_ttk": [
+        3.39,
+        3.79,
+        3.53
+      ],
+      "observed_fire_ttk": [
+        3.43,
+        3.86,
+        3.56
+      ],
+      "first_contact_armor": [
+        168.35,
+        169.93,
+        171.96
+      ],
+      "first_contact_hp": [
+        100,
+        100,
+        100
+      ],
+      "first_contact_range": [
+        12.7,
+        12.47,
+        11.75
+      ],
+      "median_impact_ttk": 3.53,
+      "median_observed_fire_ttk": 3.56
+    },
+    "p0-socom-aim": {
+      "impact_ttk": [
+        4.45,
+        3.74,
+        3.65
+      ],
+      "observed_fire_ttk": [
+        4.76,
+        4.87,
+        4.45
+      ],
+      "first_contact_armor": [
+        174.23,
+        178.83,
+        178.14
+      ],
+      "first_contact_hp": [
+        100,
+        100,
+        100
+      ],
+      "first_contact_range": [
+        11.62,
+        12.15,
+        11.79
+      ],
+      "median_impact_ttk": 3.74,
+      "median_observed_fire_ttk": 4.76
+    }
+  },
+  "limits": [
+    "Small bot-v-bot sample; no human TTK attribution or general AI superiority.",
+    "Same initial positions/resources/memory; free movement and later native random respawns; first-contact energy/range can differ.",
+    "Observed first-targeted-shot timestamp may include misses/protection; not a guarantee of complete contact history.",
+    "Per-impact HP losses can exceed initial HP if native health increases between impacts.",
+    "Head flag is native material containing head; no visual/human client test.",
+    "No new 6/15-bot scaling regression, OFF build or real-client replication test."
+  ],
+  "pilot": {
+    "source_sha": "2fcb4c0f",
+    "role": "uncontrolled mixed-weapon diagnostic pilot, excluded from matched comparison",
+    "trace_sha256": "dbb704754cbea4db974a10a29819d27149192129068decd9c6b8a631790c44cf",
+    "engine_sha256": "e816cd8c7eba6385f55c060d8860b5a3b113c2be5697b5f4e428131e0535c535",
+    "engine_errors": []
+  },
+  "aim_build": {
+    "config": "MSVC x64 Release experimental ON",
+    "sha": "8f0abd5fb0200ad9d4e8be37a824f4dad60396e2",
+    "client": "E9DE7C07D4C0682FA2877564540C46450C822739B05688D3121E36ED3417563C",
+    "server": "6EF0C0A4D18BAE5F0BE0C61254548829ADC37E3E7C197A024F3A01B214EB9953"
+  }
+}

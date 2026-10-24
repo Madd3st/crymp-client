@@ -1,8 +1,9 @@
 # Steelmill AI: measured geometry and remaining problems
 
-Current P0 candidate and testing isolation limits: [fire control](Experiments/fire-control-2026-10-24.md).
-No geometry/navigation changes in this increment; shared map memory of the active owner
-server was not touched. Native QA cannot be isolated by port alone.
+Current P0 native 1v1/aim results: [evidence](Experiments/duel-aim-2026-10-24.md).
+Owner allowed old-server shutdown; QA restored its memory snapshot after each run.
+Measured duel start coordinates are recorded in the runner; no geometry/navigation
+changes or invented rooftop links. Graph remained 7633 nodes /41618 edges.
 
 Map: `multiplayer/ia/steelmill`, original Crysis resources. No manually invented rooftop coordinates.
 

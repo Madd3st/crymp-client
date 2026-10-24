@@ -8,6 +8,15 @@ trained combat policy. No new ML dependency or training work runs in the game th
 Memory validation, decay, topology fingerprint and an explicit reset command remain work.
 Do not treat existing counters as contextual-bandit training data.
 
+## Native 1v1 data, 2026-10-24
+
+[Measured duel/aim results](Experiments/duel-aim-2026-10-24.md) distinguish actual
+remote=0 shot cadence, first observed targeted fire vs first impact, initial Armor
+energy, legitimate between-impact HP changes and revive/replica context. Six fixed
+SOCOM runs and a mixed regression are evaluation evidence, not exploratory bandit
+data. No action propensities or trained model. Do not combine later random respawns
+with first-duel paired comparisons or leak authoritative outcome fields into features.
+
 ## P0 diagnostic extension, 2026-10-24
 
 [P0 fire-control evidence](Experiments/fire-control-2026-10-24.md): existing exporter

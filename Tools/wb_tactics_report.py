@@ -199,11 +199,15 @@ def parse_fire_ttk(path, limit=1000):
     """
     from collections import OrderedDict, Counter
     pending={}; launches=OrderedDict(); active={}; result=[]; counts=Counter()
+    last_shot=OrderedDict();cadence={};targeted_fire=OrderedDict()
     def finish(target, reason, now):
         ep=active.pop(target,None)
         if ep is None:return
         ep['end_seconds']=now;ep['outcome']=reason
         ep['impact_to_death_seconds']=round(now-ep['first_impact_seconds'],4) if reason=='death' else None
+        first=ep.get('first_observed_targeted_shot_seconds')
+        ep['observed_targeted_fire_to_death_seconds']=round(now-first,4) if reason=='death' and first is not None else None
+        if reason in ('death','lifecycle_boundary'):targeted_fire.pop(target,None)
         ep['observed_contributors']=sorted(ep.pop('_contributors'))
         recent=ep.pop('_recent')
         ep['contributors_last_second']=sorted({shooter for t,shooter in recent if now-t<=1})
@@ -216,14 +220,35 @@ def parse_fire_ttk(path, limit=1000):
             if ts:now=float(ts[1])
             life=re.search(r'(ENTITY_EVENT_DONE EntityId=|revive result EntityId=)(\d+)',line)
             if life:
-                target=int(life[2]);finish(target,'lifecycle_boundary',now)
+                target=int(life[2]);finish(target,'lifecycle_boundary',now);targeted_fire.pop(target,None)
                 pending={k:v for k,v in pending.items() if k[0]!=target}
             if 'FIRE TRACE capped' in line:counts['runtime_trace_capped']+=1
             if 'FIRE SHOT ' in line:
                 v=dict(re.findall(r'(\w+)=([^\s]+)',line));projectile=int(v['projectile'])
-                if v.get('remote','0').rstrip('.')=='1':
+                remote=v.get('remote','unknown').rstrip('.')
+                if remote=='1':
                     counts['replica_shot_events']+=1;continue
-                counts['native_shot_events']+=1
+                if remote=='0':
+                    counts['native_shot_events']+=1
+                    weapon_class=v.get('class','unknown')
+                    c=cadence.setdefault(weapon_class,dict(shots=0,intervals=[],clip_decrements=[]))
+                    c['shots']+=1
+                    intended=int(v.get('target','0').rstrip('.'))
+                    if intended and intended!=int(v['shooter']):
+                        old=targeted_fire.get(intended)
+                        targeted_fire[intended]=(old[0] if old and now-old[1]<=5 else now,now)
+                        if len(targeted_fire)>4096:targeted_fire.popitem(last=False)
+                    key=(v['shooter'],v['weapon'])
+                    rpm=float(v.get('rpm','0'));clip=int(v.get('clip','-1').rstrip('.'))
+                    prev=last_shot.get(key)
+                    if prev:
+                        delta=now-prev[0]
+                        if 0<=delta<=max(1,180/rpm if rpm>0 else 1) and len(c['intervals'])<4096:
+                            c['intervals'].append(delta)
+                        if 0<=clip<prev[1] and len(c['clip_decrements'])<4096:c['clip_decrements'].append(prev[1]-clip)
+                    last_shot[key]=(now,clip)
+                    if len(last_shot)>4096:last_shot.popitem(last=False)
+                else:counts['shot_callbacks_unknown_replica_state']+=1
                 if projectile:
                     launches[projectile]=(now,int(v['shooter']),int(v['weapon']))
                     if len(launches)>4096:launches.popitem(last=False);counts['launch_context_evictions']+=1
@@ -248,8 +273,9 @@ def parse_fire_ttk(path, limit=1000):
             if ep is None:
                 ep=dict(target=target,human=b.get('human')=='1',first_impact_seconds=before_time,
                     hp_at_first_impact=hp0,hp_lost=0,armor_energy_spent=0.0,registered_hits=0,
-                    head_hits=0,weapons=[],first_distance=float(b['distance']),first_suit=int(b['suit']),
+                    head_hits=0,weapons=[],first_distance=float(b['distance']),first_suit=int(b['suit']),first_suit_energy=float(b['energy']),
                     minimum_health_after=hp1,first_impact_projectile_launch_seconds=None,
+                first_observed_targeted_shot_seconds=targeted_fire.get(target,(None,None))[0],
                     observation_source='authoritative_actor_damage_diagnostics_not_policy_features',
                     _contributors=set(),_recent=[],_last=now)
                 launch=launches.get(projectile)
@@ -267,8 +293,14 @@ def parse_fire_ttk(path, limit=1000):
     for target in list(active):finish(target,'log_end',now)
     for ep in result:ep.pop('_last',None)
     counts['pending_before_at_end']=sum(map(len,pending.values()))
-    return dict(schema=1,available=bool(counts['native_shot_events'] or result),
-                definition='first registered actor impact to lethal impact; censored otherwise',
+    for c in cadence.values():
+        intervals=c.pop('intervals')
+        c['active_interval_samples']=len(intervals)
+        c['active_interval_min']=round(min(intervals),4) if intervals else None
+        c['active_interval_median']=round(statistics.median(intervals),4) if intervals else None
+        c['clip_decrement_values']=sorted(set(c.pop('clip_decrements')))
+    return dict(schema=1,available=bool(counts['native_shot_events'] or result),cadence=cadence,
+                definition='impact-to-death plus observed intended-target native-fire-to-death; first fire may include misses/protection and is not guaranteed complete',
                 missing_first_shots=True,counters=dict(counts),episodes=result)
 
 

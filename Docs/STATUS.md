@@ -1,21 +1,29 @@
-# WarsBots for CryMP: status, 2026-10-23
+# WarsBots for CryMP: status, 2026-10-24
 
-## Current P0 candidate: fire control and TTK instrumentation, 2026-10-24
+## Current P0: native 1v1 and aim candidate, 2026-10-24
 
-Game source **`2fcb4c0f`**, MSVC x64 Release experimental client/server BUILD PASS;
-UNIT TEST PASS (C++ fire policy + 7 Python tests). Single/pump trigger cadence now
-uses actual native fire mode/RPM and human limits; current automatic burst intervals
-preserved. Opt-in `wb_fire_diagnostics=0` records actual shots/actor impacts with a
-20,000-event cap when enabled. Existing exporter has additive TTK/Armor/multi-shooter
-analysis, not invented timings from old logs. See [P0 evidence](Experiments/fire-control-2026-10-24.md).
+Built/tested game source **`8f0abd5f`**. Fixed redundant local NetShoot only for owned
+channel-0 server bots: native Shoot already created the projectile/consumed ammo;
+replay consumed again and cleared native shot cooldown. Real-client broadcast stays.
+Aim now tracks perceived points with finite lag/error floor; rare visible head-zone
+choice is separate from precision. No damage/health/energy/ShotValidator changes.
 
-Frozen **unplayed candidate** `build/play-2fcb4c0f/`; owner-tested baseline remains
-`build/play-5e8daa65/`. SERVER QA/1v1 and CLIENT/VISUAL NOT RUN: owner server PID150204
-is still active and shares USER/map memory. No process, active EXE or map memory
-changed by this iteration; different ports alone do not provide isolation.
-Default-OFF build not repeated. No measured native cadence/TTK improvement claimed.
-P0 remains open: native 1v1 validation, aim settling/head selection, then spectator.
-No map exporter, ML, PS gate or large refactor implemented in this increment.
+BUILD PASS (MSVC x64 Release experimental server+client), UNIT TEST PASS (C++ fire,
+profile/aim checks + 10 Python tests), SERVER QA PASS for 3+3 SOCOM 1v1 repeats,
+1 mixed-weapon regression and diagnostic pilot. SOCOM minimum .24 s / median .25 s,
+one-round decrements; SCAR min .09 s / median .10 s. First-duel impact-TTK median
+3.53 ->3.74 s; observed fire-to-death3.56 ->4.76 s. Native head hit confirmed later
+in a candidate run. Small sample/first-contact Armor differences prohibit a general
+AI-superiority or pure aim-only causal claim. See [evidence](Experiments/duel-aim-2026-10-24.md)
+and [JSON](Experiments/duel-aim-2026-10-24.json).
+
+Old owner server stopped with explicit permission; full logs archived. All QA servers
+ended, memory restored (hash in evidence). No client launched, active EXE replaced,
+PS gate opened or ML added. Default-OFF not rebuilt; human/visual/replication and
+6/15-bot scaling regression remain untested. Frozen pair `build/play-8f0abd5f/`,
+prepared manual launchers (port64150, no auto bots, SOCOM QA fixture OFF).
+Next: human naturalness/replication and further weapon/range checks, then spectator.
+P0 remains open for full validation; previous blocked candidate was `2fcb4c0f`.
 
 ## Power Struggle planning, 2026-10-24
 
@@ -24,7 +32,7 @@ PSCommander, channel-0 blockers and staged native-rule validation. Documentation
 no PS gate opened, runtime code or playable source changed. Steelmill core remains
 priority. Owner playtest launched with 11 Elite on source `5e8daa65`; client loaded
 Steelmill and server observed clients=1. Owner finished; feedback archived in [Elite playtest](Experiments/owner-elite11-2026-10-24.md).
-Server remains running; logs copied locally. No skill-superiority or human TTK claim.
+Old server now stopped with explicit owner permission; final logs archived. No skill-superiority claim.
 Previous 6-Normal logs archived locally in `build/owner-playtests/normal6-20261023/`.
 Counts differ (6 Normal vs 11 Elite), so this is not a controlled skill comparison.
 
