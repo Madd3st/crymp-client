@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdio>
 #include <vector>
+#include <string>
 using namespace WarsBots;
 
 int main(int argc, char** argv)
@@ -54,7 +55,10 @@ int main(int argc, char** argv)
 			{1382.52f, 1507.1f, 190.0f}, {1265.5f, 1500.4f, 112.74f}, {1108.34f, 1473.84f, 119.21f}};
 		for (auto& a : spawns) for (auto& b : spawns)
 		{
-			if (&a == &b || !L.FindPathLinks(a, b, p2, links, &why)) continue;
+			if (&a == &b) continue;
+			const bool reach = L.Reachable(a, b), found = L.FindPathLinks(a, b, p2, links, &why);
+			assert(reach == found || std::string(why) == "findpath_failed");   // directed parts agree with Detour
+			if (!found) continue;
 			++total; withLinks += !links.empty();
 			for (const NavPathLink& k : links)
 			{

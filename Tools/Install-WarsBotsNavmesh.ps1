@@ -4,7 +4,7 @@
 $ErrorActionPreference = 'Stop'
 $target = Join-Path $env:LOCALAPPDATA 'WarsBots/Navmesh'
 New-Item -ItemType Directory -Force -Path $target | Out-Null
-Get-ChildItem -Path $Source -File | Where-Object { $_.Name -like '*.navmesh' -or $_.Name -like '*.links.txt' } | ForEach-Object {
+Get-ChildItem -Path $Source -File | Where-Object { $_.Name -like '*.navmesh' -or $_.Name -like '*.links.txt' -or $_.Name -like '*.spots.txt' } | ForEach-Object {
   Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $target $_.Name) -Force
   $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash
   Write-Output ("{0} {1} bytes {2}" -f $_.Name, $_.Length, $hash)

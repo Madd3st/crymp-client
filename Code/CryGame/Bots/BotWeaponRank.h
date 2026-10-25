@@ -24,7 +24,7 @@ inline const WeaponSpec* WeaponTable(int& n)
 	static const WeaponSpec t[] = {
 		{"SCAR",       1.00f, 0.f,  5.f,  45.f,  90.f, true},
 		{"FY71",       0.95f, 0.f,  5.f,  40.f,  80.f, true},
-		{"Hurricane",  0.95f, 0.f,  3.f,  30.f,  60.f, true},
+		{"Hurricane",  0.80f, 0.f,  3.f,  20.f,  45.f, true},   // owner 25.10: 8 kills in 50 s, too strong as a pick
 		{"GaussRifle", 1.00f, 8.f, 30.f, 200.f, 300.f, true},
 		{"DSG1",       0.90f, 8.f, 35.f, 200.f, 300.f, true},
 		{"SMG",        0.85f, 0.f,  2.f,  20.f,  40.f, true},

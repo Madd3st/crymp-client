@@ -17,7 +17,7 @@ struct BotWeapons
 	static bool HasPrimary(CActor& actor);
 	static bool IsPrimary(IItem* item);
 	static EntityId FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly = false,
-		const EntityId* skip = nullptr, int skipCount = 0);
+		const EntityId* skip = nullptr, int skipCount = 0, float typicalRange = 20.f);
 	static bool AvailableForPickup(CActor& actor, EntityId item);
 	static bool PickUp(CActor& actor, EntityId item);
 	static bool GiveTestSCAR(CActor& actor);
@@ -27,5 +27,8 @@ struct BotWeapons
 	static int Held(CActor& actor, HeldWeapon* out, int max, EntityId* ids = nullptr);
 	static float HeldValue(CActor& actor, float distance);
 	static bool SelectForRange(CActor& actor, float distance);
+	// Owner playtest 25.10 (wb_bot_weapon_handling): LAM laser on unless cloaked, zoom for distant targets
+	// (BotWeaponHandling.h). targetDistance < 0 = no target to shoot at.
+	static void Handle(CActor& actor, float targetDistance, bool cloaked);
 };
 }

@@ -4980,8 +4980,27 @@ void CPlayer::SetWarsBotMotion(const Vec3& direction, float speed, const Vec3& a
 	m_warsBotSpeed = clamp_tpl(speed,0.0f,WarsBots::BotPaceEnabled()?GetStanceMaxSpeed(STANCE_STAND):2.5f);
 	m_warsBotAim = aim;
 	m_warsBotViewLimited=WarsBots::BotConfig::Get().botTurnCap==1 && g_pGame->GetBotManager().AIEnabled(GetEntityId());
+	SyncWarsBotAmmo(false);
 	ApplyWarsBotView();
 	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
+}
+// Server (apply=false): read the held weapon's clip/reserve. Client replica (apply=true): write them into the local
+// weapon/inventory so the spectator HUD shows the real count (it read 0/0 for bots: owner playtest 25.10).
+void CPlayer::SyncWarsBotAmmo(bool apply)
+{
+	IItem* item=GetCurrentItem();
+	IWeapon* weapon=item ? item->GetIWeapon() : nullptr;
+	IFireMode* mode=weapon ? weapon->GetFireMode(weapon->GetCurrentFireMode()) : nullptr;
+	IEntityClass* ammo=mode ? mode->GetAmmoType() : nullptr;
+	if (!ammo) { if (!apply) m_warsBotClip=m_warsBotReserve=0; return; }
+	if (!apply)
+	{
+		m_warsBotClip=uint16(clamp_tpl(mode->GetAmmoCount(),0,65535));
+		m_warsBotReserve=uint16(GetInventory() ? clamp_tpl(GetInventory()->GetAmmoCount(ammo),0,65535) : 0);
+		return;
+	}
+	if (mode->GetAmmoCount()!=int(m_warsBotClip)) weapon->SetAmmoCount(ammo,int(m_warsBotClip));
+	if (GetInventory() && GetInventory()->GetAmmoCount(ammo)!=int(m_warsBotReserve)) GetInventory()->SetAmmoCount(ammo,int(m_warsBotReserve));
 }
 void CPlayer::SetWarsBotAim(const Vec3& aim)
 {
@@ -5014,6 +5033,7 @@ void CPlayer::UpdateWarsBotMotion(float dt)
 	// O-025: a client replica filters the replicated steps; the server always uses the raw values.
 	const bool smooth = !gEnv->bServer && WarsBots::BotConfig::Get().clientSmooth==1;
 	Vec3 moveDir = m_warsBotDirection, aim = m_warsBotAim;
+	if (smooth && WarsBotWeaponFiring()) m_warsBotSmooth.Reset(); // owner 25.10: shooting -> raw aim, no lag behind shots
 	if (smooth)
 	{
 		const Vec3 eye=GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
@@ -5264,6 +5284,8 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 			ser.Value("airborne",m_warsBotAirborne,'bool');
 			ser.Value("jumpSerial",m_warsBotJumpSerial,'ui8');
 			ser.Value("strengthJump",m_warsBotStrengthJump,'bool');
+			ser.Value("ammoClip",m_warsBotClip,'ui16');
+			ser.Value("ammoReserve",m_warsBotReserve,'ui16');
             ser.EndGroup();
 		}
 		if (ser.IsReading() && !gEnv->bServer && GetChannelId()==0)
@@ -5272,6 +5294,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 				WB_LOG(2, "[WarsBots] Motion replica activated EntityId=%u (server dynamic aspect, no channel).",GetEntityId());
 			if (!m_warsBotPose) m_warsBotSmooth.Reset();
 			m_warsBotPose = bot;
+			if (bot) SyncWarsBotAmmo(true);
 			if (bot) GetGameObject()->EnablePrePhysicsUpdate(ePPU_Always);
 		}
 	}
