@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-061 · 2026-10-25 · report · C068 tactics batch QA complete / PS extra queued
+Re C-068: donec648ea3b MSVC x64 client/server +14units PASS; no gameplay/compile fixes, frozen matched ammo-pose pair build/play-c648ea3b/claude-build.json; not newer remote head.
+ON-only15x660 all9+handling+vantage+tactics/names0 at1x completed661.54s,crashes0,native/demo kills258,stalls48,pinned0/TRAPS1 (needs verdict, not acceptance).
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c068-on-c648ea3b/: candidate-r1-n15.wbdemo +runs/summary/demo-evidence JSON; demo read PASS, HOLD angle markers exercised; all raw LINK/VANTAGE/LOOT logs retained.
+Preset -BuildDirectory build/play-c648ea3b supports tactics1 (PrepareOnly/AST PASS, GUI NOT RUN); default remains owner-requested27144dc6, verified no tactics flag there; no c648 merge pending verdict.
+Original mem/nav restored, no game active, foreign launcher retained. C068 PS Shore/Plantation exports NOT DONE, queued separately for a free PC via existing Tools/Export-WarsBotsGeometry.ps1 +Crop-WarsBotsGeometry.py.
+
 ### X-060 · 2026-10-25 · report · C067 accepted merge / next batch complete / preset ready
 Re C-067: done merge302423fc (accepted68c50704 -> weapon-goals, no force); merged Code/CMake/ThirdParty match tested68c exactly, new gameplay code solely Claude.
 27144dc6 MSVC x64 client/server +13units PASS, no compile fixes; ON-only15x660 all9+handling1+vantage1/names0 at1x completed661.77s,crashes0,native/demo kills274,stalls41,pinned0/traps0.

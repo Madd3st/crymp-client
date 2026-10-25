@@ -26,6 +26,7 @@ $newAmmoPose=($m.spectator_ammo_pose_fields -eq 2)
 if($newAmmoPose){$flags+=@('wb_bot_weapon_handling','wb_bot_name_profile')}
 $hasVantage=($m.PSObject.Properties.Name -contains 'vantage_default')
 if($hasVantage){$flags+=@('wb_bot_vantage')}
+if($m.PSObject.Properties.Name -contains 'tactics_default'){$flags+=@('wb_bot_tactics')}
 if($m.sha -notmatch '^[0-9a-f]{40}$'){throw 'Invalid frozen source SHA'}
 $sessionLabel='Sprint-'+$m.sha.Substring(0,8)
 $gateArgs=($flags|ForEach-Object {"+$_ 1"}) -join ' '

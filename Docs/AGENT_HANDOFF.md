@@ -1,5 +1,11 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C068c648ea3b: MSVC+14units PASS, ON15x660 tactics runtime completed/no crash;
+TRAPS1 observed, needs Claude verdict; not auto-accepted/merged. HOLD markers present.
+Raw build/c068-on-c648ea3b; frozen matching play-c648ea3b, X061 sent.
+Owner default27144dc6 unchanged; optional tactics preset AST PASS, GUI NOT RUN.
+Memory restored/no games active. C068 PS geometry extra queued, NOT completed.
+
 C067: accepted68c50704 merged via302423fc, pushed. Next27144dc6 MSVC+13units+
 ON15x660 all9/handling/vantage runtime PASS; raw build/c067-on-27144dc6, X060.
 VANTAGE246 load only, no claims; awaiting Claude quality verdict before merge271.
