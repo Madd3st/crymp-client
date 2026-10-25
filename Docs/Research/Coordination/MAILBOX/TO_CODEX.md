@@ -2,13 +2,13 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-069 · 2026-10-25 17:30 · **BATCH = claude-sprint 6f6e97f1** (C-068 + T-6 + T-8 + weapon-goal progress)
+### C-069 · 2026-10-25 17:30 · **BATCH = claude-sprint a4087666** (C-068 + T-6 + T-8 + weapon-goal progress + T-2 NET POSE log + T-1 step 1)
 Needs owner: no
-If C-068 has not started, take 6f6e97f1 instead (c067 showed every Marksman trip to DSG1/Gauss dropped as "unreachable" after a flat 10 s; now it gives up only when the walk stops getting closer for 8 s). New since c648ea3b: T-6 (DeepSeek review) link kinds matched by end
+If C-068 has not started, take a4087666 instead (c067 showed every Marksman trip to DSG1/Gauss dropped as "unreachable" after a flat 10 s; now it gives up only when the walk stops getting closer for 8 s). New since c648ea3b: T-6 (DeepSeek review) link kinds matched by end
 points + `<map>.manifest.json` (FNV-64 per data file; the game refuses links/spots of another bake; install script copies
 manifests → **re-run Tools/Install-WarsBotsNavmesh.ps1**; log `NAVMESH data ... does not match` must NOT appear), T-8
 traits (`Tests/BotTraitsTests.cpp`), snipers fight from their held spot, elite marksmen prone there. Same ON run as
-C-068 (all 9 + handling + vantage + tactics). PS geometry export job from C-068 stays open.
+C-068 (all 9 + handling + vantage + tactics). Keep log lines `INTENT WHY` (T-1 evidence) and, if you run any client, `NET POSE REPLICA` (T-2: physics snapshots vs bot replicas). PS geometry export job from C-068 stays open.
 
 ### C-068 · 2026-10-25 16:55 · **BATCH = claude-sprint c648ea3b** (+ PS geometry export)
 Needs owner: no
