@@ -785,13 +785,15 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 void BotBrain::ApplyLookPolicy(CPlayer& actor)
 {
 	if (BotConfig::Get().botLook!=1 || m_now<m_testUntil) return;
-	if (m_intent.combat!=BotCombatIntent::None || (m_combat.Target() && m_combat.Visible())) { m_look.Reset(); return; } // a seen target owns the view
+	if (m_combat.Target() && m_combat.Visible()) { m_look.Reset(); return; } // a seen target owns the view
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	const Vec3 eye=feet+Vec3(0,0,1.6f);
 	LookInput in;
 	in.now=m_now; in.eye=LookVec{eye.x,eye.y,eye.z};
-	const Vec3 asked=m_intent.aim-eye;
-	in.viewYaw=RAD2DEG(atan2f(asked.x,asked.y));
+	const Vec3 view=actor.GetViewRotation().GetColumn1();
+	in.viewYaw=RAD2DEG(atan2f(view.x,view.y));
+    in.viewPitch=RAD2DEG(atan2f(view.z,sqrtf(view.x*view.x+view.y*view.y)));
+    in.pathActive=m_intent.move;
 	in.speed=m_blackboard.velocity.GetLength2D();
 	Vec3 interest(0,0,0); bool hasInterest=false;
 	if (m_combat.Target() && !m_combat.Visible()) { interest=m_combat.LastPosition()+Vec3(0,0,1.2f); hasInterest=true; }
@@ -819,9 +821,16 @@ void BotBrain::ApplyLookPolicy(CPlayer& actor)
         in.interestRayClear=EyeRayClear(actor,eye,interest);
     }
 	const LookOutput o=m_look.Update(in);
-	if (o.reason==LookReason::Keep) return;
 	const float yaw=DEG2RAD(o.yaw), pitch=DEG2RAD(o.pitch);
 	m_intent.aim=eye+Vec3(sinf(yaw)*cosf(pitch),cosf(yaw)*cosf(pitch),sinf(pitch))*8.0f;
+    if(m_lookDiagnostics<128 && m_now>=m_nextLookDiagnostic && BotConfig::Get().moveTrace!=0){
+        static const char* const names[]={"keep","target","attacker","interest","path","next"};
+        const unsigned reason=static_cast<unsigned>(o.reason);
+        WB_LOG(2,"[WarsBots] LOOK TRACE actor=%u reason=%s state=%s active=%d speed=%.2f interest=%d clear=%d rays=%u eye=(%.3f,%.3f,%.3f) corner=(%.3f,%.3f,%.3f) aim=(%.3f,%.3f,%.3f)",
+            actor.GetEntityId(),reason<6?names[reason]:"invalid",StateName(),in.pathActive?1:0,in.speed,in.hasInterest?1:0,in.interestRayClear?1:0,lookRays,
+            eye.x,eye.y,eye.z,in.corner.x,in.corner.y,in.corner.z,m_intent.aim.x,m_intent.aim.y,m_intent.aim.z);
+        ++m_lookDiagnostics;m_nextLookDiagnostic=m_now+1.f;
+    }
 }
 
 bool BotBrain::EyeRayClear(CPlayer& actor,const Vec3& from,const Vec3& to) const

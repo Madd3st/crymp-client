@@ -6,7 +6,7 @@
 // Rules, in priority order:
 //   1. visible target                         -> the target (aim model does the flick/tracking);
 //   2. hit recently, attacker direction known -> the attacker direction for a short glance;
-//   3. point of interest (search/weapon/LKP) with a CLEAR eye ray, or very close, and not far behind the travel
+//   3. point of interest (search/weapon/LKP) with a CLEAR eye ray (also at close range), and not far behind the travel
 //      direction                               -> the point of interest;
 //   4. otherwise                              -> along the path: the next corner, blending to the corner after it
 //      when the bot is about to turn; standing still -> keep the current view.
@@ -25,6 +25,8 @@ struct LookInput {
 	float now = 0.f;
 	LookVec eye;                       // eye position
 	float viewYaw = 0.f;               // current view
+    float viewPitch = 0.f;
+    bool pathActive = false;          // trying to traverse a path even if temporarily blocked
 	float speed = 0.f;                 // horizontal m/s
 	// 1. target
 	bool targetVisible = false;
@@ -80,7 +82,7 @@ public:
 	{
 		LookOutput o;
 		LookReason want = LookReason::Keep; LookVec at; bool urgent = false;
-		const bool moving = in.speed >= m_p.moving;
+		const bool moving = in.pathActive || in.speed >= m_p.moving;
 		const float travelYaw = in.hasCorner ? YawTo(in.eye, in.corner) : in.viewYaw;
 
 		if (in.targetVisible) { want = LookReason::Target; at = in.target; urgent = true; }
@@ -101,7 +103,7 @@ public:
 		{
 			want = m_reason; at = m_at;
 		}
-		if (want == LookReason::Keep) { o.yaw = in.viewYaw; o.pitch = m_pitch; o.reason = LookReason::Keep; o.changed = m_reason != LookReason::Keep; m_reason = LookReason::Keep; return o; }
+		if (want == LookReason::Keep) { o.yaw = in.viewYaw; o.pitch = in.viewPitch; o.reason = LookReason::Keep; o.changed = m_reason != LookReason::Keep; m_reason = LookReason::Keep; return o; }
 
 		o.changed = want != m_reason;
 		if (o.changed) { m_reason = want; m_since = in.now; }
@@ -111,7 +113,6 @@ public:
 		// along the path look level (eye height) unless the corner is a real climb/drop; at targets use the true pitch
 		o.pitch = (want == LookReason::Path || want == LookReason::NextCorner) ? Clamp(PitchTo(in.eye, Lift(at, 1.6f)), -20.f, 20.f)
 		                                                                       : PitchTo(in.eye, at);
-		m_pitch = o.pitch;
 		return o;
 	}
 
@@ -119,8 +120,8 @@ private:
 	bool InterestOk(const LookInput& in, bool moving, float travelYaw) const
 	{
 		const float d = Dist2D(in.eye, in.interest);
-		if (d <= m_p.interestNear) return true;
-		if (!in.interestRayClear) return false;                     // never stare at a point through a wall
+		if (!in.interestRayClear) return false;
+		if (d <= m_p.interestNear) return true;                     // never stare at a point through a wall
 		if (!moving) return true;                                   // standing: watching a clear point is fine
 		if (d > m_p.interestMax) return false;
 		return std::fabs(Wrap(YawTo(in.eye, in.interest) - travelYaw)) <= m_p.interestBehind;
@@ -130,7 +131,7 @@ private:
 
 	LookParams m_p;
 	LookReason m_reason = LookReason::Keep;
-	float m_since = -1e9f, m_pitch = 0.f;
+	float m_since = -1e9f;
 	LookVec m_at;
 };
 
@@ -152,7 +153,7 @@ inline LookVec PathLookAhead(const LookVec& pos, const LookVec* pts, int n, floa
 
 // C055: a string-pulled path can be walkable while a 3m look-ahead is hidden around a turn.
 // Share the two-ray budget with the caller's interest test. Return a FOOT point; the
-// policy lifts it by1.4m, so test exactly that elevated point, not the floor segment.
+// clearance probe uses1.4m (C055); the policy path gaze stays at1.6m eye level.
 template<class ClearEyeRay>
 LookVec ClearPathLookAhead(const LookVec& pos,const LookVec* pts,int n,unsigned& rays,ClearEyeRay clear)
 {
