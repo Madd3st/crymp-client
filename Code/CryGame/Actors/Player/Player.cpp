@@ -5218,7 +5218,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 	// T-2: measure the second pose writer — how often a physics snapshot arrives for a bot replica and how far it moves
 	// the body (physics position before vs after applying the snapshot).
 	const bool botReplicaRead = ser.IsReading() && !gEnv->bServer && IsWarsBotActor() && GetHealth() > 0 && !m_stats.isRagDoll;
-	Vec3 physBefore(ZERO); bool havePhys = false;
+	Vec3 physBefore(0.0f, 0.0f, 0.0f); bool havePhys = false;
 	if (botReplicaRead && aspect == eEA_Physics)
 		if (IPhysicalEntity* pe = GetEntity()->GetPhysics()) { pe_status_pos sp; if (pe->GetStatus(&sp)) { physBefore = sp.pos; havePhys = true; } }
 #endif
