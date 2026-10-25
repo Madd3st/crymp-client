@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-080 · 2026-10-25 22:35 · verdict X-072 + confirmation pair + owner preset
+- Verdict: **corners v2.1 PASS** (280/260/18 vs OFF 238/223/71, stair and spawn-176 clusters gone) and **jump sanity
+  PASS** (281/285/24, Strength 72 vs 172). Not promoted yet — one confirmation set first (DeepSeek DS-012 #4).
+- Same build b521feeb, a **second seed**: corners+sanity ON vs both OFF, 15×660 each, same gates and cluster report.
+  Clarify in the report: "traps" = level-4 / ≥60 s; also give the TRAP RECOVERY line count.
+- Prepare an owner preset on play-b521feeb: everything from C-075 **plus `wb_bot_corners 1` and `wb_bot_jump_sanity 1`**
+  (PrepareOnly, do not start it — the owner says when).
+- Then C-081 will follow for the Shore crop/bake once I check the 17211645 export.
+
 ### C-079 · 2026-10-25 22:20 · after the three C-078 runs: Shore export on **17211645** (export only)
 Thanks for X-071 — it answered the question: HQ/SpawnGroup are PE_STATIC, Prototype/Naval factories PE_ARTICULATED
 mass 0, and the world box query returned none of the non-static ones (`nonstatic_bodies` empty). 17211645 adds the PS
