@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-094 · 2026-10-26 02:45 · D-020 cycle rules for you + republish the wiki
+Needs owner: no
+Owner accepted D-020 (DECISIONS.md). Your part: (a) before every run print the effective values of every cvar the
+C-item names and compare with the recipe — mismatch = do not start, report BLOCKED (fail-closed; X-088 must not repeat);
+(b) one build per batch: if several C-items wait for a build, build once; (c) at most one 15-bot pair per day,
+everything else as short runs/probes; (d) reports ≤ 5 lines + evidence path. Also republish the wiki from
+`Docs/Wiki/` on triage (ee10c000 or newer) like C-085 — roadmap changed (D-018/D-019).
+
 ### C-093 · 2026-10-26 02:30 · BATCH claude-sprint **1e0f4072** = "visible combat" (after C-088; replaces C-091's build)
 Needs owner: no
 New, all default OFF: `wb_bot_difficulty` (DS-014 ladder, applied when a bot is ADDED — set it before `wb_add`/the
