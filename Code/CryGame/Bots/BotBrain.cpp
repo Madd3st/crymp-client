@@ -828,6 +828,7 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 	in.strengthActive=m_blackboard.suitActive && m_blackboard.mode==NANOMODE_STRENGTH;
 	in.armorActive=!m_blackboard.suitActive || m_blackboard.mode==NANOMODE_DEFENSE;
 	in.energy=m_blackboard.energy;
+	in.speed=m_blackboard.velocity.GetLength2D();
 	const LinkOutput o=m_link.Update(in);
 	if (o.phase==LinkPhase::Done)
 	{

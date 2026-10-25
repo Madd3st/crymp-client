@@ -183,6 +183,12 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 			CPlayer* player=CPlayer::FromIActor(candidate);
 			CNanoSuit* suit=player ? player->GetNanoSuit() : nullptr;
 			cue.cloaked=suit && suit->IsActive() && suit->GetMode()==NANOMODE_CLOAK;
+			// O-026 P1: Speed-mode sprint is loud (footsteps 12 m) and shows through cloak; was never set
+			if (IPhysicalEntity* phys=candidate->GetEntity()->GetPhysics())
+			{
+				pe_status_dynamics dyn;
+				if (phys->GetStatus(&dyn)) { cue.speed=Vec3(dyn.v.x,dyn.v.y,0).GetLength(); cue.sprintSpeedMode=suit && suit->IsActive() && suit->GetMode()==NANOMODE_SPEED && cue.speed>6.0f; }
+			}
 			IItem* theirs=candidate->GetCurrentItem();
 			IWeapon* theirWeapon=theirs ? theirs->GetIWeapon() : nullptr;
 			IFireMode* theirMode=theirWeapon ? theirWeapon->GetFireMode(theirWeapon->GetCurrentFireMode()) : nullptr;

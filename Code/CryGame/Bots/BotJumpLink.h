@@ -28,6 +28,7 @@ struct LinkInput {
 	bool strengthActive = false;       // suit is in Strength mode
 	bool armorActive = true;           // suit is in Armor (Defense) mode
 	float energy = 200.f;
+	float speed = 1.f;                 // horizontal m/s (an approach that stops short of a counts as arrived)
 };
 
 struct LinkOutput {
@@ -41,10 +42,12 @@ struct LinkOutput {
 };
 
 struct LinkParams {
-	float takeoffRadius = 0.6f;        // m from a to start the move
-	float landRadius = 1.5f;           // m from b counts as landed
+	float takeoffRadius = 1.0f;        // m from a to start the move (c061: 0.6 m left bots parked 0.62 m short)
+	float nearRadius = 1.8f;           // m: standing still this close to a also counts as arrived
+	float stillTime = 0.4f;            // s below 0.3 m/s near a
+	float landRadius = 2.5f;           // m from b counts as landed (a running Strength jump carries past b)
 	float landDz = 1.5f;
-	float prepareMax = 2.5f;           // s waiting for the suit
+	float prepareMax = 4.f;            // s waiting for the suit / energy (regen ~10/s: c061 failed at 62..69 energy)
 	float total = 6.f;                 // s for the whole link
 	float noTakeoff = 1.2f;            // s after the jump request without leaving the ground
 	float strengthEnergy = 70.f;
@@ -61,7 +64,7 @@ public:
 
 	void Start(float now, LinkMove move, const JVec& a, const JVec& b)
 	{
-		m_move = move; m_a = a; m_b = b; m_start = now; m_phase = LinkPhase::Approach; m_phaseAt = now; m_wasAir = false;
+		m_move = move; m_a = a; m_b = b; m_start = now; m_phase = LinkPhase::Approach; m_phaseAt = now; m_wasAir = false; m_stillSince = -1.f;
 	}
 
 	// Phase changes Approach -> Prepare -> Act can chain within one tick.
@@ -91,13 +94,15 @@ private:
 			o.moveTo = m_a; o.slow = da < 2.f;
 			if (m_move == LinkMove::Strength) o.wantStrength = in.energy >= m_p.strengthEnergy;
 			if (m_move == LinkMove::Jump) o.wantArmor = true;
-			if (da <= m_p.takeoffRadius || (m_wasAir && m_move == LinkMove::Drop)) Enter(LinkPhase::Prepare, in.now);
+			if (da <= m_p.nearRadius && in.speed < 0.3f) { if (m_stillSince < 0.f) m_stillSince = in.now; }
+			else m_stillSince = -1.f;
+			if (da <= m_p.takeoffRadius || (m_wasAir && m_move == LinkMove::Drop) ||
+				(m_stillSince >= 0.f && in.now - m_stillSince >= m_p.stillTime)) Enter(LinkPhase::Prepare, in.now);
 			break;
 		case LinkPhase::Prepare:
 			if (m_move == LinkMove::Strength)
 			{
 				o.wantStrength = true; o.moveTo = m_a; o.slow = true;
-				if (in.energy < m_p.strengthEnergy && !in.strengthActive) return Fail(o, LinkFail::NoEnergy);
 				if (in.strengthActive && in.energy >= m_p.strengthEnergy) Enter(LinkPhase::Act, in.now);
 				else if (in.now - m_phaseAt > m_p.prepareMax) return Fail(o, LinkFail::NoEnergy);
 			}
@@ -152,6 +157,7 @@ private:
 	JVec m_a, m_b;
 	float m_start = 0.f, m_phaseAt = 0.f;
 	bool m_wasAir = false;
+	float m_stillSince = -1.f;
 };
 
 } // namespace WarsBots

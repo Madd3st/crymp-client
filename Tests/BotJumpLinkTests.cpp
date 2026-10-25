@@ -33,11 +33,21 @@ int main()
 		in = At(0.4f, -0.2f, 0, 10); in.energy = 150; o = L.Update(in); assert(o.phase == LinkPhase::Prepare && o.jump == LinkJumpRequest::None);
 		in.now = 0.8f; in.strengthActive = true; o = L.Update(in); assert(o.jump == LinkJumpRequest::Strength);
 	}
-	// 4. Strength without energy fails at once (caller re-paths, nothing banned for energy).
+	// 4. Strength with low energy waits for regen; still too low after prepareMax -> NoEnergy (not banned by the caller).
 	{
 		BotJumpLink L; L.Start(0, LinkMove::Strength, a, JVec{5, 0, 14});
 		LinkInput in = At(0, -0.1f, 0, 10); in.energy = 30;
-		LinkOutput o = L.Update(in); assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoEnergy);
+		LinkOutput o = L.Update(in); assert(o.phase == LinkPhase::Prepare);
+		in.now = 2; in.energy = 75; in.strengthActive = true; o = L.Update(in); assert(o.jump == LinkJumpRequest::Strength);
+		BotJumpLink M; M.Start(0, LinkMove::Strength, a, JVec{5, 0, 14});
+		LinkInput low = At(0, -0.1f, 0, 10); low.energy = 30; M.Update(low); low.now = 4.5f; o = M.Update(low);
+		assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoEnergy);
+	}
+	// 6. Approach that stalls 0.62 m short of a (c061) still takes off after stillTime.
+	{
+		BotJumpLink L; L.Start(0, LinkMove::Drop, a, b);
+		LinkInput in = At(0, -1.5f, 0, 10); in.speed = 0.f; L.Update(in);
+		in.now = 0.5f; LinkOutput o = L.Update(in); assert(o.phase == LinkPhase::Act && o.moveTo.x == 3.f);
 	}
 	// 5. Jump refused by the game (never airborne) -> NoTakeoff; landing far from b -> MissedLanding; timeout.
 	{

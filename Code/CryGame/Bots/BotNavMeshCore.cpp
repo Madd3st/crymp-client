@@ -80,42 +80,45 @@ bool NavMeshCore::LoadFile(const char* path, std::string* error)
 
 void NavMeshCore::BuildComponents()
 {
+	// Weakly connected parts (union-find over every passing link, both directions). A DFS over outgoing links made
+	// one-way off-mesh drops seed-order dependent (O-026 P1). One-way reachability is checked by FindPath
+	// ("no_directed_route"), so Reachable is optimistic only across drops.
 	const unsigned short include = m_filter ? m_filter->getIncludeFlags() : 0xffff;
 	auto Pass = [include](const dtPoly* p) { return (p->flags & include) != 0; };
 	m_comp.clear(); m_components = 0;
 	const dtNavMesh* mesh = m_mesh;
 	std::vector<dtPolyRef> refs;
+	std::unordered_map<unsigned long long, int> index;
 	for (int ti = 0; ti < mesh->getMaxTiles(); ++ti)
 	{
 		const dtMeshTile* tile = mesh->getTile(ti);
 		if (!tile || !tile->header) continue;
 		const dtPolyRef base = mesh->getPolyRefBase(tile);
-		for (int i = 0; i < tile->header->polyCount; ++i) { refs.push_back(base | dtPolyRef(i)); m_comp[base | dtPolyRef(i)] = -1; }
+		for (int i = 0; i < tile->header->polyCount; ++i)
+			if (Pass(&tile->polys[i])) { index[base | dtPolyRef(i)] = int(refs.size()); refs.push_back(base | dtPolyRef(i)); }
 	}
-	std::vector<dtPolyRef> stack;
-	for (dtPolyRef seed : refs)
+	std::vector<int> parent(refs.size());
+	for (size_t i = 0; i < parent.size(); ++i) parent[i] = int(i);
+	auto find = [&](int x) { while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+	for (size_t i = 0; i < refs.size(); ++i)
 	{
-		if (m_comp[seed] >= 0) continue;
+		const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
+		if (dtStatusFailed(mesh->getTileAndPolyByRef(refs[i], &tile, &poly))) continue;
+		for (unsigned int l = poly->firstLink; l != DT_NULL_LINK; l = tile->links[l].next)
 		{
-			const dtMeshTile* st = nullptr; const dtPoly* sp = nullptr;
-			if (dtStatusFailed(mesh->getTileAndPolyByRef(seed, &st, &sp)) || !Pass(sp)) continue;
+			auto it = index.find(tile->links[l].ref);
+			if (it == index.end()) continue;
+			const int x = find(int(i)), y = find(it->second);
+			if (x != y) parent[x] = y;
 		}
-		const int id = m_components++;
-		m_comp[seed] = id; stack.assign(1, seed);
-		while (!stack.empty())
-		{
-			const dtPolyRef r = stack.back(); stack.pop_back();
-			const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
-			if (dtStatusFailed(mesh->getTileAndPolyByRef(r, &tile, &poly))) continue;
-			if (!Pass(poly)) continue;
-			for (unsigned int l = poly->firstLink; l != DT_NULL_LINK; l = tile->links[l].next)
-			{
-				const dtMeshTile* nt = nullptr; const dtPoly* np = nullptr;
-				if (dtStatusFailed(mesh->getTileAndPolyByRef(tile->links[l].ref, &nt, &np)) || !Pass(np)) continue;
-				auto it = m_comp.find(tile->links[l].ref);
-				if (it != m_comp.end() && it->second < 0) { it->second = id; stack.push_back(tile->links[l].ref); }
-			}
-		}
+	}
+	std::unordered_map<int, int> ids;
+	for (size_t i = 0; i < refs.size(); ++i)
+	{
+		const int root = find(int(i));
+		auto it = ids.find(root);
+		if (it == ids.end()) it = ids.emplace(root, m_components++).first;
+		m_comp[refs[i]] = it->second;
 	}
 }
 
