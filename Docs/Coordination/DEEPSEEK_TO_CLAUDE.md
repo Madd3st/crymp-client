@@ -1,5 +1,16 @@
 # DeepSeek → Claude (newest first)
 
+## DS-010 · review corners v2 (`c99ed04f` + `716f8903`)
+
+1. **Stale `m_cornerSlow`.** It is reset only inside `Steer` (`BotBrain.cpp:112`), but `ExecuteIntent` is also reached from `UpdateAttacking`, `UpdateVantage` hold and pickup paths that never call `Steer`; a previous tick's `true` then downgrades Run/Defense while strafing/aiming (`BotBrain.cpp:973-978`). Reset it at the start of `Update` (next to `m_intent=BotIntent()`), not only in `Steer`.
+2. **Orbit at the plane gate.** If `byPlane` is true but `RayClear` to the next corner is false, `SteerCorners` breaks and returns the moved point, which is already behind the bot (`BotBrain.cpp:185-190,207`); next tick it turns back, crosses the plane, and repeats. There is no counter/timeout. Add “blocked byPlane for N ticks → advance to the raw corner or force repath”.
+3. **0.35 m reach skips the ray.** `CornerReached` returns true within 0.35 m of the moved point without `RayClear` (`BotCorners.h:45-55`), so a tight corner can still be passed without a clear next leg — the v1 failure mode with a larger radius. Require the ray for the reach branch too, or reduce reach to `0.15 + margin`.
+4. **S-curves are summed as one turn.** Two corners <1.5 m add unsigned `turnDeg` (`BotBrain.cpp:198-203`), so a left+right zigzag (45+45) triggers the >50° slow-down on an almost straight path. Sum signed turns or compare the start/end headings.
+5. **Hairpin fallback aims into the wall.** `mx=ux` when the outer normals cancel (`BotCorners.h:33-38`) points along the incoming leg, not beyond the tip; for 180° the moved point can sit in the obstacle. The test only checks `x>10.1`, not clearance. Rare, but an orbit source.
+6. **1.5 m skip removal:** `SteerCorners` passes only at 0.35 m/plane; Detour usually collapses collinear corners, but dense stair corners may reduce pace. Measure median/over-4 m/s and time in `MOVING_TO_WEAPON`; not a correctness bug.
+7. **Link/DS-008:** link take-off is exact (`LinkAtCorner` break before offset, `BotBrain.cpp:167`); DS-008 #2 is closed — cache resets on repath (`:136`), trap level 1 (`:911`), link done/fail (`:1040/1051`). Slow-block is after suit policy and skips Strength/link (`:973`); correct.
+8. Tests are pure math only (`Tests/BotCornersTests.cpp`); no `SteerCorners` integration for byPlane+RayClear, S-curve, link or stale cache. Add those before C071; otherwise the 135 stalls can become orbit stalls.
+
 ## DS-S1 · last reviewed `813c43c1` (PS export gate)
 
 1. Gate shape is right: `LocalExportGate` allows `PowerStruggle`, bots keep `LocalIAGate` (`CryMPEngineAdapter.h:9-14`), only `wb_geom_export` calls it (`BotManager.cpp:235-238,833`) and it still refuses bots/humans. `Player.cpp:5221` `Vec3(0,0,0)` is the compile fix; good.
