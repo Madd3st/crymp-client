@@ -13,6 +13,7 @@ public:
 	void Observe(CPlayer& actor, BotBlackboard& state, float now);
 	BotJump Obstacle(CPlayer& actor, const Vec3& direction) const;
 	bool Execute(CPlayer& actor, const BotIntent& intent, BotBlackboard& state, float now, float dt);
+	void Look(CPlayer& actor, const Vec3& target);
 private:
 	bool JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength) const;
 	void Refused(CPlayer& actor, const char* reason, float now);

@@ -23,6 +23,16 @@ struct BotConfig {
  int hotspotAllNodes=0;
  int fireDiagnostics=0;
  int qaSocomOnly=0;
+ int botLook=0;       // C-033 look policy (sprint C-047), default OFF
+ int botTurnCap=0;    // C-044 per-frame view turn-rate cap, default OFF
+ int weaponRank=0;    // C-022 weapon value for pickup/hold, default OFF
+ int goalArbiter=0;   // C-032 goal arbiter with commitment/hysteresis, default OFF
+ int botPerception=0; // P2 C-037 view cone, time to notice, cloak (BotPerception.h), default OFF
+ int aimModel=0;     // P2 C-038 human aim: saccade + tracking + filtered noise (BotAimModel.h), default OFF
+ int suitPolicy=0;   // roadmap 12: one suit decision per tick (BotSuitPolicy.h), default OFF
+ int clientSmooth=0; // O-025 client replica: smooth replicated direction/aim steps (BotReplicaSmooth.h), default OFF
+ int botNavmesh=0;
+ int jumpLinks=0;    // C-036 off-mesh drop/jump/Strength links + executor (BotJumpLink.h), needs meshes_links, default OFF    // P0 Detour navmesh paths/reachability (Tools/RecastBake meshes), default OFF
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);
  void Unregister(IConsole& console);

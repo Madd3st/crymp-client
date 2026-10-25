@@ -8,6 +8,9 @@
 #include "CryGame/Bots/BotInstance.h"
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotWeapons.h"
+#include "CryGame/Bots/BotWeaponRank.h"
+#include "CryGame/Bots/BotNavMesh.h"
+#include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Actor.h"
@@ -100,14 +103,30 @@ void BotBrain::TravelGait(float distance)
 Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 {
 	const BotNav& nav = g_pGame->GetBotManager().Nav();
-	if (!nav.Ready()) return goal; // fallback: straight line + local avoidance
+	NavMeshCore* mesh = CurrentNavMesh(); // P0, wb_bot_navmesh: Detour corners instead of the sparse ray graph
+	if (!nav.Ready() && !mesh) return goal; // fallback: straight line + local avoidance
 	// Failed paths also respect the two-second retry deadline. An empty failed path is
 	// a cached result, not a reason to repeat A* at the 0.75-second global throttle.
+	if (m_link.Active()) return Vec3(m_linkNow.b[0], m_linkNow.b[1], m_linkNow.b[2]); // C-036: the link executor owns movement
 	if (((goal - m_pathGoal).GetLengthSquared() > 16.0f || m_now >= m_nextRepath) && m_now >= m_minRepath)
 	{
 		m_minRepath = m_now + 0.75f;
 		BotNav::PathTrace trace;
-		const bool found = nav.FindPath(feet, goal, m_path, &trace);
+		bool found = false;
+		m_meshPathActive = false;
+		if (mesh)
+		{
+			std::vector<float> xyz; const char* why = "navmesh";
+			const float a[3] = {feet.x, feet.y, feet.z}, b[3] = {goal.x, goal.y, goal.z};
+			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why);
+			if (!found) m_pathLinks.clear();
+			m_meshPathActive = found;
+			m_path.clear();
+			for (size_t i = 0; i + 2 < xyz.size(); i += 3) m_path.push_back(Vec3(xyz[i], xyz[i + 1], xyz[i + 2]));
+			trace.reason = why;
+		}
+		if (!found) m_pathLinks.clear();
+		if (!found && nav.Ready()) found = nav.FindPath(feet, goal, m_path, &trace);
 		m_pathIndex = 0;
 		m_pathGoal = goal;
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
@@ -119,11 +138,13 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
                 m_actorId,trace.reason,trace.from,trace.to,trace.expanded);
 		}
 	}
-	if (m_path.empty()) return goal; // Sparse graph can miss a physically reachable item.
+	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
+	m_intent.meshPath = m_meshPathActive; // stairs on the corner path are walkable (BotMovement knee ray off)
 	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
 	while (m_pathIndex + 1 < m_path.size())
 	{
 		const Vec3& p = m_path[m_pathIndex];
+		if (m_meshPathActive && LinkAtCorner(m_pathIndex)) break; // a link take-off is passed only by the executor
 		if ((p - feet).GetLengthSquared2D() < 2.25f && fabs_tpl(p.z - feet.z) < 2.0f) ++m_pathIndex;
 		else break;
 	}
@@ -152,7 +173,7 @@ void BotBrain::ResetLife()
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
-	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0;
+	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
 	m_withdrawUntil=m_nextWithdraw=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
@@ -160,6 +181,7 @@ void BotBrain::ResetLife()
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
 	m_retreating = false;
+	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_aimModelInit = false; m_aimModelTarget = 0; m_suitPolicy.Reset();
 	m_weaponSearchStarted = m_now;
 	m_nextSearch = m_now;
 	m_deadTime = 0;
@@ -224,6 +246,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	m_locomotion.Observe(actor,m_blackboard,m_now);
     UpdateTelemetry(actor);
     if(UpdateDead(bot,actor,dt))return;
+	if (BotConfig::Get().botTurnCap==1) UpdateTurnCap(actor,dt); // C-044: per-frame capped view toward the decided look point
 	m_tick += dt;
 	if (m_tick < 0.1f) return; // Bound entity searches, raycasts and decisions to 10 Hz.
 	const float decisionTime = m_tick;
@@ -239,6 +262,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
     if(UpdateWeaponSeek(actor,decisionTime,socomQA))return;
 	IActor* enemy = m_combat.FindEnemy(actor, m_now, m_verbose);
 	if (m_now<m_escapeUntil) enemy=nullptr; // A short, sensed-but-not-pursued local escape leg.
+    if(BotConfig::Get().goalArbiter==1 && !socomQA && UpdateArbitrated(bot,actor,enemy,decisionTime,socomQA))return; // C-032
     if(UpdateUpgrade(bot,actor,enemy,decisionTime,socomQA))return;
     if(!enemy){UpdateRoam(bot,actor,decisionTime);return;}
     UpdateCombat(bot,actor,decisionTime);
@@ -376,16 +400,23 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
     return false;
 }
 
-bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA)
+EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
+{
+	(void)anyHeld; // with wb_bot_weapon_rank FindNearby keeps only real upgrades over what is held
+	EntityId skip[8]; int skipCount = 0;
+	for (const BadItem& b : m_badItems) if (b.id && m_now < b.until) skip[skipCount++] = b.id;
+	return BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true, skip, skipCount);
+}
+
+bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
 {
 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
-	if (!socomQA && (!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))
+	// force: the goal arbiter (C-032) already decided this tick is a weapon tick.
+	if (!socomQA && (force || ((!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))))
 	{
 		if (m_now >= m_nextUpgradeSearch && !m_upgradeTarget)
 		{
-			EntityId skip[8]; int skipCount = 0;
-			for (const BadItem& b : m_badItems) if (b.id && m_now < b.until) skip[skipCount++] = b.id;
-			m_upgradeTarget = BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true, skip, skipCount);
+			m_upgradeTarget = UpgradeCandidate(actor, false);
 			m_upgradeSince = m_now;
 			m_nextUpgradeSearch = m_now + 3.0f;
 		}
@@ -432,6 +463,21 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		Change(State::SEARCHING_ENEMY);
 		m_blackboard.enemy=0; m_blackboard.visible=false; m_blackboard.distance=0;
 		const Vec3 feet = actor.GetEntity()->GetWorldPos();
+		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
+		Vec3 heard;
+		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
+			(heard-feet).GetLengthSquared2D()>36.0f && (heard-feet).GetLengthSquared2D()<2500.0f &&
+			(heard-m_patrolGoal).GetLengthSquared2D()>25.0f)
+		{
+			NavMeshCore* mesh = CurrentNavMesh();
+			const float from[3] = {feet.x, feet.y, feet.z}, to[3] = {heard.x, heard.y, heard.z};
+			float snap[3];
+			if (!mesh || !mesh->Project(from, snap) || mesh->Reachable(from, to))
+			{
+				m_patrolGoal = heard; m_patrolUntil = m_now + 8.0f; m_detour = false;
+				WB_LOG(2, "[WarsBots] #%d HEARD gunshot at (%.1f,%.1f,%.1f), investigating.", m_number, heard.x, heard.y, heard.z);
+			}
+		}
 		if (m_now >= m_patrolUntil || (m_patrolGoal-feet).GetLengthSquared2D() < 4.0f)
 		{
 			// Roam between the map's IA spawn points (public map knowledge, like a human's),
@@ -444,14 +490,19 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			Vec3 hotspot(0,0,0);
 			bool picked = false;
 			const bool safe = m_profile.style == BotStyle::Marksman || m_profile.style == BotStyle::Defender;
+			NavMeshCore* mesh = CurrentNavMesh();
+			const float from[3] = {feet.x, feet.y, feet.z};
+			float snap[3];
+			if (mesh && !mesh->Project(from, snap)) mesh = nullptr; // off the mesh: keep the old goal choice
+			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q); };
 			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot, &feet, actor.GetEntityId()) &&
-				(hotspot - feet).GetLengthSquared2D() > 64.0f)
+				(hotspot - feet).GetLengthSquared2D() > 64.0f && reachable(hotspot))
 			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; picked = true; }
 			else if (count && !m_detour)
 				for (int tries = 0; tries < count && !waypoint; ++tries, ++m_patrolStep)
 				{
 					IEntity* spawn = gEnv->pEntitySystem->GetEntity(rules->GetSpawnLocation(int((m_patrolStep * 7u + unsigned(m_number) * 3u) % unsigned(count))));
-					if (spawn && (spawn->GetWorldPos() - feet).GetLengthSquared2D() > 64.0f) waypoint = spawn;
+					if (spawn && (spawn->GetWorldPos() - feet).GetLengthSquared2D() > 64.0f && reachable(spawn->GetWorldPos())) waypoint = spawn;
 				}
 			if (picked) {}
 			else if (waypoint)
@@ -491,18 +542,25 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 	m_blackboard.lastEnemyPosition=destination;
 	const float distance = (destination - actor.GetEntity()->GetWorldPos()).GetLength();
 	m_blackboard.distance=distance;
+	// C-022: hold the best primary for this fight distance; not mid-burst, at most every 2 s (switch costs time).
+	if (BotConfig::Get().weaponRank==1 && m_now>=m_nextRangeSelect && m_now-m_combat.LastBurstRequest()>0.5f)
+	{ m_nextRangeSelect=m_now+2.0f; BotWeapons::SelectForRange(actor,distance); }
     Vec3 aim=m_combat.LastAim();
     if(m_trackedTarget!=m_combat.Target() || m_trackedSelection!=m_combat.SelectedAt()) {
         SMovementState movement;actor.GetMovementController()->GetMovementState(movement);
         m_trackedAim=movement.eyePosition+movement.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)*max(1.f,distance);
         m_trackedTarget=m_combat.Target();m_trackedSelection=m_combat.SelectedAt();
     }
+    if (BotConfig::Get().aimModel==1) aim=AimModelPoint(actor,aim,distance,decisionTime); // C-038
+    else
+    {
     // Track only the last observed/cached point. No velocity extrapolation or hidden query.
     m_trackedAim+=(aim-m_trackedAim)*BotAimControl::Alpha(m_profile,decisionTime);
     aim=m_trackedAim;
     const float error=BotAimControl::ErrorRadius(m_profile,distance);
 	const float t = m_now + m_phase;
 	aim += Vec3(sinf(t * 2.7f), cosf(t * 1.9f), sinf(t * 1.3f) * 0.3f) * error;
+    }
 	IItem* held=actor.GetCurrentItem();
 	const float desiredRange=m_profile.WeaponRange(held?held->GetEntity()->GetClass()->GetName():nullptr,m_life+unsigned(m_number));
 	const bool disadvantage=m_profile.retreatHealth>0 && (m_blackboard.health<=m_profile.retreatHealth ||
@@ -665,7 +723,7 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
             level,actor.GetEntityId(),m_trap.Age(m_now),p.x,p.y,p.z,m_blackboard.blocked?1:0,m_blackboard.velocity.GetLength2D(),m_blackboard.grounded?1:0,0);
         if (level==1)
         {
-            m_path.clear();m_pathIndex=0;m_nextRepath=m_minRepath=0;
+            m_path.clear();m_pathIndex=0;m_nextRepath=m_minRepath=0;m_pathLinks.clear();m_link.Reset();
         }
         else if (level==2 || level==3)
         {
@@ -701,10 +759,13 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
 void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 {
     if (RecoverTrap(actor)) return;
+    ApplyLookPolicy(actor); // C-033, wb_bot_look
 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
 		m_intent.suitMode=static_cast<ENanoMode>(m_testMode);
 	m_blackboard.obstacleJump=BotJump::None;
-	if (m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
+	m_intent.linkJump=false;
+	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
+	if (!m_link.Active() && m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
         !(m_trap.Level()>=2 && m_now<m_trapStepUntil))
 	{
 		const Vec3 direction=(m_intent.destination-m_blackboard.position).GetNormalizedSafe(FORWARD_DIRECTION);
@@ -723,12 +784,18 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	{ m_intent.suitMode=NANOMODE_DEFENSE; if (m_intent.gait==BotGait::Sprint) m_intent.gait=BotGait::Run; }
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
     if(BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){m_intent.suitMode=NANOMODE_DEFENSE;m_speedTravel=false;}
+    if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
         if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;m_intent.suitMode=NANOMODE_DEFENSE;m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
         else m_intent.gait=BotGait::Run;
     }
-	m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
+	if (BotConfig::Get().botTurnCap==1)
+	{
+		BotIntent capped=m_intent; capped.aim=CappedLook(actor); // C-044: the decision tick never snaps the view
+		m_locomotion.Execute(actor,capped,m_blackboard,m_now,dt);
+	}
+	else m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
 	if (m_intent.combat==BotCombatIntent::Fire && m_blackboard.mode!=NANOMODE_CLOAK)
 	{
 		IActor* target=g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(m_combat.Target());
@@ -736,6 +803,283 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 }
 	else m_combat.StopFire();
 }
+// ---------------------------------------------------------------------------------------------- C-036 links
+// Takes over at a link take-off corner of a Detour path and runs BotJumpLink until landing; a failed link is banned.
+void BotBrain::ApplyLinkExecutor(CPlayer& actor)
+{
+	NavMeshCore* mesh=CurrentNavMesh();
+	const Vec3 feet=m_blackboard.position;
+	if (!mesh) { m_link.Reset(); return; }
+	if (!m_link.Active())
+	{
+		if (!m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return;
+		const NavPathLink* l=LinkAtCorner(m_pathIndex);
+		if (!l) return;
+		const Vec3 a(l->a[0],l->a[1],l->a[2]);
+		if ((a-feet).GetLengthSquared2D()>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return;
+		m_linkNow=*l;
+		const LinkMove move=l->kind==NavLinkStrength?LinkMove::Strength:(l->kind==NavLinkJump?LinkMove::Jump:LinkMove::Drop);
+		m_link.Start(m_now,move,JVec{l->a[0],l->a[1],l->a[2]},JVec{l->b[0],l->b[1],l->b[2]});
+		WB_LOG(2,"[WarsBots] #%d LINK start kind=%s a=(%.2f,%.2f,%.2f) b=(%.2f,%.2f,%.2f) energy=%.0f actor=%u.",m_number,NavLinkName(l->kind),
+			l->a[0],l->a[1],l->a[2],l->b[0],l->b[1],l->b[2],m_blackboard.energy,actor.GetEntityId());
+	}
+	LinkInput in;
+	in.now=m_now; in.feet=JVec{feet.x,feet.y,feet.z}; in.grounded=m_blackboard.grounded;
+	in.strengthActive=m_blackboard.suitActive && m_blackboard.mode==NANOMODE_STRENGTH;
+	in.armorActive=!m_blackboard.suitActive || m_blackboard.mode==NANOMODE_DEFENSE;
+	in.energy=m_blackboard.energy;
+	const LinkOutput o=m_link.Update(in);
+	if (o.phase==LinkPhase::Done)
+	{
+		WB_LOG(2,"[WarsBots] #%d LINK done kind=%s at=(%.2f,%.2f,%.2f) actor=%u.",m_number,NavLinkName(m_linkNow.kind),feet.x,feet.y,feet.z,actor.GetEntityId());
+		{ const size_t next=size_t(m_linkNow.corner)+1; m_pathIndex=m_path.empty()?0:(next<m_path.size()?next:m_path.size()-1); }
+		m_link.Reset();
+		return;
+	}
+	if (o.phase==LinkPhase::Failed)
+	{
+		static const char* const why[]={"none","timeout","no_takeoff","missed_landing","no_energy"};
+		WB_LOG(1,"[WarsBots] #%d LINK failed kind=%s reason=%s at=(%.2f,%.2f,%.2f)%s actor=%u.",m_number,NavLinkName(m_linkNow.kind),
+			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> banned",actor.GetEntityId());
+		if (o.fail!=LinkFail::NoEnergy) mesh->BanLink(m_linkNow.ref);
+		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_nextRepath=m_minRepath=0;
+		return;
+	}
+	if (!m_link.Active()) return;
+	m_intent.move=true;
+	m_intent.destination=Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z);
+	m_intent.gait=o.slow?BotGait::Walk:BotGait::Run;
+	m_intent.jump=o.jump==LinkJumpRequest::Strength?BotJump::Strength:(o.jump==LinkJumpRequest::Normal?BotJump::Normal:BotJump::None);
+	m_intent.linkJump=m_intent.jump!=BotJump::None;
+	if (o.wantStrength) m_intent.suitMode=NANOMODE_STRENGTH;
+	else if (o.wantArmor) m_intent.suitMode=NANOMODE_DEFENSE;
+	m_speedTravel=false;
+}
+
+// ---------------------------------------------------------------------------------------------- sprint C-047
+// C-033 look policy (BotLookPolicy.h): without a visible target look ~3 m ahead along the path, at a point of interest
+// (hidden enemy's last position, the weapon being fetched) only with a clear eye ray or when it is very close.
+// Fixes C-042: bots looked exactly at their aim point through walls (no_route fallback aims at the far goal).
+void BotBrain::ApplyLookPolicy(CPlayer& actor)
+{
+	if (BotConfig::Get().botLook!=1 || m_now<m_testUntil) return;
+	if (m_combat.Target() && m_combat.Visible()) { m_look.Reset(); return; } // a seen target owns the view
+	const Vec3 feet=actor.GetEntity()->GetWorldPos();
+	const Vec3 eye=feet+Vec3(0,0,1.6f);
+	LookInput in;
+	in.now=m_now; in.eye=LookVec{eye.x,eye.y,eye.z};
+	const Vec3 view=actor.GetViewRotation().GetColumn1();
+	in.viewYaw=RAD2DEG(atan2f(view.x,view.y));
+    in.viewPitch=RAD2DEG(atan2f(view.z,sqrtf(view.x*view.x+view.y*view.y)));
+    in.pathActive=m_intent.move;
+	in.speed=m_blackboard.velocity.GetLength2D();
+	Vec3 interest(0,0,0), heard(0,0,0); bool hasInterest=false;
+	if (m_combat.Target() && !m_combat.Visible()) { interest=m_combat.LastPosition()+Vec3(0,0,1.2f); hasInterest=true; }
+	else if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,2.5f,heard))
+	{ interest=heard+Vec3(0,0,1.2f); hasInterest=true; } // C-037 hearing: glance at a gunshot (clear-ray rule still applies)
+	else if (IEntity* item=gEnv->pEntitySystem->GetEntity(m_upgradeTarget?m_upgradeTarget:m_weaponTarget))
+	{ interest=item->GetWorldPos(); hasInterest=true; }
+	LookVec pts[8]; int n=0;
+	for (size_t i=m_pathIndex; i<m_path.size() && n<8; ++i) pts[n++]=LookVec{m_path[i].x,m_path[i].y,m_path[i].z};
+	if (n==0 && m_intent.move)
+	{
+		// No route (BotNav fallback): look where the body actually goes, not at the far goal behind the wall.
+		Vec3 v=m_blackboard.velocity; v.z=0;
+		Vec3 dir=v.GetLength2D()>1.0f ? v.GetNormalized() : Vec3(m_intent.destination.x-feet.x,m_intent.destination.y-feet.y,0).GetNormalizedSafe(actor.GetBaseQuat().GetColumn1());
+		const Vec3 ahead=feet+dir*4.0f;
+		pts[n++]=LookVec{ahead.x,ahead.y,ahead.z};
+	}
+	unsigned lookRays=0;
+	if (n)
+	{
+		in.hasCorner=true;
+		in.corner=ClearPathLookAhead(LookVec{feet.x,feet.y,feet.z},pts,n,lookRays,
+            [&](const LookVec& p){return EyeRayClear(actor,eye,Vec3(p.x,p.y,p.z));});
+	}
+    if(hasInterest && lookRays<2){
+        ++lookRays;in.hasInterest=true;in.interest=LookVec{interest.x,interest.y,interest.z};
+        in.interestRayClear=EyeRayClear(actor,eye,interest);
+    }
+	const LookOutput o=m_look.Update(in);
+	const float yaw=DEG2RAD(o.yaw), pitch=DEG2RAD(o.pitch);
+	m_intent.aim=eye+Vec3(sinf(yaw)*cosf(pitch),cosf(yaw)*cosf(pitch),sinf(pitch))*8.0f;
+    if(m_lookDiagnostics<128 && m_now>=m_nextLookDiagnostic && BotConfig::Get().moveTrace!=0){
+        static const char* const names[]={"keep","target","attacker","interest","path","next"};
+        const unsigned reason=static_cast<unsigned>(o.reason);
+        WB_LOG(2,"[WarsBots] LOOK TRACE actor=%u reason=%s state=%s active=%d speed=%.2f interest=%d clear=%d rays=%u eye=(%.3f,%.3f,%.3f) corner=(%.3f,%.3f,%.3f) aim=(%.3f,%.3f,%.3f)",
+            actor.GetEntityId(),reason<6?names[reason]:"invalid",StateName(),in.pathActive?1:0,in.speed,in.hasInterest?1:0,in.interestRayClear?1:0,lookRays,
+            eye.x,eye.y,eye.z,in.corner.x,in.corner.y,in.corner.z,m_intent.aim.x,m_intent.aim.y,m_intent.aim.z);
+        ++m_lookDiagnostics;m_nextLookDiagnostic=m_now+1.f;
+    }
+}
+
+bool BotBrain::EyeRayClear(CPlayer& actor,const Vec3& from,const Vec3& to) const
+{
+	if (!gEnv->pPhysicalWorld) return false;
+	ray_hit hit;
+	IItem* held=actor.GetCurrentItem();
+	IPhysicalEntity* heldPhysics=held ? held->GetEntity()->GetPhysics() : nullptr;
+	return gEnv->pPhysicalWorld->RayWorldIntersection(from,to-from,ent_terrain|ent_static|ent_rigid|ent_sleeping_rigid,
+		rwi_stop_at_pierceable|rwi_colltype_any,&hit,1,actor.GetEntity()->GetPhysics(),heldPhysics)==0;
+}
+
+// C-044: bots turned the view up to ~2000 deg/s in one 31 ms server tick (owner demo 23:33: >720 deg/s in 9.5 % of samples,
+// humans 0.6 %), which reads as lag. The view now rotates toward the decided look point at a per-skill rate every frame.
+float BotBrain::TurnRate() const
+{
+	switch (m_profile.skill)
+	{
+	case BotSkill::Beginner: return 400.0f;
+	case BotSkill::Veteran: return 800.0f;
+	case BotSkill::Elite: return 900.0f;
+	default: return 720.0f;
+	}
+}
+
+void BotBrain::UpdateTurnCap(CPlayer& actor,float dt)
+{
+	if (m_now<m_testUntil) { m_lookValid=false; return; }
+	if (m_intent.aim.IsZero()) return; // No decided look point yet after start/revive.
+	const Vec3 eye=actor.GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
+	Vec3 want=m_intent.aim-eye;
+	const float dist=want.GetLength();
+	if (dist<0.2f) return;
+	want/=dist;
+	if (!m_lookValid) { m_lookDir=actor.GetViewRotation().GetColumn1().GetNormalizedSafe(want); m_lookValid=true; }
+	const float maxStep=DEG2RAD(TurnRate())*dt;
+	const float angle=acos_tpl(clamp_tpl(m_lookDir.Dot(want),-1.0f,1.0f));
+	if (angle<=maxStep) m_lookDir=want;
+	else
+	{
+		Vec3 axis=m_lookDir.Cross(want);
+		if (axis.GetLengthSquared()<1e-8f) axis=Vec3(0,0,1); // exactly behind: turn around the vertical
+		axis.Normalize();
+		m_lookDir=(Quat::CreateRotationAA(maxStep,axis)*m_lookDir).GetNormalizedSafe(want);
+	}
+	m_locomotion.Look(actor,eye+m_lookDir*max(2.0f,dist));
+}
+
+Vec3 BotBrain::CappedLook(CPlayer& actor) const
+{
+	if (!m_lookValid) {
+        const Vec3 eye=actor.GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
+        return eye+actor.GetViewRotation().GetColumn1()*max(2.0f,(m_intent.aim-eye).GetLength());
+    }
+	const Vec3 eye=actor.GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
+	return eye+m_lookDir*max(2.0f,(m_intent.aim-eye).GetLength());
+}
+
+// C-038 aim model (BotAimModel.h): flick to a new target with a Fitts-like duration and an end error, then track with
+// lag + partial lead, plus Ornstein-Uhlenbeck hand noise - instead of a low-pass filter plus fixed 2.7/1.9/1.3 Hz sines
+// (the "ellipse" the owner saw as aim wandering). Uses only the observed/cached aim point (no hidden query).
+Vec3 BotBrain::AimModelPoint(CPlayer& actor,const Vec3& observed,float distance,float dt)
+{
+	SMovementState movement; actor.GetMovementController()->GetMovementState(movement);
+	const Vec3 eye=movement.eyePosition;
+	const Vec3 d=observed-eye;
+	const float h=sqrtf(d.x*d.x+d.y*d.y);
+	const float yaw=RAD2DEG(atan2f(d.x,d.y)), pitch=RAD2DEG(atan2f(d.z,max(0.01f,h)));
+	if (!m_aimModelInit)
+	{
+		const int skill=m_profile.skill==BotSkill::Beginner?0:m_profile.skill==BotSkill::Veteran?2:m_profile.skill==BotSkill::Elite?3:1;
+		m_aimModel=BotAimModel(AimSkillPreset(skill),0x9E3779B9u*unsigned(m_number+1)+m_life);
+		const Vec3 v=movement.eyeDirection.GetNormalizedSafe(actor.GetEntity()->GetWorldRotation().GetColumn1());
+		m_aimModel.SetView(RAD2DEG(atan2f(v.x,v.y)),RAD2DEG(asin_tpl(clamp_tpl(v.z,-1.0f,1.0f))));
+		m_aimModelInit=true; m_aimModelTarget=0;
+	}
+	if (m_aimModelTarget!=m_combat.Target())
+	{
+		// New target: the flick starts from where the bot really looks now, not from a stale model view.
+		const Vec3 v=movement.eyeDirection.GetNormalizedSafe(actor.GetEntity()->GetWorldRotation().GetColumn1());
+		m_aimModel.SetView(RAD2DEG(atan2f(v.x,v.y)),RAD2DEG(asin_tpl(clamp_tpl(v.z,-1.0f,1.0f))));
+	}
+	AimInput in;
+	in.dt=max(0.02f,dt);
+	in.hasTarget=m_combat.Target()!=0;
+	in.targetId=int(m_combat.Target());
+	in.targetYaw=yaw; in.targetPitch=pitch;
+	if (m_aimModelTarget==m_combat.Target())
+	{
+		in.targetYawRate=BotAimModel::Wrap(yaw-m_prevTargetYaw)/in.dt;
+		in.targetPitchRate=(pitch-m_prevTargetPitch)/in.dt;
+	}
+	in.targetSizeDeg=RAD2DEG(atan2f(0.45f,max(1.0f,distance)));
+	m_aimModelTarget=m_combat.Target(); m_prevTargetYaw=yaw; m_prevTargetPitch=pitch;
+	const AimOutput o=m_aimModel.Update(in);
+	const float ry=DEG2RAD(o.yaw), rp=DEG2RAD(o.pitch);
+	return eye+Vec3(sinf(ry)*cosf(rp),cosf(ry)*cosf(rp),sinf(rp))*max(1.0f,d.GetLength());
+}
+
+// Roadmap 12 suit policy (BotSuitPolicy.h): one decision with priorities, energy hysteresis and a 1.5 s hold instead of
+// the last of ~25 scattered suitMode writes. BotSuit::Apply still enforces the native switch cooldown.
+void BotBrain::ApplySuitPolicy(CPlayer& actor)
+{
+	SuitInput in;
+	in.now=m_now;
+	in.energy=m_blackboard.energy;
+	in.health=m_blackboard.health;
+	in.airborne=!m_blackboard.grounded;
+	in.verticalSpeed=m_blackboard.velocity.z;
+	in.damagedRecently=m_blackboard.damagedUntil-m_now>2.4f;
+	in.enemyVisible=m_combat.Target() && m_combat.Visible();
+	in.enemyKnownHidden=m_combat.Target() && !m_combat.Visible();
+	in.enemyDistance=m_combat.Target() ? (m_combat.LastPosition()-actor.GetEntity()->GetWorldPos()).GetLength() : 1e9f;
+	in.wantStrengthJump=m_intent.jump==BotJump::Strength;
+	in.moving=m_intent.move;
+	float travel=(m_intent.destination-actor.GetEntity()->GetWorldPos()).GetLength();
+	for (size_t i=m_pathIndex; i+1<m_path.size(); ++i) travel+=(m_path[i+1]-m_path[i]).GetLength();
+	in.travelDistance=travel;
+	in.firing=m_intent.combat==BotCombatIntent::Fire;
+	in.stealthStyle=m_profile.style==BotStyle::Flanker || m_profile.style==BotStyle::Hunter;
+	in.cloakAllowed=BotSuit::CloakEnabled();
+	in.canUseSpeed=m_profile.skill!=BotSkill::Beginner || m_profile.useSpeed;
+	const SuitDecision d=m_suitPolicy.Update(in);
+	switch (d.mode)
+	{
+	case SuitMode::Speed: m_intent.suitMode=NANOMODE_SPEED; break;
+	case SuitMode::Strength: m_intent.suitMode=NANOMODE_STRENGTH; break;
+	case SuitMode::Cloak: m_intent.suitMode=NANOMODE_CLOAK; break;
+	default: m_intent.suitMode=NANOMODE_DEFENSE; break;
+	}
+	if (d.mode!=SuitMode::Strength && m_intent.jump==BotJump::Strength) m_intent.jump=BotJump::Normal; // no energy for it
+	m_speedTravel=d.mode==SuitMode::Speed;
+}
+
+// C-032 goal arbiter (BotGoalArbiter.h): one decision per tick with commitment windows, so CHASING_ENEMY and
+// MOVING_TO_WEAPON no longer flip on instantaneous visibility (14.9 decision flips per bot-minute in the baseline demo).
+bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA)
+{
+	const Vec3 feet=actor.GetEntity()->GetWorldPos();
+	const bool hasPrimary=BotWeapons::HasPrimary(actor);
+	const bool ranked=BotConfig::Get().weaponRank==1;
+	if ((!hasPrimary || ranked) && m_now>=m_nextUpgradeSearch && !m_upgradeTarget)
+	{ m_upgradeTarget=UpgradeCandidate(actor,hasPrimary); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
+	if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor,m_upgradeTarget)) m_upgradeTarget=0;
+	IEntity* item=m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
+	ArbiterInput in;
+	in.now=m_now;
+	in.hasPrimary=hasPrimary;
+	in.enemyVisible=enemy && m_combat.Visible();
+	in.enemyDistance=enemy ? (m_combat.LastPosition()-feet).GetLength() : 1e9f;
+	in.lastSeenAge=(enemy && m_combat.LastSeen()>0) ? m_now-m_combat.LastSeen() : 1e9f;
+	in.engageRange=m_profile.engageRange;
+	in.damagedRecently=m_blackboard.damagedUntil-m_now>2.4f;
+	in.weaponGoalAvailable=item!=nullptr;
+	in.weaponGoalDistance=item ? (item->GetWorldPos()-feet).GetLength() : 1e9f;
+	in.weaponGoalValue=item ? FightValue(item->GetClass()->GetName(),20.0f) : 0.0f;
+	in.heldWeaponValue=BotWeapons::HeldValue(actor,20.0f);
+	const ArbiterDecision d=m_arbiter.Update(in);
+	if (d.switched)
+		WB_LOG(2,"[WarsBots] #%d ARBITER goal=%s reason=%s score=%.2f actor=%u.",m_number,GoalArbiter::GoalName(d.goal),
+			GoalArbiter::ReasonName(d.reason),d.score,actor.GetEntityId());
+	if (d.goal==ArbiterGoal::Weapon && item && UpdateUpgrade(bot,actor,enemy,decisionTime,socomQA,true)) return true;
+	if ((d.goal==ArbiterGoal::Fight || d.goal==ArbiterGoal::Hunt) && enemy) { UpdateCombat(bot,actor,decisionTime); return true; }
+	// Goal without an executable target this tick (item gone, target forgotten): the old order decides.
+	if (enemy) { UpdateCombat(bot,actor,decisionTime); return true; }
+	UpdateRoam(bot,actor,decisionTime);
+	return true;
+}
+
 void BotBrain::AbilityCommand(BotInstance& bot, IConsoleCmdArgs* args)
 {
 	const char* command=args->GetArg(0);

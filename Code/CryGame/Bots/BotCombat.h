@@ -2,6 +2,7 @@
 #include "CryCommon/CryMath/Cry_Math.h"
 #include "CryCommon/CryEntitySystem/IEntity.h"
 #include "CryGame/Bots/BotProfile.h"
+#include "CryGame/Bots/BotPerception.h"
 class CActor;
 struct IActor;
 namespace WarsBots
@@ -9,7 +10,7 @@ namespace WarsBots
 class BotCombat
 {
 public:
-	void Configure(const BotProfile& profile) { m_profile = profile; m_burst = profile.burst; m_burstGap = profile.burstGap; }
+	void Configure(const BotProfile& profile) { m_profile = profile; m_burst = profile.burst; m_burstGap = profile.burstGap; m_perception.SetReactionTime(profile.reaction); }
 	void Reset();
 	void StopFire();
 	void NotifyDamage(EntityId shooter, float now) { m_retaliator=shooter; m_retaliatorUntil=now+3.0f; }
@@ -29,6 +30,10 @@ public:
 	const Vec3& LastPosition() const { return m_lastPosition; }
 	const Vec3& LastAim() const { return m_lastAim; }
 	float SampleTime() const { return m_sampleTime; }
+	float LastSeen() const { return m_lastSeen; } // last time the target was visible (0 = never)
+	// C-037 hearing (wb_bot_perception=1): closest enemy heard (gunshot <= 60 m, Speed sprint <= 12 m) but not seen.
+	bool Heard(float now, float maxAge, Vec3& pos) const
+	{ if (m_heardAt>0 && now-m_heardAt<=maxAge) { pos=m_heardPos; return true; } return false; }
 	// Last Attack had LOS from the eyes but the barrel was blocked by cover.
 	bool ShotBlocked() const { return m_shotBlocked; }
 	// Profiling counters across all bots (main thread only), reset on read.
@@ -36,6 +41,7 @@ public:
 	static unsigned TakeScanCount();
 private:
 	BotProfile m_profile;
+	BotPerception m_perception; // C-037, used only with wb_bot_perception=1
     bool m_preferHead=false;
     float m_nextAimChoice=0;
 	EntityId m_retaliator=0, m_avoid=0;
@@ -50,6 +56,8 @@ private:
 	EntityId m_target = 0;
 	EntityId m_firingWeapon = 0;
 	float m_lastSeen = 0;
+	Vec3 m_heardPos = Vec3(0,0,0);
+	float m_heardAt = 0;
 	float m_nextBurst = 0;
 	float m_burstEnd = 0;
 	float m_burst = 0.2f, m_burstGap = 0.65f;

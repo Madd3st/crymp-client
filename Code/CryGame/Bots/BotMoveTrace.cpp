@@ -13,7 +13,7 @@ void BotMoveTrace::Update(IGameFramework* framework,const BotManager& manager)
 {
  const int& flag=BotConfig::Get().moveTrace;
  CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
- const bool enabled=flag==1 && framework && rules &&
+ const bool enabled=(flag==1 || flag==2) && framework && rules &&
   !std::strcmp(rules->GetEntity()->GetClass()->GetName(),"InstantAction") &&
   (gEnv->bServer?manager.CanRunLocalIA():gEnv->bMultiplayer);
  if(!enabled){if(m_clock.active)Reset();return;}
@@ -25,7 +25,17 @@ void BotMoveTrace::Update(IGameFramework* framework,const BotManager& manager)
    const bool bot=manager.Find(player->GetEntityId())!=nullptr;
    if(bot || player->GetChannelId()>0)Visit(*player,bot,due,now);
   }
- }else if(CPlayer* player=CPlayer::FromIActor(framework->GetClientActor()))Visit(*player,false,due,now);
+ }else {
+  if(CPlayer* player=CPlayer::FromIActor(framework->GetClientActor()))Visit(*player,false,due,now);
+  if(flag==2){
+   // Spawn metadata identifies remote WarsBots; never infer ownership from an EntityId/name.
+   IActorIteratorPtr actors=framework->GetIActorSystem()->CreateActorIterator();
+   while(IActor* actor=actors->Next()){
+    CPlayer* player=CPlayer::FromIActor(actor);
+    if(player && !player->IsClient() && player->IsWarsBotActor())Visit(*player,true,true,now);
+   }
+  }
+ }
  for(auto it=m_records.begin();it!=m_records.end();)if(it->second.seen!=m_frame)it=m_records.erase(it);else ++it;
 }
 void BotMoveTrace::Visit(CPlayer& actor,bool bot,bool due,float now)
@@ -49,11 +59,14 @@ void BotMoveTrace::Visit(CPlayer& actor,bool bot,bool due,float now)
   pe_status_living living;if(physics->GetStatus(&living))flying=living.bFlying?1:0;
  }
  CNanoSuit* suit=actor.GetNanoSuit();const BotMoveTraceState& state=record.state;
- WB_LOG(2,"[WarsBots] MOVE TRACE actor=%u kind=%s side=%s local=%d t=%.3f sampleDt=%.3f pos=(%.3f,%.3f,%.3f) vel=(%.3f,%.3f,%.3f) speed=%.3f vz=%.3f mode=%d energy=%.1f sprint=%d grounded=%d flying=%d jump=%d land=%d takeoffs=%u jumpEdges=%u landEdges=%u jumpTime=%.3f landTime=%.3f peakZ=%.3f health=%d",
+ const Vec3 view=actor.GetViewRotation().GetColumn1();
+ const float yaw=RAD2DEG(atan2f(view.x,view.y));
+ const float pitch=RAD2DEG(atan2f(view.z,sqrtf(view.x*view.x+view.y*view.y)));
+ WB_LOG(2,"[WarsBots] MOVE TRACE actor=%u kind=%s side=%s local=%d t=%.3f sampleDt=%.3f pos=(%.3f,%.3f,%.3f) vel=(%.3f,%.3f,%.3f) speed=%.3f vz=%.3f mode=%d energy=%.1f sprint=%d grounded=%d flying=%d jump=%d land=%d takeoffs=%u jumpEdges=%u landEdges=%u jumpTime=%.3f landTime=%.3f peakZ=%.3f health=%d frame=%u yaw=%.3f pitch=%.3f remote=%d source=PostUpdate_entity_view",
   id,bot?"bot":"human",gEnv->bServer?"server":"client",actor.IsClient()?1:0,now,record.logged<0?0:now-record.logged,
   pos.x,pos.y,pos.z,velocity.x,velocity.y,velocity.z,velocity.GetLength2D(),velocity.z,
   suit?suit->GetMode():-1,suit?suit->GetSuitEnergy():-1.f,actor.IsSprinting()?1:0,ground?1:0,flying,stats.jumped?1:0,stats.landed?1:0,
-  state.takeoffs,state.jumpEdges,state.landEdges,state.jumpTime,state.landTime,state.peakZ,actor.GetHealth());
+  state.takeoffs,state.jumpEdges,state.landEdges,state.jumpTime,state.landTime,state.peakZ,actor.GetHealth(),m_frame,yaw,pitch,(!gEnv->bServer && bot && !actor.IsClient())?1:0);
  record.logged=now;record.state.Consumed(pos.z);++m_lines;
 }
 }

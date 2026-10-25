@@ -6,6 +6,12 @@
 #include <vector>
 #include "CryGame/Bots/BotProgress.h"
 #include "CryGame/Bots/BotTrapWatchdog.h"
+#include "CryGame/Bots/BotLookPolicy.h"
+#include "CryGame/Bots/BotGoalArbiter.h"
+#include "CryGame/Bots/BotAimModel.h"
+#include "CryGame/Bots/BotSuitPolicy.h"
+#include "CryGame/Bots/BotJumpLink.h"
+#include "CryGame/Bots/BotNavMeshCore.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 struct IActor;
@@ -39,12 +45,13 @@ public:
     const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
 
 private:
+    unsigned m_lookDiagnostics=0;float m_nextLookDiagnostic=0; // <=128 rows per instance, opt-in MOVE TRACE only
 	void Change(State state,bool initialize=false);
     void UpdateTelemetry(CPlayer& actor);
     bool UpdateDead(BotInstance& bot,CPlayer& actor,float dt);
     bool UpdateTest(CPlayer& actor,float decisionTime);
     bool UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA);
-    bool UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA);
+    bool UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force=false);
     void UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime);
     void UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime);
     void UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange);
@@ -53,6 +60,26 @@ private:
 
 	void ResetLife();
 	void ExecuteIntent(CPlayer& actor, float dt);
+	// Sprint C-047 (all default OFF): C-033 look policy, C-044 turn cap, C-032 goal arbiter, C-022 weapon rank.
+	void ApplyLookPolicy(CPlayer& actor);
+	void UpdateTurnCap(CPlayer& actor, float dt);
+	Vec3 CappedLook(CPlayer& actor) const;
+	float TurnRate() const;
+	bool EyeRayClear(CPlayer& actor, const Vec3& from, const Vec3& to) const;
+	bool UpdateArbitrated(BotInstance& bot, CPlayer& actor, IActor* enemy, float decisionTime, bool socomQA);
+	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld);
+	BotLookPolicy m_look;
+	Vec3 m_lookDir = Vec3(0,1,0);
+	bool m_lookValid = false;
+	GoalArbiter m_arbiter;
+	float m_nextRangeSelect = 0;
+	BotSuitPolicy m_suitPolicy;
+	void ApplySuitPolicy(CPlayer& actor);
+	BotAimModel m_aimModel;
+	bool m_aimModelInit = false;
+	EntityId m_aimModelTarget = 0;
+	float m_prevTargetYaw = 0, m_prevTargetPitch = 0;
+	Vec3 AimModelPoint(CPlayer& actor, const Vec3& observed, float distance, float dt);
 	bool NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect=false);
 	BotProgress m_progress;
     bool RecoverTrap(CPlayer& actor);
@@ -86,7 +113,14 @@ private:
 	// Path following on the shared BotNav graph.
 	Vec3 Steer(const Vec3& feet, const Vec3& goal);
 	std::vector<Vec3> m_path;
+	bool m_meshPathActive = false; // m_path came from the Detour navmesh
 	size_t m_pathIndex = 0;
+	std::vector<NavPathLink> m_pathLinks; // C-036: links on m_path (corner = take-off index)
+	BotJumpLink m_link;
+	NavPathLink m_linkNow;
+	void ApplyLinkExecutor(CPlayer& actor);
+	const NavPathLink* LinkAtCorner(size_t corner) const
+	{ for (const NavPathLink& l : m_pathLinks) if (size_t(l.corner)==corner) return &l; return nullptr; }
 	Vec3 m_pathGoal = Vec3(0,0,0);
 	float m_nextRepath = 0, m_minRepath = 0;
 	// Movement abilities and weapon upgrades.

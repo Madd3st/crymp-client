@@ -8,6 +8,10 @@
 #include "CryGame/Game.h"
 #include "CryCommon/CryAction/IItemSystem.h"
 #include "CryCommon/CryAction/IWeapon.h"
+#include "CryGame/Bots/BotConfig.h"
+#include "CryGame/Bots/BotWeaponRank.h"
+#include "CryGame/Bots/BotNavMesh.h"
+#include "CryGame/Bots/BotNavMeshCore.h"
 
 namespace WarsBots
 {
@@ -85,6 +89,14 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
     const int from=nav.GoalFilterEnabled()?nav.NodeAt(origin):-1;
     unsigned rejected=0;int first=-1;EntityId firstItem=0;
     BotGoalProjection firstTrace;Vec3 firstGoal(0,0,0);
+	NavMeshCore* mesh = CurrentNavMesh();
+	const float meshFrom[3] = {origin.x, origin.y, origin.z};
+	float meshSnap[3];
+	if (mesh && !mesh->Project(meshFrom, meshSnap)) mesh = nullptr; // we stand off the mesh: no filtering, old behaviour
+	int meshRejected = 0;
+	HeldWeapon held[8]; int heldCount = 0;
+	const bool ranked = BotConfig::Get().weaponRank == 1;
+	if (ranked) heldCount = Held(actor, held, 8);
 	SEntityProximityQuery query;
 	query.box = AABB(origin - Vec3(radius, radius, 12.0f), origin + Vec3(radius, radius, 12.0f));
 	gEnv->pEntitySystem->QueryProximity(query);
@@ -101,15 +113,28 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 		IItem* item = Items()->GetItem(entity->GetId());
 		if (Suitable(item) && (!primaryOnly || IsPrimary(item)) && !item->GetOwnerId() && static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId()))
 		{
+            if (mesh) // P0: no walk path on the navmesh (roof/catwalk without stairs) -> do not even try
+            {
+                const Vec3 w=entity->GetWorldPos(); const float q[3]={w.x,w.y,w.z};
+                if (!mesh->Reachable(meshFrom,q)) { ++meshRejected; continue; }
+            }
             BotGoalProjection trace;
             if(nav.KnownUnreachable(from,entity->GetWorldPos(),trace)) {++rejected;if(first<0){first=trace.to;firstItem=entity->GetId();firstTrace=trace;firstGoal=entity->GetWorldPos();}continue;}
 			// Prefer a different class, but keep travel cost significant. Stable within a life.
 			unsigned hash = entity->GetId()*1664525u + life*1013904223u;
 			hash ^= hash >> 16;
 			float score = sqrtf(distance) + (entity->GetClass()==previousClass ? 6.0f : 0.0f) + (hash%1000)*0.005f;
+			if (ranked)
+			{
+				// C-022: value of this pickup over what we hold, traded against the walk (BotWeaponRank.h).
+				const float value = PickupValue(entity->GetClass()->GetName(), held, heldCount);
+				if (value <= 0.01f) continue; // not worth a detour (e.g. another SMG while holding a SCAR)
+				score = PickupCost(sqrtf(distance), value) + (hash%1000)*0.005f;
+			}
 			if (score < best) { best = score; result = entity->GetId(); }
 		}
 	}
+    if(meshRejected) WB_LOG(2,"[WarsBots] GOAL SKIP navmesh kind=weapon actor=%u skipped=%d.",actor.GetEntityId(),meshRejected);
     if(rejected) WB_LOG(2,"[WarsBots] GOAL SKIP unreachable kind=weapon actor=%u id=%u fromScc=%d toScc=%d skipped=%u goal=(%.3f,%.3f,%.3f) toNode=%d toZ=%.3f candidates=%d reachableCandidates=%d",actor.GetEntityId(),firstItem,nav.Component(from),nav.Component(first),rejected,firstGoal.x,firstGoal.y,firstGoal.z,firstTrace.to,firstTrace.toZ,firstTrace.candidates,firstTrace.reachableCandidates);
 	return result;
 }
@@ -136,6 +161,7 @@ bool BotWeapons::PickUp(CActor& actor, EntityId id)
     // Bots use IItem::PickUp directly, bypassing CActor's eGE_ItemPickedUp wrapper.
     if(acquired)g_pGame->GetBotManager().Demo().Pickup(actor.GetEntityId(),id);
 	// Switch to what we just picked up (SelectAvailable prefers primaries anyway).
+	if (acquired && BotConfig::Get().weaponRank == 1) SelectForRange(actor, 20.0f); // C-022: best primary, not the first one
 	return acquired && SelectAvailable(actor);
 }
 
@@ -158,6 +184,53 @@ bool BotWeapons::GiveTestSCAR(CActor& actor)
 	WB_LOG(2, "[WarsBots] TEST GRANT SCAR actor=%u item=%u clip=%d reserve=180 (not a map pickup).",
 		actor.GetEntityId(), id, mode->GetAmmoCount());
 	return Current(actor) != nullptr;
+}
+
+int BotWeapons::Held(CActor& actor, HeldWeapon* out, int max, EntityId* ids)
+{
+	auto* inventory = actor.GetInventory();
+	if (!inventory) return 0;
+	int n = 0;
+	for (int i = 0; i < inventory->GetCount() && n < max; ++i)
+	{
+		IItem* item = Items()->GetItem(inventory->GetItem(i));
+		if (!Suitable(item)) continue;
+		out[n].cls = item->GetEntity()->GetClass()->GetName();
+		out[n].hasAmmo = HasAmmunition(actor, *item->GetIWeapon());
+		if (ids) ids[n] = item->GetEntityId();
+		++n;
+	}
+	return n;
+}
+
+float BotWeapons::HeldValue(CActor& actor, float distance)
+{
+	HeldWeapon held[8]; const int n = Held(actor, held, 8);
+	float best = 0.f;
+	for (int i = 0; i < n; ++i) best = max(best, FightValue(held[i].cls, distance, held[i].hasAmmo));
+	return best;
+}
+
+bool BotWeapons::SelectForRange(CActor& actor, float distance)
+{
+	// C-022: among primaries with ammunition pick the best for this distance; the pistol stays a fallback that
+	// SelectAvailable already handles, so the two never fight over the current item.
+	HeldWeapon held[8]; EntityId ids[8]; const int n = Held(actor, held, 8, ids);
+	HeldWeapon primary[8]; EntityId primaryIds[8]; int m = 0, current = -1;
+	IItem* currentItem = actor.GetCurrentItem();
+	for (int i = 0; i < n; ++i)
+	{
+		if (!held[i].hasAmmo || !strcmp(held[i].cls, "SOCOM")) continue;
+		if (currentItem && currentItem->GetEntityId() == ids[i]) current = m;
+		primary[m] = held[i]; primaryIds[m] = ids[i]; ++m;
+	}
+	const int best = BestToHold(primary, m, distance, current);
+	if (best < 0 || best == current) return false;
+	IItem* item = Items()->GetItem(primaryIds[best]);
+	if (!item || !item->CanSelect()) return false;
+	Items()->SetActorItem(&actor, primaryIds[best], false);
+	WB_LOG(2, "[WarsBots] WEAPON RANK actor=%u select=%s distance=%.1f.", actor.GetEntityId(), primary[best].cls, distance);
+	return true;
 }
 
 bool BotWeapons::ReloadIfNeeded(CActor& actor, IWeapon& weapon)

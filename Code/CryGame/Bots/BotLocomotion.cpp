@@ -111,7 +111,7 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 		else if (now<state.nextJump) Refused(actor,"jump_cooldown",now);
 		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<(pace?70.f:90.f))) Refused(actor,"jump_strength_mode_or_energy",now);
 		else if (!strength && state.mode==NANOMODE_STRENGTH) Refused(actor,"normal_jump_waiting_for_defense",now);
-		else if (!JumpSpace(actor,direction,intent.move,strength)) Refused(actor,"jump_clearance_or_landing",now);
+		else if (!intent.linkJump && !JumpSpace(actor,direction,intent.move,strength)) Refused(actor,"jump_clearance_or_landing",now);
 		else
 		{
 			jump=true; m_pending=true; m_strength=strength; m_requested=now;
@@ -129,7 +129,7 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
     if(intent.move){
         const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(intent.stance):2.5f);
         const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
-        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo);
+        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo,intent.meshPath);
     }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
 	state.blocked=intent.move && !accepted;
 	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,intent.stance);
@@ -139,4 +139,5 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 	actor.GetMovementController()->RequestMovement(request);
 	return accepted;
 }
+void BotLocomotion::Look(CPlayer& actor, const Vec3& target) { m_movement.Look(actor, target); }
 }

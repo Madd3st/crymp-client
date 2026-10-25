@@ -39,7 +39,20 @@ void BotMovement::Aim(CActor& actor, const Vec3& target)
 	}
 }
 
-bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe) const
+void BotMovement::Look(CActor& actor, const Vec3& target)
+{
+	static_cast<CPlayer&>(actor).SetWarsBotAim(target);
+	if (auto* controller = actor.GetMovementController())
+	{
+		CMovementRequest request;
+		request.SetLookTarget(target);
+		request.SetAimTarget(target);
+		request.SetFireTarget(target);
+		controller->RequestMovement(request);
+	}
+}
+
+bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided) const
 {
 	if (!gEnv->pPhysicalWorld || !actor.GetEntity()->GetPhysics())
 		return false;
@@ -49,9 +62,11 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe) co
 	ray_hit hit;
 	const unsigned flags = rwi_stop_at_pierceable | rwi_colltype_any;
 	// Three parallel body-width rays prevent a shoulder clipping a corner.
+	// P0 (C-055 stalls, X-049): on a Detour corner path the knee ray at 0.4 m hits stair risers 1-1.5 m ahead and
+	// declared the stairs a wall (level-4 traps on Steelmill stairs at z 142-144). The mesh already proved the slope/step.
 	for (float side : {-0.3f,0.0f,0.3f})
 	for (float height : {0.4f,1.1f,1.6f})
-		if (gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), direction * probe,
+		if (!(meshGuided && height < 1.0f) && gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), direction * probe,
 			ent_all, flags, &hit, 1, actor.GetEntity()->GetPhysics(), heldPhysics))
 			return false;
 	// Stop at real cliffs only: drops up to ~3 m are taken (Armor absorbs the landing, see BotBrain).
@@ -60,7 +75,7 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe) co
 		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
 }
 
-bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo)
+bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided)
 {
 	auto* controller = actor.GetMovementController();
 	if (!controller) return false;
@@ -89,7 +104,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 		m_sampleTime = 0;
 	}
 	m_avoidTime = max(0.0f, m_avoidTime - dt);
-	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe));
+	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided));
 	m_turned = false;
 	if (!safe)
 	{
@@ -97,7 +112,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 		for (float angle : {m_side * 0.8f, -m_side * 0.8f, m_side * 1.57f, -m_side * 1.57f, m_side * 2.36f, -m_side * 2.36f, 3.14159f})
 		{
 			Vec3 candidate = Quat::CreateRotationZ(angle) * direction;
-			if (SafeStep(actor, candidate, probe)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
+			if (SafeStep(actor, candidate, probe, meshGuided)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
 		}
 	}
 	if (!safe) { Stop(actor); Aim(actor, lookAt); return false; }
