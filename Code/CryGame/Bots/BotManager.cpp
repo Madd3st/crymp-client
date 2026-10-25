@@ -553,7 +553,12 @@ void BotManager::WatchCommand(IConsoleCmdArgs* args)
         if (!ParseInt(op,number) || number<1 || number>kHardLimit)
         { WB_LOG(0,"[WarsBots] Usage: wb_watch list|1..16|next|prev|status|off"); return; }
         char name[32];std::snprintf(name,sizeof(name),"WarsBot_%02d",number);
-        for (EntityId id:ids) if (!std::strcmp(gEnv->pEntitySystem->GetEntity(id)->GetName(),name)) target=id;
+        const size_t len=std::strlen(name); // names may carry " [Skill/Style]" (wb_bot_name_profile)
+        for (EntityId id:ids)
+        {
+            const char* n=gEnv->pEntitySystem->GetEntity(id)->GetName();
+            if (!std::strncmp(n,name,len) && (n[len]==0 || n[len]==' ')) target=id;
+        }
     }
     if (!target) { WB_LOG(0,"[WarsBots] WATCH no eligible live bot."); return; }
     rules->ChangeSpectatorMode(viewer,CActor::eASM_Follow,target,false); // Existing validated real-observer RMI.

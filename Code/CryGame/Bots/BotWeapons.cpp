@@ -12,6 +12,8 @@
 #include "CryGame/Bots/BotWeaponRank.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotWeaponHandling.h"
+#include "CryGame/Items/Weapons/Weapon.h"
 
 namespace WarsBots
 {
@@ -244,5 +246,30 @@ bool BotWeapons::ReloadIfNeeded(CActor& actor, IWeapon& weapon)
 		return true;
 	}
 	return false;
+}
+
+void BotWeapons::Handle(CActor& actor, float targetDistance, bool cloaked)
+{
+	IItem* item=actor.GetCurrentItem();
+	IWeapon* weapon=item ? item->GetIWeapon() : nullptr;
+	if (!weapon) return;
+	CWeapon* w=static_cast<CWeapon*>(weapon);
+	const char* cls=item->GetEntity()->GetClass()->GetName();
+	if (w->IsLamAttached())
+	{
+		const bool want=WantLaser(cloaked);
+		if (w->IsLamLaserActivated()!=want) w->ActivateLamLaser(want,true); // aiRequest: owner is not a player
+	}
+	static EntityId s_logged[64]={}; static unsigned s_next=0;   // one diagnostic line per weapon entity
+	bool seen=false; for (EntityId id:s_logged) seen|=id==item->GetEntityId();
+	if (!seen)
+	{
+		s_logged[s_next++%64]=item->GetEntityId();
+		WB_LOG(2,"[WarsBots] WEAPON HANDLING actor=%u weapon=%s lam=%d zoomDistance=%.0f.",actor.GetEntityId(),cls,w->IsLamAttached()?1:0,ZoomDistance(cls));
+	}
+	const bool zoomed=weapon->IsZoomed();
+	const bool want=WantZoom(cls,targetDistance,zoomed || weapon->IsZooming());
+	if (want && !zoomed && !weapon->IsZooming() && weapon->CanZoom()) weapon->StartZoom(actor.GetEntityId(),1);
+	else if (!want && (zoomed || weapon->IsZooming())) weapon->StopZoom(actor.GetEntityId());
 }
 }

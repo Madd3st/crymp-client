@@ -22,7 +22,17 @@ namespace WarsBots
 BotInstance::BotInstance(BotManager& owner, int number, const BotProfile& profile)
 	: m_owner(owner), m_number(number), m_profile(profile)
 {
-	_snprintf(m_name, sizeof(m_name) - 1, "WarsBot_%02d", number);
+	if (BotConfig::Get().nameProfile == 1)
+	{
+		// owner 25.10: the level of play shows at a glance, e.g. "WarsBot_02 [Normal/Assault]"
+		char skill[16], style[16];
+		_snprintf(skill, sizeof(skill) - 1, "%s", BotProfile::SkillName(profile.skill)); skill[sizeof(skill) - 1] = 0;
+		_snprintf(style, sizeof(style) - 1, "%s", BotProfile::StyleName(profile.style)); style[sizeof(style) - 1] = 0;
+		if (skill[0] >= 'a' && skill[0] <= 'z') skill[0] = char(skill[0] - 32);
+		if (style[0] >= 'a' && style[0] <= 'z') style[0] = char(style[0] - 32);
+		_snprintf(m_name, sizeof(m_name) - 1, "WarsBot_%02d [%s/%s]", number, skill, style);
+	}
+	else _snprintf(m_name, sizeof(m_name) - 1, "WarsBot_%02d", number);
 	m_brain.Configure(profile, number);
 }
 

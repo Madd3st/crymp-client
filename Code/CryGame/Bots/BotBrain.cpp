@@ -802,6 +802,13 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 		if (target) m_combat.Attack(actor,*target,m_now,m_verbose); else m_combat.StopFire();
 }
 	else m_combat.StopFire();
+	if (BotConfig::Get().weaponHandling==1)
+	{
+		// owner 25.10: laser on (off in cloak), zoom only while fighting a seen target far away
+		const bool fighting=m_intent.combat!=BotCombatIntent::None && m_combat.Target() && m_combat.Visible();
+		const float dist=fighting ? (m_combat.LastPosition()-m_blackboard.position).GetLength() : -1.0f;
+		BotWeapons::Handle(actor,dist,m_blackboard.suitActive && m_blackboard.mode==NANOMODE_CLOAK);
+	}
 }
 // ---------------------------------------------------------------------------------------------- C-036 links
 // Takes over at a link take-off corner of a Detour path and runs BotJumpLink until landing; a failed link is banned.

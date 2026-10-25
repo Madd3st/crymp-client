@@ -648,6 +648,9 @@ public:
 	float m_warsBotSpeed = 0;
 	// O-025: client replica filters the 10 Hz direction/aim steps (wb_bot_client_smooth, default OFF).
 	WarsBots::BotReplicaSmooth m_warsBotSmooth;
+	// owner 25.10: held-weapon clip/reserve for spectators (native ammo goes only to the owning client; bots have none)
+	uint16 m_warsBotClip = 0, m_warsBotReserve = 0;
+	void SyncWarsBotAmmo(bool apply);
 	Vec3 WarsBotViewAim() const; // smoothed aim on a client replica when enabled, else the replicated aim
 #endif
 	virtual Ang3 GetAngles();

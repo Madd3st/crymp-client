@@ -27,5 +27,8 @@ struct BotWeapons
 	static int Held(CActor& actor, HeldWeapon* out, int max, EntityId* ids = nullptr);
 	static float HeldValue(CActor& actor, float distance);
 	static bool SelectForRange(CActor& actor, float distance);
+	// Owner playtest 25.10 (wb_bot_weapon_handling): LAM laser on unless cloaked, zoom for distant targets
+	// (BotWeaponHandling.h). targetDistance < 0 = no target to shoot at.
+	static void Handle(CActor& actor, float targetDistance, bool cloaked);
 };
 }
