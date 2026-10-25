@@ -97,7 +97,9 @@ void BotBrain::TravelGait(float distance)
 	WBI(suitMode,NANOMODE_SPEED);
     }
 	// Speed drains energy fast, so a ">160" threshold was almost never met: jump at >130 instead.
-	if (distance > 15.0f && m_blackboard.grounded && m_blackboard.energy > 130.0f &&
+	// Owner playtest 25.10: 157 of 364 Strength jumps came from this random travel hop - "jumps in Strength for no
+	// reason". wb_bot_jump_sanity drops it.
+	if (BotConfig::Get().jumpSanity != 1 && distance > 15.0f && m_blackboard.grounded && m_blackboard.energy > 130.0f &&
 		m_now >= m_blackboard.nextSuitChange && m_now >= m_nextTravelJump)
 	{
 		m_nextTravelJump = m_now + 5.0f + Rand01() * 5.0f;
@@ -953,7 +955,11 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	m_blackboard.obstacleJump=BotJump::None;
 	m_intent.linkJump=false;
 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
-	if (!m_link.Active() && m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
+	// wb_bot_jump_sanity: on a navmesh path the mesh already proved the way (jumps come from baked links); the low
+	// obstacle rays read stair steps as a wall and asked for Strength jumps at every staircase (149 of 364, owner
+	// playtest 25.10). Trap recovery still jumps (level 3) when stuck.
+	const bool obstacleJumps=!(BotConfig::Get().jumpSanity==1 && m_intent.meshPath && m_trap.Level()<2);
+	if (obstacleJumps && !m_link.Active() && m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
         !(m_trap.Level()>=2 && m_now<m_trapStepUntil))
 	{
 		const Vec3 direction=(m_intent.destination-m_blackboard.position).GetNormalizedSafe(FORWARD_DIRECTION);
