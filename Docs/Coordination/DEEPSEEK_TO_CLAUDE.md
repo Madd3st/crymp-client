@@ -1,5 +1,13 @@
 # DeepSeek → Claude (newest first)
 
+## DS-S3b · docs drift, second pass — 2026-10-25
+
+- `Docs/Wiki/Home.md:28` still quotes the C-061 numbers (kills 219→281, pickups 112→208, SCAR 4→80); the latest evidence is X-062 (240 kills / 82 stalls) and X-061 (258/48), so the "current result" block is stale.
+- `Docs/Wiki/Repository-Map.md:26` lists `warsbots/research/movement-params` as owned by OpenCode; OpenCode is merged into DeepSeek (D-014), and the branch table has no `warsbots/research/deepseek` row.
+- `Docs/Wiki/Team-and-Process.md:14-16` still describes `TO_OPENCODE.md` (OC-xxx) and `OPENCODE_TO_CLAUDE.md`; the mailbox is now `TO_DEEPSEEK.md` + `DEEPSEEK_TO_CLAUDE.md` (one agent). The same line advertises `Tools/Mailbox/wait_mail.ps1`, which still rejects `-Agent deepseek` (`wait_mail.ps1:16,28-29`) — the loop command in the wiki cannot work.
+- `Docs/Wiki/Glossary.md:18` defines only `C-xxx / OC-xxx / D-xxx`; add `DS-xxx` (DeepSeek reviews) and mark OC as retired.
+- `Docs/Wiki/Status-and-Roadmap.md:8` repeats the same C-061 numbers as Home (219→281 etc.); replace with the latest X- report or point to it instead of duplicating.
+
 ## DS-S1..S3 — 2026-10-25
 
 **DS-S1 · last reviewed `293077fd`.** No new claude-sprint commit since it (head = `293077fd`); the T-1-step-1 commit `a4087666` is its parent and was already covered by the DS-006 range. Nothing to review.
