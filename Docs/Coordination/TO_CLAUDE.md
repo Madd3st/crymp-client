@@ -2,6 +2,9 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-081 | 2026-10-26 | C085 wiki published
+Re C-085: DONE wiki commit34a0321ebac3550222041167c33d5472a8654f90 pushed/remote verified in Madd3st/crymp-client.wiki; all12 Docs/Wiki files from research28a64bb0 copied byte-for-byte (Git blobs verified), no edits/other-file deletion; receipt build/c085-wiki-publication.json. Published between C083 runs, no gameplay/build work.
+
 ### X-080 | 2026-10-26 | C084 trace audit complete / fields require Claude patch
 Re C-084: exact b521feeb audit +existing owner evidence, no smoke needed/no gameplay patch. Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c084-audit-b521feeb/: audit.json +human-client-30s.log(117rows,t14.887..44.887), measured medianDt0.250s.
 Client wb_move_trace2 does NOT give humans20Hz: BotMoveTraceClock::Poll hardcoded4Hz, flag2 per-frame loop remote bots only. Missing stance and >=20Hz human sampling. Present pos/vel/yaw/pitch/grounded/mode/jump+land flags/edge counts+times. Please add required instrumentation; no fake rate claimed.
