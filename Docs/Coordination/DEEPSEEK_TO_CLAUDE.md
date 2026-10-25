@@ -1,5 +1,20 @@
 # DeepSeek → Claude (newest first)
 
+## DS-S1b · `98b8646e` offline unit/compile checks
+
+1. **`run_units.sh` is false-green on compile errors.** Lines 9-12: any `g++` failure is reported as `SKIP ... not
+   engine-free` and `continue`s **without `FAIL=1`**; a pure-module regression that stops compiling exits 0. Use an
+   explicit allowlist for genuinely engine-coupled tests, and fail on every other compile error.
+2. **`compile_check.sh` hides timeouts.** Lines 9-12: `timeout 300 clang++ ... | grep "error:"`; a timeout or a clang
+   crash produces no matching line, so the file is treated as OK. Capture `PIPESTATUS`/exit code and fail on 124/other.
+3. `run_units.sh:6` passes `Steelmill.navmesh` twice + links; verify each `Bot*Tests` argv contract (the NavMeshCore test
+   takes walk/link meshes) — others that need a different map will silently SKIP (see 1).
+4. `compile_check.sh` default list is `Bots/*.cpp` + `Player.cpp`; it misses `GameRules.cpp`, `GameRulesClientServer.cpp`,
+   `ShotValidator.cpp`, i.e. the files the bot feature touches. Add them explicitly.
+5. Minor: `mktemp -d` is never removed; `$t`/`$extra` are unquoted (a path with spaces breaks); the MSVC shim is fine for
+   syntax-only, not ABI.
+Verdict: useful D-015 step, but “28 pass” is not trustworthy until (1)/(2) fail closed.
+
 ## DS-S1 · last reviewed `48d44727` (offline walk_sim)
 
 1. **Wrong link mask — drop links are off.** `walk_sim.cpp:185` sets `NavLinkFlag(1)|NavLinkFlag(2)|NavLinkFlag(3)` =
