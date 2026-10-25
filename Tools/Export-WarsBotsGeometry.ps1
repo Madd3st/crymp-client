@@ -6,6 +6,7 @@ param(
  [string[]]$Maps=@('Steelmill','Quarry','Armada','Outpost'),
  [ValidateSet('IA','PS')][string]$MapFamily='IA',
  [string]$OutputDirectory='',
+ [switch]$PlayAreaBox,
  [ValidateRange(1024,49151)][int]$Port=46060,
  [string]$Label=('C019-'+(Get-Date -Format yyyyMMdd-HHmmss)),
  [switch]$Resume
@@ -23,6 +24,8 @@ if((Test-Path $dest) -and -not $Resume){throw 'Use a fresh label or Resume exist
 New-Item -ItemType Directory -Force $dest|Out-Null
 $python=Join-Path $env:USERPROFILE '.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'
 $runs=@();$process=$null;$exportLogs=@()
+if($PlayAreaBox -and ($MapFamily -ne 'PS' -or -not $manifest.geometry_export_box)){throw 'PlayAreaBox requires a compatible bounded PS exporter'}
+$boxes=@{Shore='1431 1000 2591 2160';Plantation='602 867 1486 1751'}
 $rules=if($MapFamily -eq 'PS'){'PowerStruggle'}else{'InstantAction'}
 try{
  foreach($map in $Maps){
@@ -30,9 +33,10 @@ try{
   if($map -notin $allowed){throw 'Unsupported map family/name'}
   if(Get-Process CryMP-Server64,CryMP-Client64 -ErrorAction SilentlyContinue){throw 'Another session appeared; no process touched'}
   $obj=Join-Path $dest "$map.obj";$meta=Join-Path $dest "$map.geometry.json"
+  $regionArgs=if($PlayAreaBox){' '+$boxes[$map]}else{''}
   $log=Join-Path $env:LOCALAPPDATA "WarsBots/Logs/$Label-$map.log";$trace=$log -replace '\.log$','.bots.log';$exportLogs+=@($log,$trace)
   if(-not ($Resume -and (Test-Path $meta))){
-  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules $rules +wb_probe_local_test 1 +wb_debug 1 +map multiplayer/$($MapFamily.ToLowerInvariant())/$map +sv_gamerules +wb_geom_export `"$obj`""
+  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules $rules +wb_probe_local_test 1 +wb_debug 1 +map multiplayer/$($MapFamily.ToLowerInvariant())/$map +sv_gamerules +wb_geom_export `"$obj`"$regionArgs"
   Write-Host "EXPORT START $map sha=$($manifest.sha)"
   $process=Start-Process $exe -ArgumentList $args -WorkingDirectory $GameDirectory -WindowStyle Hidden -PassThru
   $end=[DateTime]::UtcNow.AddMinutes(5);$text=''
