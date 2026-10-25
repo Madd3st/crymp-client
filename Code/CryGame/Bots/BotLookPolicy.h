@@ -150,4 +150,25 @@ inline LookVec PathLookAhead(const LookVec& pos, const LookVec* pts, int n, floa
 	return pts[n - 1];
 }
 
+// C-055: Detour corners are string-pulled tight around wall corners, so a 3 m look-ahead around a turn can land behind
+// the wall (15-bot pair: wall stares x10). Pick the look-ahead only if the eye ray to it is clear; otherwise the next
+// corner (string pulling keeps it in sight); when that corner is closer than `turnNear`, the corner after it if clear.
+// `clear(from, to)` is the engine eye ray (true = unobstructed). At most two rays per call.
+template <class RayClear>
+inline LookVec VisibleLookAhead(const LookVec& eye, const LookVec& feet, const LookVec* pts, int n, RayClear clear,
+	float ahead = 3.f, float turnNear = 2.f, float eyeLift = 1.4f)
+{
+	if (n <= 0) return feet;
+	LookVec a = PathLookAhead(feet, pts, n, ahead); a.z += eyeLift;
+	if (clear(eye, a)) return a;
+	const float dx = pts[0].x - feet.x, dy = pts[0].y - feet.y;
+	if (n > 1 && dx * dx + dy * dy < turnNear * turnNear)
+	{
+		LookVec b = pts[1]; b.z += eyeLift;
+		if (clear(eye, b)) return b;
+	}
+	LookVec c = pts[0]; c.z += eyeLift;
+	return c;
+}
+
 } // namespace WarsBots

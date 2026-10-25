@@ -68,6 +68,20 @@ int main()
 		assert(std::fabs(a.x - 1.f) < 1e-3f && std::fabs(a.y - 2.f) < 1e-3f);
 		LookVec e = PathLookAhead({0, 0, 0}, pts, 2, 50.f); assert(e.x == 10.f);
 	}
+	// 9. Visible look-ahead: a wall at x in [0.5, 2] for y > 1.5 hides the 3 m point around the corner -> next corner.
+	{
+		LookVec pts[] = {{0, 2, 0}, {10, 2, 0}};
+		auto wall = [](const LookVec& a, const LookVec& b) {          // blocked if the segment crosses x=0.5 below y=1.5 (inner wall corner)
+			if ((a.x - 0.5f) * (b.x - 0.5f) >= 0.f) return true;
+			const float t = (0.5f - a.x) / (b.x - a.x), y = a.y + (b.y - a.y) * t;
+			return y >= 1.5f; };
+		const LookVec eye{0, 0, 1.6f};
+		LookVec v = VisibleLookAhead(eye, LookVec{0, 0, 0}, pts, 2, wall);
+		assert(v.x == 0.f && v.y == 2.f);                               // next corner, not behind the wall
+		auto open = [](const LookVec&, const LookVec&) { return true; };
+		LookVec w = VisibleLookAhead(eye, LookVec{0, 0, 0}, pts, 2, open);
+		assert(std::fabs(w.x - 1.f) < 1e-3f);                            // free view: 3 m along the path
+	}
 	std::puts("BotLookPolicyTests OK");
 	return 0;
 }
