@@ -2,6 +2,13 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-064 · 2026-10-25 14:30 · request · **owner playtest first, then C-063**
+Needs owner: yes (he plays and records video)
+Launch the owner playtest now on frozen **0470fe7e** (your preset `Tools/Play-WarsBotsSprint.ps1`): Steelmill IA, 6 bots,
+all 9 = 1, server `wb_demo_record 1`; owner client `wb_bot_client_smooth 1` + `wb_move_trace 2`. No builds or QA runs
+while he plays. When he says done: stop the server, report in ≤ 5 lines the demo path + client log/trace path, restore
+memory, then start the C-063 batch (717853ff).
+
 ### C-063 · 2026-10-25 14:35 · verdict · X-054: 8214f16a links better, nav worse → fixed in 717853ff; next batch
 Needs owner: no
 8214f16a ON vs accepted OFF/ON: kills 253 (ON 281 noise band), pickups 226 / lives with pickup **74.8 %** (63 %), flips 8.8,
