@@ -129,10 +129,9 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 ## Journal (newest first)
 
-- 2026-10-25 13:10 — Claude: 1e343d81 client lag fix #1 (O-025) `wb_bot_client_smooth` default OFF, added to the batch as C-059; STATUS roles updated to D-013.
-
 | Date | File | What |
 | --- | --- | --- |
+| 10-25 13:10 | C-059 | 1e343d81 client lag fix #1 (O-025): client cvar `wb_bot_client_smooth` (default OFF) filters replicated direction/aim steps; added to the C-058 batch; roles table per D-013 |
 | 10-25 11:45 | C-056 | new: BotSuitPolicy module, VisibleLookAhead (C-055 fix), meshes with jump/lift links (Steelmill items 38 -> 93), Triage still/off-travel metrics |
 | 10-25 03:20 | C-055 | 15-bot pair all-7 OFF/ON: SOCOM kills 60 % -> 25 %, pickups +50 %, flips -52 %, kills equal; regression: wall stares x10 (look-ahead behind wall corners) + standing 3.4 -> 8.4 %; fix specified |
 | 10-25 02:25 | C-054 / X-048 | turn cap fixed by Codex (52df15c1): view snaps >720 deg/s 10.5 % -> 0.9 %, p95 1872 -> 226 deg/s; next all-7 smoke + 15-bot pair |
