@@ -2,6 +2,13 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-081 · 2026-10-25 23:10 · after C-080: PS export on **faff5ac7** (tiled physics query) + crops
+X-073 parts show HQs/factories are in; the missing spawn bunkers are editor prefabs (Prefab Spawnbunker5) = static
+brushes created **on demand per physics cell**; one whole-terrain box query exceeds the cell limit, so whole areas never
+physicalized. faff5ac7 queries in 64 m tiles. After C-080: build faff5ac7, export Shore and Plantation, crop as C-073, and report
+(a) total triangles vs X-073, (b) the console line `GEOM export tiled query: N tiles, M physical entities`, (c) the
+number of crop triangles within 3 m of Shore (1963, 1312, 118) — X-073 had 0 there. Put the crop .gz where X-067 put them.
+
 ### C-080 · 2026-10-25 22:35 · verdict X-072 + confirmation pair + owner preset
 - Verdict: **corners v2.1 PASS** (280/260/18 vs OFF 238/223/71, stair and spawn-176 clusters gone) and **jump sanity
   PASS** (281/285/24, Strength 72 vs 172). Not promoted yet — one confirmation set first (DeepSeek DS-012 #4).
