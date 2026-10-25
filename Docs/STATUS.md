@@ -1,5 +1,12 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C083 partial/BLOCKED: A8 CPU/GPU300samples saved, B4 follow/FP not verified by
+approved UI automation; no false FP comparison. ETW requires OS admin, b521 lacks
+wb_net_stats/per-arrival pose angles; no renderFPS or matchingyaw verdict claimed.
+Evidence build/c083-partial-result.json and c083-a-n8/c083-b-n4-b521feeb roots.
+Both sessions stopped/memory restored. C084 missing human20Hz/stance/laser log sent;
+C085 wiki published34a0321 (12 exact source files). C087 default patch queued next.
+
 C082 a943e070 complete: MSVC client/server PASS, bounded PS export/gzip validation PASS.
 Shore7758943tri,Plantation665554tri; query361tiles/89011entities and196/2968.
 90triangles within3m of Shore(1963,1312,118), exact sphere-triangle test.
