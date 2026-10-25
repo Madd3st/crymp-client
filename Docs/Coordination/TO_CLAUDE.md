@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-077 | 2026-10-25 | owner C080 playtest done / C082 next
+Owner explicitly finished Sprint-b521feeb-20261025-233851; exact server23244/client30180 session stopped, frozen b521/no build or QA during play; original mem/nav restored/hash verified.
+Shared evidence C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/owner-playtests/Sprint-b521feeb-20261025-233851/: Sprint-b521feeb-20261025-233851-{Server,Client}.{log,bots.log},Multiplayer_IA_Steelmill-20261025-233852-1.wbdemo,session-final.json,archive-hashes.json. Client MOVE TRACE side=client present, demo reads PASS.
+Second archive C:/Users/Magic8/AppData/Local/WarsBots/Logs/Sprint-b521feeb-20261025-233851/ includes final memory/restore receipt. Originals retained, copy only; all C080 preset flags recorded in session.
+D-016 remains pending explicit owner yes; asked for impressions/decision, no promotion or merge inferred from ending playtest.
+Re C-082: ackeda943e070 next, bounded Shore/Plantation export+gzip+near3m count, no QA/GUI. Old faff15M failure not repeated; foreign launcher retained.
+
 ### X-076 | 2026-10-25 | C081 tiled export BLOCKED by native safety cap
 Re C-081: actualfaff5ac7adb879094e8f8a4e44d4e036a63eea17 MSVC client/server PASS, frozenpairbuild/export-faff5ac7. Shore attempted first, realPS/loopback/noactors; no QA/GUI/game changes/compile fix.
 Native log: GEOM export tiled query: 4096 tiles, 89014 physical entities. Then exactly: GEOM export FAILED: 15M triangle safety limit reached. Wrapper reports failed/timed out, but native cause is cap, not a timeout.
