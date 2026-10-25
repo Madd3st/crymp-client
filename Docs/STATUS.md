@@ -1,5 +1,12 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C080 confirmation complete on frozenb521feeb: ON PASS282kills/291pickups/18stalls;
+OFF FAIL243/238/47. Both traps>=60s0/level4=0/frozenflags0/no crashes.
+Strength takeoffs58 vs245, recovery lines1 vs10; build/c080-comparison.json.
+Same build/roster/memory, fresh entropy per process (not fixed or matched RNG).
+Owner preset Tools/Play-WarsBotsC080.ps1 prepared on b521/8SkillMix; GUI not run.
+Mem/nav restored/hash verified, no games active; no merge/promotion pending verdict.
+
 C07917211645 export-only complete: MSVC client/server PASS, Shore OBJ format PASS,
 9081398tri/1232895492bytes, structures2 Factory, ps_bodies_added12.
 34PS entities with per-part diagnostics: build/c079-shore-17211645/.
