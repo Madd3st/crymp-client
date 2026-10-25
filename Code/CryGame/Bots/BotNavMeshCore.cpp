@@ -183,6 +183,52 @@ bool NavMeshCore::Project(const float* p, float* out, float side, float up, floa
 	return Nearest(p, out, side, up, down) != 0;
 }
 
+bool NavMeshCore::RayClear(const float* a, const float* b) const
+{
+	float snapped[3];
+	const dtPolyRef ref = (dtPolyRef)Nearest(a, snapped, 0.5f, 1.0f, 2.0f);
+	if (!ref) return false;
+	float s[3], e[3]; ToRecast(snapped, s); ToRecast(b, e);
+	float t = 0, normal[3]; dtPolyRef path[64]; int n = 0;
+	if (dtStatusFailed(m_query->raycast(ref, s, e, m_filter, &t, normal, path, &n, 64))) return false;
+	return t >= 1.0f;   // FLT_MAX when the ray reaches b without crossing a mesh edge
+}
+
+bool NavMeshCore::WallClearance(const float* p, float maxRadius, float& dist, float* dirXY) const
+{
+	dist = maxRadius; dirXY[0] = dirXY[1] = 0;
+	float snapped[3];
+	const dtPolyRef ref = (dtPolyRef)Nearest(p, snapped, 0.5f, 1.0f, 2.0f);
+	if (!ref) return false;
+	float c[3], hit[3], normal[3]; ToRecast(snapped, c);
+	float d = maxRadius;
+	if (dtStatusFailed(m_query->findDistanceToWall(ref, c, maxRadius, m_filter, &d, hit, normal))) return false;
+	dist = d;
+	if (d < maxRadius)
+	{
+		// Detour's normal points from the hit into the mesh (Recast frame); Crysis x = rx, y = -rz.
+		const float nx = normal[0], ny = -normal[2], len = sqrtf(nx * nx + ny * ny);
+		if (len > 1e-4f) { dirXY[0] = nx / len; dirXY[1] = ny / len; }
+	}
+	if (d < 0.02f && dirXY[0] == 0 && dirXY[1] == 0)
+	{
+		// p sits on the edge itself (path corners do): Detour's normal is undefined there. Average the directions
+		// of 16 probes 0.2 m away that stay on the mesh.
+		float sx = 0, sy = 0;
+		for (int i = 0; i < 16; ++i)
+		{
+			const float a = float(i) * 0.39269908f, dx = cosf(a), dy = sinf(a);
+			const float q[3] = {snapped[0] + dx * 0.2f, snapped[1] + dy * 0.2f, snapped[2]};
+			float s2[3];
+			if (Nearest(q, s2, 0.05f, 0.5f, 0.5f) && (s2[0] - q[0]) * (s2[0] - q[0]) + (s2[1] - q[1]) * (s2[1] - q[1]) < 0.0004f)
+				{ sx += dx; sy += dy; }
+		}
+		const float len = sqrtf(sx * sx + sy * sy);
+		if (len > 1e-3f) { dirXY[0] = sx / len; dirXY[1] = sy / len; }
+	}
+	return true;
+}
+
 bool NavMeshCore::Reachable(const float* start, const float* goal, float goalDown) const
 {
 	const unsigned long long a = Nearest(start, nullptr, 1.5f, 1.0f, 3.0f);

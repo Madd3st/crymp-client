@@ -131,7 +131,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		}
 		if (!found) m_pathLinks.clear();
 		if (!found && nav.Ready()) found = nav.FindPath(feet, goal, m_path, &trace);
-		m_pathIndex = 0;
+		m_pathIndex = 0; m_cornerFor = size_t(-1);
 		m_pathGoal = goal;
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
 		if (!found)
@@ -145,14 +145,33 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
 	m_intent.meshPath = m_meshPathActive; // stairs on the corner path are walkable (BotMovement knee ray off)
 	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
+	const bool corners = mesh && m_meshPathActive && BotConfig::Get().corners == 1;
 	while (m_pathIndex + 1 < m_path.size())
 	{
 		const Vec3& p = m_path[m_pathIndex];
 		if (m_meshPathActive && LinkAtCorner(m_pathIndex)) break; // a link take-off is passed only by the executor
-		if ((p - feet).GetLengthSquared2D() < 2.25f && fabs_tpl(p.z - feet.z) < 2.0f) ++m_pathIndex;
-		else break;
+		const float d2 = (p - feet).GetLengthSquared2D();
+		if (d2 >= 2.25f || fabs_tpl(p.z - feet.z) >= 2.0f) break;
+		if (corners && d2 > 0.09f)
+		{
+			// c068 trap: the stair-mouth corner was "reached" 0.6 m early and the bot walked straight at the next
+			// corner, into the railing end it was meant to go around. Pass early only with the next corner in reach.
+			const Vec3& q = m_path[m_pathIndex + 1];
+			const float a[3] = {feet.x, feet.y, feet.z}, b[3] = {q.x, q.y, q.z};
+			if (!mesh->RayClear(a, b)) break;
+		}
+		++m_pathIndex;
 	}
-	return m_path[m_pathIndex];
+	if (!corners || LinkAtCorner(m_pathIndex) || m_pathIndex + 1 >= m_path.size()) return m_path[m_pathIndex];
+	if (m_cornerFor != m_pathIndex)
+	{
+		m_cornerFor = m_pathIndex; m_cornerAdj = m_path[m_pathIndex];
+		const float c[3] = {m_cornerAdj.x, m_cornerAdj.y, m_cornerAdj.z};
+		float dist = 0, dir[2] = {0, 0};
+		const float want = 0.15f; // erosion 0.3 + 0.15 > capsule radius 0.4
+		if (mesh->WallClearance(c, want, dist, dir) && dist < want) { m_cornerAdj.x += dir[0] * (want - dist); m_cornerAdj.y += dir[1] * (want - dist); }
+	}
+	return m_cornerAdj;
 }
 
 void BotBrain::Configure(const BotProfile& profile, int number)
@@ -178,7 +197,7 @@ void BotBrain::ResetLife()
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
-	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
+	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
 	m_vantage.Reset(CurrentVantage(),m_number);
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005

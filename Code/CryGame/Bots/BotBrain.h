@@ -118,6 +118,7 @@ private:
 	std::vector<Vec3> m_path;
 	bool m_meshPathActive = false; // m_path came from the Detour navmesh
 	size_t m_pathIndex = 0;
+	size_t m_cornerFor = size_t(-1); Vec3 m_cornerAdj = Vec3(0, 0, 0); // wb_bot_corners: m_path[m_cornerFor] pushed off the wall
 	std::vector<NavPathLink> m_pathLinks; // C-036: links on m_path (corner = take-off index)
 	BotJumpLink m_link;
 	NavPathLink m_linkNow;

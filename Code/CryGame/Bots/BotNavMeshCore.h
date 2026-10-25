@@ -43,6 +43,15 @@ public:
 	// Nearest walkable point under/around p (Crysis frame): searches +-side m horizontally, `up` m above and
 	// `down` m below p. Returns false when nothing is in range.
 	bool Project(const float* p, float* out, float side = 1.5f, float up = 1.0f, float down = 3.0f) const;
+	// Distance from p (projected onto the mesh) to the nearest mesh edge within maxRadius, and the horizontal unit
+	// direction from that edge into the mesh (Crysis frame). The mesh is eroded by the bake radius (0.3 m) while the
+	// player capsule is 0.4 m, so paths that hug an edge rub walls; callers push corners inward by the difference.
+	// False when p is off the mesh. dist = maxRadius and dir = 0 when no edge is in range.
+	// Straight walk a -> b stays on the mesh (Detour raycast along the surface from a's poly). Used before skipping a
+	// path corner: a corner reached "within 1.5 m" is only passed when the next one is in straight reach, otherwise
+	// the bot cuts the turn into the wall the corner was going around.
+	bool RayClear(const float* a, const float* b) const;
+	bool WallClearance(const float* p, float maxRadius, float& dist, float* dirXY) const;
 	// Corner path start -> goal, excluding start (like BotNav::FindPath). False with a reason when either end is off
 	// the mesh or the goal is in another connected part (Detour would return a partial path).
 	bool FindPath(const float* start, const float* goal, std::vector<float>& xyz, const char** reason = nullptr) const;
