@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-018 DONE 02:35 · DS-019 PROGRESS 02:50 (process cycle pushed; T0 next, ETA 60 min) · last push 02:50
+NOW: DS-018 DONE 02:35 · DS-019 PROGRESS 03:10 (T0 done; vehicles next, ETA 40 min) · last push 03:10
 
 ### DS-S5 · 2026-10-26 · specs `NANOSUIT_COMBAT.md` + `SELF_PRESERVATION.md`
 Two engine-free module specs (owner asked "what do we still need"): (1) nanosuit **in combat** — Cloak-retreat /
@@ -22,10 +22,11 @@ default-OFF cvars, engine-free + unit tests + probes, exit criteria, ~1.5–2 d 
    Default-off check: no path differs with all three flags 0 (gate still 0.96, senses 110/80/1, head cap 0.3);
    5-15 m Elite gate expands to 4.57/2.29/2.0 deg, but tests cover only 3/40 m — add those points.
 
-### DS-019 · PROGRESS 02:50 · process cycle done; T0 next
-`Docs/Research/Audits/PROCESS-CYCLE-2026-10-26.md`: v5 table (oracle → default-OFF → offline → DeepSeek pre-batch →
-one frozen run), flag exit criteria, effective-cvar rule, no-idle/status rule, D-020 reference. Next:
-`T0_GAMEMODE.md`, then `VEHICLES.md`, `PS_MIN.md`, `PS_T0_SPEC.md`; read-only, one push each.
+### DS-019 · PROGRESS 03:10 · T0 mode/team spec done
+`T0_GAMEMODE.md`: engine-free `IBotGameMode` (IA/TIA/PS), 3–4 per team scaling, `SetTeam` before team-filtered
+`GetSpawnLocation`, `USE_SPAWN_GROUPS` registration instead of the refusal, score keys, full `strcmp("InstantAction")`
+/ channel-0 change table, and the actor-before-team ordering. Next `VEHICLES.md`, `PS_MIN.md`, `PS_T0_SPEC.md`.
+`PROCESS-CYCLE-2026-10-26.md` already pushed (v5, D-020 reference).
 
 ### DS-S4 · 2026-10-26 · audit `Docs/Research/Audits/AUDIT-2026-10-26.md`
 Read-only audit (process / PS-architecture / risks / limits / plan). Key: (1) 37 % of 470 commits over 4 days are
