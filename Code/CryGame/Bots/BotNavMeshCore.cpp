@@ -30,7 +30,7 @@ void NavMeshCore::Reset()
 	if (m_query) { dtFreeNavMeshQuery(m_query); m_query = nullptr; }
 	if (m_mesh) { dtFreeNavMesh(m_mesh); m_mesh = nullptr; }
 	delete m_filter; m_filter = nullptr;
-	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0; m_linkFails.clear();
+	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0; m_linkFails.clear(); m_linkMismatch = 0;
 }
 
 bool NavMeshCore::LoadMemory(const unsigned char* data, size_t size, std::string* error)
@@ -200,20 +200,25 @@ bool NavMeshCore::FindPath(const float* start, const float* goal, std::vector<fl
 
 int NavMeshCore::LoadLinkKinds(const char* text)
 {
+	// T-6 (DeepSeek review): the Detour user id is the 1-based line of links.txt, which silently breaks if a re-bake
+	// reorders the file. Each link's kind is therefore matched by its END POINTS (within 0.6 m): the line from the user
+	// id first, any line otherwise; links with no matching line stay unknown (never used).
 	if (!m_mesh || !text) return 0;
-	std::vector<int> kinds;            // by 1-based line
+	struct L { float a[3], b[3]; int kind; };
+	std::vector<L> lines;
 	std::istringstream in(text);
 	std::string line;
 	while (std::getline(in, line))
 	{
 		std::istringstream ls(line);
-		float v[6]; int bidir = 0; std::string kind;
-		if (!(ls >> v[0] >> v[1] >> v[2] >> v[3] >> v[4] >> v[5] >> bidir >> kind)) { kinds.push_back(-1); continue; }
-		int k = -1;
-		for (int i = 0; i < NavLinkKinds; ++i) if (kind == NavLinkName(i)) k = i;
-		kinds.push_back(k);
+		L l; int bidir = 0; std::string kind;
+		if (!(ls >> l.a[0] >> l.a[1] >> l.a[2] >> l.b[0] >> l.b[1] >> l.b[2] >> bidir >> kind)) { l.kind = -2; lines.push_back(l); continue; }
+		l.kind = -1;
+		for (int i = 0; i < NavLinkKinds; ++i) if (kind == NavLinkName(i)) l.kind = i;
+		lines.push_back(l);
 	}
-	int set = 0;
+	auto close = [](const float* p, const float* q) { return (p[0] - q[0]) * (p[0] - q[0]) + (p[1] - q[1]) * (p[1] - q[1]) + (p[2] - q[2]) * (p[2] - q[2]) < 0.36f; };
+	int set = 0; m_linkMismatch = 0;
 	for (int ti = 0; ti < m_mesh->getMaxTiles(); ++ti)
 	{
 		const dtMeshTile* tile = static_cast<const dtNavMesh*>(m_mesh)->getTile(ti);
@@ -222,8 +227,17 @@ int NavMeshCore::LoadLinkKinds(const char* text)
 		for (int i = 0; i < tile->header->offMeshConCount; ++i)
 		{
 			const dtOffMeshConnection& con = tile->offMeshCons[i];
+			float a[3], b[3]; ToCrysis(&con.pos[0], a); ToCrysis(&con.pos[3], b);
+			int k = -1;
 			const unsigned id = con.userId;
-			const int k = (id >= 1 && id <= kinds.size()) ? kinds[id - 1] : -1;
+			if (id >= 1 && id <= lines.size() && lines[id - 1].kind > -2 && close(lines[id - 1].a, a) && close(lines[id - 1].b, b))
+				k = lines[id - 1].kind;
+			else
+			{
+				++m_linkMismatch;
+				for (const L& l : lines)   // DS-005: a bidirectional link may be stored b->a
+					if (l.kind > -2 && ((close(l.a, a) && close(l.b, b)) || (close(l.a, b) && close(l.b, a)))) { k = l.kind; break; }
+			}
 			// links without a known kind (Armada lift/ladder movers from the scene) get a flag no mask ever includes
 			m_mesh->setPolyFlags(base | dtPolyRef(con.poly), k < 0 ? (unsigned short)0x4000 : NavLinkFlag(k));
 			if (k >= 0) ++set;

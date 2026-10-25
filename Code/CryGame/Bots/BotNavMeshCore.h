@@ -58,6 +58,7 @@ public:
 	void SetLinkMask(unsigned short mask);
 	unsigned short LinkMask() const { return m_linkMask; }
 	int Links() const { return m_links; }
+	int LinkMismatches() const { return m_linkMismatch; }   // links whose user id line did not match by end points
 	// A link failed in the game: never use it again on this level.
 	void BanLink(unsigned long long ref);
 	// Counts in-game failures of a link; true from the second failure on (then the caller bans it).
@@ -81,6 +82,7 @@ private:
 	unsigned short m_linkMask = 0;
 	int m_links = 0;
 	std::unordered_map<unsigned long long, int> m_linkFails;
+	int m_linkMismatch = 0;
 };
 
 } // namespace WarsBots

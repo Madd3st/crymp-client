@@ -5214,8 +5214,33 @@ bool CPlayer::SetAspectProfile(EEntityAspects aspect, uint8 profile)
 
 bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	// T-2: measure the second pose writer — how often a physics snapshot arrives for a bot replica and how far it moves
+	// the body (physics position before vs after applying the snapshot).
+	const bool botReplicaRead = ser.IsReading() && !gEnv->bServer && IsWarsBotActor() && GetHealth() > 0 && !m_stats.isRagDoll;
+	Vec3 physBefore(0.0f, 0.0f, 0.0f); bool havePhys = false;
+	if (botReplicaRead && aspect == eEA_Physics)
+		if (IPhysicalEntity* pe = GetEntity()->GetPhysics()) { pe_status_pos sp; if (pe->GetStatus(&sp)) { physBefore = sp.pos; havePhys = true; } }
+#endif
 	if (!CActor::NetSerialize(ser, aspect, profile, flags))
 		return false;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	if (botReplicaRead)
+	{
+		if (aspect == eEA_GameServerDynamic) ++m_warsBotMotionReads;
+		if (aspect == eEA_Physics)
+		{
+			++m_warsBotPhysReads;
+			IPhysicalEntity* pe = GetEntity()->GetPhysics(); pe_status_pos sp;
+			if (havePhys && pe && pe->GetStatus(&sp))
+			{
+				const float moved = (sp.pos - physBefore).GetLength();
+				if (moved > 0.05f) ++m_warsBotSnapMoves;
+				if (moved > m_warsBotSnapMax) m_warsBotSnapMax = moved;
+			}
+		}
+	}
+#endif
 
 	if (aspect == ASPECT_HEALTH)
 	{
@@ -5320,6 +5345,14 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 		ser.Value("VehicleViewRotation", m_vehicleViewDir, 'dir0');
 	}
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	if (ser.IsReading() && !gEnv->bServer && IsWarsBotActor() && gEnv->pTimer->GetCurrTime()>=m_warsBotNextPoseLog)
+	{
+		// DS-005: outside the suit gate (no suit -> still measured)
+		WB_LOG(2, "[WarsBots] NET POSE REPLICA EntityId=%u window=2s physicsReads=%u motionReads=%u snapMoves=%u snapMax=%.2f.",
+			GetEntityId(),m_warsBotPhysReads,m_warsBotMotionReads,m_warsBotSnapMoves,m_warsBotSnapMax);
+		m_warsBotPhysReads=m_warsBotMotionReads=m_warsBotSnapMoves=0; m_warsBotSnapMax=0.f;
+		m_warsBotNextPoseLog=gEnv->pTimer->GetCurrTime()+2.0f;
+	}
 	if (ser.IsReading() && !gEnv->bServer && IsWarsBotActor() && m_pNanoSuit &&
 		gEnv->pTimer->GetCurrTime()>=m_warsBotNextNetworkLog)
 	{

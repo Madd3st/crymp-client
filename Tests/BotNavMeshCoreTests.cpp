@@ -43,7 +43,14 @@ int main(int argc, char** argv)
 		std::vector<char> txt; if (FILE* f = std::fopen(argv[3], "rb")) { int c; while ((c = std::fgetc(f)) != EOF) txt.push_back(char(c)); std::fclose(f); }
 		txt.push_back(0);
 		const int kinds = L.LoadLinkKinds(txt.data());
-		assert(L.Links() > 100 && kinds == L.Links());
+		assert(L.Links() > 100 && kinds == L.Links() && L.LinkMismatches() == 0);
+		{   // T-6: a reordered links.txt still gives every link its kind (matched by end points)
+			std::string t(txt.data()); std::vector<std::string> rows; size_t p0 = 0, p1;
+			while ((p1 = t.find('\n', p0)) != std::string::npos) { rows.push_back(t.substr(p0, p1 - p0 + 1)); p0 = p1 + 1; }
+			std::string rev; for (size_t r = rows.size(); r-- > 0;) rev += rows[r];
+			NavMeshCore R; assert(R.LoadFile(argv[2], &err));
+			assert(R.LoadLinkKinds(rev.c_str()) == L.Links() && R.LinkMismatches() > 0);
+		}
 		const int walkParts = L.Components();
 		std::vector<float> p2; std::vector<NavPathLink> links;
 		assert(L.FindPathLinks(s289, s176, p2, links, &why) && links.empty());    // walk only: no links on the path

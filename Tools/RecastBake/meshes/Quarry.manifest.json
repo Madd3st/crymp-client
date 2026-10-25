@@ -1,0 +1,27 @@
+{
+ "schema": 1,
+ "map": "Quarry",
+ "mode": "IA",
+ "source": "C019/C028 collision crop (wb_geom_export a7553da7)",
+ "bake": "recast_bake --cs 0.1 --tile 256 --radius 0.3 --jumps (lanes fix 79cf0afd); tactical_spots v1 grid 2.5 targets 800",
+ "files": {
+  "navmesh": {
+   "name": "Quarry.navmesh",
+   "bytes": 2564540,
+   "fnv64": "b6b1db6ee14a8b3f",
+   "sha256": "3a2f6d50ffadf13238d80429e2269193857cc93eb9d7735574a131c4c7dc98e7"
+  },
+  "links": {
+   "name": "Quarry.links.txt",
+   "bytes": 101314,
+   "fnv64": "2360d0508283f40f",
+   "sha256": "2daa4f3ad189b0e90ffdb11312156c1b229cab67d6f49a20e642608e00d053e1"
+  },
+  "spots": {
+   "name": "Quarry.spots.txt",
+   "bytes": 1038937,
+   "fnv64": "068f5f6041d806ad",
+   "sha256": "2a4e9c01df4f8653ab576c2695f1ffc3a2e72a9dbf7e5e355e1a3f0727a4addb"
+  }
+ }
+}

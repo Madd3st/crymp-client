@@ -14,21 +14,6 @@ namespace WarsBots {
 struct TVec { float x = 0, y = 0, z = 0; };
 inline float TDist(const TVec& a, const TVec& b) { return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z)); }
 
-// skill 0 beginner .. 3 elite; style: 0 universal 1 assault 2 marksman 3 flanker 4 defender 5 hunter (BotProfile order)
-inline float TraitJumper(int skill, int style)
-{
-	static const float bySkill[4] = {0.10f, 0.30f, 0.50f, 0.70f};
-	float v = bySkill[skill < 0 ? 0 : (skill > 3 ? 3 : skill)];
-	if (style == 1 || style == 3) v += 0.15f;
-	if (style == 2 || style == 4) v -= 0.10f;
-	return v < 0.f ? 0.f : (v > 0.9f ? 0.9f : v);
-}
-inline float TraitHolder(int style)
-{
-	static const float byStyle[6] = {0.5f, 0.2f, 0.9f, 0.2f, 0.9f, 0.5f};
-	return style >= 0 && style < 6 ? byStyle[style] : 0.5f;
-}
-
 struct CoverCandidate { TVec p; unsigned coverMask = 0; };
 
 // Best cover spot to hold `threat` from, or -1. `sees(spot)` = eye ray from the spot to the threat is clear.
