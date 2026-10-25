@@ -650,6 +650,9 @@ public:
 	WarsBots::BotReplicaSmooth m_warsBotSmooth;
 	// owner 25.10: held-weapon clip/reserve for spectators (native ammo goes only to the owning client; bots have none)
 	uint16 m_warsBotClip = 0, m_warsBotReserve = 0;
+	// T-2 (DeepSeek DS-002): does a channel-0 replica receive physics snapshots AND move itself? Counted on clients.
+	unsigned m_warsBotPhysReads = 0, m_warsBotMotionReads = 0, m_warsBotSnapMoves = 0;
+	float m_warsBotSnapMax = 0.f;
 	void SyncWarsBotAmmo(bool apply);
 	Vec3 WarsBotViewAim() const; // smoothed aim on a client replica when enabled, else the replicated aim
 #endif

@@ -5214,8 +5214,33 @@ bool CPlayer::SetAspectProfile(EEntityAspects aspect, uint8 profile)
 
 bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile, int flags)
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	// T-2: measure the second pose writer — how often a physics snapshot arrives for a bot replica and how far it moves
+	// the body (physics position before vs after applying the snapshot).
+	const bool botReplicaRead = ser.IsReading() && !gEnv->bServer && IsWarsBotActor();
+	Vec3 physBefore(ZERO); bool havePhys = false;
+	if (botReplicaRead && aspect == eEA_Physics)
+		if (IPhysicalEntity* pe = GetEntity()->GetPhysics()) { pe_status_pos sp; if (pe->GetStatus(&sp)) { physBefore = sp.pos; havePhys = true; } }
+#endif
 	if (!CActor::NetSerialize(ser, aspect, profile, flags))
 		return false;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	if (botReplicaRead)
+	{
+		if (aspect == eEA_GameServerDynamic) ++m_warsBotMotionReads;
+		if (aspect == eEA_Physics)
+		{
+			++m_warsBotPhysReads;
+			IPhysicalEntity* pe = GetEntity()->GetPhysics(); pe_status_pos sp;
+			if (havePhys && pe && pe->GetStatus(&sp))
+			{
+				const float moved = (sp.pos - physBefore).GetLength();
+				if (moved > 0.05f) ++m_warsBotSnapMoves;
+				if (moved > m_warsBotSnapMax) m_warsBotSnapMax = moved;
+			}
+		}
+	}
+#endif
 
 	if (aspect == ASPECT_HEALTH)
 	{
@@ -5326,6 +5351,9 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 		WB_LOG(2, "[WarsBots] NETWORK MOTION / SUIT REPLICA EntityId=%u speed=%.2f sprint=%d airborne=%d mode=%d energy=%.1f active=%d.",
 			GetEntityId(),m_warsBotSpeed,m_warsBotSprint?1:0,m_warsBotAirborne?1:0,
 			int(m_pNanoSuit->GetMode()),m_pNanoSuit->GetSuitEnergy(),m_pNanoSuit->IsActive()?1:0);
+		WB_LOG(2, "[WarsBots] NET POSE REPLICA EntityId=%u window=2s physicsReads=%u motionReads=%u snapMoves=%u snapMax=%.2f.",
+			GetEntityId(),m_warsBotPhysReads,m_warsBotMotionReads,m_warsBotSnapMoves,m_warsBotSnapMax);
+		m_warsBotPhysReads=m_warsBotMotionReads=m_warsBotSnapMoves=0; m_warsBotSnapMax=0.f;
 		m_warsBotNextNetworkLog=gEnv->pTimer->GetCurrTime()+2.0f;
 	}
 #endif
