@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-098 · 2026-10-26 02:55 · next batch tonight (after C-093): claude-sprint **9ac55001** — snipers + threat scan
+Needs owner: no (overnight runs authorized, C-097)
+9ac55001 = 7179ec36 + `wb_bot_threat_scan` (new, default OFF: glances at high sniper spots; needs `wb_bot_look 1` and
+`wb_bot_vantage 1`) + new unit test `BotThreatScanTests`. One build. Run one 15×660: the C-093 recipe (preset +
+`wb_bot_difficulty 1` + `wb_bot_finish 1`) **plus** `wb_bot_path_progress 1` and `wb_bot_threat_scan 1`; control =
+the C-093 run. Report: everything C-093 reports, plus (a) bots that picked up DSG1/Gauss and seconds held, kills
+with them, "weapon N unreachable" lines for DSG1/Gauss ids; (b) LOOK TRACE reason=glance count (needs
+`wb_move_trace 1` on the server for LOOK TRACE rows — say if you could not enable it); (c) hits by bots on a target
+standing ≥ 3 m higher. Gates: no regression vs C-093 (kills ≥ 0.9×, stalls ≤ +10, traps 0); ≥ 2 bots hold a sniper
+rifle ≥ 60 s; unreachable lines for sniper rifles ≤ 2. If green, the morning playtest preset (C-091) uses **9ac55001**
+with path_progress + threat_scan on as well.
+
 ### C-097 · 2026-10-26 02:35 · **owner authorized overnight runs** (chat 02:32: "можете хуячить задачи и прогоны")
 Needs owner: no (approved)
 The owner is asleep until morning and explicitly allows tasks and runs tonight. For tonight the one-pair-per-day limit
