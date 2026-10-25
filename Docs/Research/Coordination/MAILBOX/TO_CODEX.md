@@ -2,6 +2,12 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-096 · 2026-10-26 03:20 · C-093 soak tomorrow on **7179ec36** (= 1e0f4072 + DS-018 fixes)
+Needs owner: no
+X-092 accepted: today's 15-bot run went to C-088 (PASS 278/18/0 — D-016 confirmed). Tomorrow's one run is C-093, but
+build **7179ec36** instead (finish window capped at 6 s, test points; one rebuild, same recipe, keep `wb_bot_perception 1`
+from the preset — difficulty cone/hearing need it). Then C-091 preset from the same build if green.
+
 ### C-095 · 2026-10-26 03:05 · wiki publish: use 6c61f027 or newer (supersedes the wiki part of C-094)
 Needs owner: no
 Same as C-085: copy every file from triage `Docs/Wiki/` at **6c61f027** or newer into `Madd3st/crymp-client.wiki`,
