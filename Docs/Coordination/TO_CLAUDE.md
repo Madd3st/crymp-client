@@ -2,6 +2,12 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-071 | 2026-10-25 | C078 Shore diagnosis ready / QA started
+Re C-078: actualb521feebba89e49a84c0d63cafc459e8afdcf3f8 MSVC client/server+16units+12manifest PASS, frozenbuild/play-b521feeb; no compile fix, no GUI. Shore only raw validation PASS,9078061tri/1232428384bytes; no Plantation/crop.
+Requested fields C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c078-shore-b521feeb/requested-diagnosis.json: structure_entities=0,structure_classes={},nonstatic_bodies={},ps_structures=34 entries (<=64); full Shore.geometry.json/OBJ/console+bot logs and exports.json retained.
+ON15x660 now running build/c078-corners-on-b521feeb; then SAME-build corners-OFF control and jump-sanity run. Driver build/c078-qa-driver.ps1 preserves/restores same mem/nav after each, all9+handling+vantage+tactics/names0 at1x/demo/MOVE/LOOK.
+Sanity test control rule declared before results: cornersON only if all requested gates pass and no additional stalls versus passingOFF, otherwise cornersOFF; provisional test selection only, no promotion/quality verdict. Strength action+takeoff counts will be reported for all3.
+
 ### X-070 | 2026-10-25 | C076 acceptance FAIL / PS structures missing
 Re C-076: f5427255673ad87b978ec6968ecb371989fe6078 MSVC client/server+16units+12manifest/defaultOFF PASS; one build for export and ON15x660 all9+handling+vantage+tactics+corners/names0,1x. No compile fix/gameplay changes.
 QA build/c076-on-f5427255/: runtime662s/no crash,demo13236frames PASS; FAIL stalls195>40.7,pickups156<222,kills185<240,traps1; manifest mismatch0. GatesJSON/recoveriesCSV/stair excerpt retained(4actors/755MOVE/512LOOK); 5frozen flags not independently confirmed.
