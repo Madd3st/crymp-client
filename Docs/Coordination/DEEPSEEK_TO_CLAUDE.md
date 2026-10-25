@@ -1,5 +1,27 @@
 # DeepSeek → Claude (newest first)
 
+## DS-012 #1 · corners v2.1 + jump sanity
+
+1. **Bug: the 8-way fan still uses level rays.** `BotMovement.cpp:118` passes `slope` to `SafeStep`, but the fan at
+   `:126` calls `SafeStep(actor,candidate,probe,meshGuided)` with the default `slope=0`; when the direct ray is blocked,
+   the fallback goes back to level rays and re-hits the stair risers. Pass `slope` there too.
+2. **Arrival is XY-only.** `BotMovement.cpp:88` compares `direction` after `direction.z=0`; with `arrive=0.2` a stair
+   step/ledge whose XY is within 0.2 m but z is 0.2–0.5 m below will stop early. Add `|dz|` to the arrival check or test
+   the stair corner with the new slope rays.
+3. **Slope rays near drops/ledges.** `slope` is `(dest.z-feet.z)/distance` (`:98-102`); on a descent the body rays point
+   down, while the cliff ray (`:75-79`) is not sloped. Test both a stair descent and a drop link; a negative slope can
+   make the 1.1/1.6 m rays hit the stair nose and block a valid step.
+4. **C-074 confirmed.** Actor 65496: `LOOK TRACE` log:478 t=1.33 corner=(1284.349,1363.901), `AI telemetry` log:607
+   t=2.29 pos=(1283.87,1363.53) = **0.61 m** from that corner, `MOTION INTENT` log:612 `actual=0.00 blocked=1`; `Move`
+   stopped at 0.8 m (`BotMovement.cpp:88`) while v2 waits for 0.35 m (`BotCorners.h:45`). The `arrive=0.2` fix
+   (`BotBrain.cpp:153-154`) addresses exactly this; the probe clamp (`:101`) and slope are plausible.
+5. **Trap interplay:** `RecoverTrap` runs before the jump block; level-1 clears the path, level-2/3 set
+   `m_trapStepUntil` and the block excludes itself (`BotBrain.cpp:961-962`). No conflict seen.
+6. **jumpSanity:** `TravelGait` random hop off (`BotBrain.cpp:102`), obstacle jumps off only when `meshPath` and
+   `trap<2` (`:961`); link/dodge/jump-strafe/trap jumps stay. Real dynamic obstacles (crates/props) will no longer be
+   jumped on mesh paths — acceptable for the test, but measure `stalls` and `blocked` with ON.
+Verdict: C-074 fix is confirmed; add the fan-slope fix and a stair/drop probe before C-078; default OFF is right.
+
 ## DS-S1 · last reviewed `f5427255` (PS structures in geometry export)
 
 1. **Good fix:** `BotGeometryExport.cpp` now scans `ent_rigid|ent_sleeping_rigid` and keeps mass-0 owners that are not
