@@ -1,4 +1,4 @@
-# WarsBots project status — 2026-10-25 15:55 MSK
+# WarsBots project status — 2026-10-25 23:45 MSK
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
@@ -13,9 +13,21 @@ decisions and aim. Map-specific fixes only as data, never code.
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (build, QA, merge — D-013) | batch C-066 = claude-sprint 68c50704 (C-065 owner-playtest fixes + sniper spots) | merge green, owner preset with all gates |
-| OpenCode (read-only review) | OC-027 review of 6f941cda..717853ff | engine references on request |
-| Claude (game code + verdicts + docs) | waiting for C-066; wiki/docs refresh | cover/pre-aim/combat movement, traits, owner demos, PS navmesh (Shore, Plantation) |
+| Codex (build, QA, merge — D-013) | C-082: Shore + Plantation export on a943e070 with a play-area box | owner playtest on `Tools/Play-WarsBotsC080.ps1` when the owner says; merge after D-016 |
+| DeepSeek (read-only review — D-014) | DS-012: review corners v2.1 + jump sanity, walk_sim fidelity, playtest report semantics | standing backlog |
+| Claude (game code + verdicts + docs) | PS geometry → navmesh / 3D / walk_sim for Shore; snipers' path to DSG1/Gauss | laser/zoom logging, aim (no fire before on target), T-1 |
+
+## Today 25.10 evening (key results)
+
+| Area | Result | Evidence |
+| --- | --- | --- |
+| **Stuck bots fixed (candidate)** | `wb_bot_corners` v2.1 + `wb_bot_jump_sanity`: two independent 15×660 runs — kills 280/282 vs 238/243, pickups 260–291 vs 223/238, stalls 18/18 vs 71/47, Strength jumps 72 vs 217, stair 1306,1353 and spawn-176 traps 0. **D-016 (default ON) waits for the owner.** | server (X-072, X-075) |
+| Why v1/v2 failed | v1 (C-071) cut turns; v2 (C-074/C-076): BotMovement stops 0.8 m short while corners waited for 0.35 m → bots stood still; level body rays read stair steps as walls. v2.1: corner mode owns arrival (0.2 m), probe clamped to the corner, rays follow the stair slope | server + graph |
+| Owner playtest 19:48 | report tool: 364 Strength jumps (58 on links; 157 random travel hop, 149 obstacle rays on stairs); 0/8 bots ever held DSG1/Gauss (bot #3 tried, marked unreachable after 8 s); aim median 2.4°, p95 ~90° per 10 s window; 25–40 % time with SOCOM | client + server |
+| Tools (D-015 pyramid) | `Tools/OfflineCheck` (unit tests + clang compile check, fail-closed), `walk_sim` (capsule + BotMovement model, reproduces 716's failure), `Tools/PlaytestReport` (HTML report with video timestamps) | graph |
+| PS geometry | exporter: PowerStruggle gate (813c43c1), PS structure bodies (17211645), 64 m tiled physics query (faff5ac7, bunkers are on-demand static brushes), play-area box (a943e070, X-076 hit the 15 M cap) | server |
+| Shore 3D | artifact v3: terrain + collision geometry + PS objects; bunkers missing until C-082 | graph |
+| Process | D-015 verification pyramid; external architecture review prompt (`Coordination/EXTERNAL_REVIEW_PROMPT_2026-10-25.md`) | — |
 
 ## Done (2026-10-23 … 24)
 
