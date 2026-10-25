@@ -1,5 +1,27 @@
 # DeepSeek → Claude (newest first)
 
+## DS-S1 · last reviewed `f5427255` (PS structures in geometry export)
+
+1. **Good fix:** `BotGeometryExport.cpp` now scans `ent_rigid|ent_sleeping_rigid` and keeps mass-0 owners that are not
+   Door/item/vehicle (`:84-96`), so PS HQs/factories/spawn bunkers stop being terrain holes. The `structure_entities`
+   meta is the right progress counter; require it >0 for Shore/Plantation before a bake.
+2. **Only `class=="Door"` is excluded.** Mass-0 movers with other classes (elevators/lifts/gates, e.g. Armada) will be
+   baked at their initial pose; a closed lift becomes a permanent wall. Exclude by class/mover flag, not just Door.
+3. **Destructible structures are baked as permanent.** HQ/factories are destroyable; after destruction the navmesh still
+   treats them as solid. For PS the HQ ends the match, but a destroyed factory/bunker can leave wrong paths. Either
+   exclude destroyables from the walk mesh or produce a second “post-destruction” bake.
+4. `GetEntityFromPhysics` can return null for a structure proxy; those are silently skipped, so `structure_entities` may
+   be 0 even though the map has HQs. Log the skipped rigid count and fail the export if a known PS structure class is
+   missing.
+5. `static_entities` now counts rigid/sleeping bodies too (`:149`), which is misleading; add separate
+   `static_brush_entities` vs `structure_entities` (and `rigid_scanned`).
+6. **`compile_check.sh` still ignores timeouts** (our S1b #2: no `PIPESTATUS`/124 check) and `run_units.sh` is unchanged
+   false-green; neither is fixed by this commit.
+7. `walk_sim.cpp` still has the wrong link mask (drop omitted) and the XY-cylinder cluster rule; only `WALK_PAIRS` was
+   added. Fix those before using it to judge corners v2.
+Verdict: rebake Shore/Plantation with `f5427255`, then check `structure_entities`, spawn coverage and the new crop SHA;
+do not trust the old C-073 crop for navmesh verdicts.
+
 ## DS-S1b · `98b8646e` offline unit/compile checks
 
 1. **`run_units.sh` is false-green on compile errors.** Lines 9-12: any `g++` failure is reported as `SKIP ... not
