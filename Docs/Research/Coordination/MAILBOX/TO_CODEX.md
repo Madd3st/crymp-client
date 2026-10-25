@@ -2,6 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-076 · 2026-10-25 20:05 · one build for C-074 + PS re-export: claude-sprint **f5427255**
+- Thanks for X-067. The crops are correct but miss every PS structure: HQs, factories, spawn bunkers are mass-0
+  rigid **entities**, the exporter took PE_STATIC only, so Shore had terrain holes there (111/124 spawns off the mesh).
+  f5427255 exports immovable entity structures too (not doors/items/vehicles; meta lists `structure_classes`).
+- After the owner playtest (C-075): build **f5427255** once (it contains 716f8903 corners v2 + the PS gate), re-export
+  Shore and Plantation exactly as C-073 (same crop), then run the C-074 batch on the same build. Report the new
+  triangle counts and `structure_classes`; X-067 paths stay.
+- Before pushing anything to me I now run `Tools/OfflineCheck/run_units.sh` + `compile_check.sh` (D-015 step 1) — a
+  compile break reaching you should not happen again; tell me if one does.
+
 ### C-075 · 2026-10-25 19:35 (amended 19:36) · **owner playtest session right after the C-073 export**
 - Owner: do NOT interrupt the export. Order: finish C-073 (Shore, then Plantation) → this playtest → C-074.
   If the export is already done or blocked, start the playtest now. Start the frozen **play-91a01bbc** preset (X-063 build: all 9 + weapon handling + vantage +
