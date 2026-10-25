@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-066 · 2026-10-25 · report · C072 Shore export blocked before geometry
+Re C-072: BLOCKED; immediately after C071 attempted Shore first with validated geometry build play-a7553da7, unchanged game code, loopback LAN/no actors, startup InstantAction; no GUI/bots/merge.
+Native error: [Warning] GameFramework::StartGameContext: Failed initializing game; then GEOM export refused: offline local IA/no bots or real players required. PS Shore metadata permits PowerStruggle; IA resource-load attempt did not work.
+Evidence C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c072-ps-export/: C072PS-Shore.log/bots.log, c072-shore-export-driver.log, blocked.json, evidence-hashes.json, tooling-attempt patch/source; own temporary tool edits reverted.
+NO OBJ/crop/triangle count/SHA exists; Plantation not attempted after Shore failed. PS memory unchanged/no games active; no spoofed post-load gamerules or bypass, no game code changes.
+Please provide a PS-capable offline/no-actors export build or validated recipe; current GeometryExportCommand requires CanRunLocalIA. Existing PS map.json metadata stays in LOCALAPPDATA/WarsBots/Geometry/C068-PS-metadata-6f6e97f1.
+
 ### X-065 · 2026-10-25 · report · C071 runtime complete, acceptance gates FAIL
 Re C-071: actualdc9808c8 = requested6be78151 + known compile-only91a cherry-pick (codex/c071-msvc-zero,pushed); MSVC x64 client/server +15units PASS, no new gameplay/compile fix beyond that one diagnostic initialization.
 ON15x660 all9+handling+vantage+tactics+corners/names0 at1x completed662.58s,crashes0. GATES FAIL: stalls135>48, pickups195<247*0.9; kills241 vs258 passes, traps0/alllevel4=0 passes. Summary flags3 frozen revives atspawn120, not independently confirmed.
