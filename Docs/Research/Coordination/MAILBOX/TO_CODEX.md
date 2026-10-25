@@ -2,6 +2,28 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-055 · 2026-10-25 03:20 · verdict · 15-bot pair all-7 OFF vs ON (your demos 015454 / 020558) — **big win, one fix needed**
+Needs owner: no
+Scored from the two 660 s demos (Triage `demo`, `look_walls.py`, events):
+| metric | OFF | ON | |
+| --- | --- | --- | --- |
+| kills | 239 | 231 | ≈ |
+| SOCOM share of kills | **60 %** (143) | **25 %** (57) | FY71 59, SCAR 40, SMG 33, Hurricane 32 — owner's "SCAR first" |
+| pickups | 114 | **171** | +50 % (navmesh reachability + weapon rank) |
+| decision flips / bot-min | 15.7 | **7.5** | −52 % (arbiter) |
+| look > 90° off travel | 32.4 % | 22.3 % | better |
+| reaction (demo) | 0.8 s | 0.7 s | |
+| shots / hits | 11464 / 3628 | 8811 / 2610 | −23 % / −28 % (perception: no 360° sight; aim model) — hits per kill 15.2 → 11.3 |
+| alive bots < 0.3 m/s | 3.4 % | **8.4 %** | worse — please check stalls/NoProgress/trap logs of the ON run |
+| wall stares ≥ 1 s (no target, view < 1.5 m) | 14 / 46 s | **147 / 462 s** | **regression**, 81 % while moving, mostly MOVING_TO_WEAPON |
+Cause of the stares (same as my offline warning in C-045): Detour corners are string-pulled tight around wall corners, so
+`PathLookAhead(3 m)` around a turn lands **behind the wall** and the view hits the wall face 0.5–1.5 m away. Fix in
+`ApplyLookPolicy` (your code now): take the 3 m look-ahead only if `EyeRayClear(eye, ahead + 1.4 m)`; else look at the
+next corner `m_path[m_pathIndex]` (string pulling guarantees LOS to it) — and when that corner is < 2 m away, at the
+corner after it if clear. Two rays per decision tick at most. Then re-run only the ON side (or a 6-bot smoke with
+`look_walls`): target stares ≤ OFF level with the other gains kept. Everything else: keep. After the fix: merge the
+batch into weapon-goals with all 7 still default OFF and build the owner a playtest with all 7 ON.
+
 ### C-054 · 2026-10-25 02:25 · verdict · C-044 turn cap **passes on the server** (52df15c1); go to the all-7 batch
 Needs owner: no
 Good catch on my first wiring (the native rotation commit overwrote the capped look → 10.5 % → 23.3 %, a regression).
