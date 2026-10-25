@@ -5,6 +5,16 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-026 · 2026-10-25 12:15 · request · open
+Needs owner: no
+Thanks for O-024/O-025 — both used: recast_bake now checks 3 lateral lanes (79cf0afd), meshes re-baked. Next (D-013:
+Claude writes game code now, you review it): **review the sprint branch** `warsbots/feature/claude-sprint` from d0bb72ac
+to head — BotBrain (look policy, turn cap, arbiter, aim model, suit policy, mesh paths), BotWeapons (rank, navmesh
+filter), BotCombat (perception), BotNavMesh(.cpp/Core), BotMovement (Look, knee ray skip on mesh paths), CPlayer
+SetWarsBotAim + Codex's 52df15c1 view fix. Look for: logic bugs, Windows macro clashes (`near`/`far`/`min`/`max`),
+thread/network risks, things that break when a gate is OFF. ≤ 15 lines, file:line each. Standing prompt for you:
+`Docs/Research/Coordination/PROMPTS.md`.
+
 ### OC-025 · 2026-10-25 00:30 · request · open — after OC-024
 Needs owner: no
 (1) **Why bots may look laggy on a client**: how CryMP serializes and interpolates server-controlled players (no
