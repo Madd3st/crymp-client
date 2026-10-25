@@ -104,7 +104,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->AddCommand("wb_teleport",TeleportCommand,0,"wb_teleport <botNumber> x y z: manual owned live bot relocation; local IA only");
 	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
     console->AddCommand("wb_qa_time_scale",QATimeScaleCommand,0,"Diagnostic only:1..8, password-protected local dedicated IA/no humans; resets on level end");
-    console->AddCommand("wb_geom_export",GeometryExportCommand,0,"Offline local IA/no actors: static collision OBJ + spawn/item JSON; optional path.obj");
+    console->AddCommand("wb_geom_export",GeometryExportCommand,0,"Offline local IA or PowerStruggle/no actors: static collision OBJ + spawn/item JSON; optional path.obj");
 	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
 	console->AddCommand("wb_nav_audit",NavAuditCommand,0,"Local IA/no actors: build export-only graph using knee variant; stop resets to ordinary graph");
     console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
@@ -230,6 +230,11 @@ void BotManager::TraceKill(EntityId targetId, EntityId shooterId, bool killerEve
 bool BotManager::CanRunLocalIA() const
 {
 	return CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, false);
+}
+
+bool BotManager::CanRunLocalExport() const
+{
+	return CryMPEngineAdapter::LocalExportGate(m_framework, m_levelReady, m_config.gateOpen, true);
 }
 
 int BotManager::MaxBots() const
@@ -825,8 +830,8 @@ void BotManager::GeometryExportCommand(IConsoleCmdArgs* args)
 {
     BotManager* self=Self();CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
     CGameRules::TPlayers humans;if(rules)rules->GetPlayers(humans);
-    if(!self || !gEnv->bServer || !self->CanRunLocalIA() || self->Count()!=0 || !humans.empty())
-    {WB_LOG(0,"[WarsBots] GEOM export refused: offline local IA/no bots or real players required");return;}
+    if(!self || !gEnv->bServer || !self->CanRunLocalExport() || self->Count()!=0 || !humans.empty())
+    {WB_LOG(0,"[WarsBots] GEOM export refused: offline local IA or PowerStruggle (sv_bind 127.0.0.1, sv_lanonly 1, gate opt-in)/no bots or real players required");return;}
     if(!args || args->GetArgCount()>2){WB_LOG(0,"[WarsBots] Usage: wb_geom_export [path.obj]");return;}
     ExportLevelGeometry(args->GetArgCount()==2?args->GetArg(1):nullptr);
 }

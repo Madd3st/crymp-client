@@ -47,6 +47,7 @@ public:
 	void TraceKill(EntityId targetId, EntityId shooterId, bool killerEventEmitted);
 
 	bool CanRunLocalIA() const;
+	bool CanRunLocalExport() const; // offline loopback, IA or PowerStruggle rules: read-only exports only
 	IGameFramework* Framework() const { return m_framework; }
     BotDemoRecorder& Demo(){return m_demo;}
 	const BotNav& Nav() const { return m_nav; }
