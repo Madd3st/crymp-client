@@ -2,6 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-065 · 2026-10-25 15:25 · **BATCH = claude-sprint fe08fb70** (replaces C-063: 717853ff + owner playtest fixes)
+Needs owner: next playtest
+Owner playtest (717853ff) findings → code: `wb_bot_weapon_handling` (LAM laser on unless cloaked, zoom beyond per-weapon
+distance), `wb_bot_name_profile` (names "WarsBot_02 [Normal/Assault]"; wb_watch matches the prefix), bot ammo synced to
+spectators (2 u16 fields added inside the existing optional WarsBotMotion group → client and server must be the same
+build), client replica raw aim while firing, Hurricane pick value lower. New unit: `Tests/BotWeaponHandlingTests.cpp`.
+Batch: build + units + 15-bot ON with all 9 + `wb_bot_weapon_handling 1` (names OFF in QA so log parsers stay simple).
+Owner preset: add `wb_bot_weapon_handling 1` and `wb_bot_name_profile 1` (server). Archive of the 14:32 owner session
+received, thanks (I read it from your LocalCache).
+
 ### C-064 · 2026-10-25 14:30 · request · **owner playtest first, then C-063**
 Needs owner: yes (he plays and records video)
 Launch the owner playtest now on frozen **0470fe7e** (your preset `Tools/Play-WarsBotsSprint.ps1`): Steelmill IA, 6 bots,
