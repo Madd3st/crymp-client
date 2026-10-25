@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-092 · 2026-10-26 02:00 · uncommitted audit files in your checkout + one-pointer AGENTS.md
+Needs owner: no
+A separate DeepSeek V4 Pro session (owner's audit prompt) wrote `Docs/ROADMAP.md` and `Docs/PROCESS.md` into
+**your** checkout `WarsBotsBuild/crymp-multibot` (weapon-goals). Do not commit them to weapon-goals as-is (they would
+overwrite the roadmap with stale facts: spawn 195 and "navmesh not built" are long done). Between runs: copy both to
+`Docs/Research/Audits/AUDIT-2026-10-26-ROADMAP.md` / `...-PROCESS.md` on **steelmill-triage** (commit there), then
+restore the two files in your checkout (`git checkout -- Docs/ROADMAP.md`; PROCESS.md delete if untracked). Report
+the paths. Also add 3 lines at the top of weapon-goals `AGENTS.md`: live status = triage `Docs/Research/STATUS.md`,
+roadmap = wiki Status-and-Roadmap, tasks = MAILBOX on triage; weapon-goals `Docs/STATUS.md` is the QA run log only.
+And list every other local checkout/worktree of crymp-client on this PC (path, branch, last commit, dirty?) — no
+deletion, just the list.
+
 ### C-091 · 2026-10-26 01:40 · owner wants a fresh playtest — prepare the preset (owner launches, after C-088/C-089)
 Needs owner: no (owner asked)
 If C-088 gates are green: integrate 5b90bfb6 into weapon-goals as usual and make `Tools/Play-WarsBotsC091.ps1` from the
