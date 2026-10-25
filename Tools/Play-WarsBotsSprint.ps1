@@ -8,6 +8,7 @@ param(
  [ValidateRange(1024,49151)][int]$Port=46050,
  [ValidateSet(1,2)][int]$ClientTraceMode=2,
  [switch]$ServerConsole,
+ [switch]$CornersAndJumpSanity,
  [switch]$PrepareOnly
 )
 $ErrorActionPreference='Stop'
@@ -27,6 +28,10 @@ if($newAmmoPose){$flags+=@('wb_bot_weapon_handling','wb_bot_name_profile')}
 $hasVantage=($m.PSObject.Properties.Name -contains 'vantage_default')
 if($hasVantage){$flags+=@('wb_bot_vantage')}
 if($m.PSObject.Properties.Name -contains 'tactics_default'){$flags+=@('wb_bot_tactics')}
+if($CornersAndJumpSanity){
+ if(-not ($m.PSObject.Properties.Name -contains 'corners_default') -or -not ($m.PSObject.Properties.Name -contains 'jump_sanity_default')){throw 'Corners/jump-sanity matched build required'}
+ $flags+=@('wb_bot_corners','wb_bot_jump_sanity')
+}
 if($m.sha -notmatch '^[0-9a-f]{40}$'){throw 'Invalid frozen source SHA'}
 $sessionLabel='Sprint-'+$m.sha.Substring(0,8)
 $gateArgs=($flags|ForEach-Object {"+$_ 1"}) -join ' '

@@ -2,6 +2,12 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-074 | 2026-10-25 | C080 confirmation started / owner preset prepared
+Re C-080: acked; no rebuild. Same frozen b521feeb pair, all9+handling+vantage+tactics/names0: second independent15x660 set bothON then bothOFF,1x/demo/MOVE/LOOK, same initial mem/nav+roster; roots build/c080-{both-on,both-off}-b521feeb/. Driver build/c080-qa-driver.ps1, active build/c080-active.json.
+Seed limitation: Code/CrySystem/RandomGenerator.cpp:31-34 uses std::random_device to seed mt19937 for each process; no set/read numeric seed API. This is an independent fresh-entropy confirmation, NOT fixed or matched RNG. No gameplay patch to fake seed control; please provide an opt-in QA seed API if deterministic matching is required.
+Owner preset Tools/Play-WarsBotsC080.ps1 defaults play-b521feeb/8SkillMix/all C075 flags+corners1+sanity1, demo20Hz/clientSmooth1/trace2/DX9/nooverlay. PrepareOnly/AST/flag checks PASS, generated build/owner-tools/Play-Sprint-b521feebRecording.ps1; NO GUI launched. Existing generic preset defaults unchanged.
+Traps will be reported separately as >=60s episodes and level4 lines; acceptance requires both zero, plus recovery line/cluster counts. Controls differ only both flags; memory restored/verified after each. No merge/promote yet.
+
 ### X-073 | 2026-10-25 | C079 Shore export complete
 Re C-079: actual1721164577956b56f0391b95283d10168b3c6ede MSVC client/server PASS, frozen matching pair build/export-17211645; export-only, no QA/crop/Plantation/GUI or game changes/compile fix, no merge.
 Bundle C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c079-shore-17211645/: Shore.obj9081398tri/1232895492bytes, unsupported0; raw validation PASS. Shore.geometry.json +requested-diagnosis.json preserve structure_entities=2,structure_classes={Factory:2},ps_bodies_added=12,ps_structures=34 entries with parts.
