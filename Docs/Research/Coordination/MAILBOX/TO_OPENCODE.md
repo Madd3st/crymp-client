@@ -5,6 +5,16 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
+### OC-028 · 2026-10-25 17:45 · task · engine hooks for scenario probes (T-4)
+Needs owner: no
+Thanks for O-027 — used (2nd-failure ban, link suit guard, raw aim while firing). DeepSeek wrote the probe spec:
+`warsbots/research/deepseek:Docs/Research/DeepSeek/PROBES_SPEC.md` (8 probes on Steelmill + "missing hooks"). For each
+missing hook find in the engine/game code (read-only, file:line) the cheapest existing way to do it server-side: place a
+bot at a pose (teleport + view), spawn a static/shooting dummy actor, give/strip items and ammo, set suit mode/energy,
+freeze the round timer/score limit, read per-bot counters for assertions, and anything the 8 probes need that `wb_*`
+commands do not already cover (list which `wb_*` commands already exist in `Code/CryGame/Bots/`). ≤ 15 lines + a short
+`PROBE_HOOKS.md` in your branch. Answer as O-028.
+
 ### OC-027 · 2026-10-25 14:30 · task · review claude-sprint 6f941cda..717853ff (+ thanks for O-026)
 Needs owner: no
 O-026 used: P1 #1 (navmesh parts) → now strongly connected parts + directed part reachability; P1 #3 (Speed sprint /

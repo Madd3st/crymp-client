@@ -2,7 +2,7 @@
 WarsBots mailbox: block until Claude leaves new mail for this agent, then print it.
 
   powershell -NoProfile -ExecutionPolicy Bypass -File wait_mail.ps1 -Agent codex -Repo C:\path\to\crymp-client
-  -Agent      codex | opencode
+  -Agent      codex | opencode | deepseek
   -Repo       any clone of Madd3st/crymp-client (only `git fetch` + `git show`, never checkout/merge)
   -TimeoutMin how long to wait (default 9, below most agent shell timeouts; call again in a loop)
   -PollSec    fetch interval (default 60)
@@ -13,7 +13,7 @@ Exit 0 = new mail printed (state advanced), 1 = timeout (nothing new), 2 = error
 State: <StateDir>\mail-<agent>.last (highest message ID already seen).
 #>
 param(
-  [Parameter(Mandatory)][ValidateSet('codex','opencode')][string]$Agent,
+  [Parameter(Mandatory)][ValidateSet('codex','opencode','deepseek')][string]$Agent,
   [Parameter(Mandatory)][string]$Repo,
   [int]$TimeoutMin = 9,
   [int]$PollSec = 60,
@@ -25,8 +25,8 @@ $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
 $OutputEncoding = [Text.Encoding]::UTF8
 $branch = 'warsbots/research/steelmill-triage'
-$file   = if ($Agent -eq 'codex') { 'Docs/Research/Coordination/MAILBOX/TO_CODEX.md' } else { 'Docs/Research/Coordination/MAILBOX/TO_OPENCODE.md' }
-$prefix = if ($Agent -eq 'codex') { 'C' } else { 'OC' }
+$file   = switch ($Agent) { 'codex' { 'Docs/Research/Coordination/MAILBOX/TO_CODEX.md' } 'deepseek' { 'Docs/Research/Coordination/MAILBOX/TO_DEEPSEEK.md' } default { 'Docs/Research/Coordination/MAILBOX/TO_OPENCODE.md' } }
+$prefix = switch ($Agent) { 'codex' { 'C' } 'deepseek' { 'DS' } default { 'OC' } }
 git -C $Repo rev-parse --git-dir 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) { Write-Output "wait_mail: $Repo is not a git repo"; exit 2 }
 New-Item -ItemType Directory -Force -Path $StateDir | Out-Null

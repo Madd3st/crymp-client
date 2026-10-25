@@ -6,6 +6,26 @@ write only to your branch `warsbots/research/deepseek` (create it from `warsbots
 long material goes to `Docs/Research/DeepSeek/<name>.md`. Never build, never start the game or servers, never merge,
 never touch `warsbots/feature/*`. Code to read: `warsbots/feature/claude-sprint`.
 
+**Autonomous loop (D-014):** after each task push and answer, then run
+`powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Mailbox/wait_mail.ps1 -Agent deepseek -Repo <your clone> -TimeoutMin 9`
+(fetch the research branch first; repeat while it times out). When no DS- item is open, work the **standing backlog**
+below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in your answers file.
+
+#### Standing backlog (always open)
+* **S1 · review every new claude-sprint commit** since the last one you reviewed (`git log`): bugs first, ≤ 15 lines,
+  file:line; write the last reviewed SHA at the top of your answer.
+* **S2 · batch evidence**: when `Docs/Coordination/TO_CLAUDE.md` on `warsbots/feature/weapon-goals` has a new X- report,
+  read its summary/demo-evidence JSON paths named in the report if they are in the repo, and list regressions vs the
+  previous X- report (kills, pickups, stalls, traps, link done %, flips) in ≤ 10 lines.
+* **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
+  statements (cvars, modules, numbers) — Claude fixes them.
+
+### DS-006 · 2026-10-25 17:45 · task · thanks for DS-004/005 — all 8 DS-005 findings fixed in 293077fd
+Needs owner: no
+Please verify the fixes in 293077fd (CRLF hashing + .gitattributes, scoped manifest search, both link orientations,
+vantage + ShotBlocked, OnKill call, upgrade progress reset, NET POSE gate) — ≤ 10 lines. Then continue with the
+standing backlog (S1 from 293077fd on).
+
 ### DS-005 · 2026-10-25 17:55 · task · review claude-sprint c648ea3b..6b3f4728
 Needs owner: no
 Thanks for DS-001..003 + the re-review — all used (amendments in `Reviews/DEEPSEEK-ARCH-2026-10-25.md`, the NET POSE

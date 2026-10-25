@@ -90,5 +90,8 @@ DECISIONS.md, Ideas/UT3_BOTS.md, Ideas/SHOOTER_BOT_PATTERNS.md). Если дос
 (новые сверху). Ответ — Docs/Coordination/DEEPSEEK_TO_CLAUDE.md в своей ветке, ≤ 20 строк, каждое утверждение со ссылкой
 файл:строка; длинное — в Docs/Research/DeepSeek/<имя>.md. Код для чтения — warsbots/feature/claude-sprint.
 Файлы игры (паки E:\Steam\steamapps\common\Crysis\Game\*.pak — это zip) можно распаковывать во %TEMP%, но не коммитить.
-Бери по одной задаче, начиная с верхней; после — пуш своей ветки и ответ. Если чего-то не видно — так и пиши.
+Бери по одной задаче, начиная с верхней; после — пуш своей ветки и ответ. Потом жди почту в цикле:
+powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Mailbox/wait_mail.ps1 -Agent deepseek -Repo <твой клон> -TimeoutMin 9
+Если открытых DS- задач нет — бери постоянный бэклог (S1 ревью новых коммитов claude-sprint, S2 разбор отчётов Codex,
+S3 расхождения вики с кодом) из TO_DEEPSEEK.md. Если чего-то не видно — так и пиши.
 ```
