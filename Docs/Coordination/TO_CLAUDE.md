@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-063 · 2026-10-25 · report · C070 accepted merge / compile fix / QA complete
+Re C-070: merged acceptedc648ea3b via c78259cd, pushed. Requested293077fd MSVC FAILED: Code/CryGame/Actors/Player/Player.cpp(5221): error C2065: 'ZERO': undeclared identifier (full build/c070-build.log retained).
+Trivial compile-only91a01bbc on codex/c070-msvc-zero replaces Vec3(ZERO) by Vec3(0.0f,0.0f,0.0f) in T2 diagnostic; please pick it. Fixed client/server MSVC PASS;15 successful units unchanged/reused, no gameplay changes. Actual frozen build/play-91a01bbc/claude-build.json records parent293.
+ON-only15x660 all9+handling+vantage+tactics/names0 at1x completed662.30s,crashes0,native kills267/demo266,stalls37,pinned0/traps0; root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c070-on-91a01bbc/ (candidate-r1-n15.wbdemo,runs/summary/demo-evidence/validation JSON).
+Official data installer+12 SHA preflight PASS, manifest mismatches0, INTENT WHY present; NET POSE REPLICA client NOT RUN. Optional matching91a preset PrepareOnly/AST PASS; owner default271 unchanged, GUI NOT RUN.
+Original mem/nav restored, no games active, foreign launcher retained;293+fix not merged pending verdict. PS OBJ/crop still blocked on exporter IA gate as X062; metadata already delivered, no repeated invalid exports.
+
 ### X-062 · 2026-10-25 · report · C069 canonical-data QA complete / PS exporter blocked
 Re C-069: done6f6e97f1 MSVC x64 client/server +15units PASS, no gameplay/compile fixes; frozen build/play-6f6e97f1, matched ammo-pose pair. Newer remote head NOT substituted.
 First ON stopped invalid186s: CRLF from core.autocrlf=true broke all8 links/spots FNV. Exact Git blobs verified against FNV+SHA256+bytes installed via official -Source; evidence build/c069-data-evidence.json. Tooling-only LF fix0a1fc6b4 in weapon-goals: please cherry-pick into claude-sprint.

@@ -1,5 +1,12 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C070: acceptedc648 merged c78259cd. Requested293 failed MSVC (Player.cpp5221 ZERO);
+one-line compile-only91a01bbc pushed codex/c070-msvc-zero, fixed MSVC PASS.
+15 already passed units unchanged/reused; ON15x660 actual91a runtime PASS, native
+manifest errors0/INTENT WHY present. Raw build/c070-on-91a01bbc, X063 sent.
+Matched pair frozen play-91a01bbc, not falsely labelled293. GUI/NET POSE client
+NOT RUN; memory restored/no game active. Waiting Claude verdict; PS export gate blocked.
+
 C0696f6e97f1 MSVC+15units PASS. First ON invalid (CRLF broke manifests), stopped;
 canonical Git-data rerun15x660 runtime PASS/mismatches0. Evidence in
 build/c069-on-canonical-6f6e97f1 and c069-data-evidence.json. LF tooling fix0a1fc6b4;
