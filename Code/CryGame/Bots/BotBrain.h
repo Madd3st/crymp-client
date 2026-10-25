@@ -12,6 +12,7 @@
 #include "CryGame/Bots/BotSuitPolicy.h"
 #include "CryGame/Bots/BotJumpLink.h"
 #include "CryGame/Bots/BotVantage.h"
+#include "CryGame/Bots/BotTactics.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
 struct IConsoleCmdArgs;
 class CPlayer;
@@ -121,6 +122,13 @@ private:
 	NavPathLink m_linkNow;
 	void ApplyLinkExecutor(CPlayer& actor);
 	BotVantage m_vantage;            // owner 25.10 sniper spots (wb_bot_vantage)
+	// wb_bot_tactics (BotTactics.h): angle hold from cover, jump-strafe, loot after a kill
+	BotAngleHold m_hold;
+	BotJumpStrafe m_jumpStrafe;
+	EntityId m_lastFightTarget = 0;
+	Vec3 m_lastFightPos = Vec3(0,0,0), m_lootPos = Vec3(0,0,0);
+	float m_lootUntil = 0;
+	bool UpdateHoldAngle(BotInstance& bot,CPlayer& actor,const Vec3& threat,float distance,float desiredRange,float decisionTime);
 	bool UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime);
 	// typical fight distance for judging pickups: Marksmen with wb_bot_vantage think at sniper range
 	float PickupRange() const;

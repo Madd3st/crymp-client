@@ -175,6 +175,7 @@ void BotBrain::ResetLife()
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
 	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
 	m_vantage.Reset(CurrentVantage(),m_number);
+	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_withdrawUntil=m_nextWithdraw=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
@@ -262,6 +263,13 @@ void BotBrain::Update(BotInstance& bot, float dt)
     const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
     if(UpdateWeaponSeek(actor,decisionTime,socomQA))return;
 	IActor* enemy = m_combat.FindEnemy(actor, m_now, m_verbose);
+	if (BotConfig::Get().tactics==1 && m_lastFightTarget)
+	{
+		// the fight target died (or left): its dropped weapon / ammo is worth a look for a few seconds
+		IActor* last=g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(m_lastFightTarget);
+		if (!last || last->GetHealth()<=0)
+		{ m_lootPos=m_lastFightPos; m_lootUntil=m_now+12.0f; m_lastFightTarget=0; m_hold.Reset(); }
+	}
 	if (m_now<m_escapeUntil) enemy=nullptr; // A short, sensed-but-not-pursued local escape leg.
     if(BotConfig::Get().goalArbiter==1 && !socomQA && UpdateArbitrated(bot,actor,enemy,decisionTime,socomQA))return; // C-032
     if(UpdateUpgrade(bot,actor,enemy,decisionTime,socomQA))return;
@@ -471,6 +479,18 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		m_blackboard.enemy=0; m_blackboard.visible=false; m_blackboard.distance=0;
 		const Vec3 feet = actor.GetEntity()->GetWorldPos();
 		if (UpdateVantage(actor,feet,decisionTime)) return; // owner 25.10: snipers hold roofs
+		if (BotConfig::Get().tactics==1 && m_now<m_lootUntil && !m_upgradeTarget)
+		{
+			// fragmovies: take the dead enemy's gun/ammo before moving on
+			const EntityId drop=BotWeapons::FindDrop(actor,m_lootPos,6.0f);
+			m_lootUntil=0;
+			if (drop)
+			{
+				m_upgradeTarget=drop; m_upgradeSince=m_now;
+				WB_LOG(2,"[WarsBots] #%d LOOT item=%u at (%.1f,%.1f,%.1f) actor=%u.",m_number,drop,m_lootPos.x,m_lootPos.y,m_lootPos.z,actor.GetEntityId());
+			}
+		}
+		if (BotConfig::Get().tactics==1 && m_upgradeTarget && UpdateUpgrade(bot,actor,nullptr,decisionTime,false,true)) return;
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
 		Vec3 heard;
 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
@@ -625,6 +645,12 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		{ m_intent.gait=BotGait::Sprint; m_intent.suitMode=NANOMODE_SPEED; m_intent.combat=BotCombatIntent::None; }
 		ExecuteIntent(actor,decisionTime); return;
 	}
+	if (BotConfig::Get().tactics==1)
+	{
+		m_lastFightTarget=m_combat.Target(); m_lastFightPos=destination;
+		if (!visible && UpdateHoldAngle(bot,actor,destination,distance,desiredRange,decisionTime)) return;
+		if (visible && m_hold.Phase()!=HoldPhase::None) m_hold.Update(m_now,TVec{0,0,0},true);
+	}
 	if (visible && distance <= (m_state == State::ATTACKING ? m_profile.holdRange : m_profile.engageRange))
 	{
         UpdateAttacking(actor,destination,aim,distance,desiredRange);
@@ -632,6 +658,39 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
         UpdateChasing(actor,destination,aim,distance,visible);
     }
     UpdateCombatPost(bot,actor,decisionTime);
+}
+
+// wb_bot_tactics: the target just broke line of sight -> hold the angle from a nearby cover spot that still sees its
+// last position (BotTactics.h). Returns true when this tick was handled.
+bool BotBrain::UpdateHoldAngle(BotInstance& bot,CPlayer& actor,const Vec3& threat,float distance,float desiredRange,float decisionTime)
+{
+	const float sinceSeen=m_combat.LastSeen()>0 ? m_now-m_combat.LastSeen() : 1e9f;
+	if (!m_hold.Begin(unsigned(m_combat.Target()),m_now,sinceSeen,distance,TraitHolder(int(m_profile.style)),m_rng+unsigned(m_decisionSerial)*40503u))
+		return false;
+	const Vec3 feet=actor.GetEntity()->GetWorldPos();
+	if (m_hold.Phase()==HoldPhase::None)
+	{
+		int n=0; const CoverCandidate* spots=CurrentCover(n);
+		const Vec3 chest=threat+Vec3(0,0,1.3f);
+		const int i=spots ? PickCover(spots,n,TVec{feet.x,feet.y,feet.z},TVec{threat.x,threat.y,threat.z},desiredRange,
+			[&](const TVec& p){ return EyeRayClear(actor,Vec3(p.x,p.y,p.z+1.6f),chest); }) : -1;
+		if (i<0) { m_hold.Fail(); return false; }
+		m_hold.Assign(spots[i].p,m_now,3.0f+2.0f*Rand01());
+		WB_LOG(2,"[WarsBots] #%d HOLD angle from (%.1f,%.1f,%.1f) on (%.1f,%.1f,%.1f) actor=%u.",m_number,spots[i].p.x,spots[i].p.y,spots[i].p.z,threat.x,threat.y,threat.z,actor.GetEntityId());
+	}
+	const HoldPhase ph=m_hold.Update(m_now,TVec{feet.x,feet.y,feet.z},false);
+	if (ph!=HoldPhase::Move && ph!=HoldPhase::Hold) return false;
+	const Vec3 aim=threat+Vec3(0,0,1.3f);   // pre-aim the spot where it disappeared, chest height
+	Change(State::CHASING_ENEMY);
+	if (ph==HoldPhase::Move)
+	{
+		const TVec& s=m_hold.Spot();
+		m_intent.MoveTo(Steer(feet,Vec3(s.x,s.y,s.z)),aim); m_intent.strafe=true; m_intent.gait=BotGait::Run;
+	}
+	else { m_intent.move=false; m_intent.aim=aim; }
+	m_intent.combat=BotCombatIntent::Aim;
+	UpdateCombatPost(bot,actor,decisionTime);
+	return true;
 }
 
 void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange)
@@ -673,6 +732,10 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
             else m_shotBlockedSince=0;
             m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+travel*4.0f,aim);
             m_intent.strafe=true;
+            // fragmovies: duels are strafe + hop, never standing in the open (normal jump: Armor only)
+            if (BotConfig::Get().tactics==1 && m_blackboard.mode==NANOMODE_DEFENSE && m_intent.jump==BotJump::None &&
+                m_jumpStrafe.Want(m_now,m_blackboard.grounded,distance,TraitJumper(int(m_profile.skill),int(m_profile.style)),m_rng+unsigned(m_decisionSerial)*2654435761u))
+                m_intent.jump=BotJump::Normal;
         }
 		Change(State::ATTACKING);
 		m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
