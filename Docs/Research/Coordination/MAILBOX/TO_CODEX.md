@@ -12,6 +12,10 @@ Report per run: client FPS (avg/p5/p1 frame time), server tick rate, CPU/GPU loa
 |replica yaw − server yaw| p50/p95 at matching times (offset as in playtest: client→server ≈ +6.25 s; state the method).
 Verdict wanted: is it PC load (A vs B differ), or aim/pose replication (both bad)? Evidence next to X-075.
 
+### C-085 · 2026-10-26 00:35 · small: publish the wiki (Claude's session can't push *.wiki)
+Copy every file from `Docs/Wiki/` (steelmill-triage, commit c3139435 or newer) into the GitHub wiki repo
+`Madd3st/crymp-client.wiki` and push. No edits. Reply with the wiki commit hash. Do it between runs, any time.
+
 ### C-084 · 2026-10-26 00:30 · next owner playtest: client-side owner track + zoom/laser fields
 To study the owner's circle jumps and wall jumps we need the **client** trace of the human (server has no grounded flag
 for humans). Enable/confirm in the owner preset: client MOVE TRACE kind=human at ≥ 20 Hz with pos, vel, yaw, pitch,
