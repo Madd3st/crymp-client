@@ -3,6 +3,9 @@
 *.cdf  linguist-language=XML
 
 ThirdParty/** linguist-vendored=true
-Tools/RecastBake/meshes/*.txt -text
-Tools/RecastBake/meshes/*.json -text
-Tools/RecastBake/meshes/*.navmesh binary
+
+# Preserve the exact bytes covered by navmesh data manifests on Windows.
+/Tools/RecastBake/meshes/*.links.txt text eol=lf
+/Tools/RecastBake/meshes/*.spots.txt text eol=lf
+/Tools/RecastBake/meshes/*.manifest.json text eol=lf
+/Tools/RecastBake/meshes/*.navmesh binary
