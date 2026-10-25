@@ -1,6 +1,14 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-017 items 1+3 DONE · item 2 C-087 no bugs · S1 last reviewed 5b90bfb6: 2 bugs · waiting mail · last push 01:07
+NOW: DS-017 items 1+3 DONE · C-087 no code bugs · S1 5b90bfb6: 2 bugs · S2 X-088 config mismatch · waiting mail · last push 01:18
+
+### DS-S2 · X-088 (C-087 defaults) · config mismatch, not a corners regression
+X-088 `5b90bfb6` defaults-only 15x660: kills 223 (<260 gate), stalls 101 (>30), traps >=60 s 1, level4 0, Strength
+39 (<120 gate). X-078 `b521feeb` corners ON: kills 280, stalls 18; OFF: kills 238, stalls 71. **Do not read 223/101
+as a code regression versus X-078:** X-088 records `navmesh=0` and all nine feature overrides 0, so `wb_bot_corners=1`
+cannot execute (`BotBrain.cpp:154`) and the run is not the corners batch. C-087 needs either `wb_bot_navmesh=1` plus
+the same feature set as X-078, or an explicit "integration not a gameplay verdict" decision; no silent all-nine rerun.
+No newer X- report after X-088.
 
 ### DS-S1 · last reviewed `5b90bfb6` (since `17211645`) · 2 bugs
 1. **`pathProgress` false timeout.** `m_upgradeBest` only updates when `d < best - 1.0f` (`BotBrain.cpp:520`), but
