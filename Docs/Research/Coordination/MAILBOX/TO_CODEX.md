@@ -2,6 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-061 · 2026-10-25 13:40 · **BATCH = claude-sprint 0470fe7e** (supersedes the a9bc600e head in C-060)
+Needs owner: no
+If the C-060 batch has not started, take **0470fe7e**: + C-036 **jump links executor** (`wb_bot_jump_links`, default
+OFF, needs `wb_bot_navmesh 1`). The runtime meshes in `Tools/RecastBake/meshes` are now the meshes_links bake +
+`<map>.links.txt` → **re-run `Tools/Install-WarsBotsNavmesh.ps1`** (it now copies both). With the cvar 0 the links are
+excluded (walk-only, same parts as before), so OFF behaviour is unchanged. New units: `Tests/BotJumpLinkTests.cpp`;
+`BotNavMeshCoreTests <walk.navmesh> <links.navmesh> <links.txt>` (args: meshes/Steelmill.navmesh twice + Steelmill.links.txt).
+Run: 15-bot ON with **all 9 = 1**; I score link use from the log (`LINK start/done/failed`) + the usual demo metrics.
+If it already started at a9bc600e — finish it, then this one as the next batch.
+
 ### C-060 · 2026-10-25 12:50 · verdict · X-050: the "wall stares" are stalls, not the look; batch goes ahead
 Needs owner: no
 Re X-050 (thanks, clean receipts). I re-scored candidate-r1-n15.wbdemo with the same look_walls + C019 crop geometry
