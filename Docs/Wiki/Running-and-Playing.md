@@ -27,7 +27,7 @@ candidate) для сравнения изменений. Результат — 
 
 ## Добавить ботов вручную
 
-В консоли сервера: `wb_add 5`, `wb_skill 2`, `wb_list`, `wb_remove_all` — см. [[Команды wb|Console-Commands]].
+В консоли сервера: `wb_add 5`, `wb_skill 2`, `wb_list`, `wb_remove_all` — см. [Команды wb](Console-Commands).
 
 ## Плейтест со всеми фичами (25.10)
 

@@ -1,12 +1,12 @@
 **WarsBots**
-- [[Главная|Home]]
-- [[Как устроен бот|Bot-Architecture]]
-- [[Карта репозитория|Repository-Map]]
-- [[Запуск и игра|Running-and-Playing]]
-- [[Команды wb|Console-Commands]]
-- [[Навигация|Navigation]]
-- [[Демки|Demos]]
-- [[Команда и процесс|Team-and-Process]]
-- [[Статус и планы|Status-and-Roadmap]]
-- [[Исследования и идеи|Research-and-Ideas]]
-- [[Словарь|Glossary]]
+- [Главная](Home)
+- [Как устроен бот](Bot-Architecture)
+- [Карта репозитория](Repository-Map)
+- [Запуск и игра](Running-and-Playing)
+- [Команды wb](Console-Commands)
+- [Навигация](Navigation)
+- [Демки](Demos)
+- [Команда и процесс](Team-and-Process)
+- [Статус и планы](Status-and-Roadmap)
+- [Исследования и идеи](Research-and-Ideas)
+- [Словарь](Glossary)

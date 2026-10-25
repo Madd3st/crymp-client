@@ -4,11 +4,11 @@
 
 | Путь | Что там |
 | --- | --- |
-| `Code/CryGame/Bots/` | код ботов (C++) — см. [[Как устроен бот|Bot-Architecture]] |
+| `Code/CryGame/Bots/` | код ботов (C++) — см. [Как устроен бот](Bot-Architecture) |
 | `Code/CryGame/Actors/Player/` | игрок движка (движение, прыжки, лестницы) — бот использует его как есть |
 | `Tools/*.ps1` | скрипты Windows: сборка (`Build-WarsBots.ps1`), тестовые прогоны (`Test-WarsBots*.ps1`), запуск игры с записью (`Play-WarsBotsRecording.ps1`), выгрузка геометрии |
 | `Tools/SteelmillTriage/` | **Triage** — набор Python-инструментов анализа логов и демок (`steelmill_triage.py`) |
-| `Tools/RecastBake/` | офлайн-запекание навигационной сетки Recast (C++), см. [[Навигация|Navigation]] |
+| `Tools/RecastBake/` | офлайн-запекание навигационной сетки Recast (C++), см. [Навигация](Navigation) |
 | `Tools/Mailbox/` | скрипты почты между агентами (`wait_mail.ps1`) |
 | `Docs/STATUS.md` | статус от Codex (игровой код) |
 | `Docs/Research/STATUS.md` | общий статус проекта: цели, кто что делает, ошибки, тупики, риски, очередь |
