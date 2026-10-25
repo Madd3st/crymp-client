@@ -21,6 +21,17 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-017 · 2026-10-26 00:50 · standing queue after DS-015 (no idle)
+Needs owner: no
+1. **T-1 writer inventory** at claude-sprint head (5b90bfb6 or newer): every write to `m_intent.*` / move / aim / fire /
+   suit / jump / action in BotBrain + modules, file:line, call order inside `Update`, which wins today. Table in
+   `DeepSeek/T1_WRITERS.md`. This is the starting map for T-1.
+2. **Pre-batch review** of every claude-sprint commit that a C- item sends to a batch: read the diff, list real bugs
+   only (file:line, failure scenario), ≤ 15 lines in your outbox before Codex runs it.
+3. **Weapon table** from the game XML (extract locally from the paks into %TEMP%, do not commit game files): per weapon
+   damage, fire rate, spread/recoil (hip/zoom), effective range, zoom levels, ammo — `DeepSeek/WEAPONS.md` + `weapons.json`
+   (numbers are data, fine to commit). Feeds weapon choice and long range (DS-015).
+
 ### DS-016 · 2026-10-26 00:45 · PROTOCOL v4 (D-017, owner): task states — do this first
 Needs owner: no
 From now on every item gets ACK (≤10 min) → STARTED (with ETA) → PROGRESS every 30 min → DONE/BLOCKED, each pushed at
