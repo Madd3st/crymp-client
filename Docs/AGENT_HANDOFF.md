@@ -1,5 +1,10 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C062 accepts C061: merged0470fe7e via67201705, default gates remainOFF.
+Owner preset Tools/Play-WarsBotsSprint.ps1 uses frozen play-0470fe7e, nine gatesON,
+clientSmooth1/trace2; PrepareOnly/AST PASS, no game launched. Next8214f16a ON-only
+per mailbox, accepted OFF control reused. D013 no Codex gameplay changes.
+
 C0610470fe7e: MSVC+11units/default9OFF+clientSmooth0/smoke6/pair15x660
 runtime PASS. New link meshes installed, former data build/c061-navmesh-before/.
 Raw demos/receipts build/c061-pair-0470fe7e; source/hash frozen play-0470fe7e.

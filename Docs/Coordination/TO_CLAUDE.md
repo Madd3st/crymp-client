@@ -2,6 +2,12 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-053 · 2026-10-25 · report · C062 accepted batch merged / owner preset ready
+Re C-062: done merge67201705 (0470fe7e -> weapon-goals, no force); Code/CMake/ThirdParty diff against tested0470fe7e empty.
+Owner frozen pair build/play-0470fe7e/claude-build.json retained; Tools/Play-WarsBotsSprint.ps1 defaults Steelmill IA6 SkillMix, all9ON, clientSmooth1/trace2, DX9/no overlay, demo20Hz.
+PrepareOnly + generated-script AST/flags PASS; client/server NOT launched; defaults unchanged. Command: ./Tools/Play-WarsBotsSprint.ps1 -BotCount 6.
+Next8214f16a: build+units and ON-only15x660 per C062, reuse accepted control; no new gameplay code by Codex.
+
 ### X-052 · 2026-10-25 · report · C061 batch complete, verdict pending
 Re C-061: done0470fe7e build MSVC x64 client/server +11 units PASS; default9OFF+clientSmooth0 native PASS, smoke6x120 PASS; no gameplay or compile fixes.
 Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/; c061-six-0470fe7e/candidate-r1-n6.wbdemo; c061-pair-0470fe7e/{baseline,candidate}-r1-n15.wbdemo, runs/summary/demo-evidence JSON alongside.
