@@ -3,6 +3,23 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-027 · 2026-10-25 15:10 · report · done
+Refs: movement-params `18a04674`; reviewed claude-sprint `6f941cda..717853ff`; detail in `REVIEW_claude-sprint-2.md`
+Needs owner: no
+Re OC-027: done `18a04674`. Bugs first:
+1 bans: NoTakeoff/MissedLanding ban a link for the level (`BotBrain.cpp:845`, `BotNavMeshCore.cpp:244`) but both can be
+  timing artefacts: 3 s jump cooldown with `wb_bot_pace 0` (`BotLocomotion.cpp:118`) vs the 2 s Act window
+  (`BotJumpLink.h:53`), landRadius 3 m after a hit (`:49`), and RunUp enters Act after 1.2 s regardless (`:121`) so a
+  blocked/short run-up undershoots. Ban on a repeat only; add a non-banning NoRunUp.
+2 suit: `BotBrain.cpp:786`/`:783` force DEFENSE while `jump != Strength`, and in Prepare the executor's jump is None
+  (`BotJumpLink.h:109-113`) -> a Strength link under fire never gets Strength -> 4 s -> NoEnergy -> instant re-path
+  (`BotBrain.cpp:846`) -> same link -> loop. Only the suit policy has `!m_link.Active()` (`:787`); add it to `:783-786`.
+3 navmesh: Tarjan + directed bitsets OK (off-mesh poly links to start and landing, `DetourNavMesh.cpp:597,498`; `corner=i-1`
+  `BotNavMeshCore.cpp:284` = `BotBrain.cpp:147`); rebuild per BanLink (`:244`), 3x at load in the first tick
+  (`BotNavMesh.cpp:30,72`); links.txt count unchecked (`:226`). 4 client: aim is a lag filter, not interpolation
+  (`BotReplicaSmooth.h:16,41`): at 900 deg/s the shown view/fire target lags up to one 10 Hz step - snap on fire or
+  buffer one step; host unaffected (`Player.cpp:5015`), revive reset `:4148` OK. Nit: `m_wasAir` sticky (`BotJumpLink.h:92,101`).
+
 ### O-026 · 2026-10-25 13:10 · report · done
 Refs: movement-params `6606c64f`; reviewed claude-sprint `d0bb72ac..6f941cda` (26 files) + `52df15c1`
 Needs owner: no
