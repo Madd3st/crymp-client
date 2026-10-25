@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include "BotConfig.h"
+#include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotBrain.h"
@@ -1157,6 +1158,7 @@ bool BotBrain::EyeRayClear(CPlayer& actor,const Vec3& from,const Vec3& to) const
 // humans 0.6 %), which reads as lag. The view now rotates toward the decided look point at a per-skill rate every frame.
 float BotBrain::TurnRate() const
 {
+	if (m_profile.turnRate>0.0f) return m_profile.turnRate; // wb_bot_difficulty
 	switch (m_profile.skill)
 	{
 	case BotSkill::Beginner: return 400.0f;
@@ -1212,7 +1214,7 @@ Vec3 BotBrain::AimModelPoint(CPlayer& actor,const Vec3& observed,float distance,
 	if (!m_aimModelInit)
 	{
 		const int skill=m_profile.skill==BotSkill::Beginner?0:m_profile.skill==BotSkill::Veteran?2:m_profile.skill==BotSkill::Elite?3:1;
-		m_aimModel=BotAimModel(AimSkillPreset(skill),0x9E3779B9u*unsigned(m_number+1)+m_life);
+		m_aimModel=BotAimModel(m_profile.turnRate>0.0f?DifficultyAim(m_profile.skill):AimSkillPreset(skill),0x9E3779B9u*unsigned(m_number+1)+m_life); // turnRate>0 = wb_bot_difficulty profile
 		const Vec3 v=movement.eyeDirection.GetNormalizedSafe(actor.GetEntity()->GetWorldRotation().GetColumn1());
 		m_aimModel.SetView(RAD2DEG(atan2f(v.x,v.y)),RAD2DEG(asin_tpl(clamp_tpl(v.z,-1.0f,1.0f))));
 		m_aimModelInit=true; m_aimModelTarget=0;

@@ -33,6 +33,13 @@ struct BotProfile
     float aimErrorFloor = 0.06f; // metres: close-range tracking never becomes exact
     float trackingLag = 0.15f;   // seconds: observation-following, not target prediction
     float headPreference = 0.06f; // strategic zone choice, separate from aim error
+    // wb_bot_difficulty (BotDifficulty.h). Defaults reproduce the pre-difficulty behaviour exactly.
+    float headCap = 0.3f;         // cap of the head-zone chance
+    float fireTolDeg = 16.26f;    // fire gate: weapon within this angle of the aim point (dot 0.96)
+    float turnRate = 0.0f;        // deg/s view cap; 0 = old per-skill table in BotBrain::TurnRate
+    float sightRange = 80.0f;     // m: scan / perception range
+    float coneDeg = 110.0f;       // perception view cone
+    float hearScale = 1.0f;       // hearing distances multiplier
 	// Chance to Strength-jump right after being hit in a fight (dodge), per hit event.
 	float dodgeChance = 0.3f;
 	// Tactical competence is separate from style. All inputs must be own state or visible cues.

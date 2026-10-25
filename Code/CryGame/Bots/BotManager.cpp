@@ -6,6 +6,7 @@
 #include "CryGame/Bots/BotGeometryExport.h"
 #include "version.h"
 #include "CryGame/Bots/BotCombat.h"
+#include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotMatch.h"
 #include "CryGame/Bots/BotSpectator.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
@@ -319,7 +320,9 @@ BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyl
 	}
 	// Default rotation through the six styles so a full roster never moves in lockstep.
 	const BotStyle chosenStyle = style ? *style : BotStyle((number - 1) % int(BotStyle::Count));
-	return AddWith(position, BotProfile::Make(chosenStyle, skill), number, startAI);
+	BotProfile profile=BotProfile::Make(chosenStyle, skill);
+	if (BotConfig::Get().difficulty==1) ApplyDifficulty(profile); // DS-014 ladder; a restored roster keeps its profile
+	return AddWith(position, profile, number, startAI);
 }
 
 BotInstance* BotManager::AddWith(const Vec3* position, const BotProfile& profile, int number, bool startAI)

@@ -1980,6 +1980,13 @@ bool CPlayer::UpdateFpSpectatorView(SViewParams& viewParams)
 				pTarget->m_netAimDirSmooth = pTarget->m_netAimDir;
 			}
 		}
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+		// DS-013 (owner 25.10: bot aim looks late and crooked in FP spectator): the camera used the extra-lerped
+		// m_netAimDirSmooth while the tracer uses raw m_netAimDir, and the bot aim was already smoothed once by
+		// BotReplicaSmooth. One filter, one direction: camera = tracer.
+		if (WarsBots::BotConfig::Get().spectatorAim==1 && pTarget->IsWarsBotActor() && pTarget->m_warsBotPose && !pVehicle)
+			pTarget->m_netAimDirSmooth = pTarget->m_netAimDir;
+#endif
 
 		pTarget->m_PlayerView.Update(m_FirstPersonSpectatorParams);
 

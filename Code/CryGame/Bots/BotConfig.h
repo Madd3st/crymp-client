@@ -39,6 +39,9 @@ struct BotConfig {
  int tactics=0;        // fragmovie patterns: hold angles from cover, jump-strafe, loot after kills (BotTactics.h), default OFF
  int pathProgress=0;   // weapon-goal progress by remaining navmesh path, not straight distance (snipers), default OFF
  int jumpSanity=1;     // no random travel Strength hops, no obstacle jumps on navmesh paths (owner 25.10), default ON (D-016)
+ int spectatorAim=0;   // DS-013 FP spectator of a bot: camera uses the same aim as the tracer, no second smoothing, default OFF
+ int difficulty=0;     // DS-014 difficulty ladder (BotDifficulty.h): reaction/turn/aim/head/fire gate/range/senses per skill, default OFF
+ int finish=0;         // DS-015 finish the damaged target, no instant switch on a one-scan LOS loss, default OFF
  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);
