@@ -33,7 +33,7 @@ New-Item -ItemType Directory -Force -Path $StateDir | Out-Null
 $state = Join-Path $StateDir "mail-$Agent.last"
 
 function Get-Mail {
-  git -C $Repo fetch -q origin "${branch}:refs/remotes/origin/$branch" 2>$null | Out-Null
+  git -C $Repo fetch -q origin '+refs/heads/warsbots/*:refs/remotes/origin/warsbots/*' 2>$null | Out-Null
   $text = git -C $Repo show "refs/remotes/origin/${branch}:$file" 2>$null
   if (-not $text) { return @() }
   $items = @(); $cur = $null
