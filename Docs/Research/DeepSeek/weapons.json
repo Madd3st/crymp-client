@@ -1,0 +1,217 @@
+{
+  "schema": "warsbots-weapons/1",
+  "game": "Crysis Wars GOG, GameData.pak",
+  "source_xml": [
+    "Scripts/Entities/Items/XML/Weapons/SCAR.xml",
+    "Scripts/Entities/Items/XML/Weapons/FY71.xml",
+    "Scripts/Entities/Items/XML/Weapons/SMG.xml",
+    "Scripts/Entities/Items/XML/Weapons/Shotgun.xml",
+    "Scripts/Entities/Items/XML/Weapons/SOCOM.xml",
+    "Scripts/Entities/Items/XML/Weapons/DSG1.xml",
+    "Scripts/Entities/Items/XML/Weapons/GaussRifle.xml",
+    "Scripts/Entities/Items/XML/Weapons/Hurricane.xml"
+  ],
+  "extraction": "Extracted to %TEMP% only; no game files committed. Rates are rounds/minute from XML rate; damage is per bullet unless pellets is set.",
+  "weapons": [
+    {
+      "id": "SCAR",
+      "category": "medium",
+      "priority": 0,
+      "mass": 20,
+      "ammo": {"name": "bullet", "clip": 40, "reserve": 80},
+      "fire_mode": {
+        "name": "default", "type": "default", "rpm": 700, "damage": 21,
+        "damage_per_shot": 21, "clip": 40, "reserve": 80, "reload_s": 1.5,
+        "bullet_chamber": 1, "hit_type": "ht_Bullet", "spread_source": "default"
+      },
+      "spread": {"min": 1.0, "max": 2.25, "attack": 1.0, "decay": 0.55, "speed_m": 1.25, "rotation_m": 0},
+      "recoil": {"max": 6, "attack": 2.25, "decay": 0.30, "maxx": 4.5, "maxy": 0.95, "randomness": 0.25},
+      "effective_range": {
+        "bot_desired_m": 18, "rank_best_lo_m": 5, "rank_best_hi_m": 45, "rank_max_m": 90,
+        "xml_damage_drop": null, "xml_max_distance_m": null
+      },
+      "zoom_modes": [
+        {"name": "ironsight", "type": "IronSight", "enabled": true, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "reflexsight", "type": "IronSight", "enabled": false, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "assaultscope", "type": "IronSight", "enabled": false, "stages": [3.5], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "sniper", "type": "Scope", "enabled": false, "stages": [4, 10], "in_s": 0.15, "out_s": 0.125, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}}
+      ],
+      "alternate_modes": ["Rapid: inherits default damage/rate, adds autozoom", "Single: inherits default damage/rate, auto_fire=true", "GrenadeLauncher: disabled, 200 damage, 1 round"]
+    },
+    {
+      "id": "FY71",
+      "category": "medium",
+      "priority": 4,
+      "mass": 20,
+      "ammo": {"name": "fybullet", "clip": 30, "reserve": 60},
+      "fire_mode": {
+        "name": "default", "type": "default", "rpm": 570, "damage": 22,
+        "damage_per_shot": 22, "clip": 30, "reserve": 60, "reload_s": 1.45,
+        "bullet_chamber": 1, "hit_type": "ht_FYBullet", "spread_source": "default"
+      },
+      "spread": {"min": 1.15, "max": 2.25, "attack": 1.15, "decay": 0.50, "speed_m": 1.15, "rotation_m": 0},
+      "recoil": {"max": 8, "attack": 2.85, "decay": 0.30, "maxx": 6.0, "maxy": 1.15, "randomness": 0.25},
+      "effective_range": {
+        "bot_desired_m": 18, "rank_best_lo_m": 5, "rank_best_hi_m": 40, "rank_max_m": 80,
+        "xml_damage_drop": null, "xml_max_distance_m": null
+      },
+      "zoom_modes": [
+        {"name": "ironsight", "type": "IronSight", "enabled": true, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 1.0, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 1.0, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "reflexsight", "type": "IronSight", "enabled": false, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "assaultscope", "type": "IronSight", "enabled": false, "stages": [3.5], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "sniper", "type": "Scope", "enabled": false, "stages": [4, 10], "in_s": 0.15, "out_s": 0.125, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}}
+      ],
+      "alternate_modes": ["Rapid: inherits default damage/rate", "Single: inherits default damage/rate", "GrenadeLauncher: disabled, 200 damage, 1 round"]
+    },
+    {
+      "id": "SMG",
+      "category": "medium",
+      "priority": 5,
+      "mass": 15,
+      "ammo": {"name": "smgbullet", "clip": 50, "reserve": 100},
+      "fire_mode": {
+        "name": "default", "type": "default", "rpm": 950, "damage": 15,
+        "damage_per_shot": 15, "clip": 50, "reserve": 100, "reload_s": 1.35,
+        "bullet_chamber": 1, "hit_type": "ht_SMGBullet", "spread_source": "default"
+      },
+      "spread": {"min": 1.0, "max": 3.2, "attack": 1.0, "decay": 0.70, "speed_m": 1.15, "rotation_m": 0},
+      "recoil": {"max": 10, "attack": 3.25, "decay": 0.30, "maxx": 5.5, "maxy": 2.0, "randomness": 0.85},
+      "effective_range": {
+        "bot_desired_m": 12, "rank_best_lo_m": 2, "rank_best_hi_m": 20, "rank_max_m": 40,
+        "xml_damage_drop": null, "xml_max_distance_m": null
+      },
+      "zoom_modes": [
+        {"name": "ironsight", "type": "IronSight", "enabled": true, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 1.0, "maxx": 1.10, "maxy": 1.10}},
+        {"name": "reflexsight", "type": "IronSight", "enabled": false, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 1.0, "maxx": 1.10, "maxy": 1.10}},
+        {"name": "assaultscope", "type": "IronSight", "enabled": false, "stages": [3.5], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 1.0, "maxx": 1.10, "maxy": 1.10}},
+        {"name": "sniper", "type": "Scope", "enabled": false, "stages": [4, 10], "in_s": 0.15, "out_s": 0.125, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 1.0, "maxx": 1.10, "maxy": 1.10}}
+      ],
+      "alternate_modes": ["Rapid: inherits default damage/rate", "Single: inherits default damage/rate"]
+    },
+    {
+      "id": "Shotgun",
+      "category": "medium",
+      "priority": 0,
+      "mass": 25,
+      "ammo": {"name": "shotgunshell", "clip": 8, "reserve": 32},
+      "fire_mode": {
+        "name": "Shotgun", "type": "Shotgun", "rpm": 240, "damage": 10,
+        "pellets": 7, "pellet_damage": 10, "damage_per_shot": 70,
+        "clip": 8, "reserve": 32, "reload_s": 4.0, "bullet_chamber": 1,
+        "hit_type": "ht_ShotgunShell", "rate_source": "default",
+        "spread_source": "default", "pellet_spread": 5.0
+      },
+      "spread": {"min": 3.0, "max": 6.0, "attack": 3.15, "decay": 1.0, "speed_m": 0.35, "rotation_m": 0},
+      "recoil": {"max": 12, "attack": 5.0, "decay": 0.75, "maxx": 22.0, "maxy": 3.5, "randomness": 4.0},
+      "effective_range": {
+        "bot_desired_m": 6, "rank_best_lo_m": 0, "rank_best_hi_m": 8, "rank_max_m": 18,
+        "xml_damage_drop": {"start_m": 10, "per_m": 1.0}, "xml_max_distance_m": null
+      },
+      "zoom_modes": [
+        {"name": "ironsight", "type": "IronSight", "enabled": true, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": null, "spread_mod_min": null, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "reflexsight", "type": "IronSight", "enabled": false, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": null, "spread_mod_min": null, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "assaultscope", "type": "IronSight", "enabled": false, "stages": [3.5], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": null, "spread_mod_min": null, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "sniper", "type": "Scope", "enabled": false, "stages": [4, 10], "in_s": 0.15, "out_s": 0.125, "spread_mod_max": null, "spread_mod_min": null, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}}
+      ],
+      "alternate_modes": ["Narrow: 7 pellets x 10, pellet spread 1.3, 240 rpm", "default base node: 10 damage, 240 rpm"]
+    },
+    {
+      "id": "SOCOM",
+      "category": "small",
+      "priority": 0,
+      "mass": 10,
+      "ammo": {"name": "lightbullet", "clip": 20, "reserve": 40},
+      "fire_mode": {
+        "name": "default", "type": "default", "rpm": 450, "damage": 17,
+        "damage_per_shot": 17, "clip": 20, "reserve": 40, "reload_s": 0.85,
+        "bullet_chamber": 1, "hit_type": "ht_LightBullet", "spread_source": "default"
+      },
+      "spread": {"min": 1.0, "max": 3.5, "attack": 1.75, "decay": 0.50, "speed_m": 1.15, "rotation_m": 0},
+      "recoil": {"max": 12, "attack": 4.0, "decay": 0.30, "maxx": 12.0, "maxy": 0.95, "randomness": 0.5},
+      "effective_range": {
+        "bot_desired_m": 10, "rank_best_lo_m": 0, "rank_best_hi_m": 10, "rank_max_m": 30,
+        "xml_damage_drop": null, "xml_max_distance_m": null
+      },
+      "burst": {"shots": 2, "burst_rate": 160, "fire_rate": 800},
+      "zoom_modes": [
+        {"name": "zoommode", "type": "default", "enabled": true, "stages": [1.4], "in_s": 0.115, "out_s": 0.115, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "ironsight", "type": "IronSight", "enabled": true, "stages": [], "in_s": null, "out_s": null, "spread_mod_max": null, "spread_mod_min": null, "recoil_mod": null}
+      ],
+      "alternate_modes": ["Burst: 2 shots at 800 rpm; internal burst rate 160"]
+    },
+    {
+      "id": "DSG1",
+      "category": "medium",
+      "priority": 3,
+      "mass": 35,
+      "ammo": {"name": "sniperbullet", "clip": 10, "reserve": 20},
+      "fire_mode": {
+        "name": "Single", "type": "Single", "rpm": 38, "damage": 88,
+        "damage_per_shot": 88, "clip": 10, "reserve": 20, "reload_s": 1.8,
+        "bullet_chamber": 1, "hit_type": "ht_SniperBullet", "spread_source": "default"
+      },
+      "spread": {"min": 3.0, "max": 6.0, "attack": 3.0, "decay": 1.0, "speed_m": 1.15, "rotation_m": 1.0},
+      "recoil": {"max": 12, "attack": 10.0, "decay": 0.30, "maxx": 8.0, "maxy": 3.0, "randomness": 2.0},
+      "effective_range": {
+        "bot_desired_m": 35, "rank_best_lo_m": 35, "rank_best_hi_m": 200, "rank_max_m": 300,
+        "xml_damage_drop": null, "xml_max_distance_m": null
+      },
+      "zoom_modes": [
+        {"name": "ironsight", "type": "IronSight", "enabled": true, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "reflexsight", "type": "IronSight", "enabled": false, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "assaultscope", "type": "IronSight", "enabled": false, "stages": [3.5], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "sniper", "type": "Scope", "enabled": false, "stages": [4, 10], "in_s": 0.15, "out_s": 0.125, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}}
+      ],
+      "attachments": ["SniperScope -> sniper 4x/10x", "AssaultScope -> 3.5x", "Reflex -> 1.4x"],
+      "alternate_modes": []
+    },
+    {
+      "id": "GaussRifle",
+      "category": "medium",
+      "priority": 2,
+      "mass": 35,
+      "ammo": {"name": "gaussbullet", "clip": 5, "reserve": 10},
+      "fire_mode": {
+        "name": "Single", "type": "Single", "rpm": 25, "damage": 130,
+        "damage_per_shot": 130, "clip": 5, "reserve": 10, "reload_s": 2.05,
+        "bullet_chamber": 1, "hit_type": "gaussbullet", "spread_source": "default"
+      },
+      "spread": {"min": 3.0, "max": 6.0, "attack": 3.5, "decay": 1.0, "speed_m": 1.15, "rotation_m": 1.0},
+      "recoil": {"max": 12, "attack": 10.0, "decay": 0.30, "maxx": 16.0, "maxy": 3.0, "randomness": 2.0},
+      "effective_range": {
+        "bot_desired_m": 35, "rank_best_lo_m": 30, "rank_best_hi_m": 200, "rank_max_m": 300,
+        "xml_damage_drop": null, "xml_max_distance_m": null
+      },
+      "zoom_modes": [
+        {"name": "ironsight", "type": "IronSight", "enabled": true, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "reflexsight", "type": "IronSight", "enabled": false, "stages": [1.4], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "assaultscope", "type": "IronSight", "enabled": false, "stages": [3.5], "in_s": 0.2, "out_s": 0.2, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}},
+        {"name": "sniper", "type": "Scope", "enabled": false, "stages": [4, 10], "in_s": 0.15, "out_s": 0.125, "spread_mod_max": 0.75, "spread_mod_min": 0.0001, "recoil_mod": {"attack": 0.75, "maxx": 0.75, "maxy": 0.75}}
+      ],
+      "attachments": ["SniperScope -> sniper 4x/10x", "AssaultScope -> 3.5x", "Reflex -> 1.4x"],
+      "alternate_modes": []
+    },
+    {
+      "id": "Hurricane",
+      "category": "medium",
+      "priority": 0,
+      "mass": 50,
+      "ammo": {"name": "hurricanebullet", "clip": 500, "reserve": 500},
+      "fire_mode": {
+        "name": "Rapid", "type": "Rapid", "rpm": 1000, "damage": 21,
+        "ai_vs_player_damage": 40, "damage_per_shot": 21,
+        "clip": 500, "reserve": 500, "reload_s": 3.2,
+        "bullet_chamber": null, "hit_type": "ht_HurricaneBullet",
+        "spread_source": "Rapid", "max_distance_m": 800
+      },
+      "spread": {"min": 1.35, "max": 2.35, "attack": 0.75, "decay": 0.50, "speed_m": null, "rotation_m": null},
+      "recoil": {"max": 10, "attack": 1.25, "decay": 0.70, "maxx": 25.0, "maxy": 1.35, "randomness": 0.25},
+      "effective_range": {
+        "bot_desired_m": 20, "rank_best_lo_m": 3, "rank_best_hi_m": 20, "rank_max_m": 45,
+        "xml_damage_drop": null, "xml_max_distance_m": 800
+      },
+      "zoom_modes": [],
+      "alternate_modes": []
+    }
+  ]
+}

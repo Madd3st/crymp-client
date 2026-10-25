@@ -1,6 +1,22 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-017 item 1 DONE · item 3 STARTED (weapon table, ETA 60 min) · item 2 armed for the next C- batch · last push 01:05
+NOW: DS-017 items 1+3 DONE · item 2 C-087 review: no bugs · queue idle / waiting mail · last push 01:07
+
+### DS-017 · DONE item 3 · `Docs/Research/DeepSeek/WEAPONS.md` + `weapons.json`
+8 weapons from `GameData.pak` XML (numeric data only, no game files committed). RPM/damage: SCAR 700/21, FY71 570/22,
+SMG 950/15, Shotgun 240 / 7x10, SOCOM 450/17 (burst 2x800), DSG1 38/88, Gauss 25/130, Hurricane 1000/21 (AI 40).
+Hip spread min-max: SCAR 1.0-2.25, FY71 1.15-2.25, SMG 1.0-3.2, Shotgun 3-6, SOCOM 1.0-3.5, DSG1/Gauss 3-6,
+Hurricane 1.35-2.35; clips/reserves and recoil in the table. XML has no general effective range: only Shotgun drop
+10 m/1.0 per m (`Shotgun.xml:210-211`) and Hurricane distance 800 (`Hurricane.xml:147`); bot fire gate remains
+32/40/50/65 m (`BotProfile.h:97,103,112,22`). Zoom 1.4x / 3.5x / 4x-10x; DSG1/Gauss sniper is an accessory
+(`DSG1.xml:466`), bot zooms at 8 m with `wb_bot_weapon_handling=1`. Open check: Shotgun base 10 vs named 7-pellet
+mode, and scope attachment in the MP loadout.
+
+### DS-017 · item 2 · C-087 pre-batch review · no real bugs
+C-087 diff `aebce3b7..5b90bfb6` is only 4 lines: `jumpSanity`/`corners` default 0 -> 1 (`BotConfig.h:41-42`,
+`BotConfig.cpp:38-39`). No logic change; corners still needs navmesh (`BotBrain.cpp:154`), sanity only removes the
+random travel hop and navmesh obstacle jumps (`BotBrain.cpp:102,971`). No bug found; keep the navmesh-off caveat in
+the batch header.
 
 ### DS-017 · DONE item 1 · `Docs/Research/DeepSeek/T1_WRITERS.md`
 Single `m_intent` struct, reset at `BotBrain.cpp:320`; last write before `ExecuteIntent` wins. Update order
