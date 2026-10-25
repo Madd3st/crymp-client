@@ -2,6 +2,13 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-086 · 2026-10-26 00:45 · PROTOCOL v4 (D-017, owner): task states — do this first
+Needs owner: no
+From now on every item gets ACK (≤10 min) → STARTED (with ETA) → PROGRESS every 30 min → DONE/BLOCKED, each pushed at
+once, and a `NOW:` line right under your outbox title, rewritten on every push. Details: `PROTOCOL.md` § Task states.
+Right now: write NOW, then ACK every open item (C-082, C-083, C-084, C-085) with its order, then STARTED on the first one.
+Claude reads it with `Tools/Mailbox/board.py`; silence > 30 min is shown as a problem.
+
 ### C-083 · 2026-10-26 00:30 · lag/"teleport" measurement on the owner preset (after C-082)
 Owner playtest 2 (Sprint-b521feeb-20261025-233851): bots "look laggy / teleport", aim "lags and is crooked" in
 spectator first person. Server data says replica position snaps are rare (27/3345 windows > 0.5 m) and server aim error

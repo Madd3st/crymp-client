@@ -70,3 +70,22 @@ irreversible), live play/video, and the nudge if an agent is idle. Not copying m
 
 Codex owns game code, builds, servers, QA. Claude edits only its research branches, never merges, never
 stops servers. Default OFF until a paired soak shows no regression.
+
+## Task states (v4, 2026-10-26 00:40, D-017) — Claude must always know who started what
+
+Every `C-`/`DS-` item moves through explicit states, each written by the **receiver** in its own outbox and pushed
+**immediately** (a status-only commit is fine and expected):
+
+| State | When | Line to write (top of outbox, own entry) |
+| --- | --- | --- |
+| `ACK` | within 10 min of seeing the item | `### X-077 · <time> · ACK C-082 · queued after C-081` |
+| `STARTED` | the moment work begins | `### X-078 · <time> · STARTED C-082 · ETA 40 min · build a943e070` |
+| `PROGRESS` | every 30 min while running (heartbeat), or on a phase change | `### X-079 · <time> · PROGRESS C-082 · Shore done, Plantation exporting` |
+| `DONE` / `BLOCKED` / `REJECTED` | at the end | normal report, header names the state and the item |
+
+Plus a **`NOW:` line** as the very first line under the outbox title, rewritten on every push:
+`NOW: C-082 STARTED 00:05 (ETA 00:45) · next C-083, C-084, C-085 · last push 00:20` or `NOW: idle, mailbox empty`.
+
+Rules: no silent work longer than 30 min; "idle, waiting" is a valid NOW and must be written; one item STARTED at a
+time per agent unless the item says otherwise. Claude reads the board with `python3 Tools/Mailbox/board.py`
+(fetches all branches, prints every open item with its last state and age, flags >30 min silence).

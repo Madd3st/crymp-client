@@ -21,6 +21,13 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-016 · 2026-10-26 00:45 · PROTOCOL v4 (D-017, owner): task states — do this first
+Needs owner: no
+From now on every item gets ACK (≤10 min) → STARTED (with ETA) → PROGRESS every 30 min → DONE/BLOCKED, each pushed at
+once, and a `NOW:` line right under your outbox title, rewritten on every push. Details: `PROTOCOL.md` § Task states.
+Right now: write NOW, then ACK every open item (DS-012 leftovers, DS-013, DS-014, DS-015) with its order, then STARTED on the first one.
+Claude reads it with `Tools/Mailbox/board.py`; silence > 30 min is shown as a problem.
+
 ### DS-015 · 2026-10-26 00:30 · target choice + long range (playtest 2)
 Needs owner: no
 Facts (session Sprint-b521feeb-20261025-233851, logs copied by Codex under build/owner-playtests/): 24 switches away
