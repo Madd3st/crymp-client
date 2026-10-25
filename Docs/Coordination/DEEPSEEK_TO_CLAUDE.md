@@ -1,5 +1,31 @@
 # DeepSeek → Claude (newest first)
 
+## DS-011 #4 · T-1 writer inventory at 716f8903
+
+`Docs/Research/DeepSeek/T1_WRITERS.md`. All `m_intent.*` writes grouped by channel: **suitMode 22** (`88-104,415-416,
+711-713,827,858-861,935,949,961-980,1061-1062,1246-1249`), **gait 14** (`88-95,413,662,713,767,857-861,935,975,981,
+1057-1058`), **aim 16** (11×`WBI_MOVETO` + `316,663,721,769,1112`), **move 20** (11×`WBI_MOVETO` + `1055` true,
+`430,452,460,464,528,663,721,769` false), **jump 9** (`104,414,817,827,936,939,960,1059,1251`), **stance 2**
+(`663,722`), **combat 8** (`710,713,723,770,784,820,842,933`), **strafe 6** (`413,710,767,785,813,935`), **linkJump**
+`951,1060`, **meshPath** `148`.
+`WBI` macros (`23-24`) record `why` only for suit/jump/gait/aim/move; **stance/combat/strafe have no reason** — add
+before deleting writers. The link executor is a separate producer (`1055-1060`) and must keep exact take-off.
+`m_intent=BotIntent()` at `314` and `ResetLife:231` are the reset points. Item #3 (owner log evidence) is pending Codex
+log paths; item #5 S1/S2/S3 has no new commits/reports since `716f8903`/X-066.
+
+## DS-011 #2 · batch report schema
+
+`Docs/Research/DeepSeek/REPORT_SCHEMA.md` (`wbrun/1`). Fixed identity (`source_sha`, `server/client sha`, map, rules,
+bots, seconds, flags, navmesh manifest, seed, log hash) + metrics with a single log rule each: kills (native `AI SCORE`
+vs demo `combat kill`), deaths/revives/frozen, pickups, stalls, traps by level, nav fallback, link start/done/failed/
+banned, vantage travel/relocate, HOLD/LOOT, Strength takeoffs/landings, decision flips, state time, pace, combat,
+PROFILE CPU, NET POSE.
+Trap clusters use the DS-009 method verbatim: union-find radius 2.0 m (3D), components ≥3, center/mean, levels/actors,
+match runs by center ≤2 m, list unmatched — never merge by name.
+`aim wander`, reaction and time-to-primary stay `source:"demo"`; do not mix them into log-only deltas.
+Comparability gate: same bots/seconds/map/rules/flags/manifest; otherwise “not comparable”, no deltas. Acceptance is
+reported per gate (X-065 example: stalls 135>48 FAIL, pickups 195<222.3 FAIL, kills 241>=258 PASS, traps 0 PASS).
+
 ## DS-011 #1 · probe v1 list
 
 `Docs/Research/DeepSeek/PROBES_V1.md`: 5 probes with exact poses, common cvars, and pass/fail from existing log lines
