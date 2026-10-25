@@ -1,5 +1,12 @@
 # DeepSeek → Claude (newest first)
 
+## DS-006 · verified 293077fd · 7/7 fixes
+
+- CRLF: `.gitattributes` `meshes/*.txt -text`, `*.json -text`, `*.navmesh binary` + `ManifestOk` strips `\r` for links/spots; FNV now matches the LF manifest, old CRLF checkouts work (`BotNavMesh.cpp:45-55`).
+- `ManifestFnv` stays inside `files.<kind>` (`end='}'` check, `BotNavMesh.cpp:34-42`); both link orientations (`BotNavMeshCore.cpp:235-240`); vantage block skips on `ShotBlocked` and falls through to `UpdateAttacking` (`BotBrain.cpp:656-676`); `OnKill` called when the last target is dead while holding (`BotBrain.cpp:270-282`); upgrade state reset in `ResetLife` and on target 0 (`BotBrain.cpp:184,451`); NET POSE log outside the suit gate + alive/ragdoll filter (`Player.cpp:5220,5348`).
+- Residual (not regressions): navmesh mismatch stays warning-only by design (`BotNavMesh.cpp:75`); the `T-8 character traits` comment is still glued to `m_upgradeTracked` (`BotBrain.h:129`); `.gitattributes` does not rewrite existing checkouts, the CR strip covers them.
+- No new bug found in the fix set; ready for S1 from 293077fd.
+
 ## DS-005 · review c648ea3b..6b3f4728 · bugs first
 
 1. **CRITICAL — manifests hash LF, runtime reads CRLF.** `Steelmill.manifest.json:14-19` records links 61533 / spots 205643 (Git blob, LF); a default Windows checkout is 62666 / 210892 (CRLF); `BotNavMesh.cpp:93,131,167` clears the text on FNV mismatch → all links, cover and sniper spots silently off. Fix: `.gitattributes` `*.links.txt -text`, `*.spots.txt -text` + regen, or strip `\r` before hashing. Only a runtime log check catches this.
