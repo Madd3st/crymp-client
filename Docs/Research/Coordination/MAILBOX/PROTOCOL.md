@@ -89,3 +89,21 @@ Plus a **`NOW:` line** as the very first line under the outbox title, rewritten 
 Rules: no silent work longer than 30 min; "idle, waiting" is a valid NOW and must be written; one item STARTED at a
 time per agent unless the item says otherwise. Claude reads the board with `python3 Tools/Mailbox/board.py`
 (fetches all branches, prints every open item with its last state and age, flags >30 min silence).
+
+## Task cycle v5 (2026-10-26, D-019) — catch cheap, promote only on evidence
+
+| Step | Who | Cost | Stop rule |
+| --- | --- | --- | --- |
+| 0. `C-`/`DS-` item: what, why, acceptance metric, flag exit criterion (promote / diagnostic / delete) | Claude | cheap | no acceptance → not taken |
+| 1. **Oracle before code**: unit / compile / walk_sim / probe that catches exactly this bug | Claude (+DeepSeek review) | cheap | oracle must be red on the current bug |
+| 2. Code behind a default-OFF flag | Claude | medium | — |
+| 3. Offline green (units + compile_check + walk_sim) | Claude | seconds | red → fix, no build |
+| 4. DeepSeek pre-batch review of the diff | DeepSeek | cheap | real bug → back to 2 |
+| 5. Build — one per batch, several C- items together | Codex | expensive | compile error → trivial fix + report |
+| 6. Probe 1–3 min (scenario) | Codex | medium | FAIL → stop, no soak |
+| 7. 15-bot pair — acceptance / default change only, **max one per day** | Codex | expensive | recipe (feature preset + effective cvars) printed and checked before start |
+| 8. Verdict by `REPORT_SCHEMA` numbers, not by eye | Claude | cheap | — |
+| 9. Merge green → weapon-goals → main every 2–3 days; STATUS + one outbox line | Codex / Claude | cheap | — |
+
+Owner: decisions (`DECISIONS.md`) and feel playtests only — never regression hunting. A "defaults-only" run without the
+feature preset is not a valid acceptance run.

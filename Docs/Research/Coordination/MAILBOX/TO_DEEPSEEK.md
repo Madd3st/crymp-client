@@ -21,6 +21,20 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-019 · 2026-10-26 02:40 · PS parallel track (D-018): T-0 spec + vehicles + PS minimum
+Needs owner: no
+Owner decided (D-018): IA first, PS designed in parallel; **3–4 bots per team, built to scale**; modes with and without
+vehicles; **entering/exiting a vehicle is mandatory** in PS v1. After DS-018, write `Docs/Research/DeepSeek/PS_T0_SPEC.md`:
+1. `IBotGameMode` interface (IA and PS implementations): mode query, team assignment and balancing (3–4 per team,
+   scaling rule), spawn by team / spawn groups / bunkers, participant registration (replace the IA-only
+   `BotMatch::Register` and every `strcmp("InstantAction")`), score keys; file:line of every place to change.
+2. Vehicles in CryEngine 2 / Crysis Wars: how a player enters and exits (IVehicle seats, actions, `IVehicleSystem`,
+   what the server must call for a channel-0 actor), what replicates, how a bot would drive (movement request vs
+   vehicle input actions), which vehicles exist on Shore/Plantation (your PS_MAPS.json), what can go wrong.
+3. PS v1 minimum as a checklist with acceptance tests: spawn by team, capture a point, buy a SCAR (prestige), enter a
+   vehicle as driver/passenger, drive to a point, exit; "vehicles off" mode.
+Read-only, cite file:line; game scripts extracted locally only.
+
 ### DS-019 · 2026-10-26 02:40 · process cycle doc + PS specs in parallel (D-018/D-019/D-020)
 Needs owner: no
 Owner decisions: IA first, PS in parallel (D-018); PS = 3–4 bots per team, scalable, modes with and without vehicles,
