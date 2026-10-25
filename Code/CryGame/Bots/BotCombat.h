@@ -31,6 +31,9 @@ public:
 	const Vec3& LastAim() const { return m_lastAim; }
 	float SampleTime() const { return m_sampleTime; }
 	float LastSeen() const { return m_lastSeen; } // last time the target was visible (0 = never)
+	// C-037 hearing (wb_bot_perception=1): closest enemy heard (gunshot <= 60 m, Speed sprint <= 12 m) but not seen.
+	bool Heard(float now, float maxAge, Vec3& pos) const
+	{ if (m_heardAt>0 && now-m_heardAt<=maxAge) { pos=m_heardPos; return true; } return false; }
 	// Last Attack had LOS from the eyes but the barrel was blocked by cover.
 	bool ShotBlocked() const { return m_shotBlocked; }
 	// Profiling counters across all bots (main thread only), reset on read.
@@ -53,6 +56,8 @@ private:
 	EntityId m_target = 0;
 	EntityId m_firingWeapon = 0;
 	float m_lastSeen = 0;
+	Vec3 m_heardPos = Vec3(0,0,0);
+	float m_heardAt = 0;
 	float m_nextBurst = 0;
 	float m_burstEnd = 0;
 	float m_burst = 0.2f, m_burstGap = 0.65f;

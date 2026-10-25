@@ -31,7 +31,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_perception.Reset(); }
+void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_heardAt = 0; m_heardPos.zero(); m_perception.Reset(); }
 
 void BotCombat::StopFire()
 {
@@ -164,6 +164,7 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 		o.eye=PVec{eye.x,eye.y,eye.z}; o.forward=PVec{fwd.x,fwd.y,fwd.z};
 		m_perception.BeginTick(o);
 	}
+	float heardDistance=1e9f; // closest heard-but-unseen enemy this scan
 	IActorIteratorPtr iterator=actors->CreateActorIterator();
 	while (IActor* candidate=iterator->Next())
 	{
@@ -189,6 +190,8 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 			cue.damagedMe=candidate->GetEntityId()==m_retaliator && now<m_retaliatorUntil;
 			const TargetPercept seen=m_perception.Observe(cue);
 			const bool tracked=candidate==old && m_visible; // an acquired, still visible target is kept by LOS
+			if (seen.heard && !seen.visible && distance<heardDistance)
+			{ heardDistance=distance; m_heardPos=candidate->GetEntity()->GetWorldPos(); m_heardAt=now; }
 			if (!seen.visible && !tracked) continue;
 		}
 		else if (!los) continue;

@@ -459,6 +459,21 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		Change(State::SEARCHING_ENEMY);
 		m_blackboard.enemy=0; m_blackboard.visible=false; m_blackboard.distance=0;
 		const Vec3 feet = actor.GetEntity()->GetWorldPos();
+		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
+		Vec3 heard;
+		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
+			(heard-feet).GetLengthSquared2D()>36.0f && (heard-feet).GetLengthSquared2D()<2500.0f &&
+			(heard-m_patrolGoal).GetLengthSquared2D()>25.0f)
+		{
+			NavMeshCore* mesh = CurrentNavMesh();
+			const float from[3] = {feet.x, feet.y, feet.z}, to[3] = {heard.x, heard.y, heard.z};
+			float snap[3];
+			if (!mesh || !mesh->Project(from, snap) || mesh->Reachable(from, to))
+			{
+				m_patrolGoal = heard; m_patrolUntil = m_now + 8.0f; m_detour = false;
+				WB_LOG(2, "[WarsBots] #%d HEARD gunshot at (%.1f,%.1f,%.1f), investigating.", m_number, heard.x, heard.y, heard.z);
+			}
+		}
 		if (m_now >= m_patrolUntil || (m_patrolGoal-feet).GetLengthSquared2D() < 4.0f)
 		{
 			// Roam between the map's IA spawn points (public map knowledge, like a human's),
@@ -797,8 +812,10 @@ void BotBrain::ApplyLookPolicy(CPlayer& actor)
 	const Vec3 asked=m_intent.aim-eye;
 	in.viewYaw=RAD2DEG(atan2f(asked.x,asked.y));
 	in.speed=m_blackboard.velocity.GetLength2D();
-	Vec3 interest(0,0,0); bool hasInterest=false;
+	Vec3 interest(0,0,0), heard(0,0,0); bool hasInterest=false;
 	if (m_combat.Target() && !m_combat.Visible()) { interest=m_combat.LastPosition()+Vec3(0,0,1.2f); hasInterest=true; }
+	else if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,2.5f,heard))
+	{ interest=heard+Vec3(0,0,1.2f); hasInterest=true; } // C-037 hearing: glance at a gunshot (clear-ray rule still applies)
 	else if (IEntity* item=gEnv->pEntitySystem->GetEntity(m_upgradeTarget?m_upgradeTarget:m_weaponTarget))
 	{ interest=item->GetWorldPos(); hasInterest=true; }
 	LookVec pts[8]; int n=0;
