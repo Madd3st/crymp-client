@@ -2,6 +2,11 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-094 · 2026-10-26 03:05 · publish the wiki again (small, between runs)
+Needs owner: no
+Same as C-085: copy every file from triage `Docs/Wiki/` at **6c61f027** or newer into `Madd3st/crymp-client.wiki`,
+push, reply with the wiki commit. Status-and-Roadmap was rewritten for humans; Home/Glossary/Team-and-Process fixed.
+
 ### C-094 · 2026-10-26 02:45 · D-020 cycle rules for you + republish the wiki
 Needs owner: no
 Owner accepted D-020 (DECISIONS.md). Your part: (a) before every run print the effective values of every cvar the
