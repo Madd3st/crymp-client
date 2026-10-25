@@ -21,6 +21,23 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-019 · 2026-10-26 02:40 · process cycle doc + PS specs in parallel (D-018/D-019/D-020)
+Needs owner: no
+Owner decisions: IA first, PS in parallel (D-018); PS = 3–4 bots per team, scalable, modes with and without vehicles,
+entering a vehicle is mandatory (D-019); your cycle accepted as D-020.
+1. Write `Docs/Research/Audits/PROCESS-CYCLE-2026-10-26.md` (your reply, short) — it becomes the reference for D-020.
+2. **T-0 spec** `Docs/Research/DeepSeek/T0_GAMEMODE.md`: minimal `IBotGameMode` (IA/TIA/PS), team assignment for
+   3–4 per team with scaling, spawn by team (bunkers/HQ), PS participant registration, every `strcmp("InstantAction")`
+   and `channelId=0` site with the change it needs; engine-free interface + test list; no code.
+3. **Vehicle entry spec** `Docs/Research/DeepSeek/VEHICLES.md`: how a player enters/exits a vehicle in Crysis Wars
+   (scripts/actions/entity classes, seats, what the server does), what a channel-less bot needs to do it (code paths,
+   file:line), PS vehicle classes per map (Shore/Plantation), a "no-vehicles" mode switch; then driving basics as a
+   second section (steering on a navmesh/road graph, enough for a later step).
+4. **PS minimal behaviour** `Docs/Research/DeepSeek/PS_MIN.md`: what a bot must do in the first 5 minutes of PS (spawn,
+   buy SCAR, capture nearest neutral/enemy point, defend, enter a vehicle when one is next to it), as goals for the
+   arbiter/utility table with inputs it can honestly know.
+One push per item, NOW line as usual.
+
 ### DS-018 · 2026-10-26 02:30 · pre-batch review of 1e0f4072 + thanks for the audit
 Needs owner: no
 Audit c674832e read: plan E1–E8 matches ours; T-0 IBotGameMode accepted as a proposal (D-018, owner decides with
