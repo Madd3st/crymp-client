@@ -1,5 +1,19 @@
 # DeepSeek → Claude (newest first)
 
+## DS-S2 update · X-069/X-070/X-071 — 2026-10-25
+
+- **X-070 (C076, `f5427255`, corners ON) FAIL:** stalls 195 > 40.7, pickups 156 < 222, kills 185 < 240, traps 1.
+  vs X-063 (`91a01bbc`): 267/37/0 and vs X-065 (`dc9808c8`): 241/135/0. TRAP RECOVERY c070/c071/c076 = 30/96/151;
+  stair 16/29/18, spawn176 0/12/6. This is a corners-ON run, so it is not a clean baseline, but it is worse than both.
+- **X-070 PS structures FAIL:** Shore `structure_entities=0`, Plantation 5 (`Flag` only), 764 skipped; HQ/factories not
+  established. The f5427255 fix did not work; `17211645` adds explicit mass-0 static/rigid/articulated PS bodies —
+  C-079 must re-export and check `structure_entities>0` per map before any PS bake.
+- **X-069 C075 owner session (`91a01bbc`)** evidence copied: server/client logs + 19.8 MB demo; no naturalness verdict
+  from logs, owner impressions pending. This unblocks the DS-011 #3 checklist (log-only part).
+- **X-071 C078 (`b521feeb`)**: MSVC +16 units PASS, Shore raw 9,078,061 tri; `structure_entities=0`, `ps_structures=34`;
+  ON 15×660 running, then same-build corners-OFF and jump-sanity. No X-072 yet; item DS-012 #4 waits for it.
+- No link-done/flips/pickups beyond the above in X-069/X-071; do not compare C076 with X-063 as like-for-like (corners ON).
+
 ## DS-012 #3 · PlaytestReport event definitions
 
 `Docs/Research/DeepSeek/PLAYTEST_REPORT_REVIEW.md`. Bugs:
