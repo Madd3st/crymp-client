@@ -1,5 +1,11 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C062 follow-up8214f16a: MSVC+11units+ON-only15x660 all9 runtime PASS;
+accepted OFF0470 reused as specifically requested, no duplicate smoke/control.
+Raw build/c062-on-8214f16a, frozen play-8214f16a; waiting Claude verdict before
+merge8214. Owner preset remains accepted0470, all9ON/clientSmooth1/trace2.
+No games active, original map memory restored. D013: no Codex gameplay changes.
+
 C062 accepts C061: merged0470fe7e via67201705, default gates remainOFF.
 Owner preset Tools/Play-WarsBotsSprint.ps1 uses frozen play-0470fe7e, nine gatesON,
 clientSmooth1/trace2; PrepareOnly/AST PASS, no game launched. Next8214f16a ON-only
