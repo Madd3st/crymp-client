@@ -3,6 +3,7 @@
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotBrain.h"
+#include "CryGame/Bots/BotCorners.h"
 #include "CryGame/Bots/BotAimControl.h"
 #include "CryCommon/CryAction/IMovementController.h"
 #include "CryGame/Bots/BotInstance.h"
@@ -108,6 +109,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 {
 	const BotNav& nav = g_pGame->GetBotManager().Nav();
 	NavMeshCore* mesh = CurrentNavMesh(); // P0, wb_bot_navmesh: Detour corners instead of the sparse ray graph
+	m_cornerSlow = false;
 	if (!nav.Ready() && !mesh) return goal; // fallback: straight line + local avoidance
 	// Failed paths also respect the two-second retry deadline. An empty failed path is
 	// a cached result, not a reason to repeat A* at the 0.75-second global throttle.
@@ -131,7 +133,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		}
 		if (!found) m_pathLinks.clear();
 		if (!found && nav.Ready()) found = nav.FindPath(feet, goal, m_path, &trace);
-		m_pathIndex = 0; m_cornerFor = size_t(-1);
+		m_pathIndex = 0; m_cornerFor = size_t(-1); m_pathStart = feet;
 		m_pathGoal = goal;
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
 		if (!found)
@@ -144,34 +146,63 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 	}
 	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
 	m_intent.meshPath = m_meshPathActive; // stairs on the corner path are walkable (BotMovement knee ray off)
+	if (mesh && m_meshPathActive && BotConfig::Get().corners == 1) return SteerCorners(*mesh, feet);
 	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
-	const bool corners = mesh && m_meshPathActive && BotConfig::Get().corners == 1;
 	while (m_pathIndex + 1 < m_path.size())
 	{
 		const Vec3& p = m_path[m_pathIndex];
 		if (m_meshPathActive && LinkAtCorner(m_pathIndex)) break; // a link take-off is passed only by the executor
-		const float d2 = (p - feet).GetLengthSquared2D();
-		if (d2 >= 2.25f || fabs_tpl(p.z - feet.z) >= 2.0f) break;
-		if (corners && d2 > 0.09f)
+		if ((p - feet).GetLengthSquared2D() < 2.25f && fabs_tpl(p.z - feet.z) < 2.0f) ++m_pathIndex;
+		else break;
+	}
+	return m_path[m_pathIndex];
+}
+
+// wb_bot_corners v2 (BotCorners.h): aim at each corner moved 0.15 m to the outside of the turn, pass it only when
+// reached or crossed, and ask for no sprint before sharp turns.
+Vec3 BotBrain::SteerCorners(NavMeshCore& mesh, const Vec3& feet)
+{
+	for (;;)
+	{
+		if (m_pathIndex + 1 >= m_path.size() || LinkAtCorner(m_pathIndex)) break; // final goal / link take-off: exact
+		const Vec3& c = m_path[m_pathIndex];
+		const Vec3& n = m_path[m_pathIndex + 1];
+		if (m_cornerFor != m_pathIndex)
 		{
-			// c068 trap: the stair-mouth corner was "reached" 0.6 m early and the bot walked straight at the next
-			// corner, into the railing end it was meant to go around. Pass early only with the next corner in reach.
-			const Vec3& q = m_path[m_pathIndex + 1];
-			const float a[3] = {feet.x, feet.y, feet.z}, b[3] = {q.x, q.y, q.z};
-			if (!mesh->RayClear(a, b)) break;
+			const Vec3& a = m_pathIndex ? m_path[m_pathIndex - 1] : m_pathStart;
+			const float pa[2] = {a.x, a.y}, pc[2] = {c.x, c.y}, pn[2] = {n.x, n.y};
+			m_cornerFor = m_pathIndex; m_cornerPlan = OffsetCorner(pa, pc, pn);
+			if (m_cornerPlan.moved)
+			{
+				// keep the moved point on the mesh (it moves away from the obstacle, so normally it is)
+				const float q[3] = {m_cornerPlan.x, m_cornerPlan.y, c.z}; float s[3];
+				if (!mesh.Project(q, s, 0.2f, 0.6f, 0.6f) || (s[0] - q[0]) * (s[0] - q[0]) + (s[1] - q[1]) * (s[1] - q[1]) > 0.0025f)
+				{ m_cornerPlan.x = c.x; m_cornerPlan.y = c.y; m_cornerPlan.moved = false; }
+			}
+		}
+		if (fabs_tpl(c.z - feet.z) >= 2.0f) break;
+		const float pf[2] = {feet.x, feet.y}, pc[2] = {c.x, c.y}, pn[2] = {n.x, n.y};
+		bool byPlane = false;
+		if (!CornerReached(pf, pc, pn, m_cornerPlan, 0.35f, 0.05f, &byPlane)) break;
+		if (byPlane)
+		{
+			const float a3[3] = {feet.x, feet.y, feet.z}, b3[3] = {n.x, n.y, n.z};
+			if (!mesh.RayClear(a3, b3)) break; // crossed the line but the next leg is not in straight reach yet
 		}
 		++m_pathIndex;
 	}
-	if (!corners || LinkAtCorner(m_pathIndex) || m_pathIndex + 1 >= m_path.size()) return m_path[m_pathIndex];
-	if (m_cornerFor != m_pathIndex)
+	const Vec3& c = m_path[m_pathIndex];
+	if (m_pathIndex + 1 >= m_path.size() || LinkAtCorner(m_pathIndex) || m_cornerFor != m_pathIndex) return c;
+	// A sharp turn is often split into two close corners (Steelmill stair mouth: 42 + 48 deg): count both.
+	CornerPlan turn = m_cornerPlan;
+	if (m_pathIndex + 2 < m_path.size() && (m_path[m_pathIndex + 1] - c).GetLength2D() < 1.5f)
 	{
-		m_cornerFor = m_pathIndex; m_cornerAdj = m_path[m_pathIndex];
-		const float c[3] = {m_cornerAdj.x, m_cornerAdj.y, m_cornerAdj.z};
-		float dist = 0, dir[2] = {0, 0};
-		const float want = 0.15f; // erosion 0.3 + 0.15 > capsule radius 0.4
-		if (mesh->WallClearance(c, want, dist, dir) && dist < want) { m_cornerAdj.x += dir[0] * (want - dist); m_cornerAdj.y += dir[1] * (want - dist); }
+		const Vec3& n = m_path[m_pathIndex + 1]; const Vec3& nn = m_path[m_pathIndex + 2];
+		const float pc[2] = {c.x, c.y}, pn[2] = {n.x, n.y}, pnn[2] = {nn.x, nn.y};
+		turn.turnDeg += OffsetCorner(pc, pn, pnn).turnDeg;
 	}
-	return m_cornerAdj;
+	m_cornerSlow = CornerSlow(turn, (c - feet).GetLength2D());
+	return Vec3(m_cornerPlan.x, m_cornerPlan.y, c.z);
 }
 
 void BotBrain::Configure(const BotProfile& profile, int number)
@@ -197,7 +228,7 @@ void BotBrain::ResetLife()
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
-	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
+	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_cornerSlow = false; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
 	m_vantage.Reset(CurrentVantage(),m_number);
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
@@ -877,7 +908,7 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
             level,actor.GetEntityId(),m_trap.Age(m_now),p.x,p.y,p.z,m_blackboard.blocked?1:0,m_blackboard.velocity.GetLength2D(),m_blackboard.grounded?1:0,0);
         if (level==1)
         {
-            m_path.clear();m_pathIndex=0;m_nextRepath=m_minRepath=0;m_pathLinks.clear();m_link.Reset();
+            m_path.clear();m_pathIndex=0;m_cornerFor=size_t(-1);m_nextRepath=m_minRepath=0;m_pathLinks.clear();m_link.Reset();
         }
         else if (level==2 || level==3)
         {
@@ -938,6 +969,11 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	{ WBI(suitMode,NANOMODE_DEFENSE); if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run); }
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
     if(!m_link.Active() && BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){WBI(suitMode,NANOMODE_DEFENSE);m_speedTravel=false;}
+    if (m_cornerSlow && !m_link.Active() && m_intent.jump==BotJump::None)
+    { // wb_bot_corners: no sprint / Speed into a sharp turn (c071: 6.3 m/s down the 1 m Steelmill stair, overshoot)
+        if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run);
+        if (m_intent.suitMode==NANOMODE_SPEED) { WBI(suitMode,NANOMODE_DEFENSE); m_speedTravel=false; }
+    }
     if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
@@ -1001,7 +1037,7 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 	if (o.phase==LinkPhase::Done)
 	{
 		WB_LOG(2,"[WarsBots] #%d LINK done kind=%s at=(%.2f,%.2f,%.2f) actor=%u.",m_number,NavLinkName(m_linkNow.kind),feet.x,feet.y,feet.z,actor.GetEntityId());
-		{ const size_t next=size_t(m_linkNow.corner)+1; m_pathIndex=m_path.empty()?0:(next<m_path.size()?next:m_path.size()-1); }
+		{ const size_t next=size_t(m_linkNow.corner)+1; m_cornerFor=size_t(-1); m_pathIndex=m_path.empty()?0:(next<m_path.size()?next:m_path.size()-1); }
 		m_link.Reset();
 		return;
 	}
@@ -1012,7 +1048,7 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> fail noted",actor.GetEntityId());
 		// O-027: one failure can be timing (hit, cooldown, short run-up) -> ban a link only on its second failure
 		if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
-		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_nextRepath=m_minRepath=0;
+		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0;
 		return;
 	}
 	if (!m_link.Active()) return;

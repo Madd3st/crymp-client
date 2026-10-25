@@ -15,6 +15,7 @@
 #include "CryGame/Bots/BotTactics.h"
 #include "CryGame/Bots/BotTraits.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotCorners.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 struct IActor;
@@ -114,11 +115,12 @@ private:
 	Vec3 m_patrolGoal = Vec3(0,0,0);
 	float m_patrolUntil = 0, m_blockedSince = 0, m_chaseBlockedSince = 0, m_shotBlockedSince = 0;
 	// Path following on the shared BotNav graph.
+	Vec3 SteerCorners(NavMeshCore& mesh, const Vec3& feet); // wb_bot_corners v2
 	Vec3 Steer(const Vec3& feet, const Vec3& goal);
 	std::vector<Vec3> m_path;
 	bool m_meshPathActive = false; // m_path came from the Detour navmesh
 	size_t m_pathIndex = 0;
-	size_t m_cornerFor = size_t(-1); Vec3 m_cornerAdj = Vec3(0, 0, 0); // wb_bot_corners: m_path[m_cornerFor] pushed off the wall
+	size_t m_cornerFor = size_t(-1); CornerPlan m_cornerPlan; Vec3 m_pathStart = Vec3(0, 0, 0); bool m_cornerSlow = false; // wb_bot_corners v2
 	std::vector<NavPathLink> m_pathLinks; // C-036: links on m_path (corner = take-off index)
 	BotJumpLink m_link;
 	NavPathLink m_linkNow;

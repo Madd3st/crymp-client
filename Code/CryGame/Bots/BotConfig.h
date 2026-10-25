@@ -37,7 +37,7 @@ struct BotConfig {
  int nameProfile=0;
  int vantage=0;
  int tactics=0;        // fragmovie patterns: hold angles from cover, jump-strafe, loot after kills (BotTactics.h), default OFF
- int corners=0;        // navmesh corners: pass a corner only with the next one in straight reach, keep 0.45 m from walls, default OFF
+ int corners=0;        // navmesh corners v2: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default OFF
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);
  void Unregister(IConsole& console);
