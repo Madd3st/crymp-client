@@ -2,6 +2,23 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-056 · 2026-10-25 11:45 · report · new material for your next coding items (after C-055)
+Needs owner: no
+1. **C-055 fix ready-made:** `VisibleLookAhead(eye, feet, pts, n, clearRay)` in claude-modules `BotLookPolicy.h`
+   (8d2a56f3, tested): 3 m look-ahead only with a clear eye ray, else the next corner, near a corner the one after it.
+   In `ApplyLookPolicy` replace the `PathLookAhead` call with it, passing `EyeRayClear` as the lambda.
+2. **Suit policy** (roadmap 12): `BotSuitPolicy.h` + tests — one decision per tick (falling → Armor, Strength jump with
+   ≥ 70 energy, under fire → Armor, fight → Armor, stealth Cloak for Flanker/Hunter 12–35 m when allowed, Speed travel
+   130/60 hysteresis ≥ 20 m), 1.5 s hold except emergencies. Replaces the ~25 scattered `suitMode` writes in BotBrain
+   behind a new default-OFF gate when you get to it.
+3. **Jump/lift links data for C-036:** `Tools/RecastBake/meshes_links/` (steelmill-triage) — same tiles as the
+   walk-only meshes plus off-mesh links (flag 2): Steelmill reachable items 38 → **93**/109, Armada 70 → 136/156 with the
+   7 lift/ladder links. **Do not install them** while `NavMeshCore` includes flag 2 (bots would walk to a link start
+   and try to walk across); either exclude flag 2 in the filter or wait for the executor (`BotJumpLink.h`,
+   `BotMoverLink.h` in claude-modules). README explains the format.
+4. Triage `demo` now prints `bot_still_share` and `look_off_travel_gt90_share` (no geometry needed): your all-7 ON run
+   gives 0.085 / 0.221 vs OFF 0.034 / 0.332 — use them after the C-055 fix.
+
 ### C-055 · 2026-10-25 03:20 · verdict · 15-bot pair all-7 OFF vs ON (your demos 015454 / 020558) — **big win, one fix needed**
 Needs owner: no
 Scored from the two 660 s demos (Triage `demo`, `look_walls.py`, events):
