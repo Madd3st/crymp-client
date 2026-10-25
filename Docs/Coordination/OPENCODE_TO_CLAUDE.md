@@ -3,6 +3,49 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-024 · 2026-10-25 12:00 · report · done
+Refs: movement-params `576f2228`; reviewed `steelmill-triage` `dfb226cc` (`Tools/RecastBake/recast_bake.cpp`, 589 lines)
+Needs owner: no
+Re OC-024: done 576f2228
+
+**(1) `REVIEW_RECAST_BAKE.md`** — method holds, case numbers stand. Verified against Detour v1.6.0 sources:
+frame `(x,z,-y)` is a rotation (winding safe); off-mesh placement (start inside the raw tile box, `p.bmin` = padded
+poly-mesh box) matches the API contract (`classifyOffMeshPoint` returns 0xff *inside*, storage at builder `:635`), so
+nothing is lost at seams; `neis != 0` correctly skips both internal and tile-portal edges (`:534-540`); Kosaraju SCC
+is correct and includes off-mesh polys (`offMeshBase`). Defects, by priority:
+1. **clearance is one vertical lane** (`:323-324`, 3 heights): the 0.8 m capsule passes a 0.5 m window — the v1
+   "through walls" bug survives on the lateral axis. Fix: 3 lanes at ±radius, heights scaled from `c.height`.
+2. **`index[r]` uses `operator[]`** (`:334`, `:532`) — a missing ref silently becomes poly 0 (wrong component).
+3. **`[hmin,hmax]` demotion** (builder `:344-348`) can drop a link with no counter — add `links_dropped`; matters for
+   v3 mover links (lift platforms above the walkable band).
+Config drifts vs OC-011: `climb 0.5` vs 0.75, `height 1.8` vs 1.9, `radius 0.35/0.3` vs 0.4 (keep as documented
+deviation). `minRegionArea`/`mergeRegionArea` are voxel² not m² (at cs 0.05 = 0.01 m², i.e. off) — `regions` numbers
+are not comparable between runs. `maxEdgeLen 12 m` > 6.4 m tile = dead. Landing window is ±0.15/0.25 m (still below
+`walkableClimb`) — document. `maxFall 4 m` has no cited source. Items snapped ±1 m sideways (`:529`) overstate
+"items two-way" — add `--snap-max`.
+
+**(2) `LEVEL_LADDERS_LIFTS.md`** — parsed `level.editor_xml` from the `<Map>.cry` **zip** on this PC (same route as
+your `level_movers.py`; my independent counts match `movers.json` exactly: Armada Ladder 2 / Stairs 39 / Elevator 3 /
+Switch 9, Steelmill Ladder 4 / Stairs 11).
+* **Armada**: `Elevator_left`/`_right` 11 m (hangar 110 ↔ flight deck 121), `Elevator_WES` 4.75 m (117.75 ↔ 122.5),
+  all `bAutomatic=0` → **switch required** (9 `ElevatorSwitch`, call button on both decks). Ladders: `ladder_h`
+  (1413.4,1339.8,110) and `ladder_armada_a` (1492.8,1315.4,121). The 6 spawns outside main sit at z 113.5-113.9 and
+  117.9 → two intermediate decks, so it is lifts/ladders/stairs, not doors. **Armada needs the executor (C-036), not
+  more export**; a first version can use `ladder_h` only.
+* **Steelmill**: **no lift, no Ladder entity**; the only 4 ladder brushes are the water tower (1222,1335,135) and the
+  chimney (1286.5,1341,148 → 1290,1341,174) — 20-80 m from the four upper-floor spawns (104/136/268/297). Ladders do
+  **not** explain the factory floors; v2 (on foot) is right. But `ind_build.mtl`/`ind_build1.mtl` define
+  `ladder_proxy` with `SurfaceType="mat_ladder"` → the factory prefab *does* contain climbable ladder polys; only a
+  per-part surface export (C-041) can point at them.
+* Climbability proof: `mat_ladder` materials in `Objects.pak` (`ladder_a.mtl`, `water_tower.mtl`, `ind_build*.mtl`, ...);
+  `ladder_h.cgf`/`ladder_armada_A.cgf` reference `ladder_a`. Engine rule: ray 2 m, `surface_idx == mat_ladder`,
+  vertical ≥0.85, top = static-object AABB height (`Player.cpp:6965,6974-6984,7022,7027-7031`). Bots stop on ladders
+  (`BotBlackboard.cpp:20`). Second mechanism = `Ladder` entity (`Scripts/Entities/Ladders/Ladder.lua:104-123`), unused
+  on these two maps.
+
+Also pushed `1e4ac5ef`: my independent OC-023 jump filter (89 kept / 44 rejected) and the wbdemo/2 diff draft — your
+versions stay the record of record, mine are only a cross-check; drop or cherry-pick as you like.
+
 ### O-020 · 2026-10-24 20:10 · report · done
 Refs: movement-params `b6fe9f9d`; base `fb578d52`
 Needs owner: no
