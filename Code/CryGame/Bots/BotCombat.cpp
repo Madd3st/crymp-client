@@ -32,7 +32,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_heardAt = 0; m_heardPos.zero(); m_perception.Reset(); m_dmgTarget = 0; m_dmgDealt = m_dmgLastHp = 0; m_dmgAt = -100.0f; }
+void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_heardAt = 0; m_heardPos.zero(); m_perception.Reset(); m_dmgTarget = 0; m_dmgDealt = m_dmgLastHp = 0; m_dmgAt = m_finishStart = -100.0f; }
 
 void BotCombat::StopFire()
 {
@@ -147,8 +147,12 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 	if (oldValid && m_visible)
 	{
 		const float hp=float(old->GetHealth());
-		if (m_dmgTarget!=m_target) { m_dmgTarget=m_target; m_dmgDealt=0; m_dmgAt=-100.0f; }
-		else if (hp<m_dmgLastHp-0.5f && now-m_lastBurstRequest<1.0f) { m_dmgDealt+=m_dmgLastHp-hp; m_dmgAt=now; }
+		if (m_dmgTarget!=m_target) { m_dmgTarget=m_target; m_dmgDealt=0; m_dmgAt=m_finishStart=-100.0f; }
+		else if (hp<m_dmgLastHp-0.5f && now-m_lastBurstRequest<1.0f)
+		{
+			const bool was=m_dmgDealt>=30.0f; m_dmgDealt+=m_dmgLastHp-hp; m_dmgAt=now;
+			if (!was && m_dmgDealt>=30.0f) m_finishStart=now; // DS-018 #2: the finish window has a fixed start
+		}
 		m_dmgLastHp=hp;
 	}
 	const bool remembered=oldValid && now-m_lastSeen<=3.0f && (m_lastPosition-origin).GetLengthSquared()<sight2;
@@ -230,7 +234,8 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 		// DS-015: the hysteresis above only runs while the old target is visible - one 0.6 s scan behind a corner
 		// switched instantly. Keep it for 1 s of lost sight; keep a target this bot has hurt (>= 30 HP in 5 s) for 2 s,
 		// unless the bot itself is low and the newcomer is the one shooting it.
-		const bool finishing=m_dmgTarget==m_target && m_dmgDealt>=30.0f && now-m_dmgAt<5.0f && now-m_lastSeen<2.0f;
+		// hard cap 6 s from the moment the bot had dealt 30 HP: someone else's damage cannot pin the target forever
+		const bool finishing=m_dmgTarget==m_target && m_dmgDealt>=30.0f && now-m_dmgAt<5.0f && now-m_finishStart<6.0f && now-m_lastSeen<2.0f;
 		const bool blink=!m_visible && now-m_lastSeen<1.0f;
 		const bool threatened=best->GetEntityId()==m_retaliator && now<m_retaliatorUntil && actor.GetHealth()<40;
 		if ((finishing || blink) && !threatened) best=old;

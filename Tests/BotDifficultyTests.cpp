@@ -33,6 +33,8 @@ int main()
 	assert(p[3].fireRange > 50.f && p[0].fireRange < 25.f);
 	// close range: gate opens to the body half-width (3 m -> ~7.6 deg), far keeps the skill value
 	assert(FireToleranceDeg(p[3], 3.f) > 7.f && std::fabs(FireToleranceDeg(p[3], 40.f) - 2.f) < 1e-4f);
+	// DS-018: 5 / 10 / 15 m -> 4.57 / 2.29 / 2.0 deg (body half-width until it drops under the skill gate)
+	assert(std::fabs(FireToleranceDeg(p[3], 5.f) - 4.57f) < 0.02f && std::fabs(FireToleranceDeg(p[3], 10.f) - 2.29f) < 0.02f && FireToleranceDeg(p[3], 15.f) == 2.f);
 	// applying twice is not used (restored rosters keep their profile) - ranges scale once from Make
 	const BotProfile raw = BotProfile::Make(BotStyle::Marksman, BotSkill::Elite);
 	BotProfile m = raw; ApplyDifficulty(m);
