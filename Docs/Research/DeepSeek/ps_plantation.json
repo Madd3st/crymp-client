@@ -1,0 +1,2679 @@
+﻿{
+    "schema":  "ps-map/1",
+    "map":  "Plantation",
+    "source":  "level.pak/mission_mission0.xml",
+    "counts":  {
+                   "entities":  917,
+                   "factories":  1,
+                   "hq":  2,
+                   "powerpoints":  2,
+                   "spawngroups":  4,
+                   "spawnpoints":  79,
+                   "turrets":  9,
+                   "buyzones":  2,
+                   "doors":  9,
+                   "vehicles":  8,
+                   "captureZones":  2
+               },
+    "captureZones":  [
+                         {
+                             "id":  2,
+                             "name":  "CaptureZone",
+                             "radius":  26.52,
+                             "box":  null,
+                             "points":  [
+                                            [
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            [
+                                                0,
+                                                37.5,
+                                                0
+                                            ],
+                                            [
+                                                -37.5,
+                                                37.5,
+                                                0
+                                            ],
+                                            [
+                                                -37.5,
+                                                0,
+                                                0
+                                            ]
+                                        ],
+                             "center":  [
+                                            1021.8353,
+                                            1447.1781,
+                                            246.85001
+                                        ]
+                         },
+                         {
+                             "id":  2,
+                             "name":  "CaptureZone",
+                             "radius":  26.52,
+                             "box":  null,
+                             "points":  [
+                                            [
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            [
+                                                0,
+                                                37.5,
+                                                0
+                                            ],
+                                            [
+                                                -37.5,
+                                                37.5,
+                                                0
+                                            ],
+                                            [
+                                                -37.5,
+                                                0,
+                                                0
+                                            ]
+                                        ],
+                             "center":  [
+                                            1018.625,
+                                            1169.5,
+                                            244.75
+                                        ]
+                         }
+                     ],
+    "entities":  [
+                     {
+                         "name":  "SpawnPoint27",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1055.5457,
+                                     1170.6917,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint23",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1053.8164,
+                                     1171.8862,
+                                     245.94412
+                                 ]
+                     },
+                     {
+                         "layer":  "Main",
+                         "kind":  "area",
+                         "pos":  [
+                                     1052.6949,
+                                     1164.675,
+                                     245
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            0.104736,
+                                            8.6076698,
+                                            0
+                                        ],
+                                        [
+                                            -9.2614698,
+                                            8.6911602,
+                                            0
+                                        ],
+                                        [
+                                            -9.3537598,
+                                            -0.281616,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "BuyZone",
+                         "radius":  6.55,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1048.0672766,
+                                        1168.9293035,
+                                        245
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint31",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1059.0796,
+                                     1172.7656,
+                                     245.94568
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_80",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1232.1239,
+                                     1331.9126,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint37",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1058.5516,
+                                     1170.6824,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_83",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1234.135,
+                                     1332.1106,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint38",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1038.3036,
+                                     1399.557,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_149",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     843.875,
+                                     1316.75,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint30",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1041.6415,
+                                     1398.2914,
+                                     248.05713
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_78",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1233.9751,
+                                     1326.074,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "layer":  "Energy",
+                         "kind":  "area",
+                         "pos":  [
+                                     1002.75,
+                                     1285.75,
+                                     236.75
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            3.75,
+                                            -3.75,
+                                            0
+                                        ],
+                                        [
+                                            31.25,
+                                            -3.75,
+                                            0
+                                        ],
+                                        [
+                                            35,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            35,
+                                            41.25,
+                                            -1.25
+                                        ],
+                                        [
+                                            31.25,
+                                            45,
+                                            0
+                                        ],
+                                        [
+                                            3.75,
+                                            45,
+                                            0
+                                        ],
+                                        [
+                                            0,
+                                            41.25,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "Shape12",
+                         "radius":  27.99,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1020.25,
+                                        1306.375,
+                                        236.59375
+                                    ]
+                     },
+                     {
+                         "name":  "multiplayer/autoturrets.NK_GroundTurret_short1",
+                         "archetype":  "Props.multiplayer/autoturrets.NK_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1219.5,
+                                     1304,
+                                     245.10001
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_148",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     841.125,
+                                     1311.875,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_144",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     839.375,
+                                     1309.625,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint33",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1041.5811,
+                                     1399.7291,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_128",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     842,
+                                     1310.625,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "name":  "multiplayer/autoturrets.NK_GroundTurret_short1",
+                         "archetype":  "Props.multiplayer/autoturrets.NK_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1227.5,
+                                     1354.5,
+                                     245.10001
+                                 ]
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "objects/library/architecture/mobile_camp_structures/us_armory/armory_door_right.cgf",
+                         "layer":  "Prototype-Factory",
+                         "useDistance":  5,
+                         "name":  "SimpleIndirectLight386",
+                         "pos":  [
+                                     1104.7781,
+                                     1269.9919,
+                                     244.673
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "name":  "SpawnPoint_US_123",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     847.5,
+                                     1306.25,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_124",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     841.125,
+                                     1310.625,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "class":  "Factory",
+                         "team":  null,
+                         "captureTime":  20,
+                         "layer":  "Prototype-Factory",
+                         "capturable":  true,
+                         "builds":  {
+                                        "equipment":  true,
+                                        "vehiclesBuy":  false,
+                                        "ammo":  true,
+                                        "weapons":  true,
+                                        "prototypes":  true,
+                                        "vehicles":  {
+
+                                                     }
+                                    },
+                         "slots":  6,
+                         "name":  "Prototype-Factory-small1",
+                         "pos":  [
+                                     1077.125,
+                                     1258.75,
+                                     246.25
+                                 ],
+                         "kind":  "factory",
+                         "serviceAreaId":  0,
+                         "captureAreaId":  1,
+                         "generatesPower":  false,
+                         "buyAreaId":  1,
+                         "captureRequirement":  1,
+                         "powerIndex":  1,
+                         "captureArea":  {
+                                             "radius":  13.99,
+                                             "areaId":  1,
+                                             "center":  [
+                                                            1049.61875,
+                                                            1254.4875,
+                                                            239.5
+                                                        ],
+                                             "name":  "Shape_PF",
+                                             "distance":  27.83
+                                         }
+                     },
+                     {
+                         "name":  "SpawnPoint_US_145",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     843.625,
+                                     1310.625,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_84",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1235.7607,
+                                     1325.5647,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "pos":  [
+                                     1127.441,
+                                     1209.9883,
+                                     239.05945
+                                 ],
+                         "layer":  "Main",
+                         "name":  "Respawn.SUV_Silver1",
+                         "class":  "Civ_car1",
+                         "kind":  "vehicle"
+                     },
+                     {
+                         "name":  "SpawnPoint_US_120",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     849.375,
+                                     1319.75,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "pos":  [
+                                     853.508,
+                                     1296.3594,
+                                     253.85429
+                                 ],
+                         "layer":  "Base_US",
+                         "name":  "Respawn.US_Light_Vehicle_Unarmed1",
+                         "class":  "Asian_ltv",
+                         "kind":  "vehicle"
+                     },
+                     {
+                         "name":  "AutoTurret_US_7",
+                         "archetype":  "Props.multiplayer/autoturrets.US_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     893.2464,
+                                     1288.1128,
+                                     257.75824
+                                 ]
+                     },
+                     {
+                         "pos":  [
+                                     1074.3839,
+                                     1375.661,
+                                     245.74905
+                                 ],
+                         "layer":  "Main",
+                         "name":  "Respawn.SUV_Blue1",
+                         "class":  "Civ_car1",
+                         "kind":  "vehicle"
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "objects/library/architecture/multiplayer/barracks/barracks_door_a.cgf",
+                         "layer":  "Base_NK",
+                         "useDistance":  5,
+                         "name":  "Door46",
+                         "pos":  [
+                                     1237.1863,
+                                     1317.0798,
+                                     241.52313
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_86",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1234.5164,
+                                     1327.0293,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_150",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     844.875,
+                                     1317.25,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "class":  "AreaSphere",
+                         "layer":  "Sound",
+                         "name":  "AreaSphere kor 1",
+                         "pos":  [
+                                     1275.5585,
+                                     1309.4312,
+                                     61.728775
+                                 ],
+                         "kind":  "area",
+                         "center":  [
+                                        1275.5585,
+                                        1309.4312,
+                                        61.728775
+                                    ],
+                         "areaId":  -1,
+                         "radius":  null
+                     },
+                     {
+                         "name":  "SpawnPoint_US_146",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     848.875,
+                                     1324.625,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "layer":  "Base_NK",
+                         "kind":  "area",
+                         "pos":  [
+                                     1226.2465,
+                                     1312.9666,
+                                     237
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            33.685101,
+                                            0.010376,
+                                            -0.0143127
+                                        ],
+                                        [
+                                            33.679199,
+                                            -12.3635,
+                                            -0.0143127
+                                        ],
+                                        [
+                                            0.029785199,
+                                            -12.4237,
+                                            0.0018158
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "Shape_B_NK2",
+                         "radius":  17.95,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1243.09502129975,
+                                        1306.772394,
+                                        236.9932976
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint21",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1044.7815,
+                                     1401.0214,
+                                     247.98096
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_118",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     845.125,
+                                     1316.75,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "layer":  "Main",
+                         "kind":  "area",
+                         "pos":  [
+                                     1040.5853,
+                                     1428.4281,
+                                     246.85001
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            0,
+                                            37.5,
+                                            0
+                                        ],
+                                        [
+                                            -37.5,
+                                            37.5,
+                                            0
+                                        ],
+                                        [
+                                            -37.5,
+                                            0,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  2,
+                         "name":  "CaptureZone",
+                         "radius":  26.52,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1021.8353,
+                                        1447.1781,
+                                        246.85001
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_121",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     847.5,
+                                     1324.625,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint20",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1043.2297,
+                                     1399.5303,
+                                     248.02036
+                                 ]
+                     },
+                     {
+                         "layer":  "Base_US",
+                         "kind":  "hq",
+                         "pos":  [
+                                     817.875,
+                                     1307.4265,
+                                     252.88988
+                                 ],
+                         "team":  "black",
+                         "hqType":  "bunker",
+                         "name":  "HQ_US",
+                         "hp":  5000,
+                         "class":  "HQ",
+                         "perimeterAreaId":  0
+                     },
+                     {
+                         "name":  "SpawnPoint_US_123",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     849,
+                                     1306.25,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "name":  "AutoTurret_US_7",
+                         "archetype":  "Props.multiplayer/autoturrets.US_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     872.01776,
+                                     1354.9308,
+                                     259.53223
+                                 ]
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "objects/library/architecture/mobile_camp_structures/us_armory/armory_door_right.cgf",
+                         "layer":  "Prototype-Factory",
+                         "useDistance":  5,
+                         "name":  "SimpleIndirectLight388",
+                         "pos":  [
+                                     1067.207,
+                                     1285.2411,
+                                     244.673
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "name":  "SpawnPoint29",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1057.7797,
+                                     1168.8008,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint32",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1056.7245,
+                                     1170.7146,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint25",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1055.9027,
+                                     1172.0042,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "layer":  "Energy",
+                         "kind":  "powerpoint",
+                         "powerIndex":  3,
+                         "pos":  [
+                                     1025.5,
+                                     1308,
+                                     247.24771
+                                 ],
+                         "team":  null,
+                         "captureAreaId":  1,
+                         "generatesPower":  true,
+                         "name":  "AlienEnergyPoint14",
+                         "capturable":  true,
+                         "class":  "AlienEnergyPoint",
+                         "captureTime":  15,
+                         "captureRequirement":  1,
+                         "captureArea":  {
+                                             "radius":  27.99,
+                                             "areaId":  1,
+                                             "center":  [
+                                                            1020.25,
+                                                            1306.375,
+                                                            236.59375
+                                                        ],
+                                             "name":  "Shape12",
+                                             "distance":  5.5
+                                         }
+                     },
+                     {
+                         "class":  "SpawnGroup",
+                         "team":  "tan",
+                         "captureTime":  15,
+                         "layer":  "Base_NK",
+                         "capturable":  false,
+                         "buyAreaId":  1,
+                         "name":  "SpawnGroup2",
+                         "pos":  [
+                                     1232.5,
+                                     1330,
+                                     239
+                                 ],
+                         "kind":  "spawngroup",
+                         "captureAreaId":  0,
+                         "enabled":  true,
+                         "spawnpointIds":  [
+                                               279,
+                                               286,
+                                               303,
+                                               261,
+                                               262,
+                                               291,
+                                               272,
+                                               270,
+                                               290,
+                                               285,
+                                               277,
+                                               292,
+                                               265,
+                                               302,
+                                               280,
+                                               287,
+                                               284,
+                                               264,
+                                               263,
+                                               275
+                                           ],
+                         "default":  true,
+                         "spawnpoints":  20
+                     },
+                     {
+                         "pos":  [
+                                     845.75983,
+                                     1284.5776,
+                                     252.18895
+                                 ],
+                         "layer":  "Base_US",
+                         "name":  "Respawn.US_Light_Vehicle_Unarmed3",
+                         "class":  "Asian_ltv",
+                         "kind":  "vehicle"
+                     },
+                     {
+                         "layer":  "Prototype-Factory",
+                         "kind":  "area",
+                         "pos":  [
+                                     1063.25,
+                                     1256.625,
+                                     239.5
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            -1.5,
+                                            4.25,
+                                            0
+                                        ],
+                                        [
+                                            -4,
+                                            7.75,
+                                            0
+                                        ],
+                                        [
+                                            -7.5,
+                                            10.25,
+                                            0
+                                        ],
+                                        [
+                                            -11.625,
+                                            11.625,
+                                            0
+                                        ],
+                                        [
+                                            -16.375,
+                                            11.625,
+                                            0
+                                        ],
+                                        [
+                                            -20.25,
+                                            10.25,
+                                            0
+                                        ],
+                                        [
+                                            -23.625,
+                                            7.75,
+                                            0
+                                        ],
+                                        [
+                                            -26.25,
+                                            4.25,
+                                            0
+                                        ],
+                                        [
+                                            -27.625,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            -27.625,
+                                            -0.25,
+                                            0
+                                        ],
+                                        [
+                                            -34.875,
+                                            -0.25,
+                                            0
+                                        ],
+                                        [
+                                            -34.875,
+                                            1.5,
+                                            0
+                                        ],
+                                        [
+                                            -45.25,
+                                            1.5,
+                                            0
+                                        ],
+                                        [
+                                            -45.25,
+                                            -13.25,
+                                            0
+                                        ],
+                                        [
+                                            -40.125,
+                                            -13.25,
+                                            0
+                                        ],
+                                        [
+                                            -40.125,
+                                            -8.25,
+                                            0
+                                        ],
+                                        [
+                                            -34.875,
+                                            -8.25,
+                                            0
+                                        ],
+                                        [
+                                            -34.875,
+                                            -4,
+                                            0
+                                        ],
+                                        [
+                                            -27.625,
+                                            -4,
+                                            0
+                                        ],
+                                        [
+                                            -27.625,
+                                            -4.25,
+                                            0
+                                        ],
+                                        [
+                                            -26.25,
+                                            -8.5,
+                                            0
+                                        ],
+                                        [
+                                            -23.75,
+                                            -12,
+                                            0
+                                        ],
+                                        [
+                                            -20.125,
+                                            -14.625,
+                                            0
+                                        ],
+                                        [
+                                            -16.125,
+                                            -15.875,
+                                            0
+                                        ],
+                                        [
+                                            -15.625,
+                                            -15.875,
+                                            0
+                                        ],
+                                        [
+                                            -15.75,
+                                            -23.125,
+                                            0
+                                        ],
+                                        [
+                                            -17.5,
+                                            -23.125,
+                                            0
+                                        ],
+                                        [
+                                            -17.5,
+                                            -28.625,
+                                            0
+                                        ],
+                                        [
+                                            -2.75,
+                                            -28.625,
+                                            0
+                                        ],
+                                        [
+                                            -2.75,
+                                            -23.125,
+                                            0
+                                        ],
+                                        [
+                                            -12,
+                                            -23.125,
+                                            0
+                                        ],
+                                        [
+                                            -12.125,
+                                            -15.875,
+                                            0
+                                        ],
+                                        [
+                                            -11.75,
+                                            -15.875,
+                                            0
+                                        ],
+                                        [
+                                            -7.5,
+                                            -14.5,
+                                            0
+                                        ],
+                                        [
+                                            -4,
+                                            -12,
+                                            0
+                                        ],
+                                        [
+                                            -1.5,
+                                            -8.5,
+                                            0
+                                        ],
+                                        [
+                                            -0.125,
+                                            -4.375,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "Shape_PF1",
+                         "radius":  27.22,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1043.8026315789473,
+                                        1249.4473684210527,
+                                        239.5
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_87",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1231.3243,
+                                     1322.8208,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_81",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1231.9097,
+                                     1333.1919,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "AutoTurret_US_7",
+                         "archetype":  "Props.multiplayer/autoturrets.US_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     820.04419,
+                                     1276.1573,
+                                     254.52768
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_74",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1236.9823,
+                                     1326.8486,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint36",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1059.6096,
+                                     1170.5642,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "buyAreaId":  1,
+                         "layer":  "Base_US",
+                         "kind":  "buyzone",
+                         "pos":  [
+                                     848.25,
+                                     1311.75,
+                                     258.125
+                                 ],
+                         "team":  "black",
+                         "vehicles":  false,
+                         "prototypes":  false,
+                         "name":  "BuyZone_US1",
+                         "equipment":  true,
+                         "weapons":  true,
+                         "class":  "BuyZone",
+                         "ammo":  true
+                     },
+                     {
+                         "name":  "multiplayer/autoturrets.NK_GroundTurret_short1",
+                         "archetype":  "Props.multiplayer/autoturrets.NK_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1260,
+                                     1298,
+                                     245.10001
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_125",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     842.625,
+                                     1316.5,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "class":  "SpawnGroup",
+                         "team":  null,
+                         "captureTime":  10,
+                         "layer":  "Main",
+                         "capturable":  true,
+                         "buyAreaId":  1,
+                         "name":  "SpawnGroup1",
+                         "pos":  [
+                                     1056.886,
+                                     1169.6194,
+                                     246.99991
+                                 ],
+                         "kind":  "spawngroup",
+                         "captureAreaId":  2,
+                         "enabled":  true,
+                         "spawnpointIds":  [
+                                               74,
+                                               85,
+                                               77,
+                                               89,
+                                               73,
+                                               90,
+                                               75,
+                                               81,
+                                               91,
+                                               70,
+                                               86,
+                                               87,
+                                               82,
+                                               93,
+                                               95,
+                                               79,
+                                               83,
+                                               76,
+                                               72,
+                                               96,
+                                               80,
+                                               84,
+                                               71
+                                           ],
+                         "default":  false,
+                         "spawnpoints":  23,
+                         "captureArea":  {
+                                             "radius":  26.52,
+                                             "areaId":  2,
+                                             "center":  [
+                                                            1018.625,
+                                                            1169.5,
+                                                            244.75
+                                                        ],
+                                             "name":  "CaptureZone",
+                                             "distance":  38.26
+                                         }
+                     },
+                     {
+                         "name":  "SpawnPoint34",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1040.084,
+                                     1398.3019,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint39",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1054.4045,
+                                     1169.4712,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "objects/library/architecture/multiplayer/barracks/barracks_door_a.cgf",
+                         "layer":  "Base_NK",
+                         "useDistance":  5,
+                         "name":  "Door48",
+                         "pos":  [
+                                     1235.543,
+                                     1346.7092,
+                                     238.27002
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "objects/library/architecture/multiplayer/barracks/barracks_door_a.cgf",
+                         "layer":  "Base_NK",
+                         "useDistance":  5,
+                         "name":  "Door44",
+                         "pos":  [
+                                     1238.7019,
+                                     1315.4543,
+                                     238.24483
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "layer":  "Main",
+                         "kind":  "area",
+                         "pos":  [
+                                     1037.375,
+                                     1150.75,
+                                     244.75
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            0,
+                                            37.5,
+                                            0
+                                        ],
+                                        [
+                                            -37.5,
+                                            37.5,
+                                            0
+                                        ],
+                                        [
+                                            -37.5,
+                                            0,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  2,
+                         "name":  "CaptureZone",
+                         "radius":  26.52,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1018.625,
+                                        1169.5,
+                                        244.75
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_91",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1234.2025,
+                                     1328.3687,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint25",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1042.5132,
+                                     1400.2981,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "objects/library/architecture/multiplayer/barracks/barracks_door_b.cgf",
+                         "layer":  "Base_NK",
+                         "useDistance":  5,
+                         "name":  "Door45",
+                         "pos":  [
+                                     1226.4407,
+                                     1342.1238,
+                                     238.24356
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "name":  "SpawnPoint30",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1057.9381,
+                                     1172.8066,
+                                     245.95712
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint33",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1056.9642,
+                                     1171.7473,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "class":  "AreaSphere",
+                         "layer":  "Sound",
+                         "name":  "AreaSphere us 2",
+                         "pos":  [
+                                     812.09363,
+                                     1306.5315,
+                                     53.321838
+                                 ],
+                         "kind":  "area",
+                         "center":  [
+                                        812.09363,
+                                        1306.5315,
+                                        53.321838
+                                    ],
+                         "areaId":  -1,
+                         "radius":  null
+                     },
+                     {
+                         "name":  "SpawnPoint26",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1042.7396,
+                                     1402.3721,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "layer":  "Base_NK",
+                         "kind":  "hq",
+                         "pos":  [
+                                     1261.875,
+                                     1332.5,
+                                     238
+                                 ],
+                         "team":  "tan",
+                         "hqType":  "bunker",
+                         "name":  "HQ_NK",
+                         "hp":  5000,
+                         "class":  "HQ",
+                         "perimeterAreaId":  0
+                     },
+                     {
+                         "name":  "SpawnPoint36",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1038.8739,
+                                     1398.6951,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "class":  "SpawnGroup",
+                         "team":  null,
+                         "captureTime":  10,
+                         "layer":  "Main",
+                         "capturable":  true,
+                         "buyAreaId":  1,
+                         "name":  "SpawnGroup1",
+                         "pos":  [
+                                     1040.1317,
+                                     1401.2891,
+                                     249.09991
+                                 ],
+                         "kind":  "spawngroup",
+                         "captureAreaId":  2,
+                         "enabled":  true,
+                         "spawnpointIds":  [
+                                               104,
+                                               115,
+                                               107,
+                                               119,
+                                               103,
+                                               120,
+                                               105,
+                                               111,
+                                               121,
+                                               100,
+                                               116,
+                                               117,
+                                               112,
+                                               123,
+                                               125,
+                                               109,
+                                               113,
+                                               106,
+                                               102,
+                                               126,
+                                               110,
+                                               114,
+                                               101
+                                           ],
+                         "default":  false,
+                         "spawnpoints":  23,
+                         "captureArea":  {
+                                             "radius":  26.52,
+                                             "areaId":  2,
+                                             "center":  [
+                                                            1021.8353,
+                                                            1447.1781,
+                                                            246.85001
+                                                        ],
+                                             "name":  "CaptureZone",
+                                             "distance":  49.4
+                                         }
+                     },
+                     {
+                         "name":  "SpawnPoint38",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1059.4033,
+                                     1169.5515,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_114",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     841.375,
+                                     1314.375,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint34",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1059.032,
+                                     1171.698,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_77",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1234.3739,
+                                     1334.1626,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint24",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1054.9579,
+                                     1171.9641,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint37",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1039.7056,
+                                     1399.3596,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "layer":  "Base_US",
+                         "kind":  "area",
+                         "pos":  [
+                                     850.375,
+                                     1309.25,
+                                     260.125
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            0,
+                                            5.875061,
+                                            0
+                                        ],
+                                        [
+                                            4.75,
+                                            5.875061,
+                                            0
+                                        ],
+                                        [
+                                            4.75,
+                                            0,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "BuyArea_US3",
+                         "radius":  3.78,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        852.75,
+                                        1312.1875305,
+                                        260.125
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint21",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1053.7874,
+                                     1173.0967,
+                                     245.88095
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint35",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1058.1113,
+                                     1171.7371,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_115",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     845.5,
+                                     1310.5,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint27",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1041.8376,
+                                     1401.4786,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint20",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1055.939,
+                                     1173.0537,
+                                     245.92035
+                                 ]
+                     },
+                     {
+                         "pos":  [
+                                     1217.4613,
+                                     1340.5172,
+                                     238.04953
+                                 ],
+                         "layer":  "Base_NK",
+                         "name":  "Respawn.NK_Light_Vehicle_Unarmed2",
+                         "class":  "Asian_ltv",
+                         "kind":  "vehicle"
+                     },
+                     {
+                         "name":  "SpawnPoint39",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1040.3738,
+                                     1402.4783,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint23",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1043.905,
+                                     1401.8567,
+                                     248.04413
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_US_127",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     839.375,
+                                     1308.5,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint35",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1040.7627,
+                                     1398.9252,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "pos":  [
+                                     1211.6326,
+                                     1354.101,
+                                     238.02042
+                                 ],
+                         "layer":  "Base_NK",
+                         "name":  "Respawn.NK_Light_Vehicle_Unarmed1",
+                         "class":  "Asian_ltv",
+                         "kind":  "vehicle"
+                     },
+                     {
+                         "name":  "SpawnPoint26",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1054.2761,
+                                     1170.6978,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "layer":  "Energy",
+                         "kind":  "area",
+                         "pos":  [
+                                     1089.875,
+                                     1401,
+                                     236.5
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            3.75,
+                                            -3.75,
+                                            0
+                                        ],
+                                        [
+                                            31.25,
+                                            -3.75,
+                                            0
+                                        ],
+                                        [
+                                            35,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            35,
+                                            41.25,
+                                            -1.25
+                                        ],
+                                        [
+                                            31.25,
+                                            45,
+                                            0
+                                        ],
+                                        [
+                                            3.75,
+                                            45,
+                                            0
+                                        ],
+                                        [
+                                            0,
+                                            41.25,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "Shape12",
+                         "radius":  27.99,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1107.375,
+                                        1421.625,
+                                        236.34375
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint32",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1041.0203,
+                                     1400.6289,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_90",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1234.0077,
+                                     1336.3884,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint22",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1054.8608,
+                                     1173.0305,
+                                     245.88985
+                                 ]
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "Objects\\library\\architecture\\mobile_camp_structures\\us_armory\\armory_door_left.cgf",
+                         "layer":  "Prototype-Factory",
+                         "useDistance":  5,
+                         "name":  "SimpleIndirectLight387",
+                         "pos":  [
+                                     1069.5459,
+                                     1285.2411,
+                                     244.673
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "buyAreaId":  1,
+                         "layer":  "Base_US",
+                         "kind":  "buyzone",
+                         "pos":  [
+                                     853.25,
+                                     1312.625,
+                                     260.875
+                                 ],
+                         "team":  "black",
+                         "vehicles":  false,
+                         "prototypes":  false,
+                         "name":  "BuyZone_US2",
+                         "equipment":  true,
+                         "weapons":  true,
+                         "class":  "BuyZone",
+                         "ammo":  true
+                     },
+                     {
+                         "name":  "AutoTurret_US_7",
+                         "archetype":  "Props.multiplayer/autoturrets.US_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     817.91571,
+                                     1335.2732,
+                                     255.02554
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_92",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1233.6411,
+                                     1337.79,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_82",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1234.4528,
+                                     1329.5989,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_79",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1231.6603,
+                                     1336.0681,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint31",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1040.8053,
+                                     1397.5133,
+                                     248.04568
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint22",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1043.9757,
+                                     1400.3091,
+                                     247.98985
+                                 ]
+                     },
+                     {
+                         "pos":  [
+                                     1222.9958,
+                                     1360.7692,
+                                     238.08997
+                                 ],
+                         "layer":  "Base_NK",
+                         "name":  "Respawn.NK_Light_Vehicle_Unarmed3",
+                         "class":  "Asian_ltv",
+                         "kind":  "vehicle"
+                     },
+                     {
+                         "layer":  "Base_US",
+                         "kind":  "area",
+                         "pos":  [
+                                     846.375,
+                                     1318,
+                                     257.25
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            0,
+                                            2.75,
+                                            0
+                                        ],
+                                        [
+                                            4,
+                                            2.75,
+                                            0
+                                        ],
+                                        [
+                                            4,
+                                            -2.875,
+                                            0
+                                        ],
+                                        [
+                                            8.75,
+                                            -2.875,
+                                            0
+                                        ],
+                                        [
+                                            8.75,
+                                            -8.75,
+                                            0
+                                        ],
+                                        [
+                                            4,
+                                            -8.75,
+                                            0
+                                        ],
+                                        [
+                                            4,
+                                            -12.875,
+                                            0
+                                        ],
+                                        [
+                                            0.125,
+                                            -12.875,
+                                            0
+                                        ],
+                                        [
+                                            0.125,
+                                            -8.75,
+                                            0
+                                        ],
+                                        [
+                                            -8.375,
+                                            -8.75,
+                                            0
+                                        ],
+                                        [
+                                            -8.375,
+                                            -0.125,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "BuyArea_US2",
+                         "radius":  10.98,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        847.79166666666663,
+                                        1312.90625,
+                                        257.25
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_93",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1232.0277,
+                                     1336.4368,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "layer":  "Main",
+                         "kind":  "area",
+                         "pos":  [
+                                     1039.599,
+                                     1407.7488,
+                                     247.10001
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            0.104736,
+                                            8.6076698,
+                                            0
+                                        ],
+                                        [
+                                            -9.2614698,
+                                            8.6911602,
+                                            0
+                                        ],
+                                        [
+                                            -9.3537598,
+                                            -0.281616,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "BuyZone",
+                         "radius":  6.55,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1034.9713766,
+                                        1412.0031035000002,
+                                        247.10001
+                                    ]
+                     },
+                     {
+                         "pos":  [
+                                     854.63214,
+                                     1334.8333,
+                                     254.84647
+                                 ],
+                         "layer":  "Base_US",
+                         "name":  "Respawn.US_Light_Vehicle_Unarmed2",
+                         "class":  "Asian_ltv",
+                         "kind":  "vehicle"
+                     },
+                     {
+                         "name":  "SpawnPoint_US_147",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     844.125,
+                                     1310.5,
+                                     257.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_89",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1232.3602,
+                                     1331.3804,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "layer":  "Prototype-Factory",
+                         "kind":  "area",
+                         "pos":  [
+                                     1063.375,
+                                     1256.625,
+                                     239.5
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            -1.375,
+                                            4.25,
+                                            0
+                                        ],
+                                        [
+                                            -3.875,
+                                            7.75,
+                                            0
+                                        ],
+                                        [
+                                            -7.375,
+                                            10.25,
+                                            0
+                                        ],
+                                        [
+                                            -11.5,
+                                            11.625,
+                                            0
+                                        ],
+                                        [
+                                            -16.25,
+                                            11.625,
+                                            0
+                                        ],
+                                        [
+                                            -20.125,
+                                            10.25,
+                                            0
+                                        ],
+                                        [
+                                            -23.5,
+                                            7.75,
+                                            0
+                                        ],
+                                        [
+                                            -26.125,
+                                            4.25,
+                                            0
+                                        ],
+                                        [
+                                            -27.5,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            -27.5,
+                                            -4.25,
+                                            0
+                                        ],
+                                        [
+                                            -26.125,
+                                            -8.5,
+                                            0
+                                        ],
+                                        [
+                                            -23.625,
+                                            -12,
+                                            0
+                                        ],
+                                        [
+                                            -20,
+                                            -14.625,
+                                            0
+                                        ],
+                                        [
+                                            -16,
+                                            -15.875,
+                                            0
+                                        ],
+                                        [
+                                            -11.625,
+                                            -15.875,
+                                            0
+                                        ],
+                                        [
+                                            -7.375,
+                                            -14.5,
+                                            0
+                                        ],
+                                        [
+                                            -3.875,
+                                            -12,
+                                            0
+                                        ],
+                                        [
+                                            -1.375,
+                                            -8.5,
+                                            0
+                                        ],
+                                        [
+                                            0,
+                                            -4.375,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "Shape_PF",
+                         "radius":  13.99,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        1049.61875,
+                                        1254.4875,
+                                        239.5
+                                    ]
+                     },
+                     {
+                         "name":  "multiplayer/autoturrets.NK_GroundTurret_short1",
+                         "archetype":  "Props.multiplayer/autoturrets.NK_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1276,
+                                     1364,
+                                     245.10001
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint39",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1055.8739,
+                                     1168.9497,
+                                     245.55199
+                                 ]
+                     },
+                     {
+                         "name":  "multiplayer/autoturrets.NK_GroundTurret_short1",
+                         "archetype":  "Props.multiplayer/autoturrets.NK_GroundTurret_short",
+                         "class":  "AutoTurret",
+                         "team":  null,
+                         "kind":  "turret",
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1240.125,
+                                     1400,
+                                     245.10001
+                                 ]
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "Objects\\library\\architecture\\mobile_camp_structures\\us_armory\\armory_door_left.cgf",
+                         "layer":  "Prototype-Factory",
+                         "useDistance":  5,
+                         "name":  "SimpleIndirectLight379",
+                         "pos":  [
+                                     1107.1179,
+                                     1269.9919,
+                                     244.673
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "name":  "SpawnPoint_US_113",
+                         "class":  "SpawnPoint",
+                         "team":  "black",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_US",
+                         "pos":  [
+                                     851.25,
+                                     1313.5,
+                                     254.5
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint39",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1041.7815,
+                                     1403.1486,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "layer":  "Base_US",
+                         "kind":  "area",
+                         "pos":  [
+                                     846.375,
+                                     1317.875,
+                                     254
+                                 ],
+                         "points":  [
+                                        [
+                                            0,
+                                            0,
+                                            0
+                                        ],
+                                        [
+                                            0,
+                                            7.625,
+                                            0
+                                        ],
+                                        [
+                                            4,
+                                            7.625,
+                                            0
+                                        ],
+                                        [
+                                            4,
+                                            -2.75,
+                                            0
+                                        ],
+                                        [
+                                            8.75,
+                                            -2.75,
+                                            0
+                                        ],
+                                        [
+                                            8.75,
+                                            -8.625,
+                                            0
+                                        ],
+                                        [
+                                            4,
+                                            -8.625,
+                                            0.125
+                                        ],
+                                        [
+                                            4,
+                                            -12.75,
+                                            0.125
+                                        ],
+                                        [
+                                            -8.375,
+                                            -12.75,
+                                            0
+                                        ],
+                                        [
+                                            -8.375,
+                                            0,
+                                            0
+                                        ]
+                                    ],
+                         "areaId":  1,
+                         "name":  "BuyArea_US1",
+                         "radius":  13.8,
+                         "class":  "AreaShape",
+                         "center":  [
+                                        848.05,
+                                        1314.575,
+                                        254.025
+                                    ]
+                     },
+                     {
+                         "name":  "SpawnPoint24",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1043.153,
+                                     1400.9945,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "class":  "SpawnGroup",
+                         "team":  "black",
+                         "captureTime":  15,
+                         "layer":  "Base_US",
+                         "capturable":  false,
+                         "buyAreaId":  1,
+                         "name":  "SpawnGroup_US",
+                         "pos":  [
+                                     847,
+                                     1316.125,
+                                     255
+                                 ],
+                         "kind":  "spawngroup",
+                         "captureAreaId":  0,
+                         "enabled":  true,
+                         "spawnpointIds":  [
+                                               175,
+                                               173,
+                                               165,
+                                               156,
+                                               184,
+                                               160,
+                                               174,
+                                               171,
+                                               176,
+                                               157,
+                                               178,
+                                               147,
+                                               150,
+                                               169,
+                                               167,
+                                               185,
+                                               159,
+                                               186,
+                                               183
+                                           ],
+                         "default":  true,
+                         "spawnpoints":  19
+                     },
+                     {
+                         "layer":  "Energy",
+                         "kind":  "powerpoint",
+                         "powerIndex":  3,
+                         "pos":  [
+                                     1112.125,
+                                     1378.25,
+                                     246.99771
+                                 ],
+                         "team":  null,
+                         "captureAreaId":  1,
+                         "generatesPower":  true,
+                         "name":  "AlienEnergyPoint14",
+                         "capturable":  true,
+                         "class":  "AlienEnergyPoint",
+                         "captureTime":  15,
+                         "captureRequirement":  1,
+                         "captureArea":  {
+                                             "radius":  27.99,
+                                             "areaId":  1,
+                                             "center":  [
+                                                            1107.375,
+                                                            1421.625,
+                                                            236.34375
+                                                        ],
+                                             "name":  "Shape12",
+                                             "distance":  43.63
+                                         }
+                     },
+                     {
+                         "class":  "Door",
+                         "model":  "objects/library/architecture/multiplayer/barracks/barracks_door_a.cgf",
+                         "layer":  "Base_NK",
+                         "useDistance":  5,
+                         "name":  "Door47",
+                         "pos":  [
+                                     1226.3104,
+                                     1326.6667,
+                                     241.49382
+                                 ],
+                         "locked":  false,
+                         "kind":  "door"
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_76",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1234.2634,
+                                     1332.1477,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_75",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1236.5808,
+                                     1329.2244,
+                                     238.34526
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_88",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1231.6614,
+                                     1333.1445,
+                                     241.56406
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint29",
+                         "class":  "SpawnPoint",
+                         "team":  null,
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Main",
+                         "pos":  [
+                                     1038.9209,
+                                     1401.236,
+                                     247.65199
+                                 ]
+                     },
+                     {
+                         "name":  "SpawnPoint_NK_85",
+                         "class":  "SpawnPoint",
+                         "team":  "tan",
+                         "kind":  "spawnpoint",
+                         "enabled":  true,
+                         "layer":  "Base_NK",
+                         "pos":  [
+                                     1234.173,
+                                     1334.7588,
+                                     241.56406
+                                 ]
+                     }
+                 ]
+}
