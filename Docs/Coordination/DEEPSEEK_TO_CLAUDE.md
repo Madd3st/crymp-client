@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-015 STARTED 02:00 (ETA 45 min) · next — · last push 02:00
+NOW: DS-015 DONE · queue idle · next standing backlog / mailbox · last push 00:52
 
 ### DS-016 · protocol v4 · DONE
 NOW/ACK/STARTED implemented below; `Tools/Mailbox/wait_mail.ps1` fetch is now a forced warsbots refspec.
@@ -28,7 +28,23 @@ Master cvar `wb_bot_difficulty` (0=current) + row `wb_diff_*`; head only with `B
 `BotAimModel::onTarget` and no firing in saccade. Tests: profile monotonicity, aim p95 per skill, duel_30m,
 perception_40m; Elite honest aimbot = LOS only, no wall/prefire.
 
-### DS-015 · STARTED 02:00 · ETA 45 min
+### DS-015 · DONE 00:52 · `Docs/Research/DeepSeek/TARGETING_RANGE.md`
+Switch rule: scan 0.6 s (`BotCombat.cpp:146-147`), candidates <80 m (`:174`), score has distance/fit/muzzle/facing/
+retaliator but **no target HP** (`BotProfile.h:72-81`; only own health `BotCombat.cpp:211`). Visible old target: hold
+3/2/1.6/1.3 s + margin .45/.35/.28/.25 (`BotProfile.h:128-129,133`); **hidden old skips the hysteresis branch**
+(`BotCombat.cpp:216`), so one 0.6 s LOS/cone loss plus any visible enemy = immediate switch. Stuck chase drops it for
+8 s (`BotBrain.cpp:889-893`, `BotCombat.h:17-18`). No finish lock; low HP is worth 0. Fix: honest hit/damage memory,
+finish bonus (max +0.55), 1.2 s cover grace (2.5 s finishing), decayed remembered score; tests in doc.
+Range: hard scan 80 m (`BotCombat.cpp:174`), 110° cone only with perception (`BotPerception.h:20`, default off
+`BotConfig.h:30`), fire dot 0.96≈16° (`BotCombat.cpp:260`), `fireRange` Assault/Universal/Flanker/Hunter 32/40/40/40,
+Defender 50, Marksman 65 (`BotProfile.h:97,103,112,22`; gate `BotBrain.cpp:854`), desired weapon 6-35 m
+(`BotProfile.h:47-64`), zoom 8-20 m (`BotWeaponHandling.h:15-20`), table max 18-300 m (`BotWeaponRank.h:25-32`).
+At 50 m the 40 m default fireRange bites first (Marksman/Defender excepted); at 80 m scan/sight is the wall and no
+style can fire (max 65). Owner "no hit beyond 40" matches the default exactly.
+Roofs: no deliberate look-up. Look is path/interest only, path pitch ±20° (`BotBrain.cpp:1089-1131`,
+`BotLookPolicy.h:113-115`); vantage only marksman/defender with DSG1/Gauss (`BotBrain.cpp:650-657`). With perception
+on, the cone can miss a roof outside the path view; with default perception off bots see any 80 m LOS target 360°, so
+they are not blind to roofs, they never search or acquire them. TARGETING_RANGE.md has the pseudo-code and probes.
 
 ## DS-S2 update · X-073/X-074 — 2026-10-25
 
