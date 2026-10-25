@@ -249,6 +249,8 @@ int main(int argc, char** argv)
 	std::fprintf(stderr, "tris %zu spawns %zu items %zu\n", g_tris.size(), spawns.size(), items.size());
 	std::vector<std::pair<int, int>> pairs;
 	for (size_t s = 0; s < spawns.size(); ++s) for (size_t i = 0; i < items.size(); ++i) if (mesh.Reachable(spawns[s].data(), items[i].data())) pairs.push_back({(int)s, (int)i});
+	if (const char* wi = getenv("WALK_ITEM")) // "x,y": only routes to items within 1.5 m of that point
+	{ float ix = 0, iy = 0; std::sscanf(wi, "%f,%f", &ix, &iy); std::vector<std::pair<int, int>> sub; for (auto& p : pairs) if (std::hypot(items[p.second][0] - ix, items[p.second][1] - iy) < 1.5f) sub.push_back(p); pairs.swap(sub); }
 	if ((int)pairs.size() > maxPairs) { std::vector<std::pair<int, int>> sub; for (int k = 0; k < maxPairs; ++k) sub.push_back(pairs[(size_t)k * pairs.size() / maxPairs]); pairs.swap(sub); }
 	if (argc > 7) { g_trace = true; const int k = std::atoi(argv[7]); auto& p = pairs[k]; std::printf("trace pair %d spawn (%.1f,%.1f,%.1f) item (%.1f,%.1f,%.1f)\n", k, spawns[p.first][0], spawns[p.first][1], spawns[p.first][2], items[p.second][0], items[p.second][1], items[p.second][2]); Result r = Walk(mesh, spawns[p.first].data(), items[p.second].data(), mode == "corners"); std::printf("done=%d t=%.1f\n", r.done, r.t); return 0; }
 	if (mode == "both")

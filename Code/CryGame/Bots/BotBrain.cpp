@@ -506,7 +506,17 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 		if (m_upgradeTarget != m_upgradeTracked || !m_upgradeTarget) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; }
 		if (IEntity* goal = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr)
 		{
-			const float d=(goal->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength();
+			const Vec3 feet=actor.GetEntity()->GetWorldPos();
+			float d=(goal->GetWorldPos()-feet).GetLength();
+			// wb_bot_path_progress: progress = remaining navmesh path, not straight distance. DSG1 on Steelmill is reached
+			// by stairs that first lead away from it: straight distance grew, and every marksman marked it "unreachable"
+			// after 8 s (owner playtest 25.10: bot #3 x4; C-080: 7 times, 0 bots ever held a sniper rifle).
+			if (BotConfig::Get().pathProgress==1 && m_meshPathActive && !m_path.empty() && (m_pathGoal-goal->GetWorldPos()).GetLength2D()<2.0f)
+			{
+				float rem=(m_path[min(m_pathIndex,m_path.size()-1)]-feet).GetLength();
+				for (size_t k=m_pathIndex+1;k<m_path.size();++k) rem+=(m_path[k]-m_path[k-1]).GetLength();
+				d=rem;
+			}
 			if (d < m_upgradeBest-1.0f) { m_upgradeBest=d; m_upgradeBestAt=m_now; }
 		}
 		if (m_upgradeTarget && (m_now - m_upgradeBestAt > 8.0f || m_now - m_upgradeSince > 60.0f))
