@@ -22,6 +22,21 @@
 | `wb_trap_recovery`, `wb_revive_guard`, `wb_spawn_exclude195` | защиты от застревания | 1 |
 | `wb_reachable_goals`, `wb_sink_escape` | экспериментальные, выключены | 0 |
 
+Фичи спринта (все по умолчанию 0; в плейтесте владельца включены все):
+
+| Переменная | Что включает |
+| --- | --- |
+| `wb_bot_look`, `wb_bot_turn_cap` | взгляд по ходу движения, плавный поворот |
+| `wb_bot_weapon_rank`, `wb_bot_arbiter` | выбор оружия по дистанции, арбитр решений |
+| `wb_bot_perception`, `wb_bot_aim_model` | восприятие и слух, человеческий прицел |
+| `wb_bot_suit_policy` | политика костюма |
+| `wb_bot_navmesh`, `wb_bot_jump_links` | навигация Detour, прыжки по связям меша |
+| `wb_bot_weapon_handling`, `wb_bot_vantage` | лазер и зум; снайперские точки |
+| `wb_bot_name_profile` | имена с уровнем и стилем (для новых ботов) |
+| `wb_bot_client_smooth` | **на клиенте**: сглаживание движения ботов |
+
+Данные для навмеша/прыжков/точек ставит `Tools/Install-WarsBotsNavmesh.ps1` в `%LOCALAPPDATA%\WarsBots\Navmesh`.
+
 Диагностика: `wb_debug`, `wb_log`, `wb_move_trace` (журнал позиций), `wb_nav`, `wb_nav_audit`, `wb_nav_explain`,
 `wb_nav_export`, `wb_geom_export` (выгрузка геометрии), `wb_physics_diagnostics`, `wb_fire_diagnostics`,
 `wb_probe_*` (сценарии-пробы), `wb_qa_time_scale` (ускорение времени — не принято, ломает поведение).

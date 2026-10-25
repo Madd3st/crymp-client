@@ -8,4 +8,5 @@
 - [[Демки|Demos]]
 - [[Команда и процесс|Team-and-Process]]
 - [[Статус и планы|Status-and-Roadmap]]
+- [[Исследования и идеи|Research-and-Ideas]]
 - [[Словарь|Glossary]]

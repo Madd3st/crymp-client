@@ -28,3 +28,9 @@ candidate) для сравнения изменений. Результат — 
 ## Добавить ботов вручную
 
 В консоли сервера: `wb_add 5`, `wb_skill 2`, `wb_list`, `wb_remove_all` — см. [[Команды wb|Console-Commands]].
+
+## Плейтест со всеми фичами (25.10)
+
+Codex готовит замороженный билд и пресет: `./Tools/Play-WarsBotsSprint.ps1 -BotCount 6` — Steelmill IA, все фичи
+включены, сервер пишет демку, клиент — `wb_bot_client_smooth 1` и `wb_move_trace 2`. Демку и трейс Claude забирает сам.
+Перед игрой с новыми данными навмеша — `Tools/Install-WarsBotsNavmesh.ps1`.

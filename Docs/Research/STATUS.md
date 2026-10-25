@@ -1,4 +1,4 @@
-# WarsBots project status — 2026-10-25 13:10 MSK
+# WarsBots project status — 2026-10-25 15:55 MSK
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
@@ -13,9 +13,9 @@ decisions and aim. Map-specific fixes only as data, never code.
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (build, QA, merge — D-013) | ON rerun of 50a516f7, then batch C-058/C-059 (2401fb43 stairs, 6f941cda suit, 1e343d81 client smooth) | merge green into weapon-goals, playtest build for the owner |
-| OpenCode (read-only review) | OC-026 review of claude-sprint d0bb72ac..head | engine references on request |
-| Claude (game code on claude-sprint + verdicts) | waiting for batch results; next code: hearing in perception, jump/lift executors (C-036) | score demos + client trace after each batch |
+| Codex (build, QA, merge — D-013) | batch C-066 = claude-sprint 68c50704 (C-065 owner-playtest fixes + sniper spots) | merge green, owner preset with all gates |
+| OpenCode (read-only review) | OC-027 review of 6f941cda..717853ff | engine references on request |
+| Claude (game code + verdicts + docs) | waiting for C-066; wiki/docs refresh | cover/pre-aim/combat movement, traits, owner demos, PS navmesh (Shore, Plantation) |
 
 ## Done (2026-10-23 … 24)
 
@@ -131,6 +131,10 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-25 15:45 | C-066 | sniper spots: tactical_spots.cpp (cover/low/sniper/exposed per map), BotVantage + wb_bot_vantage; 3D view of Steelmill (Gauss tower 13 m, 4 Strength jumps; DSG1 22 m, stairs) |
+| 10-25 15:25 | C-065 | owner playtest 717853ff: "kills without ammo" = spectator HUD (server ammo fine) → ammo synced; laser+zoom (wb_bot_weapon_handling), names with skill/style, raw client aim while firing, Hurricane lower |
+| 10-25 14:35 | C-063 | 8214f16a: links 27 % → 49 % done, but nav fallbacks ×6 (weak parts) → SCC + directed reachability, run-up before link jumps (717853ff) |
+| 10-25 13:45 | C-062 | **C-061 GREEN, 0470fe7e merged**: kills 219 → 281, SCAR kills 4 → 80, pickups 112 → 208, flips 16.6 → 9.2 |
 | 10-25 13:10 | C-059 | 1e343d81 client lag fix #1 (O-025): client cvar `wb_bot_client_smooth` (default OFF) filters replicated direction/aim steps; added to the C-058 batch; roles table per D-013 |
 | 10-25 11:45 | C-056 | new: BotSuitPolicy module, VisibleLookAhead (C-055 fix), meshes with jump/lift links (Steelmill items 38 -> 93), Triage still/off-travel metrics |
 | 10-25 03:20 | C-055 | 15-bot pair all-7 OFF/ON: SOCOM kills 60 % -> 25 %, pickups +50 %, flips -52 %, kills equal; regression: wall stares x10 (look-ahead behind wall corners) + standing 3.4 -> 8.4 %; fix specified |
