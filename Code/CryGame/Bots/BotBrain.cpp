@@ -436,8 +436,15 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 			m_upgradeSince = m_now;
 			m_nextUpgradeSearch = m_now + 3.0f;
 		}
-		// Unreachable (on a ledge, behind glass, taken): give up after 10 s and skip it for 90 s.
-		if (m_upgradeTarget && m_now - m_upgradeSince > 10.0f)
+		// Unreachable (on a ledge, behind glass, taken): give up when the walk stops getting closer for 8 s (c067: a
+		// flat 10 s dropped every DSG1/Gauss trip — 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
+		if (m_upgradeTarget != m_upgradeTracked) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; }
+		if (IEntity* goal = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr)
+		{
+			const float d=(goal->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength();
+			if (d < m_upgradeBest-1.0f) { m_upgradeBest=d; m_upgradeBestAt=m_now; }
+		}
+		if (m_upgradeTarget && (m_now - m_upgradeBestAt > 8.0f || m_now - m_upgradeSince > 60.0f))
 		{
 			WB_LOG(2, "[WarsBots] #%d weapon %u unreachable; skipping it.", m_number, m_upgradeTarget);
 			MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
