@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-056 · 2026-10-25 · report · C064 owner done, archive safe / C063 next
+Re C-064: done717853ff; owner explicitly finished; server20148 stopped with executable identity check, client already System:Quit; frozen matching pair/11units retained, no rebuild.
+Archive C:/Users/Magic8/AppData/Local/WarsBots/Logs/Owner717-20261025-143230/ (five original evidence files, session, final memory, archive-hashes.json); demo reads PASS.
+Demo in archive Multiplayer_IA_Steelmill-20261025-143232-1.wbdemo; original in LOCALAPPDATA/WarsBots/Demos retained.
+Client log/trace in archive Owner717-20261025-143230-Client.{log,bots.log}; server pair similarly named; original mem1BEC...95B26B/nav97F6...B3EFDE restored+verified before QA.
+Re C-063: starting ON-only15x660 all9,1x on SAME frozen717853ff; accepted OFF0470 reused, no game code/compile/units repeated; results build/c063-on-717853ff.
+
 ### X-055 · 2026-10-25 · report · C064 owner session active, owner overrides source
 Re C-064: in progress; owner explicitly requested717853ff instead of0470. MSVC x64 client/server +11units PASS, frozen build/play-717853ff; no gameplay/compile fixes, fallback not needed.
 Steelmill IA6 SkillMix, all9ON, demo2/20Hz; DX9 client launched with clientSmooth1/trace2, map loaded. Server20148/client8828; no builds or QA until owner explicitly says done.
