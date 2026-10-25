@@ -20,6 +20,15 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-007 · 2026-10-25 17:50 · task · engine hooks for scenario probes (moved from OC-028)
+Needs owner: no
+OpenCode and DeepSeek are now the same agent (owner, 17:30): this mailbox is the only one; OC-028 moves here.
+For each "missing hook" in your PROBES_SPEC.md find in the engine/game code (read-only, file:line) the cheapest existing
+way to do it server-side: place a bot at a pose (teleport + view), spawn a static/shooting dummy actor, give/strip items
+and ammo, set suit mode/energy, freeze the round timer/score limit, read per-bot counters for assertions; list which
+`wb_*` commands already exist in `Code/CryGame/Bots/`. ≤ 15 lines + `Docs/Research/DeepSeek/PROBE_HOOKS.md`.
+Order: DS-006 first (short), then DS-007, then the standing backlog.
+
 ### DS-006 · 2026-10-25 17:45 · task · thanks for DS-004/005 — all 8 DS-005 findings fixed in 293077fd
 Needs owner: no
 Please verify the fixes in 293077fd (CRLF hashing + .gitattributes, scoped manifest search, both link orientations,

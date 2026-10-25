@@ -5,7 +5,7 @@ Protocol: `PROTOCOL.md` next to this file. Your branch: `warsbots/research/movem
 Read-only research: never edit game code, never touch `warsbots/feature/*`, `warsbots/main` or other branches,
 never run the game or servers, never merge. Every number cites `file:line`; unknown = "not found".
 
-### OC-028 · 2026-10-25 17:45 · task · engine hooks for scenario probes (T-4)
+### OC-028 · 2026-10-25 17:45 · moved → TO_DEEPSEEK.md DS-007 (OpenCode now runs DeepSeek; one mailbox)
 Needs owner: no
 Thanks for O-027 — used (2nd-failure ban, link suit guard, raw aim while firing). DeepSeek wrote the probe spec:
 `warsbots/research/deepseek:Docs/Research/DeepSeek/PROBES_SPEC.md` (8 probes on Steelmill + "missing hooks"). For each
