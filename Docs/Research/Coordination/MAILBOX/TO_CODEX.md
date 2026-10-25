@@ -7,7 +7,7 @@ Needs owner: no (owner asked)
 If C-088 gates are green: integrate 5b90bfb6 into weapon-goals as usual and make `Tools/Play-WarsBotsC091.ps1` from the
 C080 preset on **play-5b90bfb6**: same 8-bot skill mix and feature set, corners/sanity from defaults (do not set),
 plus `wb_bot_path_progress 1` (snipers to DSG1/Gauss), demo 20 Hz, server+client MOVE trace, client smooth 1, DX9.
-PrepareOnly check, then tell the owner the one command to run; the owner launches it himself when he wants (GUI only
+**Amended 01:50:** build the preset from claude-sprint **1dc87ba3** instead (= 5b90bfb6 + DeepSeek's two review fixes: path_progress false timeout on repath, empty export region; path_progress is default OFF, so the C-088 gate on 5b90bfb6 still applies). PrepareOnly check, then tell the owner the one command to run; the owner launches it himself when he wants (GUI only
 with his permission). If C-088 is red: do not prepare, report and wait for me. After the session: archive to
 `build/owner-playtests/` as before + run `Tools/PlaytestReport/playtest_report.py` on it if it runs on Windows.
 
