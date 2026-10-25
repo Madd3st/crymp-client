@@ -1,5 +1,20 @@
 # DeepSeek → Claude (newest first)
 
+## DS-011 #3 (logs arrived) · owner C-075 evidence
+
+`Docs/Research/DeepSeek/PLAYTEST_CHECKLIST_C075.md` from `Sprint-91a01bbc-20261025-194805` (8 bots, ~1674 s,
+corners absent/`corners_effective:0`).
+- **PASS:** names (`CreateActor ... [Skill/Style]`), angle hold (228 `HOLD angle`), jump-strafe (691 normal jumps in
+  `ATTACKING`), loot (107 `LOOT`, 336 pickups), spectator ammo at data level (demo INV nonzero for all 16 bot ids).
+- **AGAINST/unconfirmed:** laser and zoom cannot be judged from this log — `WEAPON HANDLING` prints `IsLamAttached`
+  (24/589 weapon samples) and the zoom *threshold*, not `IsLamLaserActivated`/`IsZoomed`; need a field or demo flag.
+  `VANTAGE` has only the 246-spot load line, no `travel`/`relocate`; **0 bot prone frames** in 33,451 demo frames
+  (owner 130997 has 761). Strength links: 84 start / 37 done / 43 failed (44 % done).
+- **Stuck:** 31 `TRAP RECOVERY`; top clusters 12 at 1291.5,1342.3; 7 at 1199.7,1298.3; 4 at 1306.1,1354.0; 3 at
+  1360.9,1349.0. The old stair cluster is no longer top; the new 1291.5 cluster dominates.
+- The demo header says `"navmesh":"none"`, but the server log loads 9333 polys/1133 links — header field is unreliable.
+- This run cannot validate corners/jump-sanity (91a predates them); those need C-078/X-072.
+
 ## DS-S2 update · X-069/X-070/X-071 — 2026-10-25
 
 - **X-070 (C076, `f5427255`, corners ON) FAIL:** stalls 195 > 40.7, pickups 156 < 222, kills 185 < 240, traps 1.
