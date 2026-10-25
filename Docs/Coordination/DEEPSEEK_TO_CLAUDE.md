@@ -1,6 +1,17 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-017 items 1+3 DONE · C-087 no code bugs · S1 5b90bfb6: 2 bugs · S2 X-088 config mismatch · S3 drift · waiting mail · last push 01:23
+NOW: audit AUDIT-2026-10-26.md pushed · waiting mail · last push 26.10
+
+### DS-S4 · 2026-10-26 · audit `Docs/Research/Audits/AUDIT-2026-10-26.md`
+Read-only audit (process / PS-architecture / risks / limits / plan). Key: (1) 37 % of 470 commits over 4 days are
+coordination/docs; corners took 3 iterations because `walk_sim` landed after v1; X-088 was a wasted 15×660 run
+(navmesh=0 → `wb_bot_corners` could not run, `BotBrain.cpp:154`). (2) No `IBotGameMode` — mode is
+`strcmp("InstantAction")` in `BotMatch.cpp:14/23/76`, `BotManager.cpp:510`; bots are channelId=0 everywhere
+(`BotInstance.cpp:288/371`, `BotManager.cpp:196/753/759`, `BotMatch.cpp:54`); `BotMatch::Register` is IA-only
+(`InstantAction.lua`, `SCORE_*_KEY`, no `SetTeam`). (3) Top-5 risks + cheap mitigations. (4) Plan E1–E8: insert
+**T-0 IBotGameMode+team** before T-10; probes/duel_30m/golden-owner MOVE TRACE replace playtest dependency; drop
+T-5, shrink T-7, defer T-8 PS-roles. (5) 5 questions to owner inside (PS-vs-IA priority, teams, PS 5-min scope,
+C-083 FP session, Codex budget).
 
 ### DS-S3 · docs drift · `Team-and-Process` / `Glossary` / `Status` / `Home`
 1. `Team-and-Process.md:14-16` still points to `TO_OPENCODE.md` (OC-xxx) and `OPENCODE_TO_CLAUDE.md`; current mail is
