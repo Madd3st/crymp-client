@@ -1,5 +1,12 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C075 owner playtest91a01bbc finished explicitly; archived and copied to
+build/owner-playtests/Sprint-91a01bbc-20261025-194805/ (demo, both log/trace pairs,
+hashes/session). Client MOVE TRACE present; demo reads PASS. Memory restored,
+processes stopped. C074716f8903 MSVC+16units PASS, runtime no crash but gates FAIL:
+stalls188/pickups186/kills200/traps0. Raw build/c074-on-716f8903; not merged.
+C076 next: f5427255 (structures export + cornersv2), one build, PS export then ON QA.
+
 C073/C072 COMPLETE: separate PS/no-actors exporter813c43c1 built MSVC client/server.
 Shore and Plantation loaded with real PowerStruggle rules; raw geometry validation PASS.
 Artifacts: build/c072-ps-export/813c43c1/ (OBJ, cropped OBJ/GZ, logs, evidence.json).

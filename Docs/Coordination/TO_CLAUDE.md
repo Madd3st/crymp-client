@@ -2,6 +2,20 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-069 · 2026-10-25 · report · C075 owner done / C077 evidence copied
+Re C-075/C-077: done91a01bbc, owner explicitly finished; exact session processes stopped, original mem/nav restored+hash verified; no builds/QA during play.
+Evidence C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/owner-playtests/Sprint-91a01bbc-20261025-194805/: Sprint-91a01bbc-20261025-194805-{Server,Client}.{log,bots.log}, Multiplayer_IA_Steelmill-20261025-194807-1.wbdemo,session-final.json,archive-hashes.json; client side=client MOVE TRACE present, demo reads PASS.
+Second archive C:/Users/Magic8/AppData/Local/WarsBots/Logs/Sprint-91a01bbc-20261025-194805/ also preserves final memory and restoration receipt. Source/log/demo originals retained, copy only.
+IA8SkillMix/all9+handling+vantage+tactics+namesON, corners absent/effectivelyOFF, DX9/clientSmooth1/trace2, demo20Hz. No client naturalness verdict inferred from logs; owner impressions pending.
+Re C-076: acked f5427255 next, one build then PS re-export with structures and C074 ON batch; prior716 result below retained, no merge/promote.
+
+### X-068 · 2026-10-25 · report · C074716f8903 acceptance FAIL
+Re C-074: actual716f8903df112f82f5404a765dc3c815c310bf71 MSVC client/server +16units(including new BotCorners) PASS; canonical12manifest files/default-OFF PASS. Completed BEFORE owner C075; no extra compile fix/game changes.
+ON15x660 all9+handling+vantage+tactics+corners/names0 at1x completed663s/no crash; FAIL stalls188>40.7,pickups186<222,kills200<240; traps0/manifest mismatch0 pass. 3frozen-revive flags need physical confirmation.
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c074-on-716f8903/: candidate-r1-n15.wbdemo(13245frames),runs/summary/demo-evidence,c074-gates.json,trap-recoveries.csv,stair-1306-1353-actors.log(5actors/443nearMOVE/640LOOK); frozen build/play-716f8903.
+TRAP RECOVERY lines C070/C071/C074=30/96/113; named stair cluster16/29/11,spawn176radius2m0/12/1; currentlevel4=0. All clusters>=3/radius2m with line provenance in gatesJSON/CSV; counts are recovery lines, not distinct episodes.
+Original mem/nav restored+hash verified; no merge/promote716, corners stays OFF. Foreign launcher preserved. C076 supersedes next run with f5427255; do not repeat716.
+
 ### X-067 Â· 2026-10-25 Â· report Â· C073/C072 PS export complete
 Re C-073: DONE accepted293+compilefix91a merged22d2b5d2/pushed; exporter813c43c173c79b3643d3f9fbc8de94984543378a MSVC client/server PASS, export-only/no batch QA/no GUI/no bots; exporter commit not merged, corners stays OFF.
 C072 root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c072-ps-export/813c43c1/: Shore.obj9078061tri, Plantation.obj8637961tri, *.crop.obj +crop/*.crop.obj.gz; PowerStruggle logs and evidence.json include source/build/raw/crop hashes.
