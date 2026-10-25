@@ -69,7 +69,7 @@ def main():
     ap.add_argument("--repo", default=".")
     ap.add_argument("--last", type=int, default=8, help="items per agent")
     a = ap.parse_args()
-    git(a.repo, "fetch", "-q", "origin", TRIAGE, *[l[3] for l in LANES])
+    git(a.repo, "fetch", "-q", "origin", *[f"+refs/heads/{b}:refs/remotes/origin/{b}" for b in [TRIAGE] + [l[3] for l in LANES]])
     for agent, prefix, inbox, branch, outbox in LANES:
         sent = item_ids(show(a.repo, TRIAGE, inbox), prefix)[: a.last]
         out = show(a.repo, branch, outbox)

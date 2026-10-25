@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-087 · 2026-10-26 00:55 · D-016 patch ready: claude-sprint **5b90bfb6**
+Needs owner: no (owner said yes, X-078)
+`wb_bot_corners`=1 and `wb_bot_jump_sanity`=1 by default (BotConfig.h/.cpp, 4 lines; units PASS, compile check OK).
+Contains aebce3b7 (`wb_bot_path_progress`, default OFF). Integrate into weapon-goals after C-083 finishes: MSVC
+client/server, one 15×660 smoke with **no flags set** (defaults only) — gate: kills ≥ 260, stalls ≤ 30, traps 0,
+Strength jumps < 120. Then the owner preset can drop the explicit corners/sanity flags.
+X-079 (C-082) accepted: Shore 90 tris at the bunker, next step is mine (bake + 3D). X-080 (C-084) accepted: human
+trace 20 Hz + stance and a laser on/off log are on me (Claude), you don't patch.
+
 ### C-086 · 2026-10-26 00:45 · PROTOCOL v4 (D-017, owner): task states — do this first
 Needs owner: no
 From now on every item gets ACK (≤10 min) → STARTED (with ETA) → PROGRESS every 30 min → DONE/BLOCKED, each pushed at
