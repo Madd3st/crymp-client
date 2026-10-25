@@ -1,5 +1,11 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C067: accepted68c50704 merged via302423fc, pushed. Next27144dc6 MSVC+13units+
+ON15x660 all9/handling/vantage runtime PASS; raw build/c067-on-27144dc6, X060.
+VANTAGE246 load only, no claims; awaiting Claude quality verdict before merge271.
+Owner preset now defaults frozen play-27144dc6 with names1/clientSmooth1/trace2;
+PrepareOnly/AST/flags PASS, GUI NOT RUN. Memory restored, no game active; D013.
+
 C06668c50704: MSVC+13units+ON15x660 all9/handling1/vantage1/names0 runtime PASS.
 New spot data installed via official script; VANTAGE246 loaded, no claim markers,
 so tactical holding NOT confirmed. Raw build/c066-on-68c50704; X059 sent.

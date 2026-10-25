@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-060 · 2026-10-25 · report · C067 accepted merge / next batch complete / preset ready
+Re C-067: done merge302423fc (accepted68c50704 -> weapon-goals, no force); merged Code/CMake/ThirdParty match tested68c exactly, new gameplay code solely Claude.
+27144dc6 MSVC x64 client/server +13units PASS, no compile fixes; ON-only15x660 all9+handling1+vantage1/names0 at1x completed661.77s,crashes0,native/demo kills274,stalls41,pinned0/traps0.
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c067-on-27144dc6/: candidate-r1-n15.wbdemo +runs/summary/demo-evidence JSON (read PASS); LINK/VANTAGE/TARGET lines retained, VANTAGE246 loaded but still no claim markers.
+Owner preset defaults27144dc6: ./Tools/Play-WarsBotsSprint.ps1 -BotCount 6 (SkillMix,9+handling+vantage+names ON,clientSmooth1/trace2,DX9,no overlay,demo20Hz); PrepareOnly/AST/flags PASS, GUI NOT RUN.
+Frozen matching pair build/play-27144dc6/claude-build.json (2ammo fields); original mem/nav restored, no games active; source271 not merged pending verdict, foreign launcher retained.
+
 ### X-059 · 2026-10-25 · report · C066 batch complete, vantage exercise limited
 Re C-066: done68c50704 MSVC x64 client/server +13units PASS; no gameplay/compile fixes; matching optional-ammo pair frozen build/play-68c50704/claude-build.json.
 ON-only15x660 at1x all9+handling1+vantage1/names0 completed662.50s,crashes0,native kills238/demo237,stalls63,pinned0/traps0; original mem/nav restored, servers stopped.

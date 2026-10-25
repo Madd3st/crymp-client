@@ -2,7 +2,7 @@
 # Uses the tracked recording launcher, preserving a user's local launcher edits.
 [CmdletBinding()]
 param(
- [string]$BuildDirectory='build/play-0470fe7e',
+ [string]$BuildDirectory='build/play-27144dc6',
  [string]$GameDirectory='E:/Steam/steamapps/common/Crysis',
  [ValidateRange(1,15)][int]$BotCount=6,
  [ValidateRange(1024,49151)][int]$Port=46050,
@@ -26,7 +26,8 @@ $newAmmoPose=($m.spectator_ammo_pose_fields -eq 2)
 if($newAmmoPose){$flags+=@('wb_bot_weapon_handling','wb_bot_name_profile')}
 $hasVantage=($m.PSObject.Properties.Name -contains 'vantage_default')
 if($hasVantage){$flags+=@('wb_bot_vantage')}
-$sessionLabel=if($hasVantage){'SprintC066'}elseif($newAmmoPose){'SprintC065'}else{'SprintC061'}
+if($m.sha -notmatch '^[0-9a-f]{40}$'){throw 'Invalid frozen source SHA'}
+$sessionLabel='Sprint-'+$m.sha.Substring(0,8)
 $gateArgs=($flags|ForEach-Object {"+$_ 1"}) -join ' '
 $source=$source.Replace($repoAnchor,"`$repo='$($repo.Replace("'","''"))'")
 $source=$source.Replace($gateAnchor,"$gateArgs +wb_demo_record 1 +wb_demo_hz 20 $gateAnchor")
