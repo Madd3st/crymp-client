@@ -1,0 +1,96 @@
+################################################################################
+# WarsBots CI (owner decision D-021, 26.10.2026): every push to a warsbots feature branch is compiled with MSVC and
+# runs the engine-free unit tests on a GitHub Windows runner, so compile errors no longer cost a Codex build cycle
+# on the owner PC. Codex keeps the game runs (batches, probes, playtests); it may download the artifact instead of
+# building when the SHA matches.
+################################################################################
+
+name: WarsBots CI
+
+on:
+  push:
+    branches:
+      - 'warsbots/feature/**'
+    paths:
+      - 'Code/**'
+      - 'Tests/**'
+      - 'ThirdParty/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/warsbots-ci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: warsbots-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  units:
+    name: Unit tests (MSVC)
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build and run engine-free tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vs = & 'C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe' -latest -property installationPath
+          & (Join-Path $vs 'Common7/Tools/Launch-VsDevShell.ps1') -Arch amd64 -HostArch amd64 -SkipAutomaticLocation | Out-Null
+          New-Item -ItemType Directory -Force units | Out-Null
+          # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+          # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+          $tests = @('BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
+                     'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                     'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+          $failed = @()
+          foreach ($t in $tests) {
+            $src = "Tests/${t}Tests.cpp"
+            if (-not (Test-Path $src)) { "SKIP $t (no source)"; continue }
+            $more = @()
+            if ($t -eq 'BotPerception') { $more = @('/Dnear=') }
+            if ($t -eq 'BotNavMeshCore') {
+              $more = @('/I','ThirdParty/recastnavigation/Detour/Include','Code/CryGame/Bots/BotNavMeshCore.cpp') +
+                      @(Get-ChildItem ThirdParty/recastnavigation/Detour/Source/*.cpp | ForEach-Object { $_.FullName })
+            }
+            & cl /nologo /std:c++17 /EHsc /I . /I Code $src @more /Fo:units/ "/Fe:units/$t.exe" *> "units/$t-compile.log"
+            if ($LASTEXITCODE) { Get-Content "units/$t-compile.log" -Tail 40; $failed += "$t (compile)"; continue }
+            if ($t -eq 'BotNavMeshCore') {
+              & "units/$t.exe" Tools/RecastBake/meshes/Steelmill.navmesh Tools/RecastBake/meshes/Steelmill.navmesh Tools/RecastBake/meshes/Steelmill.links.txt *> "units/$t-run.log"
+            } else { & "units/$t.exe" *> "units/$t-run.log" }
+            if ($LASTEXITCODE) { Get-Content "units/$t-run.log" -Tail 40; $failed += "$t (run)"; continue }
+            "UNIT PASS $t"
+          }
+          if ($failed.Count) { throw ("UNIT FAIL: " + ($failed -join ', ')) }
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-logs-${{ github.sha }}
+          path: units/*.log
+          retention-days: 7
+
+  build:
+    name: Client + server (MSVC, experimental spawner)
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Configure and build
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $vs = & 'C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe' -latest -property installationPath
+          & (Join-Path $vs 'Common7/Tools/Launch-VsDevShell.ps1') -Arch amd64 -HostArch amd64 -SkipAutomaticLocation | Out-Null
+          $env:VSLANG = '1033'
+          cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_RC_FLAGS=/c65001 -DWARSBOTS_EXPERIMENTAL_SPAWNER=ON
+          cmake --build build/ci --parallel 4
+          Get-ChildItem build/ci -Filter 'CryMP-*64.exe' | ForEach-Object { "{0}  {1}" -f (Get-FileHash $_.FullName).Hash, $_.Name } | Tee-Object build/ci/sha256.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: warsbots-${{ github.sha }}
+          path: |
+            build/ci/CryMP-*64.exe
+            build/ci/sha256.txt
+          retention-days: 7
