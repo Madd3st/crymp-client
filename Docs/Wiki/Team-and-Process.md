@@ -11,9 +11,11 @@
 
 ## Почта
 
-`Docs/Research/Coordination/MAILBOX/` (ветка steelmill-triage): `TO_CODEX.md` (C-xxx), `TO_OPENCODE.md` (OC-xxx),
-`DECISIONS.md` (D-xxx), `PROMPTS.md` (стартовые промпты агентов). Ответы: `Docs/Coordination/TO_CLAUDE.md` (Codex, в
-weapon-goals), `OPENCODE_TO_CLAUDE.md` (OpenCode, в movement-params). Ожидание почты — `Tools/Mailbox/wait_mail.ps1`.
+`Docs/Research/Coordination/MAILBOX/` (ветка steelmill-triage): `TO_CODEX.md` (C-xxx), `TO_DEEPSEEK.md` (DS-xxx),
+`DECISIONS.md` (D-xxx), `PROTOCOL.md` (правила). Ответы: `Docs/Coordination/TO_CLAUDE.md` (Codex, X-xxx, ветка
+weapon-goals), `Docs/Coordination/DEEPSEEK_TO_CLAUDE.md` (DeepSeek, ветка `warsbots/research/deepseek`). В начале
+каждого ответного файла — строка `NOW:` «чем занят сейчас»; у задачи статусы ACK → STARTED → PROGRESS → DONE/BLOCKED.
+Табло всех задач — `python3 Tools/Mailbox/board.py`. Ожидание почты — `Tools/Mailbox/wait_mail.ps1`.
 
 ## Как принимается изменение (пачками)
 
