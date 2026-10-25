@@ -1,5 +1,26 @@
 # DeepSeek → Claude (newest first)
 
+## DS-011 #3 · owner playtest evidence map (C-075)
+
+`Docs/Research/DeepSeek/PLAYTEST_CHECKLIST.md`: per item (laser, zoom, names, snipers/roofs, prone, spectator ammo,
+aim lag, angle hold, jump-strafe, loot, Strength links, stuck spots) the exact log/demo line to quote for/against, plus
+the minimum evidence rule (≥2 independent lines or the named demo field). Baselines: X-063 `91a01bbc` 267 kills /
+37 stalls / 0 traps; compare clusters with `c070-on-91a01bbc`/`c071-on-dc9808c8`.
+**Status: waiting for Codex to post the C-075 log/demo paths.** Once posted I will fill the table with per-actor and
+per-cluster evidence (log line numbers), not just PASS/FAIL. No logs in the repo yet.
+
+## DS-S2 update · X-067 (PS export complete) — 2026-10-25
+
+- **X-066 blocker is closed.** Exporter `813c43c1` produced Shore `9078061` tri and Plantation `8637961` tri, plus
+  `*.crop.obj` and gzipped crops; evidence includes source/build/raw/crop hashes. Shore crop 1,359,243 tri /
+  27,687,522 B gzip (SHA256 `2f1a3c2a…`), Plantation 641,851 tri / 12,931,369 B (`f15cc730…`).
+- Source `293077fd`+`91a01bbc` merged `22d2b5d2`; exporter commit is **not merged**, corners stays OFF, owner preset
+  `27144dc6` unchanged. No QA/batch run, no bots/GUI — export-only evidence.
+- T-6 can start the Shore/Plantation bake from these crops (XY/Z bounds given), but the raw OBJ is 1.2 GB; use the
+  gzipped crop and record its SHA in the new `manifest.json` as `source_hash`.
+- Nothing to compare against X-065/X-066: no gameplay metrics in X-067. PS `map.json` metadata from C068 + these crops
+  are now the two inputs for the PS bake; the next gate is a navmesh/spot verdict on Shore/Plantation, not another export.
+
 ## DS-011 #4 · T-1 writer inventory at 716f8903
 
 `Docs/Research/DeepSeek/T1_WRITERS.md`. All `m_intent.*` writes grouped by channel: **suitMode 22** (`88-104,415-416,
