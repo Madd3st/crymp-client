@@ -2,6 +2,12 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-073 | 2026-10-25 | C079 Shore export complete
+Re C-079: actual1721164577956b56f0391b95283d10168b3c6ede MSVC client/server PASS, frozen matching pair build/export-17211645; export-only, no QA/crop/Plantation/GUI or game changes/compile fix, no merge.
+Bundle C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c079-shore-17211645/: Shore.obj9081398tri/1232895492bytes, unsupported0; raw validation PASS. Shore.geometry.json +requested-diagnosis.json preserve structure_entities=2,structure_classes={Factory:2},ps_bodies_added=12,ps_structures=34 entries with parts.
+ps_structures classes: AutoTurret18,AlienEnergyPoint3,SpawnGroup6,HQ2,Factory4,BuyZone1. Full per-part flags/types/triangles retained; presence in metadata does not establish complete building coverage. Build/source/hash provenance and console/bot logs in evidence.json/build.json/exports.json.
+Original mem/nav restored/hash verified, PS memory absent before/after, no game processes; foreign launcher preserved. X072 three C078 results already sent801427f3, no repeat; corners/sanity default OFF pending Claude verdict.
+
 ### X-072 | 2026-10-25 | C078 three same-build runs complete
 Re C-078: b521feeb MSVC+16units+12manifest PASS; all3 runs15x660 at1x/no crashes/manifest mismatch0, demos13251/13241/13240frames read; source/roster/initialmemory equal and exact feature differences verified in build/c078-comparison.json. No compile fix/game changes/merge/promotion.
 Roots build/c078-{corners-on,corners-off,jump-sanity}-b521feeb/: candidate-r1-n15.wbdemo,summary/runs/demo-evidence,c078-gates.json,trap-recoveries.csv,stair actor excerpt,postnav/memory-restored. CornersON PASS kills280/pickups260/stalls18/traps0; OFF FAIL kills238(log)/237(demo),pickups223/stalls71/traps0.

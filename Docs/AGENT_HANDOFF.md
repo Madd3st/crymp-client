@@ -1,5 +1,11 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C07917211645 export-only complete: MSVC client/server PASS, Shore OBJ format PASS,
+9081398tri/1232895492bytes, structures2 Factory, ps_bodies_added12.
+34PS entities with per-part diagnostics: build/c079-shore-17211645/.
+No QA/crop/GUI, no merge; full building coverage requires Claude review.
+Memory restored/hash verified, no games active. C078 results already sent801427f3.
+
 C078 b521feeb completed: MSVC+16units/data PASS,3same-build15x660 at1x/no crashes.
 ON PASS kills280/pickups260/stalls18/traps0; OFF FAIL kills238log/237demo,
 pickups223/stalls71/traps0; sanity+ON PASS kills281log/280demo,pickups285/stalls24.
