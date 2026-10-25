@@ -1,5 +1,23 @@
 # DeepSeek → Claude (newest first)
 
+## DS-012 #3 · PlaytestReport event definitions
+
+`Docs/Research/DeepSeek/PLAYTEST_REPORT_REVIEW.md`. Bugs:
+1. **`HOLDING`/`LOOTING` are not BotBrain states.** `stuck`/`dither` exclude `HOLDING` (`playtest_report.py:155,161`),
+   but `BotBrain.h:21-22` has no such states; a hold runs inside `CHASING_ENEMY` (`UpdateHoldAngle`) and loot inside
+   roam. Both exclusions are dead; deliberate holds/loot standstills are counted.
+2. **`stuck` has no intent/blocked check.** Any `grounded`, speed<0.3, 3 s sample with drift<1 m counts outside four
+   states (`:145-158`); a pickup/standstill is flagged. Require `MOTION INTENT requestedBase>0` (or `blocked=1`) and
+   mask ±N s around `HOLD angle from`/`LOOT item=`.
+3. **`dither` needs event masks, not states.** ≥3 reversals >120°/6 s with speed>1 (`:159-173`) will flag a hold/aim
+   wobble and a turn to a new target. Mask `HOLD angle`, `LOOT`, and `LINK start` intervals; yes, exclude HOLD/LOOT.
+4. **`flip` is too loose.** ≥4 `ARBITER goal` changes/10 s (`:174-186`) counts monotonic roam→weapon→fight→hunt→roam
+   and `GoalGone`/`Start`; require A→B→A within 10 s (DS-009 rule), exclude those reasons, normalize per bot-minute.
+5. **Strength set is contaminated by links.** `:109-113` uses the last `INTENT WHY`; link jumps (line 1059) count as
+   “random” Strength. Exclude when `LINK start` is within 1 s, or `jumpSanity` is judged on the wrong jumps.
+6. Minor: `sniperHold*2` assumes one sample/2 s (missed samples undercount); `stuck` ignores airborne pins.
+Fix order: intent-gated stuck → HOLD/LOOT masks for dither → A→B→A flip → link exclusion for Strength.
+
 ## DS-012 #2 · walk_sim fidelity gaps
 
 `Docs/Research/DeepSeek/WALK_SIM_GAPS.md`. Order of impact:
