@@ -7,7 +7,7 @@
 //   view    eye -> chest of ~800 random walkable targets 15..150 m away: how much of the map is visible.
 // Flags: COVER (1..11 protected sides, >= 3 open), LOW_COVER (any low side), SNIPER (view in the top 5 % and at least
 // 3 m above the median floor), EXPOSED (no protected side, >= 12 open). Output text, one spot per line:
-//   x y z flags coverMask lowMask openCount view
+//   x y z flags coverMask lowMask openCount view bestYaw
 // Only polygons reachable (walk + baked links, either direction) from the map's spawn points count: the mesh also
 // covers out-of-bounds terrain. Usage: tactical_spots <map.navmesh> <crop.obj> <map.pts> <out.txt> [grid=2.5] [targets=800]
 #include "DetourNavMesh.h"
@@ -224,12 +224,12 @@ int main(int argc, char** argv)
 	for (int i = 0; i < ntargets && !samples.empty(); ++i) targets.push_back(samples[rng() % samples.size()] + V3{0, 0, 1.2f});
 	std::vector<float> zs; for (auto& s : samples) zs.push_back(s.z); std::nth_element(zs.begin(), zs.begin() + zs.size() / 2, zs.end());
 	const float zmed = zs[zs.size() / 2];
-	struct Out { V3 p; unsigned cover, low; int open; float view; };
+	struct Out { V3 p; unsigned cover, low; int open; float view; int bestYaw; };
 	std::vector<Out> out(samples.size());
 	for (size_t i = 0; i < samples.size(); ++i)
 	{
 		const V3 p = samples[i], chest = p + V3{0, 0, 1.0f}, eye = p + V3{0, 0, 1.6f};
-		Out r{p, 0, 0, 0, 0};
+		Out r{p, 0, 0, 0, 0, 0}; float sector[8] = {};
 		for (int k = 0; k < 16; ++k)
 		{
 			const float a = k * 3.14159265f / 8; V3 d{std::sin(a), std::cos(a), 0};
@@ -241,8 +241,14 @@ int main(int argc, char** argv)
 		{
 			V3 d = t - eye; const float len = std::sqrt(Dot(d, d));
 			if (len < 15.f || len > 150.f) continue;
-			if (!bvh.Hit(eye, d * (1 / len), len - 0.3f)) r.view += 1.f;
+			if (!bvh.Hit(eye, d * (1 / len), len - 0.3f))
+			{
+				r.view += 1.f;
+				float yaw = std::atan2(d.x, d.y) * 57.2957795f; if (yaw < 0) yaw += 360.f;
+				sector[int(yaw / 45.f) % 8] += 1.f;
+			}
 		}
+		{ int b = 0; for (int k = 1; k < 8; ++k) if (sector[k] > sector[b]) b = k; r.bestYaw = b * 45 + 22; }
 		out[i] = r;
 		if (i % 2000 == 0) std::fprintf(stderr, "%zu/%zu\n", i, samples.size());
 	}
@@ -250,7 +256,7 @@ int main(int argc, char** argv)
 	std::sort(views.begin(), views.end());
 	const float v95 = views.empty() ? 0 : views[size_t(views.size() * 0.95)];
 	FILE* f = std::fopen(outPath, "w");
-	std::fprintf(f, "# tactical spots v1: x y z flags(1 cover,2 low_cover,4 sniper,8 exposed) coverMask lowMask open16 view(targets 15-150m of %d) zmed=%.2f v95=%.0f\n", int(targets.size()), zmed, v95);
+	std::fprintf(f, "# tactical spots v1: x y z flags(1 cover,2 low_cover,4 sniper,8 exposed) coverMask lowMask open16 view(targets 15-150m of %d) bestYaw(deg, centre of the 45 deg sector seeing most targets) zmed=%.2f v95=%.0f\n", int(targets.size()), zmed, v95);
 	int counts[4] = {};
 	for (auto& r : out)
 	{
@@ -261,7 +267,7 @@ int main(int argc, char** argv)
 		if (r.view >= v95 && v95 > 0 && r.p.z >= zmed + 3.f) flags |= 4;
 		if (nc == 0 && r.open >= 12) flags |= 8;
 		for (int b = 0; b < 4; ++b) counts[b] += (flags >> b) & 1;
-		std::fprintf(f, "%.2f %.2f %.2f %u %u %u %d %.0f\n", r.p.x, r.p.y, r.p.z, flags, r.cover, r.low, r.open, r.view);
+		std::fprintf(f, "%.2f %.2f %.2f %u %u %u %d %.0f %d\n", r.p.x, r.p.y, r.p.z, flags, r.cover, r.low, r.open, r.view, r.bestYaw);
 	}
 	std::fclose(f);
 	std::fprintf(stderr, "spots %zu: cover %d, low cover %d, sniper %d, exposed %d (v95 %.0f, zmed %.1f)\n", out.size(), counts[0], counts[1], counts[2], counts[3], v95, zmed);

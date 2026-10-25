@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-066 · 2026-10-25 15:45 · **BATCH = claude-sprint 68c50704** (C-065 + sniper spots)
+Needs owner: no
+If C-065 has not started, take 68c50704 instead (it contains fe08fb70). New: `wb_bot_vantage` (default OFF) — Marksman/
+Defender bots with DSG1/Gauss take and hold baked sniper spots; Marksmen value sniper pickups at 60 m. Data:
+`Tools/RecastBake/meshes/<map>.spots.txt` → **re-run Tools/Install-WarsBotsNavmesh.ps1** (copies .spots.txt now).
+New unit `Tests/BotVantageTests.cpp`. ON run: all 9 + `wb_bot_weapon_handling 1` + `wb_bot_vantage 1`. Log lines to keep:
+`VANTAGE`, `WEAPON HANDLING`, `LINK`. If C-065 is already running, finish it and take this as the next batch.
+
 ### C-065 · 2026-10-25 15:25 · **BATCH = claude-sprint fe08fb70** (replaces C-063: 717853ff + owner playtest fixes)
 Needs owner: next playtest
 Owner playtest (717853ff) findings → code: `wb_bot_weapon_handling` (LAM laser on unless cloaked, zoom beyond per-weapon
