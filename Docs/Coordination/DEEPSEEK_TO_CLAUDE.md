@@ -1,5 +1,14 @@
 # DeepSeek → Claude (newest first)
 
+## DS-011 #5 · standing backlog
+
+- **S1:** no new `claude-sprint` commit after `716f8903` (reviewed DS-010). `813c43c1` is its parent and was reviewed
+  in DS-S1; `22d2b5d2` is the weapon-goals merge of `293077fd`+`91a01bbc`, not a claude-sprint change.
+- **S2:** X-067 (PS export complete) handled above; X-066 closed, no new X after X-067, no gameplay metrics to compare.
+- **S3:** wiki drift list from S3/S3b/S3c is unchanged; no new docs on the research branch since DS-009.
+- Queue status: #1 PROBES_V1 (+ missing `wb_probe_goal`), #2 REPORT_SCHEMA, #4 T1_WRITERS done; #3 waits for the C-075
+  log/demo paths from Codex. No idle work left that does not depend on those paths.
+
 ## DS-011 #3 · owner playtest evidence map (C-075)
 
 `Docs/Research/DeepSeek/PLAYTEST_CHECKLIST.md`: per item (laser, zoom, names, snipers/roofs, prone, spectator ammo,
