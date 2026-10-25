@@ -22,6 +22,7 @@ struct BotIntent
 	EStance stance = STANCE_STAND;
 	ENanoMode suitMode = NANOMODE_DEFENSE;
 	BotCombatIntent combat = BotCombatIntent::None;
+	bool meshPath = false; // destination is a Detour corner (wb_bot_navmesh): stairs are walkable, skip the knee ray
 	void MoveTo(const Vec3& point, const Vec3& look) { move = true; destination = point; aim = look; }
 	void AimAt(const Vec3& look) { move = false; aim = look; combat = BotCombatIntent::Aim; }
 };

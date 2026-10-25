@@ -107,6 +107,7 @@ private:
 	// Path following on the shared BotNav graph.
 	Vec3 Steer(const Vec3& feet, const Vec3& goal);
 	std::vector<Vec3> m_path;
+	bool m_meshPathActive = false; // m_path came from the Detour navmesh
 	size_t m_pathIndex = 0;
 	Vec3 m_pathGoal = Vec3(0,0,0);
 	float m_nextRepath = 0, m_minRepath = 0;

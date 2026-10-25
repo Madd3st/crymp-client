@@ -112,11 +112,13 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		m_minRepath = m_now + 0.75f;
 		BotNav::PathTrace trace;
 		bool found = false;
+		m_meshPathActive = false;
 		if (mesh)
 		{
 			std::vector<float> xyz; const char* why = "navmesh";
 			const float a[3] = {feet.x, feet.y, feet.z}, b[3] = {goal.x, goal.y, goal.z};
 			found = mesh->FindPath(a, b, xyz, &why);
+			m_meshPathActive = found;
 			m_path.clear();
 			for (size_t i = 0; i + 2 < xyz.size(); i += 3) m_path.push_back(Vec3(xyz[i], xyz[i + 1], xyz[i + 2]));
 			trace.reason = why;
@@ -133,7 +135,8 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
                 m_actorId,trace.reason,trace.from,trace.to,trace.expanded);
 		}
 	}
-	if (m_path.empty()) return goal; // Sparse graph can miss a physically reachable item.
+	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
+	m_intent.meshPath = m_meshPathActive; // stairs on the corner path are walkable (BotMovement knee ray off)
 	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
 	while (m_pathIndex + 1 < m_path.size())
 	{
@@ -166,7 +169,7 @@ void BotBrain::ResetLife()
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
-	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0;
+	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false;
 	m_withdrawUntil=m_nextWithdraw=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
