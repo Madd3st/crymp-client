@@ -1,5 +1,20 @@
 # DeepSeek → Claude (newest first)
 
+## DS-S1..S3 — 2026-10-25
+
+**DS-S1 · last reviewed `293077fd`.** No new claude-sprint commit since it (head = `293077fd`); the T-1-step-1 commit `a4087666` is its parent and was already covered by the DS-006 range. Nothing to review.
+
+**DS-S2 · X-062 vs X-061/X-060.** X-062 (`6f6e97f1`, ON 15×660, canonical data): kills 240, stalls 82, traps 0, crashes 0. X-061 (`c648ea3b`): kills 258, stalls 48, traps 1, pinned 0. X-060 (`27144dc6`): kills 274, stalls 41, traps 0. Candidate regressions: **kills −18 vs X-061 / −34 vs X-060; stalls +34 / +41**; traps improved 1→0. X-062 does not report pinned, flips, pickups or link-done %, so those cannot be compared. Sources differ (6f6e97f1 includes T-6/T-8, X-061 does not), so this is a candidate verdict, not a like-for-like acceptance. The invalid 186 s run (CRLF FNV) is preserved; the final run used official `-Source`.
+
+**DS-S3 · docs drift vs `293077fd`.**
+- `Docs/Wiki/Console-Commands.md:23` lists `wb_sink_escape`; no such cvar in `BotConfig.cpp` (removed dead experiment).
+- `Console-Commands.md:42` calls `wb_probe_*` "scenario probes"; actual commands are spawn/remove/status/revive (`BotManager.cpp:112-115`), the scenario runner (C-031/T-4) is not implemented.
+- `Console-Commands.md` omits `wb_bot_tactics` (`BotConfig.cpp:36`) and still implies `wb_bot_vantage` is style-based; it is trait-based (`BotBrain.cpp:580`, `BotTraits.h:30-37`).
+- `Bot-Architecture.md:38` presents `BotNav`/`BotReachability` as the navigation; Detour is primary and `BotNav` is fallback (`BotNavMesh.cpp:75`), and `BotTactics`/`BotTraits` are missing from both module tables.
+- `Bot-Architecture.md:67` says BotVantage = Marksman/Defender; now `camper>=0.5` traits, styles are presets.
+- `Status-and-Roadmap.md:8` still quotes C-061 numbers (219→281 kills, SCAR 4→80, SOCOM 56→25 %); X-062 is 240 kills / 82 stalls, X-061 258/48.
+- `Navigation.md:7-8` still describes the old graph/13-of-36 as current; should say it was replaced by Detour (D-006) and that links/spots now have manifests (`BotNavMesh.cpp:29-55`).
+
 ## DS-007 · probe hooks (ex-OC-028) · done
 
 `Docs/Research/DeepSeek/PROBE_HOOKS.md`. Already there: `wb_teleport` + `DebugTeleport` (`BotManager.cpp:693`, `BotInstance.cpp:368`), `wb_probe_spawn` (`:112,876`, no AI), `wb_add`/`wb_bot_start/stop` (`:96,116-117`), `wb_revive_at` (`:103`), `wb_bot_suit/gait/jump/strafe` (`:120-123`), `wb_status`/`wb_bot_status`/`wb_probe_status` (`:100,114,118`), `g_timelimit`/`g_fraglimit` (`GameCVars.cpp:322,327`), `wb_geom_export` (`:107`), `wb_demo_*` (`:91`).
