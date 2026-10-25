@@ -46,7 +46,7 @@ public:
 	// Corner path start -> goal, excluding start (like BotNav::FindPath). False with a reason when either end is off
 	// the mesh or the goal is in another connected part (Detour would return a partial path).
 	bool FindPath(const float* start, const float* goal, std::vector<float>& xyz, const char** reason = nullptr) const;
-	// O(1) after projection: both ends on the mesh and in the same connected part. `goalDown` lets items lying on
+	// O(1) after projection: both ends on the mesh and the goal's part reachable from the start's part (directed). `goalDown` lets items lying on
 	// crates (up to ~2.2 m above the floor) count as reachable.
 	bool Reachable(const float* start, const float* goal, float goalDown = 2.6f) const;
 
@@ -67,12 +67,15 @@ public:
 private:
 	unsigned long long Nearest(const float* p, float* snapped, float side, float up, float down) const;
 	void BuildComponents();
+	bool PartReaches(int from, int to) const;
 
 	dtNavMesh* m_mesh = nullptr;
 	dtNavMeshQuery* m_query = nullptr;
 	dtQueryFilter* m_filter = nullptr;
 	std::unordered_map<unsigned long long, int> m_comp;   // poly ref -> connected part
 	int m_components = 0;
+	std::vector<unsigned long long> m_reach;              // part x part reachability bits (one-way links)
+	int m_words = 0;
 	unsigned short m_linkMask = 0;
 	int m_links = 0;
 };

@@ -30,7 +30,7 @@ void NavMeshCore::Reset()
 	if (m_query) { dtFreeNavMeshQuery(m_query); m_query = nullptr; }
 	if (m_mesh) { dtFreeNavMesh(m_mesh); m_mesh = nullptr; }
 	delete m_filter; m_filter = nullptr;
-	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0;
+	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0;
 }
 
 bool NavMeshCore::LoadMemory(const unsigned char* data, size_t size, std::string* error)
@@ -80,12 +80,12 @@ bool NavMeshCore::LoadFile(const char* path, std::string* error)
 
 void NavMeshCore::BuildComponents()
 {
-	// Weakly connected parts (union-find over every passing link, both directions). A DFS over outgoing links made
-	// one-way off-mesh drops seed-order dependent (O-026 P1). One-way reachability is checked by FindPath
-	// ("no_directed_route"), so Reachable is optimistic only across drops.
+	// Directed reachability (O-026 P1 + c062): strongly connected parts (iterative Tarjan over passing links), then which
+	// parts each part can reach through one-way links (drops). Reachable/FindPath answer "can I get there" exactly; a DFS
+	// over outgoing links was seed-order dependent, weak parts were optimistic across drops (nav fallbacks 115 -> 689).
 	const unsigned short include = m_filter ? m_filter->getIncludeFlags() : 0xffff;
 	auto Pass = [include](const dtPoly* p) { return (p->flags & include) != 0; };
-	m_comp.clear(); m_components = 0;
+	m_comp.clear(); m_components = 0; m_reach.clear();
 	const dtNavMesh* mesh = m_mesh;
 	std::vector<dtPolyRef> refs;
 	std::unordered_map<unsigned long long, int> index;
@@ -97,29 +97,72 @@ void NavMeshCore::BuildComponents()
 		for (int i = 0; i < tile->header->polyCount; ++i)
 			if (Pass(&tile->polys[i])) { index[base | dtPolyRef(i)] = int(refs.size()); refs.push_back(base | dtPolyRef(i)); }
 	}
-	std::vector<int> parent(refs.size());
-	for (size_t i = 0; i < parent.size(); ++i) parent[i] = int(i);
-	auto find = [&](int x) { while (parent[x] != x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
-	for (size_t i = 0; i < refs.size(); ++i)
+	const int n = int(refs.size());
+	std::vector<std::vector<int>> adj(n);
+	for (int i = 0; i < n; ++i)
 	{
 		const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
 		if (dtStatusFailed(mesh->getTileAndPolyByRef(refs[i], &tile, &poly))) continue;
 		for (unsigned int l = poly->firstLink; l != DT_NULL_LINK; l = tile->links[l].next)
 		{
 			auto it = index.find(tile->links[l].ref);
-			if (it == index.end()) continue;
-			const int x = find(int(i)), y = find(it->second);
-			if (x != y) parent[x] = y;
+			if (it != index.end()) adj[i].push_back(it->second);
 		}
 	}
-	std::unordered_map<int, int> ids;
-	for (size_t i = 0; i < refs.size(); ++i)
+	// iterative Tarjan; SCCs come out in reverse topological order (sinks first)
+	std::vector<int> num(n, -1), low(n, 0), comp(n, -1), st, edge(n, 0);
+	std::vector<char> on(n, 0);
+	int counter = 0;
+	for (int s0 = 0; s0 < n; ++s0)
 	{
-		const int root = find(int(i));
-		auto it = ids.find(root);
-		if (it == ids.end()) it = ids.emplace(root, m_components++).first;
-		m_comp[refs[i]] = it->second;
+		if (num[s0] >= 0) continue;
+		std::vector<int> call(1, s0);
+		num[s0] = low[s0] = counter++; st.push_back(s0); on[s0] = 1;
+		while (!call.empty())
+		{
+			const int v = call.back();
+			if (edge[v] < int(adj[v].size()))
+			{
+				const int w = adj[v][edge[v]++];
+				if (num[w] < 0) { num[w] = low[w] = counter++; st.push_back(w); on[w] = 1; call.push_back(w); }
+				else if (on[w] && num[w] < low[v]) low[v] = num[w];
+				continue;
+			}
+			call.pop_back();
+			if (!call.empty() && low[v] < low[call.back()]) low[call.back()] = low[v];
+			if (low[v] == num[v])
+			{
+				const int id = m_components++;
+				int w;
+				do { w = st.back(); st.pop_back(); on[w] = 0; comp[w] = id; } while (w != v);
+			}
+		}
 	}
+	// reach[c] = parts reachable from part c (itself included); successors have smaller ids (already complete)
+	const int words = (m_components + 63) / 64;
+	m_reach.assign(size_t(m_components) * words, 0ull);
+	std::vector<std::vector<int>> members(m_components);
+	for (int i = 0; i < n; ++i) members[comp[i]].push_back(i);
+	for (int c = 0; c < m_components; ++c)
+	{
+		unsigned long long* r = &m_reach[size_t(c) * words];
+		r[c / 64] |= 1ull << (c % 64);
+		for (int v : members[c]) for (int w : adj[v])
+		{
+			const int d = comp[w];
+			if (d == c) continue;
+			const unsigned long long* q = &m_reach[size_t(d) * words];
+			for (int k = 0; k < words; ++k) r[k] |= q[k];
+		}
+	}
+	m_words = words;
+	for (int i = 0; i < n; ++i) m_comp[refs[i]] = comp[i];
+}
+
+bool NavMeshCore::PartReaches(int from, int to) const
+{
+	if (from < 0 || to < 0 || from >= m_components || to >= m_components) return false;
+	return (m_reach[size_t(from) * m_words + to / 64] >> (to % 64)) & 1ull;
 }
 
 unsigned long long NavMeshCore::Nearest(const float* p, float* snapped, float side, float up, float down) const
@@ -146,7 +189,7 @@ bool NavMeshCore::Reachable(const float* start, const float* goal, float goalDow
 	const unsigned long long b = Nearest(goal, nullptr, 1.5f, 1.0f, goalDown);
 	if (!a || !b) return false;
 	auto ia = m_comp.find(a), ib = m_comp.find(b);
-	return ia != m_comp.end() && ib != m_comp.end() && ia->second == ib->second;
+	return ia != m_comp.end() && ib != m_comp.end() && PartReaches(ia->second, ib->second);
 }
 
 bool NavMeshCore::FindPath(const float* start, const float* goal, std::vector<float>& xyz, const char** reason) const
@@ -217,7 +260,7 @@ bool NavMeshCore::FindPathLinks(const float* start, const float* goal, std::vect
 	const dtPolyRef b = Nearest(goal, g, 1.5f, 1.0f, 2.6f);
 	if (!b) return fail("goal_off_mesh");
 	auto ia = m_comp.find(a), ib = m_comp.find(b);
-	if (ia == m_comp.end() || ib == m_comp.end() || ia->second != ib->second) return fail("other_component");
+	if (ia == m_comp.end() || ib == m_comp.end() || !PartReaches(ia->second, ib->second)) return fail("other_component");
 	float rs[3], rg[3]; ToRecast(s, rs); ToRecast(g, rg);
 	dtPolyRef polys[256]; int npolys = 0;
 	if (dtStatusFailed(m_query->findPath(a, b, rs, rg, m_filter, polys, &npolys, 256)) || npolys == 0) return fail("findpath_failed");
