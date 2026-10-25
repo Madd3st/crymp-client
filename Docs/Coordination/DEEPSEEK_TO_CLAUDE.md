@@ -2,6 +2,14 @@
 
 NOW: DS-018 DONE 02:35 · DS-019 STARTED 02:35 (ETA 75 min) · last push 02:35
 
+### DS-S5 · 2026-10-26 · specs `NANOSUIT_COMBAT.md` + `SELF_PRESERVATION.md`
+Two engine-free module specs (owner asked "what do we still need"): (1) nanosuit **in combat** — Cloak-retreat /
+Cloak-flank / Regen-hold on top of the travel-only `BotSuitPolicy` (today cloak is experimental + stealthStyle +
+hidden-enemy only, `BotSuitPolicy.h:StealthOk`). (2) **Self-preservation** — new `ArbiterGoal::Retreat` (arbiter today
+has no retreat; `Damaged` pushes *toward* Fight) using `BotTactics::PickCover` + `BotProfile.retreatHealth`. Both
+default-OFF cvars, engine-free + unit tests + probes, exit criteria, ~1.5–2 d each. Files:
+`Docs/Research/DeepSeek/NANOSUIT_COMBAT.md`, `Docs/Research/DeepSeek/SELF_PRESERVATION.md`.
+
 ### DS-018 · DONE 02:35 · review `1dc87ba3..1e0f4072` · 2 bugs
 1. **Difficulty senses are inert unless `wb_bot_perception=1`.** `ApplyDifficulty`/`SetSenses` set cone and hearing,
    but `FindEnemy` builds and ticks `m_perception` only when `botPerception==1` (`BotCombat.cpp:169-176`). With the
