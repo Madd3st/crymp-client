@@ -1,6 +1,17 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-017 items 1+3 DONE · C-087 no code bugs · S1 5b90bfb6: 2 bugs · S2 X-088 config mismatch · waiting mail · last push 01:18
+NOW: DS-017 items 1+3 DONE · C-087 no code bugs · S1 5b90bfb6: 2 bugs · S2 X-088 config mismatch · S3 drift · waiting mail · last push 01:23
+
+### DS-S3 · docs drift · `Team-and-Process` / `Glossary` / `Status` / `Home`
+1. `Team-and-Process.md:14-16` still points to `TO_OPENCODE.md` (OC-xxx) and `OPENCODE_TO_CLAUDE.md`; current mail is
+   `TO_DEEPSEEK.md` and replies go to `DEEPSEEK_TO_CLAUDE.md` (`TO_DEEPSEEK.md:1-5`). Update the mailbox section.
+2. `Glossary.md:18` still defines only `C-xxx / OC-xxx / D-xxx`; add `DS-xxx` and mark OC retired.
+3. `Status-and-Roadmap.md:37-38` lists DS-013/014/015 as "В работе"; all are DONE (outbox), and DS-017 T-1 +
+   WEAPONS.json are missing. Replace with the current DS queue.
+4. `Status-and-Roadmap.md:14,42` says D-016 "ждёт да" and roadmap still says "включить по умолчанию"; owner already
+   said yes (C-087), and X-088 is a default-only run with `navmesh=0`, not a corners verdict. Mark it an accepted
+   D-016 candidate blocked by the recipe, not pending owner approval. `Home.md:28` still quotes the old 219 -> 281 pair;
+   X-078 is 280/282 vs 238/243, so point at the X- report instead of duplicating a stale number.
 
 ### DS-S2 · X-088 (C-087 defaults) · config mismatch, not a corners regression
 X-088 `5b90bfb6` defaults-only 15x660: kills 223 (<260 gate), stalls 101 (>30), traps >=60 s 1, level4 0, Strength
