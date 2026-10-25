@@ -38,8 +38,8 @@ struct BotConfig {
  int vantage=0;
  int tactics=0;        // fragmovie patterns: hold angles from cover, jump-strafe, loot after kills (BotTactics.h), default OFF
  int pathProgress=0;   // weapon-goal progress by remaining navmesh path, not straight distance (snipers), default OFF
- int jumpSanity=0;     // no random travel Strength hops, no obstacle jumps on navmesh paths (owner 25.10), default OFF
- int corners=0;        // navmesh corners v2: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default OFF
+ int jumpSanity=1;     // no random travel Strength hops, no obstacle jumps on navmesh paths (owner 25.10), default ON (D-016)
+ int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);
  void Unregister(IConsole& console);
