@@ -11,6 +11,7 @@
 #include "CryGame/Bots/BotAimModel.h"
 #include "CryGame/Bots/BotSuitPolicy.h"
 #include "CryGame/Bots/BotJumpLink.h"
+#include "CryGame/Bots/BotVantage.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
 struct IConsoleCmdArgs;
 class CPlayer;
@@ -119,6 +120,8 @@ private:
 	BotJumpLink m_link;
 	NavPathLink m_linkNow;
 	void ApplyLinkExecutor(CPlayer& actor);
+	BotVantage m_vantage;            // owner 25.10 sniper spots (wb_bot_vantage)
+	bool UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime);
 	const NavPathLink* LinkAtCorner(size_t corner) const
 	{ for (const NavPathLink& l : m_pathLinks) if (size_t(l.corner)==corner) return &l; return nullptr; }
 	Vec3 m_pathGoal = Vec3(0,0,0);

@@ -32,6 +32,7 @@ const IntBinding kInts[]={
  {"wb_bot_jump_links",&BotConfig::jumpLinks,"C-036 navmesh paths may use baked drop / jump / Strength-jump links (needs <Level>.navmesh + <Level>.links.txt from Tools/RecastBake/meshes_links); BotJumpLink executes them, a failed link is banned for the level. Lifts/ladders never. Requires wb_bot_navmesh 1. 0 OFF default."},
  {"wb_bot_weapon_handling",&BotConfig::weaponHandling,"Owner 25.10: LAM laser always on when attached (off while cloaked), iron sight/scope zoom for targets beyond a per-weapon distance (SCAR/FY71 20 m, SMG 15, DSG1/Gauss 8; never shotgun/minigun/pistol). 0 OFF default."},
  {"wb_bot_name_profile",&BotConfig::nameProfile,"Owner 25.10: new bots are named with skill and style, e.g. WarsBot_02 [Normal/Assault] (spectator, kill feed, scoreboard). Applies to bots added after the change. 0 OFF default."},
+ {"wb_bot_vantage",&BotConfig::vantage,"Owner 25.10: Marksman/Defender bots holding a DSG1 or Gauss take, hold and rotate baked sniper spots (<Level>.spots.txt from Tools/RecastBake/tactical_spots, next to the navmesh); Marksmen value sniper rifles as pickups. 0 OFF default."},
  {"wb_fire_diagnostics",&BotConfig::fireDiagnostics,"Opt-in shot/hit diagnostics; at most 20000 records per level; default OFF."},
  {"wb_log",&BotConfig::logLevel,"WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file."},
  {"wb_maxbots",&BotConfig::maxBots,"Maximum simultaneous WarsBots (1..16, default 6)"},

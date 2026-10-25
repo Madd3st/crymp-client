@@ -81,7 +81,7 @@ bool BotWeapons::SelectAvailable(CActor& actor)
 }
 
 EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly,
-	const EntityId* skip, int skipCount)
+	const EntityId* skip, int skipCount, float typicalRange)
 {
 	EntityId result = 0;
 	float best = 1e10f;
@@ -129,7 +129,7 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 			if (ranked)
 			{
 				// C-022: value of this pickup over what we hold, traded against the walk (BotWeaponRank.h).
-				const float value = PickupValue(entity->GetClass()->GetName(), held, heldCount);
+				const float value = PickupValue(entity->GetClass()->GetName(), held, heldCount, typicalRange);
 				if (value <= 0.01f) continue; // not worth a detour (e.g. another SMG while holding a SCAR)
 				score = PickupCost(sqrtf(distance), value) + (hash%1000)*0.005f;
 			}

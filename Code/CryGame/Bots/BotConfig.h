@@ -34,7 +34,8 @@ struct BotConfig {
  int botNavmesh=0;
  int jumpLinks=0;
  int weaponHandling=0; // owner 25.10: LAM laser on (off in cloak) + zoom at distance (BotWeaponHandling.h), default OFF
- int nameProfile=0;    // owner 25.10: bot names show skill/style, e.g. "WarsBot_02 [Normal/Assault]", default OFF    // C-036 off-mesh drop/jump/Strength links + executor (BotJumpLink.h), needs meshes_links, default OFF    // P0 Detour navmesh paths/reachability (Tools/RecastBake meshes), default OFF
+ int nameProfile=0;
+ int vantage=0;        // owner 25.10: snipers (Marksman/Defender with DSG1/Gauss) hold baked sniper spots (BotVantage.h), default OFF    // owner 25.10: bot names show skill/style, e.g. "WarsBot_02 [Normal/Assault]", default OFF    // C-036 off-mesh drop/jump/Strength links + executor (BotJumpLink.h), needs meshes_links, default OFF    // P0 Detour navmesh paths/reachability (Tools/RecastBake meshes), default OFF
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);
  void Unregister(IConsole& console);

@@ -174,6 +174,7 @@ void BotBrain::ResetLife()
 	m_patrolUntil = 0;
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
 	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
+	m_vantage.Reset(CurrentVantage(),m_number);
 	m_withdrawUntil=m_nextWithdraw=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
@@ -405,7 +406,9 @@ EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
 	(void)anyHeld; // with wb_bot_weapon_rank FindNearby keeps only real upgrades over what is held
 	EntityId skip[8]; int skipCount = 0;
 	for (const BadItem& b : m_badItems) if (b.id && m_now < b.until) skip[skipCount++] = b.id;
-	return BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true, skip, skipCount);
+	// owner 25.10 (wb_bot_vantage): Marksmen judge pickups at sniper range, so DSG1/Gauss become real upgrades
+	const float typical=BotConfig::Get().vantage==1 && m_profile.style==BotStyle::Marksman ? 60.0f : 20.0f;
+	return BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true, skip, skipCount, typical);
 }
 
 bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
@@ -463,6 +466,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		Change(State::SEARCHING_ENEMY);
 		m_blackboard.enemy=0; m_blackboard.visible=false; m_blackboard.distance=0;
 		const Vec3 feet = actor.GetEntity()->GetWorldPos();
+		if (UpdateVantage(actor,feet,decisionTime)) return; // owner 25.10: snipers hold roofs
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
 		Vec3 heard;
 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
@@ -532,6 +536,41 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 
 		return;
 
+}
+
+// owner 25.10 (wb_bot_vantage): a Marksman/Defender holding a DSG1/Gauss takes a baked sniper spot (BotVantage.h),
+// holds it looking along its best view and rotates. Returns true when this tick was handled (holding).
+bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
+{
+	VantageMap* map=CurrentVantage();
+	IItem* held=actor.GetCurrentItem();
+	const char* cls=held ? held->GetEntity()->GetClass()->GetName() : "";
+	const bool sniper=map && (m_profile.style==BotStyle::Marksman || m_profile.style==BotStyle::Defender) &&
+		(!strcmp(cls,"DSG1") || !strcmp(cls,"GaussRifle"));
+	if (!sniper) { if (m_vantage.Phase()!=VantagePhase::None) m_vantage.Reset(map,m_number); return false; }
+	if (m_now<m_blackboard.damagedUntil) m_vantage.OnHit(m_now);
+	NavMeshCore* mesh=CurrentNavMesh();
+	const float from[3]={feet.x,feet.y,feet.z};
+	float snap[3];
+	const bool onMesh=mesh && mesh->Project(from,snap);
+	const VantageOutput o=m_vantage.Update(*map,m_number,m_now,feet.x,feet.y,feet.z,m_rng+unsigned(m_life),
+		[&](const VSpot& s){ const float q[3]={s.x,s.y,s.z}; return !onMesh || mesh->Reachable(from,q); });
+	if (o.relocated) WB_LOG(2,"[WarsBots] #%d VANTAGE relocate actor=%u.",m_number,actor.GetEntityId());
+	if (o.phase==VantagePhase::None) return false;
+	if (o.phase==VantagePhase::Travel)
+	{
+		if ((m_patrolGoal-Vec3(o.x,o.y,o.z)).GetLengthSquared()>1.0f)
+			WB_LOG(2,"[WarsBots] #%d VANTAGE travel to (%.1f,%.1f,%.1f) actor=%u.",m_number,o.x,o.y,o.z,actor.GetEntityId());
+		m_patrolGoal=Vec3(o.x,o.y,o.z); m_patrolUntil=m_now+5.0f; m_detour=false;
+		return false;   // the normal roam path walks there
+	}
+	// hold: stand on the spot and watch the best view direction (the look policy sees no path -> keeps this view)
+	const Vec3 eye=feet+Vec3(0,0,1.6f);
+	const float yaw=DEG2RAD(o.lookYaw);
+	if (o.move) { const Vec3 step=Steer(feet,Vec3(o.x,o.y,o.z)); m_intent.MoveTo(step,eye+Vec3(sinf(yaw),cosf(yaw),0)*30.0f); m_intent.gait=BotGait::Walk; }
+	else { m_intent.move=false; m_intent.aim=eye+Vec3(sinf(yaw),cosf(yaw),-0.05f)*30.0f; }
+	ExecuteIntent(actor,decisionTime);
+	return true;
 }
 
 void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
@@ -870,7 +909,7 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 // Fixes C-042: bots looked exactly at their aim point through walls (no_route fallback aims at the far goal).
 void BotBrain::ApplyLookPolicy(CPlayer& actor)
 {
-	if (BotConfig::Get().botLook!=1 || m_now<m_testUntil) return;
+	if (BotConfig::Get().botLook!=1 || m_now<m_testUntil || m_vantage.Phase()==VantagePhase::Hold) return; // a held sniper spot owns the view
 	if (m_combat.Target() && m_combat.Visible()) { m_look.Reset(); return; } // a seen target owns the view
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	const Vec3 eye=feet+Vec3(0,0,1.6f);

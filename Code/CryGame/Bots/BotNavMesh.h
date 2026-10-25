@@ -5,4 +5,7 @@
 namespace WarsBots {
 class NavMeshCore;
 NavMeshCore* CurrentNavMesh();
+class VantageMap;
+// Baked sniper spots for the current level (<Level>.spots.txt next to the navmesh), nullptr if missing/disabled.
+VantageMap* CurrentVantage();
 }

@@ -1,6 +1,7 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotVantage.h"
 #include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Bots/BotDataPath.h"
 #include "CryGame/Bots/BotLog.h"
@@ -74,5 +75,32 @@ NavMeshCore* CurrentNavMesh()
 		}
 	}
 	return s.mesh.Ready() ? &s.mesh : nullptr;
+}
+
+VantageMap* CurrentVantage()
+{
+	if (BotConfig::Get().vantage != 1 || !g_pGame) return nullptr;
+	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
+	if (!level || !level->GetLevelInfo()) return nullptr;
+	static VantageMap map; static std::string loaded; static bool tried = false;
+	const std::string name = level->GetLevelInfo()->GetName();
+	if (name != loaded) { loaded = name; tried = false; map = VantageMap(); }
+	if (!tried)
+	{
+		tried = true;
+		const size_t slash = name.find_last_of("/\\");
+		const std::string leaf = slash == std::string::npos ? name : name.substr(slash + 1);
+		const std::filesystem::path path = DataDirectory(L"Navmesh") / std::filesystem::u8path(leaf + ".spots.txt");
+		std::string text;
+		if (FILE* f = _wfopen(path.c_str(), L"rb"))
+		{
+			char chunk[1 << 16]; size_t n;
+			while ((n = fread(chunk, 1, sizeof chunk, f)) > 0) text.append(chunk, n);
+			fclose(f);
+		}
+		const int n = text.empty() ? 0 : map.Load(text.c_str());
+		WB_LOG(0, "[WarsBots] VANTAGE %d sniper spots for %s from %ls.", n, name.c_str(), path.c_str());
+	}
+	return map.Count() > 0 ? &map : nullptr;
 }
 }
