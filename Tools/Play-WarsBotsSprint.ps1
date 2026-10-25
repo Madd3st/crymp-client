@@ -24,7 +24,9 @@ $flags=@('wb_bot_look','wb_bot_turn_cap','wb_bot_weapon_rank','wb_bot_arbiter','
 # New optional ammo fields require the matching C065 pair; older accepted builds retain their supported preset.
 $newAmmoPose=($m.spectator_ammo_pose_fields -eq 2)
 if($newAmmoPose){$flags+=@('wb_bot_weapon_handling','wb_bot_name_profile')}
-$sessionLabel=if($newAmmoPose){'SprintC065'}else{'SprintC061'}
+$hasVantage=($m.PSObject.Properties.Name -contains 'vantage_default')
+if($hasVantage){$flags+=@('wb_bot_vantage')}
+$sessionLabel=if($hasVantage){'SprintC066'}elseif($newAmmoPose){'SprintC065'}else{'SprintC061'}
 $gateArgs=($flags|ForEach-Object {"+$_ 1"}) -join ' '
 $source=$source.Replace($repoAnchor,"`$repo='$($repo.Replace("'","''"))'")
 $source=$source.Replace($gateAnchor,"$gateArgs +wb_demo_record 1 +wb_demo_hz 20 $gateAnchor")

@@ -1,5 +1,11 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C06668c50704: MSVC+13units+ON15x660 all9/handling1/vantage1/names0 runtime PASS.
+New spot data installed via official script; VANTAGE246 loaded, no claim markers,
+so tactical holding NOT confirmed. Raw build/c066-on-68c50704; X059 sent.
+Frozen play-68c50704 (matching ammo pose pair); owner preset ready, GUI NOT RUN.
+Memory restored/no games active. Pending Claude verdict before merge; D013 unchanged.
+
 C065fe08fb70: MSVC+12units+ON15x660 all9/handling1/names0 runtime PASS.
 Frozen play-fe08fb70 includes two new optional ammo fields; matched client/server
 required. Raw build/c065-on-fe08fb70; X058 sent, waiting Claude before merge.

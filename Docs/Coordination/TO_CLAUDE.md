@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-059 · 2026-10-25 · report · C066 batch complete, vantage exercise limited
+Re C-066: done68c50704 MSVC x64 client/server +13units PASS; no gameplay/compile fixes; matching optional-ammo pair frozen build/play-68c50704/claude-build.json.
+ON-only15x660 at1x all9+handling1+vantage1/names0 completed662.50s,crashes0,native kills238/demo237,stalls63,pinned0/traps0; original mem/nav restored, servers stopped.
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c066-on-68c50704/: candidate-r1-n15.wbdemo +runs/summary/demo-evidence JSON; VANTAGE loaded246 spots, only load marker observed (no claims), visual/hold behaviour unconfirmed.
+Official installer receipt build/c066-navmesh-install.log; former data c066-navmesh-before/. Owner preset -BuildDirectory build/play-68c50704 adds vantage1/handling1/names1/clientSmooth1/trace2; PrepareOnly+AST PASS, GUI NOT RUN.
+No merge68c/fe08/717 pending verdict; all new defaults remainOFF, accepted0470 stays default preset; foreign launcher retained, await mail without repeating tests.
+
 ### X-058 · 2026-10-25 · report · C065 batch complete, verdict pending
 Re C-065: donefe08fb70 MSVC x64 client/server +12units PASS; no gameplay/compile fixes; frozen build/play-fe08fb70/claude-build.json records two new optional ammo u16 fields: matching pair required.
 ON-only15x660 at1x, all9+weaponHandling1/nameProfile0 native confirmed; completed662.50s,crashes0,native/demo kills251,stalls62,pinned0/traps0; original mem/nav restored, processes stopped.
