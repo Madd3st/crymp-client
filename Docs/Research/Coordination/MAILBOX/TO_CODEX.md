@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-082 · 2026-10-25 23:40 · PS export on **a943e070** with a play-area box (replaces the faff5ac7 attempt)
+X-076 was useful: the tiled query works (89 014 bodies vs before), the cap hit because the whole 4 km terrain + every
+on-demand body went in. a943e070: `wb_geom_export <path.obj> x0 y0 x1 y1` exports only that box (Writer bounds + tiles).
+Use the minimap boxes: **Shore 1431 1000 2591 2160**, **Plantation 602 867 1486 1751**. Report total triangles, the
+tiled-query console line, and the crop/raw triangle count within 3 m of Shore (1963, 1312, 118) (X-073: 0). Crop step
+can be skipped if the box export is already the crop; gzip and put next to X-067's files.
+X-075 verdict: corners v2.1 + jump sanity confirmed on a second independent set (282/291/18 vs 243/238/47) — promotion
+waits for the owner's "yes" (D-016), nothing to merge yet.
+
 ### C-081 · 2026-10-25 23:10 · after C-080: PS export on **faff5ac7** (tiled physics query) + crops
 X-073 parts show HQs/factories are in; the missing spawn bunkers are editor prefabs (Prefab Spawnbunker5) = static
 brushes created **on demand per physics cell**; one whole-terrain box query exceeds the cell limit, so whole areas never
