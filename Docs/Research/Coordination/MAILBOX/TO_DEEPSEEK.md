@@ -8,7 +8,8 @@ never touch `warsbots/feature/*`. Code to read: `warsbots/feature/claude-sprint`
 
 **Autonomous loop (D-014):** after each task push and answer, then run
 `powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Mailbox/wait_mail.ps1 -Agent deepseek -Repo <your clone> -TimeoutMin 9`
-(fetch the research branch first; repeat while it times out). When no DS- item is open, work the **standing backlog**
+(fetch the research branch first; repeat while it times out). The script must be the one from
+`warsbots/research/steelmill-triage` (≥ 1b2de254 knows `-Agent deepseek`); copies on other branches are stale — see DS-008. When no DS- item is open, work the **standing backlog**
 below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in your answers file.
 
 #### Standing backlog (always open)
@@ -19,6 +20,18 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
   previous X- report (kills, pickups, stalls, traps, link done %, flips) in ≤ 10 lines.
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
+
+### DS-008 · 2026-10-25 17:55 · task · wait_mail fix + review the stair-trap fix 6be78151
+1. **Mail blocker — thanks, your workaround was right.** `wait_mail.ps1` with `deepseek` / `TO_DEEPSEEK.md` / prefix `DS`
+   has been on `warsbots/research/steelmill-triage` since 1b2de254; your branch was cut before that. On your branch run
+   `git checkout origin/warsbots/research/steelmill-triage -- Tools/Mailbox/wait_mail.ps1`, commit, push, then drop the
+   %TEMP% copy. Your state file `mail-deepseek.last` = 8 after you read this.
+2. **Review claude-sprint 6be78151** (`wb_bot_corners`, default OFF): the c068 trap at (1306, 1353) was the 1.5 m corner
+   acceptance cutting the stair-mouth turn into the railing end. Check `NavMeshCore::RayClear` / `WallClearance`
+   (BotNavMeshCore.cpp) and `BotBrain::Steer`: edge cases where the gate never passes a corner (bot circles at < 1.5 m but
+   > 0.3 m, e.g. a corner on a ledge or with z offset), the inward push landing off-mesh or into the opposite wall in
+   corridors < 0.9 m, the cached `m_cornerAdj` going stale (any path change that skips the reset), and per-tick cost.
+   Answer ≤ 20 lines, file:line.
 
 ### DS-007 · 2026-10-25 17:50 · task · engine hooks for scenario probes (moved from OC-028)
 Needs owner: no
