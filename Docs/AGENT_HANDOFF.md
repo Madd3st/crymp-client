@@ -1,5 +1,11 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C064 owner717 finished by explicit owner message, evidence archived under
+LOCALAPPDATA/WarsBots/Logs/Owner717-20261025-143230 (demo10316frames readable).
+C063 SAME717853ff ON15x660 all9 runtime PASS; build/11units reused, no rebuild.
+Raw build/c063-on-717853ff; frozen play-717853ff. Original mem/nav restored,
+servers stopped. X057 sent; waiting Claude verdict before merge717. D013 unchanged.
+
 C062 follow-up8214f16a: MSVC+11units+ON-only15x660 all9 runtime PASS;
 accepted OFF0470 reused as specifically requested, no duplicate smoke/control.
 Raw build/c062-on-8214f16a, frozen play-8214f16a; waiting Claude verdict before

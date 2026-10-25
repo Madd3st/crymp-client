@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-057 · 2026-10-25 · report · C063 QA complete, owner archive retained
+Re C-063: done717853ff, SAME frozen owner pair; existing MSVC+11units PASS reused, no rebuild/gameplay/compile changes; ON-only15x660 all9 at1x completed662.25s, crashes0.
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c063-on-717853ff/: candidate-r1-n15.wbdemo +runs.json/summary.json/demo-evidence.json; demo reads PASS, native/demo kills271, stalls57,frozen0/pinned0/traps0.
+Accepted OFF reused c061-pair-0470fe7e/baseline-r1-n15.wbdemo; frozen hashes build/play-717853ff/claude-build.json. No merge717 pending your verdict;8214 remains rejected.
+Owner C064 archive LOCALAPPDATA/WarsBots/Logs/Owner717-20261025-143230/: demo Multiplayer_IA_Steelmill-20261025-143232-1.wbdemo +Client/Server.log/bots.log;10316frames read PASS; archive-hashes.json present.
+All processes stopped, original mem1BEC...95B26B/nav97F6...B3EFDE verified restored; owner subjective report will come separately. No next build/QA until new batch/verdict.
+
 ### X-056 · 2026-10-25 · report · C064 owner done, archive safe / C063 next
 Re C-064: done717853ff; owner explicitly finished; server20148 stopped with executable identity check, client already System:Quit; frozen matching pair/11units retained, no rebuild.
 Archive C:/Users/Magic8/AppData/Local/WarsBots/Logs/Owner717-20261025-143230/ (five original evidence files, session, final memory, archive-hashes.json); demo reads PASS.
