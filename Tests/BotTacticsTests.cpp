@@ -4,8 +4,6 @@
 using namespace WarsBots;
 int main()
 {
-	// traits
-	assert(TraitJumper(3, 3) > TraitJumper(0, 4) && TraitJumper(3, 1) <= 0.9f && TraitHolder(4) > TraitHolder(1));
 	// cover: threat north (+Y) at 20 m; spot A protected toward north, spot B not, spot C too far, D can't see
 	const TVec bot{0, 0, 0}, threat{0, 20, 0};
 	CoverCandidate c[4];

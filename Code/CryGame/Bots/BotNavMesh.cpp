@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <cstdio>
+#include <cstring>
 
 namespace WarsBots {
 namespace {
@@ -33,8 +34,10 @@ std::string ManifestFnv(const std::string& leaf, const char* kind)
 	if (FILE* f = _wfopen(path.c_str(), L"rb")) { char c[4096]; size_t n; while ((n = fread(c, 1, sizeof c, f)) > 0) text.append(c, n); fclose(f); }
 	const size_t k = text.find(std::string("\"") + kind + "\"");
 	if (k == std::string::npos) return "";
+	const size_t end = text.find('}', k);                    // DS-005: stay inside this file's object
 	const size_t f = text.find("\"fnv64\"", k);
-	const size_t q = f == std::string::npos ? f : text.find('"', text.find(':', f) + 1);
+	if (f == std::string::npos || (end != std::string::npos && f > end)) return "";
+	const size_t q = text.find('"', text.find(':', f) + 1);
 	return q == std::string::npos ? "" : text.substr(q + 1, 16);
 }
 // true when the data may be used; logs a mismatch
@@ -42,7 +45,11 @@ bool ManifestOk(const std::string& leaf, const char* kind, const std::string& da
 {
 	const std::string want = ManifestFnv(leaf, kind);
 	if (want.empty()) return true;
-	const std::string got = Fnv64(data.data(), data.size());
+	// DS-005: a Windows checkout may turn LF into CRLF in the text files; the manifest hashes LF -> hash without '\r'
+	std::string lf; lf.reserve(data.size());
+	if (std::strcmp(kind, "navmesh")) { for (char c : data) if (c != '\r') lf.push_back(c); }
+	const std::string& h = std::strcmp(kind, "navmesh") ? lf : data;
+	const std::string got = Fnv64(h.data(), h.size());
 	if (got == want) return true;
 	WB_LOG(0, "[WarsBots] NAVMESH data %s for %s does not match its manifest (%s, manifest %s).", kind, leaf.c_str(), got.c_str(), want.c_str());
 	return false;

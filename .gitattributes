@@ -3,3 +3,6 @@
 *.cdf  linguist-language=XML
 
 ThirdParty/** linguist-vendored=true
+Tools/RecastBake/meshes/*.txt -text
+Tools/RecastBake/meshes/*.json -text
+Tools/RecastBake/meshes/*.navmesh binary

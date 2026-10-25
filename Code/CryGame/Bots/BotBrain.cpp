@@ -181,6 +181,7 @@ void BotBrain::ResetLife()
 	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
 	m_vantage.Reset(CurrentVantage(),m_number);
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
+	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
 	m_withdrawUntil=m_nextWithdraw=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
@@ -268,12 +269,17 @@ void BotBrain::Update(BotInstance& bot, float dt)
     const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
     if(UpdateWeaponSeek(actor,decisionTime,socomQA))return;
 	IActor* enemy = m_combat.FindEnemy(actor, m_now, m_verbose);
-	if (BotConfig::Get().tactics==1 && m_lastFightTarget)
+	if (m_lastFightTarget)
 	{
-		// the fight target died (or left): its dropped weapon / ammo is worth a look for a few seconds
+		// the fight target died (or left): its dropped weapon / ammo is worth a look for a few seconds (tactics), and a
+		// sniper counts the kill toward relocating (DS-005: BotVantage::OnKill was never called)
 		IActor* last=g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(m_lastFightTarget);
 		if (!last || last->GetHealth()<=0)
-		{ m_lootPos=m_lastFightPos; m_lootUntil=m_now+12.0f; m_lastFightTarget=0; m_hold.Reset(); }
+		{
+			if (BotConfig::Get().tactics==1) { m_lootPos=m_lastFightPos; m_lootUntil=m_now+12.0f; }
+			if (last && m_vantage.Phase()==VantagePhase::Hold) m_vantage.OnKill();
+			m_lastFightTarget=0; m_hold.Reset();
+		}
 	}
 	if (m_now<m_escapeUntil) enemy=nullptr; // A short, sensed-but-not-pursued local escape leg.
     if(BotConfig::Get().goalArbiter==1 && !socomQA && UpdateArbitrated(bot,actor,enemy,decisionTime,socomQA))return; // C-032
@@ -442,7 +448,7 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 		}
 		// Unreachable (on a ledge, behind glass, taken): give up when the walk stops getting closer for 8 s (c067: a
 		// flat 10 s dropped every DSG1/Gauss trip — 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
-		if (m_upgradeTarget != m_upgradeTracked) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; }
+		if (m_upgradeTarget != m_upgradeTracked || !m_upgradeTarget) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; }
 		if (IEntity* goal = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr)
 		{
 			const float d=(goal->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength();
@@ -657,7 +663,7 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		{ WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_SPEED); m_intent.combat=BotCombatIntent::None; }
 		ExecuteIntent(actor,decisionTime); return;
 	}
-	if (BotConfig::Get().vantage==1 && m_vantage.Phase()==VantagePhase::Hold && visible && distance>20.0f)
+	if (BotConfig::Get().vantage==1 && m_vantage.Phase()==VantagePhase::Hold && visible && distance>20.0f && !m_combat.ShotBlocked())
 	{
 		// owner 25.10: a sniper on its spot fights from there (elite marksmen lying down: spread x0.33) instead of
 		// running off the roof toward the target
@@ -668,9 +674,9 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		UpdateCombatPost(bot,actor,decisionTime);
 		return;
 	}
+	m_lastFightTarget=m_combat.Target(); m_lastFightPos=destination;
 	if (BotConfig::Get().tactics==1)
 	{
-		m_lastFightTarget=m_combat.Target(); m_lastFightPos=destination;
 		if (!visible && UpdateHoldAngle(bot,actor,destination,distance,desiredRange,decisionTime)) return;
 		if (visible && m_hold.Phase()!=HoldPhase::None) m_hold.Update(m_now,TVec{0,0,0},true);
 	}

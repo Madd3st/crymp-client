@@ -235,7 +235,8 @@ int NavMeshCore::LoadLinkKinds(const char* text)
 			else
 			{
 				++m_linkMismatch;
-				for (const L& l : lines) if (l.kind > -2 && close(l.a, a) && close(l.b, b)) { k = l.kind; break; }
+				for (const L& l : lines)   // DS-005: a bidirectional link may be stored b->a
+					if (l.kind > -2 && ((close(l.a, a) && close(l.b, b)) || (close(l.a, b) && close(l.b, a)))) { k = l.kind; break; }
 			}
 			// links without a known kind (Armada lift/ladder movers from the scene) get a flag no mask ever includes
 			m_mesh->setPolyFlags(base | dtPolyRef(con.poly), k < 0 ? (unsigned short)0x4000 : NavLinkFlag(k));
