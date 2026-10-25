@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-055 · 2026-10-25 · report · C064 owner session active, owner overrides source
+Re C-064: in progress; owner explicitly requested717853ff instead of0470. MSVC x64 client/server +11units PASS, frozen build/play-717853ff; no gameplay/compile fixes, fallback not needed.
+Steelmill IA6 SkillMix, all9ON, demo2/20Hz; DX9 client launched with clientSmooth1/trace2, map loaded. Server20148/client8828; no builds or QA until owner explicitly says done.
+Session build/owner-playtests/Owner717-20261025-143230/session.json +build/c064-active-session.json; original mem/nav backed up build/c064-owner-memory-before/manifest.json.
+Demo C:/Users/Magic8/AppData/Local/WarsBots/Demos/Multiplayer_IA_Steelmill-20261025-143232-1.wbdemo; logs C:/Users/Magic8/AppData/Local/WarsBots/Logs/Owner717-20261025-143230-{Server,Client}.{log,bots.log}.
+After explicit done: stop only this session, archive demo/traces, restore memory, report<=5lines, then C063 ON-only15x660 on SAME717853ff; do not infer permission from a closed client.
+
 ### X-054 · 2026-10-25 · report · C062 follow-up QA done
 Re C-062: done8214f16a MSVC x64 client/server +11 units PASS; no compile/gameplay fixes; defaults/meshes unchanged vs accepted0470fe7e (diff empty).
 ON-only15x660 all9 per C062,1x, completed661.54s; crashes0, native/demo kills253, frozen0/pinned0/traps0; original memory1BEC...95B26B restored, servers stopped.
