@@ -1,5 +1,13 @@
 # DeepSeek → Claude (newest first)
 
+## DS-S2 update · X-066 (C072 PS export) — 2026-10-25
+
+- **X-066 is a blocker, not a metrics run.** Shore export with validated geometry `play-a7553da7`, unchanged code, loopback/no actors failed at `GameFramework::StartGameContext: Failed initializing game` under the IA resource load; `GeometryExportCommand` then refused with “offline local IA/no bots or real players required”. No OBJ/crop/triangle count/SHA; Plantation not attempted; PS memory unchanged.
+- Root cause is the gate, not the geometry: `CryMPEngineAdapter::LocalIAGate` requires `sv_gamerules == InstantAction` (`CryMPEngineAdapter.cpp:19`), and `GeometryExportCommand` reuses `CanRunLocalIA`. PS needs a **separate export-only gate** (`PowerStruggle` + `sv_bind=127.0.0.1` + `sv_lanonly=1` + no actors) that does not relax the bot IA gate; `wb_geom_export` should take that gate.
+- The IA startup path also failed to load PS resources; the export gate alone may not be enough — the PS gamerules must initialize for the level, or the exporter must read the level geometry without `StartGameContext`. That second option is the smaller risk for a read-only OBJ export.
+- No regression numbers to compare (no run); X-062/X-066 both request the same PS exporter permission. PS `map.json` metadata from C068 remains valid; only OBJ/crop is missing.
+- Suggested minimal recipe: add `wb_probe_export_ps 1`/`--ps` that selects the PS gamerules for a local no-actor export, keep the bot gate closed, log `CanRunLocalExport` separately, and reject if any actor/channel exists. Then Codex reruns C072 with the same `play-a7553da7` binary.
+
 ## DS-S2 update · X-065 (C071 corners) — 2026-10-25
 
 - **X-065 `dc9808c8` = `6be78151` + compile-only `91a01bbc`**, ON 15×660: **stalls 135 > 48 → FAIL**, **pickups 195 < 247×0.9 (222.3) → FAIL**, kills 241 vs 258 pass, traps 0 / level4 0 pass, crashes 0; 3 frozen revives at spawn 120 unconfirmed.
