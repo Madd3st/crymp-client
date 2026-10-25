@@ -36,3 +36,19 @@ code stops calling `g_pGame`/`CurrentNavMesh` where we touch it) instead of a 5�
 
 * Full HTN — agreed with the reviewer: only if PS economy/vehicle plans need it.
 * Rewriting `BotManager` into four classes in one go — split pieces as T-6 (LevelBotData) and T-4 (telemetry) need them.
+
+## Re-review by DeepSeek (16:46) — accepted amendments
+
+* **T-1 changes no behaviour**: every `m_intent.X =` becomes a request on its channel; `ResolveControl` replays today's
+  last-writer order exactly; one `ExecuteIntent` at the end of `Update`; aim vs per-frame `UpdateTurnCap` order untouched.
+  Priority changes = separate, tested commits. Writer inventory is recounted at the current head (BotTactics/vantage/
+  traits added writers after 68c50704). T-1 also brings: a per-tick `BotConfig` snapshot, a `NullWorld` fake for tests
+  (reused by T-4), and **`reason` per channel in INTENT telemetry** (without it T-1 cannot be proven).
+* **Exit criterion for the incremental DecisionCore**: by the end of T-9 no decision producer reads `g_pGame`,
+  `CurrentNavMesh` or `BotConfig::Get()` directly.
+* **T-9 acceptance requires T-4 probes** (2 maps + probes, not only "within noise").
+* **T-6 is three commits**: (a) reproducible bake + manifest + stable link matching — done in a17e9366 (end-point
+  matching + manifest FNV-64), (b) binary/indexed spots, (c) first Shore/Plantation bake (needs Codex's geometry export).
+* **T-7**: lift/ladder is a separate mover executor (BotMoverLink), not a jump kind.
+* **T-4**: `net_sync` needs a client → separate harness; the seed goes into the wbdemo header.
+* **T-3** adds distance LOD (near 10 Hz, far 2–5 Hz), not only dirty-check. **32 bots** stay deferred: re-gate after T-2.
