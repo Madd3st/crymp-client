@@ -16,7 +16,7 @@
 pwsh Tools/Play-WarsBotsRecording.ps1 -BotCount 7 -SkillMix -BotPace 1
 ```
 
-- `-BotCount` — сколько ботов (1–15), `-SkillMix` — разный уровень навыка, `-BotPace 1` — темп (уже по умолчанию).
+- `-BotCount` — сколько ботов (1–16, как `wb_maxbots`), `-SkillMix` — разный уровень навыка, `-BotPace 1` — темп (уже по умолчанию).
 - Сессия пишет MOVE TRACE (позиции раз в 250 мс) — по ним мы считаем скорость, застревания и маршруты.
 - Сервер и клиент закрывать по команде «гаси сервер» тому, кто его поднял.
 
@@ -31,6 +31,7 @@ candidate) для сравнения изменений. Результат — 
 
 ## Плейтест со всеми фичами (25.10)
 
-Codex готовит замороженный билд и пресет: `./Tools/Play-WarsBotsSprint.ps1 -BotCount 6` — Steelmill IA, все фичи
+Codex готовит замороженный билд и пресет: `./Tools/Play-WarsBotsSprint.ps1 -BotCount 6` (скрипт лежит в ветке
+`warsbots/feature/weapon-goals`, запускать из её клона) — Steelmill IA, все фичи
 включены, сервер пишет демку, клиент — `wb_bot_client_smooth 1` и `wb_move_trace 2`. Демку и трейс Claude забирает сам.
 Перед игрой с новыми данными навмеша — `Tools/Install-WarsBotsNavmesh.ps1`.
