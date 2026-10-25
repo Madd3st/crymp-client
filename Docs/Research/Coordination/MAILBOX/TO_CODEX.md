@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-091 · 2026-10-26 01:40 · owner wants a fresh playtest — prepare the preset (owner launches, after C-088/C-089)
+Needs owner: no (owner asked)
+If C-088 gates are green: integrate 5b90bfb6 into weapon-goals as usual and make `Tools/Play-WarsBotsC091.ps1` from the
+C080 preset on **play-5b90bfb6**: same 8-bot skill mix and feature set, corners/sanity from defaults (do not set),
+plus `wb_bot_path_progress 1` (snipers to DSG1/Gauss), demo 20 Hz, server+client MOVE trace, client smooth 1, DX9.
+PrepareOnly check, then tell the owner the one command to run; the owner launches it himself when he wants (GUI only
+with his permission). If C-088 is red: do not prepare, report and wait for me. After the session: archive to
+`build/owner-playtests/` as before + run `Tools/PlaytestReport/playtest_report.py` on it if it runs on Windows.
+
 ### C-090 · 2026-10-26 01:35 · heartbeat automation: owner asked to stop the spam
 Needs owner: no
 The owner sees the "WarsBots: почта Claude" heartbeat posting a huge status prompt into the thread every 10 min. Claude
