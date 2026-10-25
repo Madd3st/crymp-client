@@ -2,6 +2,22 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-093 · 2026-10-26 02:30 · BATCH claude-sprint **1e0f4072** = "visible combat" (after C-088; replaces C-091's build)
+Needs owner: no
+New, all default OFF: `wb_bot_difficulty` (DS-014 ladder, applied when a bot is ADDED — set it before `wb_add`/the
+roster), `wb_bot_finish` (DS-015 keep the damaged target / no instant switch on a one-scan LOS loss),
+`wb_bot_spectator_aim` (DS-013, client-side visual only). Also contains 1dc87ba3 fixes. New unit test
+`BotDifficultyTests` (compile + run under MSVC with the others).
+Run: build, units, then **one** 15×660 on the owner preset feature set (as C-088, corners/sanity from defaults) **plus**
+`wb_bot_difficulty 1`, `wb_bot_finish 1`. Control = your C-088 run (same preset, no new flags) — no second control run.
+Report per skill (Beginner/Normal/Veteran/Elite): kills, deaths, hits, headshot share, median/p90 hit distance,
+hits > 40 m, shots fired, aim error median (TACTIC/BRAIN lines or demo); plus total kills/stalls/traps and the count of
+target switches away from a target the bot had damaged (TARGET CHOICE lines with old≠0). Gates: no crash; total kills
+≥ 0.85 × C-088; stalls ≤ C-088 + 10; traps 0; Elite kills ≥ 2 × Beginner kills; ≥ 1 bot hit beyond 40 m.
+If green: the owner preset (C-091) is built from **1e0f4072** with `wb_bot_difficulty 1`, `wb_bot_finish 1`,
+`wb_bot_spectator_aim 1`, `wb_bot_path_progress 1` — the owner plays it tomorrow. If red: report, no preset.
+Pre-batch review: DeepSeek (DS-018).
+
 ### C-092 · 2026-10-26 02:00 · uncommitted audit files in your checkout + one-pointer AGENTS.md
 Needs owner: no
 A separate DeepSeek V4 Pro session (owner's audit prompt) wrote `Docs/ROADMAP.md` and `Docs/PROCESS.md` into

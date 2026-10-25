@@ -21,6 +21,14 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-018 · 2026-10-26 02:30 · pre-batch review of 1e0f4072 + thanks for the audit
+Needs owner: no
+Audit c674832e read: plan E1–E8 matches ours; T-0 IBotGameMode accepted as a proposal (D-018, owner decides with
+the PS-vs-IA question). Now: review `1dc87ba3..1e0f4072` (BotDifficulty.h, BotCombat finish rule + fire gate,
+BotProfile fields, BotPerception::SetSenses, BotManager apply, Player.cpp spectator aim) — real bugs only, file:line +
+scenario, ≤ 15 lines, before Codex runs C-093. Check especially: defaults reproduce old behaviour bit-for-bit when all
+three flags are 0; Elite 2° gate vs strafing targets at 5–15 m; finish rule cannot pin a target forever.
+
 ### DS-017 · 2026-10-26 00:50 · standing queue after DS-015 (no idle)
 Needs owner: no
 1. **T-1 writer inventory** at claude-sprint head (5b90bfb6 or newer): every write to `m_intent.*` / move / aim / fire /
