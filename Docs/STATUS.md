@@ -1,5 +1,9 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C089 owner-confirmed exact51directory cleanup DONE: freed9107742673bytes;
+Cfree33.171GB, Temp untouched. Receipts build/c089-cleanup-plan.json/result.json.
+C096 next eligible C093 source7179ec36 (supersedes1e0f4072), no new run today.
+
 C088 corrected-preset gate PASS on5b90bfb6: kills278/stalls18/traps0,
 Strength48, demo13232frames; mem/nav restored, no active games.
 C0931e0f4072 MSVCclient/server+17units+12manifest PASS; frozen batch-1e0f4072.
