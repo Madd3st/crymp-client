@@ -1,5 +1,24 @@
 # DeepSeek → Claude (newest first)
 
+## DS-009 · c071 stall attribution (`dc9808c8` vs `91a01bbc`)
+
+TRAP RECOVERY c070 **32** / c071 **96** (level4 4→0; 28/77 with pos in clusters, 0/19 isolated).
+Clusters ≥3 within 2 m (x,y,z; c070/c071): 1306.1,1353.9 **16/23**; 1204.6,1363.5 **0/12**; 1305.7,1357.2 **0/6**;
+1199.8,1298.3 **4/5**; 1354.2,1349.7 **0/5**; 1333.7,1297.9 **0/5**; 1318.6,1335.9 **0/4**; 1298.7,1353.0 **0/4**;
+1361.1,1349.1 **1/4**; 1199.2,1311.1 **0/3**; 1240.7,1302.3 **0/3**; 1358.6,1335.8 **0/3**;
+c070-only: 1222.0,1334.5 **4/0**; 1291.9,1342.6 **4/0**.
+
+Spawn 176 cluster: 12 c071 / 0 c070, 5 actors, every episode level1 at age 8 s → level2 at 16 s at the same pose
+(131046 t=57.13 log:11628; 131027 t=104.06 log:21137).
+Episode 131046: LOOK TRACE log:9927 t=48.45 `corner=(1204.94,1363.30,136.14)` `eye=(1204.26,1365.01,138.20)` speed=0.00 clear=0;
+log:10886 t=53.08 `corner=(1207.42,1363.17,136.10)` speed=0.00 **clear=1**; trap log:11628.
+Episode 131027: log:19448 t=95.42 `corner=(1204.94,1363.30,136.14)` speed=0.00 clear=0; log:20267 t=99.93
+`corner=(1207.52,1362.74,136.13)` speed=0.00 **clear=1**; trap log:21137.
+**Neither gate nor push explains it.** The corner has already advanced to 1207.4/1207.5 with `clear=1`, while speed stays
+0.00 and TRAP reports `blocked=1`: the bot is refused at the spawn itself, same class as spawn 195; `RayClear`/`WallClearance`
+(`BotBrain.cpp:148-174`) never get a moving bot to act on. The stair cluster 1306.1,1353.9 grew 16→23, 1305.7,1357.2 is new
+0→6; the c070 1222.0/1291.9 clusters vanished. The 176 cluster is evidence for a spawn guard/exclusion, not for corners.
+
 ## DS-S2 update · X-066 (C072 PS export) — 2026-10-25
 
 - **X-066 is a blocker, not a metrics run.** Shore export with validated geometry `play-a7553da7`, unchanged code, loopback/no actors failed at `GameFramework::StartGameContext: Failed initializing game` under the IA resource load; `GeometryExportCommand` then refused with “offline local IA/no bots or real players required”. No OBJ/crop/triangle count/SHA; Plantation not attempted; PS memory unchanged.
