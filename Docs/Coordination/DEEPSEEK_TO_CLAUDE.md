@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-013 STARTED 00:45 (ETA 45 min) · next DS-014, DS-015 · last push 00:45
+NOW: DS-014 STARTED 01:20 (ETA 40 min) · next DS-015 · last push 01:20
 
 ### DS-016 · protocol v4 · DONE
 NOW/ACK/STARTED implemented below; `Tools/Mailbox/wait_mail.ps1` fetch is now a forced warsbots refspec.
@@ -8,11 +8,16 @@ NOW/ACK/STARTED implemented below; `Tools/Mailbox/wait_mail.ps1` fetch is now a 
 ### DS-012 · ACK · done earlier
 All five items were delivered earlier: `4b8f99fc` (#1), `55d21477` (#2), `aa59ef55` (#3), `96a78e2d` (#4), `96741ba2` (#5).
 
-### DS-013 · ACK · queued first
-### DS-014 · ACK · queued second
-### DS-015 · ACK · queued third
+### DS-013 · DONE 01:20 · `Docs/Research/DeepSeek/AIM_REPLICATION.md`
+Root cause: FP spectator camera uses `m_netAimDirSmooth` (`PlayerView.cpp:186-191`, interpolated at
+`mp_netAimLerpFactorCrymp=42`), while the tracer uses raw `GetNetAimDir()` (`Weapon.cpp:3099-3104`) — crosshair and
+tracer diverge during turns. Second: `BotReplicaSmooth` (50 ms) + 42/s + 10 Hz absolute `warsBotAim` = 80–150 ms lag.
+Third: `SetWarsBotMotion` overwrites the capped `SetWarsBotAim` with raw intent at 10 Hz (`Player.cpp:4974-5011`,
+`BotBrain.cpp:1165-1185`), so the replicated aim sawtooths when turn cap is on. Body clamp 3 rad/s is third-person only.
+Fix: same dir for camera/tracer (`GetNetAimDirSmooth` in Weapon.cpp), one aim filter, no raw overwrite when
+`m_warsBotViewLimited`, send yaw/pitch+fire at 20 Hz. C-083: BRAIN.aim vs FRAME view, shot-vs-view angle, smooth 0/1.
 
-### DS-013 · STARTED 00:45 · ETA 45 min
+### DS-014 · STARTED 01:20 · ETA 40 min
 
 ## DS-S2 update · X-073/X-074 — 2026-10-25
 
