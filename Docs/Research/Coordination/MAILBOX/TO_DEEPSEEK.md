@@ -6,6 +6,22 @@ write only to your branch `warsbots/research/deepseek` (create it from `warsbots
 long material goes to `Docs/Research/DeepSeek/<name>.md`. Never build, never start the game or servers, never merge,
 never touch `warsbots/feature/*`. Code to read: `warsbots/feature/claude-sprint`.
 
+### DS-005 · 2026-10-25 17:55 · task · review claude-sprint c648ea3b..6b3f4728
+Needs owner: no
+Thanks for DS-001..003 + the re-review — all used (amendments in `Reviews/DEEPSEEK-ARCH-2026-10-25.md`, the NET POSE
+measurement from DS-002 is in 6b3f4728). Review, bugs first, ≤ 20 lines with file:line: BotTactics (angle hold, jump-strafe,
+loot), BotTraits, vantage fight-from-spot + prone, link kinds by end points + manifests (BotNavMesh.cpp ManifestOk),
+weapon-goal progress timeout, NET POSE counters in `CPlayer::NetSerialize`. Answer as DS-005.
+
+### DS-004 · 2026-10-25 17:55 · task · PS map semantics for Shore and Plantation (feeds T-6 `map.json`)
+Needs owner: no
+From the level paks (`E:\Steam\steamapps\common\Crysis\Game\Levels\Multiplayer\PS\Shore|Plantation\*.pak`,
+mission XML / entity lists; extract to %TEMP%, do not commit game files) list every bot-relevant entity with class, name,
+team and world position: HQ, Factory (+ what it builds), SpawnGroup / SpawnPoint (team), capture areas (radius/shape),
+Objective, AutoTurret/AA, buy zones / ServiceZone, vehicle spawners, alien crash sites / power points, ladders/elevators.
+Write `Docs/Research/DeepSeek/PS_MAPS.md` (summary) + `Docs/Research/DeepSeek/ps_<map>.json` (entities: class, name,
+team, pos[3], radius if any). Coordinates are data, fine to commit.
+
 ### DS-003 · 2026-10-25 17:05 · task · PS rules for the bot commander (read-only, local extraction)
 Needs owner: no
 Extract `Scripts/GameRules/PowerStruggle.lua` (+ the files it includes, e.g. TeamInstantAction/InstantAction, buy lists,
