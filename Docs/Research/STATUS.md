@@ -1,4 +1,4 @@
-# WarsBots project status — 2026-10-25 23:45 MSK
+# WarsBots project status — 2026-10-26 00:30 MSK
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
@@ -13,14 +13,17 @@ decisions and aim. Map-specific fixes only as data, never code.
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (build, QA, merge — D-013) | C-082: Shore + Plantation export on a943e070 with a play-area box | owner playtest on `Tools/Play-WarsBotsC080.ps1` when the owner says; merge after D-016 |
-| DeepSeek (read-only review — D-014) | DS-012: review corners v2.1 + jump sanity, walk_sim fidelity, playtest report semantics | standing backlog |
-| Claude (game code + verdicts + docs) | PS geometry → navmesh / 3D / walk_sim for Shore; snipers' path to DSG1/Gauss | laser/zoom logging, aim (no fire before on target), T-1 |
+| Codex (build, QA, merge — D-013) | C-082: Shore + Plantation export on a943e070 with a play-area box | C-083 lag measurement (8 vs 4 bots, FPS, load, replica pose/aim rate); C-084 client owner track + zoom/laser fields |
+| DeepSeek (read-only review — D-014) | DS-013 aim replication root cause; DS-014 difficulty spec (Elite = honest head aimbot); DS-015 target choice + long range | DS-012 leftovers |
+| Claude (game code + verdicts + docs) | aim gate (no fire before on target); snipers' path (`wb_bot_path_progress`) | difficulty per DS-014; Shore navmesh/3D after C-082 |
 
-## Today 25.10 evening (key results)
+Roadmap: wiki `Status-and-Roadmap` (single source; `Docs/ROADMAP.md` points there).
+
+## Today 25.10 evening → 26.10 night (key results)
 
 | Area | Result | Evidence |
 | --- | --- | --- |
+| **Owner playtest 2 (23:41, b521feeb, corners+sanity ON)** | owner: "more or less playable", fewer stucks, lasers used. Found: skills indistinguishable (speed 4.4–4.6, aim median 0.9–2.2°), no bot hit > 40 m (p90 22 m vs owner 31 m), 24 low-HP target switches, aim looks late/crooked in spectator 1st person (server error ~1° → replication suspect), position snaps rare (27/3345 > 0.5 m). Owner movement: roofs via Strength + wall jump chains, sniping from height, speed bunny hop 9–13 m/s. Report: Claude Doc «разбор плейтеста 2» | client + server |
 | **Stuck bots fixed (candidate)** | `wb_bot_corners` v2.1 + `wb_bot_jump_sanity`: two independent 15×660 runs — kills 280/282 vs 238/243, pickups 260–291 vs 223/238, stalls 18/18 vs 71/47, Strength jumps 72 vs 217, stair 1306,1353 and spawn-176 traps 0. **D-016 (default ON) waits for the owner.** | server (X-072, X-075) |
 | Why v1/v2 failed | v1 (C-071) cut turns; v2 (C-074/C-076): BotMovement stops 0.8 m short while corners waited for 0.35 m → bots stood still; level body rays read stair steps as walls. v2.1: corner mode owns arrival (0.2 m), probe clamped to the corner, rays follow the stair slope | server + graph |
 | Owner playtest 19:48 | report tool: 364 Strength jumps (58 on links; 157 random travel hop, 149 obstacle rays on stairs); 0/8 bots ever held DSG1/Gauss (bot #3 tried, marked unreachable after 8 s); aim median 2.4°, p95 ~90° per 10 s window; 25–40 % time with SOCOM | client + server |

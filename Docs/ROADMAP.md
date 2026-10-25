@@ -1,23 +1,17 @@
-# WarsBots roadmap: CryMP is primary
+# WarsBots roadmap
 
-1. Phase 0: preserve latest Wars snapshot, fork/upstream/main, clean MSVC build,
-   isolated default-OFF port with provenance and diagnostic commands.
-2. Phase 1: resolve startup, then prove one server-owned Player's create/remove/recreate,
-   client visibility, native movement/pickup/fire/damage/death/respawn and late join.
-3. Phase 2: independent move/look intent and replicated strafe; combat movement;
-   native Speed chase with measured energy/velocity; reproducible Strength jumps.
-   Do not mark implemented mechanics as gameplay-proven without repeated trials.
-4. Phase 3: tune reaction, aim, distances, reload, retreats and tactical suit selection.
-5. Phase 4: test CryAI navigation data/provider; otherwise evaluate a small route graph.
-6. Phase 5: two independent bot instances, then profiling and IA participant/statistics;
-   Power Struggle and broader scaling follow separately.
+The single, maintained roadmap is the wiki page **Status-and-Roadmap**
+(`Docs/Wiki/Status-and-Roadmap.md`, branch `warsbots/research/steelmill-triage`, mirrored to the GitHub wiki).
+Live per-task status: `Docs/Research/STATUS.md`.
 
-Crysis Wars is preserved as source/history, not the primary implementation target.
+Short version (2026-10-26):
 
-Текущий приоритет пользователя: IA scoreboard/participant identity в отдельной
-ветке, до дальнейшего развития AI. WIP build blocker указан в STATUS.
+1. D-016: corners + jump sanity default ON (owner's "yes").
+2. Visible combat: aim gate → difficulty spec (Elite = honest head aimbot) → finish-off / target hysteresis → long range 50–80 m.
+3. Network/perf: aim replication root cause (DS-013, C-083), one pose source (T-1), bot count ceiling on the owner PC.
+4. Owner-like movement: roofs via Strength/wall jumps as navmesh links, speed bunny hop.
+5. PS foundation: walk_sim map checks, scenario probes, QA seed.
+6. Power Struggle on Shore and Plantation.
+7. Armada lifts/ladders; in-game demo playback.
 
-## 2026-10-23 multi-bot checkpoint
-Phase 5 started early: BotManager registry, independent BotInstance, bot-vs-bot targeting, profiles.
-M3 (2 bots) and M4 (6 bots) SERVER-LOG PASS without humans. Next: tactical quality on 6 bots,
-owner playtest, navigation provider, then team modes and Power Struggle objectives.
+History: phases 0–5 of 2026-10-23 (one bot → multi-bot) are complete; see git history of this file.
