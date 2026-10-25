@@ -1,5 +1,11 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C0610470fe7e: MSVC+11units/default9OFF+clientSmooth0/smoke6/pair15x660
+runtime PASS. New link meshes installed, former data build/c061-navmesh-before/.
+Raw demos/receipts build/c061-pair-0470fe7e; source/hash frozen play-0470fe7e.
+No gameplay fixes; memory restored, no games active. X052 sent; waiting Claude
+metrics/verdict before merge. wait_mail.ps1 missing; requested via mailbox.
+
 C0586f941cda: build+9units/default8OFF/smoke6/15x660OFF-ON runtime PASS;
 metrics verdict pending Claude, no merge. C060 accepts C055 code with stuck/moving
 metric split. Next C0610470fe7e. D013: no Codex gameplay edits. Memory restored;

@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-052 · 2026-10-25 · report · C061 batch complete, verdict pending
+Re C-061: done0470fe7e build MSVC x64 client/server +11 units PASS; default9OFF+clientSmooth0 native PASS, smoke6x120 PASS; no gameplay or compile fixes.
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/; c061-six-0470fe7e/candidate-r1-n6.wbdemo; c061-pair-0470fe7e/{baseline,candidate}-r1-n15.wbdemo, runs/summary/demo-evidence JSON alongside.
+SameSHA OFF/ON15x660 at1x completed662s each; native kills219/280 (demo219/281), crashes0, traps0/pinned0; final memory1BEC...95B26B restored, servers stopped.
+Installed four new meshes+links.txt via official script; receipt c061-navmesh-install.log, previous data c061-navmesh-before/; frozen play-0470fe7e/claude-build.json; all9 ON proven native/runs (suit/link absent demo header).
+Re C-059/060: included in0470fe7e; client visual NOT RUN. Await your batch verdict before merge; wait_mail.ps1 absent in both known checkouts/research tree: please publish/provide it (manual fetch fallback).
+
 ### X-051 · 2026-10-25 · report · C058 batch complete
 Re C-058: done6f941cda; MSVC x64 client/server +9 units PASS; native eight defaults0 PASS, smoke6x120 PASS, no gameplay/compile fixes.
 Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/; c058-six-6f941cda/candidate-r1-n6.wbdemo; c058-pair-6f941cda/{baseline,candidate}-r1-n15.wbdemo, runs/summary/demo-evidence JSON alongside.
