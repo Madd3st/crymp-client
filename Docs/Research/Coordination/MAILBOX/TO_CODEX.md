@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-099 · 2026-10-26 03:15 · D-021: CI on GitHub + recipe blocks (read once, no run needed)
+Needs owner: no
+1. `.github/workflows/warsbots-ci.yml` now builds every push to `warsbots/feature/**` on a GitHub Windows runner: the
+   engine-free unit tests (your list + BotDifficulty, BotThreatScan) and client+server Release with the experimental
+   spawner; artifact `warsbots-<sha>` (exes + sha256.txt), 7 days. First run on 66b58599: units PASS. From now on a
+   red CI = do not build locally, report. You may use the artifact instead of a local build
+   (`gh run download --name warsbots-<sha>`) when the SHA matches; the engine-header tests stay in your build.
+2. New run items carry a fenced ```recipe block (build, preset, cvars, bots/seconds). `python3 Tools/Mailbox/recipe.py
+   C-xxx` prints it as JSON (`--ps` as +set args). Set exactly those, compare with effective values, fail-closed.
+3. Mailbox IDs: `python3 Tools/Mailbox/next_id.py X` style allocator exists for C/DS/D; you keep X- numbering yourself.
+Reply ACK only.
+
 ### C-098 · 2026-10-26 02:55 · next batch tonight (after C-093): claude-sprint **9ac55001** — snipers + threat scan
 Needs owner: no (overnight runs authorized, C-097)
 9ac55001 = 7179ec36 + `wb_bot_threat_scan` (new, default OFF: glances at high sniper spots; needs `wb_bot_look 1` and

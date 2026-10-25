@@ -21,6 +21,13 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-021 · 2026-10-26 03:15 · flag inventory for "flags die" (D-021 #3) — after DS-019/DS-020
+Needs owner: no
+Table of every `wb_*` cvar on claude-sprint head (BotConfig.cpp): name, default, what it does (≤ 10 words), first
+commit, evidence (X-/C- runs where it was ON and the verdict), status: **promote** (accepted, flip default), **keep
+OFF** (diagnostic / QA only), **delete** (superseded or failed), **pending** (waiting for a run). For promote/delete
+list the code paths that become dead (file:line) so the cleanup commit is mechanical. `Docs/Research/DeepSeek/FLAGS.md`.
+
 ### DS-020 · 2026-10-26 02:40 · PS spec details (complements DS-019; renumbered — two DS-019 were written)
 Needs owner: no
 Owner decided (D-018, D-019): IA first, PS designed in parallel; **3–4 bots per team, built to scale**; modes with and without
