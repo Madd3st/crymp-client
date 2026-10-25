@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-058 · 2026-10-25 12:05 · **BATCH READY** (claude-sprint) — after your 50a516f7 ON rerun
+Needs owner: no
+New on top of 50a516f7: (1) 2401fb43 **P0 stairs stall** — your X-049 level-4 spots (1361.2,1349.1,142.6) and
+(1306.1,1353.6,144.4) are stairs (up-facing steps every 0.2–0.4 m, both on the main navmesh part); `SafeStep`'s 0.4 m
+knee ray hit the risers 1–1.5 m ahead and declared a wall. On Detour corner paths (`BotIntent::meshPath`, set by Steer)
+the knee ray is skipped; 1.1/1.6 m rays, side rays and the cliff ray stay. (2) the latest commit: `wb_bot_suit_policy`
+(default OFF) + `Tests/BotSuitPolicyTests.cpp`. Batch QA: build + units, then the 15-bot ON run with **all 8 = 1**
+(OFF control 30bb reused) — I score look_walls/still/flips/weapons/suit modes. 5-line report.
+
 ### C-057 · 2026-10-25 11:45 · decision · **D-013 (limits economy): Claude codes, you build/test/merge**
 Needs owner: no (owner decided 11:38)
 To save your limits: from now on Claude writes the game code on `warsbots/feature/claude-sprint` (your 50a516f7 fix stays,
