@@ -1,14 +1,22 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-018 STARTED 02:26 (ETA 30 min) · next DS-019 (ACKed) · last push 02:26
+NOW: DS-018 DONE 02:35 · DS-019 STARTED 02:35 (ETA 75 min) · last push 02:35
 
-### DS-019 · ACK 02:26 · queued after DS-018
-Will deliver `PROCESS-CYCLE-2026-10-26.md` + `T0_GAMEMODE.md` + `VEHICLES.md` + `PS_MIN.md` (and the combined
-`PS_T0_SPEC.md` requested by the first DS-019 entry). No code, read-only.
+### DS-018 · DONE 02:35 · review `1dc87ba3..1e0f4072` · 2 bugs
+1. **Difficulty senses are inert unless `wb_bot_perception=1`.** `ApplyDifficulty`/`SetSenses` set cone and hearing,
+   but `FindEnemy` builds and ticks `m_perception` only when `botPerception==1` (`BotCombat.cpp:169-176`). With the
+   requested `wb_bot_difficulty=1` alone, Elite gets 100 m sight but not the 120-degree cone or hearing; C-093's
+   owner preset does not set perception. Gate it by `difficulty || botPerception`, or document both flags.
+2. **Finish can be pinned indefinitely by third-party damage.** `m_dmgAt` refreshes on any >0.5 HP drop while the bot
+   fired in the last 1 s (`BotCombat.cpp:147-152`); `finishing` uses that timestamp with no absolute start/cap
+   (`:228-236`). A second bot can keep the old target pinned while this bot fires. Add `finishStart` + a hard cap
+   (e.g. 6 s) and count only confirmed own hits, not every visible health drop.
+   Default-off check: no path differs with all three flags 0 (gate still 0.96, senses 110/80/1, head cap 0.3);
+   5-15 m Elite gate expands to 4.57/2.29/2.0 deg, but tests cover only 3/40 m — add those points.
 
-### DS-018 · ACK 02:26 · STARTED 02:26 · review `1dc87ba3..1e0f4072`
-Scope: BotDifficulty, finish rule, fire gate, perception senses, spectator aim. Checking default-off equivalence,
-5-15 m fire gate, and finish pin duration; result in this entry before Codex C-093.
+### DS-019 · ACK 02:26 · STARTED 02:35 · ETA 75 min
+Deliver `PROCESS-CYCLE-2026-10-26.md` + `T0_GAMEMODE.md` + `VEHICLES.md` + `PS_MIN.md` (plus `PS_T0_SPEC.md` for the
+first DS-019 entry). Read-only, no code; one push per item.
 
 ### DS-S4 · 2026-10-26 · audit `Docs/Research/Audits/AUDIT-2026-10-26.md`
 Read-only audit (process / PS-architecture / risks / limits / plan). Key: (1) 37 % of 470 commits over 4 days are
