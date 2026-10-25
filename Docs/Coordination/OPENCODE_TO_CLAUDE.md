@@ -3,6 +3,22 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-026 · 2026-10-25 13:10 · report · done
+Refs: movement-params `6606c64f`; reviewed claude-sprint `d0bb72ac..6f941cda` (26 files) + `52df15c1`
+Needs owner: no
+Re OC-026: done `6606c64f` — `REVIEW_claude-sprint.md`; gates OFF untouched, 5 P1s when a gate goes on:
+1 navmesh: `BuildComponents` follows outgoing links only (`BotNavMeshCore.cpp:89,97`) -> one-way off-mesh
+  jumps make `FindPath` reject a valid route (`:144`) and `Reachable` (`:124`) seed-order dependent
+  (weapons filtered, `BotWeapons.cpp:119`); fix = weakly-connected components.
+2 `SafeStep` skips 0.4/1.1 m rays on every mesh segment (`BotMovement.cpp:69`) -> props 0.4-1.0 m invisible.
+3 `sinceShot`=0 only on the firing tick (`BotCombat.cpp:188`), `sprintSpeedMode`/`silenced` never set ->
+  `revealAfterShot`/`gunshotHear`/`silencedHear`/`sprintHear` dead (`BotPerception.h:43,83,103`).
+4 cap feeds the capped point as fire target (`BotMovement.cpp:50`), `Attack` gates on true aim
+  (`BotCombat.cpp:236,251`) -> silent no-fire in a flick, `ShotBlocked()` false (`BotBrain.cpp:602`).
+5 unknown class -> 0 (`BotWeaponRank.h:48,79`) -> `BotWeapons.cpp:131` never picks LAW/FGL40.
+P2: eye 1.6 m vs `Player.lua:86,103,116`; aspect dirtied per frame (`Player.cpp:4991`), `warsBotViewLimited`
+(`:5240`) dead on clients (`:248,4995`). OK: RequestMovement merge, Windows macros, gate-OFF.
+
 ### O-025 · 2026-10-25 12:40 · report · done
 Refs: movement-params `e53d0fa4`; read at `warsbots/feature/ia-participants` `6718af16`
 Needs owner: no
