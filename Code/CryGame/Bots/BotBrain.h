@@ -43,6 +43,7 @@ public:
     const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
 
 private:
+    unsigned m_lookDiagnostics=0;float m_nextLookDiagnostic=0; // <=128 rows per instance, opt-in MOVE TRACE only
 	void Change(State state,bool initialize=false);
     void UpdateTelemetry(CPlayer& actor);
     bool UpdateDead(BotInstance& bot,CPlayer& actor,float dt);

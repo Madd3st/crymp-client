@@ -27,10 +27,11 @@ int main()
 		BotLookPolicy q; LookInput b = Base(0); b.hasInterest = true; b.interest = {5, -9, 1}; b.interestRayClear = true;
 		o = q.Update(b); assert(o.reason == LookReason::Path);
 	}
-	// 3. Very close interest (2 m) is looked at even through clutter.
+	// 3. Close range does not bypass an occluding wall.
 	{
 		BotLookPolicy p; LookInput in = Base(0); in.hasInterest = true; in.interest = {2, 0, 1}; in.interestRayClear = false;
-		assert(p.Update(in).reason == LookReason::Interest);
+		assert(p.Update(in).reason == LookReason::Path);
+        in.now=1.f;in.interestRayClear=true;assert(p.Update(in).reason==LookReason::Interest);
 	}
 	// 4. Visible target overrides everything immediately (no hysteresis), damage glance next.
 	{
@@ -89,6 +90,13 @@ int main()
         assert(a.y==4.f && rays==1 && calls==1); // don't skip a distant current corner
         rays=calls=0;a=ClearPathLookAhead(pos,pts,0,rays,[&](const LookVec&){++calls;return true;});
         assert(rays==0 && calls==0 && a.x==0.f && a.y==0.f);
+    }
+    // C055: blocked movement still follows a path; Keep means actual view, not the raw goal.
+    {
+        BotLookPolicy p;LookInput in=Base(0);in.speed=0;in.pathActive=true;
+        assert(p.Update(in).reason==LookReason::Path);
+        BotLookPolicy q;in.hasCorner=false;in.pathActive=false;in.viewYaw=123;in.viewPitch=17;
+        const auto out=q.Update(in);assert(out.reason==LookReason::Keep && Near(out.yaw,123) && Near(out.pitch,17));
     }
 	std::puts("BotLookPolicyTests OK");
 	return 0;
