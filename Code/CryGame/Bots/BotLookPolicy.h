@@ -150,4 +150,23 @@ inline LookVec PathLookAhead(const LookVec& pos, const LookVec* pts, int n, floa
 	return pts[n - 1];
 }
 
+// C055: a string-pulled path can be walkable while a 3m look-ahead is hidden around a turn.
+// Share the two-ray budget with the caller's interest test. Return a FOOT point; the
+// policy lifts it by1.4m, so test exactly that elevated point, not the floor segment.
+template<class ClearEyeRay>
+LookVec ClearPathLookAhead(const LookVec& pos,const LookVec* pts,int n,unsigned& rays,ClearEyeRay clear)
+{
+    if(n<=0)return pos;
+    auto visible=[&](LookVec p){
+        if(rays>=2)return false;
+        ++rays;p.z+=1.4f;return clear(p);
+    };
+    const LookVec ahead=PathLookAhead(pos,pts,n,3.f);
+    if(visible(ahead))return ahead;
+    const float dx=pts[0].x-pos.x,dy=pts[0].y-pos.y;
+    if(n>1 && dx*dx+dy*dy<4.f && visible(pts[1]))return pts[1];
+    // Current corridor corner is the conservative fallback, not a point behind it.
+    return pts[0];
+}
+
 } // namespace WarsBots

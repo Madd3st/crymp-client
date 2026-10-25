@@ -68,6 +68,28 @@ int main()
 		assert(std::fabs(a.x - 1.f) < 1e-3f && std::fabs(a.y - 2.f) < 1e-3f);
 		LookVec e = PathLookAhead({0, 0, 0}, pts, 2, 50.f); assert(e.x == 10.f);
 	}
+    // C055: occluded look-ahead must not point through a turn; budget includes interests.
+    {
+        const LookVec pos{0,0,0}, pts[]={{0,1,0},{4,1,0}};
+        unsigned rays=0,calls=0;
+        auto clear=[&](const LookVec& p){++calls;assert(Near(p.z,1.4f));return true;};
+        LookVec a=ClearPathLookAhead(pos,pts,2,rays,clear);
+        assert(Near(a.x,2.f) && Near(a.y,1.f) && rays==1 && calls==1);
+        rays=calls=0;
+        a=ClearPathLookAhead(pos,pts,2,rays,[&](const LookVec& p){++calls;return p.x>3.f;});
+        assert(a.x==4.f && a.y==1.f && rays==2 && calls==2); // near corner: visible next corner
+        rays=calls=0;
+        a=ClearPathLookAhead(pos,pts,2,rays,[&](const LookVec&){++calls;return false;});
+        assert(a.x==0.f && a.y==1.f && rays==2 && calls==2); // both hidden: current corner
+        rays=1;calls=0;
+        a=ClearPathLookAhead(pos,pts,2,rays,[&](const LookVec&){++calls;return false;});
+        assert(a.x==0.f && rays==2 && calls==1); // no third ray after an existing query
+        const LookVec distant[]={{0,4,0},{4,4,0}};rays=calls=0;
+        a=ClearPathLookAhead(pos,distant,2,rays,[&](const LookVec&){++calls;return false;});
+        assert(a.y==4.f && rays==1 && calls==1); // don't skip a distant current corner
+        rays=calls=0;a=ClearPathLookAhead(pos,pts,0,rays,[&](const LookVec&){++calls;return true;});
+        assert(rays==0 && calls==0 && a.x==0.f && a.y==0.f);
+    }
 	std::puts("BotLookPolicyTests OK");
 	return 0;
 }

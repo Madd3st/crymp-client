@@ -797,11 +797,6 @@ void BotBrain::ApplyLookPolicy(CPlayer& actor)
 	if (m_combat.Target() && !m_combat.Visible()) { interest=m_combat.LastPosition()+Vec3(0,0,1.2f); hasInterest=true; }
 	else if (IEntity* item=gEnv->pEntitySystem->GetEntity(m_upgradeTarget?m_upgradeTarget:m_weaponTarget))
 	{ interest=item->GetWorldPos(); hasInterest=true; }
-	if (hasInterest)
-	{
-		in.hasInterest=true; in.interest=LookVec{interest.x,interest.y,interest.z};
-		in.interestRayClear=EyeRayClear(actor,eye,interest);
-	}
 	LookVec pts[8]; int n=0;
 	for (size_t i=m_pathIndex; i<m_path.size() && n<8; ++i) pts[n++]=LookVec{m_path[i].x,m_path[i].y,m_path[i].z};
 	if (n==0 && m_intent.move)
@@ -812,11 +807,17 @@ void BotBrain::ApplyLookPolicy(CPlayer& actor)
 		const Vec3 ahead=feet+dir*4.0f;
 		pts[n++]=LookVec{ahead.x,ahead.y,ahead.z};
 	}
+	unsigned lookRays=0;
 	if (n)
 	{
 		in.hasCorner=true;
-		in.corner=PathLookAhead(LookVec{feet.x,feet.y,feet.z},pts,n,3.0f);
+		in.corner=ClearPathLookAhead(LookVec{feet.x,feet.y,feet.z},pts,n,lookRays,
+            [&](const LookVec& p){return EyeRayClear(actor,eye,Vec3(p.x,p.y,p.z));});
 	}
+    if(hasInterest && lookRays<2){
+        ++lookRays;in.hasInterest=true;in.interest=LookVec{interest.x,interest.y,interest.z};
+        in.interestRayClear=EyeRayClear(actor,eye,interest);
+    }
 	const LookOutput o=m_look.Update(in);
 	if (o.reason==LookReason::Keep) return;
 	const float yaw=DEG2RAD(o.yaw), pitch=DEG2RAD(o.pitch);
