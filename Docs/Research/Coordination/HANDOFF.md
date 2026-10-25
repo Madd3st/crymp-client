@@ -10,6 +10,9 @@ When the owner asks "статус", answer in this order: 1) who is doing what r
 
 ## Roles and rules
 
+- **D-013 (11:38, 25.10):** limits economy — Claude writes game code (claude-sprint) + reports; Codex builds/tests/merges, 5-line reports; OpenCode paused.
+
+
 - **D-012 (01:04, 25.10):** back to D-010 roles. D-011 (Claude writes sprint code) ended; claude-sprint ae798245 handed to Codex.
 
 
