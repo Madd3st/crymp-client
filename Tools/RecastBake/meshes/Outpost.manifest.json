@@ -1,0 +1,27 @@
+{
+ "schema": 1,
+ "map": "Outpost",
+ "mode": "IA",
+ "source": "C019/C028 collision crop (wb_geom_export a7553da7)",
+ "bake": "recast_bake --cs 0.1 --tile 256 --radius 0.3 --jumps (lanes fix 79cf0afd); tactical_spots v1 grid 2.5 targets 800",
+ "files": {
+  "navmesh": {
+   "name": "Outpost.navmesh",
+   "bytes": 1295072,
+   "fnv64": "4c3443f925e74f0e",
+   "sha256": "944297ac9d51e5614b05401350df107a436b7606ff8174905057ba973468d18a"
+  },
+  "links": {
+   "name": "Outpost.links.txt",
+   "bytes": 37889,
+   "fnv64": "2baa4b7975aa7d42",
+   "sha256": "0e6651a3da7536b5a20d3f1e9f81bc8ee588d0366d84e196c1e1b6dad0dc4d23"
+  },
+  "spots": {
+   "name": "Outpost.spots.txt",
+   "bytes": 95076,
+   "fnv64": "0bc705d9276049bc",
+   "sha256": "f041dbab3924403df302bdaf6169c180257cad8c49822bef044f6a980225e681"
+  }
+ }
+}

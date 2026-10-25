@@ -1,0 +1,27 @@
+{
+ "schema": 1,
+ "map": "Armada",
+ "mode": "IA",
+ "source": "C019/C028 collision crop (wb_geom_export a7553da7)",
+ "bake": "recast_bake --cs 0.1 --tile 256 --radius 0.3 --jumps (lanes fix 79cf0afd); tactical_spots v1 grid 2.5 targets 800",
+ "files": {
+  "navmesh": {
+   "name": "Armada.navmesh",
+   "bytes": 653940,
+   "fnv64": "55ab81c4a2c68b38",
+   "sha256": "87f0438cca0b531f6f227f83d640916afb93667802973e763333f73d78957590"
+  },
+  "links": {
+   "name": "Armada.links.txt",
+   "bytes": 34176,
+   "fnv64": "edbd49076dff95cc",
+   "sha256": "ce3326caf751661cf43f820560a390cc2ee5ee008c2d56e9e67d11cee7f34247"
+  },
+  "spots": {
+   "name": "Armada.spots.txt",
+   "bytes": 217398,
+   "fnv64": "6a04c13f0f000c27",
+   "sha256": "71ac48ed80c2068f6273868966362d1aefbebc0db5d34599cf0e121da53c1293"
+  }
+ }
+}
