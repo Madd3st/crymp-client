@@ -503,7 +503,7 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 		}
 		// Unreachable (on a ledge, behind glass, taken): give up when the walk stops getting closer for 8 s (c067: a
 		// flat 10 s dropped every DSG1/Gauss trip — 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
-		if (m_upgradeTarget != m_upgradeTracked || !m_upgradeTarget) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; }
+		if (m_upgradeTarget != m_upgradeTracked || !m_upgradeTarget) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0; }
 		if (IEntity* goal = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr)
 		{
 			const Vec3 feet=actor.GetEntity()->GetWorldPos();
@@ -516,6 +516,10 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 				float rem=(m_path[min(m_pathIndex,m_path.size()-1)]-feet).GetLength();
 				for (size_t k=m_pathIndex+1;k<m_path.size();++k) rem+=(m_path[k]-m_path[k-1]).GetLength();
 				d=rem;
+				// DS-S1 #1: Steer repaths every 5 s; a longer new path must not age the old best into a false timeout.
+				// New path -> restart progress from its own length (the 60 s cap still bounds endless repaths).
+				const float sig=m_path.front().x*0.37f+m_path.front().y*1.13f+(float)m_path.size()*7.0f;
+				if (fabsf(sig-m_upgradePathSig)>0.01f) { m_upgradePathSig=sig; if (d>m_upgradeBest) { m_upgradeBest=d; m_upgradeBestAt=m_now; } }
 			}
 			if (d < m_upgradeBest-1.0f) { m_upgradeBest=d; m_upgradeBestAt=m_now; }
 		}

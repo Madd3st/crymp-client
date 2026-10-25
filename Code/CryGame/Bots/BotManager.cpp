@@ -835,7 +835,7 @@ void BotManager::GeometryExportCommand(IConsoleCmdArgs* args)
     const int argc=args?args->GetArgCount():0;
     if(!args || (argc!=1 && argc!=2 && argc!=5 && argc!=6)){WB_LOG(0,"[WarsBots] Usage: wb_geom_export [path.obj] [x0 y0 x1 y1]");return;}
     float region[4];const bool hasRegion=argc>=5;const int r0=argc==6?2:1;
-    if(hasRegion)for(int i=0;i<4;++i){char* end=nullptr;region[i]=std::strtof(args->GetArg(r0+i),&end);if(!end || *end){WB_LOG(0,"[WarsBots] GEOM export: bad region number %s",args->GetArg(r0+i));return;}}
+    if(hasRegion)for(int i=0;i<4;++i){char* end=nullptr;const char* tok=args->GetArg(r0+i);region[i]=std::strtof(tok,&end);if(!end || end==tok || *end){WB_LOG(0,"[WarsBots] GEOM export: bad region number %s",args->GetArg(r0+i));return;}}
     ExportLevelGeometry(argc==2||argc==6?args->GetArg(1):nullptr,hasRegion?region:nullptr);
 }
 

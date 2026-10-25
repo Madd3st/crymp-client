@@ -130,7 +130,7 @@ private:
 	BotAngleHold m_hold;
 	BotTraits m_traits;
 	ENanoMode m_lastSuitRequest = NANOMODE_DEFENSE;   // T-1 step 1: INTENT WHY log on change
-	EntityId m_upgradeTracked = 0; float m_upgradeBest = 1e9f, m_upgradeBestAt = 0;   // weapon-goal progress              // T-8 character traits (presets per skill/style + per-bot jitter)
+	EntityId m_upgradeTracked = 0; float m_upgradeBest = 1e9f, m_upgradeBestAt = 0, m_upgradePathSig = 0;   // weapon-goal progress              // T-8 character traits (presets per skill/style + per-bot jitter)
 	BotJumpStrafe m_jumpStrafe;
 	EntityId m_lastFightTarget = 0;
 	Vec3 m_lastFightPos = Vec3(0,0,0), m_lootPos = Vec3(0,0,0);

@@ -85,6 +85,8 @@ bool ExportLevelGeometry(const char* requested,const float* region){
   if(region){
    if(!(region[2]>region[0] && region[3]>region[1]))throw std::runtime_error("region must be x0 y0 x1 y1 with x1>x0, y1>y0");
    bounds.min.x=max(0.0f,region[0]);bounds.min.y=max(0.0f,region[1]);bounds.max.x=min(float(terrainSize),region[2]);bounds.max.y=min(float(terrainSize),region[3]);
+   // DS-S1 #2: a box wholly outside the terrain clamps to zero area and used to write an empty OBJ as success.
+   if(!(bounds.max.x-bounds.min.x>=1.0f && bounds.max.y-bounds.min.y>=1.0f))throw std::runtime_error("region lies outside the terrain");
   }
   Writer writer(objTemp,bounds,name);
   IPhysicalEntity** found=nullptr;
