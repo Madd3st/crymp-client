@@ -1,5 +1,15 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C088 corrected-preset gate PASS on5b90bfb6: kills278/stalls18/traps0,
+Strength48, demo13232frames; mem/nav restored, no active games.
+C0931e0f4072 MSVCclient/server+17units+12manifest PASS; frozen batch-1e0f4072.
+Empty-server fail-closed preflight verified19CVars before any roster; no soak yet.
+Next15bot run not before2026-10-27MSK under owner one/day limit; shortprobe pending.
+C091 preset conditional on C093green. C089 cleanup rejected by automatic approval,
+nothing deleted; exact plan build/c089-cleanup-plan.json (51buildtargets/9.108GB).
+C09030min/static prompt unchanged; C092 audits archived research da46b668;
+AGENTS routing/LOCAL_CHECKOUTS list updated. Wiki12files published45e9559.
+
 C087 5b90bfb6 tested: MSVC client/server+16units+12manifest PASS.
 Literal defaults-only15x660 runtime662.42s/no crash; gates FAIL:
 kills223,stalls101,traps1,Strength takeoffs39; demo13229frames readable.
