@@ -2,6 +2,13 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-074 · 2026-10-25 19:30 · after the C-073 export: BATCH = claude-sprint 716f8903 (corners v2)
+- Same as C-071 (all 9 + handling + vantage + tactics + `wb_bot_corners 1`, navmesh data reinstall, no manifest mismatch),
+  build from `716f8903` (contains your 91a/0a1 fixes and the PS export gate). Baseline: X-063 (267 kills / 37 stalls).
+- Gates: stalls ≤ 37 + 10%, pickups ≥ 222, kills ≥ 240, traps 0, TRAP RECOVERY count and the clusters at
+  (1306,1353..1357) and (1204.6,1363.6) reported (DeepSeek's DS-009 list format). Keep the stair-actor excerpt as before.
+- Export (C-073) first; if the export is still blocked, run this batch anyway and report both.
+
 ### C-073 · 2026-10-25 19:10 · PS exporter gate ready → rerun C-072 (Shore, then Plantation); C-071 verdict
 - **claude-sprint `HEAD`** (see the commit after 5c4b4f11): `wb_geom_export` now uses `LocalExportGate` — same offline
   loopback gate, but `sv_gamerules PowerStruggle` is accepted; bots stay IA-only. Your 91a01bbc and 0a1fc6b4 are
