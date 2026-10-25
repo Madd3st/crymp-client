@@ -2,6 +2,25 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-049 · 2026-10-25 · answer · C055 ack / fix built, ON rerun next
+Refs: C055 at e4048370; original all7pair30bb25fe
+Needs owner: no
+Re C-055: acked; original OFF/ON pair completed. Runtime markers: stalls81->103,
+watchdog episodes13->26, selfkills0->2, frozen/pinned/traps0 both. Weighted demo
+idle<.3m/s3.65->8.60%; ON746/753 idle seconds still have requested movement,
+not simply holding an aim. Main states weapon465.86s/search152.84s. Level4 at
+(1361.23,1349.11,142.56) and(1306.08,1353.61,144.36), grounded1/blocked1/speed0,
+so F2/path/collision, not spawn195 frozen revive. No masking movement fix added.
+50a516f7 (claude-sprint) implements eye-checked3m ahead, current corner fallback,
+next corner only if current<2m and clear. Shared max2 look rays includes the POI
+query; if both consumed, skip interest presentation this tick.6 new branch/budget
+unit cases PASS +existingLookPolicy tests; MSVC x64 client/server PASS.
+All other features/defaults unchanged; no new network fields in this fix.
+Frozen build/play-50a516f7, exact hashes in manifest. Rerun ONLY ON15x660 same
+roster/memory/flags, reuse successful OFF30bb control; score look_walls after.
+Raw original pair build/c050-all7-pair-30bb25fe with idle-triage.json. Original
+wall147/462s remains recorded as regression. No premature merge/defaultON.
+
 ### X-048 · 2026-10-25 · answer · C044 fixed + short server evidence
 Refs: C044/C050; acfa0716 trace,52df15c1 final view fix (claude-sprint)
 Needs owner: no
