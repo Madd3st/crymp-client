@@ -21,6 +21,37 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-015 · 2026-10-26 00:30 · target choice + long range (playtest 2)
+Needs owner: no
+Facts (session Sprint-b521feeb-20261025-233851, logs copied by Codex under build/owner-playtests/): 24 switches away
+from a target with low HP (e.g. t=23.2 WarsBot_02 dropped WarsBot_01 at 4 HP); bot hit distance p90 22 m, **no bot hit
+beyond 40 m** (owner p90 31 m, snipes from roofs untouched). On claude-sprint read BotPerception, BotGoalArbiter,
+BotBrain target selection/fire gating, BotAimModel, weapon range tables. Answer: (1) exact rule(s) that cause the
+switch, with file:line, and a proposed scoring fix (commit bonus for damaged/low-HP target, hysteresis, "finish him"
+window) as pseudo-code + test cases; (2) every limit that caps engagement range (view distance, FOV, LOS ray length,
+weapon effective range, fire distance gate, zoom use) with values; which one bites first at 50/80 m; (3) do bots ever
+look up / check roofs? Report `DeepSeek/TARGETING_RANGE.md` + ≤ 20 lines answer.
+
+### DS-014 · 2026-10-26 00:30 · difficulty spec (owner: "difficulties feel the same; Elite = honest head aimbot")
+Needs owner: no
+Data: run speed 4.4–4.6 m/s for every skill; aim error median Beginner 2.2° / Normal 1.2° / Veteran 1.1° / Elite 0.9°,
+p95 45–70° for all; kills Elite 59, Normal 39, Veteran 39, Beginner 17. Read BotProfile/BotTraits/BotAimModel/
+BotSuitPolicy/BotConfig on claude-sprint and list **every** parameter that already varies by skill and its values.
+Then write a table Beginner/Normal/Veteran/Elite: reaction time, turn rate cap, tracking error, aim point (body/chest/
+head), burst discipline, fire-before-on-target tolerance, engagement range, strafe/jump-in-fight, suit use, weapon
+preference, perception range/FOV. **Elite** = honest aimbot: near-zero reaction after LOS, perfect tracking, head aim,
+still no wallhacks (LOS only). Make the gaps big enough that the owner feels them in 30 s. Map each row to a code place
+and a cvar name (default keeps current behaviour). Report `DeepSeek/DIFFICULTY_SPEC.md` + ≤ 20 lines.
+
+### DS-013 · 2026-10-26 00:30 · why aim looks crooked/laggy from spectator first person
+Needs owner: no
+Server aim error ~1° but the owner sees bots aiming late and off in spectator 1st person (W2 video). Trace on
+claude-sprint how a bot's yaw/pitch reach a client: what is serialized (WarsBotMotion? actor aim aspect?), how often,
+quantization, client-side smoothing/interpolation of view angles, what the spectator 1st-person camera reads (replica
+view rotation vs entity rotation vs weapon aim), and whether the shot/tracer origin on the client uses the same angles.
+Combine with your DS-002 finding (two pose sources). Give the most likely root cause with file:line and the minimal fix
++ which C-083 numbers would confirm it. Report `DeepSeek/AIM_REPLICATION.md` + ≤ 20 lines.
+
 ### DS-012 · 2026-10-25 22:20 · new queue (you have been idle ~2 h — work it top-down, push after each item)
 Your S1/S1b points were used: walk_sim link mask (drop), run_units/compile_check fail closed, GameRules.cpp added.
 1. **Review corners v2.1 + jump sanity** (claude-sprint d9c518b7, b521feeb): `BotIntent::arrive`, the probe clamp and

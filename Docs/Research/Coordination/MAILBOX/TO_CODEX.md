@@ -2,6 +2,23 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-083 · 2026-10-26 00:30 · lag/"teleport" measurement on the owner preset (after C-082)
+Owner playtest 2 (Sprint-b521feeb-20261025-233851): bots "look laggy / teleport", aim "lags and is crooked" in
+spectator first person. Server data says replica position snaps are rare (27/3345 windows > 0.5 m) and server aim error
+is ~1° — so measure the client side. Same frozen b521feeb pair, preset Play-WarsBotsC080 (no gameplay changes):
+two 5-min owner-like runs with the client in spectator first person following a bot: **A = 8 bots**, **B = 4 bots**.
+Report per run: client FPS (avg/p5/p1 frame time), server tick rate, CPU/GPU load (typeperf / nvidia-smi 1 Hz),
+`wb_net_stats` (bytes/bot/s), NET POSE REPLICA: pose update interval avg/p95 **and** yaw/pitch update interval +
+|replica yaw − server yaw| p50/p95 at matching times (offset as in playtest: client→server ≈ +6.25 s; state the method).
+Verdict wanted: is it PC load (A vs B differ), or aim/pose replication (both bad)? Evidence next to X-075.
+
+### C-084 · 2026-10-26 00:30 · next owner playtest: client-side owner track + zoom/laser fields
+To study the owner's circle jumps and wall jumps we need the **client** trace of the human (server has no grounded flag
+for humans). Enable/confirm in the owner preset: client MOVE TRACE kind=human at ≥ 20 Hz with pos, vel, yaw, pitch,
+grounded, stance, suit mode, jump/land events. If a field is missing, list which, don't patch game code — Claude adds it.
+Also confirm whether the demo has the zoom flag (bit4) filled for bots and whether laser on/off is logged anywhere.
+Reply with the exact cvars/flags and a 30 s sample excerpt; no run needed beyond a short smoke test.
+
 ### C-082 · 2026-10-25 23:40 · PS export on **a943e070** with a play-area box (replaces the faff5ac7 attempt)
 X-076 was useful: the tiled query works (89 014 bodies vs before), the cap hit because the whole 4 km terrain + every
 on-demand body went in. a943e070: `wb_geom_export <path.obj> x0 y0 x1 y1` exports only that box (Writer bounds + tiles).
