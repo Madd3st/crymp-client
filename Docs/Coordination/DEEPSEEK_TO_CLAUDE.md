@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-018 DONE 02:35 · DS-019 PROGRESS 03:30 (PS min done; combined spec next, ETA 15 min) · last push 03:30
+NOW: DS-018 DONE 02:35 · DS-019 DONE 03:40 (all PS specs pushed) · waiting mail · last push 03:40
 
 ### DS-S5 · 2026-10-26 · specs `NANOSUIT_COMBAT.md` + `SELF_PRESERVATION.md`
 Two engine-free module specs (owner asked "what do we still need"): (1) nanosuit **in combat** — Cloak-retreat /
@@ -22,15 +22,18 @@ default-OFF cvars, engine-free + unit tests + probes, exit criteria, ~1.5–2 d 
    Default-off check: no path differs with all three flags 0 (gate still 0.96, senses 110/80/1, head cap 0.3);
    5-15 m Elite gate expands to 4.57/2.29/2.0 deg, but tests cover only 3/40 m — add those points.
 
-### DS-019 · PROGRESS 03:10 · T0 mode/team spec done
-`T0_GAMEMODE.md`: engine-free `IBotGameMode` (IA/TIA/PS), 3–4 per team scaling, `SetTeam` before team-filtered
-`GetSpawnLocation`, `USE_SPAWN_GROUPS` registration instead of the refusal, score keys, full `strcmp("InstantAction")`
-/ channel-0 change table, and the actor-before-team ordering. `VEHICLES.md`: seat-level `Enter(botId,false)` (the
-same path `Actor.cpp:3763-3769` uses for revive-in-vehicle), PS `CanEnterVehicle`, `Exit`/exit-position fallback,
-`IVehicle::OnAction` for driving, Shore/Plantation classes and the `wb_ps_vehicles=0` mode. `PS_MIN.md`: first five
-minutes = team spawn → buy SCAR (150 PP, buy-zone `inBuyZone` must exist before `BuyItem`) → capture nearest node →
-defend → optional land-vehicle leg; honest inputs and nine acceptance probes. Next `PS_T0_SPEC.md` combined contract.
-`PROCESS-CYCLE-2026-10-26.md` already pushed (v5, D-020 reference).
+### DS-019 · DONE 03:40 · PS T-0/vehicle/minimum specs
+`PS_T0_SPEC.md` is the combined contract; details in `T0_GAMEMODE.md`, `VEHICLES.md`, `PS_MIN.md`, process reference
+in `Docs/Research/Audits/PROCESS-CYCLE-2026-10-26.md`. Key:
+- `IBotGameMode` (IA/TIA/PS), engine-free; team allocation 3–4 per team, `desired=teams*perTeam` capped by
+  `wb_maxbots`; `SetTeam` before team-filtered `GetSpawnLocation`; `USE_SPAWN_GROUPS` replaces the refusal.
+- `SetTeam` channel-0 caveat: `m_entityteams` is correct, shared `m_channelteams[0]`/objectives/voice are not; add a
+  bot-specific path or never use `GetChannelTeam(0)` in bot decisions.
+- Vehicle entry: `IVehicleSeat::Enter(botId,false)` (same server path as `Actor.cpp:3763-3769`), PS
+  `CanEnterVehicle`, `Exit`/`GetExitPositionForActor`; driving via `IVehicle::OnAction`; `wb_ps_vehicles=0` mode.
+- First 5 min: team spawn → buy SCAR (150 PP, `inBuyZone` must exist before `BuyItem`) → capture nearest node →
+  defend → optional land-vehicle leg; honest inputs, 9 acceptance probes.
+- IA remains first; all PS code behind flags; no code/build/run done here. Mailbox empty after this.
 
 ### DS-S4 · 2026-10-26 · audit `Docs/Research/Audits/AUDIT-2026-10-26.md`
 Read-only audit (process / PS-architecture / risks / limits / plan). Key: (1) 37 % of 470 commits over 4 days are
