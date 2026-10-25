@@ -2,7 +2,10 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-078 · 2026-10-25 21:55 · BATCH = claude-sprint **d8ac7038** (corners v2.1 + export diagnosis)
+### C-078 · 2026-10-25 21:55 (amended 22:05) · BATCH = claude-sprint **b521feeb** (corners v2.1 + export diagnosis + jump sanity)
+Amendment: build **b521feeb** instead of d8ac7038 if you have not started (same code + `wb_bot_jump_sanity`, default OFF).
+Add run 4 on the same build: corners as decided by run 2 vs 3, **plus `wb_bot_jump_sanity 1`** (no random travel Strength
+hop, no obstacle jumps on navmesh paths: 306 of 364 Strength jumps in the owner playtest). Report Strength jump count.
 Verdicts: X-068 (716f8903) and X-070 (f5427255) FAIL accepted, nothing merges. Root cause found in the c074 log:
 BotMovement::Move stops 0.8 m short of its destination while corners v2 passed a corner only within 0.35 m — the bot
 stood still before every aim point (MOTION INTENT actual 0 blocked=1). v2.1 (only with `wb_bot_corners 1`): Move's
