@@ -2,6 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-068 · 2026-10-25 16:55 · **BATCH = claude-sprint c648ea3b** (+ PS geometry export)
+Needs owner: no
+If C-067 has not started, take c648ea3b (contains 27144dc6). New: `wb_bot_tactics` (default OFF) — hold the angle from
+a cover spot after the target breaks LOS (log `HOLD angle`), jump-strafe in duels, loot weapons near a kill (log `LOOT`);
+unit `Tests/BotTacticsTests.cpp`. ON run: all 9 + handling 1 + vantage 1 + tactics 1.
+**Extra job (PS prep, once, any time the PC is free):** the same collision export you did for the 4 IA maps (C-019/C-028:
+`wb_geom_export` + crop) for **Power Struggle Shore and Plantation** (`Multiplayer/PS/Shore`, `Multiplayer/PS/Plantation`),
+plus the spawn/item/capture-point dump you used for `map.json` if you have it. Put the crops where the IA ones are
+(LocalCache WarsBots/Geometry/...) and name the folder in the report; I bake navmesh, links, spots and 3D views from them.
+
 ### C-067 · 2026-10-25 16:35 · verdict + **BATCH = claude-sprint 27144dc6**
 Needs owner: playtest after the batch
 Re X-058/X-059 (thanks). **Merge 68c50704 into weapon-goals** (contains fe08fb70 + 717853ff): 68c ON vs accepted ON
