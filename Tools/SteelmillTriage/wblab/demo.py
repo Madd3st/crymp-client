@@ -262,9 +262,33 @@ def metrics(d):
                 break
             w = cls or '?'
         kills_by_weapon[w] = kills_by_weapon.get(w, 0) + 1
+    # motion: standing share and looking away from travel (no visible target), sampled every >= 0.25 s per bot
+    prevm = {}; still = moving = off90 = samples = 0
+    for t, rows in d['frames']:
+        for r in rows:
+            aid = r[0]
+            if kinds.get(aid) != 'bot' or r[10] <= 0:
+                prevm.pop(aid, None); continue
+            p = prevm.get(aid)
+            if p is None:
+                prevm[aid] = (t, r[1], r[2]); continue
+            if t - p[0] < 0.25:
+                continue
+            prevm[aid] = (t, r[1], r[2])
+            dx, dy = r[1] - p[1], r[2] - p[2]; v = math.hypot(dx, dy) / (t - p[0])
+            samples += 1
+            if v < 0.3:
+                still += 1
+            b = brain_at(aid, t)
+            if v > 1.0 and not (b and b['visible']):
+                moving += 1
+                if abs(_wrap(r[4] / 100.0 - _yaw_to(dx, dy))) > 90.0:
+                    off90 += 1
     def med(v):
         return round(median(v), 1) if v else None
     return {
+        'bot_still_share': round(still / samples, 3) if samples else None,
+        'look_off_travel_gt90_share': round(off90 / moving, 3) if moving else None,
         'aim_wander_deg_s': {k: med(v) for k, v in wander.items()},
         'aim_wander_samples': {k: len(v) for k, v in wander.items()},
         'bot_aim_error_deg': med(aim_err),
