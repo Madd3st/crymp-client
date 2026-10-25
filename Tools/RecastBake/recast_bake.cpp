@@ -92,7 +92,80 @@ struct Cfg {
 	int tile = 128, minRegion = 2, mergeRegion = 20; bool monotone = false;
 	int motions = 3;      // generated link motions: 1 drop, 2 +jump, 3 +Strength
 	float vh = 4.5f;      // horizontal take-off speed for generated links (run 4.5, sprint 6.75 m/s)
+	float wallRadius = 0.f; // > radius: extra clearance from walls only (player capsule 0.4 m), ledges keep `radius`
+	float capBottom = 0.5f, capTop = 1.9f; // player capsule span above the feet (player.lua: heightCollider 1.2, size 0.4/0.3)
 };
+
+// Walls vs ledges (C-071 follow-up): Recast erodes every boundary by one radius. The player capsule is 0.4 m but its
+// bottom sits 0.5 m above the feet, so a drop or a curb never touches it while a wall, railing or post does. Bots
+// wedged on Steelmill stairs and doorways with radius 0.3, and radius 0.4 everywhere shrank the small Gauss/DSG1
+// platforms off the mesh. This pass removes walkable spans closer than wallRadius to a wall; ledges are left to
+// rcErodeWalkableArea(radius).
+static void ErodeWalls(const rcCompactHeightfield& chf, const Cfg& c)
+{
+	if (c.wallRadius <= c.radius) return;
+	const int w = chf.width, h = chf.height, n = chf.spanCount;
+	const int lo = (int)floorf(c.capBottom / chf.ch), hi = (int)ceilf(c.capTop / chf.ch);
+	std::vector<float> bx(n, 0), bz(n, 0), best(n, 1e30f);
+	std::vector<int> queue; queue.reserve(n);
+	// seeds: a span side with no connection whose neighbour column has no open space across the capsule's height band
+	for (int z = 0; z < h; ++z) for (int x = 0; x < w; ++x)
+	{
+		const rcCompactCell& cell = chf.cells[x + z * w];
+		for (int i = (int)cell.index, ni = (int)(cell.index + cell.count); i < ni; ++i)
+		{
+			if (chf.areas[i] == RC_NULL_AREA) continue;
+			const rcCompactSpan& s = chf.spans[i];
+			for (int dir = 0; dir < 4; ++dir)
+			{
+				if (rcGetCon(s, dir) != RC_NOT_CONNECTED) continue;
+				const int ax = x + rcGetDirOffsetX(dir), az = z + rcGetDirOffsetY(dir);
+				bool wall = true;
+				if (ax >= 0 && az >= 0 && ax < w && az < h)
+				{
+					const rcCompactCell& nc = chf.cells[ax + az * w];
+					for (int j = (int)nc.index, nj = (int)(nc.index + nc.count); j < nj; ++j)
+					{
+						const rcCompactSpan& t = chf.spans[j];
+						if ((int)t.y <= (int)s.y + lo && (int)t.y + (int)t.h >= (int)s.y + hi) { wall = false; break; }
+					}
+					if (nc.count == 0) wall = false; // nothing there at all: open air / void, a ledge
+				}
+				if (!wall) continue;
+				const float px = x + 0.5f + 0.5f * rcGetDirOffsetX(dir), pz = z + 0.5f + 0.5f * rcGetDirOffsetY(dir);
+				const float d = 0.5f;
+				if (d < best[i]) { if (best[i] >= 1e29f) queue.push_back(i); best[i] = d; bx[i] = px; bz[i] = pz; }
+			}
+		}
+	}
+	// propagate the nearest wall point over walkable spans (vector BFS), bounded by wallRadius
+	std::vector<int> sx(n), sz(n);
+	for (int z = 0; z < h; ++z) for (int x = 0; x < w; ++x)
+	{
+		const rcCompactCell& cell = chf.cells[x + z * w];
+		for (int i = (int)cell.index, ni = (int)(cell.index + cell.count); i < ni; ++i) { sx[i] = x; sz[i] = z; }
+	}
+	const float maxCells = c.wallRadius / chf.cs;
+	for (size_t q = 0; q < queue.size(); ++q)
+	{
+		const int i = queue[q];
+		const rcCompactSpan& s = chf.spans[i];
+		for (int dir = 0; dir < 4; ++dir)
+		{
+			if (rcGetCon(s, dir) == RC_NOT_CONNECTED) continue;
+			const int ax = sx[i] + rcGetDirOffsetX(dir), az = sz[i] + rcGetDirOffsetY(dir);
+			const int j = (int)chf.cells[ax + az * w].index + rcGetCon(s, dir);
+			if (chf.areas[j] == RC_NULL_AREA) continue;
+			const float dx = ax + 0.5f - bx[i], dz = az + 0.5f - bz[i], d = sqrtf(dx * dx + dz * dz);
+			if (d >= maxCells || d >= best[j] - 1e-4f) continue;
+			if (best[j] >= 1e29f || true) queue.push_back(j);
+			best[j] = d; bx[j] = bx[i]; bz[j] = bz[i];
+		}
+	}
+	int removed = 0;
+	for (int i = 0; i < n; ++i) if (best[i] < maxCells && chf.areas[i] != RC_NULL_AREA) { chf.areas[i] = RC_NULL_AREA; ++removed; }
+	(void)removed;
+}
 
 // Off-mesh links for one tile: those whose start lies in the tile's xz box.
 static unsigned char* BuildTile(rcContext& ctx, const Cfg& c, const std::vector<float>& verts, const std::vector<int>& tris,
@@ -139,6 +212,7 @@ static unsigned char* BuildTile(rcContext& ctx, const Cfg& c, const std::vector<
 	const bool okc = rcBuildCompactHeightfield(&ctx, cfg.walkableHeight, cfg.walkableClimb, *hf, *chf);
 	rcFreeHeightField(hf);
 	if (!okc) { rcFreeCompactHeightfield(chf); return nullptr; }
+	ErodeWalls(*chf, c);
 	rcErodeWalkableArea(&ctx, cfg.walkableRadius, *chf);
 	bool okr;
 	if (c.monotone) okr = rcBuildRegionsMonotone(&ctx, *chf, cfg.borderSize, cfg.minRegionArea, cfg.mergeRegionArea);
@@ -394,6 +468,7 @@ int main(int argc, char** argv)
 		else if (a == "--tile") c.tile = std::stoi(nx()); else if (a == "--min-region") c.minRegion = std::stoi(nx());
 		else if (a == "--monotone") c.monotone = true;
 		else if (a == "--jumps") genJumps = true; else if (a == "--links-out") linksOut = nx();
+		else if (a == "--wall-radius") c.wallRadius = std::stof(nx());
 		else if (a == "--vh") c.vh = std::stof(nx()); else if (a == "--motions") c.motions = std::stoi(nx());
 		else { fprintf(stderr, "unknown arg %s\n", a.c_str()); return 2; }
 	}
@@ -597,8 +672,8 @@ int main(int argc, char** argv)
 	int sp = 0, spIn = 0, spOn = 0, it = 0, itOn = 0, itTwo = 0, itFwd = 0, spTwo = 0;
 	printf("{\n \"input\": {\"obj\": \"%s\", \"triangles\": %d, \"dropped_by_z\": %d, \"bounds_crysis\": [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]},\n",
 		obj.c_str(), nt, dropped, bmin[0], -bmax[2], bmin[1], bmax[0], -bmin[2], bmax[1]);
-	printf(" \"params\": {\"cs\": %.2f, \"ch\": %.2f, \"radius\": %.2f, \"height\": %.2f, \"climb\": %.2f, \"slope\": %.1f, \"tile\": %d, \"min_region\": %d, \"partition\": \"%s\", \"recast\": \"v1.6.0\"},\n",
-		c.cs, c.ch, c.radius, c.height, c.climb, c.slope, c.tile, c.minRegion, c.monotone ? "monotone" : "watershed");
+	printf(" \"params\": {\"cs\": %.2f, \"ch\": %.2f, \"radius\": %.2f, \"wall_radius\": %.2f, \"height\": %.2f, \"climb\": %.2f, \"slope\": %.1f, \"tile\": %d, \"min_region\": %d, \"partition\": \"%s\", \"recast\": \"v1.6.0\"},\n",
+		c.cs, c.ch, c.radius, c.wallRadius, c.height, c.climb, c.slope, c.tile, c.minRegion, c.monotone ? "monotone" : "watershed");
 	printf(" \"mesh\": {\"tiles\": %d, \"tiles_grid\": [%d, %d], \"polys\": %d, \"max_tile_polys\": %d, \"components\": %d, \"area_m2\": %.0f, \"main_area_m2\": %.0f, \"two_way_area_m2\": %.0f, \"offmesh_links\": %zu, \"generated\": {\"drop\": %d, \"jump\": %d, \"strength\": %d}},\n",
 		builtTiles, tilesX, tilesY, totalPolys, maxTilePolys, ncomp, totalArea, mainArea, twoWayArea, links.size(), genStats[0], genStats[1], genStats[2]);
 	printf(" \"points\": [\n");
