@@ -17,7 +17,7 @@
 
 namespace WarsBots {
 
-enum class LookReason { Keep = 0, Target, Attacker, Interest, Path, NextCorner };
+enum class LookReason { Keep = 0, Target, Attacker, Interest, Path, NextCorner, Glance };
 
 struct LookVec { float x = 0.f, y = 0.f, z = 0.f; };
 
@@ -35,6 +35,10 @@ struct LookInput {
 	float sinceDamaged = 1e9f;         // s
 	bool attackerKnown = false;
 	LookVec attacker;
+	// 2b. threat glance (wb_bot_threat_scan): a short look at a high sniper spot with a clear ray, chosen and timed by
+	// the brain (owner 25.10: he camped roofs for whole matches - no bot ever looked up)
+	bool hasGlance = false;
+	LookVec glance;
 	// 3. point of interest
 	bool hasInterest = false;
 	LookVec interest;
@@ -87,6 +91,7 @@ public:
 
 		if (in.targetVisible) { want = LookReason::Target; at = in.target; urgent = true; }
 		else if (in.sinceDamaged < m_p.attackerGlance && in.attackerKnown) { want = LookReason::Attacker; at = in.attacker; urgent = true; }
+		else if (in.hasGlance) { want = LookReason::Glance; at = in.glance; urgent = true; }
 		else if (in.hasInterest && InterestOk(in, moving, travelYaw)) { want = LookReason::Interest; at = in.interest; }
 		else if (in.hasCorner && moving)
 		{

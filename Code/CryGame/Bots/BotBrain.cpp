@@ -1,6 +1,7 @@
 #include "PortIncludes.h"
 #include "BotConfig.h"
 #include "CryGame/Bots/BotDifficulty.h"
+#include "CryGame/Bots/BotThreatScan.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotBrain.h"
@@ -1131,11 +1132,34 @@ void BotBrain::ApplyLookPolicy(CPlayer& actor)
         ++lookRays;in.hasInterest=true;in.interest=LookVec{interest.x,interest.y,interest.z};
         in.interestRayClear=EyeRayClear(actor,eye,interest);
     }
+	if (BotConfig::Get().threatScan==1)
+	{
+		// wb_bot_threat_scan: now and then a 0.6 s glance at a high sniper spot ahead with a clear eye ray
+		const int skill=m_profile.skill==BotSkill::Beginner?0:m_profile.skill==BotSkill::Veteran?2:m_profile.skill==BotSkill::Elite?3:1;
+		const float period=ThreatScanPeriod(skill);
+		if (period>0.0f && m_now<m_glanceUntil) { in.hasGlance=true; in.glance=LookVec{m_glancePt.x,m_glancePt.y,m_glancePt.z}; }
+		else if (period>0.0f && m_now>=m_nextGlance)
+		{
+			m_nextGlance=m_now+period*(0.7f+0.6f*Rand01());
+			if (VantageMap* map=CurrentVantage())
+			{
+				std::vector<float> xyz; xyz.reserve(size_t(map->Count())*3);
+				for (int i=0;i<map->Count();++i) { const VSpot& s=map->Spot(i); xyz.push_back(s.x); xyz.push_back(s.y); xyz.push_back(s.z); }
+				const float travel=in.hasCorner ? BotLookPolicy::YawTo(in.eye,in.corner) : in.viewYaw;
+				int pick[3]; const int n=ThreatScanCandidates(xyz.data(),map->Count(),eye.x,eye.y,eye.z,travel,pick,3);
+				for (int k=0;k<n && lookRays<4;++k)
+				{
+					const VSpot& s=map->Spot(pick[k]); const Vec3 p(s.x,s.y,s.z+1.4f); ++lookRays;
+					if (EyeRayClear(actor,eye,p)) { m_glancePt=p; m_glanceUntil=m_now+0.6f; in.hasGlance=true; in.glance=LookVec{p.x,p.y,p.z}; break; }
+				}
+			}
+		}
+	}
 	const LookOutput o=m_look.Update(in);
 	const float yaw=DEG2RAD(o.yaw), pitch=DEG2RAD(o.pitch);
 	WBI(aim,eye+Vec3(sinf(yaw)*cosf(pitch),cosf(yaw)*cosf(pitch),sinf(pitch))*8.0f);
     if(m_lookDiagnostics<128 && m_now>=m_nextLookDiagnostic && BotConfig::Get().moveTrace!=0){
-        static const char* const names[]={"keep","target","attacker","interest","path","next"};
+        static const char* const names[]={"keep","target","attacker","interest","path","next","glance"};
         const unsigned reason=static_cast<unsigned>(o.reason);
         WB_LOG(2,"[WarsBots] LOOK TRACE actor=%u reason=%s state=%s active=%d speed=%.2f interest=%d clear=%d rays=%u eye=(%.3f,%.3f,%.3f) corner=(%.3f,%.3f,%.3f) aim=(%.3f,%.3f,%.3f)",
             actor.GetEntityId(),reason<6?names[reason]:"invalid",StateName(),in.pathActive?1:0,in.speed,in.hasInterest?1:0,in.interestRayClear?1:0,lookRays,
