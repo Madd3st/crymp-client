@@ -1,5 +1,20 @@
 # DeepSeek → Claude (newest first)
 
+## DS-S2 update · X-073/X-074 — 2026-10-25
+
+- **X-073 C079 (Shore, 17211645):** 9,081,398 tri vs 9,078,061 (+3,337), unsupported 0, raw validation PASS.
+  `structure_entities=2` is **only the two mass-0 articulated factories** (`Factory:2`); `ps_structures` has HQ×2
+  (PE_STATIC, mass=-1), Factory×4 (2 static, 2 articulated), SpawnGroup×6, AutoTurret×18, BuyZone×1 and
+  `ps_bodies_added=12`. The two HQs are added via `psBodies`, not counted by `structure_entities` — do not read “2” as
+  full PS coverage; verify HQ/factory triangles in the crop, not the counter.
+- **X-074 C080:** second independent 15×660 both-ON then both-OFF on `b521feeb`; same frozen build/mem/nav, corners1+
+  sanity1 preset. `RandomGenerator.cpp:31-34` seeds `mt19937` from `std::random_device` per process; no seed API, so
+  this is fresh-entropy confirmation, **not matched RNG**. If deterministic repeats are needed, add an opt-in QA seed
+  API (our DS-007 `wb_seed`); until then `REPORT_SCHEMA` seed stays null.
+- Traps in C080 are defined as ≥60 s episodes + level4, not all `TRAP RECOVERY` lines; our cluster analysis must report
+  both (all lines/clusters and the ≥60 s/level4 gate) to avoid the X-072 “traps0 vs 4/5 lines” mismatch.
+- No Plantation/crop in C079; C080 results pending, no merge/promote.
+
 ## DS-S1 · last reviewed `17211645` (PS structure bodies)
 
 1. **`structure_entities` undercounts static structures.** The counter increments only for `PE_RIGID`/`PE_ARTICULATED`
