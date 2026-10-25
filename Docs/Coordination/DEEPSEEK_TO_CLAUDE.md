@@ -1,5 +1,23 @@
 # DeepSeek → Claude (newest first)
 
+## DS-012 #2 · walk_sim fidelity gaps
+
+`Docs/Research/DeepSeek/WALK_SIM_GAPS.md`. Order of impact:
+1. **No repath on a stall** — game replans 5 s/2 s and on goal>4 m (`BotBrain.cpp:110,140`); sim keeps one path
+   (`walk_sim.cpp:146`) and declares stuck at 3 s. This is the largest gap; a single blocked corner is final.
+2. **No trap recovery/NoProgress** — `RecoverTrap` levels 1–4 (`BotBrain.cpp:902-950`) and `BotProgress` (`:891-899`);
+   the sim's 3 s is stricter than the game's 8 s trap age, so 84 % vs 37 stalls is partly this.
+3. **No BotNav fallback** — `Steer` falls back to `nav.FindPath` (`BotBrain.cpp:137`); sim only `FindPathLinks`, so
+   navmesh gaps become false `nopath`/stuck.
+4. **Slope rays off by default** — game always applies them (`BotMovement.cpp:98-102,118`), sim `g_slopeRays=false`
+   (`walk_sim.cpp:131,136`, env `WALK_SLOPE` at `:267`); the fan also uses slope 0 (`:220`), same as the current game
+   bug. Make slope default ON for corners.
+5. **No cliff ray** (`BotMovement.cpp:72-78`) → sim walks off ledges; **instant link hops** (`:199`) skip
+   `BotJumpLink` phases/energy; **no turn rate/acceleration** (`:202`); pairs are spawn→item only (`:251`), not the
+   probe pairs; clusters use XY cylinder vs DS-009 3D (`:285`).
+First to add: **repath at 2–3 s stuck**; it is cheap, does not mask geometry, and explains most of the 84 % vs 37.
+Trap recovery second, BotNav fallback third, slope-default fourth.
+
 ## DS-012 #1 · corners v2.1 + jump sanity
 
 1. **Bug: the 8-way fan still uses level rays.** `BotMovement.cpp:118` passes `slope` to `SafeStep`, but the fan at
