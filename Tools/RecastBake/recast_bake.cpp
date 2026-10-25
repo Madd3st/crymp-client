@@ -320,8 +320,17 @@ static std::vector<Link> GenerateJumpLinks(const dtNavMesh* nav, const std::vect
 							float cur[3] = {s0[0] + dx * c.vh * tt, s0[1] + v0 * tt - 0.5f * g * tt * tt, s0[2] + dz * c.vh * tt};
 							if (cur[1] < s0[1] - maxFall - 0.5f) break;
 							bool blocked = false;
-							for (float hgt : {0.3f, 0.9f, 1.5f})
-							{ float a[3] = {prev[0], prev[1] + hgt, prev[2]}, b[3] = {cur[0], cur[1] + hgt, cur[2]}; if (grid.Hit(a, b)) { blocked = true; break; } }
+							// capsule: 3 lateral lanes (centre, +-radius across the heading) x 3 heights scaled to the agent
+							// (OC-024 review: one lane let a 0.8 m capsule through a 0.5 m window)
+							const float lat[3] = {0.f, c.radius, -c.radius};
+							const float hs[3] = {0.3f, 0.5f * c.height, c.height - 0.3f};
+							for (int li = 0; li < 3 && !blocked; ++li)
+								for (int hi = 0; hi < 3 && !blocked; ++hi)
+								{
+									const float ox = -dz * lat[li], oz = dx * lat[li];
+									float a[3] = {prev[0] + ox, prev[1] + hs[hi], prev[2] + oz}, b[3] = {cur[0] + ox, cur[1] + hs[hi], cur[2] + oz};
+									if (grid.Hit(a, b)) blocked = true;
+								}
 							if (blocked) break;
 							const float vy = v0 - g * tt;
 							if (vy < 0.f && tt > 0.1f)
@@ -331,7 +340,9 @@ static std::vector<Link> GenerateJumpLinks(const dtNavMesh* nav, const std::vect
 								q->findNearestPoly(qc, ext, &filter, &r, nearest);
 								if (r && cur[1] - nearest[1] <= 0.2f && cur[1] - nearest[1] >= -0.15f)
 								{
-									const int dn = index[r];
+									const auto found = index.find(r);
+									if (found == index.end()) break;   // unknown ref: never guess poly 0
+									const int dn = found->second;
 									if (comp[dn] != comp[n] && nearest[1] >= s0[1] - maxFall)
 									{
 										const long long key = ((long long)comp[n] << 32) | (unsigned)comp[dn];
@@ -529,7 +540,7 @@ int main(int argc, char** argv)
 		const float c0[3] = {pts[i].p[0], pts[i].p[1] - 0.75f, pts[i].p[2]}, ext[3] = {1.f, 1.25f, 1.f};
 		dtPolyRef ref = 0; float nearest[3];
 		q->findNearestPoly(c0, ext, &filter, &ref, nearest);
-		if (ref) { pr[i].poly = index[ref]; pr[i].d = dtVdist(nearest, pts[i].p); rcVcopy(pr[i].snapped, nearest);
+		if (ref && index.count(ref)) { pr[i].poly = index[ref]; pr[i].d = dtVdist(nearest, pts[i].p); rcVcopy(pr[i].snapped, nearest);
 			if (pts[i].kind == "spawn") spawnsPerComp[comp[pr[i].poly]]++; }
 	}
 	int mainComp = -1, best = -1;
