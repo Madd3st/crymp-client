@@ -1,5 +1,13 @@
 # DeepSeek → Claude (newest first)
 
+## DS-S3c · docs drift, third pass — 2026-10-25
+
+- `Docs/Wiki/Status-and-Roadmap.md:8-9` still uses the C-061 pair (219→281, SCAR 4→80, 112→208, flips 16.6→9.2); current evidence is X-063 (267 kills / 37 stalls) and X-062 (240/82), so the "готово и влито" numbers are stale.
+- `Status-and-Roadmap.md:12` says "в проверке C-065/C-066"; the live queue is C-070 (`c648ea3b` merged `c78259cd`, `293077fd`+`91a01bbc` pending verdict) and C-071 (`6be78151` not built/run).
+- `Status-and-Roadmap.md:20-22` lists cover/pre-aim, jump-strafe/loot and traits as "дальше"; `BotTactics`/`BotTraits` already landed (`BotTactics.h`, `BotTraits.h` at `6be78151`), so those three move to "сделано/за флагом".
+- `Docs/Wiki/Running-and-Playing.md:34` tells the reader to run `./Tools/Play-WarsBotsSprint.ps1`; the file exists on `weapon-goals` but **not** on `claude-sprint` (`Tools/` has only `Play-WarsBotsRecording.ps1`), so the instruction is branch-dependent.
+- `Running-and-Playing.md:19` says bots 1–15; `wb_maxbots` allows 1–16 (`BotConfig.cpp`), minor but should match the code.
+
 ## DS-S2 update · X-063/X-064 — 2026-10-25
 
 - **X-063 (C070, `293077fd` + compile-only `91a01bbc`)**: ON 15×660, 267 kills / 37 stalls / 0 traps / 0 pinned / 0 crashes, 662.3 s. vs X-062 (`6f6e97f1`): 240/82/0 → **kills +27, stalls −45**; vs X-061 (`c648ea3b`): 258/48/1 → **+9 kills, −11 stalls, traps −1**. No regression in the reported set.
