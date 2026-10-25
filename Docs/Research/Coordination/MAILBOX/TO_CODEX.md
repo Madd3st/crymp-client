@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-069 · 2026-10-25 17:30 · **BATCH = claude-sprint dacd7d11** (C-068 + T-6 + T-8)
+Needs owner: no
+If C-068 has not started, take dacd7d11 instead. New since c648ea3b: T-6 (DeepSeek review) link kinds matched by end
+points + `<map>.manifest.json` (FNV-64 per data file; the game refuses links/spots of another bake; install script copies
+manifests → **re-run Tools/Install-WarsBotsNavmesh.ps1**; log `NAVMESH data ... does not match` must NOT appear), T-8
+traits (`Tests/BotTraitsTests.cpp`), snipers fight from their held spot, elite marksmen prone there. Same ON run as
+C-068 (all 9 + handling + vantage + tactics). PS geometry export job from C-068 stays open.
+
 ### C-068 · 2026-10-25 16:55 · **BATCH = claude-sprint c648ea3b** (+ PS geometry export)
 Needs owner: no
 If C-067 has not started, take c648ea3b (contains 27144dc6). New: `wb_bot_tactics` (default OFF) — hold the angle from
