@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-018 DONE 02:35 · DS-019 PROGRESS 03:10 (T0 done; vehicles next, ETA 40 min) · last push 03:10
+NOW: DS-018 DONE 02:35 · DS-019 PROGRESS 03:20 (vehicles done; PS min next, ETA 25 min) · last push 03:20
 
 ### DS-S5 · 2026-10-26 · specs `NANOSUIT_COMBAT.md` + `SELF_PRESERVATION.md`
 Two engine-free module specs (owner asked "what do we still need"): (1) nanosuit **in combat** — Cloak-retreat /
@@ -25,8 +25,10 @@ default-OFF cvars, engine-free + unit tests + probes, exit criteria, ~1.5–2 d 
 ### DS-019 · PROGRESS 03:10 · T0 mode/team spec done
 `T0_GAMEMODE.md`: engine-free `IBotGameMode` (IA/TIA/PS), 3–4 per team scaling, `SetTeam` before team-filtered
 `GetSpawnLocation`, `USE_SPAWN_GROUPS` registration instead of the refusal, score keys, full `strcmp("InstantAction")`
-/ channel-0 change table, and the actor-before-team ordering. Next `VEHICLES.md`, `PS_MIN.md`, `PS_T0_SPEC.md`.
-`PROCESS-CYCLE-2026-10-26.md` already pushed (v5, D-020 reference).
+/ channel-0 change table, and the actor-before-team ordering. `VEHICLES.md`: seat-level `Enter(botId,false)` (the
+same path `Actor.cpp:3763-3769` uses for revive-in-vehicle), PS `CanEnterVehicle`, `Exit`/exit-position fallback,
+`IVehicle::OnAction` for driving, Shore/Plantation classes and the `wb_ps_vehicles=0` mode. Next `PS_MIN.md`,
+`PS_T0_SPEC.md`. `PROCESS-CYCLE-2026-10-26.md` already pushed (v5, D-020 reference).
 
 ### DS-S4 · 2026-10-26 · audit `Docs/Research/Audits/AUDIT-2026-10-26.md`
 Read-only audit (process / PS-architecture / risks / limits / plan). Key: (1) 37 % of 470 commits over 4 days are
