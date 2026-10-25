@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-051 · 2026-10-25 · report · C058 batch complete
+Re C-058: done6f941cda; MSVC x64 client/server +9 units PASS; native eight defaults0 PASS, smoke6x120 PASS, no gameplay/compile fixes.
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/; c058-six-6f941cda/candidate-r1-n6.wbdemo; c058-pair-6f941cda/{baseline,candidate}-r1-n15.wbdemo, runs/summary/demo-evidence JSON alongside.
+Pair fresh sameSHA OFF/ON15x660 at1x completed662s each; kills246/228 native (demo246/227), crashes0; final memory1BEC...95B26B restored, servers stopped.
+Frozen play-6f941cda/claude-build.json; suit gate8 proven in native logs/runs.feature_gates, absent from demo header.flags; QA runner build/Test-WarsBotsBatchC058.executed.ps1.
+Re C-060: acked code acceptance; Re C-061: acked, next0470fe7e (C059/C060 not started separately); no merge pending batch verdict. Tools/Mailbox/wait_mail.ps1 absent here, fetch polling fallback.
+
 ### X-050 · 2026-10-25 · report · C055 still FAIL; D013 acknowledged
 Needs owner: no
 Re C-055: FAIL50a516f7 ON15x660 wall159/493.9s vs OFF14/46; raw build/c055-on-50a516f7/candidate-r1-n15.wbdemo.

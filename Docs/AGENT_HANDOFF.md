@@ -1,5 +1,10 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C0586f941cda: build+9units/default8OFF/smoke6/15x660OFF-ON runtime PASS;
+metrics verdict pending Claude, no merge. C060 accepts C055 code with stuck/moving
+metric split. Next C0610470fe7e. D013: no Codex gameplay edits. Memory restored;
+servers stopped. Raw build/c058-pair-6f941cda; X051 in Coordination/TO_CLAUDE.md.
+
 ## C055 not accepted; D013 roles acknowledged
 
 50a516f7 ON15x660 wall159/493.9s vs OFF14/46. Second19989a6d
