@@ -59,7 +59,7 @@ void Save(const std::filesystem::path& path,const json& doc){
 }
 void Publish(const std::filesystem::path& temp,const std::filesystem::path& path){std::filesystem::rename(temp,path);}
 }
-bool ExportLevelGeometry(const char* requested){
+bool ExportLevelGeometry(const char* requested,const float* region){
  std::vector<std::filesystem::path> temporary;
  try{
   if(!gEnv->pPhysicalWorld || !gEnv->p3DEngine || !g_pGame)throw std::runtime_error("level physics unavailable");
@@ -80,6 +80,12 @@ bool ExportLevelGeometry(const char* requested){
   if(terrainSize<=0 || terrainSize>16384)throw std::runtime_error("invalid terrain bounds");
   // Whole terrain footprint, not the old spawn-centred BotNav grid. Z spans engine map space.
   AABB bounds(Vec3(0,0,-4096),Vec3(float(terrainSize),float(terrainSize),4096));
+  // X-076: Shore's whole terrain + 89k on-demand bodies passed the 15M triangle cap. A PS map is exported for its play
+  // area (the minimap box) - the Writer drops everything outside bounds and the tiled query covers only this box.
+  if(region){
+   if(!(region[2]>region[0] && region[3]>region[1]))throw std::runtime_error("region must be x0 y0 x1 y1 with x1>x0, y1>y0");
+   bounds.min.x=max(0.0f,region[0]);bounds.min.y=max(0.0f,region[1]);bounds.max.x=min(float(terrainSize),region[2]);bounds.max.y=min(float(terrainSize),region[3]);
+  }
   Writer writer(objTemp,bounds,name);
   IPhysicalEntity** found=nullptr;
   // Static brushes + terrain, plus immovable entity geometry (mass 0 rigid bodies): Power Struggle HQs, factories,
@@ -90,7 +96,7 @@ bool ExportLevelGeometry(const char* requested){
   // inside one console command, no physics step in between, so on-demand entities stay alive until written.
   std::vector<IPhysicalEntity*> entities;{
    std::unordered_set<IPhysicalEntity*> seen;const float tile=64.0f;uint64_t queries=0;
-   for(float x=0;x<float(terrainSize);x+=tile)for(float y=0;y<float(terrainSize);y+=tile){
+   for(float x=bounds.min.x;x<bounds.max.x;x+=tile)for(float y=bounds.min.y;y<bounds.max.y;y+=tile){
     const int n=gEnv->pPhysicalWorld->GetEntitiesInBox(Vec3(x,y,bounds.min.z),Vec3(x+tile,y+tile,bounds.max.z),found,
      ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_independent|ent_ignore_noncolliding);++queries;
     for(int i=0;i<n;++i)if(found[i] && seen.insert(found[i]).second)entities.push_back(found[i]);
