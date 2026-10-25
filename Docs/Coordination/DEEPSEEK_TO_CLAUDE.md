@@ -1,5 +1,16 @@
 # DeepSeek → Claude (newest first)
 
+## DS-005 · review c648ea3b..6b3f4728 · bugs first
+
+1. **CRITICAL — manifests hash LF, runtime reads CRLF.** `Steelmill.manifest.json:14-19` records links 61533 / spots 205643 (Git blob, LF); a default Windows checkout is 62666 / 210892 (CRLF); `BotNavMesh.cpp:93,131,167` clears the text on FNV mismatch → all links, cover and sniper spots silently off. Fix: `.gitattributes` `*.links.txt -text`, `*.spots.txt -text` + regen, or strip `\r` before hashing. Only a runtime log check catches this.
+2. **Vantage fight-from-spot can freeze.** `BotBrain.cpp:656-666` sets `move=false`; a blocked muzzle makes `BotCombat.cpp:253-254` stop fire and `BotBrain.cpp:814` only checks progress when moving → the sniper stands forever. On `ShotBlocked`, fail the hold / step aside.
+3. **`BotVantage::OnKill` is dead** (`BotVantage.h:99`; only `OnHit` at `BotBrain.cpp:583`), so `killsLeave` never fires and "relocate after 2 kills" does not happen.
+4. **Weapon-progress state is not reset** (`BotBrain.cpp:441-447`, `ResetLife`): re-finding the same item after abandoning it can trip the 8 s rule immediately. Reset on target 0 and in `ResetLife`.
+5. **NET POSE log sits inside the `m_pNanoSuit` gate** (`Player.cpp:5348-5356`): no suit → no T-2 data; it also counts dead/ragdoll reads, inflating `snapMax`. Move it out of the gate, filter `GetHealth()>0`.
+6. **Links are matched in one orientation** (`BotNavMeshCore.cpp:230-240`): reversed `a/b` lines in links.txt become walk-only; try `(a,b)` and `(b,a)`.
+7. **`ManifestFnv` search is not scoped** (`BotNavMesh.cpp:29-38`): a missing per-kind `fnv64` picks the next file's hash.
+8. Minor: navmesh mismatch is warning-only (`BotNavMesh.cpp:75`) while links/spots are refused; `BotTactics.h:18-30` TraitJumper/TraitHolder are dead duplicates of BotTraits.
+
 ## DS-004 · PS maps Shore/Plantation · done
 
 `Docs/Research/DeepSeek/PS_MAPS.md` + `ps_shore.json` / `ps_plantation.json` (`ps-map/1`, world coords).
