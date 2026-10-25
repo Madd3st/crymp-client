@@ -401,14 +401,18 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
     return false;
 }
 
+float BotBrain::PickupRange() const
+{ return BotConfig::Get().vantage==1 && m_profile.style==BotStyle::Marksman ? 60.0f : 20.0f; }
+
 EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
 {
 	(void)anyHeld; // with wb_bot_weapon_rank FindNearby keeps only real upgrades over what is held
 	EntityId skip[8]; int skipCount = 0;
 	for (const BadItem& b : m_badItems) if (b.id && m_now < b.until) skip[skipCount++] = b.id;
 	// owner 25.10 (wb_bot_vantage): Marksmen judge pickups at sniper range, so DSG1/Gauss become real upgrades
-	const float typical=BotConfig::Get().vantage==1 && m_profile.style==BotStyle::Marksman ? 60.0f : 20.0f;
-	return BotWeapons::FindNearby(actor, 45.0f, nullptr, m_life, true, skip, skipCount, typical);
+	const float typical=PickupRange();
+	// c066: no bot ever reached DSG1 (22 m up) / Gauss (tower) within 45 m -> snipers look across the map
+	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical);
 }
 
 bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
@@ -819,10 +823,10 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 		m_intent.suitMode=NANOMODE_DEFENSE; // Armor before landing: native suit absorbs fall damage.
 	else if (!m_blackboard.grounded && static_cast<const SPlayerStats*>(actor.GetActorStats())->jumped && m_blackboard.mode==NANOMODE_STRENGTH && m_intent.jump==BotJump::None)
 		m_intent.suitMode=NANOMODE_STRENGTH;
-	if (!BotPaceEnabled() && (m_now<m_blackboard.damagedUntil || m_intent.combat!=BotCombatIntent::None || m_blackboard.energy<45.0f) && m_intent.jump!=BotJump::Strength)
+	if (!m_link.Active() && !BotPaceEnabled() && (m_now<m_blackboard.damagedUntil || m_intent.combat!=BotCombatIntent::None || m_blackboard.energy<45.0f) && m_intent.jump!=BotJump::Strength)
 	{ m_intent.suitMode=NANOMODE_DEFENSE; if (m_intent.gait==BotGait::Sprint) m_intent.gait=BotGait::Run; }
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
-    if(BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){m_intent.suitMode=NANOMODE_DEFENSE;m_speedTravel=false;}
+    if(!m_link.Active() && BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){m_intent.suitMode=NANOMODE_DEFENSE;m_speedTravel=false;}
     if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
@@ -887,8 +891,9 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 	{
 		static const char* const why[]={"none","timeout","no_takeoff","missed_landing","no_energy"};
 		WB_LOG(1,"[WarsBots] #%d LINK failed kind=%s reason=%s at=(%.2f,%.2f,%.2f)%s actor=%u.",m_number,NavLinkName(m_linkNow.kind),
-			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> banned",actor.GetEntityId());
-		if (o.fail!=LinkFail::NoEnergy) mesh->BanLink(m_linkNow.ref);
+			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> fail noted",actor.GetEntityId());
+		// O-027: one failure can be timing (hit, cooldown, short run-up) -> ban a link only on its second failure
+		if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
 		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_nextRepath=m_minRepath=0;
 		return;
 	}
@@ -896,6 +901,7 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 	m_intent.move=true;
 	m_intent.destination=Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z);
 	m_intent.gait=o.slow?BotGait::Walk:BotGait::Run;
+	if (m_link.Phase()==LinkPhase::Act && m_link.Move()!=LinkMove::Drop) m_intent.gait=BotGait::Sprint; // c066: Strength links still land short
 	m_intent.jump=o.jump==LinkJumpRequest::Strength?BotJump::Strength:(o.jump==LinkJumpRequest::Normal?BotJump::Normal:BotJump::None);
 	m_intent.linkJump=m_intent.jump!=BotJump::None;
 	if (o.wantStrength) m_intent.suitMode=NANOMODE_STRENGTH;
@@ -1113,8 +1119,8 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
 	in.damagedRecently=m_blackboard.damagedUntil-m_now>2.4f;
 	in.weaponGoalAvailable=item!=nullptr;
 	in.weaponGoalDistance=item ? (item->GetWorldPos()-feet).GetLength() : 1e9f;
-	in.weaponGoalValue=item ? FightValue(item->GetClass()->GetName(),20.0f) : 0.0f;
-	in.heldWeaponValue=BotWeapons::HeldValue(actor,20.0f);
+	in.weaponGoalValue=item ? FightValue(item->GetClass()->GetName(),PickupRange()) : 0.0f;
+	in.heldWeaponValue=BotWeapons::HeldValue(actor,PickupRange());
 	const ArbiterDecision d=m_arbiter.Update(in);
 	if (d.switched)
 		WB_LOG(2,"[WarsBots] #%d ARBITER goal=%s reason=%s score=%.2f actor=%u.",m_number,GoalArbiter::GoalName(d.goal),

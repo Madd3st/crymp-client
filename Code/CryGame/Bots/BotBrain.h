@@ -122,6 +122,8 @@ private:
 	void ApplyLinkExecutor(CPlayer& actor);
 	BotVantage m_vantage;            // owner 25.10 sniper spots (wb_bot_vantage)
 	bool UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime);
+	// typical fight distance for judging pickups: Marksmen with wb_bot_vantage think at sniper range
+	float PickupRange() const;
 	const NavPathLink* LinkAtCorner(size_t corner) const
 	{ for (const NavPathLink& l : m_pathLinks) if (size_t(l.corner)==corner) return &l; return nullptr; }
 	Vec3 m_pathGoal = Vec3(0,0,0);
