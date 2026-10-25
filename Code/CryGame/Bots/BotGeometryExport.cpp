@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <cctype>
 #include <memory>
+#include <unordered_set>
 #include <stdexcept>
 namespace WarsBots {
 namespace {
@@ -83,8 +84,19 @@ bool ExportLevelGeometry(const char* requested){
   IPhysicalEntity** found=nullptr;
   // Static brushes + terrain, plus immovable entity geometry (mass 0 rigid bodies): Power Struggle HQs, factories,
   // spawn bunkers and other structures are entities, not brushes (C-073 Shore crop had only terrain holes there).
-  const int count=gEnv->pPhysicalWorld->GetEntitiesInBox(bounds.min,bounds.max,found,ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_independent|ent_ignore_noncolliding);
-  std::vector<IPhysicalEntity*> entities;if(count>0)entities.assign(found,found+count);
+  // Query in 64 m tiles, not one whole-terrain box: static brushes are created on demand per physics grid cell
+  // (CPhysicalWorld::GetEntitiesAround -> CreatePhysicalEntitiesInBox) and a single 4 km box exceeds nGEBMaxCells
+  // ("too many cells requested"). Big PS maps (Shore spawn bunkers) came out as bare terrain holes. The export runs
+  // inside one console command, no physics step in between, so on-demand entities stay alive until written.
+  std::vector<IPhysicalEntity*> entities;{
+   std::unordered_set<IPhysicalEntity*> seen;const float tile=64.0f;uint64_t queries=0;
+   for(float x=0;x<float(terrainSize);x+=tile)for(float y=0;y<float(terrainSize);y+=tile){
+    const int n=gEnv->pPhysicalWorld->GetEntitiesInBox(Vec3(x,y,bounds.min.z),Vec3(x+tile,y+tile,bounds.max.z),found,
+     ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_independent|ent_ignore_noncolliding);++queries;
+    for(int i=0;i<n;++i)if(found[i] && seen.insert(found[i]).second)entities.push_back(found[i]);
+   }
+   WB_LOG(0,"[WarsBots] GEOM export tiled query: %llu tiles, %zu physical entities",queries,entities.size());
+  }
   // X-070 diagnosis: how are the Power Struggle structures physicalized (if at all) in an actorless export?
   json psStructures=json::array();std::vector<IPhysicalEntity*> psBodies;
   if(gEnv->pEntitySystem){
