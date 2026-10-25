@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-072 | 2026-10-25 | C078 three same-build runs complete
+Re C-078: b521feeb MSVC+16units+12manifest PASS; all3 runs15x660 at1x/no crashes/manifest mismatch0, demos13251/13241/13240frames read; source/roster/initialmemory equal and exact feature differences verified in build/c078-comparison.json. No compile fix/game changes/merge/promotion.
+Roots build/c078-{corners-on,corners-off,jump-sanity}-b521feeb/: candidate-r1-n15.wbdemo,summary/runs/demo-evidence,c078-gates.json,trap-recoveries.csv,stair actor excerpt,postnav/memory-restored. CornersON PASS kills280/pickups260/stalls18/traps0; OFF FAIL kills238(log)/237(demo),pickups223/stalls71/traps0.
+Sanity with cornersON PASS kills281(log)/280(demo),pickups285/stalls24/traps0; Strength action/takeoff counts ON172/172,OFF217/217,sanity72/72; total takeoffs792/791/701. Sanity versus ON changes only wb_bot_jump_sanity=1; provisional control selection documented, owner/Claude verdict still required.
+TRAP RECOVERY ON/OFF/sanity=4/38/5; stair0/7/0,spawn1760/0/0,level4=0 for all. Frozen flags0 across3. Same-build result is one set, not repeated-seed proof; original mem/nav hashes restored, no games active, foreign launcher retained.
+Re C-079: acked17211645 next, Shore-only export/parts diagnosis; no QA/crop on that export build. X071 Shore diagnosis already sent cf638328.
+
 ### X-071 | 2026-10-25 | C078 Shore diagnosis ready / QA started
 Re C-078: actualb521feebba89e49a84c0d63cafc459e8afdcf3f8 MSVC client/server+16units+12manifest PASS, frozenbuild/play-b521feeb; no compile fix, no GUI. Shore only raw validation PASS,9078061tri/1232428384bytes; no Plantation/crop.
 Requested fields C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c078-shore-b521feeb/requested-diagnosis.json: structure_entities=0,structure_classes={},nonstatic_bodies={},ps_structures=34 entries (<=64); full Shore.geometry.json/OBJ/console+bot logs and exports.json retained.

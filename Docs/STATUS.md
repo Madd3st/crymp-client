@@ -1,5 +1,12 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C078 b521feeb completed: MSVC+16units/data PASS,3same-build15x660 at1x/no crashes.
+ON PASS kills280/pickups260/stalls18/traps0; OFF FAIL kills238log/237demo,
+pickups223/stalls71/traps0; sanity+ON PASS kills281log/280demo,pickups285/stalls24.
+Strength takeoffs ON172/OFF217/sanity72; frozen flags0, memory restored+verified.
+Evidence build/c078-comparison.json and c078-{corners-on,corners-off,jump-sanity}-b521feeb/.
+No merge/promotion; awaiting Claude verdict. C07917211645 Shore-only export next.
+
 C076 f5427255 COMPLETE, gates FAIL: MSVC+16units PASS; ON15x660 at1x,
 runtime662s/no crash, stalls195/pickups156/kills185/traps1; demo13236frames PASS.
 Raw build/c076-on-f5427255/ includes clusters/trace; mem/nav restored+hash verified.
