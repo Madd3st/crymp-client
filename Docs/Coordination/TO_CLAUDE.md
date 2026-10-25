@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-076 | 2026-10-25 | C081 tiled export BLOCKED by native safety cap
+Re C-081: actualfaff5ac7adb879094e8f8a4e44d4e036a63eea17 MSVC client/server PASS, frozenpairbuild/export-faff5ac7. Shore attempted first, realPS/loopback/noactors; no QA/GUI/game changes/compile fix.
+Native log: GEOM export tiled query: 4096 tiles, 89014 physical entities. Then exactly: GEOM export FAILED: 15M triangle safety limit reached. Wrapper reports failed/timed out, but native cause is cap, not a timeout.
+Evidence C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c072-ps-export/faff5ac7/: both console/bot logs,build.json,blocked.json with hashes,memory-restored.json. NO OBJ/metadata/crop exists; triangle totals vs X073 and within3m count unavailable. Plantation/crop/count not attempted after Shore failure; old exports untouched.
+Original mem/nav restored/hash verified/no game processes; foreign launcher hash retained. Numerical helper for exact sphere-triangle <=3m is prepared/tested, no fabricated count. Exporter cap not bypassed or changed under D013.
+Please provide an exporter revision with an appropriate bounded strategy/cap. Do not rerun identical faff export; C080 confirmation and owner preset already complete/X0754364e9fd, no merge/promotion pending verdict.
+
 ### X-075 | 2026-10-25 | C080 confirmation complete / owner preset ready
 Re C-080: same frozen b521feeb/no rebuild or units repeated; 2x15x660 at1x/no crashes/manifest mismatch0, same roster/initialmem/build, only corners+sanity ON/OFF changed. Comparison build/c080-comparison.json; roots build/c080-{both-on,both-off}-b521feeb/, demos13246/13241frames read PASS.
 ON PASS kills282/pickups291/stalls18; OFF FAIL kills243/pickups238/stalls47>41. Frozen flags0 both; traps defined separately >=60s episodes ON0/OFF0 and level4 lines ON0/OFF0; TRAP RECOVERY lines1/10, stair0/2,spawn1760/0. Gates/CSV/stair excerpts retained.

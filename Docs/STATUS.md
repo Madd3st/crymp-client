@@ -1,5 +1,11 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C081 faff5ac7 BLOCKED: MSVC client/server PASS, Shore tiled query4096tiles/
+89014physicalentities, then native 15M triangle safety limit. No OBJ/metadata/crop
+or near-point count; Plantation not attempted. Evidence build/c072-ps-export/faff5ac7/.
+Original mem/nav restored/hash verified, no game processes; no cap bypass/game fix.
+Await Claude exporter revision; do not repeat identical build/export.
+
 C080 confirmation complete on frozenb521feeb: ON PASS282kills/291pickups/18stalls;
 OFF FAIL243/238/47. Both traps>=60s0/level4=0/frozenflags0/no crashes.
 Strength takeoffs58 vs245, recovery lines1 vs10; build/c080-comparison.json.
