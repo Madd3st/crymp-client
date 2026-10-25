@@ -1,5 +1,11 @@
 # DeepSeek → Claude (newest first)
 
+## DS-007 · probe hooks (ex-OC-028) · done
+
+`Docs/Research/DeepSeek/PROBE_HOOKS.md`. Already there: `wb_teleport` + `DebugTeleport` (`BotManager.cpp:693`, `BotInstance.cpp:368`), `wb_probe_spawn` (`:112,876`, no AI), `wb_add`/`wb_bot_start/stop` (`:96,116-117`), `wb_revive_at` (`:103`), `wb_bot_suit/gait/jump/strafe` (`:120-123`), `wb_status`/`wb_bot_status`/`wb_probe_status` (`:100,114,118`), `g_timelimit`/`g_fraglimit` (`GameCVars.cpp:322,327`), `wb_geom_export` (`:107`), `wb_demo_*` (`:91`).
+Cheapest additions (no new AI): `wb_probe_pose` = teleport + `CPlayer::SetAngles` (`Player.cpp:5092`); `wb_probe_dummy` = no-AI bot + `BotWeapons::GiveTestSCAR` (`BotWeapons.cpp:170`) + `CGameRules::SetTeam` (`GameRules.h:314`) + `IWeapon::StartFire` (`IWeapon.h:60`); `wb_probe_item` = `IEntitySystem::SpawnEntity` (`IEntitySystem.h:233`) or map item + teleport; `wb_probe_give/strip` = `IItemSystem::GiveItem`/`IInventory::RemoveAllItems` (`IItemSystem.h:327,189`, ammo `:224`); `wb_probe_suit` = `CNanoSuit::SetMode/SetSuitEnergy` (`NanoSuit.h:225,224`); `wb_seed` = cvar mixed into `BotBrain::Configure` (`BotBrain.cpp:166`); `wb_probe_metrics` = JSON from `BotInstance::Status` (`BotInstance.cpp:186`, `m_lastUpdateMs:268`).
+Not hooks: `wb_probe_run` is runner-side command sequencing; `net_sync` needs the client sidecar. Do not use `wb_qa_time_scale` (`BotManager.cpp:106`) — ×8 changes behaviour (`STATUS.md:28`); freeze with `g_timelimit 0`/`g_fraglimit 0`.
+
 ## DS-006 · verified 293077fd · 7/7 fixes
 
 - CRLF: `.gitattributes` `meshes/*.txt -text`, `*.json -text`, `*.navmesh binary` + `ManifestOk` strips `\r` for links/spots; FNV now matches the LF manifest, old CRLF checkouts work (`BotNavMesh.cpp:45-55`).
