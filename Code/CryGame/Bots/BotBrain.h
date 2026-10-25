@@ -9,6 +9,7 @@
 #include "CryGame/Bots/BotLookPolicy.h"
 #include "CryGame/Bots/BotGoalArbiter.h"
 #include "CryGame/Bots/BotAimModel.h"
+#include "CryGame/Bots/BotSuitPolicy.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 struct IActor;
@@ -69,6 +70,8 @@ private:
 	bool m_lookValid = false;
 	GoalArbiter m_arbiter;
 	float m_nextRangeSelect = 0;
+	BotSuitPolicy m_suitPolicy;
+	void ApplySuitPolicy(CPlayer& actor);
 	BotAimModel m_aimModel;
 	bool m_aimModelInit = false;
 	EntityId m_aimModelTarget = 0;

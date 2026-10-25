@@ -177,7 +177,7 @@ void BotBrain::ResetLife()
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
 	m_retreating = false;
-	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_aimModelInit = false; m_aimModelTarget = 0;
+	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_aimModelInit = false; m_aimModelTarget = 0; m_suitPolicy.Reset();
 	m_weaponSearchStarted = m_now;
 	m_nextSearch = m_now;
 	m_deadTime = 0;
@@ -763,6 +763,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	{ m_intent.suitMode=NANOMODE_DEFENSE; if (m_intent.gait==BotGait::Sprint) m_intent.gait=BotGait::Run; }
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
     if(BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){m_intent.suitMode=NANOMODE_DEFENSE;m_speedTravel=false;}
+    if (BotConfig::Get().suitPolicy==1) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
         if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;m_intent.suitMode=NANOMODE_DEFENSE;m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
@@ -922,6 +923,41 @@ Vec3 BotBrain::AimModelPoint(CPlayer& actor,const Vec3& observed,float distance,
 	const AimOutput o=m_aimModel.Update(in);
 	const float ry=DEG2RAD(o.yaw), rp=DEG2RAD(o.pitch);
 	return eye+Vec3(sinf(ry)*cosf(rp),cosf(ry)*cosf(rp),sinf(rp))*max(1.0f,d.GetLength());
+}
+
+// Roadmap 12 suit policy (BotSuitPolicy.h): one decision with priorities, energy hysteresis and a 1.5 s hold instead of
+// the last of ~25 scattered suitMode writes. BotSuit::Apply still enforces the native switch cooldown.
+void BotBrain::ApplySuitPolicy(CPlayer& actor)
+{
+	SuitInput in;
+	in.now=m_now;
+	in.energy=m_blackboard.energy;
+	in.health=m_blackboard.health;
+	in.airborne=!m_blackboard.grounded;
+	in.verticalSpeed=m_blackboard.velocity.z;
+	in.damagedRecently=m_blackboard.damagedUntil-m_now>2.4f;
+	in.enemyVisible=m_combat.Target() && m_combat.Visible();
+	in.enemyKnownHidden=m_combat.Target() && !m_combat.Visible();
+	in.enemyDistance=m_combat.Target() ? (m_combat.LastPosition()-actor.GetEntity()->GetWorldPos()).GetLength() : 1e9f;
+	in.wantStrengthJump=m_intent.jump==BotJump::Strength;
+	in.moving=m_intent.move;
+	float travel=(m_intent.destination-actor.GetEntity()->GetWorldPos()).GetLength();
+	for (size_t i=m_pathIndex; i+1<m_path.size(); ++i) travel+=(m_path[i+1]-m_path[i]).GetLength();
+	in.travelDistance=travel;
+	in.firing=m_intent.combat==BotCombatIntent::Fire;
+	in.stealthStyle=m_profile.style==BotStyle::Flanker || m_profile.style==BotStyle::Hunter;
+	in.cloakAllowed=BotSuit::CloakEnabled();
+	in.canUseSpeed=m_profile.skill!=BotSkill::Beginner || m_profile.useSpeed;
+	const SuitDecision d=m_suitPolicy.Update(in);
+	switch (d.mode)
+	{
+	case SuitMode::Speed: m_intent.suitMode=NANOMODE_SPEED; break;
+	case SuitMode::Strength: m_intent.suitMode=NANOMODE_STRENGTH; break;
+	case SuitMode::Cloak: m_intent.suitMode=NANOMODE_CLOAK; break;
+	default: m_intent.suitMode=NANOMODE_DEFENSE; break;
+	}
+	if (d.mode!=SuitMode::Strength && m_intent.jump==BotJump::Strength) m_intent.jump=BotJump::Normal; // no energy for it
+	m_speedTravel=d.mode==SuitMode::Speed;
 }
 
 // C-032 goal arbiter (BotGoalArbiter.h): one decision per tick with commitment windows, so CHASING_ENEMY and
