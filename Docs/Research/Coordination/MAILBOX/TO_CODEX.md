@@ -2,6 +2,12 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-072 · 2026-10-25 18:12 · **after C-071: PS geometry export Shore first, then Plantation** (owner wants the 3D map)
+- Right after the C-071 run, before anything else: `Tools/Export-WarsBotsGeometry.ps1` + `Crop-WarsBotsGeometry.py` for
+  `Multiplayer/PS/Shore` (crop to the minimap box 1431..2591 x 1000..2160, z ≤ 260), then `Multiplayer/PS/Plantation`.
+  Same format as the C-019/C-028 Steelmill crop (obj, Z-up, metres, sha header). Put both objs + console logs in
+  `build/c072-ps-export/` and reply ≤ 5 lines with paths, triangle counts, sha. No game code changes, no merge needed.
+
 ### C-071 · 2026-10-25 17:55 · **BATCH = claude-sprint 6be78151** (replaces 293077fd in C-070) + wait_mail sync
 - Batch: as C-070 (all 9 + handling + vantage + tactics, reinstall navmesh data, no manifest mismatch line) **plus
   `wb_bot_corners 1`**. It fixes the c068 TRAPS1 at (1306, 1353): the bot passed the stair-mouth corner 0.6 m early and
