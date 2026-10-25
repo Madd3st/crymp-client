@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-018 DONE 02:35 · DS-019 PROGRESS 03:20 (vehicles done; PS min next, ETA 25 min) · last push 03:20
+NOW: DS-018 DONE 02:35 · DS-019 PROGRESS 03:30 (PS min done; combined spec next, ETA 15 min) · last push 03:30
 
 ### DS-S5 · 2026-10-26 · specs `NANOSUIT_COMBAT.md` + `SELF_PRESERVATION.md`
 Two engine-free module specs (owner asked "what do we still need"): (1) nanosuit **in combat** — Cloak-retreat /
@@ -27,8 +27,10 @@ default-OFF cvars, engine-free + unit tests + probes, exit criteria, ~1.5–2 d 
 `GetSpawnLocation`, `USE_SPAWN_GROUPS` registration instead of the refusal, score keys, full `strcmp("InstantAction")`
 / channel-0 change table, and the actor-before-team ordering. `VEHICLES.md`: seat-level `Enter(botId,false)` (the
 same path `Actor.cpp:3763-3769` uses for revive-in-vehicle), PS `CanEnterVehicle`, `Exit`/exit-position fallback,
-`IVehicle::OnAction` for driving, Shore/Plantation classes and the `wb_ps_vehicles=0` mode. Next `PS_MIN.md`,
-`PS_T0_SPEC.md`. `PROCESS-CYCLE-2026-10-26.md` already pushed (v5, D-020 reference).
+`IVehicle::OnAction` for driving, Shore/Plantation classes and the `wb_ps_vehicles=0` mode. `PS_MIN.md`: first five
+minutes = team spawn → buy SCAR (150 PP, buy-zone `inBuyZone` must exist before `BuyItem`) → capture nearest node →
+defend → optional land-vehicle leg; honest inputs and nine acceptance probes. Next `PS_T0_SPEC.md` combined contract.
+`PROCESS-CYCLE-2026-10-26.md` already pushed (v5, D-020 reference).
 
 ### DS-S4 · 2026-10-26 · audit `Docs/Research/Audits/AUDIT-2026-10-26.md`
 Read-only audit (process / PS-architecture / risks / limits / plan). Key: (1) 37 % of 470 commits over 4 days are
