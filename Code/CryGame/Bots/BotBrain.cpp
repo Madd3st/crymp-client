@@ -161,6 +161,7 @@ void BotBrain::Configure(const BotProfile& profile, int number)
 	m_patrolStep = unsigned(number) * 7u;
 	m_rng = 0x9E3779B9u * unsigned(number + 1);
 	m_combat.Configure(profile);
+	m_traits = MakeTraits(int(profile.skill), int(profile.style), unsigned(number)); // T-8
 }
 
 void BotBrain::ResetLife()
@@ -410,7 +411,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 }
 
 float BotBrain::PickupRange() const
-{ return BotConfig::Get().vantage==1 && m_profile.style==BotStyle::Marksman ? 60.0f : 20.0f; }
+{ return BotConfig::Get().vantage==1 && m_traits.camper>=0.7f ? 60.0f : 20.0f; }
 
 EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
 {
@@ -569,7 +570,7 @@ bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
 	VantageMap* map=CurrentVantage();
 	IItem* held=actor.GetCurrentItem();
 	const char* cls=held ? held->GetEntity()->GetClass()->GetName() : "";
-	const bool sniper=map && (m_profile.style==BotStyle::Marksman || m_profile.style==BotStyle::Defender) &&
+	const bool sniper=map && m_traits.camper>=0.5f &&   // T-8: Marksman ~0.9, Defender ~0.6
 		(!strcmp(cls,"DSG1") || !strcmp(cls,"GaussRifle"));
 	if (!sniper) { if (m_vantage.Phase()!=VantagePhase::None) m_vantage.Reset(map,m_number); return false; }
 	if (m_now<m_blackboard.damagedUntil) m_vantage.OnHit(m_now);
@@ -592,7 +593,7 @@ bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
 	const Vec3 eye=feet+Vec3(0,0,1.6f);
 	const float yaw=DEG2RAD(o.lookYaw);
 	if (o.move) { const Vec3 step=Steer(feet,Vec3(o.x,o.y,o.z)); m_intent.MoveTo(step,eye+Vec3(sinf(yaw),cosf(yaw),0)*30.0f); m_intent.gait=BotGait::Walk; }
-	else { m_intent.move=false; m_intent.aim=eye+Vec3(sinf(yaw),cosf(yaw),-0.05f)*30.0f; }
+	else { m_intent.move=false; m_intent.aim=eye+Vec3(sinf(yaw),cosf(yaw),-0.05f)*30.0f; if (m_traits.prone>0.5f) m_intent.stance=STANCE_PRONE; }
 	ExecuteIntent(actor,decisionTime);
 	return true;
 }
@@ -645,6 +646,17 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		{ m_intent.gait=BotGait::Sprint; m_intent.suitMode=NANOMODE_SPEED; m_intent.combat=BotCombatIntent::None; }
 		ExecuteIntent(actor,decisionTime); return;
 	}
+	if (BotConfig::Get().vantage==1 && m_vantage.Phase()==VantagePhase::Hold && visible && distance>20.0f)
+	{
+		// owner 25.10: a sniper on its spot fights from there (elite marksmen lying down: spread x0.33) instead of
+		// running off the roof toward the target
+		Change(State::ATTACKING);
+		m_intent.move=false; m_intent.aim=aim;
+		if (m_traits.prone>0.5f) m_intent.stance=STANCE_PRONE;
+		m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
+		UpdateCombatPost(bot,actor,decisionTime);
+		return;
+	}
 	if (BotConfig::Get().tactics==1)
 	{
 		m_lastFightTarget=m_combat.Target(); m_lastFightPos=destination;
@@ -665,7 +677,7 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 bool BotBrain::UpdateHoldAngle(BotInstance& bot,CPlayer& actor,const Vec3& threat,float distance,float desiredRange,float decisionTime)
 {
 	const float sinceSeen=m_combat.LastSeen()>0 ? m_now-m_combat.LastSeen() : 1e9f;
-	if (!m_hold.Begin(unsigned(m_combat.Target()),m_now,sinceSeen,distance,TraitHolder(int(m_profile.style)),m_rng+unsigned(m_decisionSerial)*40503u))
+	if (!m_hold.Begin(unsigned(m_combat.Target()),m_now,sinceSeen,distance,m_traits.holder,m_rng+unsigned(m_decisionSerial)*40503u))
 		return false;
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	if (m_hold.Phase()==HoldPhase::None)
@@ -734,7 +746,7 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
             m_intent.strafe=true;
             // fragmovies: duels are strafe + hop, never standing in the open (normal jump: Armor only)
             if (BotConfig::Get().tactics==1 && m_blackboard.mode==NANOMODE_DEFENSE && m_intent.jump==BotJump::None &&
-                m_jumpStrafe.Want(m_now,m_blackboard.grounded,distance,TraitJumper(int(m_profile.skill),int(m_profile.style)),m_rng+unsigned(m_decisionSerial)*2654435761u))
+                m_jumpStrafe.Want(m_now,m_blackboard.grounded,distance,m_traits.jumper,m_rng+unsigned(m_decisionSerial)*2654435761u))
                 m_intent.jump=BotJump::Normal;
         }
 		Change(State::ATTACKING);

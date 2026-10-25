@@ -13,6 +13,7 @@
 #include "CryGame/Bots/BotJumpLink.h"
 #include "CryGame/Bots/BotVantage.h"
 #include "CryGame/Bots/BotTactics.h"
+#include "CryGame/Bots/BotTraits.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
 struct IConsoleCmdArgs;
 class CPlayer;
@@ -124,6 +125,7 @@ private:
 	BotVantage m_vantage;            // owner 25.10 sniper spots (wb_bot_vantage)
 	// wb_bot_tactics (BotTactics.h): angle hold from cover, jump-strafe, loot after a kill
 	BotAngleHold m_hold;
+	BotTraits m_traits;              // T-8 character traits (presets per skill/style + per-bot jitter)
 	BotJumpStrafe m_jumpStrafe;
 	EntityId m_lastFightTarget = 0;
 	Vec3 m_lastFightPos = Vec3(0,0,0), m_lootPos = Vec3(0,0,0);
