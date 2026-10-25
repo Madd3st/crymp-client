@@ -1,11 +1,13 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
-C072 PS export BLOCKED: Shore first, validated a755 geometry exporter, empty local
-IA context on PS resource path rejected by StartGameContext; export refused.
-No OBJ/crop created; Plantation not attempted after Shore failed. Evidence in
-build/c072-ps-export/blocked.json and console logs; X066 asks Claude for a real
-PS-capable actorless exporter/recipe. Tool prototype reverted, no game changes.
-No game active, PS memory unchanged; PS metadata from C068 remains available.
+C073/C072 COMPLETE: separate PS/no-actors exporter813c43c1 built MSVC client/server.
+Shore and Plantation loaded with real PowerStruggle rules; raw geometry validation PASS.
+Artifacts: build/c072-ps-export/813c43c1/ (OBJ, cropped OBJ/GZ, logs, evidence.json).
+Shore crop1359243tri/27687522bytes gzip; Plantation641851tri/12931369bytes.
+Explicit minimap bounds; Shore all vertices Z<=260. Independent crop validation PASS.
+Accepted C070 actual91a01bbc merged22d2b5d2/pushed. Exporter gameplay commit NOT merged;
+corners stays OFF/unmerged. No GUI/bots/batch rerun; memory hashes unchanged/processes stopped.
+Owner preset remains27144dc6; foreign recording launcher preserved.
 
 C071 acceptance FAIL: actualdc9808c8=requested6be78151+known compile-only fix91a.
 MSVC+15units PASS/runtime no crash, but stalls135>48 and pickups195 vs247 fail;

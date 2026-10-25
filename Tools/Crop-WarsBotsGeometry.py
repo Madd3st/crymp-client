@@ -23,7 +23,11 @@ def intersects(points, bounds):
             and max(p[1] for p in points) >= bounds[1] and min(p[1] for p in points) <= bounds[3])
 
 
-def crop(source, dest, bounds, expected_faces=None, expected_sha=None, max_bytes=150*1024*1024):
+def crop(source, dest, bounds, expected_faces=None, expected_sha=None, max_bytes=150*1024*1024, max_z=None):
+    if len(bounds) != 4 or not all(map(math.isfinite,bounds)) or bounds[0]>=bounds[2] or bounds[1]>=bounds[3]:
+        raise ValueError("Invalid explicit XY bounds")
+    if max_z is not None and not math.isfinite(max_z):
+        raise ValueError("Invalid maximum Z")
     temp = dest.with_name(dest.name+'.tmp')
     if dest.exists() or temp.exists():
         raise FileExistsError('Existing crop retained; choose another destination')
@@ -57,7 +61,7 @@ def crop(source, dest, bounds, expected_faces=None, expected_sha=None, max_bytes
                         if len(pending) != 3 or list(map(int,fields[1:])) != [vertices-2,vertices-1,vertices]:
                             raise ValueError('Invalid C019 face ordering')
                         faces += 1
-                        if intersects([p[1] for p in pending],bounds):
+                        if intersects([p[1] for p in pending],bounds) and (max_z is None or all(p[1][2] <= max_z for p in pending)):
                             for original,_ in pending:
                                 output.write(original)
                             first = kept*3+1
@@ -87,6 +91,8 @@ def main():
     parser.add_argument('directory',type=Path)
     parser.add_argument('--padding',type=float,default=120)
     parser.add_argument('--maps',nargs='+',default=['Steelmill','Quarry','Armada','Outpost'])
+    parser.add_argument('--bounds-xy',nargs=4,type=float,metavar=('XMIN','YMIN','XMAX','YMAX'))
+    parser.add_argument('--max-z',type=float,help='Keep whole triangles only when all vertices are at or below this Z')
     args = parser.parse_args()
     root = args.directory
     out = root/'crop'
@@ -97,11 +103,12 @@ def main():
         if name not in exports:
             raise ValueError('Unknown map')
         load = lambda suffix: json.loads((root/(name+suffix)).read_text(encoding='utf-8'))
-        bounds = marker_bounds(load('.spawns.json'),load('.items.json'),args.padding)
+        bounds = tuple(args.bounds_xy) if args.bounds_xy else marker_bounds(load('.spawns.json'),load('.items.json'),args.padding)
         original = exports[name]
         result = crop(root/(name+'.obj'),out/(name+'.crop.obj.gz'),bounds,
-                      original['triangles'],original['obj_sha256'])
-        result.update(map=name,padding=args.padding)
+                      original['triangles'],original['obj_sha256'],max_z=args.max_z)
+        result.update(map=name,padding=None if args.bounds_xy else args.padding,max_z=args.max_z,bounds_source='explicit' if args.bounds_xy else 'markers+padding',z_policy='all_vertices_at_or_below' if args.max_z is not None else 'unrestricted')
+        (out/(name+'.crop.json')).write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
         results.append(result)
         (out/'crops.json').write_text(json.dumps(results,indent=2)+'\n',encoding='utf-8')
         print(json.dumps(result),flush=True)

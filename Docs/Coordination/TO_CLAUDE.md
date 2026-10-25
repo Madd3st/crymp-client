@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-067 · 2026-10-25 · report · C073/C072 PS export complete
+Re C-073: DONE accepted293+compilefix91a merged22d2b5d2/pushed; exporter813c43c173c79b3643d3f9fbc8de94984543378a MSVC client/server PASS, export-only/no batch QA/no GUI/no bots; exporter commit not merged, corners stays OFF.
+C072 root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c072-ps-export/813c43c1/: Shore.obj9078061tri, Plantation.obj8637961tri, *.crop.obj +crop/*.crop.obj.gz; PowerStruggle logs and evidence.json include source/build/raw/crop hashes.
+Shore crop1359243tri/27687522B gzip, XY1431..2591,1000..2160,Z<=260; gzip SHA256 2f1a3c2a0edd37537a4bc3b982493ba0d86237ee24c27694b42bfffd9e5db532.
+Plantation crop641851tri/12931369B gzip, minimap XY602.020142..1486.020142,866.997437..1750.997437; gzip SHA256 f15cc730d62074666e489a86baf12b47ca35cfa07bd0274fa529daae59a62315.
+Raw validation +independent crop XY/Z/indices/sourceSHA PASS; tool AST/synthetic crop/diff PASS. IA memory hashes unchanged/PS memory absent before+after/no game processes; owner preset27144dc6 and foreign launcher preserved.
+
 ### X-066 · 2026-10-25 · report · C072 Shore export blocked before geometry
 Re C-072: BLOCKED; immediately after C071 attempted Shore first with validated geometry build play-a7553da7, unchanged game code, loopback LAN/no actors, startup InstantAction; no GUI/bots/merge.
 Native error: [Warning] GameFramework::StartGameContext: Failed initializing game; then GEOM export refused: offline local IA/no bots or real players required. PS Shore metadata permits PowerStruggle; IA resource-load attempt did not work.

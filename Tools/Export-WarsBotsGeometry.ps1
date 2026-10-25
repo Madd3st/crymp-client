@@ -4,6 +4,8 @@ param(
  [string]$GameDirectory='E:/Steam/steamapps/common/Crysis',
  [Parameter(Mandatory)][string]$BuildDirectory,
  [string[]]$Maps=@('Steelmill','Quarry','Armada','Outpost'),
+ [ValidateSet('IA','PS')][string]$MapFamily='IA',
+ [string]$OutputDirectory='',
  [ValidateRange(1024,49151)][int]$Port=46060,
  [string]$Label=('C019-'+(Get-Date -Format yyyyMMdd-HHmmss)),
  [switch]$Resume
@@ -16,19 +18,21 @@ $exe=Join-Path $build 'CryMP-Server64.exe'
 if(-not $manifest.geometry_export -or (Get-FileHash $exe).Hash -ne $manifest.server){throw 'Frozen geometry-export build/hash required'}
 if(Get-Process CryMP-Server64,CryMP-Client64 -ErrorAction SilentlyContinue){throw 'Active session retained; offline export deferred'}
 if(Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue){throw 'Export port occupied'}
-$dest=Join-Path $env:LOCALAPPDATA "WarsBots/Geometry/$Label"
+$dest=if($OutputDirectory){[IO.Path]::GetFullPath((Join-Path $repo $OutputDirectory))}else{Join-Path $env:LOCALAPPDATA "WarsBots/Geometry/$Label"}
 if((Test-Path $dest) -and -not $Resume){throw 'Use a fresh label or Resume existing completed bundles'}
 New-Item -ItemType Directory -Force $dest|Out-Null
 $python=Join-Path $env:USERPROFILE '.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'
-$runs=@();$process=$null
+$runs=@();$process=$null;$exportLogs=@()
+$rules=if($MapFamily -eq 'PS'){'PowerStruggle'}else{'InstantAction'}
 try{
  foreach($map in $Maps){
-  if($map -notin @('Steelmill','Quarry','Armada','Outpost')){throw 'Unsupported IA map'}
+  $allowed=if($MapFamily -eq 'PS'){@('Shore','Plantation')}else{@('Steelmill','Quarry','Armada','Outpost')}
+  if($map -notin $allowed){throw 'Unsupported map family/name'}
   if(Get-Process CryMP-Server64,CryMP-Client64 -ErrorAction SilentlyContinue){throw 'Another session appeared; no process touched'}
   $obj=Join-Path $dest "$map.obj";$meta=Join-Path $dest "$map.geometry.json"
-  $log=Join-Path $env:LOCALAPPDATA "WarsBots/Logs/$Label-$map.log";$trace=$log -replace '\.log$','.bots.log'
+  $log=Join-Path $env:LOCALAPPDATA "WarsBots/Logs/$Label-$map.log";$trace=$log -replace '\.log$','.bots.log';$exportLogs+=@($log,$trace)
   if(-not ($Resume -and (Test-Path $meta))){
-  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules InstantAction +wb_probe_local_test 1 +wb_debug 1 +map multiplayer/ia/$map +wb_geom_export `"$obj`""
+  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules $rules +wb_probe_local_test 1 +wb_debug 1 +map multiplayer/$($MapFamily.ToLowerInvariant())/$map +sv_gamerules +wb_geom_export `"$obj`""
   Write-Host "EXPORT START $map sha=$($manifest.sha)"
   $process=Start-Process $exe -ArgumentList $args -WorkingDirectory $GameDirectory -WindowStyle Hidden -PassThru
   $end=[DateTime]::UtcNow.AddMinutes(5);$text=''
@@ -52,5 +56,8 @@ try{
   $runs+=$data;$runs|ConvertTo-Json -Depth 5|Set-Content (Join-Path $dest 'exports.json') -Encoding UTF8
   Write-Host "EXPORT END $map triangles=$($data.triangles) bytes=$($data.bytes) unsupported=$($data.unsupported_parts)"
  }
-}finally{if($process -and -not $process.HasExited){Stop-Process -Id $process.Id;$null=$process.WaitForExit(15000)}}
+}finally{
+ if($process -and -not $process.HasExited){Stop-Process -Id $process.Id;$null=$process.WaitForExit(15000)}
+ foreach($file in $exportLogs){if(Test-Path -LiteralPath $file){Copy-Item -LiteralPath $file -Destination $dest -Force}}
+}
 Write-Host "Export bundle: $dest"
