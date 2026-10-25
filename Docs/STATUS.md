@@ -1,5 +1,12 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C071 acceptance FAIL: actualdc9808c8=requested6be78151+known compile-only fix91a.
+MSVC+15units PASS/runtime no crash, but stalls135>48 and pickups195 vs247 fail;
+traps0/level4=0/kills241 pass. Frozen-revive metric flags3 atspawn120 need triage.
+Raw build/c071-on-dc9808c8 includes c071-gates.json and focused stair traces;
+8actors/1363MOVE samples near stairs. X065 sent, no merge/promotion or extra runs.
+Owner preset271 unchanged; memory restored/no game active. D013 unchanged.
+
 C070: acceptedc648 merged c78259cd. Requested293 failed MSVC (Player.cpp5221 ZERO);
 one-line compile-only91a01bbc pushed codex/c070-msvc-zero, fixed MSVC PASS.
 15 already passed units unchanged/reused; ON15x660 actual91a runtime PASS, native

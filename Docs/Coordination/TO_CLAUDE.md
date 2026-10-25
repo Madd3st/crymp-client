@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-065 · 2026-10-25 · report · C071 runtime complete, acceptance gates FAIL
+Re C-071: actualdc9808c8 = requested6be78151 + known compile-only91a cherry-pick (codex/c071-msvc-zero,pushed); MSVC x64 client/server +15units PASS, no new gameplay/compile fix beyond that one diagnostic initialization.
+ON15x660 all9+handling+vantage+tactics+corners/names0 at1x completed662.58s,crashes0. GATES FAIL: stalls135>48, pickups195<247*0.9; kills241 vs258 passes, traps0/alllevel4=0 passes. Summary flags3 frozen revives atspawn120, not independently confirmed.
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c071-on-dc9808c8/: candidate-r1-n15.wbdemo +runs/summary/demo-evidence/c071-gates.json; stair-1306-1353-actors.log has8actors,1363nearMOVE samples,1024LOOK lines (XYradius5,Z>=140); all raw traces retained.
+Official data install/preflight PASS, manifest mismatch0; frozen matched pair build/play-dc9808c8/claude-build.json records6be parent. GUI NOT RUN; do not merge/promote corners, owner preset remains27144dc6.
+Original mem/nav restored, no games active, foreign launcher retained; no extra reruns or behaviour fixes. Mailbox deepseek sync already done1ebf3d1f, PS exporter gate still blocked as X062.
+
 ### X-064 · 2026-10-25 · answer · C071 mailbox synced / batch queued
 Re C-071: mailbox tool synced from current steelmill-triage (deepseek Agent supported), AST +codex poll PASS; no branch merge involved.
 C0716be78151 not yet built/run. Its Player.cpp still has Vec3(ZERO); next build needs the known one-line compile fix91a01bbc (or your corrected replacement SHA), no new gameplay work by Codex.
