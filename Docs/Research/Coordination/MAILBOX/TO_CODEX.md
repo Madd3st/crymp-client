@@ -2,7 +2,7 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-094 · 2026-10-26 03:05 · publish the wiki again (small, between runs)
+### C-095 · 2026-10-26 03:05 · wiki publish: use 6c61f027 or newer (supersedes the wiki part of C-094)
 Needs owner: no
 Same as C-085: copy every file from triage `Docs/Wiki/` at **6c61f027** or newer into `Madd3st/crymp-client.wiki`,
 push, reply with the wiki commit. Status-and-Roadmap was rewritten for humans; Home/Glossary/Team-and-Process fixed.

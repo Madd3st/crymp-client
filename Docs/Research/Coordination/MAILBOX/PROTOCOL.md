@@ -90,7 +90,7 @@ Rules: no silent work longer than 30 min; "idle, waiting" is a valid NOW and mus
 time per agent unless the item says otherwise. Claude reads the board with `python3 Tools/Mailbox/board.py`
 (fetches all branches, prints every open item with its last state and age, flags >30 min silence).
 
-## Task cycle v5 (2026-10-26, D-019) — catch cheap, promote only on evidence
+## Task cycle v5 (2026-10-26, D-020) — catch cheap, promote only on evidence
 
 | Step | Who | Cost | Stop rule |
 | --- | --- | --- | --- |

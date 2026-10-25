@@ -21,10 +21,10 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
-### DS-019 · 2026-10-26 02:40 · PS parallel track (D-018): T-0 spec + vehicles + PS minimum
+### DS-020 · 2026-10-26 02:40 · PS spec details (complements DS-019; renumbered — two DS-019 were written)
 Needs owner: no
-Owner decided (D-018): IA first, PS designed in parallel; **3–4 bots per team, built to scale**; modes with and without
-vehicles; **entering/exiting a vehicle is mandatory** in PS v1. After DS-018, write `Docs/Research/DeepSeek/PS_T0_SPEC.md`:
+Owner decided (D-018, D-019): IA first, PS designed in parallel; **3–4 bots per team, built to scale**; modes with and without
+vehicles; **entering/exiting a vehicle is mandatory** in PS v1. Together with DS-019, write `Docs/Research/DeepSeek/PS_T0_SPEC.md`:
 1. `IBotGameMode` interface (IA and PS implementations): mode query, team assignment and balancing (3–4 per team,
    scaling rule), spawn by team / spawn groups / bunkers, participant registration (replace the IA-only
    `BotMatch::Register` and every `strcmp("InstantAction")`), score keys; file:line of every place to change.
