@@ -1,0 +1,14 @@
+{
+  "samples": 2732,
+  "no_target_samples": 1952,
+  "share_view_wall_lt_1_5m_no_target": 0.006,
+  "share_view_wall_lt_3m_no_target": 0.046,
+  "moving_no_target": 1831,
+  "look_vs_move_median_deg": 29.9,
+  "look_off_travel_gt45_share": 0.429,
+  "look_off_travel_gt90_share": 0.338,
+  "wall_stare_episodes_ge1s": 0,
+  "wall_stare_seconds": 0,
+  "by_state": [],
+  "longest": []
+}

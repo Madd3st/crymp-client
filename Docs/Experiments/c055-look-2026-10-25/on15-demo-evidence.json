@@ -1,0 +1,137 @@
+[
+  {
+    "tag": "candidate-r1-n15",
+    "source_sha": "50a516f7a4eefd20aaadfcc2bb38aba68582e599",
+    "seconds": 661.5,
+    "wall_seconds": 662.7487745,
+    "demo": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c055-on-50a516f7\\candidate-r1-n15.wbdemo",
+    "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-112002-1.wbdemo",
+    "demo_sha256": "5061e650f7814c4a88bc978810f086b5922d3979b86f8cc5d2df3fe3b5319a67",
+    "frames": 13226,
+    "events": {
+      "suit": 1541,
+      "land": 725,
+      "pickup": 153,
+      "shot": 7823,
+      "hit": 2411,
+      "jump": 292,
+      "kill": 210,
+      "revive": 208
+    },
+    "reported_hit_damage": 55049.69,
+    "demo_frame_delta_ms": {
+      "min": 24.0,
+      "p50": 58.0,
+      "p95": 67.0,
+      "p99": 70.0,
+      "max": 90.0
+    },
+    "frame_delta_note": "Recorded20Hz game-time FRAME cadence, not every native engine frame",
+    "demo_metrics": {
+      "aim_wander_deg_s": {
+        "human": null,
+        "bot": 10.9
+      },
+      "aim_wander_samples": {
+        "human": 0,
+        "bot": 104487
+      },
+      "bot_aim_error_deg": 1.8,
+      "bot_aim_error_samples": 94061,
+      "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+      "bot_brain_aim_error_deg": 1.1,
+      "reaction_s": 0.7,
+      "reactions": 1541,
+      "decision_flips_per_bot_min": 9.57,
+      "time_to_primary_s": 5.1,
+      "primaries": 124,
+      "kills_by_weapon": {
+        "Hurricane": 40,
+        "SOCOM": 56,
+        "SMG": 38,
+        "FY71": 26,
+        "SCAR": 32,
+        "Shotgun": 13,
+        "?": 5
+      }
+    },
+    "memory_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+    "roster": [
+      {
+        "number": 1,
+        "skill": "beginner",
+        "style": "auto"
+      },
+      {
+        "number": 2,
+        "skill": "normal",
+        "style": "auto"
+      },
+      {
+        "number": 3,
+        "skill": "veteran",
+        "style": "auto"
+      },
+      {
+        "number": 4,
+        "skill": "elite",
+        "style": "auto"
+      },
+      {
+        "number": 5,
+        "skill": "beginner",
+        "style": "auto"
+      },
+      {
+        "number": 6,
+        "skill": "normal",
+        "style": "auto"
+      },
+      {
+        "number": 7,
+        "skill": "veteran",
+        "style": "auto"
+      },
+      {
+        "number": 8,
+        "skill": "elite",
+        "style": "auto"
+      },
+      {
+        "number": 9,
+        "skill": "beginner",
+        "style": "auto"
+      },
+      {
+        "number": 10,
+        "skill": "normal",
+        "style": "auto"
+      },
+      {
+        "number": 11,
+        "skill": "veteran",
+        "style": "auto"
+      },
+      {
+        "number": 12,
+        "skill": "elite",
+        "style": "auto"
+      },
+      {
+        "number": 13,
+        "skill": "beginner",
+        "style": "auto"
+      },
+      {
+        "number": 14,
+        "skill": "normal",
+        "style": "auto"
+      },
+      {
+        "number": 15,
+        "skill": "veteran",
+        "style": "auto"
+      }
+    ]
+  }
+]

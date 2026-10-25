@@ -1,0 +1,84 @@
+{
+  "schema": "warsbots-run-summary/1",
+  "label": "map=multiplayer/ia/steelmill;bots=6;seconds=120;style=auto;progress_requested=0;trap_recovery_requested=1;hotspot_all_nodes_requested=0;physics_diagnostics_requested=1;reachable_goals_requested=0;sink_escape_requested=unknown;fire_diagnostics=True;move_trace_requested=1;bot_pace_requested=1;time_mode=wall;requested_speed=1;demo_record_requested=1;roster=1:beginner:auto,2:normal:auto,3:veteran:auto,4:elite:auto,5:beginner:auto,6:normal:auto",
+  "log": "WarsBots-Tactics-c055-six-19989a6d-candidate-r1-n6.bots.log",
+  "log_sha256": "2b994264f5491ca497d088ed34db0fa49088fe27b5389575a4953ba8b91952bb",
+  "build": "v26-129-g19989a6d",
+  "bots": 6,
+  "seconds": 118.8,
+  "live_bot_minutes": 10.2,
+  "spawn195": {
+    "revives": 0,
+    "frozen": 0
+  },
+  "revives": {
+    "total": 3,
+    "frozen": 0,
+    "frozen_spawns": {}
+  },
+  "watchdog": {
+    "episodes": 5,
+    "at_spawn195": 0,
+    "reached_level": {
+      "1": 5,
+      "2": 3,
+      "3": 1
+    },
+    "self_kills": 0
+  },
+  "pinned_live_percent": 0.0,
+  "traps_ge60s": 0,
+  "stalls": 7,
+  "nav_fallback": {
+    "total": 16,
+    "per_bot_minute": 1.56,
+    "reasons": {
+      "no_route": 13,
+      "goal_unprojected": 3
+    },
+    "no_route_percent": 81.2
+  },
+  "unreachable_weapon_skips": 19,
+  "goal_skips": {},
+  "pickups": {
+    "total": 14,
+    "lives": 7,
+    "lives_with_pickup": 4,
+    "lives_with_pickup_percent": 57.1,
+    "by_spawn_kind": {
+      "isolated": {
+        "lives": 1,
+        "with_pickup": 0,
+        "percent": 0.0
+      },
+      "main": {
+        "lives": 5,
+        "with_pickup": 3,
+        "percent": 60.0
+      },
+      "sink": {
+        "lives": 1,
+        "with_pickup": 1,
+        "percent": 100.0
+      }
+    }
+  },
+  "movement": {
+    "moving_samples": 328,
+    "over_4ms_percent": 57.0,
+    "native_sprint_percent": 60.8,
+    "median_speed_by_state_max": 5.81
+  },
+  "graph": {
+    "fingerprint": "cfcf02f03d6d7bcf4a788f7c62d597499a0cebafe538d4e79ec4b465c0d4bbe6",
+    "nodes": 7633,
+    "edges": 41618,
+    "sink_sccs": 51,
+    "nodes_in_sinks_percent": 25.3,
+    "main0_main1_edges": 0,
+    "spawns_outside_main": 13,
+    "revives_on_non_main_spawns_percent": 66.7,
+    "no_route_goal_outside_main_percent": 92.3,
+    "memory_link": "OK"
+  }
+}

@@ -1,0 +1,88 @@
+[
+  {
+    "tag": "candidate-r1-n6",
+    "source_sha": "19989a6d36315da13e12ffab8d5d09eb0b7ee07e",
+    "seconds": 118.8,
+    "wall_seconds": 120.2717305,
+    "demo": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c055-six-19989a6d\\candidate-r1-n6.wbdemo",
+    "demo_original": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Demos\\Multiplayer_IA_Steelmill-20261025-121123-1.wbdemo",
+    "demo_sha256": "d51b81d89c48693c909991993d471fe9ff3974cc80ba275dee8d3cfee4a8b099",
+    "frames": 2374,
+    "events": {
+      "suit": 156,
+      "land": 60,
+      "jump": 28,
+      "pickup": 14,
+      "shot": 156,
+      "hit": 73,
+      "kill": 7,
+      "revive": 7
+    },
+    "reported_hit_damage": 2046.77,
+    "demo_frame_delta_ms": {
+      "min": 18.0,
+      "p50": 57.0,
+      "p95": 67.0,
+      "p99": 70.0,
+      "max": 74.0
+    },
+    "frame_delta_note": "Recorded20Hz game-time FRAME cadence, not every native engine frame",
+    "demo_metrics": {
+      "aim_wander_deg_s": {
+        "human": null,
+        "bot": 7.5
+      },
+      "aim_wander_samples": {
+        "human": 0,
+        "bot": 11795
+      },
+      "bot_aim_error_deg": 5.6,
+      "bot_aim_error_samples": 3010,
+      "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+      "bot_brain_aim_error_deg": 2.4,
+      "reaction_s": 0.5,
+      "reactions": 49,
+      "decision_flips_per_bot_min": 5.06,
+      "time_to_primary_s": 4.5,
+      "primaries": 4,
+      "kills_by_weapon": {
+        "Hurricane": 4,
+        "Shotgun": 1,
+        "FY71": 2
+      }
+    },
+    "memory_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+    "roster": [
+      {
+        "number": 1,
+        "style": "auto",
+        "skill": "beginner"
+      },
+      {
+        "number": 2,
+        "style": "auto",
+        "skill": "normal"
+      },
+      {
+        "number": 3,
+        "style": "auto",
+        "skill": "veteran"
+      },
+      {
+        "number": 4,
+        "style": "auto",
+        "skill": "elite"
+      },
+      {
+        "number": 5,
+        "style": "auto",
+        "skill": "beginner"
+      },
+      {
+        "number": 6,
+        "style": "auto",
+        "skill": "normal"
+      }
+    ]
+  }
+]

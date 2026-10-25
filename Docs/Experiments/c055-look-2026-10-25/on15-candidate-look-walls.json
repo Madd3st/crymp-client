@@ -1,0 +1,88 @@
+{
+  "samples": 35540,
+  "no_target_samples": 20939,
+  "share_view_wall_lt_1_5m_no_target": 0.132,
+  "share_view_wall_lt_3m_no_target": 0.25,
+  "moving_no_target": 16592,
+  "look_vs_move_median_deg": 23.6,
+  "look_off_travel_gt45_share": 0.405,
+  "look_off_travel_gt90_share": 0.234,
+  "wall_stare_episodes_ge1s": 159,
+  "wall_stare_seconds": 493.9,
+  "by_state": [
+    [
+      "MOVING_TO_WEAPON",
+      85
+    ],
+    [
+      "SEARCHING_ENEMY",
+      58
+    ],
+    [
+      "CHASING_ENEMY",
+      16
+    ]
+  ],
+  "longest": [
+    [
+      "WarsBot_11",
+      278.5,
+      20.5,
+      "SEARCHING_ENEMY"
+    ],
+    [
+      "WarsBot_15",
+      447.0,
+      16.7,
+      "MOVING_TO_WEAPON"
+    ],
+    [
+      "WarsBot_02",
+      279.3,
+      11.2,
+      "MOVING_TO_WEAPON"
+    ],
+    [
+      "WarsBot_08",
+      75.3,
+      10.8,
+      "MOVING_TO_WEAPON"
+    ],
+    [
+      "WarsBot_10",
+      213.0,
+      10.2,
+      "MOVING_TO_WEAPON"
+    ],
+    [
+      "WarsBot_10",
+      224.0,
+      10.2,
+      "MOVING_TO_WEAPON"
+    ],
+    [
+      "WarsBot_07",
+      368.0,
+      9.3,
+      "MOVING_TO_WEAPON"
+    ],
+    [
+      "WarsBot_11",
+      309.3,
+      8.7,
+      "MOVING_TO_WEAPON"
+    ],
+    [
+      "WarsBot_08",
+      66.8,
+      8.2,
+      "MOVING_TO_WEAPON"
+    ],
+    [
+      "WarsBot_13",
+      21.0,
+      8.0,
+      "MOVING_TO_WEAPON"
+    ]
+  ]
+}

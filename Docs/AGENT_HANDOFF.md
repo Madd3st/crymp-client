@@ -1,5 +1,13 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+## C055 not accepted; D013 roles acknowledged
+
+50a516f7 ON15x660 wall159/493.9s vs OFF14/46. Second19989a6d
+MSVC+LookPolicy unit PASS, ON6x120 wall24/68.4s vs retained control0/0.
+No merge/default promotion; next gameplay correction belongs to Claude per C057.
+Review branch codex/c055-policy-bypasses; C0586f941cda fetched, QA pending.
+Servers stopped, original memory restored. Evidence: [C055 report](Experiments/c055-look-2026-10-25.md).
+
 ## C044 candidate fixed; arbiter next
 
 52df15c1 on claude-sprint: capped final owned-bot view after native rotation;
