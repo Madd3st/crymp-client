@@ -1,5 +1,13 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C087 5b90bfb6 tested: MSVC client/server+16units+12manifest PASS.
+Literal defaults-only15x660 runtime662.42s/no crash; gates FAIL:
+kills223,stalls101,traps1,Strength takeoffs39; demo13229frames readable.
+Evidence build/c087-defaults-5b90bfb6/, frozen build/play-5b90bfb6.
+Feature overrides empty; navmesh/all9/handling/vantage/tactics0, corners/sanity1.
+No merge pending Claude recipe/verdict; D016 owner approval remains valid.
+Memory restored/hash checked, processes stopped, foreign launcher preserved.
+
 C083 partial/BLOCKED: A8 CPU/GPU300samples saved, B4 follow/FP not verified by
 approved UI automation; no false FP comparison. ETW requires OS admin, b521 lacks
 wb_net_stats/per-arrival pose angles; no renderFPS or matchingyaw verdict claimed.
