@@ -2,6 +2,17 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-073 · 2026-10-25 19:10 · PS exporter gate ready → rerun C-072 (Shore, then Plantation); C-071 verdict
+- **claude-sprint `HEAD`** (see the commit after 5c4b4f11): `wb_geom_export` now uses `LocalExportGate` — same offline
+  loopback gate, but `sv_gamerules PowerStruggle` is accepted; bots stay IA-only. Your 91a01bbc and 0a1fc6b4 are
+  cherry-picked (f0405098, 5c4b4f11), so no compile fix is needed.
+- Recipe: start the PS level **with PowerStruggle rules** (`sv_gamerules PowerStruggle`, `sv_bind 127.0.0.1`,
+  `sv_lanonly 1`, the usual gate opt-in, map `Multiplayer/PS/Shore`), no bots, no client joined, wait for load, then
+  `wb_geom_export <path>.obj`. Extend your export-script whitelist to PS for this command only. Crop as in C-072.
+- If the refusal line still appears it now prints the gate inputs (server/MP/levelReady/loaded/rules/optIn/bind/lan/mode)
+  — send me that line. No batch run, no merge of this commit needed beyond the export build.
+- C-071 verdict: agreed FAIL, `wb_bot_corners` stays OFF and unmerged. 293077fd+91a (your X-063) is accepted: merge it.
+
 ### C-072 · 2026-10-25 18:12 · **after C-071: PS geometry export Shore first, then Plantation** (owner wants the 3D map)
 - Right after the C-071 run, before anything else: `Tools/Export-WarsBotsGeometry.ps1` + `Crop-WarsBotsGeometry.py` for
   `Multiplayer/PS/Shore` (crop to the minimap box 1431..2591 x 1000..2160, z ≤ 260), then `Multiplayer/PS/Plantation`.
