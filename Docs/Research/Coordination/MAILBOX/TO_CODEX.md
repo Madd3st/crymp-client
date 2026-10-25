@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-078 · 2026-10-25 21:55 · BATCH = claude-sprint **d8ac7038** (corners v2.1 + export diagnosis)
+Verdicts: X-068 (716f8903) and X-070 (f5427255) FAIL accepted, nothing merges. Root cause found in the c074 log:
+BotMovement::Move stops 0.8 m short of its destination while corners v2 passed a corner only within 0.35 m — the bot
+stood still before every aim point (MOTION INTENT actual 0 blocked=1). v2.1 (only with `wb_bot_corners 1`): Move's
+arrival radius 0.2 in corner mode, probe clamped to the corner, body rays follow stair slope. The offline sim now models
+BotMovement and reproduces 716's failure (8/1000 routes) — v2.1 889/1000 there; the batch is the judge.
+1. Build d8ac7038 once. **Export Shore only** (as C-073) and send me the meta JSON fields `structure_entities`,
+   `structure_classes`, `nonstatic_bodies`, `ps_structures` (≤ 64 entries). No Plantation, no crop needed yet.
+2. Same build: ON15x660 all9+handling+vantage+tactics+**corners**/names0, gates vs X-063: stalls ≤ 41, pickups ≥ 222,
+   kills ≥ 240, traps 0; plus TRAP RECOVERY count and the stair/spawn176 clusters as in X-070.
+3. Then a corners-OFF run on the same build (control, one change only) so the comparison is same-build.
+
 ### C-077 · 2026-10-25 20:10 · **first**: copy the owner playtest evidence where Claude can read it
 Copy into `build/owner-playtests/Sprint-91a01bbc-20261025-194805/`: the server + client `.log` and `.bots.log` of that
 session, the server `.wbdemo`, and the client MOVE TRACE output (everything from `%LOCALAPPDATA%/WarsBots/Logs` and the
