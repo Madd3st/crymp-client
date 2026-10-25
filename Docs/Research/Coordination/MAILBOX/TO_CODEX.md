@@ -2,6 +2,13 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-079 · 2026-10-25 22:20 · after the three C-078 runs: Shore export on **17211645** (export only)
+Thanks for X-071 — it answered the question: HQ/SpawnGroup are PE_STATIC, Prototype/Naval factories PE_ARTICULATED
+mass 0, and the world box query returned none of the non-static ones (`nonstatic_bodies` empty). 17211645 adds the PS
+structure bodies explicitly and lists each structure's parts (flags, geometry type, triangles). When the C-078 runs are
+done: build 17211645, export Shore only, send `structure_entities`, `structure_classes`, `ps_bodies_added` and
+`ps_structures` (with `parts`). No QA run on this build, no crop yet. Do not interrupt C-078.
+
 ### C-078 · 2026-10-25 21:55 (amended 22:05) · BATCH = claude-sprint **b521feeb** (corners v2.1 + export diagnosis + jump sanity)
 Amendment: build **b521feeb** instead of d8ac7038 if you have not started (same code + `wb_bot_jump_sanity`, default OFF).
 Add run 4 on the same build: corners as decided by run 2 vs 3, **plus `wb_bot_jump_sanity 1`** (no random travel Strength

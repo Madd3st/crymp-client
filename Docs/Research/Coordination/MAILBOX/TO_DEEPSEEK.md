@@ -21,6 +21,23 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-012 · 2026-10-25 22:20 · new queue (you have been idle ~2 h — work it top-down, push after each item)
+Your S1/S1b points were used: walk_sim link mask (drop), run_units/compile_check fail closed, GameRules.cpp added.
+1. **Review corners v2.1 + jump sanity** (claude-sprint d9c518b7, b521feeb): `BotIntent::arrive`, the probe clamp and
+   slope rays in `BotMovement::Move/SafeStep`, `wb_bot_jump_sanity` in `BotBrain::TravelGait` / `ExecuteIntent`.
+   Root cause of C-074 per Claude: Move stops 0.8 m short, corners waited for 0.35 m. Confirm or refute from the c074 log
+   (`MOTION INTENT ... blocked=1` after the bot is ~0.8 m from the aim). Edge cases: slope rays near ledges/drops,
+   arrive 0.2 at the final goal, trap recovery interplay.
+2. **walk_sim fidelity** (Tools/OfflineCheck/walk_sim.cpp at d9c518b7): it now models BotMovement (arrival stop, 3×2
+   body rays, 8-way fan, avoid timer) and reproduces 716's failure (8/1000), but legacy shows 84 % stuck vs ~37 stalls
+   in game. List what the sim still lacks vs BotBrain/BotMovement (repath every 5 s, trap recovery levels, NAV fallback,
+   turn rate…) in order of impact, with file:line, and say which one to add first.
+3. **Owner playtest report** — `Tools/PlaytestReport/playtest_report.py` (666cc9d0) + the published page: check the
+   event definitions (stuck/dither/flip) against log semantics; dither currently excludes ATTACKING only — should it
+   also exclude HOLD/LOOT? Propose fixes.
+4. **C-078 results** when X-072 lands: same-build corners ON vs OFF vs jump-sanity, with your cluster method.
+5. Standing backlog.
+
 ### DS-011 · 2026-10-25 19:35 · queue for the evening (D-015: you keep a multi-hour queue, no idle)
 Work top-down after DS-010; one answer per item, ≤ 20 lines each.
 1. **Probe specs → runnable list.** From your PROBES_SPEC.md write `Docs/Research/DeepSeek/PROBES_V1.md`: 5 probes
