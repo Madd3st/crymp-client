@@ -272,4 +272,22 @@ void BotWeapons::Handle(CActor& actor, float targetDistance, bool cloaked)
 	if (want && !zoomed && !weapon->IsZooming() && weapon->CanZoom()) weapon->StartZoom(actor.GetEntityId(),1);
 	else if (!want && (zoomed || weapon->IsZooming())) weapon->StopZoom(actor.GetEntityId());
 }
+
+EntityId BotWeapons::FindDrop(CActor& actor, const Vec3& where, float radius)
+{
+	SEntityProximityQuery query;
+	query.box = AABB(where - Vec3(radius, radius, 3.0f), where + Vec3(radius, radius, 3.0f));
+	gEnv->pEntitySystem->QueryProximity(query);
+	EntityId best = 0; float bd = 1e9f;
+	for (int q = 0; q < query.nCount; ++q)
+	{
+		IEntity* entity = query.pEntities[q];
+		if (!entity || entity->IsHidden()) continue;
+		IItem* item = Items()->GetItem(entity->GetId());
+		if (!IsPrimary(item) || item->GetOwnerId() || !static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId())) continue;
+		const float d = (entity->GetWorldPos() - where).GetLengthSquared();
+		if (d < bd) { bd = d; best = entity->GetId(); }
+	}
+	return best;
+}
 }

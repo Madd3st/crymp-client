@@ -30,5 +30,7 @@ struct BotWeapons
 	// Owner playtest 25.10 (wb_bot_weapon_handling): LAM laser on unless cloaked, zoom for distant targets
 	// (BotWeaponHandling.h). targetDistance < 0 = no target to shoot at.
 	static void Handle(CActor& actor, float targetDistance, bool cloaked);
+	// wb_bot_tactics: a suitable dropped weapon (not the pistol, no owner, pick-up-able) within `radius` of `where`.
+	static EntityId FindDrop(CActor& actor, const Vec3& where, float radius);
 };
 }

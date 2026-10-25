@@ -8,4 +8,7 @@ NavMeshCore* CurrentNavMesh();
 class VantageMap;
 // Baked sniper spots for the current level (<Level>.spots.txt next to the navmesh), nullptr if missing/disabled.
 VantageMap* CurrentVantage();
+struct CoverCandidate;
+// Cover / low-cover spots (flags 1|2) of the current level with their protected sides; nullptr if none or disabled.
+const CoverCandidate* CurrentCover(int& count);
 }

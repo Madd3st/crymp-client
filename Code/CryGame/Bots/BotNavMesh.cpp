@@ -2,6 +2,7 @@
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotVantage.h"
+#include "CryGame/Bots/BotTactics.h"
 #include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Bots/BotDataPath.h"
 #include "CryGame/Bots/BotLog.h"
@@ -75,6 +76,38 @@ NavMeshCore* CurrentNavMesh()
 		}
 	}
 	return s.mesh.Ready() ? &s.mesh : nullptr;
+}
+
+const CoverCandidate* CurrentCover(int& count)
+{
+	count = 0;
+	if (BotConfig::Get().tactics != 1 || !g_pGame) return nullptr;
+	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
+	if (!level || !level->GetLevelInfo()) return nullptr;
+	static std::vector<CoverCandidate> spots; static std::string loaded; static bool tried = false;
+	const std::string name = level->GetLevelInfo()->GetName();
+	if (name != loaded) { loaded = name; tried = false; spots.clear(); }
+	if (!tried)
+	{
+		tried = true;
+		const size_t slash = name.find_last_of("/\\");
+		const std::string leaf = slash == std::string::npos ? name : name.substr(slash + 1);
+		const std::filesystem::path path = DataDirectory(L"Navmesh") / std::filesystem::u8path(leaf + ".spots.txt");
+		if (FILE* f = _wfopen(path.c_str(), L"rb"))
+		{
+			char line[256];
+			while (fgets(line, sizeof line, f))
+			{
+				if (line[0] == '#') continue;
+				CoverCandidate c; unsigned flags = 0, mask = 0;
+				if (sscanf(line, "%f %f %f %u %u", &c.p.x, &c.p.y, &c.p.z, &flags, &mask) == 5 && (flags & 3)) { c.coverMask = mask; spots.push_back(c); }
+			}
+			fclose(f);
+		}
+		WB_LOG(0, "[WarsBots] COVER %d spots for %s.", int(spots.size()), name.c_str());
+	}
+	count = int(spots.size());
+	return spots.empty() ? nullptr : spots.data();
 }
 
 VantageMap* CurrentVantage()

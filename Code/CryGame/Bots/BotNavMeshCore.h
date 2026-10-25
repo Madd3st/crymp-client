@@ -60,6 +60,8 @@ public:
 	int Links() const { return m_links; }
 	// A link failed in the game: never use it again on this level.
 	void BanLink(unsigned long long ref);
+	// Counts in-game failures of a link; true from the second failure on (then the caller bans it).
+	bool NoteLinkFailure(unsigned long long ref) { return ++m_linkFails[ref] >= 2; }
 	// FindPath + the links on the returned corners.
 	bool FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,
 		const char** reason = nullptr) const;
@@ -78,6 +80,7 @@ private:
 	int m_words = 0;
 	unsigned short m_linkMask = 0;
 	int m_links = 0;
+	std::unordered_map<unsigned long long, int> m_linkFails;
 };
 
 } // namespace WarsBots
