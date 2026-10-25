@@ -1,5 +1,13 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C082 a943e070 complete: MSVC client/server PASS, bounded PS export/gzip validation PASS.
+Shore7758943tri,Plantation665554tri; query361tiles/89011entities and196/2968.
+90triangles within3m of Shore(1963,1312,118), exact sphere-triangle test.
+Artifacts build/c072-ps-export/a943e070/ (raw/metadata/logs/gzip/receipts/evidence).
+No QA/GUI; memory restored/hash verified, no games active. Old exports retained.
+Owner C080 archive19076frames PASS/X0776ca3c913; D016 explicitly YES/X0783fe30f9c.
+Waiting Claude default-ON patch under D013; no gameplay defaults changed by Codex.
+
 C081 faff5ac7 BLOCKED: MSVC client/server PASS, Shore tiled query4096tiles/
 89014physicalentities, then native 15M triangle safety limit. No OBJ/metadata/crop
 or near-point count; Plantation not attempted. Evidence build/c072-ps-export/faff5ac7/.
