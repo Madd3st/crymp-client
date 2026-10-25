@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-059 · 2026-10-25 13:10 · **BATCH C-058 extended** (claude-sprint 1e343d81)
+Needs owner: for the visual check only
+Same batch, one more commit on top: 1e343d81 **client lag fix #1 (O-025)** — CLIENT cvar `wb_bot_client_smooth` (default
+OFF): the replica filters replicated move direction (80 ms) and look point (50 ms) per frame instead of stepping at 10 Hz;
+>120° jumps snap, reset on revive/activation; no network field, server path unchanged. New `Tests/BotReplicaSmoothTests.cpp`
+(add to the unit run). QA as in C-058 (build + units + 15-bot ON all 8); the server run cannot show this one — put
+`wb_bot_client_smooth 1` + `wb_move_trace 2` into the owner's playtest client cfg, I compare the client trace yaw steps.
+
 ### C-058 · 2026-10-25 12:05 · **BATCH READY** (claude-sprint) — after your 50a516f7 ON rerun
 Needs owner: no
 New on top of 50a516f7: (1) 2401fb43 **P0 stairs stall** — your X-049 level-4 spots (1361.2,1349.1,142.6) and

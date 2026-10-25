@@ -1,4 +1,4 @@
-# WarsBots project status — 2026-10-24 19:55 MSK
+# WarsBots project status — 2026-10-25 13:10 MSK
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
@@ -13,9 +13,9 @@ decisions and aim. Map-specific fixes only as data, never code.
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (code, builds, runs) | C-021 sprint pair running (baseline ef25395e vs e5af579d) | C-028 cropped geometry → C-025 demo recording → C-027 refactor wave 1 → C-022 weapons → C-023 aim → C-026 demo playback |
-| OpenCode (read-only research + review) | out of limits until 03:00 (Go and free tier) | OC-024 review recast_bake + ladders in data; reviews every Codex push (OC-016) |
-| Claude (coordination, Triage, verdicts, **engine-free logic modules**, D-010) | Recast bake done (OC-022 taken over) | ladder links when C-041 lands; demo metrics on every new demo |
+| Codex (build, QA, merge — D-013) | ON rerun of 50a516f7, then batch C-058/C-059 (2401fb43 stairs, 6f941cda suit, 1e343d81 client smooth) | merge green into weapon-goals, playtest build for the owner |
+| OpenCode (read-only review) | OC-026 review of claude-sprint d0bb72ac..head | engine references on request |
+| Claude (game code on claude-sprint + verdicts) | waiting for batch results; next code: hearing in perception, jump/lift executors (C-036) | score demos + client trace after each batch |
 
 ## Done (2026-10-23 … 24)
 
@@ -128,6 +128,8 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 | Owner pages | Steelmill Nav Atlas, Steelmill Replay (private artifacts) |
 
 ## Journal (newest first)
+
+- 2026-10-25 13:10 — Claude: 1e343d81 client lag fix #1 (O-025) `wb_bot_client_smooth` default OFF, added to the batch as C-059; STATUS roles updated to D-013.
 
 | Date | File | What |
 | --- | --- | --- |
