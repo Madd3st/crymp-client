@@ -4,10 +4,11 @@
 namespace WarsBots {
 struct BotMoveTraceClock {
  float next=0,last=-1;bool active=false;
- bool Poll(float now,bool enabled) {
+ bool Poll(float now,bool enabled,float hz=4.f) {
+  if(!(hz>=1.f))hz=1.f; if(hz>30.f)hz=30.f;
   if(!enabled){active=false;return false;}
   if(!active || now<last){next=now;active=true;}
-  last=now;if(now<next)return false;next+=(std::floor((now-next)*4.f)+1.f)*.25f;return true;
+  last=now;if(now<next)return false;next+=(std::floor((now-next)*hz)+1.f)/hz;return true;
  }
 };
 struct BotMoveTraceState {
