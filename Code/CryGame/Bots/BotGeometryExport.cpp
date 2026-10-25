@@ -86,7 +86,7 @@ bool ExportLevelGeometry(const char* requested){
   const int count=gEnv->pPhysicalWorld->GetEntitiesInBox(bounds.min,bounds.max,found,ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_independent|ent_ignore_noncolliding);
   std::vector<IPhysicalEntity*> entities;if(count>0)entities.assign(found,found+count);
   // X-070 diagnosis: how are the Power Struggle structures physicalized (if at all) in an actorless export?
-  json psStructures=json::array();
+  json psStructures=json::array();std::vector<IPhysicalEntity*> psBodies;
   if(gEnv->pEntitySystem){
    IEntityItPtr it=gEnv->pEntitySystem->GetEntityIterator();
    while(IEntity* e=it->Next()){
@@ -97,9 +97,23 @@ bool ExportLevelGeometry(const char* requested){
     IPhysicalEntity* pe=e->GetPhysics();int pt=pe?pe->GetType():-1;float mass=-1;
     if(pe){pe_status_dynamics dyn;if(pe->GetStatus(&dyn))mass=dyn.mass;}
     int slots=0;for(int sl=0;sl<e->GetSlotCount();++sl)if(e->GetStatObj(sl))++slots;
-    psStructures.push_back({{"class",c},{"name",e->GetName()},{"physics_type",pt},{"mass",mass},{"statobj_slots",slots},{"pos",Position(e->GetWorldPos())}});
+    json partsInfo=json::array();
+    if(pe){
+     pe_status_nparts np;const int n=pe->GetStatus(&np);
+     for(int part=0;part<n && part<12;++part){
+      pe_status_pos pose;pose.ipart=part;if(!pe->GetStatus(&pose))continue;
+      IGeometry* g=pose.pGeomProxy?pose.pGeomProxy:pose.pGeom;
+      int tris=-1;if(g && g->GetType()==GEOM_TRIMESH){const auto* m=static_cast<const mesh_data*>(g->GetData());if(m)tris=m->nTris;}
+      partsInfo.push_back({{"flagsOR",(unsigned)pose.flagsOR},{"geom_type",g?g->GetType():-1},{"tris",tris},{"proxy",pose.pGeomProxy!=nullptr}});
+     }
+    }
+    psStructures.push_back({{"class",c},{"name",e->GetName()},{"physics_type",pt},{"mass",mass},{"statobj_slots",slots},{"parts",partsInfo},{"pos",Position(e->GetWorldPos())}});
+    if(pe && (pt==PE_STATIC || pt==PE_RIGID || pt==PE_ARTICULATED) && mass<=0.0f && _stricmp(c,"AutoTurret"))psBodies.push_back(pe);
    }
   }
+  // X-071: the world box query returned none of the non-static structure bodies; add them explicitly.
+  uint64_t psAdded=0;
+  for(IPhysicalEntity* pe:psBodies)if(std::find(entities.begin(),entities.end(),pe)==entities.end()){entities.push_back(pe);++psAdded;}
   uint64_t parts=0,skipped=0,proxy=0,unsupported=0,terrain=0,structures=0;json types=json::object(),structureClasses=json::object(),skippedClasses=json::object();
   for(auto* entity:entities){
    if(!entity)continue;
@@ -114,7 +128,7 @@ bool ExportLevelGeometry(const char* requested){
      const std::string key=std::string(cls)+" type="+std::to_string(peType)+(hasDyn&&dyn.mass>0.0f?" moving":" mass0");
      skippedClasses[key]=skippedClasses.value(key,uint64_t(0))+1;
     }
-    if(peType!=PE_RIGID || !hasDyn || dyn.mass>0.0f)continue;
+    if((peType!=PE_RIGID && peType!=PE_ARTICULATED) || (hasDyn && dyn.mass>0.0f))continue; // X-071: Shore factories are PE_ARTICULATED mass 0
     if(!owner || !_stricmp(cls,"Door") || (g_pGame->GetIGameFramework()->GetIItemSystem()->GetItem(owner->GetId())) ||
        g_pGame->GetIGameFramework()->GetIVehicleSystem()->GetVehicle(owner->GetId()))continue;
     ++structures;structureClasses[cls]=structureClasses.value(cls,uint64_t(0))+1;
@@ -170,7 +184,7 @@ bool ExportLevelGeometry(const char* requested){
    for(char& c:lower)c=char(std::tolower(static_cast<unsigned char>(c)));
    if((item && !item->GetOwnerId()) || lower.find("ammo")!=std::string::npos)items.push_back({{"id",e->GetId()},{"class",cls},{"name",e->GetName()},{"position",Position(e->GetWorldPos())},{"kind",item && item->GetIWeapon()?"weapon":"item_or_ammo"}});
   }
-  json meta={{"schema","wbgeometry/1"},{"map",name},{"build",CRYMP_VERSION_STRING},{"sha",CRYMP_GIT_SHA},{"up_axis","Z"},{"units","metres"},{"bounds",{Position(bounds.min),Position(bounds.max)}},{"static_entities",entities.size()},{"parts",parts},{"collision_proxy_parts",proxy},{"skipped_parts",skipped},{"unsupported_parts",unsupported},{"geometry_types",types},{"vertices",writer.vertices},{"triangles",writer.faces},{"degenerate_skipped",writer.rejected},{"terrain_cells",terrain},{"structure_entities",structures},{"structure_classes",structureClasses},{"nonstatic_bodies",skippedClasses},{"ps_structures",psStructures},{"primitive_segments",16},{"heightmap_unit",gEnv->p3DEngine->GetHeightMapUnitSize()}};
+  json meta={{"schema","wbgeometry/1"},{"map",name},{"build",CRYMP_VERSION_STRING},{"sha",CRYMP_GIT_SHA},{"up_axis","Z"},{"units","metres"},{"bounds",{Position(bounds.min),Position(bounds.max)}},{"static_entities",entities.size()},{"parts",parts},{"collision_proxy_parts",proxy},{"skipped_parts",skipped},{"unsupported_parts",unsupported},{"geometry_types",types},{"vertices",writer.vertices},{"triangles",writer.faces},{"degenerate_skipped",writer.rejected},{"terrain_cells",terrain},{"structure_entities",structures},{"structure_classes",structureClasses},{"nonstatic_bodies",skippedClasses},{"ps_structures",psStructures},{"ps_bodies_added",psAdded},{"primitive_segments",16},{"heightmap_unit",gEnv->p3DEngine->GetHeightMapUnitSize()}};
   writer.Finish();Save(temporary[1],{{"schema","wbspawns/1"},{"map",name},{"spawns",spawns}});Save(temporary[2],{{"schema","wbitems/1"},{"map",name},{"items",items}});Save(temporary[3],meta);
   // Publish metadata last; its presence is the completion marker for the bundle.
   Publish(objTemp,path);Publish(temporary[1],spawnPath);Publish(temporary[2],itemPath);Publish(temporary[3],metaPath);
