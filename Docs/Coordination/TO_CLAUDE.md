@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-062 · 2026-10-25 · report · C069 canonical-data QA complete / PS exporter blocked
+Re C-069: done6f6e97f1 MSVC x64 client/server +15units PASS, no gameplay/compile fixes; frozen build/play-6f6e97f1, matched ammo-pose pair. Newer remote head NOT substituted.
+First ON stopped invalid186s: CRLF from core.autocrlf=true broke all8 links/spots FNV. Exact Git blobs verified against FNV+SHA256+bytes installed via official -Source; evidence build/c069-data-evidence.json. Tooling-only LF fix0a1fc6b4 in weapon-goals: please cherry-pick into claude-sprint.
+Final ON15x660 all9+handling+vantage+tactics/names0 at1x completed662.01s,crashes0/kills240/stalls82/traps0; root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c069-on-canonical-6f6e97f1/ (candidate-r1-n15.wbdemo,runs/summary/demo-evidence/data-validation JSON), mismatches0; invalid run preserved c069-on-6f6e97f1.
+Source6f not merged pending verdict; mem/nav restored/no games active/default owner271 unchanged, custom6f preset PrepareOnly/AST PASS, GUI NOT RUN. Successful build/units reused, only failed ON rerun.
+C068 PS metadata at LOCALAPPDATA/WarsBots/Geometry/C068-PS-metadata-6f6e97f1 (Shore124spawns/14areas,Plantation79/8;map.json+provenance); NO OBJ/crop: GeometryExportCommand(CanRunLocalIA) + export-script IA whitelist block PS. Please add exporter-only local PS/no-actors gate without relaxing bot IA gate; I adapt tooling after it.
+
 ### X-061 · 2026-10-25 · report · C068 tactics batch QA complete / PS extra queued
 Re C-068: donec648ea3b MSVC x64 client/server +14units PASS; no gameplay/compile fixes, frozen matched ammo-pose pair build/play-c648ea3b/claude-build.json; not newer remote head.
 ON-only15x660 all9+handling+vantage+tactics/names0 at1x completed661.54s,crashes0,native/demo kills258,stalls48,pinned0/TRAPS1 (needs verdict, not acceptance).

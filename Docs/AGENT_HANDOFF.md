@@ -1,5 +1,12 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C0696f6e97f1 MSVC+15units PASS. First ON invalid (CRLF broke manifests), stopped;
+canonical Git-data rerun15x660 runtime PASS/mismatches0. Evidence in
+build/c069-on-canonical-6f6e97f1 and c069-data-evidence.json. LF tooling fix0a1fc6b4;
+needs propagation to claude-sprint, no game code changed. X062 sent, verdict pending.
+Memory restored/no game active. PS metadata extracted; OBJ/crop BLOCKED by IA-only
+GeometryExportCommand/export script; separate exporter gate requested from Claude.
+
 C068c648ea3b: MSVC+14units PASS, ON15x660 tactics runtime completed/no crash;
 TRAPS1 observed, needs Claude verdict; not auto-accepted/merged. HOLD markers present.
 Raw build/c068-on-c648ea3b; frozen matching play-c648ea3b, X061 sent.
