@@ -83,22 +83,43 @@ bool ExportLevelGeometry(const char* requested){
   IPhysicalEntity** found=nullptr;
   // Static brushes + terrain, plus immovable entity geometry (mass 0 rigid bodies): Power Struggle HQs, factories,
   // spawn bunkers and other structures are entities, not brushes (C-073 Shore crop had only terrain holes there).
-  const int count=gEnv->pPhysicalWorld->GetEntitiesInBox(bounds.min,bounds.max,found,ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_ignore_noncolliding);
+  const int count=gEnv->pPhysicalWorld->GetEntitiesInBox(bounds.min,bounds.max,found,ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_independent|ent_ignore_noncolliding);
   std::vector<IPhysicalEntity*> entities;if(count>0)entities.assign(found,found+count);
-  uint64_t parts=0,skipped=0,proxy=0,unsupported=0,terrain=0,structures=0;json types=json::object(),structureClasses=json::object();
+  // X-070 diagnosis: how are the Power Struggle structures physicalized (if at all) in an actorless export?
+  json psStructures=json::array();
+  if(gEnv->pEntitySystem){
+   IEntityItPtr it=gEnv->pEntitySystem->GetEntityIterator();
+   while(IEntity* e=it->Next()){
+    const char* c=e->GetClass()?e->GetClass()->GetName():"";
+    static const char* kinds[]={"HQ","Factory","SpawnGroup","AlienEnergyPoint","BuyZone","AutoTurret"};
+    bool ps=false;for(const char* k:kinds)if(!_stricmp(c,k))ps=true;
+    if(!ps || psStructures.size()>=64)continue;
+    IPhysicalEntity* pe=e->GetPhysics();int pt=pe?pe->GetType():-1;float mass=-1;
+    if(pe){pe_status_dynamics dyn;if(pe->GetStatus(&dyn))mass=dyn.mass;}
+    int slots=0;for(int sl=0;sl<e->GetSlotCount();++sl)if(e->GetStatObj(sl))++slots;
+    psStructures.push_back({{"class",c},{"name",e->GetName()},{"physics_type",pt},{"mass",mass},{"statobj_slots",slots},{"pos",Position(e->GetWorldPos())}});
+   }
+  }
+  uint64_t parts=0,skipped=0,proxy=0,unsupported=0,terrain=0,structures=0;json types=json::object(),structureClasses=json::object(),skippedClasses=json::object();
   for(auto* entity:entities){
    if(!entity)continue;
    const int peType=entity->GetType();
-   if(peType==PE_RIGID){
-    // immovable structures only: mass 0, not doors (open/close at runtime), not items/vehicles
-    pe_status_dynamics dyn;if(!entity->GetStatus(&dyn) || dyn.mass>0.0f)continue;
+   if(peType!=PE_STATIC){
+    // immovable structures only: mass 0, not doors (open/close at runtime), not items/vehicles. X-070: Shore had 0
+    // structures and Plantation skipped 764 rigid bodies - record why each non-static body was skipped.
+    pe_status_dynamics dyn;const bool hasDyn=entity->GetStatus(&dyn)!=0;
     IEntity* owner=gEnv->pEntitySystem?gEnv->pEntitySystem->GetEntityFromPhysics(entity):nullptr;
-    const char* cls=owner&&owner->GetClass()?owner->GetClass()->GetName():"";
+    const char* cls=owner&&owner->GetClass()?owner->GetClass()->GetName():"<no owner>";
+    {
+     const std::string key=std::string(cls)+" type="+std::to_string(peType)+(hasDyn&&dyn.mass>0.0f?" moving":" mass0");
+     skippedClasses[key]=skippedClasses.value(key,uint64_t(0))+1;
+    }
+    if(peType!=PE_RIGID || !hasDyn || dyn.mass>0.0f)continue;
     if(!owner || !_stricmp(cls,"Door") || (g_pGame->GetIGameFramework()->GetIItemSystem()->GetItem(owner->GetId())) ||
        g_pGame->GetIGameFramework()->GetIVehicleSystem()->GetVehicle(owner->GetId()))continue;
     ++structures;structureClasses[cls]=structureClasses.value(cls,uint64_t(0))+1;
    }
-   else if(peType!=PE_STATIC)continue; // includes terrain's static entity, never living/articulated.
+   // PE_STATIC: brushes and terrain
    pe_status_nparts np;const int n=entity->GetStatus(&np);
    for(int part=0;part<n;++part){
     pe_status_pos pose;pose.ipart=part;if(!entity->GetStatus(&pose)){++skipped;continue;}
@@ -149,7 +170,7 @@ bool ExportLevelGeometry(const char* requested){
    for(char& c:lower)c=char(std::tolower(static_cast<unsigned char>(c)));
    if((item && !item->GetOwnerId()) || lower.find("ammo")!=std::string::npos)items.push_back({{"id",e->GetId()},{"class",cls},{"name",e->GetName()},{"position",Position(e->GetWorldPos())},{"kind",item && item->GetIWeapon()?"weapon":"item_or_ammo"}});
   }
-  json meta={{"schema","wbgeometry/1"},{"map",name},{"build",CRYMP_VERSION_STRING},{"sha",CRYMP_GIT_SHA},{"up_axis","Z"},{"units","metres"},{"bounds",{Position(bounds.min),Position(bounds.max)}},{"static_entities",entities.size()},{"parts",parts},{"collision_proxy_parts",proxy},{"skipped_parts",skipped},{"unsupported_parts",unsupported},{"geometry_types",types},{"vertices",writer.vertices},{"triangles",writer.faces},{"degenerate_skipped",writer.rejected},{"terrain_cells",terrain},{"structure_entities",structures},{"structure_classes",structureClasses},{"primitive_segments",16},{"heightmap_unit",gEnv->p3DEngine->GetHeightMapUnitSize()}};
+  json meta={{"schema","wbgeometry/1"},{"map",name},{"build",CRYMP_VERSION_STRING},{"sha",CRYMP_GIT_SHA},{"up_axis","Z"},{"units","metres"},{"bounds",{Position(bounds.min),Position(bounds.max)}},{"static_entities",entities.size()},{"parts",parts},{"collision_proxy_parts",proxy},{"skipped_parts",skipped},{"unsupported_parts",unsupported},{"geometry_types",types},{"vertices",writer.vertices},{"triangles",writer.faces},{"degenerate_skipped",writer.rejected},{"terrain_cells",terrain},{"structure_entities",structures},{"structure_classes",structureClasses},{"nonstatic_bodies",skippedClasses},{"ps_structures",psStructures},{"primitive_segments",16},{"heightmap_unit",gEnv->p3DEngine->GetHeightMapUnitSize()}};
   writer.Finish();Save(temporary[1],{{"schema","wbspawns/1"},{"map",name},{"spawns",spawns}});Save(temporary[2],{{"schema","wbitems/1"},{"map",name},{"items",items}});Save(temporary[3],meta);
   // Publish metadata last; its presence is the completion marker for the bundle.
   Publish(objTemp,path);Publish(temporary[1],spawnPath);Publish(temporary[2],itemPath);Publish(temporary[3],metaPath);
