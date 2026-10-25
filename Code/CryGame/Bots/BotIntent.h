@@ -23,7 +23,9 @@ struct BotIntent
 	ENanoMode suitMode = NANOMODE_DEFENSE;
 	BotCombatIntent combat = BotCombatIntent::None;
 	bool linkJump = false; // C-036: jump on a baked navmesh link (arc checked offline) - skip the local JumpSpace probe
-	bool meshPath = false; // destination is a Detour corner (wb_bot_navmesh): stairs are walkable, skip the knee ray
+	bool meshPath = false;
+	// T-1: source line (BotBrain.cpp) of the last write per channel this tick; 0 = default
+	struct Why { short suitMode = 0, jump = 0, gait = 0, aim = 0, move = 0; } why; // destination is a Detour corner (wb_bot_navmesh): stairs are walkable, skip the knee ray
 	void MoveTo(const Vec3& point, const Vec3& look) { move = true; destination = point; aim = look; }
 	void AimAt(const Vec3& look) { move = false; aim = look; combat = BotCombatIntent::Aim; }
 };

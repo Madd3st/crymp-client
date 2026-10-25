@@ -17,6 +17,10 @@
 #include "CryGame/Actors/Player/Player.h"
 #include "CryCommon/CryAction/IWeapon.h"
 #include <cmath>
+// T-1 step 1 (DeepSeek review): every write to a control channel records its source line in BotIntent::why*, so the
+// INTENT WHY log shows which rule decided suit/jump/gait/aim/move this tick. No behaviour change: same writes, same order.
+#define WBI(field,value) (m_intent.field=(value), m_intent.why.field=short(__LINE__))
+#define WBI_MOVETO(...) (m_intent.MoveTo(__VA_ARGS__), m_intent.why.move=short(__LINE__), m_intent.why.aim=short(__LINE__))
 #include <cstdlib>
 
 namespace WarsBots
@@ -80,23 +84,23 @@ void BotBrain::TravelGait(float distance)
         const bool allowed=m_profile.skill!=BotSkill::Beginner || m_profile.useSpeed;
         m_speedTravel=allowed && PaceSpeedBurst(m_speedTravel,distance,m_blackboard.energy);
         // Basic Armor sprint is available to every skill; complex Speed burst keeps the Beginner gate.
-        m_intent.gait=distance>=3.f?BotGait::Sprint:BotGait::Run;
-        m_intent.suitMode=m_speedTravel?NANOMODE_SPEED:NANOMODE_DEFENSE;
+        WBI(gait,distance>=3.f?BotGait::Sprint:BotGait::Run);
+        WBI(suitMode,m_speedTravel?NANOMODE_SPEED:NANOMODE_DEFENSE);
         if(!m_speedTravel)return;
     }else{
-	if (!m_profile.useSpeed) { m_intent.gait=BotGait::Run; return; }
+	if (!m_profile.useSpeed) { WBI(gait,BotGait::Run); return; }
 	if (m_speedTravel) { if (m_blackboard.energy < 55.0f || distance < 8.0f) m_speedTravel = false; }
 	else if (m_blackboard.energy > 120.0f && distance > 15.0f) m_speedTravel = true;
-	m_intent.gait = m_speedTravel ? BotGait::Sprint : BotGait::Run;
+	WBI(gait,m_speedTravel ? BotGait::Sprint : BotGait::Run);
 	if (!m_speedTravel) return;
-	m_intent.suitMode = NANOMODE_SPEED;
+	WBI(suitMode,NANOMODE_SPEED);
     }
 	// Speed drains energy fast, so a ">160" threshold was almost never met: jump at >130 instead.
 	if (distance > 15.0f && m_blackboard.grounded && m_blackboard.energy > 130.0f &&
 		m_now >= m_blackboard.nextSuitChange && m_now >= m_nextTravelJump)
 	{
 		m_nextTravelJump = m_now + 5.0f + Rand01() * 5.0f;
-		if (Rand01() < 0.7f) { m_intent.jump = BotJump::Strength; m_intent.suitMode = NANOMODE_STRENGTH; }
+		if (Rand01() < 0.7f) { WBI(jump,BotJump::Strength); WBI(suitMode,NANOMODE_STRENGTH); }
 	}
 }
 
@@ -258,7 +262,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
 
 	m_intent=BotIntent();
-	m_intent.aim=actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f);
+	WBI(aim,actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f));
     if(UpdateTest(actor,decisionTime))return;
     const int& qaWeapon=BotConfig::Get().qaSocomOnly;
     const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
@@ -350,10 +354,10 @@ bool BotBrain::UpdateTest(CPlayer& actor,float decisionTime)
 {
 	if (m_now<m_testUntil)
 	{
-		if (m_testGait>=0) { m_intent.MoveTo(m_testGoal,m_testStrafe ? m_testLook : m_testGoal+Vec3(0,0,1.4f)); m_intent.gait=static_cast<BotGait>(m_testGait); m_intent.strafe=m_testStrafe!=0; }
-		m_intent.jump=m_now>=m_testJumpAt?m_testJump:BotJump::None;
-		if (m_testJump!=BotJump::None) m_intent.suitMode=m_testJump==BotJump::Strength?NANOMODE_STRENGTH:NANOMODE_DEFENSE;
-		else if (m_testGait==int(BotGait::Sprint)) m_intent.suitMode=NANOMODE_SPEED;
+		if (m_testGait>=0) { WBI_MOVETO(m_testGoal,m_testStrafe ? m_testLook : m_testGoal+Vec3(0,0,1.4f)); WBI(gait,static_cast<BotGait>(m_testGait)); m_intent.strafe=m_testStrafe!=0; }
+		WBI(jump,m_now>=m_testJumpAt?m_testJump:BotJump::None);
+		if (m_testJump!=BotJump::None) WBI(suitMode,m_testJump==BotJump::Strength?NANOMODE_STRENGTH:NANOMODE_DEFENSE);
+		else if (m_testGait==int(BotGait::Sprint)) WBI(suitMode,NANOMODE_SPEED);
 		if (m_now>=m_testJumpAt) m_testJump=BotJump::None; // Consume the command once, including a refused attempt.
 		ExecuteIntent(actor,decisionTime); return true;
 	}
@@ -367,7 +371,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
     if (socomQA && (!actor.GetCurrentItem() ||
         strcmp(actor.GetCurrentItem()->GetEntity()->GetClass()->GetName(),"SOCOM") ||
         !BotWeapons::Current(actor) || !BotWeapons::HasAmmunition(actor,*BotWeapons::Current(actor)))) {
-        m_combat.StopFire();m_intent.move=false;ExecuteIntent(actor,decisionTime);return true;
+        m_combat.StopFire();WBI(move,false);ExecuteIntent(actor,decisionTime);return true;
     }
 	if (!BotWeapons::SelectAvailable(actor))
 	{
@@ -389,19 +393,19 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 			Change(State::MOVING_TO_WEAPON);
 			if ((item->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared2D() <= 4.0f && fabs_tpl(item->GetWorldPos().z - actor.GetEntity()->GetWorldPos().z) <= 2.2f)
 			{
-				m_intent.move=false;
+				WBI(move,false);
 				if (BotWeapons::PickUp(actor, m_weaponTarget)) { m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass(); m_weaponTarget = 0; Change(State::SEARCHING_ENEMY); }
 				else m_weaponTarget = 0;
 			}
-			else { const Vec3 step=Steer(actor.GetEntity()->GetWorldPos(),item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait((item->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength()); }
+			else { const Vec3 step=Steer(actor.GetEntity()->GetWorldPos(),item->GetWorldPos()); WBI_MOVETO(step,step+Vec3(0,0,1.2f)); TravelGait((item->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength()); }
 		}
 		else if (!m_fallbackGiven && (!item || m_now - m_weaponSearchStarted >= 6.0f))
 		{
-			m_intent.move=false;
+			WBI(move,false);
 			m_fallbackGiven = true; // At most one test supply per life, never per frame.
 			if (BotWeapons::GiveTestSCAR(actor)) Change(State::SEARCHING_ENEMY);
 		}
-		else { m_weaponTarget = 0; m_intent.move=false; Change(State::SEEKING_WEAPON); }
+		else { m_weaponTarget = 0; WBI(move,false); Change(State::SEEKING_WEAPON); }
 		ExecuteIntent(actor,decisionTime);
 		return true;
 	}
@@ -465,12 +469,12 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 			const float d = delta.GetLength();
 			if (delta.GetLengthSquared2D() <= 4.0f && fabs_tpl(delta.z) <= 2.2f)
 			{
-				m_intent.move=false;
+				WBI(move,false);
 				if (BotWeapons::PickUp(actor, m_upgradeTarget)) m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass();
 				else MarkBadItem(m_upgradeTarget);
 				m_upgradeTarget = 0;
 			}
-			else { const Vec3 step=Steer(feet,item->GetWorldPos()); m_intent.MoveTo(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
+			else { const Vec3 step=Steer(feet,item->GetWorldPos()); WBI_MOVETO(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
 			ExecuteIntent(actor,decisionTime);
 			if (bot.GetActor()!=&actor) return true;
 			return true;
@@ -554,7 +558,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			}
 			m_detour = false;
 		}
-		{ const Vec3 step=Steer(feet,m_patrolGoal); m_intent.MoveTo(step,step+Vec3(0,0,1.3f)); }
+		{ const Vec3 step=Steer(feet,m_patrolGoal); WBI_MOVETO(step,step+Vec3(0,0,1.3f)); }
 		TravelGait((m_patrolGoal-feet).GetLength());
 		ExecuteIntent(actor,decisionTime);
 		if (bot.GetActor()!=&actor) return;
@@ -599,8 +603,8 @@ bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
 	// hold: stand on the spot and watch the best view direction (the look policy sees no path -> keeps this view)
 	const Vec3 eye=feet+Vec3(0,0,1.6f);
 	const float yaw=DEG2RAD(o.lookYaw);
-	if (o.move) { const Vec3 step=Steer(feet,Vec3(o.x,o.y,o.z)); m_intent.MoveTo(step,eye+Vec3(sinf(yaw),cosf(yaw),0)*30.0f); m_intent.gait=BotGait::Walk; }
-	else { m_intent.move=false; m_intent.aim=eye+Vec3(sinf(yaw),cosf(yaw),-0.05f)*30.0f; if (m_traits.prone>0.5f) m_intent.stance=STANCE_PRONE; }
+	if (o.move) { const Vec3 step=Steer(feet,Vec3(o.x,o.y,o.z)); WBI_MOVETO(step,eye+Vec3(sinf(yaw),cosf(yaw),0)*30.0f); WBI(gait,BotGait::Walk); }
+	else { WBI(move,false); WBI(aim,eye+Vec3(sinf(yaw),cosf(yaw),-0.05f)*30.0f); if (m_traits.prone>0.5f) m_intent.stance=STANCE_PRONE; }
 	ExecuteIntent(actor,decisionTime);
 	return true;
 }
@@ -646,11 +650,11 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 	if (m_now<m_withdrawUntil)
 	{
 		const Vec3 away=(actor.GetEntity()->GetWorldPos()-destination).GetNormalizedSafe(FORWARD_DIRECTION);
-		m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+away*4.0f,aim);
+		WBI_MOVETO(actor.GetEntity()->GetWorldPos()+away*4.0f,aim);
 		m_intent.strafe=visible; m_intent.combat=BotCombatIntent::Aim;
-		m_intent.suitMode=NANOMODE_DEFENSE;
+		WBI(suitMode,NANOMODE_DEFENSE);
 		if (!BotPaceEnabled() && !visible && m_profile.useSpeed && m_blackboard.energy>120 && m_now>=m_blackboard.damagedUntil)
-		{ m_intent.gait=BotGait::Sprint; m_intent.suitMode=NANOMODE_SPEED; m_intent.combat=BotCombatIntent::None; }
+		{ WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_SPEED); m_intent.combat=BotCombatIntent::None; }
 		ExecuteIntent(actor,decisionTime); return;
 	}
 	if (BotConfig::Get().vantage==1 && m_vantage.Phase()==VantagePhase::Hold && visible && distance>20.0f)
@@ -658,7 +662,7 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		// owner 25.10: a sniper on its spot fights from there (elite marksmen lying down: spread x0.33) instead of
 		// running off the roof toward the target
 		Change(State::ATTACKING);
-		m_intent.move=false; m_intent.aim=aim;
+		WBI(move,false); WBI(aim,aim);
 		if (m_traits.prone>0.5f) m_intent.stance=STANCE_PRONE;
 		m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
 		UpdateCombatPost(bot,actor,decisionTime);
@@ -704,9 +708,9 @@ bool BotBrain::UpdateHoldAngle(BotInstance& bot,CPlayer& actor,const Vec3& threa
 	if (ph==HoldPhase::Move)
 	{
 		const TVec& s=m_hold.Spot();
-		m_intent.MoveTo(Steer(feet,Vec3(s.x,s.y,s.z)),aim); m_intent.strafe=true; m_intent.gait=BotGait::Run;
+		WBI_MOVETO(Steer(feet,Vec3(s.x,s.y,s.z)),aim); m_intent.strafe=true; WBI(gait,BotGait::Run);
 	}
-	else { m_intent.move=false; m_intent.aim=aim; }
+	else { WBI(move,false); WBI(aim,aim); }
 	m_intent.combat=BotCombatIntent::Aim;
 	UpdateCombatPost(bot,actor,decisionTime);
 	return true;
@@ -720,7 +724,7 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
 		{
 			m_retreating = true;
 			Vec3 away = (actor.GetEntity()->GetWorldPos()-destination).GetNormalizedSafe(FORWARD_DIRECTION);
-			m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+away*3.0f,aim);
+			WBI_MOVETO(actor.GetEntity()->GetWorldPos()+away*3.0f,aim);
 			m_intent.combat=BotCombatIntent::Aim;
 			m_intent.strafe=true;
 		}
@@ -749,12 +753,12 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
                 }
             }
             else m_shotBlockedSince=0;
-            m_intent.MoveTo(actor.GetEntity()->GetWorldPos()+travel*4.0f,aim);
+            WBI_MOVETO(actor.GetEntity()->GetWorldPos()+travel*4.0f,aim);
             m_intent.strafe=true;
             // fragmovies: duels are strafe + hop, never standing in the open (normal jump: Armor only)
             if (BotConfig::Get().tactics==1 && m_blackboard.mode==NANOMODE_DEFENSE && m_intent.jump==BotJump::None &&
                 m_jumpStrafe.Want(m_now,m_blackboard.grounded,distance,m_traits.jumper,m_rng+unsigned(m_decisionSerial)*2654435761u))
-                m_intent.jump=BotJump::Normal;
+                WBI(jump,BotJump::Normal);
         }
 		Change(State::ATTACKING);
 		m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
@@ -764,7 +768,7 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
 		{
 			m_lastHitSeen = m_blackboard.damagedUntil;
 			if (m_blackboard.grounded && m_blackboard.energy >= 110.0f && m_now >= m_nextDodge && Rand01() < m_profile.dodgeChance)
-			{ m_intent.jump=BotJump::Strength; m_intent.suitMode=NANOMODE_STRENGTH; m_nextDodge=m_now+4.0f; }
+			{ WBI(jump,BotJump::Strength); WBI(suitMode,NANOMODE_STRENGTH); m_nextDodge=m_now+4.0f; }
 		}
 
 }
@@ -773,7 +777,7 @@ void BotBrain::UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& 
 {
 
 		Change(State::CHASING_ENEMY);
-		m_intent.MoveTo(Steer(actor.GetEntity()->GetWorldPos(),destination),aim);
+		WBI_MOVETO(Steer(actor.GetEntity()->GetWorldPos(),destination),aim);
 		// A visible target beyond engage range is still shot at while closing in, like a player
 		// with a rifle would; outside fireRange or without LOS the bot only moves.
 		if (visible && distance <= m_profile.fireRange)
@@ -794,11 +798,11 @@ void BotBrain::UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& 
 		if (!visible || BotPaceEnabled()) TravelGait(distance); // hunting a hidden target: Speed travel like a player
 		else
 		{
-			m_intent.gait=m_profile.useSpeed && distance>(m_blackboard.mode==NANOMODE_SPEED?m_profile.sprintChaseRange-2.0f:m_profile.sprintChaseRange) && m_now-m_stateTime>0.4f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run;
-			if (m_intent.gait==BotGait::Sprint) m_intent.suitMode=NANOMODE_SPEED;
+			WBI(gait,m_profile.useSpeed && distance>(m_blackboard.mode==NANOMODE_SPEED?m_profile.sprintChaseRange-2.0f:m_profile.sprintChaseRange) && m_now-m_stateTime>0.4f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run);
+			if (m_intent.gait==BotGait::Sprint) WBI(suitMode,NANOMODE_SPEED);
 		}
 		if (!visible && distance>12.0f && distance<30.0f && BotSuit::CloakEnabled() && m_blackboard.energy>120.0f)
-		{ m_intent.suitMode=NANOMODE_CLOAK; m_intent.gait=BotGait::Walk; }
+		{ WBI(suitMode,NANOMODE_CLOAK); WBI(gait,BotGait::Walk); }
 
 
 }
@@ -871,12 +875,12 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
     if (m_trap.Level()>=2 && m_trap.Level()<4 && m_now<m_trapStepUntil)
     {
         m_combat.StopFire();m_intent.combat=BotCombatIntent::None;
-        m_intent.MoveTo(p+m_trapDirection*3.f,m_intent.aim);
-        m_intent.strafe=false;m_intent.gait=BotGait::Run;m_intent.suitMode=NANOMODE_DEFENSE;
-        m_intent.jump=BotJump::None;
+        WBI_MOVETO(p+m_trapDirection*3.f,m_intent.aim);
+        m_intent.strafe=false;WBI(gait,BotGait::Run);WBI(suitMode,NANOMODE_DEFENSE);
+        WBI(jump,BotJump::None);
         if (m_trap.Level()==3 && !m_trapJumpAttempted && m_blackboard.grounded &&
             m_blackboard.mode==NANOMODE_DEFENSE && m_now>=m_blackboard.nextJump)
-        { m_intent.jump=BotJump::Normal;m_trapJumpAttempted=true; } // Executor still requires JumpSpace.
+        { WBI(jump,BotJump::Normal);m_trapJumpAttempted=true; } // Executor still requires JumpSpace.
     }
     return false;
 }
@@ -886,7 +890,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
     if (RecoverTrap(actor)) return;
     ApplyLookPolicy(actor); // C-033, wb_bot_look
 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
-		m_intent.suitMode=static_cast<ENanoMode>(m_testMode);
+		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
 	m_blackboard.obstacleJump=BotJump::None;
 	m_intent.linkJump=false;
 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
@@ -897,23 +901,23 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 		m_blackboard.obstacleJump=m_locomotion.Obstacle(actor,direction);
 		if (m_blackboard.obstacleJump!=BotJump::None && m_intent.combat==BotCombatIntent::None)
 		{
-			m_intent.jump=m_blackboard.obstacleJump;
-			m_intent.suitMode=m_intent.jump==BotJump::Strength?NANOMODE_STRENGTH:NANOMODE_DEFENSE;
+			WBI(jump,m_blackboard.obstacleJump);
+			WBI(suitMode,m_intent.jump==BotJump::Strength?NANOMODE_STRENGTH:NANOMODE_DEFENSE);
 	}
 }
 	if (!m_blackboard.grounded && m_blackboard.velocity.z < -3.0f)
-		m_intent.suitMode=NANOMODE_DEFENSE; // Armor before landing: native suit absorbs fall damage.
+		WBI(suitMode,NANOMODE_DEFENSE); // Armor before landing: native suit absorbs fall damage.
 	else if (!m_blackboard.grounded && static_cast<const SPlayerStats*>(actor.GetActorStats())->jumped && m_blackboard.mode==NANOMODE_STRENGTH && m_intent.jump==BotJump::None)
-		m_intent.suitMode=NANOMODE_STRENGTH;
+		WBI(suitMode,NANOMODE_STRENGTH);
 	if (!m_link.Active() && !BotPaceEnabled() && (m_now<m_blackboard.damagedUntil || m_intent.combat!=BotCombatIntent::None || m_blackboard.energy<45.0f) && m_intent.jump!=BotJump::Strength)
-	{ m_intent.suitMode=NANOMODE_DEFENSE; if (m_intent.gait==BotGait::Sprint) m_intent.gait=BotGait::Run; }
+	{ WBI(suitMode,NANOMODE_DEFENSE); if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run); }
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
-    if(!m_link.Active() && BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){m_intent.suitMode=NANOMODE_DEFENSE;m_speedTravel=false;}
+    if(!m_link.Active() && BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){WBI(suitMode,NANOMODE_DEFENSE);m_speedTravel=false;}
     if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
-        if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;m_intent.suitMode=NANOMODE_DEFENSE;m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
-        else m_intent.gait=BotGait::Run;
+        if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;WBI(suitMode,NANOMODE_DEFENSE);m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
+        else WBI(gait,BotGait::Run);
     }
 	if (BotConfig::Get().botTurnCap==1)
 	{
@@ -921,6 +925,13 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 		m_locomotion.Execute(actor,capped,m_blackboard,m_now,dt);
 	}
 	else m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
+	// T-1 step 1: which rule decided this tick (source lines of BotBrain.cpp), logged when the suit request changes or
+	// a jump is requested — the before/after evidence for the control-frame refactor.
+	if (m_intent.suitMode!=m_lastSuitRequest || m_intent.jump!=BotJump::None)
+		WB_LOG(2,"[WarsBots] #%d INTENT WHY suit=%d@%d jump=%d@%d gait=%d@%d move=%d@%d aim@%d state=%s actor=%u.",m_number,
+			int(m_intent.suitMode),m_intent.why.suitMode,int(m_intent.jump),m_intent.why.jump,int(m_intent.gait),m_intent.why.gait,
+			m_intent.move?1:0,m_intent.why.move,m_intent.why.aim,StateName(),actor.GetEntityId());
+	m_lastSuitRequest=m_intent.suitMode;
 	if (m_intent.combat==BotCombatIntent::Fire && m_blackboard.mode!=NANOMODE_CLOAK)
 	{
 		IActor* target=g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(m_combat.Target());
@@ -980,14 +991,14 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 		return;
 	}
 	if (!m_link.Active()) return;
-	m_intent.move=true;
+	WBI(move,true);
 	m_intent.destination=Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z);
-	m_intent.gait=o.slow?BotGait::Walk:BotGait::Run;
-	if (m_link.Phase()==LinkPhase::Act && m_link.Move()!=LinkMove::Drop) m_intent.gait=BotGait::Sprint; // c066: Strength links still land short
-	m_intent.jump=o.jump==LinkJumpRequest::Strength?BotJump::Strength:(o.jump==LinkJumpRequest::Normal?BotJump::Normal:BotJump::None);
+	WBI(gait,o.slow?BotGait::Walk:BotGait::Run);
+	if (m_link.Phase()==LinkPhase::Act && m_link.Move()!=LinkMove::Drop) WBI(gait,BotGait::Sprint); // c066: Strength links still land short
+	WBI(jump,o.jump==LinkJumpRequest::Strength?BotJump::Strength:(o.jump==LinkJumpRequest::Normal?BotJump::Normal:BotJump::None));
 	m_intent.linkJump=m_intent.jump!=BotJump::None;
-	if (o.wantStrength) m_intent.suitMode=NANOMODE_STRENGTH;
-	else if (o.wantArmor) m_intent.suitMode=NANOMODE_DEFENSE;
+	if (o.wantStrength) WBI(suitMode,NANOMODE_STRENGTH);
+	else if (o.wantArmor) WBI(suitMode,NANOMODE_DEFENSE);
 	m_speedTravel=false;
 }
 
@@ -1037,7 +1048,7 @@ void BotBrain::ApplyLookPolicy(CPlayer& actor)
     }
 	const LookOutput o=m_look.Update(in);
 	const float yaw=DEG2RAD(o.yaw), pitch=DEG2RAD(o.pitch);
-	m_intent.aim=eye+Vec3(sinf(yaw)*cosf(pitch),cosf(yaw)*cosf(pitch),sinf(pitch))*8.0f;
+	WBI(aim,eye+Vec3(sinf(yaw)*cosf(pitch),cosf(yaw)*cosf(pitch),sinf(pitch))*8.0f);
     if(m_lookDiagnostics<128 && m_now>=m_nextLookDiagnostic && BotConfig::Get().moveTrace!=0){
         static const char* const names[]={"keep","target","attacker","interest","path","next"};
         const unsigned reason=static_cast<unsigned>(o.reason);
@@ -1171,12 +1182,12 @@ void BotBrain::ApplySuitPolicy(CPlayer& actor)
 	const SuitDecision d=m_suitPolicy.Update(in);
 	switch (d.mode)
 	{
-	case SuitMode::Speed: m_intent.suitMode=NANOMODE_SPEED; break;
-	case SuitMode::Strength: m_intent.suitMode=NANOMODE_STRENGTH; break;
-	case SuitMode::Cloak: m_intent.suitMode=NANOMODE_CLOAK; break;
-	default: m_intent.suitMode=NANOMODE_DEFENSE; break;
+	case SuitMode::Speed: WBI(suitMode,NANOMODE_SPEED); break;
+	case SuitMode::Strength: WBI(suitMode,NANOMODE_STRENGTH); break;
+	case SuitMode::Cloak: WBI(suitMode,NANOMODE_CLOAK); break;
+	default: WBI(suitMode,NANOMODE_DEFENSE); break;
 	}
-	if (d.mode!=SuitMode::Strength && m_intent.jump==BotJump::Strength) m_intent.jump=BotJump::Normal; // no energy for it
+	if (d.mode!=SuitMode::Strength && m_intent.jump==BotJump::Strength) WBI(jump,BotJump::Normal); // no energy for it
 	m_speedTravel=d.mode==SuitMode::Speed;
 }
 
