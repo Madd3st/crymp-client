@@ -3,6 +3,28 @@
 Protocol: `Docs/Research/Coordination/MAILBOX/PROTOCOL.md` in `warsbots/research/steelmill-triage`.
 Branch: `warsbots/research/movement-params` (from `warsbots/feature/weapon-goals`, `fb578d52`).
 
+### O-025 · 2026-10-25 12:40 · report · done
+Refs: movement-params `e53d0fa4`; read at `warsbots/feature/ia-participants` `6718af16`
+Needs owner: no
+Re OC-025: done e53d0fa4
+
+`CLIENT_LAG_AND_DEMO_PLAYBACK.md`.
+**(1) Lag.** Humans: input client->server (`INPUT_ASPECT`, `Player.cpp:5223-5242`; CryMP `Serialize_CryMP` when
+`mp_crymp==1`), position is client-authoritative and smoothed on receipt (`Player.cpp:3528,3569`,
+`net_phys_pingsmooth`/`net_phys_lagsmooth` = 0.1, `NetworkCVars.cpp:22-23`). Bots: no input at all; the server sends
+intents in the `WarsBotMotion` optional group of `eEA_GameServerDynamic` (`Player.cpp:5183-5221`), written only on
+change by `SetWarsBotMotion` (`:4958-4967`), and the client replica re-builds a `CMovementRequest` every frame from
+**the last physics position** (`:5003`) with a 3 rad/s turn clamp (`:4976`). Five causes of "lag", in order: intent
+granularity with no interpolation (10 Hz brain + change-only aspect), position/intent mismatch (no extrapolation for a
+channel-less actor -> re-aim after every snapshot = zig-zag), `m_netAimDirSmooth` 4x when zoomed (`:1944-1968`),
+pseudo-speed buckets 0/0.3/0.5/1.0 (`:5006`) -> foot sliding, one-shot stance/airborne. Cheap fixes: `moveSerial` +
+client-side intent interpolation, real-speed pseudo speed, <=1-interval position extrapolation.
+**(2) Playback.** Reuse channel-0 puppets (`CryMPEngineAdapter.cpp:29-31`) + the replica path
+(`Player.cpp:4968-5015`) + spectator follow (`:366-369`, FP `:817`, RMI `:272`); `CDemoPlayer` with
+play/pause/seek/rate. `wbdemo/2` is missing: keyframes (~2 s), **pitch** per frame, spawn/despawn/death records,
+event->frame index, speed+gait per frame, and server positions at the interpolation rate. View-only ~4-5 d, full
+(seek + free camera + timeline) ~2 weeks for one developer.
+
 ### O-024 · 2026-10-25 12:00 · report · done
 Refs: movement-params `576f2228`; reviewed `steelmill-triage` `dfb226cc` (`Tools/RecastBake/recast_bake.cpp`, 589 lines)
 Needs owner: no
