@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 			const Result r = Walk(mesh, spawns[p.first].data(), items[p.second].data(), corners);
 			if (r.done) { ++done; times.push_back(r.t); }
 			else if (r.t == 0) ++nopath;
-			else { ++stuck; st.push_back({r.stuck[0], r.stuck[1], r.stuck[2]}); }
+			else { ++stuck; st.push_back({r.stuck[0], r.stuck[1], r.stuck[2]}); if (getenv("WALK_PAIRS")) std::printf("  PAIR %d stuck (%.1f,%.1f,%.1f)\n", (int)(&p - &pairs[0]), r.stuck[0], r.stuck[1], r.stuck[2]); }
 		}
 		std::sort(times.begin(), times.end());
 		std::printf("MODE %s routes=%zu done=%d stuck=%d nopath=%d median_s=%.1f\n", corners ? "corners" : "legacy", pairs.size(), done, stuck, nopath, times.empty() ? 0.f : times[times.size() / 2]);

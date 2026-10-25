@@ -9,6 +9,8 @@
 #include "CryCommon/Cry3DEngine/I3DEngine.h"
 #include "CryCommon/CryPhysics/physinterface.h"
 #include "CryCommon/CryAction/IItemSystem.h"
+#include "CryCommon/CryEntitySystem/IEntitySystem.h"
+#include "CryCommon/CryAction/IVehicleSystem.h"
 #include "nlohmann/json.hpp"
 #include "version.h"
 #include <filesystem>
@@ -79,11 +81,24 @@ bool ExportLevelGeometry(const char* requested){
   AABB bounds(Vec3(0,0,-4096),Vec3(float(terrainSize),float(terrainSize),4096));
   Writer writer(objTemp,bounds,name);
   IPhysicalEntity** found=nullptr;
-  const int count=gEnv->pPhysicalWorld->GetEntitiesInBox(bounds.min,bounds.max,found,ent_static|ent_terrain|ent_ignore_noncolliding);
+  // Static brushes + terrain, plus immovable entity geometry (mass 0 rigid bodies): Power Struggle HQs, factories,
+  // spawn bunkers and other structures are entities, not brushes (C-073 Shore crop had only terrain holes there).
+  const int count=gEnv->pPhysicalWorld->GetEntitiesInBox(bounds.min,bounds.max,found,ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_ignore_noncolliding);
   std::vector<IPhysicalEntity*> entities;if(count>0)entities.assign(found,found+count);
-  uint64_t parts=0,skipped=0,proxy=0,unsupported=0,terrain=0;json types=json::object();
+  uint64_t parts=0,skipped=0,proxy=0,unsupported=0,terrain=0,structures=0;json types=json::object(),structureClasses=json::object();
   for(auto* entity:entities){
-   if(!entity || entity->GetType()!=PE_STATIC)continue; // includes terrain's static entity, never rigid/living.
+   if(!entity)continue;
+   const int peType=entity->GetType();
+   if(peType==PE_RIGID){
+    // immovable structures only: mass 0, not doors (open/close at runtime), not items/vehicles
+    pe_status_dynamics dyn;if(!entity->GetStatus(&dyn) || dyn.mass>0.0f)continue;
+    IEntity* owner=gEnv->pEntitySystem?gEnv->pEntitySystem->GetEntityFromPhysics(entity):nullptr;
+    const char* cls=owner&&owner->GetClass()?owner->GetClass()->GetName():"";
+    if(!owner || !_stricmp(cls,"Door") || (g_pGame->GetIGameFramework()->GetIItemSystem()->GetItem(owner->GetId())) ||
+       g_pGame->GetIGameFramework()->GetIVehicleSystem()->GetVehicle(owner->GetId()))continue;
+    ++structures;structureClasses[cls]=structureClasses.value(cls,uint64_t(0))+1;
+   }
+   else if(peType!=PE_STATIC)continue; // includes terrain's static entity, never living/articulated.
    pe_status_nparts np;const int n=entity->GetStatus(&np);
    for(int part=0;part<n;++part){
     pe_status_pos pose;pose.ipart=part;if(!entity->GetStatus(&pose)){++skipped;continue;}
@@ -134,7 +149,7 @@ bool ExportLevelGeometry(const char* requested){
    for(char& c:lower)c=char(std::tolower(static_cast<unsigned char>(c)));
    if((item && !item->GetOwnerId()) || lower.find("ammo")!=std::string::npos)items.push_back({{"id",e->GetId()},{"class",cls},{"name",e->GetName()},{"position",Position(e->GetWorldPos())},{"kind",item && item->GetIWeapon()?"weapon":"item_or_ammo"}});
   }
-  json meta={{"schema","wbgeometry/1"},{"map",name},{"build",CRYMP_VERSION_STRING},{"sha",CRYMP_GIT_SHA},{"up_axis","Z"},{"units","metres"},{"bounds",{Position(bounds.min),Position(bounds.max)}},{"static_entities",entities.size()},{"parts",parts},{"collision_proxy_parts",proxy},{"skipped_parts",skipped},{"unsupported_parts",unsupported},{"geometry_types",types},{"vertices",writer.vertices},{"triangles",writer.faces},{"degenerate_skipped",writer.rejected},{"terrain_cells",terrain},{"primitive_segments",16},{"heightmap_unit",gEnv->p3DEngine->GetHeightMapUnitSize()}};
+  json meta={{"schema","wbgeometry/1"},{"map",name},{"build",CRYMP_VERSION_STRING},{"sha",CRYMP_GIT_SHA},{"up_axis","Z"},{"units","metres"},{"bounds",{Position(bounds.min),Position(bounds.max)}},{"static_entities",entities.size()},{"parts",parts},{"collision_proxy_parts",proxy},{"skipped_parts",skipped},{"unsupported_parts",unsupported},{"geometry_types",types},{"vertices",writer.vertices},{"triangles",writer.faces},{"degenerate_skipped",writer.rejected},{"terrain_cells",terrain},{"structure_entities",structures},{"structure_classes",structureClasses},{"primitive_segments",16},{"heightmap_unit",gEnv->p3DEngine->GetHeightMapUnitSize()}};
   writer.Finish();Save(temporary[1],{{"schema","wbspawns/1"},{"map",name},{"spawns",spawns}});Save(temporary[2],{{"schema","wbitems/1"},{"map",name},{"items",items}});Save(temporary[3],meta);
   // Publish metadata last; its presence is the completion marker for the bundle.
   Publish(objTemp,path);Publish(temporary[1],spawnPath);Publish(temporary[2],itemPath);Publish(temporary[3],metaPath);

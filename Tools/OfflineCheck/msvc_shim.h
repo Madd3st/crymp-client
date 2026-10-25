@@ -25,3 +25,16 @@ inline int strcpy_s(char* d, size_t n, const char* s) { strncpy(d, s, n - 1); d[
 #define _InterlockedExchange(p, v) __sync_lock_test_and_set((p), (v))
 #define _InterlockedOr(p, v) __sync_fetch_and_or((p), (v))
 #define _InterlockedAnd(p, v) __sync_fetch_and_and((p), (v))
+static inline wchar_t* _wgetenv(const wchar_t*) { return nullptr; }
+#include <locale.h>
+#include <stdarg.h>
+typedef locale_t _locale_t;
+static inline _locale_t _create_locale(int, const char* n) { return newlocale(LC_NUMERIC_MASK, n, (locale_t)0); }
+static inline void _free_locale(_locale_t l) { freelocale(l); }
+static inline FILE* _wfopen(const wchar_t*, const wchar_t*) { return nullptr; }
+static inline int _fprintf_l(FILE* f, const char* fmt, _locale_t, ...) { va_list a; va_start(a, fmt); int r = vfprintf(f, fmt, a); va_end(a); return r; }
+static inline FILE* _wfopen(const char*, const wchar_t*) { return nullptr; }
+#include <time.h>
+#define _snprintf snprintf
+#define _vsnprintf vsnprintf
+static inline int localtime_s(struct tm* out, const time_t* t) { return localtime_r(t, out) ? 0 : 1; }
