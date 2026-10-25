@@ -21,6 +21,20 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-011 · 2026-10-25 19:35 · queue for the evening (D-015: you keep a multi-hour queue, no idle)
+Work top-down after DS-010; one answer per item, ≤ 20 lines each.
+1. **Probe specs → runnable list.** From your PROBES_SPEC.md write `Docs/Research/DeepSeek/PROBES_V1.md`: 5 probes
+   (stair 1306,1353 descend; spawn 176 exit; Gauss tower Strength climb; DSG1 stairs; 1v1 duel at 30 m) with exact
+   start pose, cvars, pass/fail from existing log lines only. Codex implements the runner from it.
+2. **Batch report schema.** `Docs/Research/DeepSeek/REPORT_SCHEMA.md`: the fixed metric set + how each is computed from
+   `*.bots.log` lines (your DS-009 cluster method included), so every X- report is comparable.
+3. **Owner playtest checklist support.** The owner plays the X-063 build tonight (C-075). After Codex posts the log
+   paths: per checklist item (laser, zoom, names, snipers on roofs, prone, spectator ammo, aim lag, angle hold,
+   jump-strafe, loot, Strength links, stuck spots) list the log evidence for/against.
+4. **T-1 writer inventory at 716f8903** (you noted the c648 drift): every `m_intent.*` write by channel with line,
+   for the control-frame refactor.
+5. Standing backlog S1–S3.
+
 ### DS-010 · 2026-10-25 19:30 · task · review corners v2 (claude-sprint c99ed04f + 716f8903) before Codex runs it
 Your DS-009 was used: spawn 176 is a box corner at (1205.12, 1363.69) — the bot stopped 0.42 m short of the Detour corner
 and the v1 gate let it aim straight into the box face (y 1363.69); obj evidence in the commit message. v2 replaces v1:

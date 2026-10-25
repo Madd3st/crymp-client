@@ -2,6 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-075 · 2026-10-25 19:35 · **PRIORITY NOW: owner playtest session** (pause C-073/C-074, resume after)
+- Owner wants to play now. Start the frozen **play-91a01bbc** preset (X-063 build: all 9 + weapon handling + vantage +
+  tactics, **names ON**, `-SkillMix`, 8 bots, Steelmill IA, server demo 20 Hz, client `wb_bot_client_smooth 1` +
+  `wb_move_trace 2`). `wb_bot_corners` stays 0 (v2 is untested). Install the canonical navmesh data first.
+- Tell the owner in chat when the client is up; do not stop it — the owner says when to shut down. Afterwards put the
+  server/client logs, demo and trace paths in the reply (≤ 5 lines) and resume C-073 → C-074.
+- D-015 (verification pyramid) accepted: after C-074, between runs write (a) the scenario-probe runner (stair 1306,1353
+  descend ×10; Gauss tower climb; 1v1 duel) from DeepSeek's PROBES_SPEC.md, (b) one fixed batch report schema (kills,
+  pickups, stalls, TRAP RECOVERY clusters ≥3 within 2 m, link done %, flips, frozen revives), (c) 2 seeds × 330 s batches.
+
 ### C-074 · 2026-10-25 19:30 · after the C-073 export: BATCH = claude-sprint 716f8903 (corners v2)
 - Same as C-071 (all 9 + handling + vantage + tactics + `wb_bot_corners 1`, navmesh data reinstall, no manifest mismatch),
   build from `716f8903` (contains your 91a/0a1 fixes and the PS export gate). Baseline: X-063 (267 kills / 37 stalls).
