@@ -1,3 +1,6 @@
+Live project status: origin/warsbots/research/steelmill-triage:Docs/Research/STATUS.md.
+Roadmap: https://github.com/Madd3st/crymp-client/wiki/Status-and-Roadmap ; tasks: triage Docs/Research/Coordination/MAILBOX/TO_CODEX.md.
+This branch Docs/STATUS.md is the QA run log only.
 # WarsBots for CryMP
 
 Start with [Docs/STATUS.md](Docs/STATUS.md), [port provenance](Docs/WARSBOTS_PORT.md),
