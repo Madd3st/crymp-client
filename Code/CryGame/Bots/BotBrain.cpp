@@ -146,7 +146,10 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 	}
 	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
 	m_intent.meshPath = m_meshPathActive; // stairs on the corner path are walkable (BotMovement knee ray off)
-	if (mesh && m_meshPathActive && BotConfig::Get().corners == 1) return SteerCorners(*mesh, feet);
+	// C-074: BotMovement::Move stops 0.8 m short of its destination; corners v2 passes a corner only within 0.35 m, so
+	// the bot stood 0.8 m short of every aim point (c074 stalls 343 -> 1704 s). Corner following owns arrival.
+	m_intent.arrive = 0.8f;
+	if (mesh && m_meshPathActive && BotConfig::Get().corners == 1) { m_intent.arrive = 0.2f; return SteerCorners(*mesh, feet); }
 	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
 	while (m_pathIndex + 1 < m_path.size())
 	{

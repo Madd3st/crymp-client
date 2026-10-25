@@ -52,7 +52,7 @@ void BotMovement::Look(CActor& actor, const Vec3& target)
 	}
 }
 
-bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided) const
+bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided, float slope) const
 {
 	if (!gEnv->pPhysicalWorld || !actor.GetEntity()->GetPhysics())
 		return false;
@@ -66,7 +66,7 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bo
 	// declared the stairs a wall (level-4 traps on Steelmill stairs at z 142-144). The mesh already proved the slope/step.
 	for (float side : {-0.3f,0.0f,0.3f})
 	for (float height : {0.4f,1.1f,1.6f})
-		if (!(meshGuided && height < 1.0f) && gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), direction * probe,
+		if (!(meshGuided && height < 1.0f) && gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), (direction + Vec3(0,0,slope)) * probe,
 			ent_all, flags, &hit, 1, actor.GetEntity()->GetPhysics(), heldPhysics))
 			return false;
 	// Stop at real cliffs only: drops up to ~3 m are taken (Armor absorbs the landing, see BotBrain).
@@ -75,7 +75,7 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bo
 		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
 }
 
-bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided)
+bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided, float arrive)
 {
 	auto* controller = actor.GetMovementController();
 	if (!controller) return false;
@@ -85,13 +85,24 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 	// Height differences are not a reason to stop: walking horizontally toward a target on another
 	// level is how ramps and stairs get found without a pathfinder. Only arrival stops here.
 	(void)jumpTraverse;
-	if (direction.GetLengthSquared() < 0.8f * 0.8f)
+	if (direction.GetLengthSquared() < arrive * arrive)
 	{
 		Stop(actor);
 		Aim(actor, lookAt);
 		return false;
 	}
+	const float distance = direction.GetLength();
 	direction.NormalizeSafe();
+	// C-074: when corner following owns arrival (wb_bot_corners) the destination is a corner the mesh already cleared;
+	// obstacles beyond it are the next leg's business. A 1.5/2.7 m probe near a corner hits the wall behind it.
+	float slope = 0;
+	if (meshGuided && arrive < 0.5f)
+	{
+		probe = min(probe, distance + 0.3f);
+		// Body rays follow the leg's slope: on stairs the steps rise ~1 m per 1.5 m and level rays at 1.1/1.6 m hit
+		// them - the bot declared the stairs a wall and dithered at the bottom (owner playtest 25.10 hotspot 1290,1350).
+		slope = clamp_tpl((destination.z - feet.z) / max(distance, 0.5f), -1.0f, 1.0f);
+	}
 	if (m_sampleTime == 0) m_sample = feet;
 	m_sampleTime += dt;
 	if (m_sampleTime >= 2.0f)
@@ -104,7 +115,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 		m_sampleTime = 0;
 	}
 	m_avoidTime = max(0.0f, m_avoidTime - dt);
-	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided));
+	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided, slope));
 	m_turned = false;
 	if (!safe)
 	{

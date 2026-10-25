@@ -104,10 +104,46 @@ static float Resolve(float* feet, float r = 0.4f)
 	return total;
 }
 
+// Moller-Trumbore segment test
+static bool SegTri(const float* o, const float* d, const Tri& t)
+{
+	float e1[3], e2[3], p[3], q[3], s[3];
+	for (int k = 0; k < 3; ++k) { e1[k] = t.b[k] - t.a[k]; e2[k] = t.c[k] - t.a[k]; s[k] = o[k] - t.a[k]; }
+	p[0] = d[1] * e2[2] - d[2] * e2[1]; p[1] = d[2] * e2[0] - d[0] * e2[2]; p[2] = d[0] * e2[1] - d[1] * e2[0];
+	const float det = e1[0] * p[0] + e1[1] * p[1] + e1[2] * p[2]; if (std::fabs(det) < 1e-9f) return false;
+	const float inv = 1 / det, u = (s[0] * p[0] + s[1] * p[1] + s[2] * p[2]) * inv; if (u < 0 || u > 1) return false;
+	q[0] = s[1] * e1[2] - s[2] * e1[1]; q[1] = s[2] * e1[0] - s[0] * e1[2]; q[2] = s[0] * e1[1] - s[1] * e1[0];
+	const float v = (d[0] * q[0] + d[1] * q[1] + d[2] * q[2]) * inv; if (v < 0 || u + v > 1) return false;
+	const float tt = (e2[0] * q[0] + e2[1] * q[1] + e2[2] * q[2]) * inv; return tt >= 0 && tt <= 1;
+}
+static bool RayHit(const float* o, const float* d)
+{
+	const float ex[2] = {std::min(o[0], o[0] + d[0]), std::max(o[0], o[0] + d[0])}, ey[2] = {std::min(o[1], o[1] + d[1]), std::max(o[1], o[1] + d[1])};
+	for (int gx = (int)std::floor(ex[0] / kCell); gx <= (int)std::floor(ex[1] / kCell); ++gx)
+		for (int gy = (int)std::floor(ey[0] / kCell); gy <= (int)std::floor(ey[1] / kCell); ++gy)
+		{
+			auto it = g_grid.find(Key(gx, gy)); if (it == g_grid.end()) continue;
+			for (int id : it->second) { const Tri& t = g_tris[id]; if (t.hi[0] < ex[0] || t.lo[0] > ex[1] || t.hi[1] < ey[0] || t.lo[1] > ey[1]) continue; if (SegTri(o, d, t)) return true; }
+		}
+	return false;
+}
+// BotMovement::SafeStep: 3 x 3 body rays `probe` m ahead (knee ray skipped on mesh paths); drop check omitted.
+static bool g_slopeRays = false;
+static bool SafeStep(const float* feet, float dx, float dy, float probe, float slope = 0)
+{
+	for (float side : {-0.3f, 0.0f, 0.3f}) for (float h : {1.1f, 1.6f})
+	{
+		const float o[3] = {feet[0] - dy * side, feet[1] + dx * side, feet[2] + h}, d[3] = {dx * probe, dy * probe, g_slopeRays ? slope * probe : 0};
+		if (RayHit(o, d)) return false;
+	}
+	return true;
+}
+static int g_moveModel = 1; // 1: model BotMovement (arrival stop, SafeStep fan, full stop); 0: ideal follower
+
 struct Result { bool done = false; float t = 0; float stuck[3] = {0, 0, 0}; };
 
 static bool g_trace = false; static bool g_all = getenv("WALK_ALL") != nullptr;
-static Result Walk(NavMeshCore& mesh, const float* start, const float* goal, bool corners)
+static Result Walk(NavMeshCore& mesh, const float* start, const float* goal, bool corners, bool fixedArrive = true)
 {
 	Result res;
 	std::vector<float> xyz; std::vector<NavPathLink> links; const char* why = nullptr;
@@ -118,10 +154,11 @@ static Result Walk(NavMeshCore& mesh, const float* start, const float* goal, boo
 	float pstart[3] = {feet[0], feet[1], feet[2]};
 	size_t idx = 0; size_t planFor = (size_t)-1; CornerPlan plan;
 	const float dt = 0.05f; float progT = 0, bestD = 1e9f;
+	float sampleT = 0, sx = feet[0], sy = feet[1], avoidUntil = -1, side = 1; // BotMovement m_sampleTime/m_avoidTime/m_side
 	for (float t = 0; t < 120.0f; t += dt)
 	{
 		const float gd = std::hypot(goal[0] - feet[0], goal[1] - feet[1]);
-		const bool atEnd = idx + 1 >= path.size() && std::hypot(path.back()[0] - feet[0], path.back()[1] - feet[1]) < 0.5f;
+		const bool atEnd = idx + 1 >= path.size() && std::hypot(path.back()[0] - feet[0], path.back()[1] - feet[1]) < 0.95f; // Move stops 0.8 m short
 		if ((gd < 0.6f && std::fabs(goal[2] - feet[2]) < 2.5f) || atEnd) { res.done = true; res.t = t; return res; }
 		// advance
 		bool slow = false; float aim[2];
@@ -163,7 +200,29 @@ static Result Walk(NavMeshCore& mesh, const float* start, const float* goal, boo
 		{ ++idx; feet[0] = path[idx][0]; feet[1] = path[idx][1]; feet[2] = path[idx][2]; planFor = (size_t)-1; continue; }
 		const float dx = aim[0] - feet[0], dy = aim[1] - feet[1], d = std::hypot(dx, dy);
 		const float speed = (!slow && d > 3.0f) ? 6.3f : 4.5f;
-		if (d > 1e-3f) { const float step = std::min(d, speed * dt); feet[0] += dx / d * step; feet[1] += dy / d * step; }
+		float mx = d > 1e-3f ? dx / d : 0, my = d > 1e-3f ? dy / d : 0; bool go = d > 1e-3f;
+		if (g_moveModel)
+		{
+			// BotMovement::Move: stop within `arrive` of the destination; body-ray fan; full stop when all blocked
+			const float arrive = (corners && fixedArrive) ? 0.2f : 0.8f;
+			if (d < arrive) go = false;
+			else
+			{
+				float probe = speed > 5 ? 2.7f : 1.5f;
+				if (corners && fixedArrive) probe = std::min(probe, d + 0.3f);
+				// slope of the leg toward the aim (mesh corners carry z): stairs rise ~1 m per 1.5 m
+				float az = idx < path.size() ? path[idx][2] : feet[2];
+				const float slope = std::max(-1.0f, std::min(1.0f, (az - feet[2]) / std::max(d, 0.5f)));
+				if (t - sampleT >= 2.0f) { if (std::hypot(feet[0] - sx, feet[1] - sy) < 0.3f) { avoidUntil = t + 1.2f; side = -side; } sampleT = t; sx = feet[0]; sy = feet[1]; }
+				if (t < avoidUntil || !SafeStep(feet, mx, my, probe, slope))
+				{
+					go = false;
+					for (float a0 : {0.8f, -0.8f, 1.57f, -1.57f, 2.36f, -2.36f, 3.14159f})
+					{ const float ang = a0 == 3.14159f ? a0 : a0 * side; const float cx = mx * std::cos(ang) - my * std::sin(ang), cy = mx * std::sin(ang) + my * std::cos(ang); if (SafeStep(feet, cx, cy, probe, 0)) { mx = cx; my = cy; go = true; break; } }
+				}
+			}
+		}
+		if (go) { const float step = std::min(std::max(d, 0.3f), speed * dt); feet[0] += mx * step; feet[1] += my * step; }
 		const float pushed = Resolve(feet);
 		if (g_trace && std::fmod(t, 0.5f) < dt) std::printf("    t=%.1f feet=(%.2f,%.2f,%.2f) idx=%zu/%zu aim=(%.2f,%.2f) push=%.2f\n", t, feet[0], feet[1], feet[2], idx, path.size(), aim[0], aim[1], pushed);
 		float s[3]; if (mesh.Project(feet, s, 0.6f, 0.7f, 1.5f) && std::fabs(s[2] - feet[2]) < 1.2f) feet[2] = s[2];
@@ -182,7 +241,7 @@ int main(int argc, char** argv)
 	const std::string mode = argc > 5 ? argv[5] : "both"; const int maxPairs = argc > 6 ? std::atoi(argv[6]) : 100000;
 	NavMeshCore mesh; std::string err;
 	if (!mesh.LoadFile(argv[1], &err)) { std::fprintf(stderr, "navmesh: %s\n", err.c_str()); return 1; }
-	{ std::string txt; if (FILE* f = std::fopen(argv[2], "rb")) { int c; while ((c = std::fgetc(f)) != EOF) txt.push_back((char)c); std::fclose(f); } mesh.LoadLinkKinds(txt.c_str()); mesh.SetLinkMask(NavLinkFlag(1) | NavLinkFlag(2) | NavLinkFlag(3)); }
+	{ std::string txt; if (FILE* f = std::fopen(argv[2], "rb")) { int c; while ((c = std::fgetc(f)) != EOF) txt.push_back((char)c); std::fclose(f); } mesh.LoadLinkKinds(txt.c_str()); mesh.SetLinkMask(NavLinkFlag(NavLinkDrop) | NavLinkFlag(NavLinkJump) | NavLinkFlag(NavLinkStrength)); } // as wb_bot_jump_links 1 (DeepSeek S1: drop was missing)
 	std::vector<std::array<float, 3>> spawns, items;
 	float xmin = 1e9, xmax = -1e9, ymin = 1e9, ymax = -1e9;
 	if (FILE* f = std::fopen(argv[4], "r")) { char k[32]; int id; float x, y, z; while (std::fscanf(f, "%31s %d %f %f %f", k, &id, &x, &y, &z) == 5) { (std::strcmp(k, "spawn") ? items : spawns).push_back({x, y, z}); xmin = std::min(xmin, x); xmax = std::max(xmax, x); ymin = std::min(ymin, y); ymax = std::max(ymax, y); } std::fclose(f); }
@@ -204,20 +263,24 @@ int main(int argc, char** argv)
 		std::sort(ratio.begin(), ratio.end());
 		if (!ratio.empty()) std::printf("TIME corners/legacy on routes both finish: n=%zu median=%.2f p90=%.2f\n", ratio.size(), ratio[ratio.size() / 2], ratio[ratio.size() * 9 / 10]);
 	}
-	for (int m = 0; m < 2; ++m)
+	if (getenv("WALK_IDEAL")) g_moveModel = 0;
+	if (getenv("WALK_SLOPE")) g_slopeRays = true;
+	for (int m = 0; m < 3; ++m)
 	{
-		const bool corners = m == 1;
-		if ((corners && mode == "legacy") || (!corners && mode == "corners")) continue;
+		const bool corners = m >= 1, fixedArrive = m == 1;
+		const char* mname = m == 0 ? "legacy" : (m == 1 ? "corners" : "corners_716");
+		if (mode != "both" && mode != "all" && mode != mname) continue;
+		if (mode == "both" && m == 2) continue;
 		int done = 0, stuck = 0, nopath = 0; std::vector<float> times; std::vector<std::array<float, 3>> st;
 		for (auto& p : pairs)
 		{
-			const Result r = Walk(mesh, spawns[p.first].data(), items[p.second].data(), corners);
+			const Result r = Walk(mesh, spawns[p.first].data(), items[p.second].data(), corners, fixedArrive);
 			if (r.done) { ++done; times.push_back(r.t); }
 			else if (r.t == 0) ++nopath;
 			else { ++stuck; st.push_back({r.stuck[0], r.stuck[1], r.stuck[2]}); if (getenv("WALK_PAIRS")) std::printf("  PAIR %d stuck (%.1f,%.1f,%.1f)\n", (int)(&p - &pairs[0]), r.stuck[0], r.stuck[1], r.stuck[2]); }
 		}
 		std::sort(times.begin(), times.end());
-		std::printf("MODE %s routes=%zu done=%d stuck=%d nopath=%d median_s=%.1f\n", corners ? "corners" : "legacy", pairs.size(), done, stuck, nopath, times.empty() ? 0.f : times[times.size() / 2]);
+		std::printf("MODE %s routes=%zu done=%d stuck=%d nopath=%d median_s=%.1f\n", mname, pairs.size(), done, stuck, nopath, times.empty() ? 0.f : times[times.size() / 2]);
 		// clusters within 2 m
 		std::vector<int> used(st.size(), 0); std::vector<std::pair<int, std::array<float, 3>>> cl;
 		for (size_t i = 0; i < st.size(); ++i) if (!used[i])
