@@ -35,6 +35,44 @@ int main(int argc, char** argv)
 	// A point far outside the level is off the mesh.
 	const float off[3] = {0, 0, 0};
 	assert(!m.FindPath(s289, off, path, &why));
+	// C-036: a mesh with off-mesh links (meshes_links) + its links.txt: walk-only by default, kinds switch on by mask.
+	if (argc >= 4)
+	{
+		NavMeshCore L; assert(L.LoadFile(argv[2], &err));
+		std::vector<char> txt; if (FILE* f = std::fopen(argv[3], "rb")) { int c; while ((c = std::fgetc(f)) != EOF) txt.push_back(char(c)); std::fclose(f); }
+		txt.push_back(0);
+		const int kinds = L.LoadLinkKinds(txt.data());
+		assert(L.Links() > 100 && kinds == L.Links());
+		const int walkParts = L.Components();
+		std::vector<float> p2; std::vector<NavPathLink> links;
+		assert(L.FindPathLinks(s289, s176, p2, links, &why) && links.empty());    // walk only: no links on the path
+		L.SetLinkMask(NavLinkFlag(NavLinkDrop) | NavLinkFlag(NavLinkJump) | NavLinkFlag(NavLinkStrength));
+		assert(L.Components() < walkParts);                                       // links join parts
+		// every spawn-to-spawn path that uses links reports them on consecutive corners
+		int withLinks = 0, total = 0, kindCount[NavLinkKinds] = {};
+		const float spawns[][3] = {{1290.125f, 1362.375f, 136.125f}, {1206.33f, 1366.625f, 136.125f}, {1282.72f, 1513.17f, 143.0f},
+			{1382.52f, 1507.1f, 190.0f}, {1265.5f, 1500.4f, 112.74f}, {1108.34f, 1473.84f, 119.21f}};
+		for (auto& a : spawns) for (auto& b : spawns)
+		{
+			if (&a == &b || !L.FindPathLinks(a, b, p2, links, &why)) continue;
+			++total; withLinks += !links.empty();
+			for (const NavPathLink& k : links)
+			{
+				assert(k.corner >= 0 && size_t(k.corner + 1) < p2.size() / 3 && k.ref != 0 && k.kind >= 0 && k.kind < NavLinkKinds);
+				assert(std::fabs(p2[k.corner * 3] - k.a[0]) < 1e-3f && std::fabs(p2[(k.corner + 1) * 3] - k.b[0]) < 1e-3f);
+				++kindCount[k.kind];
+			}
+		}
+		// banning a used link removes it from later paths
+		if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why) && !links.empty())
+		{
+			const unsigned long long r = links[0].ref; L.BanLink(r);
+			if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why)) for (const NavPathLink& k : links) assert(k.ref != r);
+		}
+		L.SetLinkMask(0); assert(L.Components() == walkParts);
+		std::printf("links=%d walkParts=%d paths=%d withLinks=%d drop=%d jump=%d strength=%d\n", L.Links(), walkParts, total, withLinks,
+			kindCount[0], kindCount[1], kindCount[2]);
+	}
 	std::printf("BotNavMeshCoreTests OK polys=%d parts=%d corners=%zu length=%.1f m\n", m.Polys(), m.Components(), n, len);
 	return 0;
 }

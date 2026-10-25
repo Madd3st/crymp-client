@@ -10,6 +10,8 @@
 #include "CryGame/Bots/BotGoalArbiter.h"
 #include "CryGame/Bots/BotAimModel.h"
 #include "CryGame/Bots/BotSuitPolicy.h"
+#include "CryGame/Bots/BotJumpLink.h"
+#include "CryGame/Bots/BotNavMeshCore.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 struct IActor;
@@ -113,6 +115,12 @@ private:
 	std::vector<Vec3> m_path;
 	bool m_meshPathActive = false; // m_path came from the Detour navmesh
 	size_t m_pathIndex = 0;
+	std::vector<NavPathLink> m_pathLinks; // C-036: links on m_path (corner = take-off index)
+	BotJumpLink m_link;
+	NavPathLink m_linkNow;
+	void ApplyLinkExecutor(CPlayer& actor);
+	const NavPathLink* LinkAtCorner(size_t corner) const
+	{ for (const NavPathLink& l : m_pathLinks) if (size_t(l.corner)==corner) return &l; return nullptr; }
 	Vec3 m_pathGoal = Vec3(0,0,0);
 	float m_nextRepath = 0, m_minRepath = 0;
 	// Movement abilities and weapon upgrades.

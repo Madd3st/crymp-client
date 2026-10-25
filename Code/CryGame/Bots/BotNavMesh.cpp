@@ -13,7 +13,7 @@
 
 namespace WarsBots {
 namespace {
-struct State { NavMeshCore mesh; std::string level; bool tried = false; };
+struct State { NavMeshCore mesh; std::string level; bool tried = false; int kinds = 0; };
 State& S() { static State s; return s; }
 }
 
@@ -27,7 +27,7 @@ NavMeshCore* CurrentNavMesh()
 	if (name != s.level) { s.mesh.Reset(); s.level = name; s.tried = false; }
 	if (!s.tried)
 	{
-		s.tried = true;
+		s.tried = true; s.kinds = 0;
 		// "Multiplayer/IA/Steelmill" -> Steelmill.navmesh
 		const size_t slash = name.find_last_of("/\\");
 		const std::string leaf = slash == std::string::npos ? name : name.substr(slash + 1);
@@ -44,7 +44,34 @@ NavMeshCore* CurrentNavMesh()
 		else if (!s.mesh.LoadMemory(data.data(), data.size(), &error))
 			WB_LOG(0, "[WarsBots] NAVMESH load failed for %s: %s; BotNav graph stays in use.", name.c_str(), error.c_str());
 		else
-			WB_LOG(0, "[WarsBots] NAVMESH loaded %s: %d polys, %d parts, %u bytes.", name.c_str(), s.mesh.Polys(), s.mesh.Components(), unsigned(data.size()));
+		{
+			WB_LOG(0, "[WarsBots] NAVMESH loaded %s: %d polys, %d parts, %d links, %u bytes.", name.c_str(), s.mesh.Polys(), s.mesh.Components(), s.mesh.Links(), unsigned(data.size()));
+			s.kinds = 0;
+			if (s.mesh.Links() > 0)
+			{
+				const std::filesystem::path links = DataDirectory(L"Navmesh") / std::filesystem::u8path(leaf + ".links.txt");
+				std::string text;
+				if (FILE* f = _wfopen(links.c_str(), L"rb"))
+				{
+					char chunk[1 << 16]; size_t n;
+					while ((n = fread(chunk, 1, sizeof chunk, f)) > 0) text.append(chunk, n);
+					fclose(f);
+				}
+				s.kinds = text.empty() ? 0 : s.mesh.LoadLinkKinds(text.c_str());
+				WB_LOG(0, "[WarsBots] NAVMESH link kinds %d/%d from %ls.", s.kinds, s.mesh.Links(), links.c_str());
+			}
+		}
+	}
+	if (s.mesh.Ready())
+	{
+		// C-036: links only with wb_bot_jump_links=1 (and only kinds with an executor: drop, jump, Strength).
+		const unsigned short want = BotConfig::Get().jumpLinks == 1 && s.kinds > 0
+			? (unsigned short)(NavLinkFlag(NavLinkDrop) | NavLinkFlag(NavLinkJump) | NavLinkFlag(NavLinkStrength)) : 0;
+		if (want != s.mesh.LinkMask())
+		{
+			s.mesh.SetLinkMask(want);
+			WB_LOG(0, "[WarsBots] NAVMESH links %s: %d links, %d parts.", want ? "ON" : "OFF", s.mesh.Links(), s.mesh.Components());
+		}
 	}
 	return s.mesh.Ready() ? &s.mesh : nullptr;
 }

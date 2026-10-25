@@ -29,6 +29,7 @@ const IntBinding kInts[]={
  {"wb_bot_suit_policy",&BotConfig::suitPolicy,"One nanosuit decision per tick: falling/under fire/fight Armor, Strength jumps with energy, Speed travel 130/60, stealth Cloak only if cloak is enabled. 0 OFF default."},
  {"wb_bot_client_smooth",&BotConfig::clientSmooth,"O-025 CLIENT cvar: remote WarsBot replicas turn in curves - replicated move direction (80 ms) and look point (50 ms) are filtered per frame instead of stepping at the server's 10 Hz; jumps >120 deg snap. Server unaffected, no network change. 0 OFF default."},
  {"wb_bot_navmesh",&BotConfig::botNavmesh,"P0 Detour navmesh from %LOCALAPPDATA%/WarsBots/Navmesh/<Level>.navmesh for paths, weapon/roam reachability; BotNav graph fallback. 0 OFF default. Exit: promote only after owner playtest; retire gate/legacy path when validated."},
+ {"wb_bot_jump_links",&BotConfig::jumpLinks,"C-036 navmesh paths may use baked drop / jump / Strength-jump links (needs <Level>.navmesh + <Level>.links.txt from Tools/RecastBake/meshes_links); BotJumpLink executes them, a failed link is banned for the level. Lifts/ladders never. Requires wb_bot_navmesh 1. 0 OFF default."},
  {"wb_fire_diagnostics",&BotConfig::fireDiagnostics,"Opt-in shot/hit diagnostics; at most 20000 records per level; default OFF."},
  {"wb_log",&BotConfig::logLevel,"WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file."},
  {"wb_maxbots",&BotConfig::maxBots,"Maximum simultaneous WarsBots (1..16, default 6)"},

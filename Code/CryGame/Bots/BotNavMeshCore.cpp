@@ -6,6 +6,9 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
+#include <cstdlib>
+#include <sstream>
+#include <string>
 
 namespace WarsBots {
 
@@ -27,7 +30,7 @@ void NavMeshCore::Reset()
 	if (m_query) { dtFreeNavMeshQuery(m_query); m_query = nullptr; }
 	if (m_mesh) { dtFreeNavMesh(m_mesh); m_mesh = nullptr; }
 	delete m_filter; m_filter = nullptr;
-	m_comp.clear(); m_components = 0;
+	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0;
 }
 
 bool NavMeshCore::LoadMemory(const unsigned char* data, size_t size, std::string* error)
@@ -54,9 +57,13 @@ bool NavMeshCore::LoadMemory(const unsigned char* data, size_t size, std::string
 	m_query = dtAllocNavMeshQuery();
 	if (!m_query || dtStatusFailed(m_query->init(m_mesh, 4096))) return fail("query init failed");
 	m_filter = new dtQueryFilter();
-	m_filter->setIncludeFlags(0xffff);
 	m_filter->setExcludeFlags(0);
-	BuildComponents();
+	for (int ti = 0; ti < m_mesh->getMaxTiles(); ++ti)
+	{
+		const dtMeshTile* tile = static_cast<const dtNavMesh*>(m_mesh)->getTile(ti);
+		if (tile && tile->header) m_links += tile->header->offMeshConCount;
+	}
+	SetLinkMask(0);    // walk only until an executor enables kinds
 	return true;
 }
 
@@ -73,6 +80,8 @@ bool NavMeshCore::LoadFile(const char* path, std::string* error)
 
 void NavMeshCore::BuildComponents()
 {
+	const unsigned short include = m_filter ? m_filter->getIncludeFlags() : 0xffff;
+	auto Pass = [include](const dtPoly* p) { return (p->flags & include) != 0; };
 	m_comp.clear(); m_components = 0;
 	const dtNavMesh* mesh = m_mesh;
 	std::vector<dtPolyRef> refs;
@@ -87,6 +96,10 @@ void NavMeshCore::BuildComponents()
 	for (dtPolyRef seed : refs)
 	{
 		if (m_comp[seed] >= 0) continue;
+		{
+			const dtMeshTile* st = nullptr; const dtPoly* sp = nullptr;
+			if (dtStatusFailed(mesh->getTileAndPolyByRef(seed, &st, &sp)) || !Pass(sp)) continue;
+		}
 		const int id = m_components++;
 		m_comp[seed] = id; stack.assign(1, seed);
 		while (!stack.empty())
@@ -94,8 +107,11 @@ void NavMeshCore::BuildComponents()
 			const dtPolyRef r = stack.back(); stack.pop_back();
 			const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
 			if (dtStatusFailed(mesh->getTileAndPolyByRef(r, &tile, &poly))) continue;
+			if (!Pass(poly)) continue;
 			for (unsigned int l = poly->firstLink; l != DT_NULL_LINK; l = tile->links[l].next)
 			{
+				const dtMeshTile* nt = nullptr; const dtPoly* np = nullptr;
+				if (dtStatusFailed(mesh->getTileAndPolyByRef(tile->links[l].ref, &nt, &np)) || !Pass(np)) continue;
 				auto it = m_comp.find(tile->links[l].ref);
 				if (it != m_comp.end() && it->second < 0) { it->second = id; stack.push_back(tile->links[l].ref); }
 			}
@@ -132,7 +148,64 @@ bool NavMeshCore::Reachable(const float* start, const float* goal, float goalDow
 
 bool NavMeshCore::FindPath(const float* start, const float* goal, std::vector<float>& xyz, const char** reason) const
 {
-	xyz.clear();
+	std::vector<NavPathLink> links;
+	return FindPathLinks(start, goal, xyz, links, reason);
+}
+
+int NavMeshCore::LoadLinkKinds(const char* text)
+{
+	if (!m_mesh || !text) return 0;
+	std::vector<int> kinds;            // by 1-based line
+	std::istringstream in(text);
+	std::string line;
+	while (std::getline(in, line))
+	{
+		std::istringstream ls(line);
+		float v[6]; int bidir = 0; std::string kind;
+		if (!(ls >> v[0] >> v[1] >> v[2] >> v[3] >> v[4] >> v[5] >> bidir >> kind)) { kinds.push_back(-1); continue; }
+		int k = -1;
+		for (int i = 0; i < NavLinkKinds; ++i) if (kind == NavLinkName(i)) k = i;
+		kinds.push_back(k);
+	}
+	int set = 0;
+	for (int ti = 0; ti < m_mesh->getMaxTiles(); ++ti)
+	{
+		const dtMeshTile* tile = static_cast<const dtNavMesh*>(m_mesh)->getTile(ti);
+		if (!tile || !tile->header) continue;
+		const dtPolyRef base = m_mesh->getPolyRefBase(tile);
+		for (int i = 0; i < tile->header->offMeshConCount; ++i)
+		{
+			const dtOffMeshConnection& con = tile->offMeshCons[i];
+			const unsigned id = con.userId;
+			const int k = (id >= 1 && id <= kinds.size()) ? kinds[id - 1] : -1;
+			// links without a known kind (Armada lift/ladder movers from the scene) get a flag no mask ever includes
+			m_mesh->setPolyFlags(base | dtPolyRef(con.poly), k < 0 ? (unsigned short)0x4000 : NavLinkFlag(k));
+			if (k >= 0) ++set;
+		}
+	}
+	SetLinkMask(m_linkMask);
+	return set;
+}
+
+void NavMeshCore::SetLinkMask(unsigned short mask)
+{
+	if (!m_filter) return;
+	m_linkMask = mask;
+	m_filter->setIncludeFlags((unsigned short)(1u | mask));
+	BuildComponents();
+}
+
+void NavMeshCore::BanLink(unsigned long long ref)
+{
+	if (!m_mesh || !ref) return;
+	m_mesh->setPolyFlags(dtPolyRef(ref), 0);
+	BuildComponents();
+}
+
+bool NavMeshCore::FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,
+	const char** reason) const
+{
+	xyz.clear(); links.clear();
 	auto fail = [&](const char* why) { if (reason) *reason = why; return false; };
 	if (!m_query) return fail("navmesh_not_loaded");
 	float s[3], g[3];
@@ -146,6 +219,7 @@ bool NavMeshCore::FindPath(const float* start, const float* goal, std::vector<fl
 	dtPolyRef polys[256]; int npolys = 0;
 	if (dtStatusFailed(m_query->findPath(a, b, rs, rg, m_filter, polys, &npolys, 256)) || npolys == 0) return fail("findpath_failed");
 	float end[3]; dtVcopy(end, rg);
+	if (polys[npolys - 1] != b && npolys < 256) return fail("no_directed_route"); // one-way drops: same part, no way back
 	if (polys[npolys - 1] != b)
 	{
 		// Path buffer exhausted on a very long route: walk toward the closest point of the last polygon.
@@ -159,6 +233,18 @@ bool NavMeshCore::FindPath(const float* start, const float* goal, std::vector<fl
 	{
 		float c[3]; ToCrysis(&corners[i * 3], c);
 		xyz.push_back(c[0]); xyz.push_back(c[1]); xyz.push_back(c[2]);
+		if ((flags[i] & DT_STRAIGHTPATH_OFFMESH_CONNECTION) && i + 1 < ncorners)
+		{
+			NavPathLink L; L.corner = i - 1; L.ref = cpolys[i];
+			const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
+			unsigned short f = 2;
+			if (dtStatusSucceed(m_mesh->getTileAndPolyByRef(cpolys[i], &tile, &poly))) f = poly->flags;
+			L.kind = NavLinkDrop;
+			for (int k = 0; k < NavLinkKinds; ++k) if (f == NavLinkFlag(k)) L.kind = k;
+			L.a[0] = c[0]; L.a[1] = c[1]; L.a[2] = c[2];
+			ToCrysis(&corners[(i + 1) * 3], L.b);
+			links.push_back(L);
+		}
 	}
 	if (xyz.empty()) { xyz.push_back(g[0]); xyz.push_back(g[1]); xyz.push_back(g[2]); }
 	if (reason) *reason = "ok";

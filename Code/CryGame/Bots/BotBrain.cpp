@@ -107,6 +107,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 	if (!nav.Ready() && !mesh) return goal; // fallback: straight line + local avoidance
 	// Failed paths also respect the two-second retry deadline. An empty failed path is
 	// a cached result, not a reason to repeat A* at the 0.75-second global throttle.
+	if (m_link.Active()) return Vec3(m_linkNow.b[0], m_linkNow.b[1], m_linkNow.b[2]); // C-036: the link executor owns movement
 	if (((goal - m_pathGoal).GetLengthSquared() > 16.0f || m_now >= m_nextRepath) && m_now >= m_minRepath)
 	{
 		m_minRepath = m_now + 0.75f;
@@ -117,12 +118,14 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		{
 			std::vector<float> xyz; const char* why = "navmesh";
 			const float a[3] = {feet.x, feet.y, feet.z}, b[3] = {goal.x, goal.y, goal.z};
-			found = mesh->FindPath(a, b, xyz, &why);
+			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why);
+			if (!found) m_pathLinks.clear();
 			m_meshPathActive = found;
 			m_path.clear();
 			for (size_t i = 0; i + 2 < xyz.size(); i += 3) m_path.push_back(Vec3(xyz[i], xyz[i + 1], xyz[i + 2]));
 			trace.reason = why;
 		}
+		if (!found) m_pathLinks.clear();
 		if (!found && nav.Ready()) found = nav.FindPath(feet, goal, m_path, &trace);
 		m_pathIndex = 0;
 		m_pathGoal = goal;
@@ -141,6 +144,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 	while (m_pathIndex + 1 < m_path.size())
 	{
 		const Vec3& p = m_path[m_pathIndex];
+		if (m_meshPathActive && LinkAtCorner(m_pathIndex)) break; // a link take-off is passed only by the executor
 		if ((p - feet).GetLengthSquared2D() < 2.25f && fabs_tpl(p.z - feet.z) < 2.0f) ++m_pathIndex;
 		else break;
 	}
@@ -169,7 +173,7 @@ void BotBrain::ResetLife()
 	m_weaponTarget = 0;
 	m_patrolUntil = 0;
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
-	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false;
+	m_path.clear(); m_pathIndex = 0; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
 	m_withdrawUntil=m_nextWithdraw=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
@@ -719,7 +723,7 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
             level,actor.GetEntityId(),m_trap.Age(m_now),p.x,p.y,p.z,m_blackboard.blocked?1:0,m_blackboard.velocity.GetLength2D(),m_blackboard.grounded?1:0,0);
         if (level==1)
         {
-            m_path.clear();m_pathIndex=0;m_nextRepath=m_minRepath=0;
+            m_path.clear();m_pathIndex=0;m_nextRepath=m_minRepath=0;m_pathLinks.clear();m_link.Reset();
         }
         else if (level==2 || level==3)
         {
@@ -759,7 +763,9 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
 		m_intent.suitMode=static_cast<ENanoMode>(m_testMode);
 	m_blackboard.obstacleJump=BotJump::None;
-	if (m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
+	m_intent.linkJump=false;
+	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
+	if (!m_link.Active() && m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
         !(m_trap.Level()>=2 && m_now<m_trapStepUntil))
 	{
 		const Vec3 direction=(m_intent.destination-m_blackboard.position).GetNormalizedSafe(FORWARD_DIRECTION);
@@ -778,7 +784,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	{ m_intent.suitMode=NANOMODE_DEFENSE; if (m_intent.gait==BotGait::Sprint) m_intent.gait=BotGait::Run; }
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
     if(BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){m_intent.suitMode=NANOMODE_DEFENSE;m_speedTravel=false;}
-    if (BotConfig::Get().suitPolicy==1) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
+    if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
         if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;m_intent.suitMode=NANOMODE_DEFENSE;m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
@@ -797,6 +803,59 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 }
 	else m_combat.StopFire();
 }
+// ---------------------------------------------------------------------------------------------- C-036 links
+// Takes over at a link take-off corner of a Detour path and runs BotJumpLink until landing; a failed link is banned.
+void BotBrain::ApplyLinkExecutor(CPlayer& actor)
+{
+	NavMeshCore* mesh=CurrentNavMesh();
+	const Vec3 feet=m_blackboard.position;
+	if (!mesh) { m_link.Reset(); return; }
+	if (!m_link.Active())
+	{
+		if (!m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return;
+		const NavPathLink* l=LinkAtCorner(m_pathIndex);
+		if (!l) return;
+		const Vec3 a(l->a[0],l->a[1],l->a[2]);
+		if ((a-feet).GetLengthSquared2D()>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return;
+		m_linkNow=*l;
+		const LinkMove move=l->kind==NavLinkStrength?LinkMove::Strength:(l->kind==NavLinkJump?LinkMove::Jump:LinkMove::Drop);
+		m_link.Start(m_now,move,JVec{l->a[0],l->a[1],l->a[2]},JVec{l->b[0],l->b[1],l->b[2]});
+		WB_LOG(2,"[WarsBots] #%d LINK start kind=%s a=(%.2f,%.2f,%.2f) b=(%.2f,%.2f,%.2f) energy=%.0f actor=%u.",m_number,NavLinkName(l->kind),
+			l->a[0],l->a[1],l->a[2],l->b[0],l->b[1],l->b[2],m_blackboard.energy,actor.GetEntityId());
+	}
+	LinkInput in;
+	in.now=m_now; in.feet=JVec{feet.x,feet.y,feet.z}; in.grounded=m_blackboard.grounded;
+	in.strengthActive=m_blackboard.suitActive && m_blackboard.mode==NANOMODE_STRENGTH;
+	in.armorActive=!m_blackboard.suitActive || m_blackboard.mode==NANOMODE_DEFENSE;
+	in.energy=m_blackboard.energy;
+	const LinkOutput o=m_link.Update(in);
+	if (o.phase==LinkPhase::Done)
+	{
+		WB_LOG(2,"[WarsBots] #%d LINK done kind=%s at=(%.2f,%.2f,%.2f) actor=%u.",m_number,NavLinkName(m_linkNow.kind),feet.x,feet.y,feet.z,actor.GetEntityId());
+		{ const size_t next=size_t(m_linkNow.corner)+1; m_pathIndex=m_path.empty()?0:(next<m_path.size()?next:m_path.size()-1); }
+		m_link.Reset();
+		return;
+	}
+	if (o.phase==LinkPhase::Failed)
+	{
+		static const char* const why[]={"none","timeout","no_takeoff","missed_landing","no_energy"};
+		WB_LOG(1,"[WarsBots] #%d LINK failed kind=%s reason=%s at=(%.2f,%.2f,%.2f)%s actor=%u.",m_number,NavLinkName(m_linkNow.kind),
+			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> banned",actor.GetEntityId());
+		if (o.fail!=LinkFail::NoEnergy) mesh->BanLink(m_linkNow.ref);
+		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_nextRepath=m_minRepath=0;
+		return;
+	}
+	if (!m_link.Active()) return;
+	m_intent.move=true;
+	m_intent.destination=Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z);
+	m_intent.gait=o.slow?BotGait::Walk:BotGait::Run;
+	m_intent.jump=o.jump==LinkJumpRequest::Strength?BotJump::Strength:(o.jump==LinkJumpRequest::Normal?BotJump::Normal:BotJump::None);
+	m_intent.linkJump=m_intent.jump!=BotJump::None;
+	if (o.wantStrength) m_intent.suitMode=NANOMODE_STRENGTH;
+	else if (o.wantArmor) m_intent.suitMode=NANOMODE_DEFENSE;
+	m_speedTravel=false;
+}
+
 // ---------------------------------------------------------------------------------------------- sprint C-047
 // C-033 look policy (BotLookPolicy.h): without a visible target look ~3 m ahead along the path, at a point of interest
 // (hidden enemy's last position, the weapon being fetched) only with a clear eye ray or when it is very close.

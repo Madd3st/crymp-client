@@ -15,6 +15,17 @@ class dtQueryFilter;
 
 namespace WarsBots {
 
+// Off-mesh link kinds (meshes_links bake, C-036). Poly flags: walk 1, then one bit per kind so the query filter can
+// enable only the kinds that have an executor.
+enum NavLinkKind { NavLinkDrop = 0, NavLinkJump, NavLinkStrength, NavLinkLift, NavLinkLadder, NavLinkKinds };
+inline unsigned short NavLinkFlag(int kind) { return (unsigned short)(2u << kind); }
+inline const char* NavLinkName(int kind)
+{ static const char* n[] = {"drop", "jump", "strength", "lift", "ladder"}; return kind >= 0 && kind < NavLinkKinds ? n[kind] : "?"; }
+
+// One off-mesh link on a corner path: corner `corner` (index into FindPath's xyz/3) is the take-off point a,
+// corner `corner + 1` the landing point b.
+struct NavPathLink { int corner = 0; int kind = 0; float a[3] = {0, 0, 0}, b[3] = {0, 0, 0}; unsigned long long ref = 0; };
+
 class NavMeshCore {
 public:
 	NavMeshCore();
@@ -39,6 +50,20 @@ public:
 	// crates (up to ~2.2 m above the floor) count as reachable.
 	bool Reachable(const float* start, const float* goal, float goalDown = 2.6f) const;
 
+	// C-036 links. `<map>.links.txt` (x0 y0 z0 x1 y1 z1 bidir kind; Detour user id = 1-based line) gives each
+	// off-mesh poly its kind flag; lines without a known kind (lift/ladder movers) are never used. Without the file the
+	// caller keeps the mask 0 (walk only).
+	int LoadLinkKinds(const char* text);
+	// Which link kinds paths may use (bit per NavLinkFlag); 0 = walk only. Rebuilds the connected parts.
+	void SetLinkMask(unsigned short mask);
+	unsigned short LinkMask() const { return m_linkMask; }
+	int Links() const { return m_links; }
+	// A link failed in the game: never use it again on this level.
+	void BanLink(unsigned long long ref);
+	// FindPath + the links on the returned corners.
+	bool FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,
+		const char** reason = nullptr) const;
+
 private:
 	unsigned long long Nearest(const float* p, float* snapped, float side, float up, float down) const;
 	void BuildComponents();
@@ -48,6 +73,8 @@ private:
 	dtQueryFilter* m_filter = nullptr;
 	std::unordered_map<unsigned long long, int> m_comp;   // poly ref -> connected part
 	int m_components = 0;
+	unsigned short m_linkMask = 0;
+	int m_links = 0;
 };
 
 } // namespace WarsBots
