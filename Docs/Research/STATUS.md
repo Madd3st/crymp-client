@@ -1,4 +1,4 @@
-# WarsBots project status — 2026-10-26 00:30 MSK
+# WarsBots project status — 2026-10-26 03:00 MSK
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
@@ -13,9 +13,9 @@ decisions and aim. Map-specific fixes only as data, never code.
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (build, QA, merge — D-013) | C-082: Shore + Plantation export on a943e070 with a play-area box | C-083 lag measurement (8 vs 4 bots, FPS, load, replica pose/aim rate); C-084 client owner track + zoom/laser fields |
-| DeepSeek (read-only review — D-014) | DS-013 aim replication root cause; DS-014 difficulty spec (Elite = honest head aimbot); DS-015 target choice + long range | DS-012 leftovers |
-| Claude (game code + verdicts + docs) | aim gate (no fire before on target); snipers' path (`wb_bot_path_progress`) | difficulty per DS-014; Shore navmesh/3D after C-082 |
+| Codex (build, QA, merge — D-013) | C-093 soak on 7179ec36 (difficulty + finish), overnight runs authorized (C-097); C-089 cleanup DONE (51 dirs) | C-098 batch 9ac55001 (snipers + threat scan) → morning playtest preset C-091; wiki C-094/C-095 |
+| DeepSeek (read-only review — D-014) | DS-019/DS-020 PS specs: IBotGameMode + teams 3–4 (scaling), vehicles enter/exit, PS minimum | pre-batch review of every diff |
+| Claude (game code + verdicts + docs) | done tonight: difficulty ladder, finish, spectator aim (1e0f4072/7179ec36), threat scan (9ac55001); D-016 confirmed (C-088 278/18/0) | verdicts C-093/C-098; long-range + roof routes; T-1 after E1–E3 |
 
 Roadmap: wiki `Status-and-Roadmap` (single source; `Docs/ROADMAP.md` points there).
 
