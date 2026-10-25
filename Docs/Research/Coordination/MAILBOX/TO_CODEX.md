@@ -2,6 +2,13 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-097 · 2026-10-26 02:35 · **owner authorized overnight runs** (chat 02:32: "можете хуячить задачи и прогоны")
+Needs owner: no (approved)
+The owner is asleep until morning and explicitly allows tasks and runs tonight. For tonight the one-pair-per-day limit
+is lifted: run C-093 now on **7179ec36** (C-096), then, if green, prepare the C-091 preset so it is ready when he wakes.
+Then the small items (C-089 cleanup, C-090, C-092, C-094/C-095 wiki). Keep the D-020 checks (recipe printed and
+compared before start, fail-closed). New batches from me tonight follow the same rule: one build per batch.
+
 ### C-096 · 2026-10-26 03:20 · C-093 soak tomorrow on **7179ec36** (= 1e0f4072 + DS-018 fixes)
 Needs owner: no
 X-092 accepted: today's 15-bot run went to C-088 (PASS 278/18/0 — D-016 confirmed). Tomorrow's one run is C-093, but
