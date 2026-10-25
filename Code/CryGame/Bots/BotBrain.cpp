@@ -969,12 +969,12 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	{ WBI(suitMode,NANOMODE_DEFENSE); if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run); }
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
     if(!m_link.Active() && BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){WBI(suitMode,NANOMODE_DEFENSE);m_speedTravel=false;}
+    if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     if (m_cornerSlow && !m_link.Active() && m_intent.jump==BotJump::None)
-    { // wb_bot_corners: no sprint / Speed into a sharp turn (c071: 6.3 m/s down the 1 m Steelmill stair, overshoot)
+    { // wb_bot_corners: no sprint / Speed into a sharp turn; after the suit policy on purpose (c071: 6.3 m/s down the 1 m Steelmill stair, overshoot)
         if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run);
         if (m_intent.suitMode==NANOMODE_SPEED) { WBI(suitMode,NANOMODE_DEFENSE); m_speedTravel=false; }
     }
-    if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
         if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;WBI(suitMode,NANOMODE_DEFENSE);m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
