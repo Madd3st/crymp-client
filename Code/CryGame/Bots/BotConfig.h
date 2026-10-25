@@ -30,6 +30,7 @@ struct BotConfig {
  int botPerception=0; // P2 C-037 view cone, time to notice, cloak (BotPerception.h), default OFF
  int aimModel=0;     // P2 C-038 human aim: saccade + tracking + filtered noise (BotAimModel.h), default OFF
  int suitPolicy=0;   // roadmap 12: one suit decision per tick (BotSuitPolicy.h), default OFF
+ int clientSmooth=0; // O-025 client replica: smooth replicated direction/aim steps (BotReplicaSmooth.h), default OFF
  int botNavmesh=0;    // P0 Detour navmesh paths/reachability (Tools/RecastBake meshes), default OFF
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);

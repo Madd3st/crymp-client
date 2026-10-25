@@ -23,6 +23,9 @@
 #include "CryCommon/CryAction/IActionMapManager.h"
 #include "CryCommon/CryAction/IViewSystem.h"
 #include "PlayerView.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "CryGame/Bots/BotReplicaSmooth.h"
+#endif
 
 
 class CPlayerMovement;
@@ -643,6 +646,9 @@ public:
 	bool m_warsBotStrafe = false;
 	Vec3 m_warsBotDirection = Vec3(0,1,0), m_warsBotAim = Vec3(0,0,0);
 	float m_warsBotSpeed = 0;
+	// O-025: client replica filters the 10 Hz direction/aim steps (wb_bot_client_smooth, default OFF).
+	WarsBots::BotReplicaSmooth m_warsBotSmooth;
+	Vec3 WarsBotViewAim() const; // smoothed aim on a client replica when enabled, else the replicated aim
 #endif
 	virtual Ang3 GetAngles();
 	virtual void PlayAction(const char* action, const char* extension, bool looping = false);

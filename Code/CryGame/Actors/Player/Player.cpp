@@ -1929,7 +1929,7 @@ bool CPlayer::UpdateFpSpectatorView(SViewParams& viewParams)
         {
             // Bots have no CNetPlayerInput. Reuse the existing replicated pose, never a fake channel.
             const Vec3 eye = pTarget->GetEntity()->GetWorldPos() + pTarget->GetStanceInfo(pTarget->GetStance())->viewOffset;
-            pTarget->m_netAimDir = (pTarget->m_warsBotAim - eye).GetNormalizedSafe(pTarget->m_baseQuat.GetColumn1());
+            pTarget->m_netAimDir = (pTarget->WarsBotViewAim() - eye).GetNormalizedSafe(pTarget->m_baseQuat.GetColumn1());
         }
 #endif
 		CItem* pItem = static_cast<CItem*>(pTarget->GetCurrentItem(true));
@@ -4145,6 +4145,7 @@ void CPlayer::Revive(ReasonForRevive reason)
 		m_warsBotSpeed=0;
 		m_warsBotStance=STANCE_STAND;
 		m_warsBotSeenJump=m_warsBotJumpSerial;
+		m_warsBotSmooth.Reset(); // revive: snap to the new pose, never curve from the corpse
 	}
 #endif
 
@@ -4996,15 +4997,34 @@ void CPlayer::ApplyWarsBotView()
     if (gEnv->bServer && !g_pGame->GetBotManager().Owns(GetEntityId())) return;
     // Same eye origin as the capped command. View is independent of locomotion/body heading.
     const Vec3 eye=GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
-    const Vec3 direction=(m_warsBotAim-eye).GetNormalizedSafe(m_viewQuat.GetColumn1());
+    const Vec3 direction=(WarsBotViewAim()-eye).GetNormalizedSafe(m_viewQuat.GetColumn1());
     m_viewQuat=m_viewQuatFinal=Quat::CreateRotationVDir(direction);
+}
+Vec3 CPlayer::WarsBotViewAim() const
+{
+	if (gEnv->bServer || !m_warsBotSmooth.Initialized() || WarsBots::BotConfig::Get().clientSmooth!=1) return m_warsBotAim;
+	const Vec3 eye=GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
+	const WarsBots::RVec a=m_warsBotSmooth.Aim(WarsBots::RVec{eye.x,eye.y,eye.z});
+	return Vec3(a.x,a.y,a.z);
 }
 void CPlayer::UpdateWarsBotMotion(float dt)
 {
 	if (!m_warsBotPose || GetChannelId()!=0 || GetHealth()<=0 || m_stats.isRagDoll || IsFrozen()) return;
 	if (gEnv->bServer && !g_pGame->GetBotManager().Owns(GetEntityId())) return;
+	// O-025: a client replica filters the replicated steps; the server always uses the raw values.
+	const bool smooth = !gEnv->bServer && WarsBots::BotConfig::Get().clientSmooth==1;
+	Vec3 moveDir = m_warsBotDirection, aim = m_warsBotAim;
+	if (smooth)
+	{
+		const Vec3 eye=GetEntity()->GetWorldPos()+Vec3(0,0,1.6f);
+		const WarsBots::RVec e{eye.x,eye.y,eye.z};
+		m_warsBotSmooth.Update(dt,WarsBots::RVec{m_warsBotDirection.x,m_warsBotDirection.y,0},WarsBots::RVec{m_warsBotAim.x,m_warsBotAim.y,m_warsBotAim.z},e);
+		const WarsBots::RVec d=m_warsBotSmooth.Dir(), a=m_warsBotSmooth.Aim(e);
+		moveDir=Vec3(d.x,d.y,0); aim=Vec3(a.x,a.y,a.z);
+	}
+	else m_warsBotSmooth.Reset();
 	Vec3 forward = m_baseQuat.GetColumn1();
-    Vec3 facing = m_warsBotStrafe ? m_warsBotAim-GetEntity()->GetWorldPos() : m_warsBotDirection;
+    Vec3 facing = m_warsBotStrafe ? aim-GetEntity()->GetWorldPos() : moveDir;
     facing.z=0; facing.NormalizeSafe(forward);
     float turn = atan2f(forward.x*facing.y-forward.y*facing.x,forward.x*facing.x+forward.y*facing.y);
 	const float yaw = atan2f(-forward.x,forward.y) + clamp_tpl(turn,-3.0f*dt,3.0f*dt);
@@ -5034,15 +5054,15 @@ void CPlayer::UpdateWarsBotMotion(float dt)
 		if (!m_warsBotAirborne && m_stats.jumped) GetAnimationGraphState()->SetInput("Action","idle");
 		m_stats.jumped=m_warsBotAirborne;
 		CMovementRequest request;
-		if (m_warsBotSpeed>0.01f) request.SetMoveTarget(GetEntity()->GetWorldPos()+m_warsBotDirection*2.0f);
+		if (m_warsBotSpeed>0.01f) request.SetMoveTarget(GetEntity()->GetWorldPos()+moveDir*2.0f);
 		else request.ClearMoveTarget();
 		request.SetDesiredSpeed(m_warsBotSpeed);
 		request.SetPseudoSpeed(m_warsBotSpeed>0.01f ? (WarsBots::BotPaceEnabled()?CalculatePseudoSpeed(m_warsBotSprint):(m_warsBotSprint?1.0f:(m_warsBotSpeed<2.0f?0.3f:0.5f))) : 0.0f);
 		request.SetStance(static_cast<EStance>(m_warsBotStance));
-		request.SetLookTarget(m_warsBotAim);
-		request.SetAimTarget(m_warsBotAim);
-		request.SetFireTarget(m_warsBotAim);
-		request.SetBodyTarget(m_warsBotStrafe ? m_warsBotAim : GetEntity()->GetWorldPos()+m_warsBotDirection*4.0f);
+		request.SetLookTarget(aim);
+		request.SetAimTarget(aim);
+		request.SetFireTarget(aim);
+		request.SetBodyTarget(m_warsBotStrafe ? aim : GetEntity()->GetWorldPos()+moveDir*4.0f);
 		request.SetAllowStrafing(m_warsBotStrafe);
 		m_pMovementController->RequestMovement(request);
 	}
@@ -5250,6 +5270,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 		{
 			if (bot && !m_warsBotPose)
 				WB_LOG(2, "[WarsBots] Motion replica activated EntityId=%u (server dynamic aspect, no channel).",GetEntityId());
+			if (!m_warsBotPose) m_warsBotSmooth.Reset();
 			m_warsBotPose = bot;
 			if (bot) GetGameObject()->EnablePrePhysicsUpdate(ePPU_Always);
 		}
