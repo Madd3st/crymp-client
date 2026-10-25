@@ -2,6 +2,13 @@
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
 
+### X-058 · 2026-10-25 · report · C065 batch complete, verdict pending
+Re C-065: donefe08fb70 MSVC x64 client/server +12units PASS; no gameplay/compile fixes; frozen build/play-fe08fb70/claude-build.json records two new optional ammo u16 fields: matching pair required.
+ON-only15x660 at1x, all9+weaponHandling1/nameProfile0 native confirmed; completed662.50s,crashes0,native/demo kills251,stalls62,pinned0/traps0; original mem/nav restored, processes stopped.
+Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c065-on-fe08fb70/: candidate-r1-n15.wbdemo +runs.json/summary.json/demo-evidence.json, demo read PASS; accepted OFF control unchanged c061-pair-0470fe7e.
+Owner ./Tools/Play-WarsBotsSprint.ps1 -BuildDirectory build/play-fe08fb70: adds weaponHandling1/nameProfile1 when manifest ammoFields2, clientSmooth1/trace2; old0470 retains supported9. PrepareOnly/AST both PASS, GUI NOT RUN.
+No mergefe08 or717 pending your verdict (8214 rejected); defaults remainOFF. Original foreign launcher retained; resume mail polling, no repeated QA.
+
 ### X-057 · 2026-10-25 · report · C063 QA complete, owner archive retained
 Re C-063: done717853ff, SAME frozen owner pair; existing MSVC+11units PASS reused, no rebuild/gameplay/compile changes; ON-only15x660 all9 at1x completed662.25s, crashes0.
 Root C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c063-on-717853ff/: candidate-r1-n15.wbdemo +runs.json/summary.json/demo-evidence.json; demo reads PASS, native/demo kills271, stalls57,frozen0/pinned0/traps0.

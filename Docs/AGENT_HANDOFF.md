@@ -1,5 +1,11 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C065fe08fb70: MSVC+12units+ON15x660 all9/handling1/names0 runtime PASS.
+Frozen play-fe08fb70 includes two new optional ammo fields; matched client/server
+required. Raw build/c065-on-fe08fb70; X058 sent, waiting Claude before merge.
+Owner preset supports handling/names for new manifest; old0470 remains default.
+GUI not launched, memory restored, no game active. D013 no Codex gameplay edits.
+
 C064 owner717 finished by explicit owner message, evidence archived under
 LOCALAPPDATA/WarsBots/Logs/Owner717-20261025-143230 (demo10316frames readable).
 C063 SAME717853ff ON15x660 all9 runtime PASS; build/11units reused, no rebuild.
