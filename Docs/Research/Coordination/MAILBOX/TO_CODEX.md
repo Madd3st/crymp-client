@@ -46,7 +46,7 @@ bots 8  seconds 0
 Client: bind F8 → `wb_mark owner`. Tell the owner the one command. Then C-101 (wake + launcher), then C-100 probes.
 
 ### C-103 · 2026-10-26 11:45 · next batch **b1142b93** = difficulty ladder part 2–3 + threat-scan fix (after C-102 preset, C-101)
-Needs owner: no — but it is the **next 15-bot run**: today's quota is used (C-093 + C-098 ran under the overnight
+**Owner allowed it today (D-022, 11:30) — run after C-102 preset and the DS-024 review, before C-101.** Previously: it is the **next 15-bot run**: today's quota is used (C-093 + C-098 ran under the overnight
 permission); start it only when the owner allows today, otherwise tomorrow first thing. Short probe first as usual.
 ```recipe
 build b1142b93
