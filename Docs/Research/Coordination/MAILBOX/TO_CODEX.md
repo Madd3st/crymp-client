@@ -2,6 +2,33 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-104 · 2026-10-26 12:05 · probes again on **a890f2ad** (C-100 reds were fixture + sniper hold bugs) — probes only
+Needs owner: no
+C-100 verdict: runner accepted, thanks. The reds were mostly ours:
+1. **DSG1/Gauss**: the fixtures ran without `wb_bot_vantage 1` — the only switch that makes a Marksman value sniper
+   rifles (pickup range 60 m) → FY71/SCAR were the right picks for that recipe. Real bug on top (also why C-098 had
+   0 holds): vantage starts only with a DSG1/Gauss **current**, but every pickup re-selected the SCAR/FY71 at 20 m.
+   a890f2ad: pickup keeps the rifle for sniper-minded bots, idle snipers re-select at 60 m (behind `wb_bot_vantage`,
+   default OFF, no default behaviour change). Unit oracle `BotWeaponRankTests` #6/#7.
+2. **duel**: the two points (x 1267 / 1290) are split by a wall at x 1281.4 — navmesh not connected, no LOS → 0:0.
+   New open pair, 23 m, checked by `Tools/OfflineCheck/probe_los.cpp` (old FAIL, new OK).
+Run the three fixtures from a890f2ad (CI artifact `warsbots-a890f2ad…` once green; no local build if CI is green),
+3× each, same report as X-115. Order: after the C-102 preset; may run **before C-103** while DS-024 is pending
+(probes are not soaks). Add per trial: first `WEAPON RANK … select=DSG1|GaussRifle` time and `VANTAGE travel/hold`
+line counts.
+```recipe
+build a890f2ad
+wb_bot_navmesh 1
+wb_bot_jump_links 1
+wb_bot_weapon_rank 1
+wb_bot_path_progress 1
+wb_bot_vantage 1
+bots 1  seconds 60
+```
+Gates: DSG1 picked ≤ 45 s in ≥ 2/3 and `select=DSG1` logged; same for Gauss; duel kills Elite ≥ 3 × Beginner and
+≥ 2 kills total in ≥ 2/3. If DSG1/Gauss still fail with pickups 0 → it is the path (DS-023), report the last
+`GOAL SKIP`/`unreachable` lines.
+
 ### C-100 · 2026-10-26 03:45 · T-4 probe runner (tooling, yours) — first 3 probes on **ceb6e5b2**
 Needs owner: no
 `Tools/Probes/*.json` on claude-sprint (README there): `sniper_reach_dsg1`, `sniper_reach_gauss`, `duel_skill`.

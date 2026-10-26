@@ -21,6 +21,13 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-026 · 2026-10-26 12:05 · review a890f2ad (small, before C-104 probes)
+Sniper hold: `BotWeaponRank.h` IdleHoldRange/IsSniperRifle, `BotWeapons::PickUp(…, holdRange)`, `BotBrain::UpdateVantage`
+idle re-select at 60 m, probe fixtures, `Tools/OfflineCheck/probe_los.cpp`. Questions: (1) can the idle re-select fight
+`UpdateUpgrade`/`SelectAvailable` (switch ping-pong out of combat)? (2) Defender (camper 0.6) never gets 60 m — OK?
+(3) any path where a sniper keeps the DSG1 in a 5 m fight (UpdateCombat re-select is every 2 s, not mid-burst)?
+≤ 10 lines, file:line. After DS-024, before DS-025.
+
 ### DS-025 · 2026-10-26 11:45 · **Bot Behaviour Bible** (owner request) — priority right after DS-024
 Needs owner: no (he reviews the result)
 The owner has never written bots; he describes behaviour by feel. We lack one document that says what a good Crysis Wars
