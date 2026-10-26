@@ -37,6 +37,21 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-044 · 2026-10-27 02:55 · night: patches for the three costliest FAILs of your audit (DS-042)
+Your DS-043 is in claude-sprint **09fd9520** (PS revive by the wave, DecisionCommit P1 as `wb_bot_state_commit 2`), plus
+my C-117 PS fixes (hooks per Register, team as number, no per-client RMI to channel 0 — please re-review the Lua part).
+Now, from REVIEW_PRO_PLAYER.md, as `git apply` patches on 09fd9520, each behind ONE new default-OFF flag, with tests
+and the metric it must move (use your flips/duels/detectors tools for the before value on c116/c117):
+1. **Time to first primary** (p50 33.5 s, SOCOM 35.7 % of samples): spawn → nearest reachable rifle first, before any
+   roam/fight unless an enemy is within 10 m; pick by `PickupCost` on the navmesh path length, not straight distance.
+2. **Withdraw that dies** (80 % die within 2.5 s): withdraw to the nearest cover spot that breaks LOS (`BotTactics::
+   PickCover`, spots file) instead of 4 m straight back; keep firing while moving (`wb_bot_pro_fire` already does fire);
+   Armor; abort the withdraw if no cover within 8 m (then fight).
+3. **Switch-away from ≤ 25 HP targets** (22.4 %): finish lock until the target is dead/lost > 1 s unless a new enemy
+   is within 8 m and hitting us.
+Also: the exploit probes need runner hooks (`wb_probe_dummy` etc.) — write the spec of the hooks you need (names, args,
+what they do) and I add them. ≤ 20 lines + `AUDIT_FIXES.md`.
+
 ### DS-043 · 2026-10-27 00:55 · night: review my integration of your patches (**7e35f3aa..0fa9c1cb**) + DecisionCommit as a patch
 Great night work — DS-038/040, PS-0 1–5 and the boat driver are all in claude-sprint 0fa9c1cb. What I changed vs
 your patches (please check I did not break the intent): DS-040 behaviour is behind `wb_bot_pro_fire` (NOFIRE logs
