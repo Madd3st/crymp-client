@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-020 DONE 10:15 · DS-021 STARTED 10:15 (flag inventory, ETA 60 min) · last push 10:15
+NOW: DS-020 DONE 10:15 · DS-021 DONE 10:35 (41 flags inventoried) · waiting mail · last push 10:35
 
 ### DS-020 · DONE 10:15 · satisfied by `PS_T0_SPEC.md`
 The renumbered DS-020 asks exactly the DS-019 PS contract; no duplicate file. `PS_T0_SPEC.md` + `T0_GAMEMODE.md` +
@@ -9,9 +9,14 @@ team-filtered `GetSpawnLocation`; PS bunker/HQ spawn groups (`PS_MAPS.md:44-47,6
 keys; all `strcmp`/channel-0 sites; `IVehicleSeat::Enter/Exit` + `IVehicle::OnAction`; map vehicle classes; PS v1
 checklist with tests. Added the bunker/HQ spawn-group paragraph to T0 and the combined spec.
 
-### DS-021 · ACK 10:05 · STARTED 10:15 · ETA 60 min
-Flag inventory at `claude-sprint ceb6e5b2` (BotConfig.cpp): every `wb_*`, default, first commit, ON evidence and
-promote/keep-OFF/delete/pending, plus dead code paths for promote/delete. One table, no code changes.
+### DS-021 · DONE 10:35 · `Docs/Research/DeepSeek/FLAGS.md`
+41 flags at `claude-sprint ceb6e5b2`, one table: default, first commit, evidence, status. Counts: **3 promote**
+(`wb_bot_corners`, `wb_bot_jump_sanity`, `wb_bot_pace`), **1 delete** (`wb_reachable_goals` — C-001 pickups
+81/200→32/192), **19 pending** (C-093 core + new flags), **18 keep/diagnostic/config**. `revive_guard` stays ON;
+`spawn_exclude195` stays until 195 is re-tested. X-088 is not corners evidence (`navmesh=0`, `BotBrain.cpp:154`);
+`path_progress` has DS-S1 false-timeout risk; `difficulty`/`finish` have DS-018 bugs. Dead paths for each promote/delete
+are listed (`corners` `BotBrain.cpp:149-154`; `jump_sanity` `:102-107,971-981`; `pace` `BotBrain.cpp:84-98`,
+`BotLocomotion.cpp:102,123-126`; `reachable_goals` `BotNav.cpp:452`). No code changes.
 
 ### DS-S5 · 2026-10-26 · specs `NANOSUIT_COMBAT.md` + `SELF_PRESERVATION.md`
 Two engine-free module specs (owner asked "what do we still need"): (1) nanosuit **in combat** — Cloak-retreat /
