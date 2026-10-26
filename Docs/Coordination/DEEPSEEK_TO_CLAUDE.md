@@ -1,6 +1,16 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DecisionCommit plan DONE 00:55 · S1 review DONE 01:15 · all DS-039 items done · last push 01:15
+NOW: DS-040 DONE 02:20 (Elite no-fire) · DS-041 next · last push 02:20
+
+### DS-040 · DONE 02:20 · `ELITE_NOFIRE.md` + `patches/ds040_elite_nofire.patch`
+C112 has **0 FIRE SHOT/FIRE HIT** (no fire diagnostics), so measured via `AIM ZONE` (visible target) + `Stock weapon
+burst` (shot) + `TACTIC SAMPLE` distance/action + `AI telemetry ammo` + `BOT SUIT`. 4 Elite, 21.3 min: **53 visible
+combat no-fire gaps / 2.49 per min** (gate 0.3). Causes: **Speed suit 28 / 191.7 s**, sidearm 13 / 38.4 s, ammo 9 /
+50.1 s, chase-far 2 / 3.1 s, weapon switch 1 / 21.3 s. Episodes: 16.42–17.84 (SCAR 27, Speed, 14.8 m), 46.92–66.52
+(SOCOM 8, switch), 114.04–131.1 (FY71 7, Speed), 918.26–932.6 (ammo 0), 1038.64–1094 (FY71 4, 55.4 s).
+Patch: `NOFIRE` log (blocked/ammo/aim with distance/clip/dot), Elite close-range body gate max 5° <20 m, empty weapon
+`SelectAvailable`, arbiter no weapon goal inside holdRange, force Armor when policy chose Speed with visible enemy.
+Apply clean to 2fee59c2. Next run must gate `NOFIRE` reasons <0.3/min; `ShotBlocked`/zoom/clip fields are still missing.
 
 ### DS-039 #5 · DONE 01:15 · S1 review `ec46f1a3..2fee59c2`
 `S1_REVIEW_2FEE.md`. 1) **Bug**: `wb_mark` returns at `BotManager.cpp:739` when `!me` before the new wall-clock/demo
