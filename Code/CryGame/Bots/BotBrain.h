@@ -16,6 +16,7 @@
 #include "CryGame/Bots/BotTraits.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotCorners.h"
+#include "CryGame/Bots/BotDecisionCommit.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 struct IActor;
@@ -50,7 +51,10 @@ public:
 
 private:
     unsigned m_lookDiagnostics=0;float m_nextLookDiagnostic=0; // <=128 rows per instance, opt-in MOVE TRACE only
-	void Change(State state,bool initialize=false);
+	void Change(State state,bool initialize=false,DecisionOwner owner=DecisionOwner::Arbiter);
+	static DecisionState ToCommit(State s);
+	bool IsUrgentCommit(State s) const;
+	DecisionOwner OwnerOf(State s) const;
     void UpdateTelemetry(CPlayer& actor);
     bool UpdateDead(BotInstance& bot,CPlayer& actor,float dt);
     bool UpdateTest(CPlayer& actor,float decisionTime);
@@ -109,7 +113,11 @@ private:
 	bool m_fallbackGiven = false;
 	bool m_retreating = false;
 	State m_state = State::SPAWNING;
+	DecisionCommit m_commit;              // DS-043 P1: one state change per decision serial
+	MoveCommit m_move;                    // DS-043 P1: hold a destination inside one state
+	DecisionOwner m_moveOwner = DecisionOwner::Arbiter;
 	float m_now = 0, m_tick = 0, m_stateTime = 0, m_weaponSearchStarted = 0, m_nextSearch = 0, m_deadTime = 0;
+	bool m_psReviveLogged = false;   // DS-043: PS revive wave owns the respawn
 	float m_nextTelemetry = 0;
     Vec3 m_trackedAim=Vec3(0,0,0);
     EntityId m_trackedTarget=0;

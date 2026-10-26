@@ -58,8 +58,10 @@ bool BotMatch::Register(CGameRules& rules, IActor& actor)
             rulesTable->GetValue("warsBotsPSAttached",attached);
             if (!attached) return false;
         }
+        // C-117: hooks were fetched only for the first bot; the second Register used an empty table and crashed.
+        if (!hooks.GetPtr() && (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsPS",hooks) || !hooks.GetPtr())) return false;
         // PS-0 #3: create the PS player entry (PP/CP/score/revive) for the channel-0 actor.
-        if (!Script::CallMethod(hooks.GetPtr(),"Register",ScriptHandle(actor.GetEntityId()),ScriptHandle(rules.GetTeam(actor.GetEntityId())))) return false;
+        if (!Script::CallMethod(hooks.GetPtr(),"Register",ScriptHandle(actor.GetEntityId()),rules.GetTeam(actor.GetEntityId()))) return false;   // C-117: team is a number in Lua
         WB_LOG(1, "[WarsBots] PS participant registered EntityId=%u team=%d channelId=0 nativeIsPlayer=0 matchCount=%d.",
             actor.GetEntityId(),rules.GetTeam(actor.GetEntityId()),rules.GetMatchParticipantCount(true));
     }

@@ -11,6 +11,7 @@
 #include "CryCommon/CryAction/IMovementController.h"
 #include "CryGame/Bots/BotInstance.h"
 #include "CryGame/Bots/BotManager.h"
+#include "CryGame/Bots/BotMatch.h"
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Bots/BotWeaponRank.h"
 #include "CryGame/Bots/BotUpgradeGate.h"
@@ -49,11 +50,65 @@ const char* NameOf(BotBrain::State state)
 }
 }
 
-void BotBrain::Change(State state,bool initialize)
+DecisionState BotBrain::ToCommit(State s)
 {
-    // Preserve Start's former silent initialization; normal transitions keep their exact effects.
-    if(initialize){m_state=state;return;}
+	switch (s)
+	{
+	case State::SPAWNING: return DecisionState::Spawning;
+	case State::SEEKING_WEAPON: return DecisionState::SeekWeapon;
+	case State::MOVING_TO_WEAPON: return DecisionState::MoveToWeapon;
+	case State::SEARCHING_ENEMY: return DecisionState::Search;
+	case State::CHASING_ENEMY: return DecisionState::Chase;
+	case State::ATTACKING: return DecisionState::Attack;
+	case State::DEAD: return DecisionState::Dead;
+	case State::RESPAWNING: return DecisionState::Respawn;
+	}
+	return DecisionState::Search;
+}
+
+bool BotBrain::IsUrgentCommit(State s) const
+{
+	// Death/respawn must never wait for a dwell; a visible target may enter ATTACKING at once.
+	return s == State::DEAD || s == State::RESPAWNING || s == State::SPAWNING ||
+		(s == State::ATTACKING && m_combat.Target() != 0);
+}
+
+DecisionOwner BotBrain::OwnerOf(State s) const
+{
+	switch (s)
+	{
+	case State::SEEKING_WEAPON:
+	case State::MOVING_TO_WEAPON: return DecisionOwner::Upgrade;
+	case State::SEARCHING_ENEMY: return DecisionOwner::Roam;
+	case State::CHASING_ENEMY:
+	case State::ATTACKING: return DecisionOwner::Combat;
+	default: return DecisionOwner::Arbiter;
+	}
+}
+
+void BotBrain::Change(State state,bool initialize,DecisionOwner owner)
+{
+	// Preserve Start's former silent initialization; normal transitions keep their exact effects.
+	if(initialize)
+	{
+		m_state=state;
+		m_commit.Reset(); m_move.Reset(); m_moveOwner=DecisionOwner::Arbiter;
+		m_commit.BeginTick(m_decisionSerial,m_now);
+		return;
+	}
 	if (m_state == state) return;
+	if (BotConfig::Get().stateCommit>=2)
+	{
+		const DecisionOwner who = owner==DecisionOwner::Arbiter ? OwnerOf(state) : owner;
+		if (!m_commit.Offer(who,ToCommit(state),m_now,IsUrgentCommit(state)))
+		{
+			if (m_commit.ShouldLogConflict(m_now))
+				WB_LOG(1,"[WarsBots] #%d STATE CONFLICT first=%s second=%s owner=%d actor=%u.",
+					m_number,NameOf(m_state),NameOf(state),int(who),m_actorId);
+			return;
+		}
+		m_move.Reset(); m_moveOwner=who;
+	}
 	m_progress.Reset();
 	m_state = state;
 	m_stateTime = m_now;
@@ -252,6 +307,7 @@ void BotBrain::ResetLife()
 	m_weaponSearchStarted = m_now;
 	m_nextSearch = m_now;
 	m_deadTime = 0;
+	m_psReviveLogged = false;
 }
 
 bool BotBrain::Start(BotInstance& bot)
@@ -319,6 +375,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	const float decisionTime = m_tick;
     ++m_decisionSerial;
 	m_tick = 0;
+	if (BotConfig::Get().stateCommit>=2) m_commit.BeginTick(m_decisionSerial,m_now);
 	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
 
 	m_intent=BotIntent();
@@ -401,7 +458,15 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
 			m_blackboard.nextJump=m_blackboard.nextSuitChange=0; m_suit.Reset();
 		}
 		m_deadTime += dt;
-		if (m_deadTime >= 5.0f)
+		// DS-043: in PowerStruggle the PS revive wave owns the respawn; the 5 s self-revive double-revived a bot that
+		// the wave then revived again. Keep a 30 s fallback so a broken queue cannot leave a bot dead for the match.
+		const bool ps = g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules());
+		if (ps && !m_psReviveLogged && m_deadTime >= 5.0f)
+		{
+			m_psReviveLogged = true;
+			WB_LOG(1, "[WarsBots] #%d PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=%u.", m_number, m_actorId);
+		}
+		if (m_deadTime >= (ps ? 30.0f : 5.0f))
 		{
 			Change(State::RESPAWNING);
 			if (bot.Revive())
@@ -785,8 +850,12 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 	}
 	// DS-034: a target moving around holdRange flipped ATTACKING/CHASING every decision (2,768 times in playtest 3);
 	// once attacking, keep attacking a visible target for at least 0.5 s.
-	const bool attackDwell = BotConfig::Get().stateCommit == 1 && m_state == State::ATTACKING && m_now - m_stateTime < 0.5f;
-	if (visible && (attackDwell || distance <= (m_state == State::ATTACKING ? m_profile.holdRange : m_profile.engageRange)))
+	// DS-043 P1: stateCommit 2 widens the band to holdRange+4 (or preferredRange+6) and holds it for 1.5 s.
+	const int commitMode=BotConfig::Get().stateCommit;
+	const float attackHold=commitMode>=2?1.5f:0.5f;
+	const bool attackDwell = commitMode>=1 && m_state == State::ATTACKING && m_now - m_stateTime < attackHold;
+	const float leaveRange = commitMode>=2 ? max(m_profile.holdRange+4.0f,m_profile.preferredRange+6.0f) : m_profile.holdRange;
+	if (visible && (attackDwell || distance <= (m_state == State::ATTACKING ? leaveRange : m_profile.engageRange)))
 	{
         UpdateAttacking(actor,destination,aim,distance,desiredRange);
     }else{
@@ -1008,6 +1077,27 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
 void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 {
     if (RecoverTrap(actor)) return;
+	// DS-043 P1: hold a destination inside one state. A new state resets the commit in Change(); trap/link override it.
+	if (BotConfig::Get().stateCommit>=2)
+	{
+		if (m_link.Active() || m_trap.Level()>=2) m_move.Reset();
+		else if (m_intent.move)
+		{
+			const Vec3 d=m_intent.destination;
+			if (!m_move.Valid(d.x,d.y,d.z,m_now))
+			{
+				const DecisionOwner owner=OwnerOf(m_state);
+				if (!m_move.Has() || m_moveOwner==owner) { m_move.Set(d.x,d.y,d.z,m_now); m_moveOwner=owner; }
+				else
+				{
+					float x=0,y=0,z=0; m_move.Get(x,y,z);
+					m_intent.MoveTo(Vec3(x,y,z),m_intent.aim);
+					m_intent.why.move=short(__LINE__);
+					if (m_verbose) WB_LOG(2,"[WarsBots] #%d MOVE COMMIT hold owner=%d actor=%u.",m_number,int(m_moveOwner),actor.GetEntityId());
+				}
+			}
+		}
+	}
     ApplyLookPolicy(actor); // C-033, wb_bot_look
 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
 		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
@@ -1041,7 +1131,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
     // DS-040 (wb_bot_pro_fire): a visible enemy inside the hold range must not sprint. Native fire is blocked while
     // sprinting; C-112 had 12 visible combat gaps / 116.5 s at 60-89 % sprint. After the suit policy on purpose.
     if (BotConfig::Get().proFire==1 && m_blackboard.visible && m_blackboard.distance<=m_profile.holdRange && m_intent.jump==BotJump::None && m_intent.gait==BotGait::Sprint)
-    { WBI(gait,BotGait::Run); m_speedTravel=false; }
+    { WBI(gait,BotGait::Run); m_speedTravel=false; if (m_intent.suitMode==NANOMODE_SPEED) WBI(suitMode,NANOMODE_DEFENSE); } // DS-043 (c): no Speed suit in the fight either
     if (m_cornerSlow && !m_link.Active() && m_intent.jump==BotJump::None)
     { // wb_bot_corners: no sprint / Speed into a sharp turn; after the suit policy on purpose (c071: 6.3 m/s down the 1 m Steelmill stair, overshoot)
         if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run);
