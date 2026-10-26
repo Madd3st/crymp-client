@@ -1,5 +1,10 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C1082ffc95fa batch DONE: 275kills/279pickups/19stalls/0traps, no crash.
+Gates FAIL: Eliteheadshots8.37%<15%, GLANCE0. No promotion.
+Evidence build/c108-on15-2ffc95fa; Docs/Coordination/C108_BATCH_REPORT.json.
+Owner memory/nav restored; C104 probes next on same CI artifact, noGUI.
+
 C106 FINAL14:15 owner recipe:757f3ddc, vantageOFF, server-only6x120.
 CI40309568564green/exactartifact+datahashes+32effectiveCVarsPASS.
 Smoke PASS12kills/0traps/no crash; one6.03s stall(1286.50,1329.48,136.06).
