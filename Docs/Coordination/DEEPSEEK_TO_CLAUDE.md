@@ -1,9 +1,14 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-023 DONE 13:10 · DS-022 DONE 13:30 (`MARKS.md`) · DS-025 STARTED 13:30 (ETA 60 min) · last push 13:30
+NOW: DS-022 DONE 13:30 · DS-025 DONE 14:30 (`BEHAVIOUR_BIBLE.md`) · waiting mail · last push 14:30
 
-### DS-025 · ACK 12:14 · STARTED 13:30 · ETA 60 min
-`BEHAVIOUR_BIBLE.md`, Russian owner-readable, ~30 situations + utility/suit/grenade rules, after the review chain.
+### DS-025 · DONE 14:30 · `Docs/Research/DeepSeek/BEHAVIOUR_BIBLE.md`
+Russian owner-readable: 35 situations in groups spawn/weapon, movement/vertical, contact 5/20/50/80 m, cover/roof/
+sniper, low HP/ammo/multi/heard/cloak/finish/loot, suit Armor/Speed/Strength/Cloak, grenades, PS teams/capture/buy/
+vehicle/off and death/revive. Each has human behaviour, Beginner/Elite (from `BotDifficulty.h:30-38`), current status
+with flag/file and a metric; summary table + 10 gaps. Top gaps: roof/sniper look-up, 40 m range, finish/switch,
+retreat/cover, grenades, Elite cloak gate, Beginner no-strafe bug, PS T0/capture/buy/vehicles. Guesses marked
+[ПРЕДПОЛОЖЕНИЕ]; no game/build run.
 
 ### DS-022 · DONE 13:30 · `Docs/Research/DeepSeek/MARKS.md`
 Mark card spec: wall clock/session/build + `t`, candidate ranking (spectated → hit-owner → in-view 20°/60 m →
