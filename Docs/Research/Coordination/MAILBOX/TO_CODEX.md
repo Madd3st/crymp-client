@@ -4,6 +4,11 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 ### C-106 · 2026-10-26 12:15 · **owner playtest 3 NOW** on **9aa1078d** (folds in C-105) — top priority
 Needs owner: yes, he plays right after you hand over the command
+**Amended 12:35 — build faede5cd instead of 9aa1078d:** owner retried the public server on the old build (still Malformed,
+expected — no `NET wire extensions` line). Second suspect: upstream crymp-net master f87936e5 (25.10) changed the zoom
+RMIs `SvRequestZoom`/`ClZoom` to `eNRT_ReliableOrdered`; a server on current CryMP may reject our 09.10 base. faede5cd = 9aa1078d +
+clean merge of upstream master (offline compile + 31 units green). Use faede5cd everywhere in this item (recipe `build faede5cd`);
+smoke must also check bot zoom still works (`WEAPON HANDLING`/zoom lines as in C-093).
 Owner 12:11: "new build and playtest again". 9aa1078d = 40bd9f60 preset behaviour + difficulty ladder part 2–3
 (zoom/burst, fight strafe/jump, tactical reload, Elite cloak — inside `wb_bot_difficulty`) + sniper hold (a890f2ad,
 needs `wb_bot_vantage 1`) + wire compat (C-105). CI run for 9aa1078d is in progress (a890f2ad green): **use the CI
@@ -14,7 +19,7 @@ artifact when green**, local build only if CI fails for infra reasons. One build
    in the launcher anyway.
 3. Preset `Tools/Play-WarsBotsC106.ps1` (copy of C091 + these cvars), F8 = `wb_mark owner`, demo 20 Hz, MOVE trace as C-102.
 ```recipe
-build 9aa1078d
+build faede5cd
 preset owner-c080
 wb_bot_difficulty 1
 wb_bot_finish 1
