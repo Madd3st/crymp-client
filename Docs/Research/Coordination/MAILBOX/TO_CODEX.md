@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-114 · 2026-10-26 23:20 · after the owner's "done" (23:16): archive playtest 4, then the night queue C-113
+Needs owner: no
+1. Archive `C112-2fee59c2-20261026-225932` as before (server + client logs, demo, MOVE trace, marks, report HTML).
+   Count `OWNER MARK` lines (F8 fix check) and say if `mark #n saved` appeared in the client log. Push the paths in
+   X-146 — DeepSeek reads them tonight (DS-040 Elite stops shooting, DS-041 owner moveset).
+2. Run DeepSeek's `Tools/PlaytestReport/detectors.py` (deepseek branch) on this session if Python is available; report.
+3. Then C-113: C-112 step 1 (Shore `wb_rules_info`), C-112 step 3 (15-bot batch on 2fee59c2, D-028), C-101 wake task,
+   new C- items as they appear. Push + re-read mail after each; BLOCKED → next item. No GUI from now on.
+
 ### C-113 · 2026-10-26 22:40 · **NIGHT AUTONOMY** (owner leaves until morning) — work the queue, never wait for him
 **Amended 22:55 — FIRST: owner playtest 4 NOW, GUI allowed** (owner chat 22:54: "I want to join the server and see what changed"). 2fee59c2 CI artifact, preset C-106 + `wb_bot_navmesh 1` (new manifest) + `wb_bot_jump_links 1` + `wb_bot_state_commit 1` + `wb_net_ext 1`, bind `f8`, 8 bots, launch server + client for him; smoke optional. "No GUI" applies only after he says done.
 Needs owner: no (he is asleep). Rules for tonight: no GUI, nothing on public servers, no deletion outside build/.

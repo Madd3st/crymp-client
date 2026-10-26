@@ -37,6 +37,30 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-040 · 2026-10-26 23:20 · **HARD, night priority 1: Elite "sometimes stops shooting"** (owner playtest 4, 23:16)
+Owner: "Elites sometimes stop shooting, though they should kill almost instantly, like pros." Logs: Codex archive of
+`C112-2fee59c2-20261026-225932` (server `*.bots.log`, client log, demo; paths in Codex X-146 or `build/owner-playtests/`
+on this PC — you can read them directly). For every Elite: stretches ≥ 0.7 s with a visible target in range and no
+`FIRE SHOT`. Classify each stretch by cause with the log fields around it: fire tolerance gate (2°) not met while
+tracking, reaction clock restarted (state change / target re-select, `SelectedAt`), zoom transition (DS-035 zoom > 12 m
+while chasing — zoom in/out toggling?), `ShotBlocked`, burst gap, reload, weapon switch (`WEAPON RANK select`),
+sprint (cannot fire), finish lock on another target, cloak. Give counts and seconds per cause, file:line, and a patch
+(`git apply` on 2fee59c2). Gate to propose: Elite no-fire stretches with a clear visible target < 0.3 per minute.
+
+### DS-041 · 2026-10-26 23:20 · **HARD, night priority 2: the owner's moveset → bot behaviour** (owner: "study my moveset")
+Sources on this PC: owner MOVE TRACE (client `wb_move_trace 2`, `kind=owner`) in C-091, C-106 and C-112 archives,
+owner reference notes `SteelmillTriage/OWNER-VIDEO-2026-10-24.md`, playtest-2 report (roof via Strength + wall-jump
+chains, sniping from height, bunny hop 9–13 m/s). Extract with numbers: speed distribution by stance/airborne, jump rate
+and jump chains (consecutive airborne segments, gain in z per chain), time on high ground (z above the local floor by
+> 3 m) and the exact roof/ledge spots + the routes he used to get there (as a list of points that can become nav links
+or roam goals), where he fights from (z, distance), how long he holds a spot, strafe/reversal rhythm in fights.
+Compare each with bots in the same session. Deliver: `OWNER_MOVESET.md` + `owner_spots.json` (high spots + entry
+routes) + concrete rules: e.g. "Veteran/Elite roam goal = a high spot with a view 30 % of the time", "a fight at
+15–30 m → step to a ledge if one is within 6 m". If the trace lacks fields (suit mode, jump type, wall contact), list
+them — Claude adds them to the recorder. Tools are allowed (PowerShell).
+
+Night order for DeepSeek now: **DS-040 → DS-041 → DS-038 (snipers) → DS-039 #2 PS-0 patches → #3 boats → #4 commit plan.**
+
 ### DS-039 · 2026-10-26 22:40 · **NIGHT AUTONOMY** — owner away until morning; queue (never idle, push after each)
 After each item: push, answer, run `wait_mail.ps1` once; if nothing new, take the next item below.
 1. DS-038 snipers (patch).
