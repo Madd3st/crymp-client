@@ -1,6 +1,22 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-033/034/035 DONE 21:05 (3 docs + proto) · waiting mail · last push 21:05
+NOW: DS-036 DONE 22:05 · DS-037 #2 DONE 22:05 · #3 #4 #5 next · last push 22:05
+
+### DS-036 · DONE 22:05 · review `06a6e79b`
+1. P0 fixes the 26k `SEARCHING↔MOVING` pair **only with `wb_bot_state_commit=1`**; default 0 (`BotConfig.h:28`), so C-111 must set it in both halves.
+2. `UpdateRoam` writes SEARCHING once, after the weapon delegation (`BotBrain.cpp:574,589`); the `UpdateVantage` path writes one state (after `ExecuteIntent`, harmless). `Change` at `:50-58`.
+3. `UpdateArbitrated`'s `UpdateUpgrade` is **not** a second writer: `:1347` returns when it executes; if it returns false, `UpdateRoam` calls it once (`:589`). No double Change found.
+4. Remaining flips are `ATTACKING↔CHASING`: 2,768 / 9.5 per bot-min (`:766-768`). The 0.5 s dwell caps the entry side; expect ~4-5 A→B→A/bot-min, so P0 likely reaches <10 but not <2. P1 `DecisionCommit` is still needed for <2.
+5. Remaining bug: `BotSuit::Apply` urgent bypasses the 2 s cooldown (`BotSuit.cpp:41`) but still rejects Strength below 70/90 (`:26`); `BotJumpLink` waits for 90 with `prepareMax=4` (`BotJumpLink.h:51`) and can time out after a 2 s cooldown. Raise `prepareMax` to 6 or start only at ≥90.
+6. Flat link `Steelmill.links.txt:546` (1298.14,1343.57 → 1289.41,1343.52, dz 0.10, gap 8.73). Bake filter: `strength && |dz|<0.8 && gap>3.5`; removes 78/1133 Steelmill (90 Quarry, 58 Armada, 33 Outpost). Filtered keeps 34/34 DSG1 and Gauss. Do **not** auto-remove `rise>3.5`: the DSG1 key link `:654` is +4.30.
+7. `BotJumpLinkTests` updated correctly (Act 3.5 s); `BotDifficultyTests` is untouched in 06a6e79b — the duel patch updates it.
+
+### DS-037 #2 · DONE 22:05 · duel patch for DS-035
+`Docs/Research/DeepSeek/duels_035.patch` (+ `DUELS_PATCH.md`), applies to `06a6e79b` with `git apply`.
+`BotDifficulty.h`: `holdScale` 0.8/1.0/1.3/1.6, `rangeScale` 0.85/1.0/1.4/1.75, caps B 16/20/24, N 20/24/45,
+V 30/36/55, E 38/44/60; `preferredRange` now scales (the range the bot walks to). One reaction clock
+`max(m_stateTime,SelectedAt)+reaction` at 3 sites; zoom a visible target >12 m while chasing; AIM ZONE 0.5 s.
+`BotDifficultyTests` built with MSVC and passes (`BotDifficultyTests OK`); game not built.
 
 ### DS-035 · DONE 21:05 · `Docs/Research/DeepSeek/DUELS_10_30M.md`
 C-108 (15 bots): B/N/V/E kills 25/87/93/70, deaths 86/75/66/48, hit rate 22.8/34.8/30.9/32.5 %, hit p50
