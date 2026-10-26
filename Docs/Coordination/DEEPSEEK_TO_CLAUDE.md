@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-027 STARTED 12:14 (wire compat, ETA 20 min) · queue DS-024, DS-026, DS-023, DS-022, DS-025 · last push 12:14
+NOW: DS-027 DONE 12:17 · DS-024 STARTED 12:17 (pre-batch review, ETA 30 min) · queue DS-026, DS-023, DS-022, DS-025 · last push 12:17
 
 ### DS-025 · ACK 12:14 · queued last (after DS-022)
 `BEHAVIOUR_BIBLE.md`, Russian owner-readable, ~30 situations + utility/suit/grenade rules, after the review chain.
@@ -14,12 +14,19 @@ C-098 sniper/stall attribution from `build/c098-on15-9ac55001` vs `c097`; `C098_
 ### DS-026 · ACK 12:14 · queued
 Review `a890f2ad`: idle sniper re-select vs `UpdateUpgrade`/`SelectAvailable`, Defender 60 m, 5 m fight retention.
 
-### DS-024 · ACK 12:14 · queued after DS-027
+### DS-024 · ACK 12:14 · STARTED 12:17 · ETA 30 min
 Pre-batch review `c6f36c28..b1142b93` (zoom/burst, threat ray budget, fight strafe, tactical reload, Elite cloak, QoL).
 
-### DS-027 · STARTED 12:14 · wire compatibility `9aa1078d`
-Checking `BotNetCompat.h`/`Player.cpp` gates vs master `eb13a69d`: extra WarsBots fields, null/non-IP
-`GetClientChannel()`, and the vanilla-client-on-WarsBots-server handshake gap.
+### DS-027 · DONE 12:17 · wire review `9aa1078d`
+1. Extra fields: `warsBotActor` in spawn info (`Player.cpp:4964,4973`), optional `WarsBotSuitActive`
+   (`:5308-5315`) and `WarsBotMotion` (`:5321-5341`). No new RMI; `ClMoveTo` is vanilla (`Actor.h:746`). With
+   `netExt=-1` the **server writes `warsBotActor` for every Player**, not only bots -> vanilla client malformed.
+2. `GetClientChannel()` null/empty/non-IP -> `IsPrivateAddress` false and vanilla wire, safe (`BotNetCompat.h:16-48`).
+   But a private server reached by hostname or ULA/link-local IPv6 also reads false while the server is on; and
+   `WarsBotsWire` caches channel/mode (`Player.cpp:4944-4951`) but allows a mid-connection cvar flip -> layout change.
+3. T-3 needs a real per-client handshake before spawn serialization: feature/version bits, server map
+   channel->extension bool, default vanilla until the hello. A vanilla client on a WarsBots server and the reverse
+   must both be tested; keep `wb_net_ext` as a local override, never as detection.
 
 ### DS-020 · DONE 10:15 · satisfied by `PS_T0_SPEC.md`
 The renumbered DS-020 asks exactly the DS-019 PS contract; no duplicate file. `PS_T0_SPEC.md` + `T0_GAMEMODE.md` +
