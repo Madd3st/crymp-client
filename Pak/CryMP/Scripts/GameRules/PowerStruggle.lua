@@ -672,6 +672,10 @@ function PowerStruggle.Server:OnPlayerKilled(hit)
 	
 	if (hit.target and hit.target.actor) then
 		self:VehicleOwnerDeath(hit.target);
+		-- PS-0 #4: bots have no client RequestRevive; join the next PS wave instead of the 5 s BotBrain revive.
+		if (self.botPlayers and self.botPlayers[hit.target.id] and not self:IsInReviveQueue(hit.target.id)) then
+			self:QueueRevive(hit.target.id);
+		end
 	end
 end
 
@@ -1185,7 +1189,9 @@ function PowerStruggle:ProcessScores(hit, tk)
 	if (self:GetState()=="PostGame") then return; end	
 	
 	local shooter=hit.shooter;
-	if (shooter and shooter.actor and shooter.actor:IsPlayer()) then
+	-- PS-0 #5: channel-0 bots are not IsPlayer but are PS participants; PP/CP must be awarded by entity id.
+	local isBot = shooter and self.botPlayers and self.botPlayers[shooter.id];
+	if (shooter and shooter.actor and (shooter.actor:IsPlayer() or isBot)) then
 		self:AwardKillPP(hit);
 		self:AwardKillCP(hit);
 	end
@@ -1599,6 +1605,27 @@ end
 jeep="special";
 van="nkapc";
 
+
+----------------------------------------------------------------------------------------------------
+-- PS-0 #4: bots are in m_playerteams via CGameRules::SetTeam, so GetTeamPlayerCount sees them while
+-- GetTeamChannelCount (TeamInstantAction) does not. Count bots for the start check, not for autobalance.
+function PowerStruggle:PlayerCountOk()
+	-- only with WarsBots in the match; plain PS servers keep the stock rule
+	if (not (self.botPlayers and next(self.botPlayers)) and TeamInstantAction and TeamInstantAction.PlayerCountOk) then
+		return TeamInstantAction.PlayerCountOk(self);
+	end
+	local preGame = self:GetState() == "PreGame";
+	for i, teamName in ipairs(self.teamName) do
+		local teamId = self.game:GetTeamId(teamName);
+		local players = self.game:GetTeamPlayerCount(teamId, preGame);
+		local need = self.game:GetMinTeamLimit();
+		if (players < need) then
+			Log("WarsBots PS PlayerCountOk: team %s has %d/%d (bots included)", teamName, players, need);
+			return false;
+		end
+	end
+	return true;
+end
 
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------

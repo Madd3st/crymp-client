@@ -7,6 +7,8 @@ namespace WarsBots {
 // Match identity is an EntityId. It is never an entry in the connection registry.
 class BotMatch {
 public:
+    static bool IsBotMode(const CGameRules& rules);       // InstantAction or PowerStruggle
+    static bool IsPowerStruggle(const CGameRules& rules);
     static bool IsBot(const CGameRules& rules, EntityId id);
     static void Collect(const CGameRules& rules, std::vector<EntityId>& bots);
     static bool Register(CGameRules& rules, IActor& actor);

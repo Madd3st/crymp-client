@@ -1,12 +1,13 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
 #include "CryMPEngineAdapter.h"
+#include "CryGame/Bots/BotModePlan.h"
 #include "CryCommon/CryAction/ILevelSystem.h"
 #include "CryCommon/CryAction/IGameRulesSystem.h"
 #include <cmath>
 #include <cstring>
 namespace WarsBots {
-bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle)
+bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle, bool allowPublic)
 {
     if (!gEnv || !gEnv->pConsole) return false;
     ICVar* bind = gEnv->pConsole->GetCVar("sv_bind");
@@ -14,9 +15,11 @@ bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady,
     ICVar* mode = gEnv->pConsole->GetCVar("sv_gamerules");
     const bool loaded = framework && framework->GetILevelSystem()->IsLevelLoaded();
     const bool rules = framework && framework->GetIGameRulesSystem()->GetCurrentGameRules();
+    // DS-037 PS-0 #1: a public server cannot use sv_bind=127.0.0.1/sv_lanonly=1. The owner opts in explicitly.
+    const bool localBind = bind && !strcmp(bind->GetString(),"127.0.0.1") && lan && lan->GetIVal()==1;
+    const bool bindOk = GateBindOk(allowPublic, localBind);
     const bool allowed = framework && gEnv->bServer && gEnv->bMultiplayer && !gEnv->bEditor &&
-        levelReady && loaded && rules && optIn==1 && bind && !strcmp(bind->GetString(),"127.0.0.1") &&
-        lan && lan->GetIVal()==1 && mode && (!strcmp(mode->GetString(),"InstantAction") ||
+        levelReady && loaded && rules && optIn==1 && bindOk && mode && (!strcmp(mode->GetString(),"InstantAction") ||
         (allowPowerStruggle && !strcmp(mode->GetString(),"PowerStruggle")));
     if (!allowed && diagnostic)
         WB_LOG(0, "[WarsBots/CryMP] GATE closed: server=%d multiplayer=%d editor=%d levelReady=%d loaded=%d rules=%d optIn=%d bind=%s lan=%d mode=%s.",

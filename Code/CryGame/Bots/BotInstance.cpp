@@ -5,6 +5,7 @@
 #include "CryGame/Bots/BotInstance.h"
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotMatch.h"
+#include "CryGame/Bots/BotTeamPlan.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
@@ -65,6 +66,16 @@ bool BotInstance::Spawn(const Vec3& position)
 	m_identity = actor->GetEntity();
 	// Ownership must be visible to the registry before IA registration queries it.
 	m_owner.Adopt(*this);
+	// PS-0 #2: team before registration/spawn; CanEnterVehicle and GetSpawnLocationTeam read it.
+	if (CGameRules* rules = g_pGame->GetGameRules())
+		if (BotMatch::IsPowerStruggle(*rules))
+		{
+			const int team = TeamForSlot(m_number);
+			rules->SetTeam(team, m_entityId);
+			const EntityId group = rules->GetTeamDefaultSpawnGroup(team);
+			if (group) rules->SetPlayerSpawnGroup(m_entityId, group);
+			WB_LOG(1, "[WarsBots] #%d PS team=%d spawnGroup=%u before registration.", m_number, team, group);
+		}
 	if (!BotMatch::Register(*g_pGame->GetGameRules(), *actor))
 	{
 		WB_LOG(0, "[WarsBots] #%d IA registration failed; removing only this new owned actor.", m_number);
@@ -293,7 +304,10 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 		return false;
 	}
 	const EntityId id = m_entityId;
-	const EntityId chosen = forcedSpawn ? forcedSpawn : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation,guardRetry?&m_guardFailedSpawns:nullptr);
+	const bool ps = BotMatch::IsPowerStruggle(*rules);
+	const EntityId chosen = forcedSpawn ? forcedSpawn :
+		(ps ? rules->GetSpawnLocationTeam(id, m_spawnPosition)
+		    : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation,guardRetry?&m_guardFailedSpawns:nullptr));
 	if (!chosen)
 	{
 		WB_LOG(1, "[WarsBots] #%d revive deferred: no safe IA spawn; retry in 5 seconds.", m_number);
@@ -313,7 +327,7 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 	const Ang3 angles(spawn->GetWorldRotation());
 	WB_LOG(2, "[WarsBots] #%d revive requested EntityId=%u spawnId=%u previousSpawn=%u position=(%.3f,%.3f,%.3f).",
 		m_number, id, chosen, m_lastSpawnLocation, position.x, position.y, position.z);
-	rules->RevivePlayer(actor, position, angles, 0, !guardRetry);
+	rules->RevivePlayer(actor, position, angles, rules->GetTeam(id), !guardRetry);
 
 	IActor* revived = m_owner.Framework()->GetIActorSystem()->GetActor(id);
 	const bool alive = Owns(id) && revived && revived->GetHealth() > 0 &&

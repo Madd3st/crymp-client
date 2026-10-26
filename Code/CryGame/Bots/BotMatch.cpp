@@ -1,6 +1,7 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotLog.h"
 #include "BotMatch.h"
+#include "CryGame/Bots/BotModePlan.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Player/Player.h"
@@ -9,9 +10,19 @@
 #include <algorithm>
 #include <cstring>
 namespace WarsBots {
+bool BotMatch::IsBotMode(const CGameRules& rules)
+{
+    const char* name=rules.GetEntity() && rules.GetEntity()->GetClass() ? rules.GetEntity()->GetClass()->GetName() : "";
+    return IsBotRulesClass(name);
+}
+bool BotMatch::IsPowerStruggle(const CGameRules& rules)
+{
+    const char* name=rules.GetEntity() && rules.GetEntity()->GetClass() ? rules.GetEntity()->GetClass()->GetName() : "";
+    return IsPowerStruggleClass(name);
+}
 bool BotMatch::IsBot(const CGameRules& rules, EntityId id)
 {
-    if (!id || strcmp(rules.GetEntity()->GetClass()->GetName(),"InstantAction")) return false;
+    if (!id || !IsBotMode(rules)) return false;
     IActor* actor=g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(id);
     if (!actor || strcmp(actor->GetEntity()->GetClass()->GetName(),"Player") ||
         !static_cast<CPlayer*>(actor)->IsWarsBotActor()) return false;
@@ -20,7 +31,7 @@ bool BotMatch::IsBot(const CGameRules& rules, EntityId id)
 void BotMatch::Collect(const CGameRules& rules, std::vector<EntityId>& bots)
 {
     bots.clear();
-    if (strcmp(rules.GetEntity()->GetClass()->GetName(),"InstantAction")) return;
+    if (!IsBotMode(rules)) return;
     IActorIteratorPtr it=g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
     while (IActor* actor=it->Next()) if (IsBot(rules,actor->GetEntityId())) bots.push_back(actor->GetEntityId());
 }
@@ -32,18 +43,40 @@ bool BotMatch::Register(CGameRules& rules, IActor& actor)
     if (!rulesTable || !actorTable) return false;
     bool groups=false;
     rulesTable->GetValue("USE_SPAWN_GROUPS",groups);
-    if (groups) { WB_LOG(0, "[WarsBots] IA registration refused: spawn-group channel callbacks unsupported."); return false; }
-    bool attached=false;
-    rulesTable->GetValue("warsBotsIAAttached",attached);
-    if (!attached)
+    const bool ps=IsPowerStruggle(rules);
+    if (groups && !ps) { WB_LOG(0, "[WarsBots] IA registration refused: spawn-group channel callbacks unsupported."); return false; }
+    SmartScriptTable hooks;
+    if (ps)
     {
-        if (!gEnv->pScriptSystem->ExecuteFile("Scripts/WarsBots/InstantAction.lua")) return false;
-        SmartScriptTable hooks;
-        // CallMethod pushes the table as self: WarsBotsIA:Attach(rules) semantics preserved.
-        if (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsIA",hooks) || !hooks.GetPtr() ||
-            !Script::CallMethod(hooks.GetPtr(),"Attach",rulesTable)) return false;
+        bool attached=false;
+        rulesTable->GetValue("warsBotsPSAttached",attached);
+        if (!attached)
+        {
+            if (!gEnv->pScriptSystem->ExecuteFile("Scripts/WarsBots/PowerStruggle.lua")) return false;
+            if (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsPS",hooks) || !hooks.GetPtr() ||
+                !Script::CallMethod(hooks.GetPtr(),"Attach",rulesTable)) return false;
+            rulesTable->GetValue("warsBotsPSAttached",attached);
+            if (!attached) return false;
+        }
+        // PS-0 #3: create the PS player entry (PP/CP/score/revive) for the channel-0 actor.
+        if (!Script::CallMethod(hooks.GetPtr(),"Register",ScriptHandle(actor.GetEntityId()),ScriptHandle(rules.GetTeam(actor.GetEntityId())))) return false;
+        WB_LOG(1, "[WarsBots] PS participant registered EntityId=%u team=%d channelId=0 nativeIsPlayer=0 matchCount=%d.",
+            actor.GetEntityId(),rules.GetTeam(actor.GetEntityId()),rules.GetMatchParticipantCount(true));
+    }
+    else
+    {
+        bool attached=false;
         rulesTable->GetValue("warsBotsIAAttached",attached);
-        if (!attached) return false;
+        if (!attached)
+        {
+            if (!gEnv->pScriptSystem->ExecuteFile("Scripts/WarsBots/InstantAction.lua")) return false;
+            if (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsIA",hooks) || !hooks.GetPtr() ||
+                !Script::CallMethod(hooks.GetPtr(),"Attach",rulesTable)) return false;
+            rulesTable->GetValue("warsBotsIAAttached",attached);
+            if (!attached) return false;
+        }
+        WB_LOG(1, "[WarsBots] IA participant registered EntityId=%u channelId=0 nativeIsPlayer=0 matchCount=%d.",
+            actor.GetEntityId(),rules.GetMatchParticipantCount(true));
     }
     // Reset first: a failed call must not leave a half-registered participant flag.
     if (!Script::CallMethod(rulesTable,"ResetScore",ScriptHandle(actor.GetEntityId()))) return false;
@@ -51,8 +84,6 @@ bool BotMatch::Register(CGameRules& rules, IActor& actor)
     // Ping is a display field, not evidence of a connection.
     int pingKey=0;
     if (rulesTable->GetValue("SCORE_PING_KEY",pingKey)) rules.SetSynchedEntityValue(actor.GetEntityId(),TSynchedKey(pingKey),0);
-    WB_LOG(1, "[WarsBots] IA participant registered EntityId=%u channelId=0 nativeIsPlayer=0 matchCount=%d.",
-        actor.GetEntityId(),rules.GetMatchParticipantCount(true));
     return true;
 }
 void BotMatch::EquipLikePlayer(CGameRules& rules, IActor& actor)
@@ -73,7 +104,7 @@ void BotMatch::Unregister(EntityId id)
 {
     if (!gEnv || !gEnv->bServer || !g_pGame || !id) return;
     CGameRules* rules=g_pGame->GetGameRules();
-    if (!rules || strcmp(rules->GetEntity()->GetClass()->GetName(),"InstantAction")) return;
+    if (!rules || !IsBotMode(*rules)) return;
     IScriptTable* table=rules->GetEntity()->GetScriptTable();
     if (!table) return;
     for (const char* name : {"SCORE_KILLS_KEY","SCORE_DEATHS_KEY","SCORE_HEADSHOTS_KEY","SCORE_PING_KEY"})
@@ -101,3 +132,4 @@ void BotMatch::LogScores(EntityId target, EntityId shooter)
     }
 }
 }
+

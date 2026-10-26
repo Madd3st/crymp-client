@@ -241,7 +241,7 @@ void BotManager::TraceKill(EntityId targetId, EntityId shooterId, bool killerEve
 
 bool BotManager::CanRunLocalIA() const
 {
-	return CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, false);
+	return CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, false, true);
 }
 
 bool BotManager::CanRunLocalExport() const
@@ -315,7 +315,7 @@ BotInstance* BotManager::Selected() const
 BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyle* style, bool startAI)
 {
     if(m_nav.AuditOnly()){WB_LOG(0,"[WarsBots] Add refused: export-only NAV AUDIT active");return nullptr;}
-	if (!CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, true))
+	if (!CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, true, true))
 		return nullptr;
 	if (Count() >= MaxBots())
 	{
@@ -1065,3 +1065,4 @@ void BotManager::BotAbilityCommand(IConsoleCmdArgs* args)
 	bot->Brain().AbilityCommand(*bot, args);
 }
 }
+
