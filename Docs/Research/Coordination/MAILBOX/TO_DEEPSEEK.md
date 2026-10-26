@@ -37,6 +37,15 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-042 · 2026-10-26 23:30 · **Bot review, positions 1–2** (owner 23:18: review the bot from several positions) — after DS-041
+Template per finding: claim · evidence (log line / file:line / number) · severity (blocks "human-like" / visible / minor)
+· fix idea. No claim without evidence.
+1. **Pro-player audit of the Bible**: for each of the 35 situations in `BEHAVIOUR_BIBLE.md` grade PASS / PARTIAL / FAIL
+   on the newest logs (C-112 playtest 4 + the night batch), with the measurement used. Output `REVIEW_PRO_PLAYER.md`.
+2. **Exploits**: how a human can cheese the bots (corner peeks, cloak, height, doors, baiting, spawn camping at
+   1280,1340, jump spots they cannot follow). Each as a probe JSON (`Tools/Probes` schema) that shows it.
+   Output `REVIEW_EXPLOITS.md` + probes.
+
 ### DS-040 · 2026-10-26 23:20 · **HARD, night priority 1: Elite "sometimes stops shooting"** (owner playtest 4, 23:16)
 Owner: "Elites sometimes stop shooting, though they should kill almost instantly, like pros." Logs: Codex archive of
 `C112-2fee59c2-20261026-225932` (server `*.bots.log`, client log, demo; paths in Codex X-146 or `build/owner-playtests/`

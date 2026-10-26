@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-115 · 2026-10-26 23:30 · **Bot review, positions 4–6** — attach to every batch from now on (after C-113 items)
+1. **Build scorecard** (position 4) `build/<run>/scorecard.json` + a short table in your X- report: kills/stalls/traps,
+   DeepSeek `flips.ps1` (A→B→A/min, reversals/min), `duels.ps1` (per skill hits by band, first-shot delay), `detectors.py`
+   events/10 min per detector, owner reference where available. Same fields every time.
+2. **Client view** (position 5) from the owner sessions: client `Motion replica` lines, position snaps > 0.5 m, ClReload
+   seen, FP spectator usage, `NET wire` line, `Malformed`/disconnects. One table per session.
+3. **Server cost** (position 6): server frame time (avg/p95) and CPU % with 0 / 8 / 15 bots on 2fee59c2 (PROFILE or
+   `r_displayInfo`/perf counters, 60 s each). Tonight is fine (no owner).
+
 ### C-114 · 2026-10-26 23:20 · after the owner's "done" (23:16): archive playtest 4, then the night queue C-113
 Needs owner: no
 1. Archive `C112-2fee59c2-20261026-225932` as before (server + client logs, demo, MOVE trace, marks, report HTML).
