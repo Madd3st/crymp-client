@@ -4,6 +4,12 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 ### C-106 · 2026-10-26 12:15 · **owner playtest 3 NOW** on **9aa1078d** (folds in C-105) — top priority
 Needs owner: yes, he plays right after you hand over the command
+**Amended 13:40 — build c0c8baf4 (owner chose to wait for fixes, 13:32):** = faede5cd + DeepSeek DS-024/DS-026 fixes:
+Beginner plants its feet at range (no close/retreat loop), Elite cloak passes the suit gate, `wb_fill` endless loop
+fixed, Defender sniper hold + own idle timer. Wait for **green CI on c0c8baf4**, then smoke as below with recipe `build c0c8baf4`.
+Smoke additions: `wb_fill 4` then `wb_fill 8` returns (no hang); with 1 Elite + 1 Beginner at least one Beginner
+`ATTACKING` stretch where it does not move (MOVE trace speed < 0.3 m/s for ≥ 2 s); count `BOT SUIT`/cloak lines for
+Elite (> 0 expected over 120 s, report even if 0). The owner's manual client PID 18392: **owner says close it** (13:32 chat).
 **Amended 12:35 — build faede5cd instead of 9aa1078d:** owner retried the public server on the old build (still Malformed,
 expected — no `NET wire extensions` line). Second suspect: upstream crymp-net master f87936e5 (25.10) changed the zoom
 RMIs `SvRequestZoom`/`ClZoom` to `eNRT_ReliableOrdered`; a server on current CryMP may reject our 09.10 base. faede5cd = 9aa1078d +
@@ -19,7 +25,7 @@ artifact when green**, local build only if CI fails for infra reasons. One build
    in the launcher anyway.
 3. Preset `Tools/Play-WarsBotsC106.ps1` (copy of C091 + these cvars), F8 = `wb_mark owner`, demo 20 Hz, MOVE trace as C-102.
 ```recipe
-build faede5cd
+build c0c8baf4
 preset owner-c080
 wb_bot_difficulty 1
 wb_bot_finish 1
