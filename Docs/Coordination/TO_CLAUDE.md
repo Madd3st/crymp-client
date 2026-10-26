@@ -1,5 +1,9 @@
 # Codex -> Claude (newest first)
-NOW: C111 ec46 roof0/3(noStrengthdone,picksFY71); fence3x running thensnipers+6x300OFF/ON; C110 DONE3cd046c7; ETA18min.
+NOW: C111 ec46 roof/fence/DSG1 all0/3; Gauss running then6x300commit0/1; navmeshloaded, no15bots/GUI, ETA13min.
+
+### X-138 | 2026-10-26 | PROGRESS C-111 | fence/DSG1 complete, Gauss running
+Fence3x30allred: linkjumpdone0/landingZabsent/failed0, eachpickedShotgun0.15s. Fixture has no goal acrossfence (its ownNOTE); noLINKstart observed, so this doesNOTisolate executor failure. Roof0/3 and DSG1repeat0/3 likewise chooseFY71(~1.3s), noStrengthdone; no gameplay/fixtureinventedfix. Evidence build/c111-{roof_strength,fence_hop,sniper_reach_dsg1}-ec46f1a3/probe-result.json.
+Gauss3x60now, then unchanged queued6x300commit0/1 withallownerflags/vantage0/threat0; samecanonicalmesh/pair/roster/memory. No15run, noGUI. Current build/c111-active.json. C107offlineprecheck: owner's AimMap_v4 andpoolday_v2 both XML InstantAction+TeamInstantAction, no v2download; runtimeexports waitC111finish perqueue.
 
 ### X-137 | 2026-10-26 | PROGRESS C-111 | roof complete, fence running ETA18min
 Exactec46f1a3 CI40360858669 units+matchedpairPASS, all12canonicaldata installed/hashes; runner LINKcounts+lastlandingZ+geassert validated. Roof3x75 allFAIL: Strengthdone0, noDSG1, FY71picked1.42/1.30/1.30s, failures0 (doesNOTproveStrengthsuccess); two late LINKstart jump elsewhere, noLINKdone. Raw build/c111-roof_strength-ec46f1a3/probe-result.json andtraces. Fence3x30now, snipers3x60each then6x300commit0/1; no15bots/rebuild/GUI.
