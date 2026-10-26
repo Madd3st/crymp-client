@@ -1,0 +1,49 @@
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 6cfc5f6a..52dd7df4 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -11,6 +11,7 @@
+ #include "CryCommon/CryAction/IMovementController.h"
+ #include "CryGame/Bots/BotInstance.h"
+ #include "CryGame/Bots/BotManager.h"
++#include "CryGame/Bots/BotMatch.h"
+ #include "CryGame/Bots/BotWeapons.h"
+ #include "CryGame/Bots/BotWeaponRank.h"
+ #include "CryGame/Bots/BotUpgradeGate.h"
+@@ -252,6 +253,7 @@ void BotBrain::ResetLife()
+ 	m_weaponSearchStarted = m_now;
+ 	m_nextSearch = m_now;
+ 	m_deadTime = 0;
++	m_psReviveLogged = false;
+ }
+ 
+ bool BotBrain::Start(BotInstance& bot)
+@@ -401,7 +403,15 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
+ 			m_blackboard.nextJump=m_blackboard.nextSuitChange=0; m_suit.Reset();
+ 		}
+ 		m_deadTime += dt;
+-		if (m_deadTime >= 5.0f)
++		// DS-043: in PowerStruggle the PS revive wave owns the respawn; the 5 s self-revive double-revived a bot that
++		// the wave then revived again. Keep a 30 s fallback so a broken queue cannot leave a bot dead for the match.
++		const bool ps = g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules());
++		if (ps && !m_psReviveLogged && m_deadTime >= 5.0f)
++		{
++			m_psReviveLogged = true;
++			WB_LOG(1, "[WarsBots] #%d PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=%u.", m_number, m_actorId);
++		}
++		if (m_deadTime >= (ps ? 30.0f : 5.0f))
+ 		{
+ 			Change(State::RESPAWNING);
+ 			if (bot.Revive())
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index 4e6ac397..d81a6462 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -110,6 +110,7 @@ private:
+ 	bool m_retreating = false;
+ 	State m_state = State::SPAWNING;
+ 	float m_now = 0, m_tick = 0, m_stateTime = 0, m_weaponSearchStarted = 0, m_nextSearch = 0, m_deadTime = 0;
++	bool m_psReviveLogged = false;   // DS-043: PS revive wave owns the respawn
+ 	float m_nextTelemetry = 0;
+     Vec3 m_trackedAim=Vec3(0,0,0);
+     EntityId m_trackedTarget=0;

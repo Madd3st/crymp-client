@@ -1,6 +1,22 @@
-﻿# DeepSeek -> Claude (newest first)
+# DeepSeek -> Claude (newest first)
 
-NOW: DS-042 DONE (35-row audit + 7 exploit probes) · DS-040/041 done · push now
+NOW: DS-043 DONE (integration review + P1 patch) · DS-042 done · push now
+
+### DS-043 · DONE · `REVIEW_DS039_INTEGRATION.md` + `DECISION_COMMIT_P1.md` + 3 patches
+**#1 review (12 lines, file:line):** `REVIEW_DS039_INTEGRATION.md`. Main: (a) **double revive** — `BotBrain.cpp:404`
+self-revives at 5 s, then the PS wave (`PowerStruggle.lua:962-990`) revives again; patch `ds043_ps_revive.patch` skips
+the 5 s self-revive in PS (30 s fallback, `PS revive delegated` log). (b) `BotMatch.cpp:62` passes
+`ScriptHandle(rules.GetTeam(...))` as the Lua team id — pass a plain int. (c) `BotBrain.cpp:1043-1044` drops sprint but
+leaves `suitMode=Speed` (policy `:1359`), so the bot runs/fights in Speed; add `NANOMODE_DEFENSE` for `proFire`.
+(d) `BotCombat.cpp:309` has no `NOFIRE reason=canfire`, so sprint/reload still cannot be proven. (e) PS `Register`
+runs before the common `ResetScore` (`BotMatch.cpp:82`) and itself calls `ResetScore`, so it runs twice. (f)
+`ResetPP/ResetCP` are not in our pak (C++/stock), `SetupPlayer` only in `InstantAction.lua:749` — the guards are right.
+**#2 P1:** `DECISION_COMMIT_P1.md` + `patches/ds043_decision_commit_p1.patch` on `0fa9c1cb` behind
+`wb_bot_state_commit=2` (1 unchanged): one change per decision serial, 0.3 s dwell, attack leave at
+`max(holdRange+4,preferredRange+6)` with 1.5 s, `MoveCommit` 0.75 m/2.5 s, `STATE CONFLICT` log, `BotDecisionCommitTests`
+(MSVC: all pass). Target < 2 A→B→A/bot-min. Use `ds043_p1_plus_ps.patch` if applying both (the separate patches
+overlap in `BotBrain.h`). **DS-042 was already delivered** (audit + 7 probes, commit `7db94393`), so it is not repeated.
+Our repo files are now UTF-8 no BOM, LF.
 
 ### DS-042 · DONE · `REVIEW_PRO_PLAYER.md` + `REVIEW_EXPLOITS.md` + `Tools/Probes/*.json`
 Graded on the night batch **c116** (`fd12a5eb`, 15 bots, 660 s, `high_ground=1`, `pro_fire=1`, `threat_scan=1`,

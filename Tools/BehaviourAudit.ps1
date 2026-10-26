@@ -1,4 +1,4 @@
-﻿# DS-042 night-batch behaviour metrics for the 35 BEHAVIOUR_BIBLE situations.
+# DS-042 night-batch behaviour metrics for the 35 BEHAVIOUR_BIBLE situations.
 # Usage:
 #   powershell -File Tools/BehaviourAudit.ps1 -Log "<...>.bots.log" -OutPath out.json
 param(

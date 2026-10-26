@@ -1,0 +1,397 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index 0062b388..3cf61356 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 6cfc5f6a..c8f9e954 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -49,11 +49,65 @@ const char* NameOf(BotBrain::State state)
+ }
+ }
+ 
+-void BotBrain::Change(State state,bool initialize)
++DecisionState BotBrain::ToCommit(State s)
+ {
+-    // Preserve Start's former silent initialization; normal transitions keep their exact effects.
+-    if(initialize){m_state=state;return;}
++	switch (s)
++	{
++	case State::SPAWNING: return DecisionState::Spawning;
++	case State::SEEKING_WEAPON: return DecisionState::SeekWeapon;
++	case State::MOVING_TO_WEAPON: return DecisionState::MoveToWeapon;
++	case State::SEARCHING_ENEMY: return DecisionState::Search;
++	case State::CHASING_ENEMY: return DecisionState::Chase;
++	case State::ATTACKING: return DecisionState::Attack;
++	case State::DEAD: return DecisionState::Dead;
++	case State::RESPAWNING: return DecisionState::Respawn;
++	}
++	return DecisionState::Search;
++}
++
++bool BotBrain::IsUrgentCommit(State s) const
++{
++	// Death/respawn must never wait for a dwell; a visible target may enter ATTACKING at once.
++	return s == State::DEAD || s == State::RESPAWNING || s == State::SPAWNING ||
++		(s == State::ATTACKING && m_combat.Target() != 0);
++}
++
++DecisionOwner BotBrain::OwnerOf(State s) const
++{
++	switch (s)
++	{
++	case State::SEEKING_WEAPON:
++	case State::MOVING_TO_WEAPON: return DecisionOwner::Upgrade;
++	case State::SEARCHING_ENEMY: return DecisionOwner::Roam;
++	case State::CHASING_ENEMY:
++	case State::ATTACKING: return DecisionOwner::Combat;
++	default: return DecisionOwner::Arbiter;
++	}
++}
++
++void BotBrain::Change(State state,bool initialize,DecisionOwner owner)
++{
++	// Preserve Start's former silent initialization; normal transitions keep their exact effects.
++	if(initialize)
++	{
++		m_state=state;
++		m_commit.Reset(); m_move.Reset(); m_moveOwner=DecisionOwner::Arbiter;
++		m_commit.BeginTick(m_decisionSerial,m_now);
++		return;
++	}
+ 	if (m_state == state) return;
++	if (BotConfig::Get().stateCommit>=2)
++	{
++		const DecisionOwner who = owner==DecisionOwner::Arbiter ? OwnerOf(state) : owner;
++		if (!m_commit.Offer(who,ToCommit(state),m_now,IsUrgentCommit(state)))
++		{
++			if (m_commit.ShouldLogConflict(m_now))
++				WB_LOG(1,"[WarsBots] #%d STATE CONFLICT first=%s second=%s owner=%d actor=%u.",
++					m_number,NameOf(m_state),NameOf(state),int(who),m_actorId);
++			return;
++		}
++		m_move.Reset(); m_moveOwner=who;
++	}
+ 	m_progress.Reset();
+ 	m_state = state;
+ 	m_stateTime = m_now;
+@@ -319,6 +373,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
+ 	const float decisionTime = m_tick;
+     ++m_decisionSerial;
+ 	m_tick = 0;
++	if (BotConfig::Get().stateCommit>=2) m_commit.BeginTick(m_decisionSerial,m_now);
+ 	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
+ 
+ 	m_intent=BotIntent();
+@@ -785,8 +840,12 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 	}
+ 	// DS-034: a target moving around holdRange flipped ATTACKING/CHASING every decision (2,768 times in playtest 3);
+ 	// once attacking, keep attacking a visible target for at least 0.5 s.
+-	const bool attackDwell = BotConfig::Get().stateCommit == 1 && m_state == State::ATTACKING && m_now - m_stateTime < 0.5f;
+-	if (visible && (attackDwell || distance <= (m_state == State::ATTACKING ? m_profile.holdRange : m_profile.engageRange)))
++	// DS-043 P1: stateCommit 2 widens the band to holdRange+4 (or preferredRange+6) and holds it for 1.5 s.
++	const int commitMode=BotConfig::Get().stateCommit;
++	const float attackHold=commitMode>=2?1.5f:0.5f;
++	const bool attackDwell = commitMode>=1 && m_state == State::ATTACKING && m_now - m_stateTime < attackHold;
++	const float leaveRange = commitMode>=2 ? max(m_profile.holdRange+4.0f,m_profile.preferredRange+6.0f) : m_profile.holdRange;
++	if (visible && (attackDwell || distance <= (m_state == State::ATTACKING ? leaveRange : m_profile.engageRange)))
+ 	{
+         UpdateAttacking(actor,destination,aim,distance,desiredRange);
+     }else{
+@@ -1008,6 +1067,27 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
+ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+ {
+     if (RecoverTrap(actor)) return;
++	// DS-043 P1: hold a destination inside one state. A new state resets the commit in Change(); trap/link override it.
++	if (BotConfig::Get().stateCommit>=2)
++	{
++		if (m_link.Active() || m_trap.Level()>=2) m_move.Reset();
++		else if (m_intent.move)
++		{
++			const Vec3 d=m_intent.destination;
++			if (!m_move.Valid(d.x,d.y,d.z,m_now))
++			{
++				const DecisionOwner owner=OwnerOf(m_state);
++				if (!m_move.Has() || m_moveOwner==owner) { m_move.Set(d.x,d.y,d.z,m_now); m_moveOwner=owner; }
++				else
++				{
++					float x=0,y=0,z=0; m_move.Get(x,y,z);
++					m_intent.MoveTo(Vec3(x,y,z),m_intent.aim);
++					m_intent.why.move=short(__LINE__);
++					if (m_verbose) WB_LOG(2,"[WarsBots] #%d MOVE COMMIT hold owner=%d actor=%u.",m_number,int(m_moveOwner),actor.GetEntityId());
++				}
++			}
++		}
++	}
+     ApplyLookPolicy(actor); // C-033, wb_bot_look
+ 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
+ 		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index 4e6ac397..8b75622c 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -16,6 +16,7 @@
+ #include "CryGame/Bots/BotTraits.h"
+ #include "CryGame/Bots/BotNavMeshCore.h"
+ #include "CryGame/Bots/BotCorners.h"
++#include "CryGame/Bots/BotDecisionCommit.h"
+ struct IConsoleCmdArgs;
+ class CPlayer;
+ struct IActor;
+@@ -50,7 +51,10 @@ public:
+ 
+ private:
+     unsigned m_lookDiagnostics=0;float m_nextLookDiagnostic=0; // <=128 rows per instance, opt-in MOVE TRACE only
+-	void Change(State state,bool initialize=false);
++	void Change(State state,bool initialize=false,DecisionOwner owner=DecisionOwner::Arbiter);
++	static DecisionState ToCommit(State s);
++	bool IsUrgentCommit(State s) const;
++	DecisionOwner OwnerOf(State s) const;
+     void UpdateTelemetry(CPlayer& actor);
+     bool UpdateDead(BotInstance& bot,CPlayer& actor,float dt);
+     bool UpdateTest(CPlayer& actor,float decisionTime);
+@@ -109,6 +113,9 @@ private:
+ 	bool m_fallbackGiven = false;
+ 	bool m_retreating = false;
+ 	State m_state = State::SPAWNING;
++	DecisionCommit m_commit;              // DS-043 P1: one state change per decision serial
++	MoveCommit m_move;                    // DS-043 P1: hold a destination inside one state
++	DecisionOwner m_moveOwner = DecisionOwner::Arbiter;
+ 	float m_now = 0, m_tick = 0, m_stateTime = 0, m_weaponSearchStarted = 0, m_nextSearch = 0, m_deadTime = 0;
+ 	float m_nextTelemetry = 0;
+     Vec3 m_trackedAim=Vec3(0,0,0);
+diff --git a/Code/CryGame/Bots/BotDecisionCommit.h b/Code/CryGame/Bots/BotDecisionCommit.h
+new file mode 100644
+index 00000000..490d42fa
+--- /dev/null
++++ b/Code/CryGame/Bots/BotDecisionCommit.h
+@@ -0,0 +1,117 @@
++// Decision commitment gate (DS-034/DS-043 P1). Engine-free: only the state writer and the movement commit.
++// The bot writes its state from several places in one 10 Hz tick (roam, upgrade, combat, vantage). This gate accepts
++// at most one state change per decision serial, enforces a minimum dwell for non-urgent changes and makes conflicts
++// observable (STATE CONFLICT) instead of silent.
++//
++// pure C++17, no engine types; Tests/BotDecisionCommitTests.cpp.
++#pragma once
++#include <cstdint>
++
++namespace WarsBots {
++
++enum class DecisionOwner : uint8_t { Arbiter = 0, Upgrade, Roam, Combat, Look, Range, Finish, Count };
++enum class DecisionState : uint8_t { Spawning = 0, SeekWeapon, MoveToWeapon, Search, Chase, Attack, Dead, Respawn, Count };
++
++struct CommitParams {
++    float minDwell = 0.30f;       // s: a non-urgent state must live this long
++    float attackLeave = 1.50f;    // s: ATTACKING may not fall back to CHASE sooner (P1; P0 used 0.5)
++    float conflictLogGap = 1.0f;  // s: rate-limit conflict logs
++};
++
++class DecisionCommit {
++public:
++    explicit DecisionCommit(const CommitParams& p = CommitParams()) : m_p(p) {}
++
++    void Reset()
++    {
++        m_state = DecisionState::Spawning; m_owner = DecisionOwner::Arbiter;
++        m_stateAt = -1e9f; m_tick = 0; m_tickHadChange = false; m_conflicts = 0; m_lastConflictLog = -1e9f;
++        m_firstOwner = m_secondOwner = DecisionOwner::Arbiter; m_firstState = m_secondState = DecisionState::Spawning;
++        m_tickConflicts = 0;
++    }
++
++    // One decision tick (10 Hz). The first Offer after BeginTick may change state; later ones are conflicts.
++    void BeginTick(uint32_t tick, float now) { m_tick = tick; m_tickHadChange = false; m_tickConflicts = 0; m_now = now; }
++
++    bool Offer(DecisionOwner owner, DecisionState state, float now, bool urgent)
++    {
++        m_now = now;
++        if (state == m_state)
++        {
++            m_owner = owner; // same state, a different writer is harmless
++            return true;
++        }
++        if (m_tickHadChange)
++        {
++            if (!urgent)
++            {
++                ++m_conflicts; ++m_tickConflicts;
++                if (m_tickConflicts == 1) { m_secondOwner = owner; m_secondState = state; }
++                return false; // one state per tick: the first writer wins
++            }
++            // Death/respawn must win over a state that changed earlier in the same tick; count it as a conflict.
++            ++m_conflicts; ++m_tickConflicts;
++            if (m_tickConflicts == 1) { m_secondOwner = owner; m_secondState = state; }
++        }
++        if (!urgent && !CanLeave(now)) return false;
++        if (!urgent && m_state == DecisionState::Attack && now - m_stateAt < m_p.attackLeave) return false;
++        m_firstOwner = m_owner; m_firstState = m_state;
++        m_state = state; m_owner = owner; m_stateAt = now; m_tickHadChange = true;
++        return true;
++    }
++
++    // True when leaving the current state is allowed (dwell elapsed). Urgent callers ignore this.
++    bool CanLeave(float now) const { return (now - m_stateAt) >= m_p.minDwell; }
++
++    DecisionState State() const { return m_state; }
++    DecisionOwner Owner() const { return m_owner; }
++    float StateAge(float now) const { return now - m_stateAt; }
++    int Conflicts() const { return m_conflicts; }
++    int TickConflicts() const { return m_tickConflicts; }
++    bool ChangedThisTick() const { return m_tickHadChange; }
++    DecisionOwner FirstOwner() const { return m_firstOwner; }
++    DecisionOwner SecondOwner() const { return m_secondOwner; }
++    DecisionState FirstState() const { return m_firstState; }
++    DecisionState SecondState() const { return m_secondState; }
++
++    // Rate-limited report: true at most once per conflictLogGap.
++    bool ShouldLogConflict(float now)
++    {
++        if (!m_tickConflicts) return false;
++        if (now - m_lastConflictLog < m_p.conflictLogGap) return false;
++        m_lastConflictLog = now; return true;
++    }
++
++private:
++    CommitParams m_p;
++    DecisionState m_state = DecisionState::Spawning;
++    DecisionOwner m_owner = DecisionOwner::Arbiter;
++    float m_stateAt = 0.f, m_now = 0.f, m_lastConflictLog = -1e9f;
++    uint32_t m_tick = 0;
++    bool m_tickHadChange = false;
++    int m_tickConflicts = 0, m_conflicts = 0;
++    DecisionOwner m_firstOwner = DecisionOwner::Arbiter, m_secondOwner = DecisionOwner::Arbiter;
++    DecisionState m_firstState = DecisionState::Spawning, m_secondState = DecisionState::Spawning;
++};
++
++// Movement-destination hysteresis: keep the previous destination until it is > minMove away or maxAge elapsed.
++// Prevents two writers inside the same state from alternating the destination every tick.
++struct MoveCommit {
++    float minMove = 0.75f;
++    float maxAge = 2.5f;
++    bool Has() const { return m_valid; }
++    bool Valid(float x, float y, float z, float now) const
++    {
++        if (!m_valid) return false;
++        const float dx = x - m_x, dy = y - m_y, dz = z - m_z;
++        return (dx * dx + dy * dy + dz * dz) < minMove * minMove && (now - m_at) < maxAge;
++    }
++    void Get(float& x, float& y, float& z) const { x = m_x; y = m_y; z = m_z; }
++    void Set(float x, float y, float z, float now) { m_x = x; m_y = y; m_z = z; m_at = now; m_valid = true; }
++    void Reset() { m_valid = false; }
++private:
++    float m_x = 0, m_y = 0, m_z = 0, m_at = 0;
++    bool m_valid = false;
++};
++
++} // namespace WarsBots
+diff --git a/Tests/BotDecisionCommitTests.cpp b/Tests/BotDecisionCommitTests.cpp
+new file mode 100644
+index 00000000..68e6fb79
+--- /dev/null
++++ b/Tests/BotDecisionCommitTests.cpp
+@@ -0,0 +1,97 @@
++// DS-043 P1 tests: one state change per decision serial, dwell, attack band and move commit (engine-free).
++#include "CryGame/Bots/BotDecisionCommit.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++static int failures = 0;
++#define CHECK(cond) do { if (!(cond)) { std::printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #cond); ++failures; } } while (0)
++
++int main()
++{
++    {
++        DecisionCommit c; c.Reset(); c.BeginTick(1, 0.0f);
++        CHECK(c.Offer(DecisionOwner::Roam, DecisionState::Search, 0.0f, false));
++        CHECK(!c.Offer(DecisionOwner::Upgrade, DecisionState::MoveToWeapon, 0.0f, false));
++        CHECK(c.TickConflicts() == 1 && c.Conflicts() == 1);
++        CHECK(c.State() == DecisionState::Search);
++        CHECK(c.FirstOwner() == DecisionOwner::Arbiter && c.SecondOwner() == DecisionOwner::Upgrade);
++    }
++    {
++        // Death in the same tick must win over a roam change.
++        DecisionCommit c; c.Reset(); c.BeginTick(1, 0.0f);
++        CHECK(c.Offer(DecisionOwner::Roam, DecisionState::Search, 0.0f, false));
++        CHECK(c.Offer(DecisionOwner::Arbiter, DecisionState::Dead, 0.0f, true));
++        CHECK(c.State() == DecisionState::Dead);
++        CHECK(c.TickConflicts() == 1);
++    }
++    {
++        // Same state from another writer is not a conflict.
++        DecisionCommit c; c.Reset(); c.BeginTick(1, 10.0f);
++        CHECK(c.Offer(DecisionOwner::Roam, DecisionState::Search, 10.0f, false));
++        CHECK(c.Offer(DecisionOwner::Combat, DecisionState::Search, 10.0f, false));
++        CHECK(c.Conflicts() == 0);
++        CHECK(c.Owner() == DecisionOwner::Combat);
++    }
++    {
++        // 0.3 s non-urgent dwell.
++        DecisionCommit c; c.Reset(); c.BeginTick(1, 0.0f);
++        CHECK(c.Offer(DecisionOwner::Roam, DecisionState::Search, 0.0f, false));
++        c.BeginTick(2, 0.1f);
++        CHECK(!c.Offer(DecisionOwner::Combat, DecisionState::Attack, 0.1f, false));
++        c.BeginTick(4, 0.3f);
++        CHECK(c.Offer(DecisionOwner::Combat, DecisionState::Attack, 0.3f, false));
++        CHECK(c.State() == DecisionState::Attack);
++    }
++    {
++        // P1 attack band: 1.5 s before falling back to CHASE.
++        DecisionCommit c; c.Reset(); c.BeginTick(1, 0.0f);
++        CHECK(c.Offer(DecisionOwner::Combat, DecisionState::Attack, 0.0f, true));
++        c.BeginTick(2, 1.4f);
++        CHECK(!c.Offer(DecisionOwner::Combat, DecisionState::Chase, 1.4f, false));
++        c.BeginTick(3, 1.6f);
++        CHECK(c.Offer(DecisionOwner::Combat, DecisionState::Chase, 1.6f, false));
++    }
++    {
++        // 100 Hz input still yields at most ~4 changes in 1 s (0.3 s dwell), and at most one per tick.
++        DecisionCommit c; c.Reset();
++        int changes = 0;
++        DecisionState last = DecisionState::Search;
++        for (int i = 0; i < 100; ++i)
++        {
++            const float t = i * 0.01f;
++            c.BeginTick(uint32_t(i + 1), t);
++            const DecisionState s = (i % 2) ? DecisionState::Search : DecisionState::MoveToWeapon;
++            if (c.Offer(DecisionOwner::Roam, s, t, false) && s != last) { ++changes; last = s; }
++        }
++        CHECK(changes <= 4);
++    }
++    {
++        // Rate-limited conflict log.
++        DecisionCommit c; c.Reset(); c.BeginTick(1, 0.0f);
++        c.Offer(DecisionOwner::Roam, DecisionState::Search, 0.0f, false);
++        CHECK(!c.Offer(DecisionOwner::Upgrade, DecisionState::MoveToWeapon, 0.0f, false));
++        CHECK(c.ShouldLogConflict(0.0f));
++        CHECK(!c.ShouldLogConflict(0.5f));
++        CHECK(c.ShouldLogConflict(1.0f));
++    }
++    {
++        // MoveCommit holds a destination for 0.75 m / 2.5 s and can be read back.
++        MoveCommit m;
++        CHECK(!m.Has());
++        CHECK(!m.Valid(1, 2, 3, 0.0f));
++        m.Set(1, 2, 3, 0.0f);
++        float x = 0, y = 0, z = 0; m.Get(x, y, z);
++        CHECK(x == 1 && y == 2 && z == 3);
++        CHECK(m.Has() && m.Valid(1.2f, 2.0f, 3.0f, 0.5f));
++        CHECK(!m.Valid(2.0f, 2.0f, 3.0f, 0.5f));
++        CHECK(!m.Valid(1.1f, 2.0f, 3.0f, 3.0f));
++        m.Reset();
++        CHECK(!m.Has());
++    }
++
++    if (failures) { std::printf("decision_commit: %d FAILURES\n", failures); return 1; }
++    std::printf("decision_commit: all tests passed\n");
++    return 0;
++}
