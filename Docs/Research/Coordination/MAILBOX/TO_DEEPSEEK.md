@@ -21,6 +21,14 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-022 · 2026-10-26 11:05 · QoL wave 1: what an owner mark must capture + review the coming patch
+Needs owner: no
+The owner will press F8 (`wb_demo_mark owner`) when a bot does something dumb. Spec `Docs/Research/DeepSeek/MARKS.md`: for a
+mark at time t, which existing log lines / demo records (`BRAIN`, `TARGET CHOICE`, `INTENT WHY`, `LOOK TRACE`, `MOVE TRACE`,
+`TRAP RECOVERY`, EVENTs) within ±5 s around t, for which bots (nearest to the owner / in his view / last that hit him),
+make the "why did it do that" card in `Tools/PlaytestReport` — field list and the grep/demo source of each. Then review my
+next claude-sprint patch (QoL: marks, `wb_fill`/`wb_skill_all`/`wb_kick_bots`, spectator HUD line) when it lands.
+
 ### DS-021 · 2026-10-26 03:15 · flag inventory for "flags die" (D-021 #3) — after DS-019/DS-020
 Needs owner: no
 Table of every `wb_*` cvar on claude-sprint head (BotConfig.cpp): name, default, what it does (≤ 10 words), first

@@ -13,6 +13,19 @@ report each and the median. Never touch owner files; memory/nav restore as usual
 ceb6e5b2 (CI builds it: artifact `warsbots-ceb6e5b2…`). Probes are not 15-bot runs — they do **not** count against the
 daily soak limit. Report the three results (3× each) when it works; this becomes the fast gate before soaks.
 
+### C-101 · 2026-10-26 11:05 · QoL wave 1 (owner 11:00) — tooling, AFTER C-097/C-098/C-091
+Needs owner: no
+1. **Wake reliability** (the heartbeat missed C-097 for 8 h last night): check `Tools/Mailbox/register_wake_task.ps1` /
+   scheduled task "WarsBots Mailbox Wake" is registered and actually restarts you when an open item exists and the clone
+   is idle 20 min; if not, register it (no admin tricks; report what the owner must click if it needs elevation). Prove it
+   with one dry-run log line. Also say why the 30-min heartbeat did not act on C-097 (fired? saw nothing new?).
+2. **One-click playtest launcher** `Tools/Play-WarsBotsLatest.ps1` + a desktop shortcut for the owner: picks the newest
+   build that passed its gate (manifest in `build/`), applies the current owner preset (C-091 flags), records demo/logs,
+   binds **F8 = `wb_demo_mark owner`** on the client, and on game exit archives to `build/owner-playtests/` and runs
+   `Tools/PlaytestReport/playtest_report.py`, opening the HTML report. PrepareOnly + AST check; GUI only when the owner
+   launches it.
+Order: finish C-097 (C-093 verdict) → C-098 → C-091 preset → this → C-100 probe runner.
+
 ### C-099 · 2026-10-26 03:15 · D-021: CI on GitHub + recipe blocks (read once, no run needed)
 Needs owner: no
 1. `.github/workflows/warsbots-ci.yml` now builds every push to `warsbots/feature/**` on a GitHub Windows runner: the
