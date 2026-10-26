@@ -1294,8 +1294,8 @@ void BotBrain::ApplySuitPolicy(CPlayer& actor)
 	for (size_t i=m_pathIndex; i+1<m_path.size(); ++i) travel+=(m_path[i+1]-m_path[i]).GetLength();
 	in.travelDistance=travel;
 	in.firing=m_intent.combat==BotCombatIntent::Fire;
-	in.stealthStyle=m_profile.style==BotStyle::Flanker || m_profile.style==BotStyle::Hunter;
-	in.cloakAllowed=BotSuit::CloakEnabled();
+	in.stealthStyle=m_profile.style==BotStyle::Flanker || m_profile.style==BotStyle::Hunter || m_profile.cloakApproach;
+	in.cloakAllowed=BotSuit::CloakEnabled() || m_profile.cloakApproach;
 	in.canUseSpeed=m_profile.skill!=BotSkill::Beginner || m_profile.useSpeed;
 	const SuitDecision d=m_suitPolicy.Update(in);
 	switch (d.mode)

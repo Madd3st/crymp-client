@@ -62,6 +62,7 @@ inline void ApplyDifficulty(BotProfile& p)
 	static const float jump[] = {0.f, 0.f, 0.2f, 0.6f}; static const float reload[] = {0.f, 0.4f, 0.5f, 0.6f};
 	const int s = int(p.skill) >= 0 && int(p.skill) < 4 ? int(p.skill) : 1;
 	p.fightStrafe = s > 0; p.fightJump = jump[s]; p.reloadAt = reload[s];
+	p.cloakApproach = s == 3; // Elite: cloak to flank a hidden target (suit policy stealth approach 12-35 m)
 }
 
 inline AimSkill DifficultyAim(BotSkill skill)
