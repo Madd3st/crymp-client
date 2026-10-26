@@ -30,13 +30,20 @@ $memoryHook=@'
 $warsBotsSnapshotRoot=Join-Path $sessionDir 'memory-before'
 $warsBotsMemoryRoot=Join-Path $env:LOCALAPPDATA 'WarsBots/Memory'
 New-Item -ItemType Directory -Force $warsBotsSnapshotRoot|Out-Null
+$warsBotsMissingMemory=@()
 $warsBotsSnapshotRecords=@(foreach($name in @('Multiplayer_IA_Steelmill.mem','Multiplayer_IA_Steelmill.nav.json')){
  $file=Join-Path $warsBotsMemoryRoot $name
- if(-not(Test-Path -LiteralPath $file)){throw 'Owner memory snapshot source missing'}
- Copy-Item -LiteralPath $file -Destination $warsBotsSnapshotRoot
- @{name=$name;sha256=(Get-FileHash $file).Hash}
+ if(-not(Test-Path -LiteralPath $file -PathType Leaf)){
+  $warsBotsMissingMemory+=@{name=$name;path=$file}
+  continue
+ }
+ Copy-Item -LiteralPath $file -Destination $warsBotsSnapshotRoot -ErrorAction Stop
+ @{name=$name;sha256=(Get-FileHash -LiteralPath $file -ErrorAction Stop).Hash}
 })
-ConvertTo-Json -InputObject $warsBotsSnapshotRecords|Set-Content (Join-Path $warsBotsSnapshotRoot 'manifest.json') -Encoding UTF8
+$warsBotsUtf8=[Text.UTF8Encoding]::new($false)
+[IO.File]::WriteAllText((Join-Path $warsBotsSnapshotRoot 'manifest.json'),(ConvertTo-Json -InputObject @($warsBotsSnapshotRecords) -Depth 4),$warsBotsUtf8)
+$warsBotsSnapshotInfo=@{source_root=$warsBotsMemoryRoot;missing=@($warsBotsMissingMemory);existing_count=$warsBotsSnapshotRecords.Count}
+[IO.File]::WriteAllText((Join-Path $warsBotsSnapshotRoot 'source-info.json'),(ConvertTo-Json -InputObject $warsBotsSnapshotInfo -Depth 4),$warsBotsUtf8)
 $server=Start-Process
 '@
 if(-not $source.Contains('$server=Start-Process')){throw 'Owner snapshot anchor changed'}
