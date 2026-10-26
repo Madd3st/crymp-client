@@ -2,7 +2,34 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-105 · 2026-10-26 12:20 · **owner client broken on public servers** — build 9aa1078d (wire compat), before C-104/C-103
+### C-106 · 2026-10-26 12:15 · **owner playtest 3 NOW** on **9aa1078d** (folds in C-105) — top priority
+Needs owner: yes, he plays right after you hand over the command
+Owner 12:11: "new build and playtest again". 9aa1078d = 40bd9f60 preset behaviour + difficulty ladder part 2–3
+(zoom/burst, fight strafe/jump, tactical reload, Elite cloak — inside `wb_bot_difficulty`) + sniper hold (a890f2ad,
+needs `wb_bot_vantage 1`) + wire compat (C-105). CI run for 9aa1078d is in progress (a890f2ad green): **use the CI
+artifact when green**, local build only if CI fails for infra reasons. One build, no soak.
+1. Units (CI) + 6 bots × 120 s smoke with this recipe: no crash, traps 0, kills > 0. If the smoke shows a crash or a
+   trap → stop, report, offer the owner the 40bd9f60 preset instead.
+2. C-105 check inside the smoke: client log `NET wire extensions ON (… 127.0.0.1…)`; put `+wb_net_ext 1` on the client
+   in the launcher anyway.
+3. Preset `Tools/Play-WarsBotsC106.ps1` (copy of C091 + these cvars), F8 = `wb_mark owner`, demo 20 Hz, MOVE trace as C-102.
+```recipe
+build 9aa1078d
+preset owner-c080
+wb_bot_difficulty 1
+wb_bot_finish 1
+wb_bot_spectator_aim 1
+wb_bot_perception 1
+wb_bot_name_profile 1
+wb_bot_vantage 1
+wb_net_ext 1
+bots 8  seconds 0
+```
+Threat scan stays OFF (C-098 red). Then tell the owner the one command; **no builds or runs while he plays** (rule).
+After he finishes: archive + playtest report as usual, then C-104 probes on the same 9aa1078d (not a890f2ad), then C-103
+on 9aa1078d instead of b1142b93 (same code + two fixes; DS-024 still gates it).
+
+### C-105 · 2026-10-26 12:20 · **owner client broken on public servers** — build 9aa1078d (wire compat) — **folded into C-106**
 Needs owner: one connect to a public server at the end
 Owner 12:04: the WarsBots client got `Malformed packet` on a public CryMP PS server (193.165.100.242:11522). Cause: our
 player stream always carried `warsBotActor` (spawn info) and the `WarsBotSuitActive`/`WarsBotMotion` optional groups;
