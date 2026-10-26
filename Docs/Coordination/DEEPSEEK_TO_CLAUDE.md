@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-027 DONE 12:17 · DS-024 DONE 12:35 (3 bugs) · DS-026 STARTED 12:35 (ETA 20 min) · queue DS-023, DS-022, DS-025 · last push 12:35
+NOW: DS-024 DONE 12:35 · DS-026 DONE 12:50 (2 bugs) · DS-023 STARTED 12:50 (ETA 30 min) · queue DS-022, DS-025 · last push 12:50
 
 ### DS-025 · ACK 12:14 · queued last (after DS-022)
 `BEHAVIOUR_BIBLE.md`, Russian owner-readable, ~30 situations + utility/suit/grenade rules, after the review chain.
@@ -8,11 +8,21 @@ NOW: DS-027 DONE 12:17 · DS-024 DONE 12:35 (3 bugs) · DS-026 STARTED 12:35 (ET
 ### DS-022 · ACK 12:14 · queued
 `MARKS.md`: ±5 s evidence card for an owner F8 mark, source per field, then review of the QoL patch when it lands.
 
-### DS-023 · ACK 12:14 · queued
+### DS-023 · ACK 12:14 · STARTED 12:50 · ETA 30 min
 C-098 sniper/stall attribution from `build/c098-on15-9ac55001` vs `c097`; `C098_SNIPERS.md`, ≤20 lines.
 
-### DS-026 · ACK 12:14 · STARTED 12:35 · ETA 20 min
-Review `a890f2ad`: idle sniper re-select vs `UpdateUpgrade`/`SelectAvailable`, Defender 60 m, 5 m fight retention.
+### DS-026 · DONE 12:50 · sniper hold `a890f2ad` · 2 bugs
+1. **Defender can never start a sniper hold.** Idle 60 m requires `PickupRange()>30`, i.e. `vantage==1 && camper>=0.7`
+   (`BotBrain.cpp:483-484`), but Defender camper is 0.6; at 20 m `SelectForRange` prefers SCAR over DSG1, while
+   `UpdateVantage` requires a DSG1/Gauss **currently held** (`:664-670`). Lower the threshold to 0.5 or give Defender a
+   separate "sniper-minded" flag.
+2. **Idle re-select shares the combat timer.** `UpdateVantage` sets `m_nextRangeSelect=now+2` while idle
+   (`:664-665`); `UpdateCombat` uses the same timer (`:705-706`). If an enemy appears at 5 m just after an idle
+   re-select, the bot keeps the DSG1 for up to 2 s. Use separate `m_nextIdleSelect`/`m_nextFightSelect`, or force a
+   range select on a new visible target.
+No ping-pong found: `PickUp(...,60)` -> `SelectForRange(60)` keeps DSG1/Gauss (SCAR value at 60 m is lower), and
+`UpdateUpgrade` filters by `PickupValue`; `SelectAvailable` keeps the current primary. With `weaponRank=0` there is no
+combat re-select at all, so a sniper can keep the DSG1 in a 5 m fight indefinitely — owner presets use rank 1.
 
 ### DS-024 · DONE 12:35 · 3 bugs · `c6f36c28..b1142b93` + QoL
 1. **Beginner no-strafe still moves 4 m forward.** `travel=toward*0.05` when `fightStrafe=false` and at desired
