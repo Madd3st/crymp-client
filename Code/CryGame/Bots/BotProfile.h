@@ -40,6 +40,7 @@ struct BotProfile
     float sightRange = 80.0f;     // m: scan / perception range
     float coneDeg = 110.0f;       // perception view cone
     float hearScale = 1.0f;       // hearing distances multiplier
+    float zoomScale = 1.0f;       // zoom-in distance multiplier (Elite zooms SCAR from 8 m instead of 20 m)
 	// Chance to Strength-jump right after being hit in a fight (dodge), per hit event.
 	float dodgeChance = 0.3f;
 	// Tactical competence is separate from style. All inputs must be own state or visible cues.

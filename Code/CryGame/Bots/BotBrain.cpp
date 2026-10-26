@@ -1029,7 +1029,8 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 		// owner 25.10: laser on (off in cloak), zoom only while fighting a seen target far away
 		const bool fighting=m_intent.combat!=BotCombatIntent::None && m_combat.Target() && m_combat.Visible();
 		const float dist=fighting ? (m_combat.LastPosition()-m_blackboard.position).GetLength() : -1.0f;
-		BotWeapons::Handle(actor,dist,m_blackboard.suitActive && m_blackboard.mode==NANOMODE_CLOAK);
+		// wb_bot_difficulty: zoomScale < 1 zooms earlier (Elite SCAR from 8 m: ironsight spread x0.0067 lets head aim land)
+		BotWeapons::Handle(actor,dist>0.0f?dist/max(0.2f,m_profile.zoomScale):dist,m_blackboard.suitActive && m_blackboard.mode==NANOMODE_CLOAK);
 	}
 }
 // ---------------------------------------------------------------------------------------------- C-036 links
@@ -1147,10 +1148,12 @@ void BotBrain::ApplyLookPolicy(CPlayer& actor)
 				for (int i=0;i<map->Count();++i) { const VSpot& s=map->Spot(i); xyz.push_back(s.x); xyz.push_back(s.y); xyz.push_back(s.z); }
 				const float travel=in.hasCorner ? BotLookPolicy::YawTo(in.eye,in.corner) : in.viewYaw;
 				int pick[3]; const int n=ThreatScanCandidates(xyz.data(),map->Count(),eye.x,eye.y,eye.z,travel,pick,3);
-				for (int k=0;k<n && lookRays<4;++k)
+				// own budget: the path look-ahead may already have spent its rays (C-098: 0 glances logged)
+				for (int k=0;k<n;++k)
 				{
-					const VSpot& s=map->Spot(pick[k]); const Vec3 p(s.x,s.y,s.z+1.4f); ++lookRays;
-					if (EyeRayClear(actor,eye,p)) { m_glancePt=p; m_glanceUntil=m_now+0.6f; in.hasGlance=true; in.glance=LookVec{p.x,p.y,p.z}; break; }
+					const VSpot& s=map->Spot(pick[k]); const Vec3 p(s.x,s.y,s.z+1.4f);
+					if (EyeRayClear(actor,eye,p)) { m_glancePt=p; m_glanceUntil=m_now+0.6f; in.hasGlance=true; in.glance=LookVec{p.x,p.y,p.z};
+						WB_LOG(2,"[WarsBots] #%d GLANCE spot=(%.1f,%.1f,%.1f) actor=%u.",m_number,p.x,p.y,p.z,actor.GetEntityId()); break; }
 				}
 			}
 		}

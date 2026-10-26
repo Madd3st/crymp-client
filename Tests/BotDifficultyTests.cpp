@@ -28,6 +28,8 @@ int main()
 		assert(p[s].fireRange > p[s - 1].fireRange && p[s].sightRange > p[s - 1].sightRange);
 	}
 	// Elite: <= 0.1 s reaction, 2 deg gate at range, head nearly always, sees 100 m
+	assert(p[3].zoomScale < p[2].zoomScale && p[2].zoomScale < p[1].zoomScale && p[1].zoomScale < p[0].zoomScale);
+	{ const BotProfile raw3 = BotProfile::Make(BotStyle::Universal, BotSkill::Elite); assert(p[3].burst < raw3.burst && p[3].burstGap < raw3.burstGap); }
 	assert(p[3].reaction <= 0.1f && p[3].fireTolDeg == 2.f && p[3].headCap >= 0.95f && p[3].sightRange >= 100.f);
 	// Elite universal fires past 50 m (owner: no bot hit beyond 40 m), Beginner stays under 25 m
 	assert(p[3].fireRange > 50.f && p[0].fireRange < 25.f);

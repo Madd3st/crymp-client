@@ -24,6 +24,7 @@ struct DifficultyRow {
 	float sightM;         // perception range (old: 80 for all)
 	float coneDeg;        // view cone (old: 110 for all)
 	float hearScale;      // hearing distances multiplier
+	float zoomScale, burstScale, gapScale; // C-093: Elite headshots 7.8 % - hip spread ate the head aim; zoom early, tap fire
 	// aim model (BotAimModel) when wb_bot_aim_model=1
 	float saccadeBase, saccadeSlope, flickError, modelTrackLag, lead, noiseDeg;
 };
@@ -32,10 +33,10 @@ inline const DifficultyRow& Difficulty(BotSkill skill)
 {
 	static const DifficultyRow rows[] = {
 		// reac  turn  err  max  floor lag   head cap   tol  range sight cone hear | sacc  slope flick lag   lead  noise
-		{ 0.90f, 250, 2.5f, .80f, .12f, .24f, .00f, .00f, 20.f, .55f, 50.f, 90.f, .6f, .22f, .070f, .25f, .24f, .25f, 1.6f },  // beginner
-		{ 0.50f, 500, 1.2f, .45f, .07f, .14f, .08f, .15f, 10.f, .85f, 65.f, 100.f, .8f, .13f, .045f, .12f, .13f, .55f, 0.7f }, // normal
-		{ 0.28f, 850, 0.6f, .25f, .04f, .09f, .35f, .50f,  5.f, 1.15f, 80.f, 110.f, 1.f, .09f, .035f, .06f, .08f, .75f, .35f }, // veteran
-		{ 0.08f, 1200, 0.1f, .05f, .01f, .04f, .95f, 1.0f, 2.f, 1.45f, 100.f, 120.f, 1.2f, .05f, .020f, .02f, .04f, .95f, .05f },// elite
+		{ 0.90f, 250, 2.5f, .80f, .12f, .24f, .00f, .00f, 20.f, .55f, 50.f, 90.f, .6f, 1.5f, 1.6f, 1.4f, .22f, .070f, .25f, .24f, .25f, 1.6f },  // beginner
+		{ 0.50f, 500, 1.2f, .45f, .07f, .14f, .08f, .15f, 10.f, .85f, 65.f, 100.f, .8f, 1.0f, 1.0f, 1.0f, .13f, .045f, .12f, .13f, .55f, 0.7f }, // normal
+		{ 0.28f, 850, 0.6f, .25f, .04f, .09f, .35f, .50f,  5.f, 1.15f, 80.f, 110.f, 1.f, 0.7f, 0.7f, .75f, .09f, .035f, .06f, .08f, .75f, .35f }, // veteran
+		{ 0.08f, 1200, 0.1f, .05f, .01f, .04f, .95f, 1.0f, 2.f, 1.45f, 100.f, 120.f, 1.2f, 0.4f, .45f, .5f, .05f, .020f, .02f, .04f, .95f, .05f },// elite
 	};
 	const int s = int(skill) >= 0 && int(skill) < int(BotSkill::Count) ? int(skill) : 1;
 	return rows[s];
@@ -56,6 +57,7 @@ inline void ApplyDifficulty(BotProfile& p)
 	p.turnRate = d.turnDeg;
 	p.engageRange *= d.rangeScale; p.holdRange *= d.rangeScale; p.fireRange *= d.rangeScale;
 	p.sightRange = d.sightM; p.coneDeg = d.coneDeg; p.hearScale = d.hearScale;
+	p.zoomScale = d.zoomScale; p.burst *= d.burstScale; p.burstGap *= d.gapScale;
 }
 
 inline AimSkill DifficultyAim(BotSkill skill)
