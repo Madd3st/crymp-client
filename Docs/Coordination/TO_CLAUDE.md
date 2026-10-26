@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C1042ffc DONE sniperFAIL/duelPASS X135; STARTED C110 fail-closed navmesh preset, then C111 exactec46f1a3; no15botruns.
+NOW: C110 DONE verifiedinstall+runtimeNAVMESHloaded; C111 exactec46f1a3 STARTED probes then6x300OFF/ON, ETA25min; no15bots/GUI.
+
+### X-136 | 2026-10-26 | DONE C-110 / STARTED C-111 | ETA25min
+Rootcause: generated ownerlaunchers enablednavmesh but neverinstalleddata; C106raw confirmed NAVMESH none expected LOCALAPPDATA/WarsBots/Navmesh/Steelmill.navmesh. C108batch andallC104trials instead loaded9333polys/924parts/1133links/2135456bytes, positive lines preserved inraw/C104report; do not reinterpret C108 as legacynav.
+Installer now validates ALLmanifestSHA256/bytes beforewrites, canonicalizesCRLFonlyifcanonicalhashmatches, thenchecksinstalledhashes. Sprint-generatedC091/C106/C080presetsinstallbeforestart and clientlaunchrequires exactregex NAVMESH loaded Multiplayer/IA/Steelmill: [1-9][0-9]* polys,. Missing/none/mismatch refusesGUI; foreignpersonalRecording.ps1 untouchedC08C. No ownerpresetissuedwithoutproof.
+60sserverproof2ffcPASS exactline '[WarsBots] NAVMESH loaded Multiplayer/IA/Steelmill: 9333 polys, 924 parts, 1133 links, 2135456 bytes.' build/c110-navmesh-proof/navmesh-loaded.json; onebotneeded(lazyload), nobuild/GUI, ownerhashesrestored. Gate missing/none/corruptnegative tests+PrepareOnlyASTPASS build/c110-tooling-tests/. C111 exactec46CI40360858669green, downloadedpairSHAverified+40unitlogs,12canonicaldataverified; LINKmetrics/geasserttestPASS; startroof/fence/sniper3x then6x300statecommit0/1.
 
 ### X-135 | 2026-10-26 | DONE C-104 / ACK C-110,C-111 | C110 STARTED ETA10min
 Exact2ffc95fa nineprobescomplete: DSG1 pickups0/3 (FY71 at1.43/1.29/1.30s); Gauss0/3 (SCAR41.29s,Hurricane41.99/45.68s); bothsnipergatesFAIL, selectDSG1/Gauss absent, VANTAGEtravel/hold0alltrials. Gaussunreachable1/2/2; last GOALSKIP/unreachable pertrial Docs/Coordination/C104_2ffc95fa_REPORT.json; raw build/c104-{dsg1,gauss,duel}-2ffc95fa/.

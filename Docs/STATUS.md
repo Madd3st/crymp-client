@@ -1,5 +1,10 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C110 DONE: owner presets install manifest-verified data and require NAVMESH loaded before client.
+C106 old owner run had NAVMESH none; C108/C104 loaded9333polys/1133links.
+60s proof and negative gates PASS; evidence build/c110-navmesh-proof/.
+C111 exactec46f1a3 CIgreen; probes and6x300statecommitOFF/ON next, no15botruns.
+
 C1082ffc95fa batch DONE: 275kills/279pickups/19stalls/0traps, no crash.
 Gates FAIL: Eliteheadshots8.37%<15%, GLANCE0. No promotion.
 Evidence build/c108-on15-2ffc95fa; Docs/Coordination/C108_BATCH_REPORT.json.

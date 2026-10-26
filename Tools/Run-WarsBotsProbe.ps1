@@ -95,6 +95,10 @@ function Invoke-ProbeProcess([string]$tag,[bool]$withSetup) {
 function Metrics-FromTrace([string]$file){
  $text=Get-Content -LiteralPath $file -Raw
  $m=[ordered]@{unreachable=([regex]::Matches($text,'weapon \d+ unreachable; skipping it')).Count;stalls=([regex]::Matches($text,'TRAP RECOVERY')).Count;glances=([regex]::Matches($text,'LOOK TRACE[^\n]*reason=glance')).Count}
+ $m['link:failed']=([regex]::Matches($text,'LINK failed')).Count
+ foreach($kind in @('drop','jump','strength')){$m['link:'+$kind+':done']=([regex]::Matches($text,'LINK done kind='+$kind+'\b')).Count}
+ $landings=[regex]::Matches($text,'LINK done[^\r\n]*at=\([-\d.]+,[-\d.]+,([-\d.]+)\)')
+ if($landings.Count){$m['landing_z']=[double]::Parse($landings[$landings.Count-1].Groups[1].Value,[Globalization.CultureInfo]::InvariantCulture)}
  $start=[regex]::Match($text,'(?m)^([\d.]+).*AI state=SPAWNING');$t0=if($start.Success){[double]$start.Groups[1].Value}else{0}
  $ids=@{};foreach($entry in $levelItems.GetEnumerator()){$ids[$entry.Key]=$entry.Value}
  foreach($match in [regex]::Matches($text,'PROBE ITEM (\w+) id=(\d+)')){$ids[[int]$match.Groups[2].Value]=$match.Groups[1].Value}
@@ -116,6 +120,7 @@ try{
    $exists=$m.Contains($a.metric);$value=if($exists){$m[$a.metric]}elseif($a.metric -like 'kills:*'){0}else{$null};$pass=$false
    switch($a.op){
     'eq' {$pass=($null -ne $value -and $value -eq $a.value)}
+    'ge' {$pass=($null -ne $value -and $value -ge $a.value)}
     'le_seconds' {$pass=($null -ne $value -and $value -le $a.value)}
     'ge_ratio_of' {$other=if($m.Contains($a.other)){$m[$a.other]}else{0};$pass=($value -gt 0 -and $value -ge $a.value*$other)}
     default {throw 'Unsupported assertion operator'}

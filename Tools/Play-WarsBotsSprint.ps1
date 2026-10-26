@@ -41,6 +41,14 @@ $source=$source.Replace('+wb_move_trace 1 +connect',"+wb_bot_client_smooth 1 +wb
 $source=$source.Replace('bots=$BotCount;roster=$roster;', 'bots=$BotCount;demo_record=1;demo_hz=20;feature_gates=@(__OWNER_FEATURE_GATES__);client_smooth=1;client_trace_mode=__CLIENT_TRACE_MODE__;roster=$roster;')
 $source=$source.Replace('__OWNER_FEATURE_GATES__',(($flags|ForEach-Object {'"'+$_+'"'}) -join ','))
 $source=$source.Replace('__CLIENT_TRACE_MODE__',[string]$ClientTraceMode)
+# C110: all generated presets install verified data and require runtime evidence before GUI.
+$installAnchor='$logs=Join-Path'
+$proofAnchor='$displayInfo=if($NoOverlay)'
+if(-not $source.Contains($installAnchor) -or -not $source.Contains($proofAnchor)){throw 'Navmesh launcher anchors changed'}
+$source=$source.Replace($installAnchor,'& (Join-Path $repo ''Tools/Install-WarsBotsNavmesh.ps1'') | Out-Host'+"`n"+$installAnchor)
+$proof='$session.navmesh_loaded=& (Join-Path $repo ''Tools/Wait-WarsBotsNavmesh.ps1'') -Log $serverLog -ServerPid $server.Id'+"`n"
+$source=$source.Replace($proofAnchor,$proof+$proofAnchor)
+
 $cache=Join-Path $repo 'build/owner-tools';New-Item -ItemType Directory -Force $cache|Out-Null
 $script=Join-Path $cache ('Play-'+$sessionLabel+'Recording.ps1')
 [IO.File]::WriteAllText($script,$source,[Text.UTF8Encoding]::new($false))
