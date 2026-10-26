@@ -1,0 +1,247 @@
+{
+  "schema": "warsbots-build-scorecard/1",
+  "source_sha": "2fee59c2a6d2d8531ba51aafbb33b0024cf8db39",
+  "run_root": "build\\c113-on15-2fee59c2",
+  "kills": 303,
+  "stalls": 27,
+  "traps": 0,
+  "flips": {
+    "reversals": 3391,
+    "reversals_per_bot_min": 20.54,
+    "state_changes": 5499,
+    "state_changes_per_bot_min": 33.31,
+    "state_ab_a_2s": 1460,
+    "state_ab_a_2s_per_bot_min": 8.84,
+    "state_conflicts": 0,
+    "state_conflicts_per_bot_min": 0,
+    "goal_ab_a_2s": 323,
+    "goal_ab_a_2s_per_bot_min": 1.96,
+    "target_ab_a_2s": 0,
+    "target_ab_a_2s_per_bot_min": 0,
+    "target_switches": 1044,
+    "attacking_chasing": 2254,
+    "attacking_chasing_per_bot_min": 13.65,
+    "per_bot": [
+      {
+        "number": 1,
+        "reversals": 107,
+        "state_changes": 289,
+        "state_flips": 53
+      },
+      {
+        "number": 2,
+        "reversals": 221,
+        "state_changes": 368,
+        "state_flips": 89
+      },
+      {
+        "number": 3,
+        "reversals": 257,
+        "state_changes": 415,
+        "state_flips": 145
+      },
+      {
+        "number": 4,
+        "reversals": 317,
+        "state_changes": 402,
+        "state_flips": 127
+      },
+      {
+        "number": 5,
+        "reversals": 102,
+        "state_changes": 307,
+        "state_flips": 36
+      },
+      {
+        "number": 6,
+        "reversals": 234,
+        "state_changes": 341,
+        "state_flips": 60
+      },
+      {
+        "number": 7,
+        "reversals": 234,
+        "state_changes": 382,
+        "state_flips": 91
+      },
+      {
+        "number": 8,
+        "reversals": 281,
+        "state_changes": 315,
+        "state_flips": 67
+      },
+      {
+        "number": 9,
+        "reversals": 212,
+        "state_changes": 423,
+        "state_flips": 154
+      },
+      {
+        "number": 10,
+        "reversals": 275,
+        "state_changes": 392,
+        "state_flips": 125
+      },
+      {
+        "number": 11,
+        "reversals": 250,
+        "state_changes": 390,
+        "state_flips": 94
+      },
+      {
+        "number": 12,
+        "reversals": 295,
+        "state_changes": 343,
+        "state_flips": 99
+      },
+      {
+        "number": 13,
+        "reversals": 66,
+        "state_changes": 329,
+        "state_flips": 59
+      },
+      {
+        "number": 14,
+        "reversals": 273,
+        "state_changes": 410,
+        "state_flips": 140
+      },
+      {
+        "number": 15,
+        "reversals": 267,
+        "state_changes": 393,
+        "state_flips": 121
+      }
+    ]
+  },
+  "flip_denominator": "DeepSeek flips.ps1 wall minutes * botcount; differs from C111 alive-minute meter",
+  "duels": {
+    "beginner": {
+      "kills": 39,
+      "deaths": 95,
+      "shots": 1719,
+      "hits": 465,
+      "hit_rate": 0.271,
+      "headshots": 22,
+      "headshot_share": 0.047,
+      "first_shot_delay_median_s": 1.07,
+      "first_shot_delay_samples": 146,
+      "burst_median": 2,
+      "moving_shot_share": 0.272,
+      "hits_by_band": {
+        "0-10": 154,
+        "10-20": 288,
+        "20-30": 22,
+        "30-50": 1,
+        "50+": 0
+      },
+      "hits_20m_share": 0.049
+    },
+    "normal": {
+      "kills": 109,
+      "deaths": 83,
+      "shots": 2865,
+      "hits": 1058,
+      "hit_rate": 0.369,
+      "headshots": 41,
+      "headshot_share": 0.039,
+      "first_shot_delay_median_s": 0.64,
+      "first_shot_delay_samples": 181,
+      "burst_median": 2,
+      "moving_shot_share": 1,
+      "hits_by_band": {
+        "0-10": 372,
+        "10-20": 630,
+        "20-30": 53,
+        "30-50": 3,
+        "50+": 0
+      },
+      "hits_20m_share": 0.053
+    },
+    "veteran": {
+      "kills": 74,
+      "deaths": 77,
+      "shots": 3141,
+      "hits": 954,
+      "hit_rate": 0.304,
+      "headshots": 66,
+      "headshot_share": 0.069,
+      "first_shot_delay_median_s": 0.41,
+      "first_shot_delay_samples": 199,
+      "burst_median": 2,
+      "moving_shot_share": 1,
+      "hits_by_band": {
+        "0-10": 124,
+        "10-20": 643,
+        "20-30": 164,
+        "30-50": 23,
+        "50+": 0
+      },
+      "hits_20m_share": 0.196
+    },
+    "elite": {
+      "kills": 81,
+      "deaths": 48,
+      "shots": 2704,
+      "hits": 868,
+      "hit_rate": 0.321,
+      "headshots": 83,
+      "headshot_share": 0.096,
+      "first_shot_delay_median_s": 0.28,
+      "first_shot_delay_samples": 148,
+      "burst_median": 3,
+      "moving_shot_share": 1,
+      "hits_by_band": {
+        "0-10": 240,
+        "10-20": 541,
+        "20-30": 70,
+        "30-50": 15,
+        "50+": 2
+      },
+      "hits_20m_share": 0.1
+    }
+  },
+  "detectors": {
+    "ignore_visible": {
+      "events": 452,
+      "events_per10min": 410.6602059357965
+    },
+    "open_under_fire": {
+      "events": 20,
+      "events_per10min": 18.170805572380377
+    },
+    "shoot_cover": {
+      "events": 17,
+      "events_per10min": 15.44518473652332
+    },
+    "freeze": {
+      "events": 19,
+      "events_per10min": 17.26226529376136
+    },
+    "oscillation": {
+      "events": 13,
+      "events_per10min": 11.811023622047244
+    }
+  },
+  "detectors_events_per10min": 473.34,
+  "gates": {
+    "no_crash": true,
+    "kills_ge247_5": true,
+    "stalls_le25": false,
+    "traps_zero": true,
+    "elite_kills_gt_veteran": true,
+    "elite_20_30hits_gt_veteran": false,
+    "aba_lt10": true
+  },
+  "all_gates_pass": false,
+  "control": "build/c108-on15-2ffc95fa",
+  "rng": "native independent random_device; no matched RNG",
+  "owner_reference": "build/owner-playtests/C112-2fee59c2-20261026-225932; no owner FIRE diagnostics, not a controlled comparison",
+  "native_server_frame_ms": null,
+  "cpu_pct": null,
+  "telemetry_notes": [
+    "kills run/demo302 vs GameRules log per-skill303; sources retained, no forced reconciliation",
+    "detector events heuristic, not verified defects",
+    "native engine frame time and CPU cost await C115 dedicated cost samples"
+  ]
+}

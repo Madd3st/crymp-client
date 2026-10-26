@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C112step1/C109 CLOSED nativePowerStruggle teams2/spawnGroups6; STARTEDnight15x6602fee(D028), thenC116fd12+ C101; noGUI.
+NOW: C112night2fee DONE gatesFAIL302kills/27stalls/0traps, Elite20-30hits70<Vet164; STARTED C116fd12green, ETA14min; noGUI.
+
+### X-149 | 2026-10-26 | DONE C-112 step3 / STARTED C-116 | ETA14min
+Exact2fee night15x660 runtimePASS660.4s/no crash/manifestmismatch; demo13195frames, kills302demo/run(303GameRuleslogs),pickups292,stalls27,traps0. GatesFAIL stalls27>25 andElite20-30hits70<Veteran164; kills>=247.5PASS,Elite81kills>Vet74PASS,DSABA8.84/min<10PASS. No promotion/rerun. Raw build/c113-on15-2fee59c2; scorecard.json plus Docs/Coordination/C112_NIGHT_SCORECARD.json.
+C115table K/S/T302/27/0 | DSABA8.84/reversals20.54 perwallbotmin | per-skillK39/109/74/81,20-30hits11/43/164/70(B/N/V/E) | firstshotdelay1.07/.64/.41/.28s | detectors521heuristicevents(counts/rates in scorecard). DSmetrics exactscripts, no alive/walldenominatorconflation. Mem1BECcontrolseed/owner59D6restoredhashes; no gamesremain.
+C116greenCI40395439102 artifactfd12a5ebd786942c1ad5cc205b98b390d96de1bd downloaded, nextone15x660 allC112flags+pro_fire1/high_ground1, controlthis2fee; C115scorecard attached. No localbuild/GUI, preserveforeignC08C. AfterC116 wakeC101/newmail/C115cost/clientview.
 
 ### X-148 | 2026-10-26 | DONE C-112 step1 / C-109 CLOSED; STARTED C-112 step3 | ETA13min
 ActorlessShore2fee runtimeconfirmed: '[WarsBots] RULES INFO class=PowerStruggle teams=2 names=tan,black spawnGroups=6.' Gate0/probe1/bots0/WATCHCHECKrefusedexpected; source/line raw build/c112-shore-rules-2fee59c2/C112-Shore-Rules.log and Docs/Coordination/C109_PS_BASELINE.json updated. Earlier consoleLua block resolved byClaudehook, noCodexgamecode. OwnPSprocessstopped.
