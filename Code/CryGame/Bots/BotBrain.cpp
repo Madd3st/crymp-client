@@ -303,7 +303,7 @@ void BotBrain::ResetLife()
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
 	m_retreating = false;
-	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_nextIdleSelect = 0; m_highUntil = 0; m_nextHighRoll = 0; m_aimModelInit = false; m_aimModelTarget = 0; m_suitPolicy.Reset();
+	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_nextIdleSelect = 0; m_highUntil = 0; m_nextHighRoll = 0; m_highHolding = false; m_aimModelInit = false; m_aimModelTarget = 0; m_suitPolicy.Reset();
 	m_weaponSearchStarted = m_now;
 	m_nextSearch = m_now;
 	m_deadTime = 0;
@@ -745,7 +745,7 @@ bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
 	{
 		m_nextHighRoll=m_now+20.0f;
 		if (Rand01()<(m_profile.skill==BotSkill::Elite?0.45f:0.25f))
-		{ m_highUntil=m_now+70.0f; WB_LOG(2,"[WarsBots] #%d HIGH GROUND start actor=%u.",m_number,actor.GetEntityId()); }
+		{ m_highUntil=m_now+70.0f; m_highHolding=false; WB_LOG(2,"[WarsBots] #%d HIGH GROUND start actor=%u.",m_number,actor.GetEntityId()); }
 	}
 	const bool high=map && BotConfig::Get().highGround==1 && m_now<m_highUntil;
 	const bool sniper=high || (map && m_traits.camper>=0.5f &&   // T-8: Marksman ~0.9, Defender ~0.6
@@ -759,6 +759,9 @@ bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
 	const VantageOutput o=m_vantage.Update(*map,m_number,m_now,feet.x,feet.y,feet.z,m_rng+unsigned(m_life),
 		[&](const VSpot& s){ const float q[3]={s.x,s.y,s.z}; return !onMesh || mesh->Reachable(from,q); });
 	if (o.relocated) WB_LOG(2,"[WarsBots] #%d VANTAGE relocate actor=%u.",m_number,actor.GetEntityId());
+	// DS-041: the owner holds a high spot 8-15 s (median 10.8), not a sniper's 25-45 s
+	if (high && o.phase==VantagePhase::Hold && !m_highHolding)
+	{ m_highHolding=true; m_highUntil=std::min(m_highUntil,m_now+8.0f+7.0f*Rand01()); }
 	if (o.phase==VantagePhase::None) return false;
 	if (o.phase==VantagePhase::Travel)
 	{
