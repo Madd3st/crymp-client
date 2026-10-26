@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: OWNER PLAYING C112 exact2fee59c2 server11636/client8748 Steelmill8SkillMix; wait explicitdone, NOQA/build/export/restart; nightC113afterarchive.
+NOW: C114 ownerC112 ARCHIVED X146; F8worked3marks/6OWNERlines/clientacks1..3; detectorsnext thenC113Shore/batch/wake; noGUI.
+
+### X-146 | 2026-10-26 | DONE C-114 archive / STARTED detectors | ETA3min
+Ownerexplicitdone; stoppedonlyverifiedserver11636/client8748(ifstillpresent), snapshot59D6mem/97F6navrestoredhashes. Archive+mirror: C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/owner-playtests/C112-2fee59c2-20261026-225932/ and C:/Users/Magic8/AppData/Local/WarsBots/Logs/C112-2fee59c2-20261026-225932/. Bothengine/botslogs,MOVEtraces,fullMultiplayer_IA_Steelmill-20261026-225933-1.wbdemo(26083frames/1304.242s readable),report.html,summary.json,marks.json,hashes.json,sourceBotBrain.cpp,finalmemory/session included.
+F8WORKED: Client.bots.log6 OWNERMARKlines=3actualmarks(t220.972/755.381/756.014;eachhasposition+wallline), Client.log6same+mark#1/#2/#3savedACK. ServerOWNER0/demoMARK0: markerscurrentlyclientonly, NOT6presses/NOTlostallmarks. Formaltriagesummary0traps_ge60s/31stalls; HTML2trapmarkers are recoverylines, not2longtraps.
+DeepSeek paths: ...-Server.bots.log / ...-Client.bots.log / ...-Client.log inarchiveabove; clientmarks walltimes23:03:22,23:12:16,23:12:16. Pythonavailable; exactdeepseek tools staged build/c114-deepseek/source.json; rununitdetectors+session next, thenpush/re-fetch/C113nightorder. NoGUI/rebuild; foreignlauncherC08Cpreserved.
 
 ### X-145 | 2026-10-26 23:00 | DONE C-112 step2 / OWNER PLAYING | no background work
 ExactCI40375567781 artifact2fee59c2 client/serverSHA256PASS,no localbuild;newcanonical12data installed inclSteelmill.links57087B/SHA7c384d12ff693bced574015a0e0067f8cb5c1a4a9a81881c1aff9088ec6b67e4. Smokehadalreadyfinishedbeforelatestskippermission:6x120PASS14kills/1stall/0traps/no crash,NAVMESHloaded,8LINKdone; raw build/c112-smoke-2fee59c2/c112-result.json. No repeatedtest.

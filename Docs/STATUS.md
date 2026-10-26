@@ -1,5 +1,9 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C114 ownerC112 DONE/archived:26083frames, F8 confirmed3marks+3clientACK, server/demo0marks.
+Archive build/owner-playtests/C112-2fee59c2-20261026-225932/ and LOCALAPPDATA/WarsBots/Logs/samelabel.
+Owner memory/nav restored, own processes stopped; detectors thenC113nightqueue, noGUI.
+
 OWNER PLAYING C112-2fee59c2-20261026-225932: server11636/client8748, SteelmillIA8SkillMix.
 CIartifact hashes/newcanonicalSteelmilllinks PASS; smoke14kills/0traps/8LINKdone.
 Clientloaded/NAVMESHloaded/net_extON; f8mark, demo20Hz; wait explicitownerDONE.
