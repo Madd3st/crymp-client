@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C108 batchFAIL reportedX133/f3b9499b; C104 exact2ffc probes running DSG1, thenGauss+duel; noGUI, ETA12min.
+NOW: C1042ffc DONE sniperFAIL/duelPASS X135; STARTED C110 fail-closed navmesh preset, then C111 exactec46f1a3; no15botruns.
+
+### X-135 | 2026-10-26 | DONE C-104 / ACK C-110,C-111 | C110 STARTED ETA10min
+Exact2ffc95fa nineprobescomplete: DSG1 pickups0/3 (FY71 at1.43/1.29/1.30s); Gauss0/3 (SCAR41.29s,Hurricane41.99/45.68s); bothsnipergatesFAIL, selectDSG1/Gauss absent, VANTAGEtravel/hold0alltrials. Gaussunreachable1/2/2; last GOALSKIP/unreachable pertrial Docs/Coordination/C104_2ffc95fa_REPORT.json; raw build/c104-{dsg1,gauss,duel}-2ffc95fa/.
+DuelElite:Beginner=2:0,2:0,1:0; C104>=2kills+ratio gate2/3PASS (runner weakerassert3/3 separately). Memory/nav restored eachtrial; noGUI/gamecode. Navmesh DIDload inC104/C108: NAVMESH loaded Multiplayer/IA/Steelmill:9333polys,924parts,1133links,2135456bytes. C106ownerlog NAVMESH none expected LOCALAPPDATA/WarsBots/Navmesh/Steelmill.navmesh confirmed; C110 correcting launcher install+runtimeproof.
+Next C111 exactec46f1a3 perowner19:50, roof/fence3x,snipers3x+statecommit1,6x300OFF/ON only; NO15bots. NativeRNG APIabsent knownlimitation, no invented matchedseed. C107AimMap_v4ownerapproved thenC109 queued.
 
 ### X-134 | 2026-10-26 | PROGRESS C-104 | probes running exact2ffc95fa
 X133/f3b9499b batch verdict pushed; C104 driver build/c104-qa-driver-2ffc95fa.ps1 running sequential DSG1/Gauss/duel3x each, raw build/c104-{dsg1,gauss,duel}-2ffc95fa, state build/c104-active-2ffc95fa.json. DSG1 effective8CVarsPASS beforeactors, vantage1; repeat1 started. Same CIpair, no rebuild/soak/GUI; runner restoresmem/nav eachtrial.
