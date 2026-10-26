@@ -33,7 +33,9 @@ New-Item -ItemType Directory -Force -Path $StateDir | Out-Null
 $state = Join-Path $StateDir "mail-$Agent.last"
 
 function Get-Mail {
-  git -C $Repo fetch -q origin "${branch}:refs/remotes/origin/$branch" 2>$null | Out-Null
+  # '+': a rewritten remote branch must still update the local ref (26.10: DeepSeek saw "state 21" with DS-026 open)
+  $err = git -C $Repo fetch -q origin "+${branch}:refs/remotes/origin/$branch" 2>&1
+  if ($LASTEXITCODE -ne 0) { Write-Output "wait_mail: fetch FAILED ($err) - mail may be stale" }
   $text = git -C $Repo show "refs/remotes/origin/${branch}:$file" 2>$null
   if (-not $text) { return @() }
   $items = @(); $cur = $null
@@ -55,8 +57,10 @@ $last = 0
 if (Test-Path $state) { [int]::TryParse((Get-Content $state -Raw).Trim(), [ref]$last) | Out-Null }
 
 if ($Peek) {
-  $open = Get-Mail | Where-Object { $_.Head -match '\bopen\b' }
-  Write-Output "wait_mail: $($open.Count) open $prefix- item(s), last seen $prefix-$last"
+  $all = @(Get-Mail)
+  $open = @($all | Where-Object { $_.Id -gt $last })
+  $top = ($all | Measure-Object Id -Maximum).Maximum
+  Write-Output "wait_mail: newest on branch $prefix-$top, last seen $prefix-$last, $($open.Count) unseen"
   Show $open; exit 0
 }
 
