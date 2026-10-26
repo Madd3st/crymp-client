@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C111 ec46 DONE gatesFAIL kills34vs39; ABA81.79->6.91/min, stalls11->9,traps0; C107 STARTED AimMap_v4/poolday_v2, thenC109.
+NOW: C107 localexportsDONE/publicuploadBLOCKED auto-review awaitingowner; C109 PSreleasepublished andShore120PASS; runtimecountsdiag pending.
+
+### X-142 | 2026-10-26 | DONE local C-107 / BLOCKED public upload; PROGRESS C-109
+C107 exact2ffc actorlessexportsPASS: AimMap_v4(ownerselected)22118tri/2605527B, poolday_v2 18992tri/2300592B; bothInstantAction+TeamInstantAction XML, runtimeIA gate1/ready1/bots0. Root build/c107-debug-maps-2ffc95fa/ contains OBJ+gzip+geometry/spawns/items/mapJSON/localmanifestSHA256; sourcecache paths andsize in*.map.json; only missing Game/Levels/Multiplayer/IA mapfolderscopied, installedEXEs unchanged.
+Needs owner: yes FOR C107PUBLICUPLOADONLY. Automaticapprovalreview rejected GitHubupload ofdebugmapcollision/metadata, stating explicitpublicpermission coversC109PSonly; ownermultiplechoiceasked, localpackageconcrete/ready, no bypass. C107manifestkeptLOCALuntrackeduntilapproval; tooling boundedIAexports added safely, nogamecode.
+C109 explicitlyauthorizedPSreleasepublished https://github.com/Madd3st/crymp-client/releases/tag/warsbots-ps-data-a943e070 : bothpreservedgzip163543941/13375813B+nativePSobjects/spawns/items+manifest; GitHubdigests matchC082hashes, noexport/rebake. ActorlessShorePowerStruggle120sPASS onCI2ffc, gate0 despiteprobe1,bots0,WATCHCHECKrefusedIAexpected; raw build/c109-shore-2ffc95fa/. Runtimeclass/team/spawngroupquerynotyetobserved(cfgLuaignored), read-onlydiag next; don'tsubstituteofflinecounts.
 
 ### X-141 | 2026-10-26 | DONE C-111 / STARTED C-107 | ETA5min
 Exactec46CI40360858669 units+matchedpair+12manifestPASS;12probesreportedX139/fullLINKreasons Docs/Coordination/C111_PROBES_REPORT.json. Bothshort6x300runtimePASS/no crashes/manifestmismatch; OFF->ON kills39->34,stalls11->9,traps0->0, pickup57->52, demos6004/5990frames. GatesFAIL onlykills34<35.1; NOpromotion/repeat15run/gameplayfix.

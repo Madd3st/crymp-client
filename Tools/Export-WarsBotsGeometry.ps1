@@ -7,6 +7,7 @@ param(
  [ValidateSet('IA','PS')][string]$MapFamily='IA',
  [string]$OutputDirectory='',
  [switch]$PlayAreaBox,
+ [hashtable]$MapBoxes=@{},
  [ValidateRange(1024,49151)][int]$Port=46060,
  [string]$Label=('C019-'+(Get-Date -Format yyyyMMdd-HHmmss)),
  [switch]$Resume
@@ -24,19 +25,28 @@ if((Test-Path $dest) -and -not $Resume){throw 'Use a fresh label or Resume exist
 New-Item -ItemType Directory -Force $dest|Out-Null
 $python=Join-Path $env:USERPROFILE '.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe'
 $runs=@();$process=$null;$exportLogs=@()
-if($PlayAreaBox -and ($MapFamily -ne 'PS' -or -not $manifest.geometry_export_box)){throw 'PlayAreaBox requires a compatible bounded PS exporter'}
+if(($PlayAreaBox -or $MapBoxes.Count) -and -not $manifest.geometry_export_box){throw 'Bounded geometry exporter required'}
+if($PlayAreaBox -and $MapFamily -ne 'PS'){throw 'PlayAreaBox default boxes are PS-only; use explicit MapBoxes for IA'}
 $boxes=@{Shore='1431 1000 2591 2160';Plantation='602 867 1486 1751'}
 $rules=if($MapFamily -eq 'PS'){'PowerStruggle'}else{'InstantAction'}
 try{
  foreach($map in $Maps){
-  $allowed=if($MapFamily -eq 'PS'){@('Shore','Plantation')}else{@('Steelmill','Quarry','Armada','Outpost')}
+  $allowed=if($MapFamily -eq 'PS'){@('Shore','Plantation')}else{@('Steelmill','Quarry','Armada','Outpost','AimMap_v4','poolday_v2')}
   if($map -notin $allowed){throw 'Unsupported map family/name'}
   if(Get-Process CryMP-Server64,CryMP-Client64 -ErrorAction SilentlyContinue){throw 'Another session appeared; no process touched'}
   $obj=Join-Path $dest "$map.obj";$meta=Join-Path $dest "$map.geometry.json"
   $regionArgs=if($PlayAreaBox){' '+$boxes[$map]}else{''}
+  if($MapBoxes.ContainsKey($map)){
+   $values=@($MapBoxes[$map])
+   if($values.Count -ne 4){throw 'MapBoxes requires x0,y0,x1,y1'}
+   $coords=@($values|ForEach-Object{[double]$v=$_;if([double]::IsNaN($v) -or [double]::IsInfinity($v)){throw 'Nonfinite box'};$v})
+   if($coords[0] -ge $coords[2] -or $coords[1] -ge $coords[3]){throw 'Empty map box'}
+   $regionArgs=' '+(($coords|ForEach-Object{$_.ToString([Globalization.CultureInfo]::InvariantCulture)}) -join ' ')
+  }
+  if($map -in @('AimMap_v4','poolday_v2') -and -not $regionArgs){throw 'Debug maps require an explicit bounded play-area box'}
   $log=Join-Path $env:LOCALAPPDATA "WarsBots/Logs/$Label-$map.log";$trace=$log -replace '\.log$','.bots.log';$exportLogs+=@($log,$trace)
   if(-not ($Resume -and (Test-Path $meta))){
-  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules $rules +wb_probe_local_test 1 +wb_debug 1 +map multiplayer/$($MapFamily.ToLowerInvariant())/$map +sv_gamerules +wb_geom_export `"$obj`"$regionArgs"
+  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules $rules +wb_probe_local_test 1 +wb_debug 1 +map multiplayer/$($MapFamily.ToLowerInvariant())/$map +sv_gamerules +wb_geom_export `"$obj`"$regionArgs +wb_status"
   Write-Host "EXPORT START $map sha=$($manifest.sha)"
   $process=Start-Process $exe -ArgumentList $args -WorkingDirectory $GameDirectory -WindowStyle Hidden -PassThru
   $end=[DateTime]::UtcNow.AddMinutes(5);$text=''
