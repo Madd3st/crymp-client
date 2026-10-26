@@ -5,6 +5,7 @@ namespace WarsBots {
 namespace {
 struct IntBinding {const char* name;int BotConfig::*field;const char* help;};
 const IntBinding kInts[]={
+ {"wb_net_ext",&BotConfig::netExt,"Owner 26.10 (Malformed packet on public servers): WarsBots player-stream fields only between WarsBots ends. -1 auto (default: server on; client on only for a loopback/LAN server address), 0 vanilla wire, 1 force. Set before connecting. Exit: keep until T-3 adds a real handshake."},
  {"wb_demo_record",&BotConfig::demoRecord,"Opt-in server wbdemo/2 recorder; exit: diagnostic-only, default OFF"},
  {"wb_demo_hz",&BotConfig::demoHz,"Diagnostic demo sample rate10..60; default20"},
  {"wb_probe_local_test",&BotConfig::gateOpen,"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction."},

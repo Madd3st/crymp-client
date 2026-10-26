@@ -11,6 +11,7 @@ History:
 
 *************************************************************************/
 #include "CryCommon/CrySystem/ISystem.h"
+#include "CryGame/Bots/BotNetCompat.h"
 #include "CryGame/Bots/BotLog.h"
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 #include "CryGame/Bots/BotPace.h"
@@ -4934,9 +4935,27 @@ bool CPlayer::WarsBotWeaponFiring() const
     IFireMode* mode = weapon ? weapon->GetFireMode(weapon->GetCurrentFireMode()) : nullptr;
     return mode && mode->IsFiring();
 }
+// Owner 26.10 12:04 ("Malformed packet" on a public CryMP server): the WarsBots fields below are written/read only
+// when both ends are WarsBots (BotNetCompat.h, wb_net_ext). Client: decided once per connection from the server address.
+static bool WarsBotsWire()
+{
+	const int mode = WarsBots::BotConfig::Get().netExt;
+	if (gEnv->bServer) return WarsBots::WireExtensions(mode, true, nullptr);
+	static INetChannel* s_channel = nullptr; static int s_mode = -2; static bool s_on = false;
+	INetChannel* channel = g_pGame->GetIGameFramework()->GetClientChannel();
+	if (channel != s_channel || mode != s_mode)
+	{
+		const char* name = channel ? channel->GetName() : nullptr;
+		s_channel = channel; s_mode = mode; s_on = WarsBots::WireExtensions(mode, false, name);
+		if (channel) CryLogAlways("[WarsBots] NET wire extensions %s (wb_net_ext %d, server %s)", s_on ? "ON" : "OFF (vanilla)", mode, name ? name : "?");
+	}
+	return s_on;
+}
+
 // Spawn metadata is read before any suit aspects, including for late joiners.
 ISerializableInfoPtr CPlayer::GetSpawnInfo()
 {
+	if (!WarsBotsWire()) return CActor::GetSpawnInfo();
 	struct SBotInfo : ISerializableInfo
 	{
 		ISerializableInfoPtr base;
@@ -4951,7 +4970,7 @@ ISerializableInfoPtr CPlayer::GetSpawnInfo()
 void CPlayer::SerializeSpawnInfo(TSerialize ser)
 {
 	CActor::SerializeSpawnInfo(ser);
-	ser.Value("warsBotActor",m_warsBotActor,'bool');
+	if (WarsBotsWire()) ser.Value("warsBotActor",m_warsBotActor,'bool');
 	// CryAction reads spawn metadata BEFORE Init: store only; Revive initializes the suit after CActor::Init.
 }
 void CPlayer::EnsureWarsBotSuit()
@@ -5286,7 +5305,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 	if (IsWarsBotActor()) EnsureWarsBotSuit();
-	if (aspect==eEA_GameServerDynamic && ser.BeginOptionalGroup("WarsBotSuitActive",IsWarsBotActor()))
+	if (aspect==eEA_GameServerDynamic && WarsBotsWire() && ser.BeginOptionalGroup("WarsBotSuitActive",IsWarsBotActor()))
 	{
 		bool active=m_pNanoSuit && m_pNanoSuit->IsActive();
 		ser.Value("active",active,'bool');
@@ -5299,7 +5318,7 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 		m_pNanoSuit->Serialize(ser, aspect);	// because jumping/punching/sprinting energy consumption will vary with suit settings
 
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
-	if (aspect == eEA_GameServerDynamic)
+	if (aspect == eEA_GameServerDynamic && WarsBotsWire())
 	{
 		bool bot = gEnv->bServer ? g_pGame->GetBotManager().Owns(GetEntityId()) && m_warsBotPose : m_warsBotPose;
 		// CryNetwork caches aspect layouts: conditional payload must be an optional group.
