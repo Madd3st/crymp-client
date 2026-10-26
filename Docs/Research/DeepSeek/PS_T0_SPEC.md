@@ -13,7 +13,9 @@ contract. Details: `T0_GAMEMODE.md` (interface/team/spawn/registration), `VEHICL
    `teamCount=2`, `perTeam=wb_ps_bots_per_team` (3/4), `desired=teamCount*perTeam`, `limit=min(desired,wb_maxbots)`.
 3. `SetTeam` + `SetPlayerSpawnGroup` after actor creation and before `ChooseSpawn`; `GetSpawnLocation` filters by
    `GetTeam(id)` (`GameRules.cpp:2473-2481`). `BotMatch::Register` must stop refusing `USE_SPAWN_GROUPS`
-   (`BotMatch.cpp:34-35`).
+   (`BotMatch.cpp:34-35`). PS spawn groups anchor at bunkers/HQ: `SpawnGroup2` tan / `SpawnGroup_US5` black on Shore,
+   `SpawnGroup_US`/`SpawnGroup2` on Plantation (`PS_MAPS.md:44-47,67-69`); use the team default group, never the
+   enemy HQ group.
 4. A bot-specific team path: `SetTeam` writes shared `m_channelteams[0]` and sends objectives/voice for every
    channel-0 bot (`GameRules.cpp:1721-1801,1904-1915`). Either add a bot-specific path or forbid `GetChannelTeam(0)` in
    bot decisions; test two bots on different teams.

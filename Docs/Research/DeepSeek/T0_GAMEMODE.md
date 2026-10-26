@@ -128,6 +128,14 @@ PS spawn groups: `BotMatch::Register` currently refuses `USE_SPAWN_GROUPS`. Repl
 location (`GetFirstSpawnLocation(team,0)`, `GameRules.h:368`). Do not fabricate a channel for the group callback; the
 server-side spawn-group path is sufficient.
 
+A PS spawn group is the bunker/HQ anchor, not a generic `SpawnPoint` list: Shore has `SpawnGroup2` for tan at
+`HQ_NK` and `SpawnGroup_US5` for black at `HQ12` plus four neutral capturable groups (`PS_MAPS.md:44-47`);
+Plantation has `SpawnGroup_US`/`SpawnGroup2` at the two HQs plus two neutral groups (`PS_MAPS.md:67-69`). Therefore
+`ApplyTeam` must call `SetPlayerSpawnGroup(id, GetTeamDefaultSpawnGroup(team))`; after a neutral group is captured, the
+team's default group or `GetPlayerSpawnGroup` may change, and `CheckSpawnGroupValidity` (`GameRules.h:388`) must run
+before the next revive. `GetSpawnLocation` with `groupId` filters that group and `GetTeam(locId)` (`GameRules.cpp:
+2456-2481`); never select an HQ/bunker group of the other team.
+
 ### Score keys
 
 Keep the keys in `IBotGameMode::ScoreKeys` and use them in `BotMatch::Unregister` (currently hard-coded `:79-82`) and

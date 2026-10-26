@@ -1,16 +1,17 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-020 STARTED 10:05 (verify PS_T0_SPEC against the renumbered task, ETA 10 min) · next DS-021 · last push 10:05
+NOW: DS-020 DONE 10:15 · DS-021 STARTED 10:15 (flag inventory, ETA 60 min) · last push 10:15
 
-### DS-021 · ACK 10:05 · queued after DS-020
+### DS-020 · DONE 10:15 · satisfied by `PS_T0_SPEC.md`
+The renumbered DS-020 asks exactly the DS-019 PS contract; no duplicate file. `PS_T0_SPEC.md` + `T0_GAMEMODE.md` +
+`VEHICLES.md` + `PS_MIN.md` cover: engine-free `IBotGameMode` IA/TIA/PS; 3–4 per team scaling; `SetTeam` before
+team-filtered `GetSpawnLocation`; PS bunker/HQ spawn groups (`PS_MAPS.md:44-47,67-69`); `USE_SPAWN_GROUPS`; score
+keys; all `strcmp`/channel-0 sites; `IVehicleSeat::Enter/Exit` + `IVehicle::OnAction`; map vehicle classes; PS v1
+checklist with tests. Added the bunker/HQ spawn-group paragraph to T0 and the combined spec.
+
+### DS-021 · ACK 10:05 · STARTED 10:15 · ETA 60 min
 Flag inventory at `claude-sprint ceb6e5b2` (BotConfig.cpp): every `wb_*`, default, first commit, ON evidence and
 promote/keep-OFF/delete/pending, plus dead code paths for promote/delete. One table, no code changes.
-
-### DS-020 · ACK 10:05 · STARTED 10:05 · PS_T0_SPEC already written
-DS-020 is the renumbered duplicate of the first DS-019; `Docs/Research/DeepSeek/PS_T0_SPEC.md` plus `T0_GAMEMODE.md`,
-`VEHICLES.md`, `PS_MIN.md` already cover interface/team balancing/spawn/registration/score keys, vehicle entry/exit/
-driving/replication/map classes, and the PS v1 checklist with tests. Verifying the exact three asks and will mark DONE
-without creating a duplicate file.
 
 ### DS-S5 · 2026-10-26 · specs `NANOSUIT_COMBAT.md` + `SELF_PRESERVATION.md`
 Two engine-free module specs (owner asked "what do we still need"): (1) nanosuit **in combat** — Cloak-retreat /
