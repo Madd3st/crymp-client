@@ -9,7 +9,7 @@ Beginner plants its feet at range (no close/retreat loop), Elite cloak passes th
 fixed, Defender sniper hold + own idle timer. Wait for **green CI on c0c8baf4**, then smoke as below with recipe `build c0c8baf4`.
 Smoke additions: `wb_fill 4` then `wb_fill 8` returns (no hang); with 1 Elite + 1 Beginner at least one Beginner
 `ATTACKING` stretch where it does not move (MOVE trace speed < 0.3 m/s for ≥ 2 s); count `BOT SUIT`/cloak lines for
-Elite (> 0 expected over 120 s, report even if 0). The owner's manual client PID 18392: **owner says close it** (13:32 chat).
+Elite (> 0 expected over 120 s, report even if 0). The owner's manual client PID 18392: still needs his own consent in chat with you (Claude asked him to give it).
 **Amended 12:35 — build faede5cd instead of 9aa1078d:** owner retried the public server on the old build (still Malformed,
 expected — no `NET wire extensions` line). Second suspect: upstream crymp-net master f87936e5 (25.10) changed the zoom
 RMIs `SvRequestZoom`/`ClZoom` to `eNRT_ReliableOrdered`; a server on current CryMP may reject our 09.10 base. faede5cd = 9aa1078d +
