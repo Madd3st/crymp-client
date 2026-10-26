@@ -1,5 +1,19 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C097/C0937179ec36 PASS: MSVC17units, kills276/stalls19/traps0; per-skill
+report Docs/Coordination/C093_REPORT.md, raw build/c097-on15-7179ec36/.
+Accepted7179 merged07db7152, exact game-code identity checked; D016 defaultsON.
+C0989ac55001 FAIL: kills258/stalls39/traps0, no sniperhold,12sniperunreachable,
+0glance despite flags; raw build/c098-on15-9ac55001/, no promotion.
+C100CIceb6e5b2 nine probes complete: DSG1 0/3,Gauss0/3,Duel1/3(0:0,0:0,1:0).
+Tool runner committed, Docs/Coordination/C100_REPORT.md, build/c100-comparison.json.
+C102-approved owner QoL40bd9f60: MSVC18units/data/preflight20CVarsPASS,
+frozen build/batch-40bd9f60; Tools/Play-WarsBotsC091.ps1 PrepareOnly/ASTPASS.
+8SkillMix,difficulty/finish/spectatorAim/perception/names1,threat/pathprogress0,
+F8wb_markowner,DX9/demo20Hz. GUI/F8 live behaviour not tested. Owner launches.
+No games active, baseline mem/nav hashes restored; foreign launcher preserved.
+C103queuedDS024review thenC101; automation remains30min/staticpromptunchanged.
+
 C088 corrected-preset gate PASS on5b90bfb6: kills278/stalls18/traps0,
 Strength48, demo13232frames; mem/nav restored, no active games.
 C0931e0f4072 MSVCclient/server+17units+12manifest PASS; frozen batch-1e0f4072.
