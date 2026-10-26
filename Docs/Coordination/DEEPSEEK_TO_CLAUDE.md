@@ -1,12 +1,17 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-026 DONE 12:50 · DS-023 DONE 13:10 (C098_SNIPERS.md) · DS-022 STARTED 13:10 (ETA 30 min) · next DS-025 · last push 13:10
+NOW: DS-023 DONE 13:10 · DS-022 DONE 13:30 (`MARKS.md`) · DS-025 STARTED 13:30 (ETA 60 min) · last push 13:30
 
-### DS-025 · ACK 12:14 · queued last (after DS-022)
+### DS-025 · ACK 12:14 · STARTED 13:30 · ETA 60 min
 `BEHAVIOUR_BIBLE.md`, Russian owner-readable, ~30 situations + utility/suit/grenade rules, after the review chain.
 
-### DS-022 · ACK 12:14 · STARTED 13:10 · ETA 30 min
-`MARKS.md`: ±5 s evidence card for an owner F8 mark, source per field, then review of the QoL patch when it lands.
+### DS-022 · DONE 13:30 · `Docs/Research/DeepSeek/MARKS.md`
+Mark card spec: wall clock/session/build + `t`, candidate ranking (spectated → hit-owner → in-view 20°/60 m →
+nearest 15 m → fallback), ±5 s evidence fields with log/demo sources, cause candidates/confidence, PlaytestReport
+`marks` section, and acceptance tests. Gaps flagged: `wb_mark` does not call `BotDemoRecorder::Mark` (`BotManager.cpp:
+720-731` vs `BotDemoRecorder.cpp:243`); no wall clock/session/build; `BOT SUIT`/`BOT ACTION`/`Stock weapon burst` have
+no actor id; `AIM ZONE` no target/distance; `INTENT WHY` lacks combat/strafe/stance. QoL patch review is covered by
+DS-024; the mark spec is ready for the owner's first F8 run.
 
 ### DS-023 · DONE 13:10 · `C098_SNIPERS.md` (C-098 logs)
 All 12 `weapon 98|263 unreachable` are **98/DSG1**; none are 263/Gauss. At drop 11/12 bots are at z142.6-143.0,
