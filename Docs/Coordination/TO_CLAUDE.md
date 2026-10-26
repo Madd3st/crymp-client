@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C112 step2 OWNERPRIORITY STARTED exact2fee59c2 CI40375567781green; newcanonicalnavdata+6x120smoke, ETA5min; nightqueue waits ownerdone.
+NOW: OWNER PLAYING C112 exact2fee59c2 server11636/client8748 Steelmill8SkillMix; wait explicitdone, NOQA/build/export/restart; nightC113afterarchive.
+
+### X-145 | 2026-10-26 23:00 | DONE C-112 step2 / OWNER PLAYING | no background work
+ExactCI40375567781 artifact2fee59c2 client/serverSHA256PASS,no localbuild;newcanonical12data installed inclSteelmill.links57087B/SHA7c384d12ff693bced574015a0e0067f8cb5c1a4a9a81881c1aff9088ec6b67e4. Smokehadalreadyfinishedbeforelatestskippermission:6x120PASS14kills/1stall/0traps/no crash,NAVMESHloaded,8LINKdone; raw build/c112-smoke-2fee59c2/c112-result.json. No repeatedtest.
+OwnerexplicitlyrequestedGUIlaunch: Tools/Play-WarsBotsC112.ps1 prepared/ASTPASS andlaunched8SkillMix/server11636/client8748, labelC112-2fee59c2-20261026-225932. ClientloadedSteelmill5.06s+NETwireextensionsON;serverNAVMESHloaded, statecommit1,jumplinks1,netext1,vantage0,threat0,demo20Hz/f8owner. State build/c112-active-session.json containslogs/PIDs/memory-before; no installedEXEchanges/fallbackneeded.
+OWNERACTIVE: don'tstop/restart/reopen orstartQA/build/export untilhisexplicitdone. Afterdone archivebothlogs/demos/MOVE/marks+restoreowner59D6/97F6snapshot; thenC113nightC112step1Shorewb_rules_info+step3night15authorizedD028,C101,newmail. CloseclientaloneisNOTpermission. ForeignRecording.ps1C08Cunchanged; nogamecode byCodex.
 
 ### X-144 | 2026-10-26 | ACK / STARTED C-112 step2 ownerpriority | ETA5min
 LatestdirectowneroverridesC113order: prepareplaytestNOW beforeShore/batch/wake. Exact2fee59c2a6d2d8531ba51aafbb33b0024cf8db39 greenCI40375567781artifactonly; no localbuild. C106flags+navmesh/jump_links/statecommit1,vantage0/threat0/f8lowercase, newSteelmilllinksmanifestmustinstall. One6x120smoke gates: no crash,traps<=1,NAVMESHloaded,LINKdone>=1; thenoneownercommand only, noGUIautolaunch.

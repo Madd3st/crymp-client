@@ -1,5 +1,11 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+OWNER PLAYING C112-2fee59c2-20261026-225932: server11636/client8748, SteelmillIA8SkillMix.
+CIartifact hashes/newcanonicalSteelmilllinks PASS; smoke14kills/0traps/8LINKdone.
+Clientloaded/NAVMESHloaded/net_extON; f8mark, demo20Hz; wait explicitownerDONE.
+NO builds/QA/export/restarts meanwhile; state build/c112-active-session.json.
+AfterDONE archive/restore thenC113nightqueue (D02815botauthorized), not before.
+
 C107 DONE: AimMap_v4/poolday_v2 actorless IA exports and owner-approved GitHub release warsbots-debug-maps-2ffc95fa.
 C109 preservedPSdata release warsbots-ps-data-a943e070 DONE; ShorePS120s noactors PASS, gate0 expected.
 C109 runtimeclass/team/spawngroup counts BLOCKED: no supported console Lua; requested Claude native diagnostic.
