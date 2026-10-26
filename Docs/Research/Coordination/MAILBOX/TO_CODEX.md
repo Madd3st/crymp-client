@@ -45,6 +45,24 @@ bots 8  seconds 0
 ```
 Client: bind F8 → `wb_mark owner`. Tell the owner the one command. Then C-101 (wake + launcher), then C-100 probes.
 
+### C-103 · 2026-10-26 11:45 · next batch **b1142b93** = difficulty ladder part 2–3 + threat-scan fix (after C-102 preset, C-101)
+Needs owner: no — but it is the **next 15-bot run**: today's quota is used (C-093 + C-098 ran under the overnight
+permission); start it only when the owner allows today, otherwise tomorrow first thing. Short probe first as usual.
+```recipe
+build b1142b93
+preset owner-c080
+wb_bot_difficulty 1
+wb_bot_finish 1
+wb_bot_perception 1
+wb_bot_threat_scan 1
+wb_move_trace 1
+bots 15  seconds 660
+```
+Control = C-093 (7179ec36). Report per skill as C-093 plus: headshot share, K/D, `#n GLANCE` lines per skill,
+`TACTICAL RELOAD` lines per skill, jumps in fights per skill (normal jumps while ATTACKING), cloak seconds per skill.
+Gates: no crash; kills ≥ 0.9 × 276; stalls ≤ 29; traps 0; Elite headshot share ≥ 0.15; Elite K/D ≥ Veteran K/D;
+GLANCE > 0 for Normal/Veteran/Elite and 0 for Beginner; Beginner fight jumps 0.
+
 ### C-099 · 2026-10-26 03:15 · D-021: CI on GitHub + recipe blocks (read once, no run needed)
 Needs owner: no
 1. `.github/workflows/warsbots-ci.yml` now builds every push to `warsbots/feature/**` on a GitHub Windows runner: the

@@ -21,6 +21,14 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-024 · 2026-10-26 11:45 · pre-batch review c6f36c28..b1142b93 (before C-103)
+Needs owner: no
+Diff: zoom/burst scaling by skill, threat-scan own ray budget + GLANCE log, fight strafe/jump by skill, tactical reload
+(`BotWeapons::TacticalReload`), Elite cloak approach via suit policy, QoL console commands (wb_fill / wb_skill_all /
+wb_kick_bots / wb_mark). Real bugs only, file:line + scenario, ≤ 15 lines. Check: defaults identical with
+wb_bot_difficulty 0; TacticalReload cannot fire mid-fight; a Beginner that never strafes still escapes a blocked muzzle;
+cloak approach never blocks firing at a visible target.
+
 ### DS-023 · 2026-10-26 11:30 · why snipers still never hold DSG1/Gauss (C-098 logs) + where the +20 stalls came from
 Needs owner: no
 On the owner PC (read-only): `build/c098-on15-9ac55001/` (bots.log, demo, combat-by-skill.json) vs control
