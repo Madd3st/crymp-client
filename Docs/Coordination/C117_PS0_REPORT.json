@@ -1,0 +1,91 @@
+[
+  {
+    "map": "Shore",
+    "source": "0fa9c1cb5e7a13534dc6c7f23adc5507cdcb1bee",
+    "registrations": 1,
+    "requested": 6,
+    "completed240": false,
+    "team_group_lines": [
+      "0.06 [WarsBots] #1 PS team=1 spawnGroup=120 before registration.",
+      "0.06 [WarsBots] #2 PS team=2 spawnGroup=537 before registration."
+    ],
+    "created": [
+      {
+        "slot": 1,
+        "actor": 65486,
+        "position": [
+          1965.939,
+          1536.152,
+          100.928
+        ],
+        "tan_base_xy": [
+          1839.8,
+          1238.6
+        ],
+        "distance_xy_to_tan_base": 323.1845293713796
+      }
+    ],
+    "lua_errors": [
+      "[Error] [Script] RMI No such server channel 0",
+      "[Error]     [C]:-1 C method ClReviveCycle",
+      "[Error]     [string \"CryMP/Scripts/GameRules/PowerStruggle.lua\"]:874 Lua field ?",
+      "[Error]     [string \"Scripts/WarsBots/PowerStruggle.lua\"]:23 Lua  (null)",
+      "[Error] [Script] Function GetTeamDefaultSpawnGroup(teamId) expects parameter 1 to be type Number and not Pointer",
+      "[Error]     [C]:-1 C method GetTeamDefaultSpawnGroup",
+      "[Error]     [string \"Scripts/WarsBots/PowerStruggle.lua\"]:30 Lua  (null)"
+    ],
+    "crash_lines": [
+      "================================ CRASH DETECTED ================================",
+      "Access violation (0xC0000005) at 0x0000000140624443: Read from 0x0000000000000000 failed"
+    ],
+    "rules_info": [
+      "0.06 [WarsBots] RULES INFO class=PowerStruggle teams=2 names=tan,black spawnGroups=6."
+    ],
+    "game_state": null,
+    "pp_change": null,
+    "revive_observation": "not measurable: registration crashed before match",
+    "blocked_reason": "1/6 registration + channel0 RMI/type errors and crash reporter atsecond actor; aborted no240s wait"
+  },
+  {
+    "map": "Plantation",
+    "source": "0fa9c1cb5e7a13534dc6c7f23adc5507cdcb1bee",
+    "registrations": 1,
+    "requested": 6,
+    "completed240": false,
+    "team_group_lines": [
+      "0.06 [WarsBots] #1 PS team=1 spawnGroup=273 before registration.",
+      "0.06 [WarsBots] #2 PS team=2 spawnGroup=163 before registration."
+    ],
+    "created": [
+      {
+        "slot": 1,
+        "actor": 65518,
+        "position": [
+          849.375,
+          1319.75,
+          257.7
+        ]
+      }
+    ],
+    "lua_errors": [
+      "[Error] [Script] RMI No such server channel 0",
+      "[Error]     [C]:-1 C method ClReviveCycle",
+      "[Error]     [string \"CryMP/Scripts/GameRules/PowerStruggle.lua\"]:874 Lua field ?",
+      "[Error]     [string \"Scripts/WarsBots/PowerStruggle.lua\"]:23 Lua  (null)",
+      "[Error] [Script] Function GetTeamDefaultSpawnGroup(teamId) expects parameter 1 to be type Number and not Pointer",
+      "[Error]     [C]:-1 C method GetTeamDefaultSpawnGroup",
+      "[Error]     [string \"Scripts/WarsBots/PowerStruggle.lua\"]:30 Lua  (null)"
+    ],
+    "crash_lines": [
+      "================================ CRASH DETECTED ================================",
+      "Access violation (0xC0000005) at 0x0000000140624443: Read from 0x0000000000000000 failed"
+    ],
+    "rules_info": [
+      "0.06 [WarsBots] RULES INFO class=PowerStruggle teams=2 names=tan,black spawnGroups=4."
+    ],
+    "game_state": null,
+    "pp_change": null,
+    "revive_observation": "not measurable: registration crashed before match",
+    "blocked_reason": "1/6 registration + channel0 RMI/type errors and crash reporter atsecond actor; aborted no240s wait"
+  }
+]
