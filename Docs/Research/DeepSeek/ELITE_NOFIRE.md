@@ -77,6 +77,10 @@ switch; the 14.3 s gap is sprint into an empty clip. The remaining 80 s of "aim 
 
 ## Patch (`ds040_elite_nofire.patch`)
 
+Re-checked 2026-10-27: the patch applies cleanly to the current head `fd12a5eb` as well (and together with
+`ds038_sniper_upgrade_gate.patch`). `fd12a5eb` added `wb_bot_pro_fire`, but its Fire path still forces only
+`NANOMODE_DEFENSE` (`BotBrain.cpp:1035`) and never drops `gait=Sprint`, so item 5 is still needed.
+
 1. **`NOFIRE` diagnostics** in `BotCombat::Attack` (rate-limited 0.5 s):
    `reason=blocked|ammo|aim`, actor, target, distance, clip, tolerance and dot. This makes the next run classifiable
    without guessing.

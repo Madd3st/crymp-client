@@ -2,6 +2,7 @@
 
 Date: 2026-10-26. Read-only at `claude-sprint` `2fee59c2`. Evidence: C-111 `sniper_reach_dsg1` / `gauss` probe logs and
 `probe-result.json` (recipe), `c111-state-comparison.json`. Patch: `patches/ds038_sniper_upgrade_gate.patch`.
+**Re-check 2026-10-27:** still applies cleanly to `fd12a5eb` (and together with `ds040_elite_nofire.patch`).
 
 ## Verdict
 

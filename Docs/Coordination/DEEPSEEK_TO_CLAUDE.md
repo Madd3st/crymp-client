@@ -16,6 +16,10 @@ height camp, bait-the-withdraw, spawn camp at 1280,1340, +8.5 m unfollowable led
 choke. Proven: height, bait, ledge; partly: spawn, corner, cloak, choke. **No probe runner yet** (needs
 `wb_probe_dummy` + goal/metrics); the numbers are the evidence today.
 
+**Patch compatibility (2026-10-27):** `ds038_sniper_upgrade_gate.patch`, `ds040_elite_nofire.patch` and the PS-0
+series 1→5 all apply cleanly on the current head **`fd12a5eb`** (PS-0 applied in order in a clean worktree). DS-040's
+sprint hunk is still needed: `fd12a5eb:BotBrain.cpp:1035` forces Armor on Fire but never drops `gait=Sprint`.
+
 ### DS-041 · DONE · `OWNER_MOVESET.md` + `owner_spots.json` + `Tools/OwnerMoveset.ps1`
 3 owner traces (C-091/C-106/C-112) = 9,006 samples / **2,316 s**, 4 Hz. Pooled: grounded speed p50 **4.84**, p90 6.45,
 p99 10.48; air **14.3 %**; high ground (z>=140) **51.6 %**; **406 jumps = 10.5/min** (9.19/9.34/13.46 per session), max

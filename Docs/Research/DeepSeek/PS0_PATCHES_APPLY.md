@@ -4,6 +4,9 @@ Date: 2026-10-26. Five `git apply`-able diffs in `Docs/Research/DeepSeek/patches
 written against the previous patch, so apply in numeric order. Verified by applying all five on a clean `2fee59c2`
 worktree (`git apply --check` + apply, no conflict). No game build; the two new engine-free tests were built with MSVC.
 
+**Re-check 2026-10-27:** the whole series still applies in order on the current head `fd12a5eb` (applied 1→5 in a
+clean detached worktree, no conflict; new files `BotModePlan.h`/`BotTeamPlan.h`/`PowerStruggle.lua` created).
+
 | # | Patch | Files | Check |
 | --- | --- | --- | --- |
 | 1 | `ps0_1_mode_gate.patch` | `BotMatch.*`, `CryMPEngineAdapter.*`, `BotConfig.*`, `BotManager.cpp`, new `BotModePlan.h` + test | `BotModePlanTests`: all pass. Server log on PS: gate open for `mode=PowerStruggle`, no `GATE closed`; `wb_allow_public 1` removes the loopback requirement. |
