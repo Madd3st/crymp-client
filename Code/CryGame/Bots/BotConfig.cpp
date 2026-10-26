@@ -5,6 +5,7 @@ namespace WarsBots {
 namespace {
 struct IntBinding {const char* name;int BotConfig::*field;const char* help;};
 const IntBinding kInts[]={
+ {"wb_bot_state_commit",&BotConfig::stateCommit,"DS-034 (owner playtest 3: bots twitch): roam writes its state once per tick after the weapon-goal decision (was SEARCHING then MOVING_TO_WEAPON every tick, 89 A-B-A flips per bot-minute) and a visible target keeps ATTACKING for >= 0.5 s. 0 OFF default. Exit: promote after a batch shows flips down and kills/stalls within noise."},
  {"wb_net_ext",&BotConfig::netExt,"Owner 26.10 (Malformed packet on public servers): WarsBots player-stream fields only between WarsBots ends. -1 auto (default: server on; client on only for a loopback/LAN server address), 0 vanilla wire, 1 force. Set before connecting. Exit: keep until T-3 adds a real handshake."},
  {"wb_demo_record",&BotConfig::demoRecord,"Opt-in server wbdemo/2 recorder; exit: diagnostic-only, default OFF"},
  {"wb_demo_hz",&BotConfig::demoHz,"Diagnostic demo sample rate10..60; default20"},

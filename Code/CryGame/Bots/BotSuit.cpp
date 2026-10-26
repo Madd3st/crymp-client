@@ -12,7 +12,7 @@ bool BotSuit::CloakEnabled()
 	const int& flag=BotConfig::Get().cloakExperimental;
 	return flag==1;
 }
-bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float now, bool cloakAllowed)
+bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float now, bool cloakAllowed, bool urgent)
 {
 	// DS-024 #2: the difficulty ladder (Elite cloakApproach) may cloak without wb_bot_cloak_experimental.
 	const bool cloakOk = CloakEnabled() || cloakAllowed;
@@ -38,7 +38,8 @@ bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float 
 	}
 	if (suit->GetMode() == mode) return true;
 	// Defense can interrupt an ability immediately on attack/damage; other transitions have hysteresis.
-	if (now < state.nextSuitChange && mode != NANOMODE_DEFENSE) return false;
+	// DS-033: a link take-off (urgent) may switch to Strength inside the 2 s hysteresis (6 no_takeoff failures).
+	if (now < state.nextSuitChange && mode != NANOMODE_DEFENSE && !urgent) return false;
 	if (!suit->SetMode(mode)) return false;
 	state.nextSuitChange = now + 2.0f;
 	state.mode = suit->GetMode();

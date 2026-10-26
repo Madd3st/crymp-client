@@ -7,7 +7,7 @@ class BotSuit
 {
 public:
 	void Reset() { m_nextLog = 0; }
-	bool Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float now, bool cloakAllowed = false);
+	bool Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float now, bool cloakAllowed = false, bool urgent = false);
 	static bool CloakEnabled();
 private:
 	float m_nextLog = 0;

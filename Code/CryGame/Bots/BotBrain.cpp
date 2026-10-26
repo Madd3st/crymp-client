@@ -566,11 +566,14 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 
 void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 {
-
-		Change(State::SEARCHING_ENEMY);
+		// DS-034: SEARCHING_ENEMY used to be set here and MOVING_TO_WEAPON by UpdateUpgrade below in the same tick
+		// (13,004 + 12,999 flips in playtest 3), and every Change() restarted m_stateTime (reaction, stuck checks).
+		// The state is written once, after deciding whether this tick delegates to the weapon goal.
+		const bool commit = BotConfig::Get().stateCommit == 1;
+		if (!commit) Change(State::SEARCHING_ENEMY);
 		m_blackboard.enemy=0; m_blackboard.visible=false; m_blackboard.distance=0;
 		const Vec3 feet = actor.GetEntity()->GetWorldPos();
-		if (UpdateVantage(actor,feet,decisionTime)) return; // owner 25.10: snipers hold roofs
+		if (UpdateVantage(actor,feet,decisionTime)) { Change(State::SEARCHING_ENEMY); return; } // owner 25.10: snipers hold roofs
 		if (BotConfig::Get().tactics==1 && m_now<m_lootUntil && !m_upgradeTarget)
 		{
 			// fragmovies: take the dead enemy's gun/ammo before moving on
@@ -583,6 +586,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			}
 		}
 		if (BotConfig::Get().tactics==1 && m_upgradeTarget && UpdateUpgrade(bot,actor,nullptr,decisionTime,false,true)) return;
+		if (commit) Change(State::SEARCHING_ENEMY);
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
 		Vec3 heard;
 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
@@ -759,7 +763,10 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		if (!visible && UpdateHoldAngle(bot,actor,destination,distance,desiredRange,decisionTime)) return;
 		if (visible && m_hold.Phase()!=HoldPhase::None) m_hold.Update(m_now,TVec{0,0,0},true);
 	}
-	if (visible && distance <= (m_state == State::ATTACKING ? m_profile.holdRange : m_profile.engageRange))
+	// DS-034: a target moving around holdRange flipped ATTACKING/CHASING every decision (2,768 times in playtest 3);
+	// once attacking, keep attacking a visible target for at least 0.5 s.
+	const bool attackDwell = BotConfig::Get().stateCommit == 1 && m_state == State::ATTACKING && m_now - m_stateTime < 0.5f;
+	if (visible && (attackDwell || distance <= (m_state == State::ATTACKING ? m_profile.holdRange : m_profile.engageRange)))
 	{
         UpdateAttacking(actor,destination,aim,distance,desiredRange);
     }else{
@@ -1013,7 +1020,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
         if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run);
         if (m_intent.suitMode==NANOMODE_SPEED) { WBI(suitMode,NANOMODE_DEFENSE); m_speedTravel=false; }
     }
-    const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now,m_profile.cloakApproach);
+    const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now,m_profile.cloakApproach,m_intent.linkJump && m_intent.suitMode==NANOMODE_STRENGTH);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
         if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;WBI(suitMode,NANOMODE_DEFENSE);m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
         else WBI(gait,BotGait::Run);
@@ -1313,7 +1320,8 @@ void BotBrain::ApplySuitPolicy(CPlayer& actor)
 	case SuitMode::Cloak: WBI(suitMode,NANOMODE_CLOAK); break;
 	default: WBI(suitMode,NANOMODE_DEFENSE); break;
 	}
-	if (d.mode!=SuitMode::Strength && m_intent.jump==BotJump::Strength) WBI(jump,BotJump::Normal); // no energy for it
+	// DS-033: never downgrade a link's Strength jump - a Normal jump cannot cover a +4 m link (27/49 link failures).
+	if (d.mode!=SuitMode::Strength && m_intent.jump==BotJump::Strength && !m_intent.linkJump) WBI(jump,BotJump::Normal); // no energy for it
 	m_speedTravel=d.mode==SuitMode::Speed;
 }
 

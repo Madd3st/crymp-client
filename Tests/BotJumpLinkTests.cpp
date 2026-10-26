@@ -45,7 +45,8 @@ int main()
 	// 5. Jump refused by the game (never airborne) -> NoTakeoff; landing far below b -> MissedLanding; timeout.
 	{
 		BotJumpLink L; L.Start(0, LinkMove::Jump, a, JVec{3, 0, 11});
-		L.Update(At(0, 0, 0, 10)); LinkOutput o = L.Update(At(2.5f, 0.2f, 0, 10)); assert(o.fail == LinkFail::NoTakeoff);
+		L.Update(At(0, 0, 0, 10)); LinkOutput o = L.Update(At(2.5f, 0.2f, 0, 10)); assert(o.phase == LinkPhase::Act); // DS-033: 3.5 s window
+		o = L.Update(At(4.0f, 0.2f, 0, 10)); assert(o.fail == LinkFail::NoTakeoff);
 		BotJumpLink M; M.Start(0, LinkMove::Drop, a, b);
 		M.Update(At(0, 0, 0, 10)); M.Update(At(0.2f, 0.5f, 0, 9, false));
 		M.Update(At(0.5f, 2.8f, 0, 2, true)); o = M.Update(At(1.4f, 2.8f, 0, 2, true)); assert(o.fail == LinkFail::MissedLanding);
