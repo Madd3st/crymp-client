@@ -8,7 +8,7 @@ Do not stop after a task: push, then read this mailbox again (fetch `+refs/heads
 item. If an item is blocked, write BLOCKED with the reason and move to the next one. PROGRESS every 30 min.
 Queue tonight, in order:
 1. C-112 step 1 (Shore `wb_rules_info`) and step 2 (playtest-4 preset, smoke, **do not launch the GUI**).
-2. C-112 step 3 batch on 2fee59c2 — **only if the owner's chat says overnight 15-bot runs are allowed**; else at 08:00.
+2. C-112 step 3 batch on 2fee59c2 — **allowed tonight (D-028, owner 22:36)**; further 15-bot runs tonight are allowed too when a new C- item asks for one.
 3. New claude-sprint commits that appear tonight: for each green CI head named in a new C- item, run what it asks.
 4. C-101 wake task: make the Windows task restart you when a C- item is open and the clone is idle 20 min; this is
    the reason nights get lost. Prove it with a dry-run log line.
