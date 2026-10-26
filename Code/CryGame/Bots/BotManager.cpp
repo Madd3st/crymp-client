@@ -736,6 +736,8 @@ void BotManager::MarkCommand(IConsoleCmdArgs* args)
 	WB_LOG(0, "[WarsBots] OWNER MARK t=%.3f side=%s pos=(%.2f,%.2f,%.2f) yaw=%.1f pitch=%.1f spectating=%u text=\"%s\"",
 		now, gEnv->bServer ? "server" : "client", pos.x, pos.y, pos.z, RAD2DEG(atan2f(view.x, view.y)),
 		RAD2DEG(atan2f(view.z, sqrtf(view.x * view.x + view.y * view.y))), unsigned(watched), text.c_str());
+	static int s_marks = 0;
+	CryLogAlways("$3[WarsBots] mark #%d saved", ++s_marks);   // visible confirmation for the owner (playtest 3: marks lost)
 }
 
 void BotManager::ListCommand(IConsoleCmdArgs*) { if (BotManager* self = Self()) self->List(); }

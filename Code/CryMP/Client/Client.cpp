@@ -1,3 +1,4 @@
+#include <cctype>
 #include <stdlib.h>  // atoi
 
 #include <tracy/Tracy.hpp>
@@ -157,7 +158,11 @@ void Client::OnKeyBindCmd(IConsoleCmdArgs* pArgs)
 			command += ' ';
 		}
 
-		gClient->AddKeyBind(pArgs->GetArg(1), command);
+		// Key names from the input system are lower case ("f8"); "bind F8 ..." used to never fire (WarsBots playtest 3).
+		std::string key = pArgs->GetArg(1);
+		for (char& c : key) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+
+		gClient->AddKeyBind(key, command);
 	}
 }
 
