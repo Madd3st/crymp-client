@@ -152,7 +152,10 @@ const CoverCandidate* CurrentCover(int& count)
 
 VantageMap* CurrentVantage()
 {
-	if (BotConfig::Get().vantage != 1 || !g_pGame) return nullptr;
+	// Spots serve vantage (snipers), threat scan (glances up) and high ground. Threat scan used to need vantage 1 to load
+	// them: C-098/C-108 ran threat_scan 1 + vantage 0 -> 0 GLANCE lines.
+	const BotConfig& c = BotConfig::Get();
+	if ((c.vantage != 1 && c.threatScan != 1 && c.highGround != 1) || !g_pGame) return nullptr;
 	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
 	if (!level || !level->GetLevelInfo()) return nullptr;
 	static VantageMap map; static std::string loaded; static bool tried = false;

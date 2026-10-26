@@ -77,7 +77,8 @@ private:
 	bool m_lookValid = false;
 	GoalArbiter m_arbiter;
 	float m_nextRangeSelect = 0;
-	float m_nextIdleSelect = 0;    // DS-026: idle sniper re-select, separate from the fight timer
+	float m_nextIdleSelect = 0;
+	float m_highUntil = 0, m_nextHighRoll = 0;   // wb_bot_high_ground session    // DS-026: idle sniper re-select, separate from the fight timer
 	float m_nextGlance = 0, m_glanceUntil = -1.0f; Vec3 m_glancePt = Vec3(0,0,0); // wb_bot_threat_scan
 	BotSuitPolicy m_suitPolicy;
 	void ApplySuitPolicy(CPlayer& actor);

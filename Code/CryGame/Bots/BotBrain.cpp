@@ -247,7 +247,7 @@ void BotBrain::ResetLife()
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
 	m_retreating = false;
-	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_nextIdleSelect = 0; m_aimModelInit = false; m_aimModelTarget = 0; m_suitPolicy.Reset();
+	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_nextIdleSelect = 0; m_highUntil = 0; m_nextHighRoll = 0; m_aimModelInit = false; m_aimModelTarget = 0; m_suitPolicy.Reset();
 	m_weaponSearchStarted = m_now;
 	m_nextSearch = m_now;
 	m_deadTime = 0;
@@ -671,8 +671,16 @@ bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
 	{ m_nextIdleSelect=m_now+2.0f; BotWeapons::SelectForRange(actor,WarsBots::IdleHoldRange(true)); }
 	IItem* held=actor.GetCurrentItem();
 	const char* cls=held ? held->GetEntity()->GetClass()->GetName() : "";
-	const bool sniper=map && m_traits.camper>=0.5f &&   // T-8: Marksman ~0.9, Defender ~0.6
-		(!strcmp(cls,"DSG1") || !strcmp(cls,"GaussRifle"));
+	// wb_bot_high_ground: Veteran/Elite sometimes take the height with any rifle (owner fights from roofs)
+	if (map && BotConfig::Get().highGround==1 && m_profile.skill>=BotSkill::Veteran && m_now>=m_nextHighRoll && m_now>=m_highUntil)
+	{
+		m_nextHighRoll=m_now+20.0f;
+		if (Rand01()<(m_profile.skill==BotSkill::Elite?0.45f:0.25f))
+		{ m_highUntil=m_now+70.0f; WB_LOG(2,"[WarsBots] #%d HIGH GROUND start actor=%u.",m_number,actor.GetEntityId()); }
+	}
+	const bool high=map && BotConfig::Get().highGround==1 && m_now<m_highUntil;
+	const bool sniper=high || (map && m_traits.camper>=0.5f &&   // T-8: Marksman ~0.9, Defender ~0.6
+		(!strcmp(cls,"DSG1") || !strcmp(cls,"GaussRifle")));
 	if (!sniper) { if (m_vantage.Phase()!=VantagePhase::None) m_vantage.Reset(map,m_number); return false; }
 	if (m_now<m_blackboard.damagedUntil) m_vantage.OnHit(m_now);
 	NavMeshCore* mesh=CurrentNavMesh();
@@ -709,7 +717,11 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 	m_blackboard.distance=distance;
 	// C-022: hold the best primary for this fight distance; not mid-burst, at most every 2 s (switch costs time).
 	if (BotConfig::Get().weaponRank==1 && m_now>=m_nextRangeSelect && m_now-m_combat.LastBurstRequest()>0.5f)
-	{ m_nextRangeSelect=m_now+2.0f; BotWeapons::SelectForRange(actor,distance); }
+	{
+		// wb_bot_pro_fire: a switch costs 0.6-1 s without shooting -> mid-fight only for a clear gain, at most every 4 s
+		const bool pro=BotConfig::Get().proFire==1 && visible;
+		m_nextRangeSelect=m_now+(pro?4.0f:2.0f); BotWeapons::SelectForRange(actor,distance,pro?0.3f:0.12f);
+	}
     Vec3 aim=m_combat.LastAim();
     if(m_trackedTarget!=m_combat.Target() || m_trackedSelection!=m_combat.SelectedAt()) {
         SMovementState movement;actor.GetMovementController()->GetMovementState(movement);
@@ -742,12 +754,15 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		const Vec3 away=(actor.GetEntity()->GetWorldPos()-destination).GetNormalizedSafe(FORWARD_DIRECTION);
 		WBI_MOVETO(actor.GetEntity()->GetWorldPos()+away*4.0f,aim);
 		m_intent.strafe=visible; m_intent.combat=BotCombatIntent::Aim;
+		// wb_bot_pro_fire: a player backs off shooting, not just aiming
+		if (BotConfig::Get().proFire==1 && visible && distance<=m_profile.fireRange && m_now>=std::max(m_stateTime,m_combat.SelectedAt())+m_profile.reaction)
+			m_intent.combat=BotCombatIntent::Fire;
 		WBI(suitMode,NANOMODE_DEFENSE);
 		if (!BotPaceEnabled() && !visible && m_profile.useSpeed && m_blackboard.energy>120 && m_now>=m_blackboard.damagedUntil)
 		{ WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_SPEED); m_intent.combat=BotCombatIntent::None; }
 		ExecuteIntent(actor,decisionTime); return;
 	}
-	if (BotConfig::Get().vantage==1 && m_vantage.Phase()==VantagePhase::Hold && visible && distance>20.0f && !m_combat.ShotBlocked())
+	if ((BotConfig::Get().vantage==1 || BotConfig::Get().highGround==1) && m_vantage.Phase()==VantagePhase::Hold && visible && distance>12.0f && !m_combat.ShotBlocked())
 	{
 		// owner 25.10: a sniper on its spot fights from there (elite marksmen lying down: spread x0.33) instead of
 		// running off the roof toward the target
@@ -819,6 +834,9 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
 			Vec3 away = (actor.GetEntity()->GetWorldPos()-destination).GetNormalizedSafe(FORWARD_DIRECTION);
 			WBI_MOVETO(actor.GetEntity()->GetWorldPos()+away*3.0f,aim);
 			m_intent.combat=BotCombatIntent::Aim;
+			// wb_bot_pro_fire: point blank is the moment to shoot, not to only aim while stepping back
+			if (BotConfig::Get().proFire==1 && m_now>=std::max(m_stateTime,m_combat.SelectedAt())+m_profile.reaction)
+				m_intent.combat=BotCombatIntent::Fire;
 			m_intent.strafe=true;
 		}
 		else
@@ -1039,6 +1057,9 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 			int(m_intent.suitMode),m_intent.why.suitMode,int(m_intent.jump),m_intent.why.jump,int(m_intent.gait),m_intent.why.gait,
 			m_intent.move?1:0,m_intent.why.move,m_intent.why.aim,StateName(),actor.GetEntityId());
 	m_lastSuitRequest=m_intent.suitMode;
+	// wb_bot_pro_fire: a cloaked bot that wants to fire drops cloak now (Armor) instead of waiting on the suit policy
+	if (BotConfig::Get().proFire==1 && m_intent.combat==BotCombatIntent::Fire && m_blackboard.mode==NANOMODE_CLOAK)
+	{ WBI(suitMode,NANOMODE_DEFENSE); m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now); }
 	if (m_intent.combat==BotCombatIntent::Fire && m_blackboard.mode!=NANOMODE_CLOAK)
 	{
 		IActor* target=g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(m_combat.Target());

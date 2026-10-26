@@ -213,7 +213,7 @@ float BotWeapons::HeldValue(CActor& actor, float distance)
 	return best;
 }
 
-bool BotWeapons::SelectForRange(CActor& actor, float distance)
+bool BotWeapons::SelectForRange(CActor& actor, float distance, float switchMargin)
 {
 	// C-022: among primaries with ammunition pick the best for this distance; the pistol stays a fallback that
 	// SelectAvailable already handles, so the two never fight over the current item.
@@ -226,7 +226,7 @@ bool BotWeapons::SelectForRange(CActor& actor, float distance)
 		if (currentItem && currentItem->GetEntityId() == ids[i]) current = m;
 		primary[m] = held[i]; primaryIds[m] = ids[i]; ++m;
 	}
-	const int best = BestToHold(primary, m, distance, current);
+	const int best = BestToHold(primary, m, distance, current, switchMargin);
 	if (best < 0 || best == current) return false;
 	IItem* item = Items()->GetItem(primaryIds[best]);
 	if (!item || !item->CanSelect()) return false;

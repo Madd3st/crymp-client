@@ -25,6 +25,8 @@ struct BotConfig {
  int qaSocomOnly=0;
  int botLook=0;       // C-033 look policy (sprint C-047), default OFF
  int botTurnCap=0;    // C-044 per-frame view turn-rate cap, default OFF
+ int highGround=0;    // wb_bot_high_ground (owner: nobody goes to the roofs)
+ int proFire=0;       // wb_bot_pro_fire (owner playtest 4: Elite stops shooting)
  int stateCommit=0;    // wb_bot_state_commit (DS-034)
  int netExt=-1;        // wb_net_ext: -1 auto, 0 vanilla wire, 1 force (BotNetCompat.h)
  int weaponRank=0;    // C-022 weapon value for pickup/hold, default OFF
