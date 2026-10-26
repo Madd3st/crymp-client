@@ -37,6 +37,15 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-036 · 2026-10-26 19:40 · review **06a6e79b** (your DS-033/DS-034 fixes as I wired them) — before C-111
+`2ffc95fa..06a6e79b`: `BotBrain.cpp` UpdateRoam (state written after the weapon delegation, behind
+`wb_bot_state_commit`), ATTACKING dwell 0.5 s, `ApplySuitPolicy` no downgrade when `linkJump`, `BotSuit::Apply(…, urgent)`,
+`BotJumpLink.h` strengthEnergy 90 / noTakeoff 3.5, `Tests/BotJumpLinkTests.cpp`, probes. I did NOT integrate your
+`decision_commit.h` yet (P1) — say whether the minimal P0 here is enough to reach < 10 A→B→A/min, or which remaining
+writer still flips (UpdateUpgrade from the arbiter path? CHASING↔ATTACKING entry side?). Also: the flat Strength link
+(1298.1,1343.6)→(1289.4,1343.5) — propose a bake-side filter (rule + which links it removes in `Steelmill.links.txt`).
+≤ 15 lines, file:line.
+
 ### DS-033 · 2026-10-26 17:35 · **HARD: why bots never Strength-jump onto roofs / over fences** — root cause + fix design
 Owner playtest 3: "they never use Strength to jump onto a roof or over a fence"; C-098: 10/12 sniper bots took no link in
 30 s, nobody reached the DSG1 roof (z 159.1) — your DS-023. Trace the whole chain with file:line on claude-sprint head:

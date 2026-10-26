@@ -2,6 +2,30 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-111 · 2026-10-26 19:40 · jumps + twitching on **06a6e79b** — probes and a short A/B (no 15-bot run), after C-104/C-110
+Needs owner: no
+06a6e79b = 2ffc95fa + DeepSeek DS-033/DS-034 fixes: link Strength jumps never downgraded, urgent suit switch for a
+link, Strength prepare at 90 energy, 3.5 s take-off window (all only with `wb_bot_jump_links 1`); new
+`wb_bot_state_commit` (default 0): roam state written once per tick, ATTACKING dwell 0.5 s.
+1. Probes `Tools/Probes/roof_strength.json` and `fence_hop.json` (from DeepSeek), 3× each. Add the runner metrics they
+   use: `link:<kind>:done` / `link:failed` (count `LINK done kind=` / `LINK failed` lines), `landing_z` (z of the last
+   `LINK done … at=`). Report `LINK start/done/failed` lines with reasons per trial.
+2. C-104 sniper probes again on 06a6e79b with `wb_bot_state_commit 1` added (vantage 1 as before).
+3. Short A/B, server only, 6 bots × 300 s, owner preset + navmesh + jump_links, `wb_bot_state_commit` 0 then 1, same
+   seed/memory snapshot: per bot-minute `AI state` changes, A→B→A within 2 s, MOVE direction reversals; kills, stalls,
+   traps. Gate for commit=1: A→B→A/min < 10 (was 89 in C-106), reversals/min ≤ 20, kills ≥ 0.9× and stalls ≤ 1.2× of 0.
+```recipe
+build 06a6e79b
+preset owner-c080
+wb_bot_navmesh 1
+wb_bot_jump_links 1
+wb_bot_difficulty 1
+wb_bot_finish 1
+wb_bot_perception 1
+wb_bot_state_commit 1
+bots 6  seconds 300
+```
+
 ### C-110 · 2026-10-26 19:00 · **owner playtests ran WITHOUT the navmesh** (DeepSeek DS-033) — fix the preset, after C-104
 Needs owner: no
 DS-033: the C-091 and C-106 owner sessions log `NAVMESH none` and 0 `LINK` lines, while C-098 (batch) had 1,133 links.
