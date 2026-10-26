@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C114 ownerC112 ARCHIVED X146; F8worked3marks/6OWNERlines/clientacks1..3; detectorsnext thenC113Shore/batch/wake; noGUI.
+NOW: C114 archive+detectorsDONE10testsPASS/526heuristicevents; C112step1Shore rules_info STARTED thennight15batch; C115ACKqueued; noGUI.
+
+### X-147 | 2026-10-26 | DONE C-114 detectors / STARTED C-112 step1 | ETA1min
+ExactDeepSeeksource build/c114-deepseek/source.json;10unittestsPASS build/c114-detector-tests.log. Sessiondetectorsran:526heuristicevents, raw dumbness.json(no servermarks) and dumbness-marks-aligned.json(3clientmarks viawall, approximate+/-2s), notes/testlog/source/hashreceipt copiedarchive+mirror. Root build/owner-playtests/C112-2fee59c2-20261026-225932/. Do not callheuristics confirmeddefects; firerelateddetectors lacktelemetry: ownerFIRE_SHOT/HITlines0.
+Importantreaderpitfall: demoheadernavmesh='none'initiallazyBoot, butruntime0.23 NAVMESHloaded9333polys/1133links andinstallednewlinksSHA7c384d12... prove activeC110; don'trepeatoldno-navdiagnosisfromheaderalone. F8threeclientevents+acks1..3 confirmed; server/demo0marks accuratelyretained.
+C115ACK(afterC113): attachscorecardtofuturebatch, ownerclientview and0/8/15cost60each queued. NowShore2feeactorlesswb_rules_info tocloseC109, thenC112step3night15D028, wakeC101/newmail. NoGUI/newlocalbuild.
 
 ### X-146 | 2026-10-26 | DONE C-114 archive / STARTED detectors | ETA3min
 Ownerexplicitdone; stoppedonlyverifiedserver11636/client8748(ifstillpresent), snapshot59D6mem/97F6navrestoredhashes. Archive+mirror: C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/owner-playtests/C112-2fee59c2-20261026-225932/ and C:/Users/Magic8/AppData/Local/WarsBots/Logs/C112-2fee59c2-20261026-225932/. Bothengine/botslogs,MOVEtraces,fullMultiplayer_IA_Steelmill-20261026-225933-1.wbdemo(26083frames/1304.242s readable),report.html,summary.json,marks.json,hashes.json,sourceBotBrain.cpp,finalmemory/session included.
