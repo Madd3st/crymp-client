@@ -1,6 +1,32 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-022 DONE 13:30 · DS-025 DONE 14:30 (`BEHAVIOUR_BIBLE.md`) · waiting mail · last push 14:30
+NOW: DS-025 DONE 14:30 · DS-028 DONE 15:20 (`GAME_META_RESEARCH.md`, owner research) · waiting mail · last push 15:20
+
+### DS-028 · DONE 15:20 · `Docs/Research/DeepSeek/GAME_META_RESEARCH.md` (owner research, not a mailbox item)
+Five parts, every claim tagged `[ЛОКАЛЬНО]/[ИСТОЧНИК]/[ВЫВОД]/[ПРЕДПОЛОЖЕНИЕ]`:
+1. **IA maps** (verified XML): Steelmill 207x88 m / 34 spawns / 33 guns / z136-159 / DSG1 159.1, Gauss 149.3;
+   Quarry 128x166 / 32 / 33 / z152-170; Armada 194x74 / 40 / 46 / z110-127 / **no snipers**; Outpost 86x138 / 35 / 35 /
+   z155-170. **No vehicle entities in any IA map**.
+2. **PS economy** (verified Lua): start 100 PP, kill 100 (+10/rank), TK -200, capture 100/200/300 PP, capture 15/22.5/30 s,
+   `captureRequirement=1` on shipped maps, 4+ players x2; power only from alien points 0.1125/0.1389/0.2089 per s
+   (100 energy = 4-12 min); prices (SCAR 175, DSG1 200, Gauss 600, TAC 500+5, tank 400-500+10); `level 50/100` = team
+   energy, not rank; rank = CP order in team; death tops PP to rank floor. **TAC 6000 dmg vs HQ 5000 HP = one shot**;
+   objective chain PT -> 100 energy -> TAC -> HQ. No adjacency rule: capture order is value-based, plus the per-map
+   factory table (Beach/Mesa/Shore 3 alien, Tarmac 9 factories, Crossroads/Frost/Plantation/Training proto-only).
+3. **Vehicle bots**: UT/BF use road/waypoint graph + separate driver/gunner + bail-out, not raw physics; CryEngine 2
+   gives only digital `OnAction` (`eVAI_*`), so the contract is corridor + 8-12 m lookahead + brake distance + stuck
+   reverse (2 s) + 3 m down-ray for water/edges + exit 30-50 m early. Ties to `VEHICLES.md`.
+4. **Difficulty**: CS:S `BotProfile.db` fields verified (Skill 50, ReactionTime 0.3, Teamwork 100, AttackDelay,
+   WeaponPreference); UT Skill/Accuracy/StrafingAbility/Jumpy; BF mods keep same rules. Proposes replacing our
+   0.08 s / 0.1 deg / 95 % head Elite and 0.9 s Beginner with 0.18/0.45 s, 0.45/3.5 deg, 40/0 % head, and capping
+   turn acceleration.
+5. **Steelmill hot zones C091**: 195 kills (173 bot-bot, 22 owner, 0 owner deaths) over 25.5 min. Top 20 m cells:
+   1280,1340 = 41 (spawn 95/119 + FY71); 1260,1340 = 27 (7 owner kills); 1280,1320 = 14; 1240,1340 = 12;
+   1280,1300 = 11. Owner walked 1236 m, z135.8-148.2, never took the DSG1 roof. Bot-bot median kill distance
+   11.8 m (p90 17.9), owner 12.9 m (p90 32.5) -> the gap is 10-30 m fighting, not sniping. Hypothesis: spawn+pickup
+   cell causes the 41-kill cluster; verify with a split-spawn run.
+Limits: CryMP forum/Discord/YouTube and Valve wiki were unreachable, `websearch` cancelled, so community map meta is
+`[ПРЕДПОЛОЖЕНИЕ]`; only crymp.net, the crymp-client repo and the CS:S BotProfile are cited as web sources.
 
 ### DS-025 · DONE 14:30 · `Docs/Research/DeepSeek/BEHAVIOUR_BIBLE.md`
 Russian owner-readable: 35 situations in groups spawn/weapon, movement/vertical, contact 5/20/50/80 m, cover/roof/
