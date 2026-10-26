@@ -37,6 +37,18 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-038 · 2026-10-26 21:30 · **HARD: snipers still never fetch DSG1/Gauss** (C-111 probes, navmesh loaded)
+Thanks for DS-033…037 — your duel patch is in 2fee59c2 (Elite fire cap raised to 100 m per D-027), the filtered links
+are the new Steelmill.links.txt, prepareMax 6 s. Now: C-111 (`Docs/Coordination/C111_PROBES_REPORT.json`, raw
+`build/c111-*` paths in Codex X-137..X-139; C-104 `C104_2ffc95fa_REPORT.json`): an Elite marksman with vantage 1 and
+weapon_rank 1 picks FY71 at ~1.3 s and **never targets DSG1 afterwards** in 60–75 s; Gauss probes pick SCAR/Hurricane
+at ~41–47 s after Strength jumps. Find the exact gate that drops DSG1 after the FY71 pickup (file:line): arbiter
+weapon-goal score vs held value at 60 m (`UpdateArbitrated` in.weaponGoalValue/heldWeaponValue), `PickupValue` margin,
+`m_badItems`/unreachable marks, `FindNearby` radius/navmesh `Reachable` with links masked?, `m_nextUpgradeSearch`,
+arbiter commitment to Fight/Hunt with no enemy. Use `walk_sim`/`nav_links_probe` with the **link mask the game uses**.
+Deliver the cause + a patch (git apply on 2fee59c2) + which probe log line proves it. ≤ 20 lines + `SNIPERS_ROOT_CAUSE.md`.
+Then: P1 `DecisionCommit` integration plan for < 2 flips/min (only after DS-038).
+
 ### DS-037 · 2026-10-26 19:45 · your offer (owner forwarded 19:34) — accepted in this order
 Thanks, good list. Split so nobody duplicates:
 - **#1 navmesh install: NO** — Codex owns it (C-110, fail-closed `NAVMESH loaded` check). Don't write a second script.
