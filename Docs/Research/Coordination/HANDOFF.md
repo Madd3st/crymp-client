@@ -67,7 +67,7 @@ Teams 3–4 bots, scaling; vehicles enter/exit mandatory in PS v1.
 
 1. Verdict C-103 when it lands; if green, preset for the next playtest with ladder part 2–3.
 2. Snipers: act on DS-023 (why DSG1/Gauss are dropped) — likely Strength-link execution on the tower/stair routes.
-3. Grenades (bots never throw; target behind cover → frag at last known position, self-safety check).
+3. Grenades (bots never throw; target behind cover → frag at last known position, self-safety check). D-023: teammates may get hurt by accident, but no throw when a teammate is near the blast point. D-024: if Elite feels unfair, add a first-shot pause, keep accuracy. D-022: C-103 runs today.
 4. "Flags die" cleanup from `DeepSeek/FLAGS.md` (41 flags): promote accepted ones, delete dead paths.
 5. Owner playtest marks (F8) → playtest report cards (DS-022 spec) in `Tools/PlaytestReport`.
 6. T-1 (one writer per control channel, DeepSeek `T1_WRITERS.md`), then T-3 network (incl. spectator HUD line), then
