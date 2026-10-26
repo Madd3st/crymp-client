@@ -109,6 +109,8 @@ try{
  for($repeat=1;$repeat -le $spec.repeat;$repeat++){
   if($repeat -eq 1 -and $FirstTrace){$trace=(Resolve-Path -LiteralPath $FirstTrace).Path}else{$trace=Invoke-ProbeProcess ('repeat-'+$repeat) $true}
   $m=Metrics-FromTrace $trace;$assertions=@()
+  foreach($a in $spec.assert){foreach($key in @($a.metric,$a.other)){if($key -like 'kills:*' -and -not $m.Contains($key)){$m[$key]=0}}}
+
   foreach($a in $spec.assert){
    $exists=$m.Contains($a.metric);$value=if($exists){$m[$a.metric]}elseif($a.metric -like 'kills:*'){0}else{$null};$pass=$false
    switch($a.op){
@@ -124,7 +126,7 @@ try{
 }catch{$failure=$_.Exception.Message}finally{
  Restore-ProbeMemory
  $medians=@{};$keys=@($results|ForEach-Object{$_.metrics.Keys}|Sort-Object -Unique)
- foreach($key in $keys){$v=@($results|ForEach-Object{if($_.metrics.Contains($key)){$_.metrics[$key]}}|Sort-Object);if($v.Count){$medians[$key]=$v[[int][math]::Floor(($v.Count-1)/2)]}}
+ foreach($key in $keys){$v=@($results|ForEach-Object{if($_.metrics.Contains($key)){$_.metrics[$key]}}|Sort-Object);if($v.Count){$mid=[int][math]::Floor($v.Count/2);$medians[$key]=if($v.Count%2){$v[$mid]}else{([double]$v[$mid-1]+[double]$v[$mid])/2}}}
  $pass=($null -eq $failure -and $results.Count -eq $spec.repeat -and @($results|Where-Object{-not $_.pass}).Count -eq 0)
  $restoredHashes=@($memoryManifest|ForEach-Object{@{name=$_.name;sha256=(Get-FileHash (Join-Path $memory $_.name)).Hash;expected=$_.sha256}})
  @{memory_after=$restoredHashes;schema='warsbots-probe-result/1';id=$spec.id;source=$manifest.sha;server_sha256=$manifest.server;recipe=$expected;results=$results;reused_first_trace=$FirstTrace;medians=$medians;pass=$pass;error=$failure;memory_restored=$true;seed='native random_device, setup only is fixed'}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $out 'probe-result.json')
