@@ -6,6 +6,7 @@
 #include "CryGame/Bots/BotGeometryExport.h"
 #include "version.h"
 #include "CryGame/Bots/BotCombat.h"
+#include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotMatch.h"
 #include "CryGame/Bots/BotSpectator.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
@@ -104,7 +105,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->AddCommand("wb_teleport",TeleportCommand,0,"wb_teleport <botNumber> x y z: manual owned live bot relocation; local IA only");
 	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
     console->AddCommand("wb_qa_time_scale",QATimeScaleCommand,0,"Diagnostic only:1..8, password-protected local dedicated IA/no humans; resets on level end");
-    console->AddCommand("wb_geom_export",GeometryExportCommand,0,"Offline local IA/no actors: static collision OBJ + spawn/item JSON; optional path.obj");
+    console->AddCommand("wb_geom_export",GeometryExportCommand,0,"Offline local IA or PowerStruggle/no actors: static collision OBJ + spawn/item JSON; optional path.obj and play-area box x0 y0 x1 y1");
 	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
 	console->AddCommand("wb_nav_audit",NavAuditCommand,0,"Local IA/no actors: build export-only graph using knee variant; stop resets to ordinary graph");
     console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
@@ -232,6 +233,11 @@ bool BotManager::CanRunLocalIA() const
 	return CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, false);
 }
 
+bool BotManager::CanRunLocalExport() const
+{
+	return CryMPEngineAdapter::LocalExportGate(m_framework, m_levelReady, m_config.gateOpen, true);
+}
+
 int BotManager::MaxBots() const
 {
 	return clamp_tpl(m_config.maxBots, 1, kHardLimit);
@@ -314,7 +320,9 @@ BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyl
 	}
 	// Default rotation through the six styles so a full roster never moves in lockstep.
 	const BotStyle chosenStyle = style ? *style : BotStyle((number - 1) % int(BotStyle::Count));
-	return AddWith(position, BotProfile::Make(chosenStyle, skill), number, startAI);
+	BotProfile profile=BotProfile::Make(chosenStyle, skill);
+	if (BotConfig::Get().difficulty==1) ApplyDifficulty(profile); // DS-014 ladder; a restored roster keeps its profile
+	return AddWith(position, profile, number, startAI);
 }
 
 BotInstance* BotManager::AddWith(const Vec3* position, const BotProfile& profile, int number, bool startAI)
@@ -825,10 +833,13 @@ void BotManager::GeometryExportCommand(IConsoleCmdArgs* args)
 {
     BotManager* self=Self();CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
     CGameRules::TPlayers humans;if(rules)rules->GetPlayers(humans);
-    if(!self || !gEnv->bServer || !self->CanRunLocalIA() || self->Count()!=0 || !humans.empty())
-    {WB_LOG(0,"[WarsBots] GEOM export refused: offline local IA/no bots or real players required");return;}
-    if(!args || args->GetArgCount()>2){WB_LOG(0,"[WarsBots] Usage: wb_geom_export [path.obj]");return;}
-    ExportLevelGeometry(args->GetArgCount()==2?args->GetArg(1):nullptr);
+    if(!self || !gEnv->bServer || !self->CanRunLocalExport() || self->Count()!=0 || !humans.empty())
+    {WB_LOG(0,"[WarsBots] GEOM export refused: offline local IA or PowerStruggle (sv_bind 127.0.0.1, sv_lanonly 1, gate opt-in)/no bots or real players required");return;}
+    const int argc=args?args->GetArgCount():0;
+    if(!args || (argc!=1 && argc!=2 && argc!=5 && argc!=6)){WB_LOG(0,"[WarsBots] Usage: wb_geom_export [path.obj] [x0 y0 x1 y1]");return;}
+    float region[4];const bool hasRegion=argc>=5;const int r0=argc==6?2:1;
+    if(hasRegion)for(int i=0;i<4;++i){char* end=nullptr;const char* tok=args->GetArg(r0+i);region[i]=std::strtof(tok,&end);if(!end || end==tok || *end){WB_LOG(0,"[WarsBots] GEOM export: bad region number %s",args->GetArg(r0+i));return;}}
+    ExportLevelGeometry(argc==2||argc==6?args->GetArg(1):nullptr,hasRegion?region:nullptr);
 }
 
 void BotManager::NavExportCommand(IConsoleCmdArgs* args)

@@ -36,7 +36,14 @@ struct BotConfig {
  int weaponHandling=0; // owner 25.10: LAM laser on (off in cloak) + zoom at distance (BotWeaponHandling.h), default OFF
  int nameProfile=0;
  int vantage=0;
- int tactics=0;        // fragmovie patterns: hold angles from cover, jump-strafe, loot after kills (BotTactics.h), default OFF        // owner 25.10: snipers (Marksman/Defender with DSG1/Gauss) hold baked sniper spots (BotVantage.h), default OFF    // owner 25.10: bot names show skill/style, e.g. "WarsBot_02 [Normal/Assault]", default OFF    // C-036 off-mesh drop/jump/Strength links + executor (BotJumpLink.h), needs meshes_links, default OFF    // P0 Detour navmesh paths/reachability (Tools/RecastBake meshes), default OFF
+ int tactics=0;        // fragmovie patterns: hold angles from cover, jump-strafe, loot after kills (BotTactics.h), default OFF
+ int pathProgress=0;   // weapon-goal progress by remaining navmesh path, not straight distance (snipers), default OFF
+ int jumpSanity=1;     // no random travel Strength hops, no obstacle jumps on navmesh paths (owner 25.10), default ON (D-016)
+ int moveTraceHz=4;    // C-084 client MOVE TRACE rate for the local human (1..30), default 4
+ int spectatorAim=0;   // DS-013 FP spectator of a bot: camera uses the same aim as the tracer, no second smoothing, default OFF
+ int difficulty=0;     // DS-014 difficulty ladder (BotDifficulty.h): reaction/turn/aim/head/fire gate/range/senses per skill, default OFF
+ int finish=0;         // DS-015 finish the damaged target, no instant switch on a one-scan LOS loss, default OFF
+ int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);
  void Unregister(IConsole& console);

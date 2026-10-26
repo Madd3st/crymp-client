@@ -61,6 +61,9 @@ class BotPerception {
 public:
 	explicit BotPerception(const PerceptionParams& p = PerceptionParams()) : m_p(p) {}
 	void SetReactionTime(float s) { m_p.reactionTime = s > 0.05f ? s : 0.05f; }
+	// wb_bot_difficulty: per-skill senses (defaults 110 deg / 80 m / x1 = unchanged)
+	void SetSenses(float coneDeg, float sight, float hearScale)
+	{ m_p.coneDeg = coneDeg; m_p.maxSight = sight > 15.f ? sight : 15.f; m_p.gunshotHear = 60.f * hearScale; m_p.silencedHear = 12.f * hearScale; m_p.sprintHear = 12.f * hearScale; }
 	void Reset() { m_n = 0; m_lastNow = -1.f; }
 
 	void BeginTick(const ObserverState& o)

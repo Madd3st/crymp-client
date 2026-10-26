@@ -6,7 +6,7 @@
 #include <cmath>
 #include <cstring>
 namespace WarsBots {
-bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic)
+bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle)
 {
     if (!gEnv || !gEnv->pConsole) return false;
     ICVar* bind = gEnv->pConsole->GetCVar("sv_bind");
@@ -16,7 +16,8 @@ bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady,
     const bool rules = framework && framework->GetIGameRulesSystem()->GetCurrentGameRules();
     const bool allowed = framework && gEnv->bServer && gEnv->bMultiplayer && !gEnv->bEditor &&
         levelReady && loaded && rules && optIn==1 && bind && !strcmp(bind->GetString(),"127.0.0.1") &&
-        lan && lan->GetIVal()==1 && mode && !strcmp(mode->GetString(),"InstantAction");
+        lan && lan->GetIVal()==1 && mode && (!strcmp(mode->GetString(),"InstantAction") ||
+        (allowPowerStruggle && !strcmp(mode->GetString(),"PowerStruggle")));
     if (!allowed && diagnostic)
         WB_LOG(0, "[WarsBots/CryMP] GATE closed: server=%d multiplayer=%d editor=%d levelReady=%d loaded=%d rules=%d optIn=%d bind=%s lan=%d mode=%s.",
             gEnv->bServer, gEnv->bMultiplayer, gEnv->bEditor, levelReady, loaded, rules, optIn,

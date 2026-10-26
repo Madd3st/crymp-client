@@ -129,7 +129,7 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
     if(intent.move){
         const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(intent.stance):2.5f);
         const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
-        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo,intent.meshPath);
+        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo,intent.meshPath,intent.arrive);
     }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
 	state.blocked=intent.move && !accepted;
 	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,intent.stance);

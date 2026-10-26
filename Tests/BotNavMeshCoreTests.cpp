@@ -1,6 +1,7 @@
 // Offline test of the Detour runtime on a real baked mesh (Tools/RecastBake output, MSET v1).
 // Usage: BotNavMeshCoreTests <Steelmill.navmesh>   (skips with exit 0 when no file is given)
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotCorners.h"
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -36,6 +37,54 @@ int main(int argc, char** argv)
 	// A point far outside the level is off the mesh.
 	const float off[3] = {0, 0, 0};
 	assert(!m.FindPath(s289, off, path, &why));
+	// Wall clearance: open floor in the middle of the spawn route has none nearby; the c068 stair trap
+	// (1305.98, 1353.56, 144.36) sits on the eroded edge, and the inward direction stays on the mesh.
+	{
+		float d = 0, dir[2] = {0, 0};
+		assert(!m.WallClearance(off, 0.5f, d, dir));
+		const float trap[3] = {1305.98f, 1353.56f, 144.36f};
+		if (m.WallClearance(trap, 0.5f, d, dir))
+		{
+			std::printf("trap clearance %.3f dir (%.2f, %.2f)\n", d, dir[0], dir[1]);
+			assert(d < 0.5f && (dir[0] != 0 || dir[1] != 0));
+			const float in[3] = {trap[0] + dir[0] * 0.15f, trap[1] + dir[1] * 0.15f, trap[2]};
+			float s2[3]; assert(m.Project(in, s2, 0.05f, 0.5f, 0.5f));
+			// The c068 turn: from the stair mouth the next corner east (1308.98, 1353.38) is behind the railing end,
+			// so it must not be skipped to; a point straight down the walkway is.
+			const float east[3] = {1308.98f, 1353.38f, 144.38f};
+			assert(!m.RayClear(trap, east));
+			const float w0[3] = {1307.5f, 1352.95f, 144.4f}, w1[3] = {1311.5f, 1352.95f, 144.4f};
+			assert(m.RayClear(w0, w1));
+			// The real first corner of a path out of the mouth hugs the railing end; pushing it inward gains clearance.
+			const float goal[3] = {1312.0f, 1353.0f, 144.4f};
+			std::vector<float> p2; const char* w = nullptr;
+			assert(m.FindPath(trap, goal, p2, &w) && p2.size() >= 6);
+			float cd = 0, cdir[2] = {0, 0};
+			assert(m.WallClearance(&p2[0], 0.15f, cd, cdir) && cd < 0.15f && (cdir[0] != 0 || cdir[1] != 0));
+			const float moved[3] = {p2[0] + cdir[0] * (0.15f - cd), p2[1] + cdir[1] * (0.15f - cd), p2[2]};
+			float cd2 = 0, cdir2[2]; assert(m.WallClearance(moved, 0.5f, cd2, cdir2) && cd2 > cd + 0.1f);
+			std::printf("mouth corner (%.2f, %.2f) clearance %.2f -> %.2f\n", p2[0], p2[1], cd, cd2);
+			// corners v2 on the real path down the stair: the mouth corner moves outside the turn and stays on the mesh
+			const float top[3] = {1306.1f, 1356.5f, 146.0f};
+			std::vector<float> p3; assert(m.FindPath(top, goal, p3, &w) && p3.size() >= 6);
+			const float pa[2] = {top[0], top[1]}, pc[2] = {p3[0], p3[1]}, pn[2] = {p3[3], p3[4]};
+			const CornerPlan cp = OffsetCorner(pa, pc, pn);
+			const float q[3] = {cp.x, cp.y, p3[2]}; float s3[3];
+			assert(cp.moved && m.Project(q, s3, 0.2f, 0.6f, 0.6f) && std::hypot(s3[0] - q[0], s3[1] - q[1]) < 0.05f);
+			assert(std::hypot(cp.x - 1306.57f, cp.y - 1353.54f) > 0.45f);
+			std::printf("stair corner (%.2f, %.2f) turn %.0f -> aim (%.2f, %.2f), next (%.2f, %.2f)\n", p3[0], p3[1], cp.turnDeg, cp.x, cp.y, p3[3], p3[4]);
+			// the leg from the aim point to the next corner clears the railing end post by more than the capsule
+			{
+				float nx2 = p3[3], ny2 = p3[4];
+				if (p3.size() >= 9) { const float c2[2] = {p3[3], p3[4]}, n2[2] = {p3[6], p3[7]}; const CornerPlan cp2 = OffsetCorner(pc, c2, n2); nx2 = cp2.x; ny2 = cp2.y; }
+				const float ex = nx2 - cp.x, ey = ny2 - cp.y, L2 = ex * ex + ey * ey;
+				float t = ((1306.57f - cp.x) * ex + (1353.54f - cp.y) * ey) / L2; t = t < 0 ? 0 : (t > 1 ? 1 : t);
+				const float dpost = std::hypot(cp.x + ex * t - 1306.57f, cp.y + ey * t - 1353.54f);
+				std::printf("  leg clearance to the post %.2f\n", dpost);
+				assert(dpost > 0.4f);
+			}
+		}
+	}
 	// C-036: a mesh with off-mesh links (meshes_links) + its links.txt: walk-only by default, kinds switch on by mask.
 	if (argc >= 4)
 	{

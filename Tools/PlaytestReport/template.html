@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Разбор плейтеста</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--fg:#1d2329;--muted:#5b6670;--line:#d7dce1;--accent:#c2410c;
+ --stuck:#dc2626;--dither:#7c3aed;--flip:#0891b2;--strength:#d97706;--trap:#111827;
+ --font:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111518;--card:#1a1f24;--fg:#e6eaee;--muted:#9aa5ae;--line:#2e3943;--accent:#fb923c;--trap:#e5e7eb;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111518;--card:#1a1f24;--fg:#e6eaee;--muted:#9aa5ae;--line:#2e3943;--accent:#fb923c;--trap:#e5e7eb;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:22px;margin:0 0 4px}
+h2{font-size:16px;margin:28px 0 10px}
+p{margin:0;color:var(--muted);line-height:1.5}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.card b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.card span{color:var(--muted);font-size:12px}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--muted);font-weight:600;position:sticky;top:0;background:var(--card);cursor:pointer}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.sel{outline:2px solid var(--accent);outline-offset:-2px}
+tbody tr:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+canvas{width:100%;aspect-ratio:1/1;background:var(--card);border:1px solid var(--line);border-radius:8px;display:block}
+.filters{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0}
+label{display:flex;gap:6px;align-items:center;cursor:pointer;font-size:13px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.mono{font-family:var(--mono);font-size:12px}
+.side{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;max-height:620px;overflow:auto}
+.side h3{font-size:14px;margin:0 0 6px}
+.side .ev{padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.side .ev:hover{color:var(--accent)}
+select{font:inherit;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+.bar{height:6px;border-radius:3px;background:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+ <h1 id="title">Разбор плейтеста</h1>
+ <p id="sub"></p>
+ <div class="cards" id="cards"></div>
+
+ <h2>Где тупили</h2>
+ <div class="filters" id="filters"></div>
+ <div class="filters"><label>Бот <select id="botSel"><option value="">все</option></select></label></div>
+ <div class="grid">
+  <canvas id="map" width="900" height="900" aria-label="Карта путей ботов и проблемных мест"></canvas>
+  <div class="side" id="side"></div>
+ </div>
+
+ <h2>Боты</h2>
+ <div class="wrap"><table id="bots"><thead></thead><tbody></tbody></table></div>
+
+ <h2>Прицел: ошибка наведения по 10-секундным окнам</h2>
+ <p>Угол между взглядом бота и целью (демо, 20 Гц). Медиана — обычная точность, p95 — худшие моменты: развороты и недовороты.</p>
+ <canvas id="aim" width="1100" height="220" style="aspect-ratio:auto;height:220px;margin-top:8px" aria-label="Ошибка прицела во времени"></canvas>
+ <p class="mono" id="aimTxt" style="margin-top:6px"></p>
+
+ <h2>Прыжки в силе: какое правило попросило</h2>
+ <div class="wrap"><table id="rules"><thead><tr><th>Правило (функция BotBrain)</th><th>Строка</th><th class="num">Раз</th></tr></thead><tbody></tbody></table></div>
+ <p class="mono" id="extra" style="margin-top:10px"></p>
+
+ <h2>Все события</h2>
+ <div class="wrap" style="max-height:520px"><table id="events"><thead><tr><th>Время</th><th>Видео</th><th>Бот</th><th>Что</th><th>Где</th><th>Подробно</th></tr></thead><tbody></tbody></table></div>
+</main>
+<script>
+const D=/*DATA*/null;
+const TYPES={stuck:['Застрял','--stuck'],dither:['Мечется','--dither'],flip:['Меняет цель','--flip'],strength:['Прыжок в силе','--strength'],trap:['Аварийный выход','--trap']};
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt=t=>{t=Math.round(t);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');};
+const nm=b=>D.names[b]||b;
+document.getElementById('title').textContent='Разбор плейтеста · '+D.title;
+document.getElementById('sub').textContent=`${fmt(D.duration)} игры · ${D.rows.length} ботов`+(D.demoStart?` · сервер стартовал ${D.demoStart}`:'')+(D.videos.length?` · видео: ${D.videos.map(v=>v.name+' ('+v.start+')').join(', ')}`:'');
+const cnt=t=>D.events.filter(e=>e.type===t).length;
+const sniperBots=D.rows.filter(r=>r.sniper>0).length;
+const cards=[[cnt('stuck'),'застреваний ≥ 3 с'],[cnt('dither'),'эпизодов метания'],[cnt('flip'),'частых смен цели'],[cnt('strength'),'прыжков в силе'],[cnt('trap'),'аварийных выходов'],[sniperBots+' / '+D.rows.length,'ботов хоть раз со снайперкой'],[D.vantage.length,'событий снайперских точек']];
+document.getElementById('cards').innerHTML=cards.map(c=>`<div class="card"><b>${c[0]}</b><span>${c[1]}</span></div>`).join('');
+const on={stuck:true,dither:true,flip:true,strength:true,trap:true};
+document.getElementById('filters').innerHTML=Object.entries(TYPES).map(([k,v])=>`<label><input type="checkbox" data-k="${k}" checked><span class="dot" style="background:var(${v[1]})"></span>${v[0]} (${cnt(k)})</label>`).join('');
+document.querySelectorAll('#filters input').forEach(i=>i.onchange=()=>{on[i.dataset.k]=i.checked;draw();side();});
+const sel=document.getElementById('botSel');
+D.rows.forEach(r=>{const o=document.createElement('option');o.value=r.bot;o.textContent=r.name;sel.appendChild(o);});
+sel.onchange=()=>{draw();side();};
+// map bounds
+let xs=[],ys=[];Object.values(D.paths).forEach(p=>p.forEach(q=>{xs.push(q[0]);ys.push(q[1]);}));
+xs.sort((a,b)=>a-b);ys.sort((a,b)=>a-b);const pc=(a,q)=>a[Math.floor(q*(a.length-1))];
+const x0=pc(xs,0.005)-8,x1=pc(xs,0.995)+8,y0=pc(ys,0.005)-8,y1=pc(ys,0.995)+8,span=Math.max(x1-x0,y1-y0);
+const cv=document.getElementById('map'),g=cv.getContext('2d');
+const X=x=>(x-x0)/span*cv.width, Y=y=>cv.height-(y-y0)/span*cv.height;
+let focus=null;
+function visible(e){return on[e.type]&&(!sel.value||e.bot===sel.value);}
+function draw(){
+ g.clearRect(0,0,cv.width,cv.height);
+ const muted=css('--muted');
+ for(const [b,p] of Object.entries(D.paths)){
+  if(sel.value&&b!==sel.value)continue;
+  g.strokeStyle=muted;g.globalAlpha=sel.value?0.6:0.18;g.lineWidth=1;g.beginPath();
+  p.forEach((q,i)=>{const px=X(q[0]),py=Y(q[1]);if(i)g.lineTo(px,py);else g.moveTo(px,py);});g.stroke();
+ }
+ g.globalAlpha=1;
+ for(const e of D.events){if(!visible(e)||!e.pos)continue;
+  g.fillStyle=css(TYPES[e.type][1]);g.beginPath();g.arc(X(e.pos[0]),Y(e.pos[1]),e===focus?9:4.5,0,7);g.fill();
+  if(e===focus){g.strokeStyle=css('--accent');g.lineWidth=2;g.stroke();}
+ }
+ g.fillStyle=muted;g.font='12px IBM Plex Mono, monospace';g.fillText(`x ${x0.toFixed(0)}…${(x0+span).toFixed(0)}  y ${y0.toFixed(0)}…${(y0+span).toFixed(0)}  (север вверх)`,8,cv.height-8);
+}
+function side(){
+ // hotspots: cluster visible events within 3 m
+ const ev=D.events.filter(e=>visible(e)&&e.pos);const used=new Set();const cl=[];
+ ev.forEach((e,i)=>{if(used.has(i))return;const m=[e];used.add(i);ev.forEach((f,j)=>{if(!used.has(j)&&Math.hypot(f.pos[0]-e.pos[0],f.pos[1]-e.pos[1])<3&&Math.abs(f.pos[2]-e.pos[2])<2.5){m.push(f);used.add(j);}});cl.push(m);});
+ cl.sort((a,b)=>b.length-a.length);
+ document.getElementById('side').innerHTML='<h3>Горячие точки (в радиусе 3 м)</h3>'+cl.slice(0,25).map((m,i)=>{const e=m[0];const types=[...new Set(m.map(x=>TYPES[x.type][0]))].join(', ');
+  return `<div class="ev" data-i="${D.events.indexOf(e)}"><b>${m.length}×</b> ${types}<br><span class="mono">(${e.pos.map(v=>v.toFixed(1)).join(', ')}) · ${[...new Set(m.map(x=>nm(x.bot)))].slice(0,3).join(', ')}${e.video?' · '+e.video:''}</span></div>`;}).join('');
+ document.querySelectorAll('#side .ev').forEach(d=>d.onclick=()=>{focus=D.events[+d.dataset.i];draw();});
+}
+// bots table
+const cols=[['name','Бот'],['skill','Уровень'],['style','Стиль'],['kd','У / С'],['acc','Точность %'],['shots','Выстрелов'],['hits','Попаданий'],['weapons','В руках (доля времени)'],['pickups','Подборов'],['sniper','Со снайперкой, с'],['stuck','Застрял'],['dither','Метался'],['flip','Цель'],['strength','Сила'],['trap','Авар.']];
+const anyShots=D.rows.some(r=>r.shots>0);
+if(!anyShots){const i=cols.findIndex(c=>c[0]==='acc');cols.splice(i,2);}
+const bt=document.getElementById('bots');
+bt.tHead.innerHTML='<tr>'+cols.map(c=>`<th>${c[1]}</th>`).join('')+'</tr>';
+bt.tBodies[0].innerHTML=D.rows.map(r=>'<tr data-b="'+r.bot+'">'+cols.map(([k])=>{let v=r[k];if(k==='kd')v=v[0]+' / '+v[1];if(k==='acc')v=v.toFixed(1);const num=typeof r[k]==='number';return `<td class="${num?'num':''}">${v}</td>`;}).join('')+'</tr>').join('');
+bt.querySelectorAll('tbody tr').forEach(tr=>tr.onclick=()=>{sel.value=tr.dataset.b;draw();side();});
+document.getElementById('rules').tBodies[0].innerHTML=D.strengthRules.map(r=>`<tr><td>${r[0]}</td><td class="num">${r[1]||'—'}</td><td class="num">${r[2]}</td></tr>`).join('')||'<tr><td colspan="3">нет</td></tr>';
+document.getElementById('extra').textContent=`Прыжки по связям навмеша: ${JSON.stringify(D.links)}, неудачных: ${JSON.stringify(D.linkFail)}. ${D.demoAim||''}`;
+const et=document.getElementById('events');
+et.tBodies[0].innerHTML=D.events.map((e,i)=>`<tr data-i="${i}"><td class="mono">${fmt(e.t)}</td><td class="mono">${e.video||''}</td><td>${nm(e.bot)}</td><td><span class="dot" style="background:var(${TYPES[e.type][1]})"></span> ${TYPES[e.type][0]}</td><td class="mono">${e.pos?e.pos.map(v=>v.toFixed(1)).join(', '):''}</td><td>${e.detail}</td></tr>`).join('');
+et.querySelectorAll('tbody tr').forEach(tr=>tr.onclick=()=>{focus=D.events[+tr.dataset.i];draw();cv.scrollIntoView({behavior:'smooth',block:'center'});});
+function drawAim(){const c=document.getElementById('aim'),q=c.getContext('2d');q.clearRect(0,0,c.width,c.height);const A=D.aim;if(!A.length){document.getElementById('aimTxt').textContent='нет данных';return;}
+ const tm=Math.max(...A.map(a=>a[0])),ym=60;const px=t=>30+t/tm*(c.width-40),py=v=>c.height-20-Math.min(v,ym)/ym*(c.height-30);
+ q.strokeStyle=css('--line');q.fillStyle=css('--muted');q.font='11px IBM Plex Mono, monospace';[0,15,30,45,60].forEach(v=>{q.beginPath();q.moveTo(30,py(v));q.lineTo(c.width-10,py(v));q.stroke();q.fillText(v+'°',2,py(v)+4);});
+ [[2,css('--muted')],[1,css('--accent')]].forEach(([k,col])=>{q.strokeStyle=col;q.lineWidth=k===1?2:1;q.beginPath();A.forEach((a,i)=>{const x=px(a[0]),y=py(a[k]);i?q.lineTo(x,y):q.moveTo(x,y);});q.stroke();});
+ const med=A.map(a=>a[1]).sort((x,y)=>x-y),p95=A.map(a=>a[2]).sort((x,y)=>x-y);
+ document.getElementById('aimTxt').textContent=`медиана по окнам: ${med[Math.floor(med.length/2)].toFixed(1)}° (оранжевая), p95: ${p95[Math.floor(p95.length/2)].toFixed(0)}° (серая), окон ${A.length}`;}
+draw();side();drawAim();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+</script>
+</body>
+</html>
