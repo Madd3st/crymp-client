@@ -460,7 +460,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 			if ((item->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared2D() <= 4.0f && fabs_tpl(item->GetWorldPos().z - actor.GetEntity()->GetWorldPos().z) <= 2.2f)
 			{
 				WBI(move,false);
-				if (BotWeapons::PickUp(actor, m_weaponTarget)) { m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass(); m_weaponTarget = 0; Change(State::SEARCHING_ENEMY); }
+				if (BotWeapons::PickUp(actor, m_weaponTarget, PickupRange())) { m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass(); m_weaponTarget = 0; Change(State::SEARCHING_ENEMY); }
 				else m_weaponTarget = 0;
 			}
 			else { const Vec3 step=Steer(actor.GetEntity()->GetWorldPos(),item->GetWorldPos()); WBI_MOVETO(step,step+Vec3(0,0,1.2f)); TravelGait((item->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength()); }
@@ -481,7 +481,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 }
 
 float BotBrain::PickupRange() const
-{ return BotConfig::Get().vantage==1 && m_traits.camper>=0.7f ? 60.0f : 20.0f; }
+{ return WarsBots::IdleHoldRange(BotConfig::Get().vantage==1 && m_traits.camper>=0.7f); }
 
 EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
 {
@@ -550,7 +550,7 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 			if (delta.GetLengthSquared2D() <= 4.0f && fabs_tpl(delta.z) <= 2.2f)
 			{
 				WBI(move,false);
-				if (BotWeapons::PickUp(actor, m_upgradeTarget)) m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass();
+				if (BotWeapons::PickUp(actor, m_upgradeTarget, PickupRange())) m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass();
 				else MarkBadItem(m_upgradeTarget);
 				m_upgradeTarget = 0;
 			}
@@ -659,6 +659,10 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
 {
 	VantageMap* map=CurrentVantage();
+	// C-104 (C-100 probes, C-098 "no sniper ever held"): vantage below starts only with a DSG1/Gauss CURRENT, but every
+	// pickup and fight re-selected the SCAR/FY71 at 20 m -> deadlock. Idle sniper-minded bots re-judge at 60 m.
+	if (BotConfig::Get().weaponRank==1 && PickupRange()>30.0f && m_now>=m_nextRangeSelect)
+	{ m_nextRangeSelect=m_now+2.0f; BotWeapons::SelectForRange(actor,PickupRange()); }
 	IItem* held=actor.GetCurrentItem();
 	const char* cls=held ? held->GetEntity()->GetClass()->GetName() : "";
 	const bool sniper=map && m_traits.camper>=0.5f &&   // T-8: Marksman ~0.9, Defender ~0.6

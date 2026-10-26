@@ -148,7 +148,7 @@ bool BotWeapons::AvailableForPickup(CActor& actor, EntityId id)
 		static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId());
 }
 
-bool BotWeapons::PickUp(CActor& actor, EntityId id)
+bool BotWeapons::PickUp(CActor& actor, EntityId id, float holdRange)
 {
 	IItem* item = Items()->GetItem(id);
 	if (!Suitable(item) || item->GetOwnerId() || !static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId())) return false;
@@ -163,7 +163,7 @@ bool BotWeapons::PickUp(CActor& actor, EntityId id)
     // Bots use IItem::PickUp directly, bypassing CActor's eGE_ItemPickedUp wrapper.
     if(acquired)g_pGame->GetBotManager().Demo().Pickup(actor.GetEntityId(),id);
 	// Switch to what we just picked up (SelectAvailable prefers primaries anyway).
-	if (acquired && BotConfig::Get().weaponRank == 1) SelectForRange(actor, 20.0f); // C-022: best primary, not the first one
+	if (acquired && BotConfig::Get().weaponRank == 1) SelectForRange(actor, holdRange); // C-022: best primary, not the first one; C-104: a sniper keeps the DSG1/Gauss
 	return acquired && SelectAvailable(actor);
 }
 

@@ -37,6 +37,25 @@ int main()
 		assert(PickupValue("SMG", rifle, 2) < 0.01f);
 		assert(PickupCost(10.f, PickupValue("SMG", rifle, 2)) > 1e8f);
 	}
+	// 6. C-100 oracle: a sniper-minded bot that owns SCAR + DSG1 holds the DSG1 while idle (vantage needs it in hand);
+	//    a normal bot keeps the SCAR; in a 15 m fight the sniper switches to the SCAR like a player.
+	{
+		HeldWeapon inv[] = {{"SCAR", true}, {"DSG1", true}};
+		assert(BestToHold(inv, 2, IdleHoldRange(true), 0) == 1);
+		assert(BestToHold(inv, 2, IdleHoldRange(false), 0) == 0);
+		assert(BestToHold(inv, 2, 15.f, 1) == 0);
+		HeldWeapon gauss[] = {{"FY71", true}, {"GaussRifle", true}};
+		assert(BestToHold(gauss, 2, IdleHoldRange(true), 0) == 1);
+		assert(IsSniperRifle("DSG1") && IsSniperRifle("GaussRifle") && !IsSniperRifle("SCAR") && !IsSniperRifle(nullptr));
+	}
+	// 7. Sniper-minded pickup: a nearby FY71 first is fine (a gun now), but after it the DSG1 is still worth the walk
+	//    at sniper range and not at the normal 20 m (c066: rifles were never fetched).
+	{
+		const float r = IdleHoldRange(true);
+		HeldWeapon fy[] = {{"SOCOM", true}, {"FY71", true}};
+		assert(PickupValue("DSG1", fy, 2, r) > 0.2f);
+		assert(PickupValue("DSG1", fy, 2, IdleHoldRange(false)) < 0.01f);
+	}
 	std::puts("BotWeaponRankTests OK");
 	return 0;
 }

@@ -100,4 +100,13 @@ inline float PickupCost(float distance, float value, float metresPerValue = 40.f
 	return distance - value * metresPerValue;
 }
 
+// Distance a bot judges "which gun to hold" at when it is NOT fighting (roam, after a pickup). C-100 probes: a
+// Marksman that picked up a DSG1 kept the SCAR/FY71 in hand (SelectForRange(20 m) after every pickup), and the
+// vantage spots only start when a sniper rifle is CURRENT -> no sniper ever held a roof. A sniper-minded bot
+// (wb_bot_vantage + camper trait) thinks at sniper range while idle; in a fight the real distance decides.
+inline float IdleHoldRange(bool sniperMind) { return sniperMind ? 60.f : 20.f; }
+
+inline bool IsSniperRifle(const char* cls)
+{ return cls && (!std::strcmp(cls, "DSG1") || !std::strcmp(cls, "GaussRifle")); }
+
 } // namespace WarsBots
