@@ -31,7 +31,7 @@ Order: finish C-097 (C-093 verdict) → C-098 → C-091 preset → this → C-10
 Needs owner: no
 Verdicts: **C-093 PASS** (X-108; difficulty + finish accepted as playtest candidates). **C-098 FAIL** (X-111) accepted —
 threat-scan had a ray-budget bug (fixed in c6f36c28, logs `#n GLANCE`), sniper reach is under analysis (DS), no rerun today.
-Preset now: build **40bd9f60** (CI artifact if green; = 7179ec36 behaviour + QoL console commands, threat scan stays OFF)
+Preset now: build **40bd9f60** (its CI run was cancelled by the newer push — build it locally, one build; = 7179ec36 behaviour + QoL console commands, threat scan stays OFF)
 with the C-093 recipe for the owner:
 ```recipe
 build 40bd9f60
