@@ -1,5 +1,10 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C111 ec46 DONE gatesFAIL: OFF->ON kills39->34 (<90%), stalls11->9,traps0.
+ABA/min81.79->6.91, reversals/min13.29->15.58; no promotion.
+Docs/Coordination/C111_STATE_COMPARISON.json and C111_PROBES_REPORT.json contain evidence.
+Memory/nav restored, no gamesactive; C107 thenC109 next.
+
 C110 DONE: owner presets install manifest-verified data and require NAVMESH loaded before client.
 C106 old owner run had NAVMESH none; C108/C104 loaded9333polys/1133links.
 60s proof and negative gates PASS; evidence build/c110-navmesh-proof/.

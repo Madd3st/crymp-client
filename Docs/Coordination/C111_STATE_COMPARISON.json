@@ -1,0 +1,288 @@
+{
+  "off": {
+    "source": "ec46f1a33a6db5b2d768e91b7e333910c6f66d5e",
+    "root": "build\\c111-commit0-ec46f1a3",
+    "per_bot": {
+      "1": {
+        "alive_seconds": 270.20700000000005,
+        "state_writes": 425,
+        "state_changes": 424,
+        "aba_2s": 357,
+        "reversals": 22,
+        "alive_bot_minutes": 4.503450000000001,
+        "state_writes_per_bot_minute": 94.37209250685584,
+        "state_changes_per_bot_minute": 94.15004052448677,
+        "aba_2s_per_bot_minute": 79.2725577057589,
+        "reversals_per_bot_minute": 4.885143612119596
+      },
+      "2": {
+        "alive_seconds": 270.33,
+        "state_writes": 603,
+        "state_changes": 602,
+        "aba_2s": 502,
+        "reversals": 54,
+        "alive_bot_minutes": 4.5055,
+        "state_writes_per_bot_minute": 133.8364221507047,
+        "state_changes_per_bot_minute": 133.6144712018644,
+        "aba_2s_per_bot_minute": 111.41937631783377,
+        "reversals_per_bot_minute": 11.985351237376541
+      },
+      "3": {
+        "alive_seconds": 285.30100000000004,
+        "state_writes": 396,
+        "state_changes": 395,
+        "aba_2s": 312,
+        "reversals": 47,
+        "alive_bot_minutes": 4.755016666666667,
+        "state_writes_per_bot_minute": 83.28046519290153,
+        "state_changes_per_bot_minute": 83.07016098786895,
+        "aba_2s_per_bot_minute": 65.61491197016484,
+        "reversals_per_bot_minute": 9.884297636531242
+      },
+      "4": {
+        "alive_seconds": 280.373,
+        "state_writes": 443,
+        "state_changes": 442,
+        "aba_2s": 335,
+        "reversals": 86,
+        "alive_bot_minutes": 4.672883333333333,
+        "state_writes_per_bot_minute": 94.8022812467677,
+        "state_changes_per_bot_minute": 94.58828061189915,
+        "aba_2s_per_bot_minute": 71.6902126809643,
+        "reversals_per_bot_minute": 18.40405459869531
+      },
+      "5": {
+        "alive_seconds": 245.66099999999997,
+        "state_writes": 412,
+        "state_changes": 411,
+        "aba_2s": 305,
+        "reversals": 83,
+        "alive_bot_minutes": 4.0943499999999995,
+        "state_writes_per_bot_minute": 100.62647306654293,
+        "state_changes_per_bot_minute": 100.3822340542455,
+        "aba_2s_per_bot_minute": 74.49289875071746,
+        "reversals_per_bot_minute": 20.271838020687046
+      },
+      "6": {
+        "alive_seconds": 255.42,
+        "state_writes": 491,
+        "state_changes": 490,
+        "aba_2s": 380,
+        "reversals": 64,
+        "alive_bot_minutes": 4.257,
+        "state_writes_per_bot_minute": 115.33944092083628,
+        "state_changes_per_bot_minute": 115.10453370918488,
+        "aba_2s_per_bot_minute": 89.26474042753114,
+        "reversals_per_bot_minute": 15.034061545689454
+      }
+    },
+    "live_bot_minutes": 26.7882,
+    "totals": {
+      "state_writes": 2770,
+      "state_changes": 2764,
+      "aba_2s": 2191,
+      "reversals": 356,
+      "state_writes_per_bot_minute": 103.40373746649644,
+      "state_changes_per_bot_minute": 103.17975825176757,
+      "aba_2s_per_bot_minute": 81.78974324516018,
+      "reversals_per_bot_minute": 13.289433407246474
+    },
+    "kills": 39,
+    "stalls": 11,
+    "traps": 0,
+    "memory_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+    "roster": [
+      {
+        "number": 1,
+        "style": "auto",
+        "skill": "beginner"
+      },
+      {
+        "number": 2,
+        "style": "auto",
+        "skill": "normal"
+      },
+      {
+        "number": 3,
+        "style": "auto",
+        "skill": "veteran"
+      },
+      {
+        "number": 4,
+        "style": "auto",
+        "skill": "elite"
+      },
+      {
+        "number": 5,
+        "style": "auto",
+        "skill": "beginner"
+      },
+      {
+        "number": 6,
+        "style": "auto",
+        "skill": "normal"
+      }
+    ],
+    "runtime_complete": true,
+    "seconds": 300.65,
+    "navmesh_loaded": "0.21 [WarsBots] NAVMESH loaded Multiplayer/IA/Steelmill: 9333 polys, 924 parts, 1133 links, 2135456 bytes.",
+    "definitions": {
+      "aba": "consecutive distinct A-B-A states within 2s by bot slot",
+      "reversal": "consecutive alive MOVE actual XY velocities >=0.5m/s, angle>=135deg, sample gap0.1..1s; resets at stop/death",
+      "denominator": "alive seconds integrated from server demo F_ALIVE /60; not wall 6*300"
+    },
+    "rng": "native independent random_device; numeric seed unavailable, NOT matched RNG"
+  },
+  "on": {
+    "source": "ec46f1a33a6db5b2d768e91b7e333910c6f66d5e",
+    "root": "build\\c111-commit1-ec46f1a3",
+    "per_bot": {
+      "1": {
+        "alive_seconds": 254.70100000000005,
+        "state_writes": 124,
+        "state_changes": 123,
+        "aba_2s": 20,
+        "reversals": 51,
+        "alive_bot_minutes": 4.245016666666667,
+        "state_writes_per_bot_minute": 29.21072159119909,
+        "state_changes_per_bot_minute": 28.97515125578619,
+        "aba_2s_per_bot_minute": 4.711406708257917,
+        "reversals_per_bot_minute": 12.014087106057689
+      },
+      "2": {
+        "alive_seconds": 284.58599999999996,
+        "state_writes": 104,
+        "state_changes": 103,
+        "aba_2s": 25,
+        "reversals": 45,
+        "alive_bot_minutes": 4.743099999999999,
+        "state_writes_per_bot_minute": 21.92658809639266,
+        "state_changes_per_bot_minute": 21.71575551854273,
+        "aba_2s_per_bot_minute": 5.270814446248235,
+        "reversals_per_bot_minute": 9.487466003246823
+      },
+      "3": {
+        "alive_seconds": 274.57500000000005,
+        "state_writes": 158,
+        "state_changes": 157,
+        "aba_2s": 56,
+        "reversals": 81,
+        "alive_bot_minutes": 4.576250000000001,
+        "state_writes_per_bot_minute": 34.52608576891559,
+        "state_changes_per_bot_minute": 34.30756623873258,
+        "aba_2s_per_bot_minute": 12.237093690248564,
+        "reversals_per_bot_minute": 17.700081944823815
+      },
+      "4": {
+        "alive_seconds": 282.985,
+        "state_writes": 128,
+        "state_changes": 127,
+        "aba_2s": 44,
+        "reversals": 69,
+        "alive_bot_minutes": 4.7164166666666665,
+        "state_writes_per_bot_minute": 27.13924766330371,
+        "state_changes_per_bot_minute": 26.92722229093415,
+        "aba_2s_per_bot_minute": 9.32911638426065,
+        "reversals_per_bot_minute": 14.629750693499656
+      },
+      "5": {
+        "alive_seconds": 276.466,
+        "state_writes": 84,
+        "state_changes": 83,
+        "aba_2s": 23,
+        "reversals": 80,
+        "alive_bot_minutes": 4.607766666666667,
+        "state_writes_per_bot_minute": 18.230089775957985,
+        "state_changes_per_bot_minute": 18.01306489767277,
+        "aba_2s_per_bot_minute": 4.991572200559924,
+        "reversals_per_bot_minute": 17.361990262817127
+      },
+      "6": {
+        "alive_seconds": 259.57300000000004,
+        "state_writes": 108,
+        "state_changes": 107,
+        "aba_2s": 20,
+        "reversals": 98,
+        "alive_bot_minutes": 4.326216666666667,
+        "state_writes_per_bot_minute": 24.964075616493236,
+        "state_changes_per_bot_minute": 24.732926768192375,
+        "aba_2s_per_bot_minute": 4.622976966017267,
+        "reversals_per_bot_minute": 22.652587133484605
+      }
+    },
+    "live_bot_minutes": 27.21476666666667,
+    "totals": {
+      "state_writes": 706,
+      "state_changes": 700,
+      "aba_2s": 188,
+      "reversals": 424,
+      "state_writes_per_bot_minute": 25.94179875386279,
+      "state_changes_per_bot_minute": 25.721330209212397,
+      "aba_2s_per_bot_minute": 6.908014399045616,
+      "reversals_per_bot_minute": 15.579777155294368
+    },
+    "kills": 34,
+    "stalls": 9,
+    "traps": 0,
+    "memory_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+    "roster": [
+      {
+        "number": 1,
+        "style": "auto",
+        "skill": "beginner"
+      },
+      {
+        "number": 2,
+        "style": "auto",
+        "skill": "normal"
+      },
+      {
+        "number": 3,
+        "style": "auto",
+        "skill": "veteran"
+      },
+      {
+        "number": 4,
+        "style": "auto",
+        "skill": "elite"
+      },
+      {
+        "number": 5,
+        "style": "auto",
+        "skill": "beginner"
+      },
+      {
+        "number": 6,
+        "style": "auto",
+        "skill": "normal"
+      }
+    ],
+    "runtime_complete": true,
+    "seconds": 300.23,
+    "navmesh_loaded": "0.22 [WarsBots] NAVMESH loaded Multiplayer/IA/Steelmill: 9333 polys, 924 parts, 1133 links, 2135456 bytes.",
+    "definitions": {
+      "aba": "consecutive distinct A-B-A states within 2s by bot slot",
+      "reversal": "consecutive alive MOVE actual XY velocities >=0.5m/s, angle>=135deg, sample gap0.1..1s; resets at stop/death",
+      "denominator": "alive seconds integrated from server demo F_ALIVE /60; not wall 6*300"
+    },
+    "rng": "native independent random_device; numeric seed unavailable, NOT matched RNG"
+  },
+  "gates": {
+    "no_crash": true,
+    "aba_lt10": true,
+    "reversals_le20": true,
+    "kills_ge90pct": false,
+    "stalls_le120pct": true,
+    "same_memory": true,
+    "same_roster": true,
+    "navmesh_loaded": true
+  },
+  "pass_all": false,
+  "effective_delta": {
+    "wb_bot_state_commit": [
+      0,
+      1
+    ]
+  },
+  "initial_nav_note": "Driver verified C093 seed97F6 by SHA256 before each run; memory1BEC matched in runs.json. Owner59D6 restored after each."
+}
