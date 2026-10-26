@@ -1,4 +1,16 @@
-# WarsBots for CryMP: status, 2026-10-25
+# WarsBots for CryMP: QA status, 2026-10-27
+
+Night checkpoint X146-X157 (details TO_CLAUDE and Docs/Coordination/*SCORECARD.json):
+- OwnerC112 archived26083frames; F8 works3clientmarks/acks, server/demo0marks; detectors10testsPASS, 526heuristicevents, owner firetelemetry absent.
+- C109 closed by2fee native rules_info: PowerStruggle,2teams tan/black,6groups Shore.
+- Night15:2fee302kills/27stalls/0traps gatesFAIL; fd12=287/29/0 gatesPASS;0fa9 IA293/30/0 gatesPASS, EliteNoFire9.513/min.
+- 0fa9 PS0 bothmaps CRASH atsecondactor,1/6 registered, channel0 ClReviveCycle/typePointer/team/nullhooks bugs; noPSrepeat untilnewClaudeSHA.
+- 0fa9 snipers DSG1/Gauss0/3both despitevantage1/rank1/arbiter0. No gamecode written or wholebuild promotion.
+- C101 Windows wake registered every10min/idle20, explicitexistingthread; dryrun+actualskip ticks proven, realresume not exercised; C090heartbeat untouched.
+- C115 CPU0/8/15windows and10clientreviews published; full nativeframe/snap/ClReload/FP proof absent -> instrumentation needed.
+- No GUI/publicserver/installEXEchanges. PreserveforeignRecording.ps1 C08C... unchanged; owner59D6mem/97F6nav restored afterruns.
+- Next C113explicitidlefallback duel+roof3x once/newestgreen, thenfreshmail watch. No duplicate15/build/successful checks.
+
 
 C114 ownerC112 DONE/archived:26083frames, F8 confirmed3marks+3clientACK, server/demo0marks.
 Archive build/owner-playtests/C112-2fee59c2-20261026-225932/ and LOCALAPPDATA/WarsBots/Logs/samelabel.

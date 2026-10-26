@@ -1,0 +1,225 @@
+{
+  "source": "0fa9c1cb5e7a13534dc6c7f23adc5507cdcb1bee",
+  "fixtures": {
+    "sniper_reach_dsg1": {
+      "trials": [
+        {
+          "repeat": 1,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 1,
+            "link:drop:done": 0,
+            "link:jump:done": 1,
+            "link:strength:done": 0,
+            "landing_z": 135.99,
+            "pickup:FY71": 1.3399999999999999,
+            "pickup:SCAR": 33.37
+          },
+          "sniper_select": [],
+          "vantage_travel": 0,
+          "vantage_hold": 0,
+          "last_path": [
+            "0.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "3.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "29.37 [WarsBots] #1 weapon 98 unreachable; skipping it.",
+            "29.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "33.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5."
+          ],
+          "link_lines": [
+            "43.11 [WarsBots] #1 LINK start kind=jump a=(1292.65,1352.37,137.05) b=(1288.74,1352.29,137.43) energy=117 actor=65501.",
+            "45.04 [WarsBots] #1 LINK done kind=jump at=(1289.53,1352.35,135.99) actor=65501.",
+            "54.59 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=125 actor=65501.",
+            "56.93 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1228.48,1372.06,136.00) -> fail noted actor=65501.",
+            "58.40 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=67 actor=65501."
+          ]
+        },
+        {
+          "repeat": 2,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 1,
+            "link:drop:done": 0,
+            "link:jump:done": 1,
+            "link:strength:done": 2,
+            "landing_z": 141.94,
+            "pickup:FY71": 1.41,
+            "pickup:SCAR": 23.470000000000002
+          },
+          "sniper_select": [],
+          "vantage_travel": 0,
+          "vantage_hold": 0,
+          "last_path": [
+            "0.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "3.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "19.26 [WarsBots] #1 weapon 98 unreachable; skipping it.",
+            "19.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "23.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5."
+          ],
+          "link_lines": [
+            "32.74 [WarsBots] #1 LINK start kind=jump a=(1292.65,1352.37,137.05) b=(1288.74,1352.29,137.43) energy=113 actor=65501.",
+            "34.33 [WarsBots] #1 LINK done kind=jump at=(1289.45,1352.21,136.00) actor=65501.",
+            "44.00 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=101 actor=65501.",
+            "48.11 [WarsBots] #1 LINK done kind=strength at=(1230.46,1372.80,139.08) actor=65501.",
+            "48.21 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=73 actor=65501.",
+            "54.02 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.00,1373.69,139.13) -> fail noted actor=65501.",
+            "54.12 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=127 actor=65501.",
+            "58.86 [WarsBots] #1 LINK done kind=strength at=(1228.98,1365.40,141.94) actor=65501."
+          ]
+        },
+        {
+          "repeat": 3,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 2,
+            "link:drop:done": 0,
+            "link:jump:done": 1,
+            "link:strength:done": 1,
+            "landing_z": 139.1,
+            "pickup:FY71": 1.3,
+            "pickup:SCAR": 23.34
+          },
+          "sniper_select": [],
+          "vantage_travel": 0,
+          "vantage_hold": 0,
+          "last_path": [
+            "0.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "3.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "19.46 [WarsBots] #1 weapon 98 unreachable; skipping it.",
+            "19.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "23.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5."
+          ],
+          "link_lines": [
+            "32.54 [WarsBots] #1 LINK start kind=jump a=(1292.65,1352.37,137.05) b=(1288.74,1352.29,137.43) energy=111 actor=65501.",
+            "34.12 [WarsBots] #1 LINK done kind=jump at=(1289.46,1352.16,135.99) actor=65501.",
+            "43.73 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=82 actor=65501.",
+            "47.57 [WarsBots] #1 LINK done kind=strength at=(1230.64,1372.87,139.10) actor=65501.",
+            "47.68 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=37 actor=65501.",
+            "53.70 [WarsBots] #1 LINK failed kind=strength reason=no_energy at=(1229.65,1372.74,139.13) actor=65501.",
+            "53.81 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=83 actor=65501.",
+            "59.99 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.64,1377.27,139.13) -> fail noted actor=65501."
+          ]
+        }
+      ],
+      "pass_all": false,
+      "memory_restored": true
+    },
+    "sniper_reach_gauss": {
+      "trials": [
+        {
+          "repeat": 1,
+          "metrics": {
+            "unreachable": 2,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 3,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 139.11,
+            "pickup:SCAR": 49.82
+          },
+          "sniper_select": [],
+          "vantage_travel": 0,
+          "vantage_hold": 0,
+          "last_path": [
+            "27.65 [WarsBots] #1 weapon 263 unreachable; skipping it.",
+            "27.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "43.34 [WarsBots] #1 weapon 280 unreachable; skipping it.",
+            "43.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=6.",
+            "49.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=6."
+          ],
+          "link_lines": [
+            "8.50 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=69 actor=65501.",
+            "13.28 [WarsBots] #1 LINK done kind=strength at=(1230.91,1372.76,139.11) actor=65501.",
+            "13.40 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=33 actor=65501.",
+            "19.50 [WarsBots] #1 LINK failed kind=strength reason=no_energy at=(1229.83,1372.70,139.13) actor=65501.",
+            "19.63 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=80 actor=65501.",
+            "25.72 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.24,1375.27,139.13) -> fail noted actor=65501.",
+            "25.98 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=131 actor=65501.",
+            "32.09 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1229.22,1364.53,136.00) -> fail noted actor=65501."
+          ]
+        },
+        {
+          "repeat": 2,
+          "metrics": {
+            "unreachable": 2,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 3,
+            "link:drop:done": 1,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 136,
+            "pickup:Hurricane": 41.809999999999995,
+            "pickup:SCAR": 45
+          },
+          "sniper_select": [],
+          "vantage_travel": 0,
+          "vantage_hold": 0,
+          "last_path": [
+            "27.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "35.20 [WarsBots] #1 weapon 280 unreachable; skipping it.",
+            "35.31 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=6.",
+            "41.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=6.",
+            "45.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=6."
+          ],
+          "link_lines": [
+            "8.52 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=79 actor=65501.",
+            "12.55 [WarsBots] #1 LINK done kind=strength at=(1230.23,1373.08,139.12) actor=65501.",
+            "12.67 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=35 actor=65501.",
+            "18.76 [WarsBots] #1 LINK failed kind=strength reason=no_energy at=(1229.81,1373.23,139.13) actor=65501.",
+            "18.89 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=82 actor=65501.",
+            "24.99 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.09,1375.49,139.13) -> fail noted actor=65501.",
+            "25.20 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=135 actor=65501.",
+            "31.41 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.49,1374.98,139.13) -> fail noted actor=65501.",
+            "35.20 [WarsBots] #1 LINK start kind=drop a=(1229.74,1372.60,139.14) b=(1229.74,1369.09,136.04) energy=61 actor=65501.",
+            "37.99 [WarsBots] #1 LINK done kind=drop at=(1229.79,1368.71,136.00) actor=65501."
+          ]
+        },
+        {
+          "repeat": 3,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 4,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 139.12,
+            "pickup:SCAR": 54.769999999999996
+          },
+          "sniper_select": [],
+          "vantage_travel": 0,
+          "vantage_hold": 0,
+          "last_path": [
+            "0.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=5.",
+            "53.37 [WarsBots] #1 weapon 263 unreachable; skipping it.",
+            "53.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=7.",
+            "56.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=7."
+          ],
+          "link_lines": [
+            "8.11 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=72 actor=65501.",
+            "13.36 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1228.48,1372.06,136.00) -> fail noted actor=65501.",
+            "15.40 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=28 actor=65501.",
+            "21.41 [WarsBots] #1 LINK failed kind=strength reason=no_energy at=(1236.54,1372.79,136.00) actor=65501.",
+            "21.52 [WarsBots] #1 LINK start kind=strength a=(1236.33,1372.61,136.09) b=(1229.40,1372.76,139.14) energy=87 actor=65501.",
+            "26.61 [WarsBots] #1 LINK done kind=strength at=(1229.65,1372.85,139.12) actor=65501.",
+            "26.73 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=69 actor=65501.",
+            "33.05 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.55,1374.71,139.13) -> fail noted actor=65501.",
+            "33.41 [WarsBots] #1 LINK start kind=strength a=(1229.74,1372.60,139.14) b=(1229.74,1365.49,141.99) energy=118 actor=65501.",
+            "39.98 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1229.14,1365.55,136.00) -> fail noted actor=65501."
+          ]
+        }
+      ],
+      "pass_all": false,
+      "memory_restored": true
+    }
+  }
+}
