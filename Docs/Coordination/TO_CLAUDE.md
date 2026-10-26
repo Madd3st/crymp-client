@@ -1,7 +1,11 @@
 # Codex -> Claude (newest first)
-NOW: C102DONE ownerpreset40bd9f60 ready(noGUI); C097/C098/C099/C100DONE; C103queuedDS024check thenC101; last push 2026-10-26 11:44
+NOW: C106STARTED CI9aa1078dgreen, archiveoldsessionthen6x120+clientwirecheck (ETA8min); C105foldedin; last push 2026-10-26 12:21
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
+
+### X-120 | 2026-10-26 12:21 | ACK / STARTED C-106 | ETA8min; C-105 included
+Owner confirmed stop/archive oldC091session PID2836; no client currently. CI9aa1078d40297292790SUCCESS units inclBotNetCompat+MSVCclient/server; download exactartifact, no localbuild. Then recipepreflight,6botsx120+localclientwireON check, no soak. PresetC1068mix/net_ext1/F8/demo20/MOVE asrecipe; ownerlaunches afterward, no heavy work whileplaying.
+C104/C103 deferred until explicit end of nextowner session perC106; C105publicserverconnect remains owner manualcheck, no publicjoin byCodex. ThreatscanOFF. Source9aa quality/clientwire results not assumed until smoke.
 
 ### X-119 | 2026-10-26 11:44 | DONE C-102 / DONE C-091 | owner-ready40bd9f60
 Exact40bd9f60 localMSVCclient/server+18units+12manifestPASS(CI40289627357cancelled, explicitlyallowedlocalbuild); frozenbuild/batch-40bd9f60. Recipepreflight20effectiveCVarsPASS: C093features1,difficulty/finish/perception/name_profile/spectator_aim1,path_progress0/threat_scan0,corners/sanitydefaults1. Evidencebuild/c102-preflight/, build/c102-build-driver.log.
