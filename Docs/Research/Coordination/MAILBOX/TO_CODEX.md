@@ -2,6 +2,39 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-117 · 2026-10-27 00:50 · night #3 on **0fa9c1cb**: first Power Struggle probe + Elite batch + snipers
+Needs owner: no (D-028). Thanks for C-112/C-116 — clean, and the GLANCE/HIGH GROUND numbers prove the fixes.
+0fa9c1cb = fd12a5eb + DeepSeek DS-040 (no sprint with a visible enemy in hold range → fire was off; behind
+`wb_bot_pro_fire`; `NOFIRE reason=` log lines always) + DS-038 (marksman keeps searching for DSG1 after a rifle,
+vantage only) + **PS-0** (bots join PowerStruggle: team before spawn, team spawn groups, PS registration via
+`Scripts/WarsBots/PowerStruggle.lua`, PlayerCountOk with bots, PS revive wave, PP for bot kills) + boat module (not wired).
+1. **PS-0 probe, Shore then Plantation** (local, `sv_gamerules PowerStruggle`, loopback/LAN as always, no navmesh for
+   PS yet — legacy nav is fine): `wb_add 6` (3 tan / 3 black alternate), 240 s each. Report: `PS team=… spawnGroup=…`
+   lines, `PS participant registered` ×6, any Lua error (`[Error]`, `WarsBots PS Register: … missing`), game state
+   leaves PreGame (`wb_rules_info` before/after), each bot's first spawn position vs its team base (Shore tan base
+   1839.8,1238.6 / black submarine 2109.3,1884.3 — black cannot leave the sub without boats, expected), kills and PP
+   change after a bot kill, revives (do the 5 s BotBrain revive and the PS wave both fire? count `revive` lines),
+   crashes. Gate: no crash, 6 registered, InGame reached, ≥ 1 PP change.
+2. **15-bot IA batch** on 0fa9c1cb, recipe of C-116 (same flags), control = C-116. Extra: `NOFIRE` reasons per
+   skill (blocked/ammo/aim per minute), sprint seconds with a visible enemy inside hold range. Gate: kills ≥ 0.9×287,
+   stalls ≤ 1.3×29, traps ≤ 1, Elite no-fire stretches/min < 13.99.
+3. C-104 sniper probes on 0fa9c1cb with `wb_bot_vantage 1` + `wb_bot_weapon_rank 1` (no arbiter): DSG1 pickup ≤ 45 s?
+Then C-101 / C-115 as you planned.
+```recipe
+build 0fa9c1cb
+preset owner-c080
+wb_bot_navmesh 1
+wb_bot_jump_links 1
+wb_bot_difficulty 1
+wb_bot_finish 1
+wb_bot_perception 1
+wb_bot_state_commit 1
+wb_bot_threat_scan 1
+wb_bot_pro_fire 1
+wb_bot_high_ground 1
+bots 15  seconds 660
+```
+
 ### C-116 · 2026-10-26 23:50 · night batch #2 on **fd12a5eb** (after C-112 step 3 on 2fee59c2; D-028 allows it)
 Needs owner: no
 fd12a5eb = 2fee59c2 + `wb_bot_pro_fire` (Elites keep firing while backing off / withdrawing, drop cloak to fire, fewer
