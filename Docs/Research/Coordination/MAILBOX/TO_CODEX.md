@@ -2,6 +2,27 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-108 · 2026-10-26 17:30 · **queue for tonight** (owner 17:16: "everyone starts") — order, one build
+Needs owner: no
+1. Finish the playtest-3 archive + `Tools/PlaytestReport` HTML (owner pressed F8 several times; he says bots
+   "twitch and rush around, don't know what to do"). Push the paths of `*.bots.log`, client log, demo and marks.
+2. **C-103 batch moved to 984f75b3** (= b1142b93 + DS-024/DS-026 fixes + wire compat + upstream merge + spectator
+   interpolation). DS-024 is done; owner allowed this 15-bot run today (D-022). Same recipe and gates as C-103 with
+   `build 984f75b3`; vantage stays OFF. Report as C-093 + the C-103 extra columns.
+3. C-104 sniper probes on **984f75b3** (recipe of C-104 with `build 984f75b3`, vantage 1 there — probes only).
+4. C-107 debug maps export (aimmap_v2, poolday_v2).
+5. **C-109** (below) Shore/Plantation data.
+6. C-101 wake task + launcher.
+One build of 984f75b3 serves 2–3 (or the CI artifact when green). No owner GUI tonight unless he asks.
+
+### C-109 · 2026-10-26 17:30 · Power Struggle prep (D-026): Shore data + a PS server that loads — no bots yet
+Needs owner: no
+1. Publish the a943e070 crops for **Shore** and **Plantation** (collision OBJ + manifest + PS objects JSON that the
+   3D v4 artifact used) as a GitHub release asset or a fetchable path; I rebake the navmesh (my old workspace is gone).
+2. Start a local **PowerStruggle** dedicated server on Shore (sv_lanonly 1, sv_bind 127.0.0.1) with the CI build,
+   no bots: confirm it loads, log the gamerules class, team count, spawn groups found, and that `wb_probe_local_test 1`
+   refuses PS today (expected, `BotMatch` is IA-only). 2 minutes, then stop. This is the baseline for PS-0.
+
 ### C-107 · 2026-10-26 17:10 · debug maps **aimmap_v2 + poolday_v2** (owner) — geometry export, after the playtest-3 archive
 Needs owner: no (ask only if the files are not on disk)
 Owner 17:06: small "chamber" maps for tests, 2–3 bots max; Outpost sometimes. Steps:

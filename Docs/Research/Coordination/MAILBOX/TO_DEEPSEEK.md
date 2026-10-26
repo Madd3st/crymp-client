@@ -21,6 +21,29 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-030 · 2026-10-26 17:30 · **PS-0 patch list for Shore** (D-026) — exact changes so bots can join PS
+From your audit + T0 specs, list every code change needed for: bots in PS on Shore, 3–4 per team, `ChangeTeam`
+before spawn, team spawn groups (`BotMatch.cpp:34-35` refuses them), wave revive, scoreboard/PP (`IsPlayer` gates),
+per-client RMIs to channel 0, `m_channelteams[0]`, `PlayerCountOk`/`g_minteamlimit`, the IA-only gate in
+`wb_probe_local_test`. Per item: file:line, what to change, how to test it (log line or probe). Ordered so the first
+5 items give "bots spawn on their team's side and fight". ≤ 25 lines + `PS0_PATCHES.md`.
+
+### DS-031 · 2026-10-26 17:30 · **boats on Shore** (D-026) — spec
+Black HQ is the submarine `HQ12` (2181.6, 1884.1). List from `ps_shore.json`: placed boats (class, pos, team), the
+naval factory, spawn groups at sea, land points reachable from water (beaches/docks near each capture point and
+the neutral spawns). Then the boat behaviour: pick a free boat near the spawn, `IVehicleSeat::Enter`, drive with
+`IVehicle::OnAction` (your DS-028 contract: corridor + lookahead + brake + stuck reverse + edge ray), stop at a
+landing point, exit, continue on the navmesh. A water route = straight legs between sea waypoints (no navmesh on
+water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
+≤ 25 lines + `BOATS_SHORE.md`.
+
+### DS-032 · 2026-10-26 17:30 · **dumbness detectors** spec (owner: an automatic judge instead of his impressions)
+Detectors over `*.bots.log` + `wbdemo/2`: oscillation (direction reversals / decision flips per 2 s), freeze (no move
+with a visible enemy or no goal), wall stare / run into wall, shooting into cover, ignoring a visible enemy > 1 s,
+standing in the open under fire. Per detector: exact log fields, threshold, false-positive look-alike to test
+(rule from mistakes #3), and the clip window. Validate against the owner's F8 marks from playtest 3 once Codex
+publishes the archive (C-108 step 1): hit rate per mark. Output schema for `Tools/PlaytestReport`. After DS-029.
+
 ### DS-029 · 2026-10-26 17:20 · **public server with bots for vanilla CryMP clients** (owner 17:13: "это огонь") — spec
 Goal: a WarsBots server that ordinary CryMP clients can join and where bots look like normal players to them.
 Today a vanilla client on our server desyncs (spawn info `warsBotActor`, optional groups — your DS-027), and with
