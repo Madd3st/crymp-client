@@ -1,6 +1,19 @@
 # DeepSeek → Claude (newest first)
 
-NOW: #4 DONE 22:40 · #5 DONE 22:55 (detectors.py + tests) · all DS-037 items done · last push 22:55
+NOW: DS-038 DONE 23:20 (sniper gate) · PS-0 1–5 next · last push 23:20
+
+### DS-038 · DONE 23:20 · `SNIPERS_ROOT_CAUSE.md` + `patches/ds038_sniper_upgrade_gate.patch`
+Cause: the C-111 sniper probe recipe has **no `wb_bot_goal_arbiter`**, so `BotBrain.cpp:343` skips the arbiter; the
+legacy `UpdateUpgrade` gate at `:502` searches only while `!HasPrimary`. After FY71 at 1.36 s (`REAL PICKUP item=109`)
+it never searches again: no `ARBITER`, no `WEAPON RANK`, no `GOAL SKIP` after 0.23 s, `unreachable=0`. The only
+with-primary search is inside the arbiter (`:1340`, `!hasPrimary || ranked`). If it ran, the choice math picks DSG1:
+at 60 m `PickupCost` DSG1 (24 m, value .354) = **9.85** vs SCAR (41.7 m, .170) = 34.88; Gauss 72.85.
+Patch: new `BotUpgradeGate.h` (force / enemy-visible / no-primary / ranked+sniper) and `:502` uses it with
+`PickupRange()>30`; `Tests/BotUpgradeGateTests.cpp` built/passed. Applies cleanly to `2fee59c2`. Probe proof:
+`...-repeat-1.bots.log:36` is the FY71 pickup; nothing after it. `link:failed=3`/`landing_z=136` in the Gauss probe is
+the separate link-quality issue, not this gate.
+
+### DS-037 #5 · DONE 22:55 · detectors as code
 
 ### DS-037 #5 · DONE 22:55 · detectors as code
 `Tools/PlaytestReport/detectors.py` + `test_detectors.py` + `README_detectors.md`. Emits `warsbots-dumbness/1`

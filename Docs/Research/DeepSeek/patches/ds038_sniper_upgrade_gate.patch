@@ -1,0 +1,91 @@
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index f2e9cf5c..f9532b48 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -13,6 +13,7 @@
+ #include "CryGame/Bots/BotManager.h"
+ #include "CryGame/Bots/BotWeapons.h"
+ #include "CryGame/Bots/BotWeaponRank.h"
++#include "CryGame/Bots/BotUpgradeGate.h"
+ #include "CryGame/Bots/BotNavMesh.h"
+ #include "CryGame/Bots/BotNavMeshCore.h"
+ #include "CryGame/Game.h"
+@@ -498,8 +499,11 @@ EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
+ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
+ {
+ 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
++	// DS-038: a sniper-minded marksman with a rifle must keep searching; the old gate stopped after the FY71 at 1.3 s.
+ 	// force: the goal arbiter (C-032) already decided this tick is a weapon tick.
+-	if (!socomQA && (force || ((!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))))
++	const bool hasPrimary=BotWeapons::HasPrimary(actor);
++	const bool sniperMind=PickupRange()>30.0f;
++	if (!socomQA && WarsBots::ShouldSearchUpgrade(hasPrimary,BotConfig::Get().weaponRank==1,sniperMind,force,enemy && m_combat.Visible()))
+ 	{
+ 		if (m_now >= m_nextUpgradeSearch && !m_upgradeTarget)
+ 		{
+diff --git a/Code/CryGame/Bots/BotUpgradeGate.h b/Code/CryGame/Bots/BotUpgradeGate.h
+new file mode 100644
+index 00000000..9cf062d5
+--- /dev/null
++++ b/Code/CryGame/Bots/BotUpgradeGate.h
+@@ -0,0 +1,17 @@
++// DS-038: should this tick look for a better weapon? The old UpdateUpgrade gate only searched while the bot had
++// no primary, so a marksman that picked up an FY71 at 1.3 s never considered the DSG1/Gauss again unless the goal
++// arbiter happened to be enabled. A sniper-minded bot (vantage 1 + camper) must keep looking while it holds a rifle.
++// Pure logic, no engine types; Tests/BotUpgradeGateTests.cpp.
++#pragma once
++
++namespace WarsBots {
++
++inline bool ShouldSearchUpgrade(bool hasPrimary, bool ranked, bool sniperMind, bool force, bool enemyVisible)
++{
++    if (force) return true;                 // the arbiter already chose a weapon tick
++    if (enemyVisible) return false;         // no shopping in a visible fight
++    if (!hasPrimary) return true;           // spawn pistol -> any primary
++    return ranked && sniperMind;            // a marksman with a rifle still wants the sniper rifle
++}
++
++} // namespace WarsBots
+diff --git a/Tests/BotUpgradeGateTests.cpp b/Tests/BotUpgradeGateTests.cpp
+new file mode 100644
+index 00000000..955131b7
+--- /dev/null
++++ b/Tests/BotUpgradeGateTests.cpp
+@@ -0,0 +1,37 @@
++// DS-038 tests: the upgrade gate and the sniper pickup choice (engine-free).
++#include "CryGame/Bots/BotUpgradeGate.h"
++#include "CryGame/Bots/BotWeaponRank.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++int main()
++{
++    // Gate: spawn pistol -> search; a rifle with no sniper mind -> stop; a marksman with a rifle -> keep looking.
++    assert(ShouldSearchUpgrade(false, true, false, false, false));
++    assert(ShouldSearchUpgrade(false, false, true, false, false));
++    assert(!ShouldSearchUpgrade(true, true, false, false, false));
++    assert(!ShouldSearchUpgrade(true, false, true, false, false));
++    assert(ShouldSearchUpgrade(true, true, true, false, false));
++    assert(!ShouldSearchUpgrade(true, true, true, false, true));   // visible enemy
++    assert(ShouldSearchUpgrade(true, true, true, true, true));     // arbiter forced it
++
++    // Choice: at 60 m an FY71 is worth .546, DSG1 .900, SCAR .717. DSG1 is 24 m away, SCAR 41.7 m.
++    HeldWeapon held[] = {{"FY71", true}};
++    const float dsg = PickupValue("DSG1", held, 1, 60.f);
++    const float scar = PickupValue("SCAR", held, 1, 60.f);
++    const float gauss = PickupValue("GaussRifle", held, 1, 60.f);
++    assert(dsg > 0.30f && dsg < 0.40f);
++    assert(scar > 0.10f && scar < 0.25f);
++    assert(gauss > 0.40f && gauss < 0.50f);
++    const float costDsg = PickupCost(24.0f, dsg);
++    const float costScar = PickupCost(41.7f, scar);
++    const float costGauss = PickupCost(91.0f, gauss);
++    assert(costDsg < costScar);       // the nearby marginal SCAR must not beat the sniper rifle
++    assert(costDsg < costGauss);
++    assert(PickupValue("Hurricane", held, 1, 60.f) <= 0.01f);
++
++    std::printf("upgrade gate: all tests passed (DSG1 cost %.2f, SCAR %.2f)\n", costDsg, costScar);
++    return 0;
++}
