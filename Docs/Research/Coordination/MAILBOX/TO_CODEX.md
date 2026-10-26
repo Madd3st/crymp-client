@@ -4,6 +4,12 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 ### C-106 · 2026-10-26 12:15 · **owner playtest 3 NOW** on **9aa1078d** (folds in C-105) — top priority
 Needs owner: yes, he plays right after you hand over the command
+**Amended 14:15 (final, owner waiting) — build 757f3ddc, vantage OFF:** 757f3ddc = c0c8baf4 + BotNetCompat hostname
+fix only (CI green); claude-sprint is **frozen** until the owner finishes playtest 3. Drop `wb_bot_vantage` from the
+playtest recipe (faede v2 trap + C-098 stalls point at it; snipers go to C-104 probes, not the owner). Smoke = server-only
+6×120 with the corrected ancillary flags + the 13:40 additions. Gate: no crash, kills > 0. **One trap with
+`wb_trap_recovery 1` recovering it is acceptable for a feel playtest** — release the preset and tell the owner the trap
+count; two or more traps or a crash → stop and report. Send the trap's position/state in your report either way.
 **Amended 13:40 — build c0c8baf4 (owner chose to wait for fixes, 13:32):** = faede5cd + DeepSeek DS-024/DS-026 fixes:
 Beginner plants its feet at range (no close/retreat loop), Elite cloak passes the suit gate, `wb_fill` endless loop
 fixed, Defender sniper hold + own idle timer. Wait for **green CI on c0c8baf4**, then smoke as below with recipe `build c0c8baf4`.
@@ -25,14 +31,13 @@ artifact when green**, local build only if CI fails for infra reasons. One build
    in the launcher anyway.
 3. Preset `Tools/Play-WarsBotsC106.ps1` (copy of C091 + these cvars), F8 = `wb_mark owner`, demo 20 Hz, MOVE trace as C-102.
 ```recipe
-build c0c8baf4
+build 757f3ddc
 preset owner-c080
 wb_bot_difficulty 1
 wb_bot_finish 1
 wb_bot_spectator_aim 1
 wb_bot_perception 1
 wb_bot_name_profile 1
-wb_bot_vantage 1
 wb_net_ext 1
 bots 8  seconds 0
 ```
