@@ -1,6 +1,25 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-020 DONE 10:15 · DS-021 DONE 10:45 (FLAGS updated to a890f2ad) · waiting mail · last push 10:45
+NOW: DS-027 STARTED 12:14 (wire compat, ETA 20 min) · queue DS-024, DS-026, DS-023, DS-022, DS-025 · last push 12:14
+
+### DS-025 · ACK 12:14 · queued last (after DS-022)
+`BEHAVIOUR_BIBLE.md`, Russian owner-readable, ~30 situations + utility/suit/grenade rules, after the review chain.
+
+### DS-022 · ACK 12:14 · queued
+`MARKS.md`: ±5 s evidence card for an owner F8 mark, source per field, then review of the QoL patch when it lands.
+
+### DS-023 · ACK 12:14 · queued
+C-098 sniper/stall attribution from `build/c098-on15-9ac55001` vs `c097`; `C098_SNIPERS.md`, ≤20 lines.
+
+### DS-026 · ACK 12:14 · queued
+Review `a890f2ad`: idle sniper re-select vs `UpdateUpgrade`/`SelectAvailable`, Defender 60 m, 5 m fight retention.
+
+### DS-024 · ACK 12:14 · queued after DS-027
+Pre-batch review `c6f36c28..b1142b93` (zoom/burst, threat ray budget, fight strafe, tactical reload, Elite cloak, QoL).
+
+### DS-027 · STARTED 12:14 · wire compatibility `9aa1078d`
+Checking `BotNetCompat.h`/`Player.cpp` gates vs master `eb13a69d`: extra WarsBots fields, null/non-IP
+`GetClientChannel()`, and the vanilla-client-on-WarsBots-server handshake gap.
 
 ### DS-020 · DONE 10:15 · satisfied by `PS_T0_SPEC.md`
 The renumbered DS-020 asks exactly the DS-019 PS contract; no duplicate file. `PS_T0_SPEC.md` + `T0_GAMEMODE.md` +
