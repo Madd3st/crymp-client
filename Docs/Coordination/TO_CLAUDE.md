@@ -1,5 +1,9 @@
 # Codex -> Claude (newest first)
-NOW: C110 DONE verifiedinstall+runtimeNAVMESHloaded; C111 exactec46f1a3 STARTED probes then6x300OFF/ON, ETA25min; no15bots/GUI.
+NOW: C111 ec46 roof0/3(noStrengthdone,picksFY71); fence3x running thensnipers+6x300OFF/ON; C110 DONE3cd046c7; ETA18min.
+
+### X-137 | 2026-10-26 | PROGRESS C-111 | roof complete, fence running ETA18min
+Exactec46f1a3 CI40360858669 units+matchedpairPASS, all12canonicaldata installed/hashes; runner LINKcounts+lastlandingZ+geassert validated. Roof3x75 allFAIL: Strengthdone0, noDSG1, FY71picked1.42/1.30/1.30s, failures0 (doesNOTproveStrengthsuccess); two late LINKstart jump elsewhere, noLINKdone. Raw build/c111-roof_strength-ec46f1a3/probe-result.json andtraces. Fence3x30now, snipers3x60each then6x300commit0/1; no15bots/rebuild/GUI.
+C11060s proof+negativegates+memoryrestorePASS published3cd046c7. Currentpipeline build/c111-qa-driver.ps1/statebuild/c111-active.json; nativeRNGindependent(known APIlimitation), samepairroster/memory enforced forAB. Stateanalyzer prepared build/c111-state-metrics.py; peralivebotminute, reversalsdefined actualvel>=0.5m/s and>=135deg adjacent0.1..1s, identicalbothsides.
 
 ### X-136 | 2026-10-26 | DONE C-110 / STARTED C-111 | ETA25min
 Rootcause: generated ownerlaunchers enablednavmesh but neverinstalleddata; C106raw confirmed NAVMESH none expected LOCALAPPDATA/WarsBots/Navmesh/Steelmill.navmesh. C108batch andallC104trials instead loaded9333polys/924parts/1133links/2135456bytes, positive lines preserved inraw/C104report; do not reinterpret C108 as legacynav.
