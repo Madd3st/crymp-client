@@ -40,6 +40,7 @@ public:
 	bool Expired() const { return m_entityId == 0; }
 	// True only while our own Remove() is deleting the entity.
 	bool Removing() const { return m_removing; }
+	bool RemovalPending() const { return m_removeRequested && m_entityId != 0; }   // DS-024 #3
 	EntityId GetEntityId() const { return m_entityId; }
 	int Number() const { return m_number; }
 	const char* Name() const { return m_name; }
@@ -85,6 +86,7 @@ private:
 	EntityId m_lastSpawnLocation = 0;
 	bool m_killPlayerObserved = false;
 	bool m_removing = false;
+	bool m_removeRequested = false;
 	float m_lastUpdateMs = 0, m_maxUpdateMs = 0, m_totalUpdateMs = 0;
 	unsigned m_updateCount = 0;
 	BotBrain m_brain;

@@ -690,14 +690,20 @@ void BotManager::FillCommand(IConsoleCmdArgs* args)
 	if (args->GetArgCount() < 2 || args->GetArgCount() > 3 || !ParseInt(args->GetArg(1), target) || target < 0 || target > kHardLimit ||
 		(args->GetArgCount() == 3 && !BotProfile::ParseSkill(args->GetArg(2), skill)))
 	{ WB_LOG(0, "[WarsBots] Usage: wb_fill <0..%d> [beginner|normal|veteran|elite].", kHardLimit); return; }
-	while (self->Count() > target)
+	// DS-024 #3: a removal the engine defers keeps its slot, so `while (Count() > target)` removed the same bot forever.
+	// Each bot is removed at most once, highest number first; slots pending removal do not count as live bots.
+	self->Sweep();
+	std::vector<BotInstance*> order = self->Ordered();
+	int live = 0;
+	for (BotInstance* b : order) if (!b->RemovalPending() && !b->Expired()) ++live;
+	std::sort(order.begin(), order.end(), [](BotInstance* a, BotInstance* b) { return a->Number() > b->Number(); });
+	for (BotInstance* b : order)
 	{
-		BotInstance* last = nullptr;
-		for (auto& entry : self->m_bots) if (!last || entry.second->Number() > last->Number()) last = entry.second.get();
-		if (!last) break;
-		self->RemoveInstance(*last);
+		if (live <= target) break;
+		if (b->RemovalPending() || b->Expired()) continue;
+		self->RemoveInstance(*b); --live;   // may erase b; not touched again
 	}
-	while (self->Count() < target && self->Add(nullptr, skill, nullptr, true)) {}
+	for (int guard = 0; live < target && guard < kHardLimit; ++guard) { if (!self->Add(nullptr, skill, nullptr, true)) break; ++live; }
 	WB_LOG(0, "[WarsBots] wb_fill: now %d/%d bots.", self->Count(), self->MaxBots());
 }
 

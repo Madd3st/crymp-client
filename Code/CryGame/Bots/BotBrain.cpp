@@ -246,7 +246,7 @@ void BotBrain::ResetLife()
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
 	m_retreating = false;
-	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_aimModelInit = false; m_aimModelTarget = 0; m_suitPolicy.Reset();
+	m_look.Reset(); m_lookValid = false; m_arbiter.Reset(); m_nextRangeSelect = 0; m_nextIdleSelect = 0; m_aimModelInit = false; m_aimModelTarget = 0; m_suitPolicy.Reset();
 	m_weaponSearchStarted = m_now;
 	m_nextSearch = m_now;
 	m_deadTime = 0;
@@ -661,8 +661,9 @@ bool BotBrain::UpdateVantage(CPlayer& actor,const Vec3& feet,float decisionTime)
 	VantageMap* map=CurrentVantage();
 	// C-104 (C-100 probes, C-098 "no sniper ever held"): vantage below starts only with a DSG1/Gauss CURRENT, but every
 	// pickup and fight re-selected the SCAR/FY71 at 20 m -> deadlock. Idle sniper-minded bots re-judge at 60 m.
-	if (BotConfig::Get().weaponRank==1 && PickupRange()>30.0f && m_now>=m_nextRangeSelect)
-	{ m_nextRangeSelect=m_now+2.0f; BotWeapons::SelectForRange(actor,PickupRange()); }
+	// DS-026: Defenders (camper 0.6) hold too; own timer so a fight right after it re-selects at once.
+	if (BotConfig::Get().weaponRank==1 && BotConfig::Get().vantage==1 && m_traits.camper>=0.5f && m_now>=m_nextIdleSelect)
+	{ m_nextIdleSelect=m_now+2.0f; BotWeapons::SelectForRange(actor,WarsBots::IdleHoldRange(true)); }
 	IItem* held=actor.GetCurrentItem();
 	const char* cls=held ? held->GetEntity()->GetClass()->GetName() : "";
 	const bool sniper=map && m_traits.camper>=0.5f &&   // T-8: Marksman ~0.9, Defender ~0.6
@@ -825,7 +826,9 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
             Vec3 lateral(-toward.y,toward.x,0);
             // wb_bot_difficulty: a Beginner does not strafe - only closes / opens the distance
             Vec3 travel=lateral*float(m_profile.fightStrafe?m_strafeSide:0)+toward*clamp_tpl((distance-desiredRange)*0.1f,-0.5f,0.5f);
-            if (!m_profile.fightStrafe && travel.GetLengthSquared()<0.01f) travel=toward*0.05f;
+            // DS-024 #1: no-strafe used to walk 4 m toward the target even at the right distance (close -> retreat ->
+            // close loop). Inside a deadband around desiredRange a non-strafing bot plants its feet and shoots.
+            const bool plant=!m_profile.fightStrafe && fabsf(distance-desiredRange)<=2.0f+0.15f*desiredRange;
             travel.NormalizeSafe(lateral);
             // Eyes see the target but the barrel is blocked by cover: step out (forward and to
             // the current strafe side) instead of standing and staring; flip side if it persists.
@@ -839,7 +842,8 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
                 }
             }
             else m_shotBlockedSince=0;
-            WBI_MOVETO(actor.GetEntity()->GetWorldPos()+travel*4.0f,aim);
+            if (plant && m_shotBlockedSince<=0) { WBI(move,false); WBI(aim,aim); }
+            else WBI_MOVETO(actor.GetEntity()->GetWorldPos()+travel*4.0f,aim);
             m_intent.strafe=true;
             // fragmovies: duels are strafe + hop, never standing in the open (normal jump: Armor only)
             if (BotConfig::Get().tactics==1 && m_blackboard.mode==NANOMODE_DEFENSE && m_intent.jump==BotJump::None &&
@@ -1009,7 +1013,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
         if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run);
         if (m_intent.suitMode==NANOMODE_SPEED) { WBI(suitMode,NANOMODE_DEFENSE); m_speedTravel=false; }
     }
-    const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now);
+    const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now,m_profile.cloakApproach);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
         if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;WBI(suitMode,NANOMODE_DEFENSE);m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
         else WBI(gait,BotGait::Run);
