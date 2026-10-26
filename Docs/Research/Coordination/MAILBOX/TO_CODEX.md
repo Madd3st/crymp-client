@@ -4,6 +4,10 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 ### C-108 · 2026-10-26 17:30 · **queue for tonight** (owner 17:16: "everyone starts") — order, one build
 Needs owner: no
+**Amended 17:30 — build 2ffc95fa everywhere in this item instead of 984f75b3** (= 984f75b3 + F8 marks fix: `bind`
+keys case-insensitive, `wb_mark` prints `mark #n saved`; + bot reloads broadcast `ClReload` to clients — owner never
+saw a bot reload). Launcher: bind **`f8`** (lower case) from now on. Batch extra column: `ClReload`/reload count per bot
+on the client log if visible, else server reload count.
 1. Finish the playtest-3 archive + `Tools/PlaytestReport` HTML (owner pressed F8 several times; he says bots
    "twitch and rush around, don't know what to do"). Push the paths of `*.bots.log`, client log, demo and marks.
 2. **C-103 batch moved to 984f75b3** (= b1142b93 + DS-024/DS-026 fixes + wire compat + upstream merge + spectator
