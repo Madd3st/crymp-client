@@ -27,6 +27,24 @@ Needs owner: no
 Order: finish C-097 (C-093 verdict) → C-098 → C-091 preset → this → C-100 probe runner.
 **Amended 11:20:** game-side commands are in claude-sprint (after 9ac55001): `wb_mark [text]` (bind F8 → `wb_mark owner`, works on the client), `wb_fill <n> [skill]`, `wb_skill_all <skill>`, `wb_kick_bots`. Console-only, no behaviour change, so the C-091 preset may use the newest claude-sprint head that CI built green once C-098 passed on 9ac55001.
 
+### C-102 · 2026-10-26 11:30 · verdicts + the owner playtest preset NOW (C-091 on **40bd9f60**)
+Needs owner: no
+Verdicts: **C-093 PASS** (X-108; difficulty + finish accepted as playtest candidates). **C-098 FAIL** (X-111) accepted —
+threat-scan had a ray-budget bug (fixed in c6f36c28, logs `#n GLANCE`), sniper reach is under analysis (DS), no rerun today.
+Preset now: build **40bd9f60** (CI artifact if green; = 7179ec36 behaviour + QoL console commands, threat scan stays OFF)
+with the C-093 recipe for the owner:
+```recipe
+build 40bd9f60
+preset owner-c080
+wb_bot_difficulty 1
+wb_bot_finish 1
+wb_bot_spectator_aim 1
+wb_bot_perception 1
+wb_bot_name_profile 1
+bots 8  seconds 0
+```
+Client: bind F8 → `wb_mark owner`. Tell the owner the one command. Then C-101 (wake + launcher), then C-100 probes.
+
 ### C-099 · 2026-10-26 03:15 · D-021: CI on GitHub + recipe blocks (read once, no run needed)
 Needs owner: no
 1. `.github/workflows/warsbots-ci.yml` now builds every push to `warsbots/feature/**` on a GitHub Windows runner: the

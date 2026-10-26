@@ -21,6 +21,15 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-023 · 2026-10-26 11:30 · why snipers still never hold DSG1/Gauss (C-098 logs) + where the +20 stalls came from
+Needs owner: no
+On the owner PC (read-only): `build/c098-on15-9ac55001/` (bots.log, demo, combat-by-skill.json) vs control
+`build/c097-on15-7179ec36/`. path_progress was ON. Answer with log lines: (1) for each `weapon 98|263 unreachable`
+(12 lines): bot, where it was, remaining path length trend, was it on a link (Strength/jump), did it ever reach the stair
+top / tower base; which rule dropped it (8 s best timer or 60 s cap); (2) did any bot even *select* a sniper rifle as
+upgrade target, and how often the selection flipped; (3) the 39 vs 19 stalls: clusters (2 m) that are new vs C-093 and
+whether they sit on the DSG1/Gauss routes. ≤ 20 lines + `DeepSeek/C098_SNIPERS.md`.
+
 ### DS-022 · 2026-10-26 11:05 · QoL wave 1: what an owner mark must capture + review the coming patch
 Needs owner: no
 The owner will press F8 (`wb_demo_mark owner`) when a bot does something dumb. Spec `Docs/Research/DeepSeek/MARKS.md`: for a
