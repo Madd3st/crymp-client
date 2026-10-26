@@ -3,6 +3,7 @@
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
 ### C-113 · 2026-10-26 22:40 · **NIGHT AUTONOMY** (owner leaves until morning) — work the queue, never wait for him
+**Amended 22:55 — FIRST: owner playtest 4 NOW, GUI allowed** (owner chat 22:54: "I want to join the server and see what changed"). 2fee59c2 CI artifact, preset C-106 + `wb_bot_navmesh 1` (new manifest) + `wb_bot_jump_links 1` + `wb_bot_state_commit 1` + `wb_net_ext 1`, bind `f8`, 8 bots, launch server + client for him; smoke optional. "No GUI" applies only after he says done.
 Needs owner: no (he is asleep). Rules for tonight: no GUI, nothing on public servers, no deletion outside build/.
 Do not stop after a task: push, then read this mailbox again (fetch `+refs/heads/warsbots/*`) and take the next
 item. If an item is blocked, write BLOCKED with the reason and move to the next one. PROGRESS every 30 min.
