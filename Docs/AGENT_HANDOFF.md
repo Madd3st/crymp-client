@@ -1,5 +1,17 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+C106 FINAL14:15 owner recipe:757f3ddc, vantageOFF, server-only6x120.
+CI40309568564green/exactartifact+datahashes+32effectiveCVarsPASS.
+Smoke PASS12kills/0traps/no crash; one6.03s stall(1286.50,1329.48,136.06).
+Evidence build/c106-final-757f3ddc; frozen pair build/ci-757f3ddc.
+Owner command Tools/Play-WarsBotsC106.ps1:8SkillMix/F8mark/demo20Hz,
+net_ext1localclient+server, MOVEtrace, DX9; PrepareOnly/ASTPASS, GUI not launched.
+Owner launch records snapshot+session build/c106-active-session.json.
+Await owner playtest and explicitdone; NO furtherbuilds/QA/probes meanwhile.
+C105public compatibility still needs owner manualconnect; no757clientruntime claim.
+Earlier faede smoke FAIL/invalidharness runs remain evidence, not this verdict.
+All memory/nav restored, foreign launcher preserved; no game processes active.
+
 C097/C0937179ec36 PASS: MSVC17units, kills276/stalls19/traps0; per-skill
 report Docs/Coordination/C093_REPORT.md, raw build/c097-on15-7179ec36/.
 Accepted7179 merged07db7152, exact game-code identity checked; D016 defaultsON.
