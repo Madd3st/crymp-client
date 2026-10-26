@@ -25,6 +25,7 @@ Needs owner: no
    `Tools/PlaytestReport/playtest_report.py`, opening the HTML report. PrepareOnly + AST check; GUI only when the owner
    launches it.
 Order: finish C-097 (C-093 verdict) → C-098 → C-091 preset → this → C-100 probe runner.
+**Amended 11:20:** game-side commands are in claude-sprint (after 9ac55001): `wb_mark [text]` (bind F8 → `wb_mark owner`, works on the client), `wb_fill <n> [skill]`, `wb_skill_all <skill>`, `wb_kick_bots`. Console-only, no behaviour change, so the C-091 preset may use the newest claude-sprint head that CI built green once C-098 passed on 9ac55001.
 
 ### C-099 · 2026-10-26 03:15 · D-021: CI on GitHub + recipe blocks (read once, no run needed)
 Needs owner: no
