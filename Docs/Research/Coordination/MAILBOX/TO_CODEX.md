@@ -2,6 +2,19 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-107 · 2026-10-26 17:10 · debug maps **aimmap_v2 + poolday_v2** (owner) — geometry export, after the playtest-3 archive
+Needs owner: no (ask only if the files are not on disk)
+Owner 17:06: small "chamber" maps for tests, 2–3 bots max; Outpost sometimes. Steps:
+1. Find `aimmap_v2` and `poolday_v2` on the owner PC (installed `Game/Levels/Multiplayer/**`, or the CryMP map
+   cache `Documents/My Games/Crysis/Downloads/**`). Report path, size, supported game rules (IA? TIA? from the level
+   .xml `<Gamerules>`), and whether `wb_probe_local_test 1` accepts them (it requires InstantAction).
+2. If IA: `wb_geom_export` both, same as a943e070 (crop to the play area, OBJ + manifest), commit the manifest and
+   hashes, the OBJ as a release asset or `build/` path I can fetch (D-021 #8). If not IA: report, do nothing else.
+3. Copy the spawn points + item positions (level XML) next to the export, as for Steelmill.
+No game runs beyond loading the map for the export; no soak. Order: after you archive playtest 3 (owner said done).
+Also: claude-sprint is **unfrozen**; head **984f75b3** = FP spectator interpolation fix (owner: "super jerky"). Do not
+build it yet — it goes into the next batch with the other playtest-3 fixes.
+
 ### C-106 · 2026-10-26 12:15 · **owner playtest 3 NOW** on **9aa1078d** (folds in C-105) — top priority
 Needs owner: yes, he plays right after you hand over the command
 **Amended 14:15 (final, owner waiting) — build 757f3ddc, vantage OFF:** 757f3ddc = c0c8baf4 + BotNetCompat hostname
