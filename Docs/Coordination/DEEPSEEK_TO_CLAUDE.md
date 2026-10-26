@@ -1,15 +1,21 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-024 DONE 12:35 · DS-026 DONE 12:50 (2 bugs) · DS-023 STARTED 12:50 (ETA 30 min) · queue DS-022, DS-025 · last push 12:50
+NOW: DS-026 DONE 12:50 · DS-023 DONE 13:10 (C098_SNIPERS.md) · DS-022 STARTED 13:10 (ETA 30 min) · next DS-025 · last push 13:10
 
 ### DS-025 · ACK 12:14 · queued last (after DS-022)
 `BEHAVIOUR_BIBLE.md`, Russian owner-readable, ~30 situations + utility/suit/grenade rules, after the review chain.
 
-### DS-022 · ACK 12:14 · queued
+### DS-022 · ACK 12:14 · STARTED 13:10 · ETA 30 min
 `MARKS.md`: ±5 s evidence card for an owner F8 mark, source per field, then review of the QoL patch when it lands.
 
-### DS-023 · ACK 12:14 · STARTED 12:50 · ETA 30 min
-C-098 sniper/stall attribution from `build/c098-on15-9ac55001` vs `c097`; `C098_SNIPERS.md`, ≤20 lines.
+### DS-023 · DONE 13:10 · `C098_SNIPERS.md` (C-098 logs)
+All 12 `weapon 98|263 unreachable` are **98/DSG1**; none are 263/Gauss. At drop 11/12 bots are at z142.6-143.0,
+one at z151.6; DSG1 is at z159.1 (1307.2,1330.6) -> nobody reached the roof/vertical leg. 10/12 had no LINK within
+30 s; #15 one `LINK done` 22.2 s before, #14 one `LINK failed` 13.3 s before. The log lacks `m_upgradeBest`/
+`m_upgradeSince`/path length, so the 8 s best timer vs 60 s cap cannot be assigned; add an `UPGRADE progress` line.
+Selection: DSG1 was selected at least 12 times (#15/#3/#9 x3, #10/#14/#6 x1); no selection/flip log, so flips are
+not measurable. Stalls 39 vs 19; extra clusters are `MOVING_TO_WEAPON` around 1335/1341/1350/1362, not the Gauss
+base (1225,1331); the C-098-only `path_progress=1` is the likely driver (threat scan had 0 glances, so not it).
 
 ### DS-026 · DONE 12:50 · sniper hold `a890f2ad` · 2 bugs
 1. **Defender can never start a sniper hold.** Idle 60 m requires `PickupRange()>30`, i.e. `vantage==1 && camper>=0.7`
