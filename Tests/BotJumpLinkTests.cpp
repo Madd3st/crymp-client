@@ -50,7 +50,7 @@ int main()
 		BotJumpLink M; M.Start(0, LinkMove::Drop, a, b);
 		M.Update(At(0, 0, 0, 10)); M.Update(At(0.2f, 0.5f, 0, 9, false));
 		M.Update(At(0.5f, 2.8f, 0, 2, true)); o = M.Update(At(1.4f, 2.8f, 0, 2, true)); assert(o.fail == LinkFail::MissedLanding);
-		BotJumpLink N; N.Start(0, LinkMove::Drop, a, b); N.Update(At(0, -20, 0, 10)); o = N.Update(At(10, -19, 0, 10)); assert(o.fail == LinkFail::Timeout);
+		BotJumpLink N; N.Start(0, LinkMove::Drop, a, b); N.Update(At(0, -20, 0, 10)); o = N.Update(At(13, -19, 0, 10)); assert(o.fail == LinkFail::Timeout);   // total 12 s
 	}
 	// 6. Approach that stalls 0.62 m short of a (c061) still goes on after stillTime.
 	{
