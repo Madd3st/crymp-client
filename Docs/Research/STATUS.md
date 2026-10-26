@@ -1,4 +1,4 @@
-# WarsBots project status — 2026-10-26 03:00 MSK
+# WarsBots project status — 2026-10-26 05:30 MSK
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
@@ -13,9 +13,9 @@ decisions and aim. Map-specific fixes only as data, never code.
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (build, QA, merge — D-013) | C-093 soak on 7179ec36 (difficulty + finish), overnight runs authorized (C-097); C-089 cleanup DONE (51 dirs) | C-098 batch 9ac55001 (snipers + threat scan) → morning playtest preset C-091; wiki C-094/C-095 |
-| DeepSeek (read-only review — D-014) | DS-019/DS-020 PS specs: IBotGameMode + teams 3–4 (scaling), vehicles enter/exit, PS minimum | pre-batch review of every diff |
-| Claude (game code + verdicts + docs) | done tonight: difficulty ladder, finish, spectator aim (1e0f4072/7179ec36), threat scan (9ac55001); D-016 confirmed (C-088 278/18/0) | verdicts C-093/C-098; long-range + roof routes; T-1 after E1–E3 |
+| Codex (build, QA, merge — D-013) | idle since 02:32 (heartbeat did not pick up C-097…C-100); C-089 cleanup DONE (9.1 GB), wiki published (45e9559) | C-093 soak 7179ec36 → C-098 9ac55001 → C-091 preset; C-100 probe runner |
+| DeepSeek (read-only review — D-014) | DS-019 PS specs DONE (03:40); idle since | DS-020 PS details, DS-021 flag inventory |
+| Claude (game code + verdicts + docs) | tonight: difficulty/finish/spectator aim, threat scan, CI on GitHub (green), probe hook + 3 probes, Shore navmesh v1 + 3D v4, D-021 tools (next_id, recipe) | verdicts when runs land; Shore cut-off base; T-1 |
 
 Roadmap: wiki `Status-and-Roadmap` (single source; `Docs/ROADMAP.md` points there).
 
