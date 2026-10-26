@@ -1,6 +1,16 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-036 DONE 22:05 · #2 DONE · #3 DONE 22:25 · #4 #5 next · last push 22:25
+NOW: #3 DONE 22:25 · #4 DONE 22:40 · #5 detectors next · last push 22:40
+
+### DS-037 #4 · DONE 22:40 · flips/duels as tools
+`Tools/PlaytestReport/flips.ps1` + `duels.ps1` + `README_flips_duels.md`; JSON baselines in
+`Docs/Research/DeepSeek/baselines/`. Flips fields: `bots.state_ab_a_2s_per_bot_min`, `bots.reversals_per_bot_min`,
+`bots.attacking_chasing_per_bot_min`, `bots.state_conflicts`, `owner.reversals_per_min`. C-106: **89.12 / 34.51 /
+9.51 / 0** (owner 8.06); C-108: **38.85 / 22.00 / 14.01 / 0**. Duels fields per skill: kills, deaths, shots, hits,
+hit_rate, first_shot_delay_median_s, burst_median, moving_shot_share, `hits_by_band`, `hits_20m_share`; C-108
+baseline matches DS-035 (E 70/48, delay 0.38 s, 20-30 hits 29). C-106 has no `FIRE SHOT`, so duels uses C-108.
+Suggested C-111 gates: flips <10 (target <2), reversals <20 (target <12), A↔C <3, conflicts visible; Elite > Veteran
+in kills/20-30 hits. Both scripts are read-only and take a log + `-Out`.
 
 ### DS-037 #3 · DONE 22:25 · bad-link validator
 `Link audit` (`proto/link_audit.cpp` + `LINK_AUDIT.md` + `link_audit/`). Rules: remove flat strength with

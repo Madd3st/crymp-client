@@ -1,0 +1,123 @@
+﻿{
+    "schema":  "warsbots-flips/1",
+    "source":  "WarsBots-Tactics-c108-on15-2ffc95fa-candidate-r1-n15.bots.log",
+    "session":  {
+                    "seconds":  662.5,
+                    "minutes":  11.04,
+                    "bots":  15
+                },
+    "owner":  {
+                  "active_seconds":  0,
+                  "reversals":  0,
+                  "reversals_per_min":  0
+              },
+    "bots":  {
+                 "reversals":  3643,
+                 "reversals_per_bot_min":  22,
+                 "state_changes":  10383,
+                 "state_changes_per_bot_min":  62.69,
+                 "state_ab_a_2s":  6434,
+                 "state_ab_a_2s_per_bot_min":  38.85,
+                 "state_conflicts":  0,
+                 "state_conflicts_per_bot_min":  0,
+                 "goal_ab_a_2s":  169,
+                 "goal_ab_a_2s_per_bot_min":  1.02,
+                 "target_ab_a_2s":  0,
+                 "target_ab_a_2s_per_bot_min":  0,
+                 "target_switches":  972,
+                 "attacking_chasing":  2320,
+                 "attacking_chasing_per_bot_min":  14.01,
+                 "per_bot":  [
+                                 {
+                                     "number":  1,
+                                     "reversals":  166,
+                                     "state_changes":  707,
+                                     "state_flips":  474
+                                 },
+                                 {
+                                     "number":  2,
+                                     "reversals":  255,
+                                     "state_changes":  511,
+                                     "state_flips":  243
+                                 },
+                                 {
+                                     "number":  3,
+                                     "reversals":  345,
+                                     "state_changes":  730,
+                                     "state_flips":  432
+                                 },
+                                 {
+                                     "number":  4,
+                                     "reversals":  292,
+                                     "state_changes":  674,
+                                     "state_flips":  395
+                                 },
+                                 {
+                                     "number":  5,
+                                     "reversals":  210,
+                                     "state_changes":  560,
+                                     "state_flips":  284
+                                 },
+                                 {
+                                     "number":  6,
+                                     "reversals":  198,
+                                     "state_changes":  448,
+                                     "state_flips":  197
+                                 },
+                                 {
+                                     "number":  7,
+                                     "reversals":  268,
+                                     "state_changes":  602,
+                                     "state_flips":  347
+                                 },
+                                 {
+                                     "number":  8,
+                                     "reversals":  294,
+                                     "state_changes":  760,
+                                     "state_flips":  503
+                                 },
+                                 {
+                                     "number":  9,
+                                     "reversals":  195,
+                                     "state_changes":  689,
+                                     "state_flips":  416
+                                 },
+                                 {
+                                     "number":  10,
+                                     "reversals":  208,
+                                     "state_changes":  565,
+                                     "state_flips":  325
+                                 },
+                                 {
+                                     "number":  11,
+                                     "reversals":  314,
+                                     "state_changes":  822,
+                                     "state_flips":  550
+                                 },
+                                 {
+                                     "number":  12,
+                                     "reversals":  231,
+                                     "state_changes":  954,
+                                     "state_flips":  691
+                                 },
+                                 {
+                                     "number":  13,
+                                     "reversals":  165,
+                                     "state_changes":  608,
+                                     "state_flips":  367
+                                 },
+                                 {
+                                     "number":  14,
+                                     "reversals":  234,
+                                     "state_changes":  981,
+                                     "state_flips":  696
+                                 },
+                                 {
+                                     "number":  15,
+                                     "reversals":  268,
+                                     "state_changes":  772,
+                                     "state_flips":  514
+                                 }
+                             ]
+             }
+}

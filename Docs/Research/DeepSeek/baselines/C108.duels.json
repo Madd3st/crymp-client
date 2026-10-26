@@ -1,0 +1,95 @@
+﻿{
+    "schema":  "warsbots-duels/1",
+    "source":  "WarsBots-Tactics-c108-on15-2ffc95fa-candidate-r1-n15.bots.log",
+    "session":  {
+                    "shots":  10069,
+                    "hits":  3153,
+                    "hit_rate":  0.313
+                },
+    "per_skill":  {
+                      "beginner":  {
+                                       "kills":  25,
+                                       "deaths":  86,
+                                       "shots":  1331,
+                                       "hits":  304,
+                                       "hit_rate":  0.228,
+                                       "headshots":  17,
+                                       "headshot_share":  0.056,
+                                       "first_shot_delay_median_s":  1.04,
+                                       "first_shot_delay_samples":  119,
+                                       "burst_median":  1,
+                                       "moving_shot_share":  0.719,
+                                       "hits_by_band":  {
+                                                            "0-10":  112,
+                                                            "10-20":  180,
+                                                            "20-30":  10,
+                                                            "30-50":  2,
+                                                            "50+":  0
+                                                        },
+                                       "hits_20m_share":  0.039
+                                   },
+                      "normal":  {
+                                     "kills":  87,
+                                     "deaths":  75,
+                                     "shots":  2864,
+                                     "hits":  998,
+                                     "hit_rate":  0.348,
+                                     "headshots":  35,
+                                     "headshot_share":  0.035,
+                                     "first_shot_delay_median_s":  0.66,
+                                     "first_shot_delay_samples":  180,
+                                     "burst_median":  2,
+                                     "moving_shot_share":  1,
+                                     "hits_by_band":  {
+                                                          "0-10":  368,
+                                                          "10-20":  581,
+                                                          "20-30":  43,
+                                                          "30-50":  6,
+                                                          "50+":  0
+                                                      },
+                                     "hits_20m_share":  0.049
+                                 },
+                      "veteran":  {
+                                      "kills":  93,
+                                      "deaths":  66,
+                                      "shots":  3554,
+                                      "hits":  1098,
+                                      "hit_rate":  0.309,
+                                      "headshots":  61,
+                                      "headshot_share":  0.056,
+                                      "first_shot_delay_median_s":  0.41,
+                                      "first_shot_delay_samples":  186,
+                                      "burst_median":  2,
+                                      "moving_shot_share":  0.773,
+                                      "hits_by_band":  {
+                                                           "0-10":  163,
+                                                           "10-20":  800,
+                                                           "20-30":  111,
+                                                           "30-50":  22,
+                                                           "50+":  2
+                                                       },
+                                      "hits_20m_share":  0.123
+                                  },
+                      "elite":  {
+                                    "kills":  70,
+                                    "deaths":  48,
+                                    "shots":  2320,
+                                    "hits":  753,
+                                    "hit_rate":  0.325,
+                                    "headshots":  63,
+                                    "headshot_share":  0.084,
+                                    "first_shot_delay_median_s":  0.38,
+                                    "first_shot_delay_samples":  144,
+                                    "burst_median":  3,
+                                    "moving_shot_share":  1,
+                                    "hits_by_band":  {
+                                                         "0-10":  246,
+                                                         "10-20":  456,
+                                                         "20-30":  29,
+                                                         "30-50":  19,
+                                                         "50+":  3
+                                                     },
+                                    "hits_20m_share":  0.068
+                                }
+                  }
+}
