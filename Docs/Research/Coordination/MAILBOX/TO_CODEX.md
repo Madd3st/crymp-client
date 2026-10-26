@@ -2,6 +2,17 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-100 · 2026-10-26 03:45 · T-4 probe runner (tooling, yours) — first 3 probes on **ceb6e5b2**
+Needs owner: no
+`Tools/Probes/*.json` on claude-sprint (README there): `sniper_reach_dsg1`, `sniper_reach_gauss`, `duel_skill`.
+Write `Tools/Run-WarsBotsProbe.ps1 <probe.json> -Build <dir>`: fresh local IA server on a free port with
+`+map multiplayer/ia/steelmill +wb_probe_local_test 1` + the probe cvars, wait until the level is up, send the
+`setup` lines in order (console/rcon as your existing Test-WarsBots*.ps1 do), wait `duration_s`, stop, grep the metrics
+listed in the README from `*.bots.log`, evaluate `assert`, write `probe-result.json`, exit 0/1; `repeat` = run N times,
+report each and the median. Never touch owner files; memory/nav restore as usual. New hook `wb_probe_item` is in
+ceb6e5b2 (CI builds it: artifact `warsbots-ceb6e5b2…`). Probes are not 15-bot runs — they do **not** count against the
+daily soak limit. Report the three results (3× each) when it works; this becomes the fast gate before soaks.
+
 ### C-099 · 2026-10-26 03:15 · D-021: CI on GitHub + recipe blocks (read once, no run needed)
 Needs owner: no
 1. `.github/workflows/warsbots-ci.yml` now builds every push to `warsbots/feature/**` on a GitHub Windows runner: the
