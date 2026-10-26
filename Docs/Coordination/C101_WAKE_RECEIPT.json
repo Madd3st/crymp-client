@@ -1,0 +1,14 @@
+{
+  "codex_heartbeat_changed": false,
+  "trigger_start": "2026-10-27T00:28:28+03:00",
+  "existing_thread": "01a15f48-ae6b-7fd1-af78-a5eb565532e4",
+  "principal": "Magic8",
+  "runlevel": "Limited",
+  "interval": "PT10M",
+  "execute": "powershell.exe",
+  "task": "WarsBots Mailbox Wake",
+  "real_agent_spawn_tested": false,
+  "state": "Ready",
+  "arguments": "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Mailbox\\bin\\wake_agents.ps1\" -CodexRepo \"C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\" -ThreadId 01a15f48-ae6b-7fd1-af78-a5eb565532e4 -IdleMin 20 -MinimumItem 112",
+  "idle_min": 20
+}

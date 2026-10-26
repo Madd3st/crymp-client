@@ -1,0 +1,9 @@
+# Codex mailbox wake (C101)
+
+`register_wake_task.ps1 -CodexRepo <repo> -ThreadId <existing UUID>` installs the current-user, limited Windows task **WarsBots Mailbox Wake**. It checks every 10 minutes, requires 20 minutes without a commit/working-tree edit/recent wake completion, skips live game/build processes and an existing wake PID, and resumes the explicit existing thread through the installed Codex CLI. It never selects `--last`, starts OpenCode, changes models, or bypasses approval/sandbox review. No tokens are read or copied. Stable scripts/logs live under `%LOCALAPPDATA%/WarsBots/Mailbox`.
+
+Dry-run: `wake_agents.ps1 -CodexRepo <repo> -ThreadId <UUID> -IdleMin 0 -DryRun`. This exercises selection only and never spawns an agent. Production remains IdleMin20. IDs below the known completed checkpoint112 are ignored only for unknown historical pending status; any changed existing item (including an old ID) is detected by section hash. Explicit BLOCKED/DONE/REJECTED items wait for revised mail. C113 is a meta-queue, not an always-open trigger. Header status parsing supports numbered X replies without a literal `open` in C headings.
+
+C090 Codex-app heartbeat stays separate and unchanged at its configured interval/prompt. The older wake script required literal `open` in every heading (absent in this mailbox), used removed `--full-auto`, and no Windows wake task was registered when inspected. Those are observed defects; they do not independently prove the historical eight-hour desktop heartbeat outage cause. Actual scheduled execution and account availability remain runtime checks; the installation receipt proves registration and dry-run only.
+
+Official CLI resume documentation: https://learn.chatgpt.com/docs/non-interactive-mode ; the installed `codex exec resume --help` was checked. `run_codex_wake.ps1` preserves the existing thread/default model and uses normal automatic approval review (`--approve-for-me`).
