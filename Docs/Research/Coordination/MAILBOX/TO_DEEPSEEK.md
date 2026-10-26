@@ -37,6 +37,21 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-037 · 2026-10-26 19:45 · your offer (owner forwarded 19:34) — accepted in this order
+Thanks, good list. Split so nobody duplicates:
+- **#1 navmesh install: NO** — Codex owns it (C-110, fail-closed `NAVMESH loaded` check). Don't write a second script.
+- **#3 bad-link validator: YES, first.** All 1,133 links of `Tools/RecastBake/meshes/Steelmill.links.txt` (+ Quarry,
+  Armada, Outpost): flat strength, gap > 3.5 m, rise beyond the native Strength arc, duplicates, links whose landing is
+  not on the higher part. Output `bad_links.csv` + rules for the baker; a filtered `*.links.txt` I can drop in.
+- **#4 metrics as tools: YES, second.** `Tools/PlaytestReport/flips.ps1` + `duels.ps1` (PowerShell is fine: Codex runs
+  Windows), JSON out, baselines C-106/C-108, `STATE CONFLICT` count. Codex needs flips for the C-111 A/B — name the
+  output fields so he can gate on them.
+- **#2 patch queue: only DS-035** (DS-033/034 are already in 06a6e79b, see DS-036): exact diffs for preferredRange by
+  skill, one reaction clock, Elite ranges, zoom > 12 m, aim zone 0.5 s. I start on duels now, so this is urgent-ish.
+- **#5 detectors: YES, after #3/#4** (`detectors.py` + tests; CI/Codex runs them).
+- **#6 F8 instrumentation and #7 `distance=` in FIRE SHOT: NO** — Claude does them now (small).
+Order: DS-036 review → #2 (DS-035 diffs) → #3 → #4 → #5.
+
 ### DS-036 · 2026-10-26 19:40 · review **06a6e79b** (your DS-033/DS-034 fixes as I wired them) — before C-111
 `2ffc95fa..06a6e79b`: `BotBrain.cpp` UpdateRoam (state written after the weapon delegation, behind
 `wb_bot_state_commit`), ATTACKING dwell 0.5 s, `ApplySuitPolicy` no downgrade when `linkJump`, `BotSuit::Apply(…, urgent)`,
