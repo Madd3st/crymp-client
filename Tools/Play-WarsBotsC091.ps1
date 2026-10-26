@@ -20,7 +20,7 @@ $source=[IO.File]::ReadAllText($base)
 $gate='+wb_maxbots $BotCount';$client='+wb_bot_client_smooth 1'
 if(-not $source.Contains($gate) -or -not $source.Contains($client)){throw 'Generated launcher anchors changed'}
 $source=$source.Replace($gate,'+wb_bot_difficulty 1 +wb_bot_finish 1 +wb_bot_spectator_aim 1 +wb_bot_path_progress 0 +wb_bot_threat_scan 0 '+$gate)
-$source=$source.Replace($client,'+wb_bot_spectator_aim 1 +bind F8 `"wb_mark owner`" '+$client)
+$source=$source.Replace($client,'+wb_bot_spectator_aim 1 +bind f8 `"wb_mark owner`" '+$client)
 $source=$source.Replace('feature_gates=@(','feature_gates=@("wb_bot_difficulty","wb_bot_finish",')
 $source=$source.Replace('client_smooth=1;','client_smooth=1;spectator_aim=1;path_progress=0;threat_scan=0;owner_mark_key="F8";corners_default=1;jump_sanity_default=1;')
 if($source -match '\+wb_bot_(corners|jump_sanity)\s+[01]'){throw 'C091 must use promoted defaults'}

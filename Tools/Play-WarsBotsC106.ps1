@@ -23,7 +23,7 @@ if(-not $source.Contains($gate) -or -not $source.Contains($client)){throw 'Gener
 $source=$source.Replace('+wb_bot_vantage 1','+wb_bot_vantage 0')
 $source=$source.Replace('"wb_bot_vantage",','')
 $source=$source.Replace($gate,'+wb_net_ext 1 +wb_bot_difficulty 1 +wb_bot_finish 1 +wb_bot_spectator_aim 1 +wb_bot_path_progress 0 +wb_bot_threat_scan 0 '+$gate)
-$source=$source.Replace($client,'+wb_net_ext 1 +wb_bot_spectator_aim 1 +bind F8 `"wb_mark owner`" '+$client)
+$source=$source.Replace($client,'+wb_net_ext 1 +wb_bot_spectator_aim 1 +bind f8 `"wb_mark owner`" '+$client)
 $source=$source.Replace('feature_gates=@(','feature_gates=@("wb_net_ext","wb_bot_difficulty","wb_bot_finish",')
 $source=$source.Replace('client_smooth=1;','client_smooth=1;spectator_aim=1;vantage=0;client_net_ext=1;path_progress=0;threat_scan=0;owner_mark_key="F8";corners_default=1;jump_sanity_default=1;')
 $memoryHook=@'
