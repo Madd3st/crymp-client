@@ -8,10 +8,10 @@
   "local_gate": 0,
   "wb_probe_local_test": 1,
   "watch_check_refused": true,
-  "runtime_rules_entity_class": null,
-  "runtime_team_count": null,
-  "runtime_spawn_group_count": null,
-  "counts_status": "BLOCKED: cfg Lua produced no output; one read-only command-line query was rejected Unknown command. Need Claude native read-only diagnostic CGameRules GetEntity()->GetClass()->GetName / GetTeamCount / GetSpawnGroupCount. No gameplay edits or invented offline-as-runtime counts.",
+  "runtime_rules_entity_class": "PowerStruggle",
+  "runtime_team_count": 2,
+  "runtime_spawn_group_count": 6,
+  "counts_status": "CONFIRMED native wb_rules_info on2fee59c2, supersedes earlier console-Lua block",
   "baseline": "build\\c109-shore-2ffc95fa",
   "additional_query": "build/c109-shore-runtime-query/C109-Query.log",
   "data_release": "https://github.com/Madd3st/crymp-client/releases/tag/warsbots-ps-data-a943e070",
@@ -142,5 +142,12 @@
       "updatedAt": "2026-10-26T17:44:54Z",
       "url": "https://github.com/Madd3st/crymp-client/releases/download/warsbots-ps-data-a943e070/Shore.spawns.json"
     }
-  ]
+  ],
+  "runtime_team_names": [
+    "tan",
+    "black"
+  ],
+  "counts_source_sha": "2fee59c2a6d2d8531ba51aafbb33b0024cf8db39",
+  "counts_log": "build/c112-shore-rules-2fee59c2/C112-Shore-Rules.log",
+  "rules_info_line": "[WarsBots] RULES INFO class=PowerStruggle teams=2 names=tan,black spawnGroups=6."
 }
