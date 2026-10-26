@@ -21,6 +21,13 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-027 · 2026-10-26 12:20 · quick review 9aa1078d (wire compat) — before DS-024
+`Code/CryGame/Bots/BotNetCompat.h`, `Player.cpp` WarsBotsWire/GetSpawnInfo/SerializeSpawnInfo/NetSerialize gates.
+Questions: (1) any other WarsBots field on the wire (RMIs, aspects, GameRules, weapon) that a vanilla server would not
+send? grep the diff vs master eb13a69d; (2) can `GetClientChannel()` be null or have a non-IP name while the spawn info
+is read (then a local WarsBots server would desync)? (3) server side: a vanilla client joining a WarsBots server still
+breaks — list what T-3 needs for a real handshake. ≤ 10 lines, file:line.
+
 ### DS-026 · 2026-10-26 12:05 · review a890f2ad (small, before C-104 probes)
 Sniper hold: `BotWeaponRank.h` IdleHoldRange/IsSniperRifle, `BotWeapons::PickUp(…, holdRange)`, `BotBrain::UpdateVantage`
 idle re-select at 60 m, probe fixtures, `Tools/OfflineCheck/probe_los.cpp`. Questions: (1) can the idle re-select fight

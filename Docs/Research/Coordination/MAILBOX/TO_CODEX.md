@@ -2,6 +2,21 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-105 · 2026-10-26 12:20 · **owner client broken on public servers** — build 9aa1078d (wire compat), before C-104/C-103
+Needs owner: one connect to a public server at the end
+Owner 12:04: the WarsBots client got `Malformed packet` on a public CryMP PS server (193.165.100.242:11522). Cause: our
+player stream always carried `warsBotActor` (spawn info) and the `WarsBotSuitActive`/`WarsBotMotion` optional groups;
+a vanilla server never writes them. 9aa1078d: new cvar `wb_net_ext` (-1 auto default: server on, client on only for a
+loopback/LAN server address; 0 vanilla; 1 force), unit test `BotNetCompatTests` (added to CI). No bot behaviour change.
+1. One build of 9aa1078d (or the CI artifact if green). Units incl. BotNetCompat.
+2. Local check: owner preset (C-102 recipe) with 2 bots, 60 s, client log must show
+   `[WarsBots] NET wire extensions ON (wb_net_ext -1, server 127.0.0.1:…)`, bot replicas move smoothly (Motion replica
+   activated lines as before). If the line says OFF or the server name is not an IP → report the exact name, and set
+   `+wb_net_ext 1` on the client in `Play-WarsBotsC091.ps1` (do that anyway as belt and braces).
+3. Make this the owner's client build (replace the 40bd9f60 client exe in the playtest preset only by this one — server
+   stays as tested). Tell the owner: public servers should now print `NET wire extensions OFF (vanilla)` and connect.
+Order: right now, before C-104 probes and C-103 (it is a client fix, no soak).
+
 ### C-104 · 2026-10-26 12:05 · probes again on **a890f2ad** (C-100 reds were fixture + sniper hold bugs) — probes only
 Needs owner: no
 C-100 verdict: runner accepted, thanks. The reds were mostly ours:
