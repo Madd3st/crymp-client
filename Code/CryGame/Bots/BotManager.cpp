@@ -18,6 +18,7 @@
 #include "CryCommon/CryAction/IWeapon.h"
 #include "CryGame/Items/Weapons/WeaponSystem.h"
 #include "CryGame/Items/Weapons/Projectile.h"
+#include <ctime>
 #include <algorithm>
 #include <cerrno>
 #include <cmath>
@@ -215,9 +216,13 @@ void BotManager::TraceShot(EntityId weaponId, EntityId shooter, EntityId project
     IWeapon* weapon=item?item->GetIWeapon():nullptr;
     IFireMode* mode=weapon?weapon->GetFireMode(weapon->GetCurrentFireMode()):nullptr;
     CProjectile* bullet=g_pGame->GetWeaponSystem()->GetProjectile(projectile);
-    WB_LOG(2,"[WarsBots] FIRE SHOT shooter=%u target=%u projectile=%u weapon=%u class=%s mode=%s rpm=%.2f clip=%d remote=%d.",
+    // DS-035: distance to the target at the shot (was only on hits, so misses had no range band)
+    IEntity* shooterEntity=gEnv->pEntitySystem->GetEntity(shooter);
+    IEntity* targetEntity=bot->Brain().Target()?gEnv->pEntitySystem->GetEntity(bot->Brain().Target()):nullptr;
+    const float distance=shooterEntity && targetEntity?(targetEntity->GetWorldPos()-shooterEntity->GetWorldPos()).GetLength():-1.0f;
+    WB_LOG(2,"[WarsBots] FIRE SHOT shooter=%u target=%u projectile=%u weapon=%u class=%s mode=%s rpm=%.2f clip=%d remote=%d distance=%.2f.",
         shooter,bot->Brain().Target(),projectile,item?item->GetEntityId():0,
-        item?item->GetEntity()->GetClass()->GetName():"unknown",mode?mode->GetType():"unknown",mode?mode->GetFireRate():0,mode?mode->GetAmmoCount():-1,bullet?int(bullet->IsRemote()):-1);
+        item?item->GetEntity()->GetClass()->GetName():"unknown",mode?mode->GetType():"unknown",mode?mode->GetFireRate():0,mode?mode->GetAmmoCount():-1,bullet?int(bullet->IsRemote()):-1,distance);
 }
 
 void BotManager::TraceKill(EntityId targetId, EntityId shooterId, bool killerEventEmitted)
@@ -736,6 +741,10 @@ void BotManager::MarkCommand(IConsoleCmdArgs* args)
 	WB_LOG(0, "[WarsBots] OWNER MARK t=%.3f side=%s pos=(%.2f,%.2f,%.2f) yaw=%.1f pitch=%.1f spectating=%u text=\"%s\"",
 		now, gEnv->bServer ? "server" : "client", pos.x, pos.y, pos.z, RAD2DEG(atan2f(view.x, view.y)),
 		RAD2DEG(atan2f(view.z, sqrtf(view.x * view.x + view.y * view.y))), unsigned(watched), text.c_str());
+	// DS-022: the mark also goes into the demo (event 10) with the wall clock, so a report card finds it in both
+	time_t wall = time(nullptr); char clock[32] = {0}; strftime(clock, sizeof(clock), "%Y-%m-%d %H:%M:%S", localtime(&wall));
+	WB_LOG(0, "[WarsBots] OWNER MARK wall=%s t=%.3f", clock, now);
+	if (self) self->Demo().Mark(text.empty() ? "owner" : text.c_str());
 	static int s_marks = 0;
 	CryLogAlways("$3[WarsBots] mark #%d saved", ++s_marks);   // visible confirmation for the owner (playtest 3: marks lost)
 }
