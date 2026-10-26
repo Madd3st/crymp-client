@@ -1,0 +1,108 @@
+diff --git a/Code/CryGame/Bots/BotMatch.cpp b/Code/CryGame/Bots/BotMatch.cpp
+index a08d27f7..e17a5d36 100644
+--- a/Code/CryGame/Bots/BotMatch.cpp
++++ b/Code/CryGame/Bots/BotMatch.cpp
+@@ -43,18 +43,40 @@ bool BotMatch::Register(CGameRules& rules, IActor& actor)
+     if (!rulesTable || !actorTable) return false;
+     bool groups=false;
+     rulesTable->GetValue("USE_SPAWN_GROUPS",groups);
+-    if (groups) { WB_LOG(0, "[WarsBots] IA registration refused: spawn-group channel callbacks unsupported."); return false; }
+-    bool attached=false;
+-    rulesTable->GetValue("warsBotsIAAttached",attached);
+-    if (!attached)
++    const bool ps=IsPowerStruggle(rules);
++    if (groups && !ps) { WB_LOG(0, "[WarsBots] IA registration refused: spawn-group channel callbacks unsupported."); return false; }
++    SmartScriptTable hooks;
++    if (ps)
+     {
+-        if (!gEnv->pScriptSystem->ExecuteFile("Scripts/WarsBots/InstantAction.lua")) return false;
+-        SmartScriptTable hooks;
+-        // CallMethod pushes the table as self: WarsBotsIA:Attach(rules) semantics preserved.
+-        if (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsIA",hooks) || !hooks.GetPtr() ||
+-            !Script::CallMethod(hooks.GetPtr(),"Attach",rulesTable)) return false;
++        bool attached=false;
++        rulesTable->GetValue("warsBotsPSAttached",attached);
++        if (!attached)
++        {
++            if (!gEnv->pScriptSystem->ExecuteFile("Scripts/WarsBots/PowerStruggle.lua")) return false;
++            if (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsPS",hooks) || !hooks.GetPtr() ||
++                !Script::CallMethod(hooks.GetPtr(),"Attach",rulesTable)) return false;
++            rulesTable->GetValue("warsBotsPSAttached",attached);
++            if (!attached) return false;
++        }
++        // PS-0 #3: create the PS player entry (PP/CP/score/revive) for the channel-0 actor.
++        if (!Script::CallMethod(hooks.GetPtr(),"Register",ScriptHandle(actor.GetEntityId()),ScriptHandle(rules.GetTeam(actor.GetEntityId())))) return false;
++        WB_LOG(1, "[WarsBots] PS participant registered EntityId=%u team=%d channelId=0 nativeIsPlayer=0 matchCount=%d.",
++            actor.GetEntityId(),rules.GetTeam(actor.GetEntityId()),rules.GetMatchParticipantCount(true));
++    }
++    else
++    {
++        bool attached=false;
+         rulesTable->GetValue("warsBotsIAAttached",attached);
+-        if (!attached) return false;
++        if (!attached)
++        {
++            if (!gEnv->pScriptSystem->ExecuteFile("Scripts/WarsBots/InstantAction.lua")) return false;
++            if (!gEnv->pScriptSystem->GetGlobalValue("WarsBotsIA",hooks) || !hooks.GetPtr() ||
++                !Script::CallMethod(hooks.GetPtr(),"Attach",rulesTable)) return false;
++            rulesTable->GetValue("warsBotsIAAttached",attached);
++            if (!attached) return false;
++        }
++        WB_LOG(1, "[WarsBots] IA participant registered EntityId=%u channelId=0 nativeIsPlayer=0 matchCount=%d.",
++            actor.GetEntityId(),rules.GetMatchParticipantCount(true));
+     }
+     // Reset first: a failed call must not leave a half-registered participant flag.
+     if (!Script::CallMethod(rulesTable,"ResetScore",ScriptHandle(actor.GetEntityId()))) return false;
+@@ -62,8 +84,6 @@ bool BotMatch::Register(CGameRules& rules, IActor& actor)
+     // Ping is a display field, not evidence of a connection.
+     int pingKey=0;
+     if (rulesTable->GetValue("SCORE_PING_KEY",pingKey)) rules.SetSynchedEntityValue(actor.GetEntityId(),TSynchedKey(pingKey),0);
+-    WB_LOG(1, "[WarsBots] IA participant registered EntityId=%u channelId=0 nativeIsPlayer=0 matchCount=%d.",
+-        actor.GetEntityId(),rules.GetMatchParticipantCount(true));
+     return true;
+ }
+ void BotMatch::EquipLikePlayer(CGameRules& rules, IActor& actor)
+diff --git a/Pak/Scripts/WarsBots/PowerStruggle.lua b/Pak/Scripts/WarsBots/PowerStruggle.lua
+new file mode 100644
+index 00000000..21e1e900
+--- /dev/null
++++ b/Pak/Scripts/WarsBots/PowerStruggle.lua
+@@ -0,0 +1,38 @@
++-- WarsBots: PowerStruggle integration for a channel-0 bot. Native channels and Actor:IsPlayer stay unchanged.
++-- Attach once per rules object; Register is called by BotMatch after SetTeam, before the bot's first revive.
++WarsBotsPS = WarsBotsPS or {};
++
++function WarsBotsPS:Attach(rules)
++    if rules.warsBotsPSAttached then return; end
++    self.rules = rules;
++    rules.botPlayers = rules.botPlayers or {};
++    rules.warsBotsPSAttached = true;
++end
++
++function WarsBotsPS:Register(playerId, teamId)
++    local rules = self.rules;
++    if not rules then return false; end
++    local player = System.GetEntity(playerId);
++    if not player or not player.actor then return false; end
++    rules.botPlayers[playerId] = true;
++    player.warsBot = true;
++
++    -- PP/CP/score/revive bookkeeping normally done by PowerStruggle.Server:OnClientConnect.
++    rules:ResetScore(playerId);
++    rules:ResetPP(playerId);
++    rules:ResetCP(playerId);
++    rules:ResetRevive(playerId);
++    rules:SetupPlayer(player);
++
++    -- Keep the team set by BotInstance::Spawn; the spawn group is what PS RevivePlayer needs with USE_SPAWN_GROUPS.
++    local group = rules.game:GetTeamDefaultSpawnGroup(teamId);
++    if group and group ~= NULL_ENTITY then
++        player.spawnGroupId = group;
++        rules:SetPlayerSpawnGroup(playerId, group);
++    end
++    return true;
++end
++
++function WarsBotsPS:IsBot(playerId)
++    return self.rules and self.rules.botPlayers and self.rules.botPlayers[playerId] == true;
++end

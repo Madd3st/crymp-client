@@ -1,0 +1,48 @@
+diff --git a/Pak/CryMP/Scripts/GameRules/PowerStruggle.lua b/Pak/CryMP/Scripts/GameRules/PowerStruggle.lua
+index 58f900a3..6ee3e679 100644
+--- a/Pak/CryMP/Scripts/GameRules/PowerStruggle.lua
++++ b/Pak/CryMP/Scripts/GameRules/PowerStruggle.lua
+@@ -8,7 +8,7 @@
+ --  
+ --------------------------------------------------------------------------
+ --  History:
+---  - 30/ 6/2006   12:30 : Created by Márcio Martins
++--  - 30/ 6/2006   12:30 : Created by Mï¿½rcio Martins
+ --
+ ----------------------------------------------------------------------------------------------------
+ Script.LoadScript("scripts/gamerules/teaminstantaction.lua", 1, 1);
+@@ -672,6 +672,10 @@ function PowerStruggle.Server:OnPlayerKilled(hit)
+ 	
+ 	if (hit.target and hit.target.actor) then
+ 		self:VehicleOwnerDeath(hit.target);
++		-- PS-0 #4: bots have no client RequestRevive; join the next PS wave instead of the 5 s BotBrain revive.
++		if (self.botPlayers and self.botPlayers[hit.target.id] and not self:IsInReviveQueue(hit.target.id)) then
++			self:QueueRevive(hit.target.id);
++		end
+ 	end
+ end
+ 
+@@ -1600,6 +1604,23 @@ jeep="special";
+ van="nkapc";
+ 
+ 
++----------------------------------------------------------------------------------------------------
++-- PS-0 #4: bots are in m_playerteams via CGameRules::SetTeam, so GetTeamPlayerCount sees them while
++-- GetTeamChannelCount (TeamInstantAction) does not. Count bots for the start check, not for autobalance.
++function PowerStruggle:PlayerCountOk()
++	local preGame = self:GetState() == "PreGame";
++	for i, teamName in ipairs(self.teamName) do
++		local teamId = self.game:GetTeamId(teamName);
++		local players = self.game:GetTeamPlayerCount(teamId, preGame);
++		local need = self.game:GetMinTeamLimit();
++		if (players < need) then
++			Log("WarsBots PS PlayerCountOk: team %s has %d/%d (bots included)", teamName, players, need);
++			return false;
++		end
++	end
++	return true;
++end
++
+ ----------------------------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------------------------------
+ Script.LoadScript("scripts/gamerules/powerstrugglebuying.lua", 1, 1);

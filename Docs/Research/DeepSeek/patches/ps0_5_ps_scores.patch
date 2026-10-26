@@ -1,0 +1,15 @@
+diff --git a/Pak/CryMP/Scripts/GameRules/PowerStruggle.lua b/Pak/CryMP/Scripts/GameRules/PowerStruggle.lua
+index 6ee3e679..400b1cc1 100644
+--- a/Pak/CryMP/Scripts/GameRules/PowerStruggle.lua
++++ b/Pak/CryMP/Scripts/GameRules/PowerStruggle.lua
+@@ -1189,7 +1189,9 @@ function PowerStruggle:ProcessScores(hit, tk)
+ 	if (self:GetState()=="PostGame") then return; end	
+ 	
+ 	local shooter=hit.shooter;
+-	if (shooter and shooter.actor and shooter.actor:IsPlayer()) then
++	-- PS-0 #5: channel-0 bots are not IsPlayer but are PS participants; PP/CP must be awarded by entity id.
++	local isBot = shooter and self.botPlayers and self.botPlayers[shooter.id];
++	if (shooter and shooter.actor and (shooter.actor:IsPlayer() or isBot)) then
+ 		self:AwardKillPP(hit);
+ 		self:AwardKillCP(hit);
+ 	end

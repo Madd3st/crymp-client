@@ -1,0 +1,99 @@
+diff --git a/Code/CryGame/Bots/BotInstance.cpp b/Code/CryGame/Bots/BotInstance.cpp
+index 3198557b..d927206a 100644
+--- a/Code/CryGame/Bots/BotInstance.cpp
++++ b/Code/CryGame/Bots/BotInstance.cpp
+@@ -5,6 +5,7 @@
+ #include "CryGame/Bots/BotInstance.h"
+ #include "CryGame/Bots/BotManager.h"
+ #include "CryGame/Bots/BotMatch.h"
++#include "CryGame/Bots/BotTeamPlan.h"
+ #include "CryGame/Bots/CryMPEngineAdapter.h"
+ #include "CryGame/Game.h"
+ #include "CryGame/GameRules.h"
+@@ -65,6 +66,16 @@ bool BotInstance::Spawn(const Vec3& position)
+ 	m_identity = actor->GetEntity();
+ 	// Ownership must be visible to the registry before IA registration queries it.
+ 	m_owner.Adopt(*this);
++	// PS-0 #2: team before registration/spawn; CanEnterVehicle and GetSpawnLocationTeam read it.
++	if (CGameRules* rules = g_pGame->GetGameRules())
++		if (BotMatch::IsPowerStruggle(*rules))
++		{
++			const int team = BotTeamPlan::TeamForSlot(m_number);
++			rules->SetTeam(team, m_entityId);
++			const EntityId group = rules->GetTeamDefaultSpawnGroup(team);
++			if (group) rules->SetPlayerSpawnGroup(m_entityId, group);
++			WB_LOG(1, "[WarsBots] #%d PS team=%d spawnGroup=%u before registration.", m_number, team, group);
++		}
+ 	if (!BotMatch::Register(*g_pGame->GetGameRules(), *actor))
+ 	{
+ 		WB_LOG(0, "[WarsBots] #%d IA registration failed; removing only this new owned actor.", m_number);
+@@ -293,7 +304,10 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
+ 		return false;
+ 	}
+ 	const EntityId id = m_entityId;
+-	const EntityId chosen = forcedSpawn ? forcedSpawn : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation,guardRetry?&m_guardFailedSpawns:nullptr);
++	const bool ps = BotMatch::IsPowerStruggle(*rules);
++	const EntityId chosen = forcedSpawn ? forcedSpawn :
++		(ps ? rules->GetSpawnLocationTeam(id, m_spawnPosition)
++		    : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation,guardRetry?&m_guardFailedSpawns:nullptr));
+ 	if (!chosen)
+ 	{
+ 		WB_LOG(1, "[WarsBots] #%d revive deferred: no safe IA spawn; retry in 5 seconds.", m_number);
+@@ -313,7 +327,7 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
+ 	const Ang3 angles(spawn->GetWorldRotation());
+ 	WB_LOG(2, "[WarsBots] #%d revive requested EntityId=%u spawnId=%u previousSpawn=%u position=(%.3f,%.3f,%.3f).",
+ 		m_number, id, chosen, m_lastSpawnLocation, position.x, position.y, position.z);
+-	rules->RevivePlayer(actor, position, angles, 0, !guardRetry);
++	rules->RevivePlayer(actor, position, angles, rules->GetTeam(id), !guardRetry);
+ 
+ 	IActor* revived = m_owner.Framework()->GetIActorSystem()->GetActor(id);
+ 	const bool alive = Owns(id) && revived && revived->GetHealth() > 0 &&
+diff --git a/Code/CryGame/Bots/BotTeamPlan.h b/Code/CryGame/Bots/BotTeamPlan.h
+new file mode 100644
+index 00000000..572a09e6
+--- /dev/null
++++ b/Code/CryGame/Bots/BotTeamPlan.h
+@@ -0,0 +1,21 @@
++// PS-0 #2: team assignment before the first spawn. In PowerStruggle a bot must have a team before
++// GetSpawnLocationTeam / SetPlayerSpawnGroup / EquipPlayer, otherwise it is a neutral channel-0 actor.
++// Pure logic, no engine types; Tests/BotTeamPlanTests.cpp.
++#pragma once
++
++namespace WarsBots {
++
++// Alternating slot assignment (1-based): odd -> tan (1), even -> black (2).
++inline int TeamForSlot(int slot)
++{
++    return (slot & 1) ? 1 : 2;
++}
++// Balance a new slot by current team sizes; tie goes to the slot's natural team so a fresh 3v3 does not drift.
++inline int TeamForCounts(int slot, int tanCount, int blackCount)
++{
++    if (tanCount < blackCount) return 1;
++    if (blackCount < tanCount) return 2;
++    return TeamForSlot(slot);
++}
++
++} // namespace WarsBots
+diff --git a/Tests/BotTeamPlanTests.cpp b/Tests/BotTeamPlanTests.cpp
+new file mode 100644
+index 00000000..3b3f1f57
+--- /dev/null
++++ b/Tests/BotTeamPlanTests.cpp
+@@ -0,0 +1,16 @@
++// PS-0 #2 tests: team-before-spawn policy (engine-free).
++#include "CryGame/Bots/BotTeamPlan.h"
++#include <cassert>
++#include <cstdio>
++using namespace WarsBots;
++
++int main()
++{
++    assert(TeamForSlot(1) == 1 && TeamForSlot(2) == 2 && TeamForSlot(3) == 1);
++    assert(TeamForCounts(1, 0, 0) == 1);
++    assert(TeamForCounts(2, 3, 1) == 2);
++    assert(TeamForCounts(3, 1, 3) == 1);
++    assert(TeamForCounts(4, 2, 2) == 2);
++    std::printf("team plan: all tests passed\n");
++    return 0;
++}

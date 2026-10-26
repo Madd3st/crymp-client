@@ -1,0 +1,228 @@
+diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
+index cc4dac98..562b19e1 100644
+--- a/Code/CryGame/Bots/BotConfig.cpp
++++ b/Code/CryGame/Bots/BotConfig.cpp
+@@ -10,6 +10,7 @@ const IntBinding kInts[]={
+  {"wb_demo_record",&BotConfig::demoRecord,"Opt-in server wbdemo/2 recorder; exit: diagnostic-only, default OFF"},
+  {"wb_demo_hz",&BotConfig::demoHz,"Diagnostic demo sample rate10..60; default20"},
+  {"wb_probe_local_test",&BotConfig::gateOpen,"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction."},
++ {"wb_allow_public",&BotConfig::allowPublic,"PS-0 #1: allow bots on a non-loopback server (public). Still requires wb_probe_local_test=1 and a supported game mode; default 0 keeps the local-only safety."},
+  {"wb_bot_cloak_experimental",&BotConfig::cloakExperimental,"Experimental bot cloak, defaults OFF"},
+  {"wb_hotspot_all_nodes",&BotConfig::hotspotAllNodes,"Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak."},
+  {"wb_reachable_goals",&BotConfig::reachableGoals,"Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF."},
+diff --git a/Code/CryGame/Bots/BotConfig.h b/Code/CryGame/Bots/BotConfig.h
+index 14728280..78f4a579 100644
+--- a/Code/CryGame/Bots/BotConfig.h
++++ b/Code/CryGame/Bots/BotConfig.h
+@@ -5,6 +5,7 @@ namespace WarsBots {
+ struct BotConfig {
+  bool registered=false;
+  int gateOpen=0;
++ int allowPublic=0;   // wb_allow_public (PS-0): allow bots on a non-loopback server
+  int cloakExperimental=0;
+  int maxBots=6;
+  int logLevel=1;
+diff --git a/Code/CryGame/Bots/BotManager.cpp b/Code/CryGame/Bots/BotManager.cpp
+index 870c8170..5f32f135 100644
+--- a/Code/CryGame/Bots/BotManager.cpp
++++ b/Code/CryGame/Bots/BotManager.cpp
+@@ -1,4 +1,4 @@
+-// WarsBots project addition. See LICENSE.txt for SDK usage terms.
++﻿// WarsBots project addition. See LICENSE.txt for SDK usage terms.
+ #include "PortIncludes.h"
+ #include "CryGame/Bots/BotLog.h"
+ #include "CryGame/Bots/BotManager.h"
+@@ -241,7 +241,7 @@ void BotManager::TraceKill(EntityId targetId, EntityId shooterId, bool killerEve
+ 
+ bool BotManager::CanRunLocalIA() const
+ {
+-	return CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, false);
++	return CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, false, true, m_config.allowPublic==1);
+ }
+ 
+ bool BotManager::CanRunLocalExport() const
+@@ -315,7 +315,7 @@ BotInstance* BotManager::Selected() const
+ BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyle* style, bool startAI)
+ {
+     if(m_nav.AuditOnly()){WB_LOG(0,"[WarsBots] Add refused: export-only NAV AUDIT active");return nullptr;}
+-	if (!CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, true))
++	if (!CryMPEngineAdapter::LocalIAGate(m_framework, m_levelReady, m_config.gateOpen, true, true, m_config.allowPublic==1))
+ 		return nullptr;
+ 	if (Count() >= MaxBots())
+ 	{
+@@ -1065,3 +1065,4 @@ void BotManager::BotAbilityCommand(IConsoleCmdArgs* args)
+ 	bot->Brain().AbilityCommand(*bot, args);
+ }
+ }
++
+diff --git a/Code/CryGame/Bots/BotMatch.cpp b/Code/CryGame/Bots/BotMatch.cpp
+index c97734d9..a08d27f7 100644
+--- a/Code/CryGame/Bots/BotMatch.cpp
++++ b/Code/CryGame/Bots/BotMatch.cpp
+@@ -1,6 +1,7 @@
+-#include "PortIncludes.h"
++﻿#include "PortIncludes.h"
+ #include "CryGame/Bots/BotLog.h"
+ #include "BotMatch.h"
++#include "CryGame/Bots/BotModePlan.h"
+ #include "CryGame/Game.h"
+ #include "CryGame/GameRules.h"
+ #include "CryGame/Actors/Player/Player.h"
+@@ -9,9 +10,19 @@
+ #include <algorithm>
+ #include <cstring>
+ namespace WarsBots {
++bool BotMatch::IsBotMode(const CGameRules& rules)
++{
++    const char* name=rules.GetEntity() && rules.GetEntity()->GetClass() ? rules.GetEntity()->GetClass()->GetName() : "";
++    return IsBotRulesClass(name);
++}
++bool BotMatch::IsPowerStruggle(const CGameRules& rules)
++{
++    const char* name=rules.GetEntity() && rules.GetEntity()->GetClass() ? rules.GetEntity()->GetClass()->GetName() : "";
++    return IsPowerStruggleClass(name);
++}
+ bool BotMatch::IsBot(const CGameRules& rules, EntityId id)
+ {
+-    if (!id || strcmp(rules.GetEntity()->GetClass()->GetName(),"InstantAction")) return false;
++    if (!id || !IsBotMode(rules)) return false;
+     IActor* actor=g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(id);
+     if (!actor || strcmp(actor->GetEntity()->GetClass()->GetName(),"Player") ||
+         !static_cast<CPlayer*>(actor)->IsWarsBotActor()) return false;
+@@ -20,7 +31,7 @@ bool BotMatch::IsBot(const CGameRules& rules, EntityId id)
+ void BotMatch::Collect(const CGameRules& rules, std::vector<EntityId>& bots)
+ {
+     bots.clear();
+-    if (strcmp(rules.GetEntity()->GetClass()->GetName(),"InstantAction")) return;
++    if (!IsBotMode(rules)) return;
+     IActorIteratorPtr it=g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
+     while (IActor* actor=it->Next()) if (IsBot(rules,actor->GetEntityId())) bots.push_back(actor->GetEntityId());
+ }
+@@ -73,7 +84,7 @@ void BotMatch::Unregister(EntityId id)
+ {
+     if (!gEnv || !gEnv->bServer || !g_pGame || !id) return;
+     CGameRules* rules=g_pGame->GetGameRules();
+-    if (!rules || strcmp(rules->GetEntity()->GetClass()->GetName(),"InstantAction")) return;
++    if (!rules || !IsBotMode(*rules)) return;
+     IScriptTable* table=rules->GetEntity()->GetScriptTable();
+     if (!table) return;
+     for (const char* name : {"SCORE_KILLS_KEY","SCORE_DEATHS_KEY","SCORE_HEADSHOTS_KEY","SCORE_PING_KEY"})
+@@ -101,3 +112,4 @@ void BotMatch::LogScores(EntityId target, EntityId shooter)
+     }
+ }
+ }
++
+diff --git a/Code/CryGame/Bots/BotMatch.h b/Code/CryGame/Bots/BotMatch.h
+index 127b17b8..efa7c0aa 100644
+--- a/Code/CryGame/Bots/BotMatch.h
++++ b/Code/CryGame/Bots/BotMatch.h
+@@ -7,6 +7,8 @@ namespace WarsBots {
+ // Match identity is an EntityId. It is never an entry in the connection registry.
+ class BotMatch {
+ public:
++    static bool IsBotMode(const CGameRules& rules);       // InstantAction or PowerStruggle
++    static bool IsPowerStruggle(const CGameRules& rules);
+     static bool IsBot(const CGameRules& rules, EntityId id);
+     static void Collect(const CGameRules& rules, std::vector<EntityId>& bots);
+     static bool Register(CGameRules& rules, IActor& actor);
+diff --git a/Code/CryGame/Bots/BotModePlan.h b/Code/CryGame/Bots/BotModePlan.h
+new file mode 100644
+index 00000000..a28c26eb
+--- /dev/null
++++ b/Code/CryGame/Bots/BotModePlan.h
+@@ -0,0 +1,22 @@
++// PS-0 #1: mode and bind policy for bots on a public/PS server. Pure logic, no engine types.
++// Tests/BotModePlanTests.cpp.
++#pragma once
++#include <cstring>
++
++namespace WarsBots {
++
++inline bool IsBotRulesClass(const char* className)
++{
++    return className && (!std::strcmp(className, "InstantAction") || !std::strcmp(className, "PowerStruggle"));
++}
++inline bool IsPowerStruggleClass(const char* className)
++{
++    return className && !std::strcmp(className, "PowerStruggle");
++}
++// The local gate needs loopback+LAN unless the owner explicitly allowed a public server.
++inline bool GateBindOk(bool allowPublic, bool localBind)
++{
++    return allowPublic || localBind;
++}
++
++} // namespace WarsBots
+diff --git a/Code/CryGame/Bots/CryMPEngineAdapter.cpp b/Code/CryGame/Bots/CryMPEngineAdapter.cpp
+index 1d0c81db..973b98aa 100644
+--- a/Code/CryGame/Bots/CryMPEngineAdapter.cpp
++++ b/Code/CryGame/Bots/CryMPEngineAdapter.cpp
+@@ -1,12 +1,13 @@
+ #include "PortIncludes.h"
+ #include "CryGame/Bots/BotLog.h"
+ #include "CryMPEngineAdapter.h"
++#include "CryGame/Bots/BotModePlan.h"
+ #include "CryCommon/CryAction/ILevelSystem.h"
+ #include "CryCommon/CryAction/IGameRulesSystem.h"
+ #include <cmath>
+ #include <cstring>
+ namespace WarsBots {
+-bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle)
++bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle, bool allowPublic)
+ {
+     if (!gEnv || !gEnv->pConsole) return false;
+     ICVar* bind = gEnv->pConsole->GetCVar("sv_bind");
+@@ -14,9 +15,11 @@ bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady,
+     ICVar* mode = gEnv->pConsole->GetCVar("sv_gamerules");
+     const bool loaded = framework && framework->GetILevelSystem()->IsLevelLoaded();
+     const bool rules = framework && framework->GetIGameRulesSystem()->GetCurrentGameRules();
++    // DS-037 PS-0 #1: a public server cannot use sv_bind=127.0.0.1/sv_lanonly=1. The owner opts in explicitly.
++    const bool localBind = bind && !strcmp(bind->GetString(),"127.0.0.1") && lan && lan->GetIVal()==1;
++    const bool bindOk = GateBindOk(allowPublic, localBind);
+     const bool allowed = framework && gEnv->bServer && gEnv->bMultiplayer && !gEnv->bEditor &&
+-        levelReady && loaded && rules && optIn==1 && bind && !strcmp(bind->GetString(),"127.0.0.1") &&
+-        lan && lan->GetIVal()==1 && mode && (!strcmp(mode->GetString(),"InstantAction") ||
++        levelReady && loaded && rules && optIn==1 && bindOk && mode && (!strcmp(mode->GetString(),"InstantAction") ||
+         (allowPowerStruggle && !strcmp(mode->GetString(),"PowerStruggle")));
+     if (!allowed && diagnostic)
+         WB_LOG(0, "[WarsBots/CryMP] GATE closed: server=%d multiplayer=%d editor=%d levelReady=%d loaded=%d rules=%d optIn=%d bind=%s lan=%d mode=%s.",
+diff --git a/Code/CryGame/Bots/CryMPEngineAdapter.h b/Code/CryGame/Bots/CryMPEngineAdapter.h
+index bd0181fb..5450f288 100644
+--- a/Code/CryGame/Bots/CryMPEngineAdapter.h
++++ b/Code/CryGame/Bots/CryMPEngineAdapter.h
+@@ -6,7 +6,7 @@ namespace WarsBots {
+ // CryMP integration boundary. No connection registration or binary addresses here.
+ class CryMPEngineAdapter {
+ public:
+-    static bool LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle = false);
++    static bool LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle = false, bool allowPublic = false);
+     // Read-only exports (wb_geom_export): the same offline loopback gate, but a PowerStruggle level may be loaded with
+     // its own rules (X-066: PS maps fail to start under InstantAction). Bots keep LocalIAGate, IA only.
+     static bool LocalExportGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic)
+diff --git a/Tests/BotModePlanTests.cpp b/Tests/BotModePlanTests.cpp
+new file mode 100644
+index 00000000..4dba6a4a
+--- /dev/null
++++ b/Tests/BotModePlanTests.cpp
+@@ -0,0 +1,21 @@
++// PS-0 #1 tests: mode/bind policy (engine-free).
++#include "CryGame/Bots/BotModePlan.h"
++#include <cassert>
++#include <cstdio>
++using namespace WarsBots;
++
++int main()
++{
++    assert(IsBotRulesClass("InstantAction"));
++    assert(IsBotRulesClass("PowerStruggle"));
++    assert(!IsBotRulesClass("SinglePlayer"));
++    assert(!IsBotRulesClass(""));
++    assert(IsPowerStruggleClass("PowerStruggle"));
++    assert(!IsPowerStruggleClass("InstantAction"));
++    assert(GateBindOk(false, true));    // local loopback
++    assert(!GateBindOk(false, false));  // public without opt-in
++    assert(GateBindOk(true, false));    // explicit public opt-in
++    assert(GateBindOk(true, true));
++    std::printf("mode plan: all tests passed\n");
++    return 0;
++}

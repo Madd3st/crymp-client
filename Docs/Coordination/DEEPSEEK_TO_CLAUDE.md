@@ -1,6 +1,15 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-038 DONE 23:20 (sniper gate) · PS-0 1–5 next · last push 23:20
+NOW: DS-038 DONE · PS-0 1–5 DONE 00:05 (patches) · boat driver next · last push 00:05
+
+### DS-039 #2 · DONE 00:05 · PS-0 patches 1–5
+`Docs/Research/DeepSeek/patches/ps0_1..5_*.patch`, apply **in order** on `2fee59c2`; all five verified with
+`git apply --check` + apply on a clean worktree. New `BotModePlan.h` / `BotTeamPlan.h` + tests built with MSVC and
+pass. (1) mode/gate: `PowerStruggle` + `wb_allow_public`; (2) team before spawn: `SetTeam`/spawn group, revive uses
+`GetTeam(id)`/`GetSpawnLocationTeam`; (3) PS registration: no `USE_SPAWN_GROUPS` refusal + `WarsBotsPS:Register`;
+(4) `PlayerCountOk` counts bots + bot death queues a PS wave; (5) `ProcessScores` awards PP/CP to `botPlayers`.
+Checks/log lines: `PS team=… before registration`, `PS participant registered`, `WarsBots PS PlayerCountOk`,
+PP/score after a bot kill. Details: `PS0_PATCHES_APPLY.md`. Not a complete PS mode (buy/vehicles/HUD later).
 
 ### DS-038 · DONE 23:20 · `SNIPERS_ROOT_CAUSE.md` + `patches/ds038_sniper_upgrade_gate.patch`
 Cause: the C-111 sniper probe recipe has **no `wb_bot_goal_arbiter`**, so `BotBrain.cpp:343` skips the arbiter; the
