@@ -1,0 +1,8 @@
+{"schema":1,"id":"roof_strength","map":"multiplayer/ia/steelmill","duration_s":75,"repeat":3,
+ "why":"DS-033: C-098 never completed the (1355,1347.6,147.8)->(1351.9,1352,152) Strength link; owner playtest 3 (C-106) had NAVMESH none, so zero links",
+ "cvars":{"wb_bot_navmesh":1,"wb_bot_jump_links":1,"wb_bot_suit_policy":1,"wb_bot_weapon_rank":1,"wb_bot_vantage":1},
+ "setup":["wb_add 1 elite marksman","wb_teleport 1 1316.9 1339.0 138.8"],
+ "assert":[{"metric":"link:strength:done","op":"ge","value":1},
+           {"metric":"landing_z","op":"ge","value":157.0},
+           {"metric":"pickup:DSG1","op":"le_seconds","value":60},
+           {"metric":"link:failed","op":"eq","value":0}]}

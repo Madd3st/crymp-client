@@ -1,6 +1,34 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-029…DS-032 DONE 18:55 (4 docs) · waiting mail · last push 18:55
+NOW: DS-033/034/035 DONE 21:05 (3 docs + proto) · waiting mail · last push 21:05
+
+### DS-035 · DONE 21:05 · `Docs/Research/DeepSeek/DUELS_10_30M.md`
+C-108 (15 bots): B/N/V/E kills 25/87/93/70, deaths 86/75/66/48, hit rate 22.8/34.8/30.9/32.5 %, hit p50
+10.96/11.03/13.62/11.56. Hits at 20-30 m: 10/43/**111**/29 -> Veteran, not Elite. First-shot delay 1.04/0.66/0.41/0.38 s
+(Elite 4.75x its 0.08 table value). Causes: style `preferredRange` decides the band and skill scaling leaves it untouched
+(`BotProfile.h:59-74`, `BotDifficulty.h:58`); Elite closes to 8-13 m and fires while moving, where SCAR spread (1-2.25°)
+swamps its 0.1°; double reaction gate (`BotBrain.cpp:752,854,876`); zoom only while "fighting"; AIM ZONE 1.5 s.
+Fix: scale preferredRange 0.8/1.0/1.3/1.6, one reaction clock, E 32/38/60, hold the band, zoom >12 m, aim zone 0.5 s.
+Acceptance: Elite > Veteran in kills and 20-30 hits, monotonic hit rate and delay.
+
+### DS-034 · DONE 21:05 · `Docs/Research/DeepSeek/FLIPS_ROOT_CAUSE.md` + `proto/decision_commit.h/.cpp`
+C-106 (36.4 min, 8 bots): 89.1 state A→B→A per bot-min, 34.5 direction reversals/min vs owner 8.06; target A→B→A = 0,
+goal flips 0.44/bot-min. Dominant pair SEARCHING_ENEMY↔MOVING_TO_WEAPON 13,004/12,999: `UpdateRoam` sets SEARCHING
+(`BotBrain.cpp:570`) then calls `UpdateUpgrade` (`:585`), which sets MOVING (`:546`) in the same tick; the arbiter leaves
+`m_upgradeTarget` set when it does not choose Weapon (`:1327`). Second pair CHASING↔ATTACKING 2,768 at the 18/22 m
+boundary (`:762`). Fix: clear the stale upgrade target / change state after the tactics block; one change per decision
++ 0.3 s dwell + 0.5 s attack-leave via `DecisionCommit`; hold the move destination (`MoveCommit`). Module + 9 test groups
+built with MSVC and pass (`decision_commit: all tests passed`). Target <2 state flips and <12 reversals/bot-min.
+
+### DS-033 · DONE 21:05 · `Docs/Research/DeepSeek/JUMPS_ROOT_CAUSE.md` + `proto/nav_links_probe.cpp` + 2 probes
+Ranked: (1) C-091 and C-106 both log `NAVMESH none` -> 0 LINK lines; owner's playtest 3 had no links at all. (2) C-098
+had 1,133 links ON; 152 starts / 89 done / 49 failed; Strength 35/71 failures, 27 `missed_landing`. `ApplySuitPolicy`
+line 1316 downgrades a Strength link to a Normal jump when energy <70, so it undershoots; the 2 s suit cooldown also
+exceeds the 2 s Act window (`no_takeoff`). (3) Flat `strength` links (e.g. 1298,1343.6 -> 1289,1343.5) run off the
+ledge, and 2 failures ban the link. Offline probe: **34/34 spawns reach DSG1**, 23/34 with 54 links, 11 walk-only;
+DSG1 projects to z 157.94; Gauss 34/34 with 174 links. So the bake is connected; the executor/policy is the blocker.
+Fix: install navmesh in the playtest, never downgrade `linkJump`, energy >=90 + wait for Strength + 3.5 s Act, start the
+link 3.5 m out at speed, validate links, walk-only fallback. Probes `roof_strength`, `fence_hop`.
 
 ### DS-032 · DONE 18:55 · `Docs/Research/DeepSeek/DUMBNESS_DETECTORS.md`
 Seven detectors + goal stall: oscillation (4 reversals/2 s, strafe=0), decision flapping (3 changes/2 s, old target
