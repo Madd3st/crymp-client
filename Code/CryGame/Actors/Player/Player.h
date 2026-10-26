@@ -24,6 +24,7 @@
 #include "CryCommon/CryAction/IViewSystem.h"
 #include "PlayerView.h"
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "CryGame/Bots/BotAimInterp.h"
 #include "CryGame/Bots/BotReplicaSmooth.h"
 #endif
 
@@ -648,6 +649,7 @@ public:
 	float m_warsBotSpeed = 0;
 	// O-025: client replica filters the 10 Hz direction/aim steps (wb_bot_client_smooth, default OFF).
 	WarsBots::BotReplicaSmooth m_warsBotSmooth;
+	WarsBots::BotAimInterp m_warsBotAimInterp;   // playtest 3: FP spectator camera, snapshot interpolation
 	// owner 25.10: held-weapon clip/reserve for spectators (native ammo goes only to the owning client; bots have none)
 	uint16 m_warsBotClip = 0, m_warsBotReserve = 0;
 	// T-2 (DeepSeek DS-002): does a channel-0 replica receive physics snapshots AND move itself? Counted on clients.

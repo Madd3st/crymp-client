@@ -1930,7 +1930,15 @@ bool CPlayer::UpdateFpSpectatorView(SViewParams& viewParams)
         {
             // Bots have no CNetPlayerInput. Reuse the existing replicated pose, never a fake channel.
             const Vec3 eye = pTarget->GetEntity()->GetWorldPos() + pTarget->GetStanceInfo(pTarget->GetStance())->viewOffset;
-            pTarget->m_netAimDir = (pTarget->WarsBotViewAim() - eye).GetNormalizedSafe(pTarget->m_baseQuat.GetColumn1());
+            if (WarsBots::BotConfig::Get().spectatorAim==1 && pTarget->m_warsBotAimInterp.Ready())
+            {
+                // playtest 3 ("FP spectator super jerky"): interpolated between packets, one interval behind
+                float yaw, pitch; pTarget->m_warsBotAimInterp.At(gEnv->pTimer->GetCurrTime(), yaw, pitch);
+                const float c = cosf(pitch);
+                pTarget->m_netAimDir = Vec3(sinf(yaw) * c, cosf(yaw) * c, sinf(pitch));
+            }
+            else
+                pTarget->m_netAimDir = (pTarget->WarsBotViewAim() - eye).GetNormalizedSafe(pTarget->m_baseQuat.GetColumn1());
         }
 #endif
 		CItem* pItem = static_cast<CItem*>(pTarget->GetCurrentItem(true));
@@ -4154,6 +4162,7 @@ void CPlayer::Revive(ReasonForRevive reason)
 		m_warsBotStance=STANCE_STAND;
 		m_warsBotSeenJump=m_warsBotJumpSerial;
 		m_warsBotSmooth.Reset(); // revive: snap to the new pose, never curve from the corpse
+		m_warsBotAimInterp.Reset();
 	}
 #endif
 
@@ -5343,8 +5352,14 @@ bool CPlayer::NetSerialize(TSerialize ser, EEntityAspects aspect, uint8 profile,
 		{
 			if (bot && !m_warsBotPose)
 				WB_LOG(2, "[WarsBots] Motion replica activated EntityId=%u (server dynamic aspect, no channel).",GetEntityId());
-			if (!m_warsBotPose) m_warsBotSmooth.Reset();
+			if (!m_warsBotPose) { m_warsBotSmooth.Reset(); m_warsBotAimInterp.Reset(); }
 			m_warsBotPose = bot;
+			if (bot)
+			{
+				// playtest 3: every replicated aim is a sample for the FP spectator camera (BotAimInterp.h)
+				const Vec3 d = m_warsBotAim - (GetEntity()->GetWorldPos() + Vec3(0, 0, 1.6f));
+				m_warsBotAimInterp.Push(gEnv->pTimer->GetCurrTime(), atan2f(d.x, d.y), atan2f(d.z, sqrtf(d.x * d.x + d.y * d.y) + 1e-4f));
+			}
 			if (bot) SyncWarsBotAmmo(true);
 			if (bot) GetGameObject()->EnablePrePhysicsUpdate(ePPU_Always);
 		}
