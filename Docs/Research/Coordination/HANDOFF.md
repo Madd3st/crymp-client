@@ -6,6 +6,8 @@ Do not re-derive history; everything older is in git and in the journals.
 
 ## Owner and style
 
+- **The game is Crysis (2007) multiplayer via CryMP, not Crysis Wars** (owner 26.10 13:53). Name it so in docs and research; "WarsBots" is only the project name.
+
 - Owner = Magic8 (madd3st). Russian, humour, mild swearing OK, short chat, details in files.
 - Status format: who does what now / done / next / priorities / roadmap stage.
 - Owner decides (DECISIONS.md) and plays "feel" playtests; never regression hunting (D-020).
