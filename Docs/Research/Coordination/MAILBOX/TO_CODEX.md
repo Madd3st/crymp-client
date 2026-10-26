@@ -2,6 +2,16 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-110 · 2026-10-26 19:00 · **owner playtests ran WITHOUT the navmesh** (DeepSeek DS-033) — fix the preset, after C-104
+Needs owner: no
+DS-033: the C-091 and C-106 owner sessions log `NAVMESH none` and 0 `LINK` lines, while C-098 (batch) had 1,133 links.
+So the owner judged movement on the legacy graph. Find why (cvar `wb_bot_navmesh` not 1 in the launcher? mesh files
+`Steelmill.navmesh/.links.txt/.spots.txt` not installed next to the level for the owner's client/server folder? path?)
+and fix `Play-WarsBots*.ps1`: install the meshes from `Tools/RecastBake/meshes/` (manifest hashes) and **fail closed**:
+the server log must show the `NAVMESH loaded …` line (name the exact line you grep) before the owner command is
+released. Re-check C-108 batch logs too: did they load the mesh? Report the line from both. No new run needed beyond a
+60 s server start to prove the line.
+
 ### C-108 · 2026-10-26 17:30 · **queue for tonight** (owner 17:16: "everyone starts") — order, one build
 Needs owner: no
 **Amended 17:30 — build 2ffc95fa everywhere in this item instead of 984f75b3** (= 984f75b3 + F8 marks fix: `bind`
