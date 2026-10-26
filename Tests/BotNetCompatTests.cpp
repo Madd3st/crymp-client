@@ -16,6 +16,9 @@ int main()
 	assert(WireExtensions(-1, false, "localhost:64087"));
 	assert(WireExtensions(-1, false, "[::1]:64087"));
 	assert(WireExtensions(-1, false, "::1"));
+	// C-106: the owner's local server channel is named by the machine name.
+	assert(WireExtensions(-1, false, "Magic8-PC:46040"));
+	assert(!WireExtensions(-1, false, "crymp.example.net:64087"));
 	// Unknown / garbage -> vanilla (safe).
 	assert(!WireExtensions(-1, false, nullptr));
 	assert(!WireExtensions(-1, false, ""));

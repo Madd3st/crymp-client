@@ -12,7 +12,9 @@
 
 namespace WarsBots {
 
-// "ip:port", "ip", "[::1]:port", "localhost:port". Unknown or empty -> false (vanilla wire is the safe default).
+// "ip:port", "ip", "[::1]:port", "localhost:port", "Magic8-PC:46040" (C-106: CryNetwork names a LAN channel by the
+// machine name). A single-label host name (no dot) is a LAN/NetBIOS name; public servers are IPs or dotted names.
+// Unknown or empty -> false (vanilla wire is the safe default).
 inline bool IsPrivateAddress(const char* name)
 {
 	if (!name || !*name) return false;
@@ -27,6 +29,11 @@ inline bool IsPrivateAddress(const char* name)
 	}
 	h[n] = 0;
 	if (!std::strcmp(h, "localhost") || !std::strcmp(h, "::1")) return true;
+	if (std::isalpha((unsigned char)h[0]) && !std::strchr(h, '.') && !std::strchr(h, ':') && !std::strchr(h, '<'))
+	{
+		for (const char* c = h; *c; ++c) if (!std::isalnum((unsigned char)*c) && *c != '-' && *c != '_') return false;
+		return true;
+	}
 	int a[4]; const char* s = h;
 	for (int i = 0; i < 4; ++i)
 	{
