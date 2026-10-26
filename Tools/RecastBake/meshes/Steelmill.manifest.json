@@ -3,7 +3,7 @@
  "map": "Steelmill",
  "mode": "IA",
  "source": "C019/C028 collision crop (wb_geom_export a7553da7)",
- "bake": "recast_bake --cs 0.1 --tile 256 --radius 0.3 --jumps (lanes fix 79cf0afd); tactical_spots v1 grid 2.5 targets 800",
+ "bake": "recast_bake --cs 0.1 --tile 256 --radius 0.3 --jumps (lanes fix 79cf0afd); tactical_spots v1 grid 2.5 targets 800; links filtered by DeepSeek link_audit (DS-037 #3: 78 flat/zero/dup strength links removed)",
  "files": {
   "navmesh": {
    "name": "Steelmill.navmesh",
@@ -13,9 +13,9 @@
   },
   "links": {
    "name": "Steelmill.links.txt",
-   "bytes": 61533,
-   "fnv64": "199a35a02d25a83a",
-   "sha256": "300a20f06472d08493242ab643b8a539fd26af7449a9b74ef8bfb82ab8055e64"
+   "bytes": 57087,
+   "fnv64": "399fe0d705d1c1b8",
+   "sha256": "7c384d12ff693bced574015a0e0067f8cb5c1a4a9a81881c1aff9088ec6b67e4"
   },
   "spots": {
    "name": "Steelmill.spots.txt",

@@ -1,5 +1,6 @@
 // Offline test of the Detour runtime on a real baked mesh (Tools/RecastBake output, MSET v1).
 // Usage: BotNavMeshCoreTests <Steelmill.navmesh>   (skips with exit 0 when no file is given)
+#include <algorithm>
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotCorners.h"
 #include <cassert>
@@ -92,13 +93,15 @@ int main(int argc, char** argv)
 		std::vector<char> txt; if (FILE* f = std::fopen(argv[3], "rb")) { int c; while ((c = std::fgetc(f)) != EOF) txt.push_back(char(c)); std::fclose(f); }
 		txt.push_back(0);
 		const int kinds = L.LoadLinkKinds(txt.data());
-		assert(L.Links() > 100 && kinds == L.Links() && L.LinkMismatches() == 0);
+		// DS-037 #3: links.txt is filtered (flat/zero/duplicate Strength links removed) -> those links stay unknown on purpose
+		const int lines = int(std::count(txt.begin(), txt.end(), '\n'));
+		assert(L.Links() > 100 && kinds == lines && kinds <= L.Links() && L.Links() - kinds < 100);
 		{   // T-6: a reordered links.txt still gives every link its kind (matched by end points)
 			std::string t(txt.data()); std::vector<std::string> rows; size_t p0 = 0, p1;
 			while ((p1 = t.find('\n', p0)) != std::string::npos) { rows.push_back(t.substr(p0, p1 - p0 + 1)); p0 = p1 + 1; }
 			std::string rev; for (size_t r = rows.size(); r-- > 0;) rev += rows[r];
 			NavMeshCore R; assert(R.LoadFile(argv[2], &err));
-			assert(R.LoadLinkKinds(rev.c_str()) == L.Links() && R.LinkMismatches() > 0);
+			assert(R.LoadLinkKinds(rev.c_str()) == kinds && R.LinkMismatches() > 0);   // same set, any order
 		}
 		const int walkParts = L.Components();
 		std::vector<float> p2; std::vector<NavPathLink> links;

@@ -21,6 +21,8 @@ struct DifficultyRow {
 	float headCap;        // cap of that chance (old code: 0.3 for everyone)
 	float fireTolDeg;     // fire only when the weapon points within this angle of the aim point (old: ~16 for all)
 	float rangeScale;     // engage / hold / fire range multiplier
+	float holdScale;      // DS-035: preferredRange (the distance the bot walks to) multiplier
+	float engageCap, holdCap, fireCap; // DS-035: absolute caps (D-027: Elite fire cap 100 m, never below its old reach)
 	float sightM;         // perception range (old: 80 for all)
 	float coneDeg;        // view cone (old: 110 for all)
 	float hearScale;      // hearing distances multiplier
@@ -32,11 +34,11 @@ struct DifficultyRow {
 inline const DifficultyRow& Difficulty(BotSkill skill)
 {
 	static const DifficultyRow rows[] = {
-		// reac  turn  err  max  floor lag   head cap   tol  range sight cone hear | sacc  slope flick lag   lead  noise
-		{ 0.90f, 250, 2.5f, .80f, .12f, .24f, .00f, .00f, 20.f, .55f, 50.f, 90.f, .6f, 1.5f, 1.6f, 1.4f, .22f, .070f, .25f, .24f, .25f, 1.6f },  // beginner
-		{ 0.50f, 500, 1.2f, .45f, .07f, .14f, .08f, .15f, 10.f, .85f, 65.f, 100.f, .8f, 1.0f, 1.0f, 1.0f, .13f, .045f, .12f, .13f, .55f, 0.7f }, // normal
-		{ 0.28f, 850, 0.6f, .25f, .04f, .09f, .35f, .50f,  5.f, 1.15f, 80.f, 110.f, 1.f, 0.7f, 0.7f, .75f, .09f, .035f, .06f, .08f, .75f, .35f }, // veteran
-		{ 0.08f, 1200, 0.1f, .05f, .01f, .04f, .95f, 1.0f, 2.f, 1.45f, 100.f, 120.f, 1.2f, 0.4f, .45f, .5f, .05f, .020f, .02f, .04f, .95f, .05f },// elite
+		// reac  turn  err  max  floor lag   head cap   tol  range hold  ecap hcap fcap sight cone hear | sacc  slope flick lag   lead  noise
+		{ 0.90f, 250, 2.5f, .80f, .12f, .24f, .00f, .00f, 20.f, .85f, .8f, 16.f, 20.f, 24.f, 50.f, 90.f, .6f, 1.5f, 1.6f, 1.4f, .22f, .070f, .25f, .24f, .25f, 1.6f },  // beginner
+		{ 0.50f, 500, 1.2f, .45f, .07f, .14f, .08f, .15f, 10.f, 1.0f, 1.0f, 20.f, 24.f, 45.f, 65.f, 100.f, .8f, 1.0f, 1.0f, 1.0f, .13f, .045f, .12f, .13f, .55f, 0.7f }, // normal
+		{ 0.28f, 850, 0.6f, .25f, .04f, .09f, .35f, .50f,  5.f, 1.4f, 1.3f, 30.f, 36.f, 55.f, 80.f, 110.f, 1.f, 0.7f, 0.7f, .75f, .09f, .035f, .06f, .08f, .75f, .35f }, // veteran
+		{ 0.08f, 1200, 0.1f, .05f, .01f, .04f, .95f, 1.0f, 2.f, 1.75f, 1.6f, 38.f, 44.f, 100.f, 100.f, 120.f, 1.2f, 0.4f, .45f, .5f, .05f, .020f, .02f, .04f, .95f, .05f },// elite
 	};
 	const int s = int(skill) >= 0 && int(skill) < int(BotSkill::Count) ? int(skill) : 1;
 	return rows[s];
@@ -55,7 +57,12 @@ inline void ApplyDifficulty(BotProfile& p)
 	p.headCap = d.headCap;
 	p.fireTolDeg = d.fireTolDeg;
 	p.turnRate = d.turnDeg;
-	p.engageRange *= d.rangeScale; p.holdRange *= d.rangeScale; p.fireRange *= d.rangeScale;
+	// DS-035: skill owns the band. Style still sets the base, but the cap stops a Marksman style from turning
+	// Elite into a 100 m turret; holdScale is the range the bot actually walks to (UpdateAttacking).
+	p.engageRange = std::fminf(p.engageRange * d.rangeScale, d.engageCap);
+	p.holdRange = std::fminf(p.holdRange * d.rangeScale, d.holdCap);
+	p.fireRange = std::fminf(p.fireRange * d.rangeScale, d.fireCap);
+	p.preferredRange = std::fmaxf(6.f, p.preferredRange * d.holdScale);
 	p.sightRange = d.sightM; p.coneDeg = d.coneDeg; p.hearScale = d.hearScale;
 	p.zoomScale = d.zoomScale; p.burst *= d.burstScale; p.burstGap *= d.gapScale;
 	// fight movement + reload discipline (DS-014 rows 'strafe/jump in fight'; owner video: he jump-strafes every duel)

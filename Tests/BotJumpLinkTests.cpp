@@ -40,7 +40,7 @@ int main()
 	{
 		BotJumpLink M; M.Start(0, LinkMove::Strength, a, JVec{5, 0, 14});
 		LinkInput low = At(0, -0.1f, 0, 10); low.energy = 30; LinkOutput o = M.Update(low); assert(o.phase == LinkPhase::Prepare);
-		low.now = 4.5f; o = M.Update(low); assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoEnergy);
+		low.now = 6.5f; o = M.Update(low);   // DS-036: prepareMax 6 s assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoEnergy);
 	}
 	// 5. Jump refused by the game (never airborne) -> NoTakeoff; landing far below b -> MissedLanding; timeout.
 	{

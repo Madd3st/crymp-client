@@ -1,4 +1,5 @@
 #include "PortIncludes.h"
+#include <algorithm>
 #include "BotConfig.h"
 #include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotThreatScan.h"
@@ -753,7 +754,7 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		Change(State::ATTACKING);
 		WBI(move,false); WBI(aim,aim);
 		if (m_traits.prone>0.5f) m_intent.stance=STANCE_PRONE;
-		m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
+		m_intent.combat=m_now>=std::max(m_stateTime,m_combat.SelectedAt())+m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim; // DS-035: one clock, not 2x reaction
 		UpdateCombatPost(bot,actor,decisionTime);
 		return;
 	}
@@ -858,7 +859,7 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
                 WBI(jump,BotJump::Normal);
         }
 		Change(State::ATTACKING);
-		m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
+		m_intent.combat=m_now>=std::max(m_stateTime,m_combat.SelectedAt())+m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim; // DS-035: one clock, not 2x reaction
 		// Just got hit: sometimes a Strength jump to break the enemy's aim (native jump, energy cost).
 		const bool freshHit = m_blackboard.damagedUntil - m_now > 2.4f && m_blackboard.damagedUntil != m_lastHitSeen;
 		if (freshHit)
@@ -880,7 +881,7 @@ void BotBrain::UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& 
 		if (visible && distance <= m_profile.fireRange)
 		{
 			m_intent.strafe=true;
-			m_intent.combat=m_now-m_stateTime>=m_profile.reaction && m_now-m_combat.SelectedAt()>=m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim;
+			m_intent.combat=m_now>=std::max(m_stateTime,m_combat.SelectedAt())+m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim; // DS-035: one clock, not 2x reaction
 		}
 		else m_combat.StopFire();
 		// Running into geometry toward a target we cannot see: give it up and roam instead.
@@ -1046,11 +1047,15 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	else m_combat.StopFire();
 	if (BotConfig::Get().weaponHandling==1)
 	{
-		// owner 25.10: laser on (off in cloak), zoom only while fighting a seen target far away
-		const bool fighting=m_intent.combat!=BotCombatIntent::None && m_combat.Target() && m_combat.Visible();
-		const float dist=fighting ? (m_combat.LastPosition()-m_blackboard.position).GetLength() : -1.0f;
-		// wb_bot_difficulty: zoomScale < 1 zooms earlier (Elite SCAR from 8 m: ironsight spread x0.0067 lets head aim land)
-		BotWeapons::Handle(actor,dist>0.0f?dist/max(0.2f,m_profile.zoomScale):dist,m_blackboard.suitActive && m_blackboard.mode==NANOMODE_CLOAK);
+		// DS-035: zoom a visible target at >12 m even while chasing (20-30 m hits were fired with hip spread).
+		const bool visibleTarget=m_combat.Target() && m_combat.Visible();
+		const float dist=visibleTarget ? (m_combat.LastPosition()-m_blackboard.position).GetLength() : -1.0f;
+		const bool fighting=m_intent.combat!=BotCombatIntent::None && visibleTarget;
+		const bool zoomFar=visibleTarget && dist>12.0f;
+		if (fighting || zoomFar)
+			BotWeapons::Handle(actor,dist/max(0.2f,m_profile.zoomScale),m_blackboard.suitActive && m_blackboard.mode==NANOMODE_CLOAK);
+		else
+			BotWeapons::Handle(actor,dist,m_blackboard.suitActive && m_blackboard.mode==NANOMODE_CLOAK);
 	}
 }
 // ---------------------------------------------------------------------------------------------- C-036 links

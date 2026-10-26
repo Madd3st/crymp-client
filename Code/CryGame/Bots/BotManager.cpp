@@ -63,7 +63,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 }
 const char* kCommands[] = { "wb_demo_start", "wb_demo_stop", "wb_demo_mark", "wb_qa_time_scale", "wb_nav_audit",
 	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_probe_item", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
-	"wb_add", "wb_remove", "wb_remove_all", "wb_kick_bots", "wb_fill", "wb_skill_all", "wb_mark", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
+	"wb_add", "wb_remove", "wb_remove_all", "wb_kick_bots", "wb_fill", "wb_skill_all", "wb_mark", "wb_rules_info", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
@@ -101,6 +101,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_kick_bots", RemoveAllCommand, 0, "Same as wb_remove_all");
 	console->AddCommand("wb_fill", FillCommand, 0, "wb_fill <n> [beginner|normal|veteran|elite]: add or remove bots until there are n");
 	console->AddCommand("wb_skill_all", SkillAllCommand, 0, "wb_skill_all <beginner|normal|veteran|elite>: re-add every bot at that skill (styles kept, bots respawn)");
+	console->AddCommand("wb_rules_info", RulesInfoCommand, 0, "wb_rules_info: read-only game rules diagnostic (class, teams, spawn groups) - C-109 PS baseline");
 	console->AddCommand("wb_mark", MarkCommand, 0, "wb_mark [text]: mark this moment for the playtest report (bind to F8); works on the client and the server");
 	console->AddCommand("wb_list", ListCommand, 0, "List bots: number, EntityId, profile, state");
 	console->AddCommand("wb_status", StatusCommand, 0, "Detailed status and per-bot update cost");
@@ -747,6 +748,18 @@ void BotManager::MarkCommand(IConsoleCmdArgs* args)
 	if (self) self->Demo().Mark(text.empty() ? "owner" : text.c_str());
 	static int s_marks = 0;
 	CryLogAlways("$3[WarsBots] mark #%d saved", ++s_marks);   // visible confirmation for the owner (playtest 3: marks lost)
+}
+
+// C-109: Codex needs the runtime PS baseline (rules class, team count, spawn groups) without a Lua console. Read-only.
+void BotManager::RulesInfoCommand(IConsoleCmdArgs*)
+{
+	CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
+	if (!rules) { WB_LOG(0, "[WarsBots] RULES INFO none (no game rules yet)."); return; }
+	const int teams = rules->GetTeamCount();
+	std::string names;
+	for (int t = 1; t <= teams; ++t) { if (t > 1) names += ','; const char* n = rules->GetTeamName(t); names += n ? n : "?"; }
+	WB_LOG(0, "[WarsBots] RULES INFO class=%s teams=%d names=%s spawnGroups=%d.",
+		rules->GetEntity() ? rules->GetEntity()->GetClass()->GetName() : "?", teams, names.c_str(), rules->GetSpawnGroupCount());
 }
 
 void BotManager::ListCommand(IConsoleCmdArgs*) { if (BotManager* self = Self()) self->List(); }

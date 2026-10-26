@@ -113,8 +113,8 @@ bool BotCombat::Observe(CActor& actor, IActor& target, float now, bool verbose)
             const unsigned sample=actor.GetEntityId()*16777619u ^ target.GetEntityId()*33u ^ unsigned(now*10)*2654435761u;
             m_preferHead=BotAimControl::PreferHead(m_profile,name,
                 (target.GetEntity()->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength(),sample);
-            m_nextAimChoice=now+1.5f;
-            if(verbose) WB_LOG(2,"[WarsBots] AIM ZONE actor=%u target=%u preferred=%s interval=1.5.",
+            m_nextAimChoice=now+0.5f; // DS-035: 1.5 s was slower than a moving head ray
+            if(verbose) WB_LOG(2,"[WarsBots] AIM ZONE actor=%u target=%u preferred=%s interval=0.5.",
                 actor.GetEntityId(),target.GetEntityId(),m_preferHead?"head":"body");
         }
 		m_lastSeen = now;

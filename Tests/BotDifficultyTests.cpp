@@ -44,7 +44,10 @@ int main()
 	// applying twice is not used (restored rosters keep their profile) - ranges scale once from Make
 	const BotProfile raw = BotProfile::Make(BotStyle::Marksman, BotSkill::Elite);
 	BotProfile m = raw; ApplyDifficulty(m);
-	assert(std::fabs(m.fireRange - raw.fireRange * 1.45f) < 1e-3f);
+	// DS-035: Elite owns the 20-30 m band; caps stop a Marksman base from becoming a 100 m turret.
+	assert(std::fabs(m.fireRange - 100.f) < 1e-3f);   // D-027: capped at 100, not weakened
+	assert(std::fabs(m.holdRange - 44.f) < 1e-3f);
+	assert(std::fabs(m.preferredRange - 32.f) < 1e-3f);
 
 	// aim model: Elite settles near the target, Beginner keeps clearly more error
 	auto settle = [](BotSkill s) {
