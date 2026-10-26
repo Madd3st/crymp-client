@@ -1,21 +1,28 @@
 diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
-index f2e9cf5c..a57362c1 100644
+index f2e9cf5c..674fc574 100644
 --- a/Code/CryGame/Bots/BotBrain.cpp
 +++ b/Code/CryGame/Bots/BotBrain.cpp
-@@ -1325,9 +1325,11 @@ void BotBrain::ApplySuitPolicy(CPlayer& actor)
- 	case SuitMode::Cloak: WBI(suitMode,NANOMODE_CLOAK); break;
- 	default: WBI(suitMode,NANOMODE_DEFENSE); break;
+@@ -1015,6 +1015,11 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+ 	{ WBI(suitMode,NANOMODE_DEFENSE); if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run); }
+ 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
+     if(!m_link.Active() && BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){WBI(suitMode,NANOMODE_DEFENSE);m_speedTravel=false;}
++    // DS-040: a visible enemy inside the hold range must not sprint. Native fire is blocked while sprinting, and
++    // C-112 had 12 visible combat gaps / 116.5 s with sprint=60-89 % (the 55 s gap was 62 % sprint). The pace-ON
++    // path forced Armor above but left gait=Sprint, so weapon->CanFire() stayed false.
++    if (m_blackboard.visible && m_blackboard.distance<=m_profile.holdRange && m_intent.jump==BotJump::None && m_intent.gait==BotGait::Sprint)
++    { WBI(gait,BotGait::Run); m_speedTravel=false; }
+     if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
+     if (m_cornerSlow && !m_link.Active() && m_intent.jump==BotJump::None)
+     { // wb_bot_corners: no sprint / Speed into a sharp turn; after the suit policy on purpose (c071: 6.3 m/s down the 1 m Steelmill stair, overshoot)
+@@ -1327,7 +1332,6 @@ void BotBrain::ApplySuitPolicy(CPlayer& actor)
  	}
-+	// DS-040: a visible enemy means Armor, even if the policy timer still holds Speed; C-112 stayed in Speed for
-+	// minutes while ATTACKING, and the no-fire gaps clustered there. Link Strength jumps are exempt.
-+	if (in.enemyVisible && d.mode==SuitMode::Speed && !m_intent.linkJump) { WBI(suitMode,NANOMODE_DEFENSE); m_speedTravel=false; }
  	// DS-033: never downgrade a link's Strength jump - a Normal jump cannot cover a +4 m link (27/49 link failures).
  	if (d.mode!=SuitMode::Strength && m_intent.jump==BotJump::Strength && !m_intent.linkJump) WBI(jump,BotJump::Normal); // no energy for it
 -	m_speedTravel=d.mode==SuitMode::Speed;
  }
  
  // C-032 goal arbiter (BotGoalArbiter.h): one decision per tick with commitment windows, so CHASING_ENEMY and
-@@ -1352,6 +1354,8 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
+@@ -1352,6 +1356,8 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
  	in.weaponGoalAvailable=item!=nullptr;
  	in.weaponGoalDistance=item ? (item->GetWorldPos()-feet).GetLength() : 1e9f;
  	in.weaponGoalValue=item ? FightValue(item->GetClass()->GetName(),PickupRange()) : 0.0f;
