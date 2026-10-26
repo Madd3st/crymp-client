@@ -62,7 +62,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 }
 const char* kCommands[] = { "wb_demo_start", "wb_demo_stop", "wb_demo_mark", "wb_qa_time_scale", "wb_nav_audit",
 	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_probe_item", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
-	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
+	"wb_add", "wb_remove", "wb_remove_all", "wb_kick_bots", "wb_fill", "wb_skill_all", "wb_mark", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
@@ -97,6 +97,10 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_add", AddCommand, 0, "wb_add [count] [beginner|normal|veteran|elite] [style]: add autonomous bots");
 	console->AddCommand("wb_remove", RemoveCommand, 0, "wb_remove <botNumber>: remove one bot (number from wb_list, not EntityId)");
 	console->AddCommand("wb_remove_all", RemoveAllCommand, 0, "Remove every WarsBot");
+	console->AddCommand("wb_kick_bots", RemoveAllCommand, 0, "Same as wb_remove_all");
+	console->AddCommand("wb_fill", FillCommand, 0, "wb_fill <n> [beginner|normal|veteran|elite]: add or remove bots until there are n");
+	console->AddCommand("wb_skill_all", SkillAllCommand, 0, "wb_skill_all <beginner|normal|veteran|elite>: re-add every bot at that skill (styles kept, bots respawn)");
+	console->AddCommand("wb_mark", MarkCommand, 0, "wb_mark [text]: mark this moment for the playtest report (bind to F8); works on the client and the server");
 	console->AddCommand("wb_list", ListCommand, 0, "List bots: number, EntityId, profile, state");
 	console->AddCommand("wb_status", StatusCommand, 0, "Detailed status and per-bot update cost");
 	console->AddCommand("wb_debug", DebugCommand, 0, "wb_debug 0|1: verbose telemetry for all bots");
@@ -675,6 +679,57 @@ void BotManager::RemoveCommand(IConsoleCmdArgs* args)
 void BotManager::RemoveAllCommand(IConsoleCmdArgs*)
 {
 	if (BotManager* self = Self()) if (gEnv->bServer) self->RemoveAll("wb_remove_all");
+}
+
+void BotManager::FillCommand(IConsoleCmdArgs* args)
+{
+	BotManager* self = Self();
+	if (!self || !args || !gEnv->bServer) return;
+	int target = 0;
+	BotSkill skill = BotSkill(clamp_tpl(self->m_config.skill, 0, int(BotSkill::Count) - 1));
+	if (args->GetArgCount() < 2 || args->GetArgCount() > 3 || !ParseInt(args->GetArg(1), target) || target < 0 || target > kHardLimit ||
+		(args->GetArgCount() == 3 && !BotProfile::ParseSkill(args->GetArg(2), skill)))
+	{ WB_LOG(0, "[WarsBots] Usage: wb_fill <0..%d> [beginner|normal|veteran|elite].", kHardLimit); return; }
+	while (self->Count() > target)
+	{
+		BotInstance* last = nullptr;
+		for (auto& entry : self->m_bots) if (!last || entry.second->Number() > last->Number()) last = entry.second.get();
+		if (!last) break;
+		self->RemoveInstance(*last);
+	}
+	while (self->Count() < target && self->Add(nullptr, skill, nullptr, true)) {}
+	WB_LOG(0, "[WarsBots] wb_fill: now %d/%d bots.", self->Count(), self->MaxBots());
+}
+
+void BotManager::SkillAllCommand(IConsoleCmdArgs* args)
+{
+	BotManager* self = Self();
+	BotSkill skill = BotSkill::Normal;
+	if (!self || !args || !gEnv->bServer || args->GetArgCount() != 2 || !BotProfile::ParseSkill(args->GetArg(1), skill))
+	{ WB_LOG(0, "[WarsBots] Usage: wb_skill_all <beginner|normal|veteran|elite>."); return; }
+	std::vector<BotStyle> styles;
+	for (auto& entry : self->m_bots) styles.push_back(entry.second->Profile().style);
+	self->RemoveAll("wb_skill_all");
+	int added = 0;
+	for (const BotStyle& style : styles) if (self->Add(nullptr, skill, &style, true)) ++added;
+	WB_LOG(0, "[WarsBots] wb_skill_all: %d bots re-added as %s.", added, BotProfile::SkillName(skill));
+}
+
+// Owner presses F8 when a bot does something dumb; the playtest report turns each mark into a "why did it do that" card
+// from the logs around it (DS-022). Client log on the owner's machine, server log on a local server; never changes state.
+void BotManager::MarkCommand(IConsoleCmdArgs* args)
+{
+	BotManager* self = Self();
+	std::string text;
+	for (int i = 1; args && i < args->GetArgCount(); ++i) { if (i > 1) text += ' '; text += args->GetArg(i); }
+	CPlayer* me = self && self->m_framework ? CPlayer::FromIActor(self->m_framework->GetClientActor()) : nullptr;
+	const float now = gEnv->pTimer->GetCurrTime();
+	if (!me) { WB_LOG(0, "[WarsBots] OWNER MARK t=%.3f side=%s text=\"%s\"", now, gEnv->bServer ? "server" : "client", text.c_str()); return; }
+	const Vec3 pos = me->GetEntity()->GetWorldPos(), view = me->GetViewRotation().GetColumn1();
+	const EntityId watched = me->GetSpectatorTarget();
+	WB_LOG(0, "[WarsBots] OWNER MARK t=%.3f side=%s pos=(%.2f,%.2f,%.2f) yaw=%.1f pitch=%.1f spectating=%u text=\"%s\"",
+		now, gEnv->bServer ? "server" : "client", pos.x, pos.y, pos.z, RAD2DEG(atan2f(view.x, view.y)),
+		RAD2DEG(atan2f(view.z, sqrtf(view.x * view.x + view.y * view.y))), unsigned(watched), text.c_str());
 }
 
 void BotManager::ListCommand(IConsoleCmdArgs*) { if (BotManager* self = Self()) self->List(); }

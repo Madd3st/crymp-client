@@ -105,6 +105,9 @@ private:
 	static void AddCommand(IConsoleCmdArgs* args);
 	static void RemoveCommand(IConsoleCmdArgs* args);
 	static void RemoveAllCommand(IConsoleCmdArgs* args);
+	static void FillCommand(IConsoleCmdArgs* args);     // QoL: wb_fill <n> [skill] - add or remove bots to n
+	static void SkillAllCommand(IConsoleCmdArgs* args); // QoL: wb_skill_all <skill> - re-add every bot at that skill
+	static void MarkCommand(IConsoleCmdArgs* args);     // QoL: wb_mark [text] - owner marks a moment (client or server log)
 	static void ListCommand(IConsoleCmdArgs* args);
 	static void StatusCommand(IConsoleCmdArgs* args);
 	static void DebugCommand(IConsoleCmdArgs* args);
