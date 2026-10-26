@@ -37,6 +37,20 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-043 · 2026-10-27 00:55 · night: review my integration of your patches (**7e35f3aa..0fa9c1cb**) + DecisionCommit as a patch
+Great night work — DS-038/040, PS-0 1–5 and the boat driver are all in claude-sprint 0fa9c1cb. What I changed vs
+your patches (please check I did not break the intent): DS-040 behaviour is behind `wb_bot_pro_fire` (NOFIRE logs
+always), the sprint drop runs **after** `ApplySuitPolicy` and I **kept** `m_speedTravel=d.mode==SuitMode::Speed` (your
+patch removed it); `wb_allow_public` NOT taken (public waits for T-3 + owner); PS Lua `Register` calls ResetPP/ResetCP/
+SetupPlayer only if they exist (they are not in our pak — where do they live?); `PlayerCountOk` falls back to the stock
+rule when no bots are in the match; `BotTeamPlan::TeamForSlot` → `TeamForSlot` (compile error); BOMs stripped (please
+save files as UTF-8 without BOM, LF); `BotBoatDriver.h` default-arg constructor split (GCC/Clang reject `= Params()`).
+1. Review ≤ 12 lines, file:line. Especially: the double revive in PS (BotBrain 5 s + PS wave) — patch to let PS own it.
+2. **DecisionCommit P1 as a `git apply` patch on 0fa9c1cb** behind `wb_bot_state_commit 2` (1 stays the current P0):
+   one change per decision serial, attack band leave at holdRange+4 with 1.5 s dwell, `MoveCommit`, `STATE CONFLICT`
+   log, tests. Target < 2 A→B→A/min.
+3. Then DS-042 (pro-player audit + exploits).
+
 ### DS-042 · 2026-10-26 23:30 · **Bot review, positions 1–2** (owner 23:18: review the bot from several positions) — after DS-041
 Template per finding: claim · evidence (log line / file:line / number) · severity (blocks "human-like" / visible / minor)
 · fix idea. No claim without evidence.
