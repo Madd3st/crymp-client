@@ -1,6 +1,46 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-025 DONE 14:30 · DS-028 DONE 15:20 (`GAME_META_RESEARCH.md`, owner research) · waiting mail · last push 15:20
+NOW: DS-029…DS-032 DONE 18:55 (4 docs) · waiting mail · last push 18:55
+
+### DS-032 · DONE 18:55 · `Docs/Research/DeepSeek/DUMBNESS_DETECTORS.md`
+Seven detectors + goal stall: oscillation (4 reversals/2 s, strafe=0), decision flapping (3 changes/2 s, old target
+alive+visible), freeze (speed<0.3 for 1.5 s in ATTACKING/CHASING/MOVING, blocked=0), wall stare (5 blocked samples
+or 2 trap recoveries/3 s), shooting into cover (3 shots/2 s with clear=0 and ≤1 hit), ignoring a visible enemy
+(1.0 s, Beginner 1.2 s), standing in the open under fire (2 hits/2 s, no cover, not VANTAGE), goal stall (>60 s
+MOVING_TO_WEAPON, no pickup). Each has a false-positive twin and a clip window. Adds `dumbness.json` schema
+(events/evidence/clip/markId), a PlaytestReport "Dumbness" tab, and validation: hitRate ≥0.5 on ≥10 F8 marks,
+events/10 min as the false-alarm metric. No code run.
+
+### DS-031 · DONE 18:55 · `Docs/Research/DeepSeek/BOATS_SHORE.md`
+Shore water 99.5. Black HQ12 submarine (2181.6,1884.1,105.8); 4 `US_smallboat`, 4 `US_hovercraft`, 3 `Civ_speedboat`,
+all neutral, at the submarine bay and east shore. Only tan has `Naval_Factory_NK` (1758.5,1343.2,108.3) — black has
+no naval factory. Landings: west dock 1968,1536,100.7 (20 spawns, capture 1949.8,1527.5), east dock 2292,1534,101.2
+(18 spawns, capture 2254,1572.8); submarine→west 360 m, →east 390 m. Boat controller: seat 1, `OnAction` 10 Hz,
+12 m lookahead, 4 m/s on turns, brake 8 m out, reverse after 2 s stuck, 1.2 m depth, exit raycast land z>100.5.
+Water routes: runtime 4 m down-ray grid + A* with depth cost (recommended); `heightmap.dat` header verified
+(2048, unit 2, scale 0.015625, water 99.5) but the grid is not at offset 32, so offline parsing needs point
+validation. Six probes incl. stuck-reverse and owner-claim.
+
+### DS-030 · DONE 18:55 · `Docs/Research/DeepSeek/PS0_PATCHES.md`
+Ten ordered patches. First five: (1) `BotMatch`/`LocalIAGate`/`Add` open PowerStruggle + public (`wb_allow_public`),
+(2) `SetTeam` before spawn/revive and PS spawn groups, (3) `PSBots:Register` hook (PP/CP/score/revive/SetupPlayer,
+`spawnGroupId`), (4) `PlayerCountOk` counts bots + wave revive, (5) team filter/`ProcessScores` for bot PP. Then
+channel-0 guards in `SetTeam` (m_channelteams/voice/objectives), per-client RMIs, buy via a server path, vehicles.
+Key blockers found: `BotMatch::Register` refuses `USE_SPAWN_GROUPS` (`BotMatch.cpp:34-35`), PS starts only via
+`GetTeamChannelCount` (`TeamInstantAction.lua:446-457`), `SpawnPlayer(0)` returns the first bot (`GameRules.cpp:968`),
+and `ProcessScores` requires `IsPlayer()` (`PowerStruggle.lua:1134`). Acceptance: 3v3 leaves PreGame, own-side spawn,
+capture, PP kill, wave revive.
+
+### DS-029 · DONE 18:55 · `Docs/Research/DeepSeek/PUBLIC_SERVER.md`
+Verdict: the INPUT_ASPECT idea is right but insufficient. The server is allowed to write it (server-owned channel-0
+entity; `Actor.cpp:2351` already marks it, `Player.cpp:5368-5387` serializes it), but `m_pPlayerInput` is created only
+for `GetChannelId()!=0` (`Player.cpp:984-993`), so a bot writes a default input (forward, stance NULL, zero move).
+A vanilla client also creates no `CNetPlayerInput` for channel 0 (same gate) and the read path needs it
+(`:5381-5383`), so the payload is discarded; the bot stays a physics-only replica. Only standard fix: a server-side
+bot channel + a custom `IBotPlayerInput` (and suppress the engine's `CNetPlayerInput` for bots). Also listed:
+`warsBotActor`/optional groups, `mp_crymp` `dir0` vs `dir3`, `ClMoveTo`, PS `SvRequest*`, channel-0 RMIs,
+`m_channelteams[0]`, `PlayerCountOk`, `wb_probe_local_test`. Handshake: per-channel hello + `WarsBotsWireFor(channel)`,
+default vanilla. Ten-minute test with one vanilla CryMP client + one WarsBots client on a LAN server.
 
 ### DS-028 · DONE 15:20 · `Docs/Research/DeepSeek/GAME_META_RESEARCH.md` (owner research, not a mailbox item)
 Five parts, every claim tagged `[ЛОКАЛЬНО]/[ИСТОЧНИК]/[ВЫВОД]/[ПРЕДПОЛОЖЕНИЕ]`:
