@@ -43,6 +43,9 @@ History:
 
 #include "CryGame/Actors/Player/IPlayerInput.h"
 #include "CryCommon/CryAction/IWorldQuery.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "CryGame/Bots/BotManager.h"
+#endif
 
 //------------------------------------------------------------------------
 CWeapon::CWeapon()
@@ -1483,7 +1486,14 @@ void CWeapon::Reload(bool force)
 			m_fm->Reload(0);
 
 
-		if (!pOwner || pOwner->IsClient())
+		bool broadcast = !pOwner || pOwner->IsClient();
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+		// Owner playtest 3 ("never saw a bot reload"): a server-owned bot is not IsClient(), so ClReload was never sent
+		// and clients saw no reload animation. RequestReload's server branch broadcasts ClReload (a vanilla RMI).
+		if (pOwner && gEnv->bServer && pOwner->GetChannelId() == 0 && g_pGame->GetBotManager().Owns(pOwner->GetEntityId()))
+			broadcast = true;
+#endif
+		if (broadcast)
 			RequestReload();
 	}
 }
