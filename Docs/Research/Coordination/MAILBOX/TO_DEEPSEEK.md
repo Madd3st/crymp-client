@@ -37,6 +37,43 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-033 · 2026-10-26 17:35 · **HARD: why bots never Strength-jump onto roofs / over fences** — root cause + fix design
+Owner playtest 3: "they never use Strength to jump onto a roof or over a fence"; C-098: 10/12 sniper bots took no link in
+30 s, nobody reached the DSG1 roof (z 159.1) — your DS-023. Trace the whole chain with file:line on claude-sprint head:
+navmesh links (`Tools/RecastBake/meshes/Steelmill.links.txt`, kinds, flags) → `NavMeshCore::FindPathLinks` (are link
+polys even used by the query filter? cost?) → path corners → `BotJumpLink.h` executor (run-up, take-off window, suit
+Strength + energy gate, landing check, `NoteLinkFailure` blacklisting after 2 fails) → `BotLocomotion::JumpSpace` /
+`wb_bot_jump_sanity` (does sanity veto link jumps or fence jumps?) → native jump. You may build and run the engine-free
+pieces offline yourself: `Tools/OfflineCheck/walk_sim.cpp` + `BotNavMeshCore` on the Steelmill navmesh (README there),
+e.g. how many spawn→DSG1/Gauss paths contain a link at all, and where the walk sim stops. Deliver: the ranked causes
+with evidence, and a concrete fix as a patch description (or an engine-free header + test under
+`Docs/Research/DeepSeek/proto/`), plus 2 probe fixtures (`Tools/Probes` schema: roof via Strength, fence hop) that are
+red today. ≤ 25 lines + `JUMPS_ROOT_CAUSE.md`. **Priority 1.**
+
+### DS-034 · 2026-10-26 17:35 · **HARD: "bots twitch and rush around, don't know what to do"** — decision instability
+Owner playtest 3 (logs: Codex C-108 step 1, `build/owner-playtests/C106-757f3ddc-*`; until then C-093 logs). Measure on
+the logs: decision flips per bot-minute by pair (state A→B→A within 2 s), goal changes, target switches, move direction
+reversals, and which of `BotGoalArbiter` / `UpdateCombat` / `UpdateRoam` / look policy / range re-select / finish /
+perception produces them (file:line). Compare with the owner's own MOVE TRACE (reversals per minute). Then design the
+fix: commitment/hysteresis per decision, minimum dwell times, one owner per decision (T-1). Deliver as an engine-free
+module draft + unit tests under `Docs/Research/DeepSeek/proto/` (C++17, no engine types, like `BotGoalArbiter.h`) that
+I can integrate, with the metric it must move (e.g. flips/min from X to < Y). ≤ 25 lines + `FLIPS_ROOT_CAUSE.md`.
+**Priority 2** (start on C-093 logs if the playtest archive is not pushed yet).
+
+### DS-035 · 2026-10-26 17:35 · **HARD: lose fights at 10–30 m** — what makes a bot win a duel (owner: Elite strong, even stronger)
+Your DS-028: bots kill at median 11.8 m / p90 17.9, the owner at 12.9 / p90 32.5 and never died. Using C-093 + C-091
+demos/logs: per skill and distance band (0–10, 10–20, 20–30, 30–50 m) — first-shot delay, shots per hit, hit rate,
+burst length, aim error at the shot, moving vs standing, weapon held, `fireRange` refusals. Find what stops bots from
+firing or hitting beyond ~18 m (range gates, `WeaponRange`, fire tolerance, spread while moving, zoom rules) with
+file:line. Propose changes that make Elite dominant at 10–30 m without lowering it anywhere (D-027) and make the
+ladder Beginner < Normal < Veteran < Elite at every band. Deliver numbers + a patch description. ≤ 25 lines +
+`DUELS_10_30M.md`. **Priority 3.**
+
+Order of all open items: DS-033 → DS-034 → DS-030 (PS-0) → DS-031 (boats) → DS-032 (detectors; write them as Python
+in `Tools/PlaytestReport/detectors.py` on your branch, with tests) → DS-035 → DS-029 (public server).
+You may write NEW files (engine-free headers + tests, Python tools, probe JSON) on your branch; still never edit
+existing game code, never build the game or run servers.
+
 ### DS-032 · 2026-10-26 17:30 · **dumbness detectors** spec (owner: an automatic judge instead of his impressions)
 Detectors over `*.bots.log` + `wbdemo/2`: oscillation (direction reversals / decision flips per 2 s), freeze (no move
 with a visible enemy or no goal), wall stare / run into wall, shooting into cover, ignoring a visible enemy > 1 s,
