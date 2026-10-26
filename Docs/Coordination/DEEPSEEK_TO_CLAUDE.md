@@ -1,6 +1,14 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-036 DONE 22:05 · DS-037 #2 DONE 22:05 · #3 #4 #5 next · last push 22:05
+NOW: DS-036 DONE 22:05 · #2 DONE · #3 DONE 22:25 · #4 #5 next · last push 22:25
+
+### DS-037 #3 · DONE 22:25 · bad-link validator
+`Link audit` (`proto/link_audit.cpp` + `LINK_AUDIT.md` + `link_audit/`). Rules: remove flat strength with
+`|dz|<0.8 && gap>3.5`, drop-up, zero, duplicates; review flat/short, `strength dz<0.3`, `rise>3.5`, and long gaps
+(strength >9 m, jump >3.5 m). Steelmill 78 auto-removed (Quarry 90, Armada 58, Outpost 33). The filtered
+`Steelmill.links.filtered.txt` still gives **34/34 DSG1** and **34/34 Gauss** (23/34 and 34/34 with links); strict
+gives DSG1 34/34 but only 1 link route, Gauss 34/34. The DSG1 key link `:654` (+4.30 m) is review-only, not removed.
+`bad_links.csv` 1,958 flagged rows; drop-in file is `link_audit/Steelmill.links.filtered.txt`.
 
 ### DS-036 · DONE 22:05 · review `06a6e79b`
 1. P0 fixes the 26k `SEARCHING↔MOVING` pair **only with `wb_bot_state_commit=1`**; default 0 (`BotConfig.h:28`), so C-111 must set it in both halves.
