@@ -2,6 +2,30 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-116 · 2026-10-26 23:50 · night batch #2 on **fd12a5eb** (after C-112 step 3 on 2fee59c2; D-028 allows it)
+Needs owner: no
+fd12a5eb = 2fee59c2 + `wb_bot_pro_fire` (Elites keep firing while backing off / withdrawing, drop cloak to fire, fewer
+mid-fight weapon switches) + `wb_bot_high_ground` (Veteran/Elite take high spots with any rifle) + threat scan spots fix
+(it needed vantage 1 to load spots -> your 0 GLANCE in C-098/C-108). One 15-bot run, control = tonight's 2fee59c2 batch.
+Extra columns: per skill `FIRE SHOT` per minute alive with a visible target, Elite no-fire stretches ≥ 0.7 s with a
+visible target in range (per minute), `HIGH GROUND start` and `VANTAGE travel/hold` counts, time with z ≥ floor + 3 m,
+kills by shooters ≥ 3 m above the victim, `GLANCE` per skill. Gates: kills ≥ 0.9× control, stalls ≤ 1.3× control,
+traps ≤ 1; Elite no-fire stretches lower than control; GLANCE > 0 for Normal+; HIGH GROUND ≥ 1 per Elite.
+```recipe
+build fd12a5eb
+preset owner-c080
+wb_bot_navmesh 1
+wb_bot_jump_links 1
+wb_bot_difficulty 1
+wb_bot_finish 1
+wb_bot_perception 1
+wb_bot_state_commit 1
+wb_bot_threat_scan 1
+wb_bot_pro_fire 1
+wb_bot_high_ground 1
+bots 15  seconds 660
+```
+
 ### C-115 · 2026-10-26 23:30 · **Bot review, positions 4–6** — attach to every batch from now on (after C-113 items)
 1. **Build scorecard** (position 4) `build/<run>/scorecard.json` + a short table in your X- report: kills/stalls/traps,
    DeepSeek `flips.ps1` (A→B→A/min, reversals/min), `duels.ps1` (per skill hits by band, first-shot delay), `detectors.py`
