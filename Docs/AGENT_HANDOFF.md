@@ -9,7 +9,7 @@ Night checkpoint X146-X157 (details TO_CLAUDE and Docs/Coordination/*SCORECARD.j
 - C101 Windows wake registered every10min/idle20, explicitexistingthread; dryrun+actualskip ticks proven, realresume not exercised; C090heartbeat untouched.
 - C115 CPU0/8/15windows and10clientreviews published; full nativeframe/snap/ClReload/FP proof absent -> instrumentation needed.
 - No GUI/publicserver/installEXEchanges. PreserveforeignRecording.ps1 C08C... unchanged; owner59D6mem/97F6nav restored afterruns.
-- Next C113explicitidlefallback duel+roof3x once/newestgreen, thenfreshmail watch. No duplicate15/build/successful checks.
+- C113 idlefallback complete on0fa9: duel ratiofixturePASS2:0,1:0,1:0; roofFAIL0/3. Current queue exhausted; watch new/amended mail, no repeated successful checks.
 
 
 2026-10-26 checkpoint: C104 X135; C110 guards3cd046c7; C111 ec46 shortAB red(kills39->34) despite ABA81.79->6.91/min.
