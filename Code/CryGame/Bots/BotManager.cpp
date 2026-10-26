@@ -736,16 +736,16 @@ void BotManager::MarkCommand(IConsoleCmdArgs* args)
 	for (int i = 1; args && i < args->GetArgCount(); ++i) { if (i > 1) text += ' '; text += args->GetArg(i); }
 	CPlayer* me = self && self->m_framework ? CPlayer::FromIActor(self->m_framework->GetClientActor()) : nullptr;
 	const float now = gEnv->pTimer->GetCurrTime();
+	// DS-022: the mark also goes into the demo (event 10) with the wall clock, so a report card finds it in both
+	time_t wall = time(nullptr); char clock[32] = {0}; strftime(clock, sizeof(clock), "%Y-%m-%d %H:%M:%S", localtime(&wall));
+	WB_LOG(0, "[WarsBots] OWNER MARK wall=%s t=%.3f", clock, now);
+	if (self) self->Demo().Mark(text.empty() ? "owner" : text.c_str());
 	if (!me) { WB_LOG(0, "[WarsBots] OWNER MARK t=%.3f side=%s text=\"%s\"", now, gEnv->bServer ? "server" : "client", text.c_str()); return; }
 	const Vec3 pos = me->GetEntity()->GetWorldPos(), view = me->GetViewRotation().GetColumn1();
 	const EntityId watched = me->GetSpectatorTarget();
 	WB_LOG(0, "[WarsBots] OWNER MARK t=%.3f side=%s pos=(%.2f,%.2f,%.2f) yaw=%.1f pitch=%.1f spectating=%u text=\"%s\"",
 		now, gEnv->bServer ? "server" : "client", pos.x, pos.y, pos.z, RAD2DEG(atan2f(view.x, view.y)),
 		RAD2DEG(atan2f(view.z, sqrtf(view.x * view.x + view.y * view.y))), unsigned(watched), text.c_str());
-	// DS-022: the mark also goes into the demo (event 10) with the wall clock, so a report card finds it in both
-	time_t wall = time(nullptr); char clock[32] = {0}; strftime(clock, sizeof(clock), "%Y-%m-%d %H:%M:%S", localtime(&wall));
-	WB_LOG(0, "[WarsBots] OWNER MARK wall=%s t=%.3f", clock, now);
-	if (self) self->Demo().Mark(text.empty() ? "owner" : text.c_str());
 	static int s_marks = 0;
 	CryLogAlways("$3[WarsBots] mark #%d saved", ++s_marks);   // visible confirmation for the owner (playtest 3: marks lost)
 }

@@ -49,7 +49,7 @@ struct LinkParams {
 	float landRadius = 3.0f;           // m from b counts as landed (a running Strength jump carries past b)
 	float landDz = 1.5f;
 	float prepareMax = 6.f;            // DS-036: 90 energy after a 2 s cooldown needs more than 4 s            // s waiting for the suit / energy (regen ~10/s: c061 failed at 62..69 energy)
-	float total = 9.f;                 // s for the whole link
+	float total = 12.f;                // DS-039: prepare 6 + take-off 3.5 + air must fit                 // s for the whole link
 	float noTakeoff = 3.5f;            // s in Act without leaving the ground (includes the run-up; DS-033: 2 s = suit cooldown)
 	float runUp = 2.5f;                // m behind a: a standing jump undershoots (c062: 15 Strength landings under b)
 	float strengthEnergy = 90.f;       // DS-033: links started at 10-57 energy landed short

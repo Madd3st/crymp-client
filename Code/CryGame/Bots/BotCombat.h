@@ -61,6 +61,7 @@ private:
 	// wb_bot_finish (DS-015): damage this bot saw itself deal to its target (health drop while visible and firing)
 	EntityId m_dmgTarget = 0; float m_dmgDealt = 0, m_dmgLastHp = 0, m_dmgAt = -100.0f, m_finishStart = -100.0f;
 	float m_nextBurst = 0;
+	float m_nextNoFireLog = 0;
 	float m_burstEnd = 0;
 	float m_burst = 0.2f, m_burstGap = 0.65f;
 };

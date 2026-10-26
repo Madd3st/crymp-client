@@ -13,6 +13,7 @@
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Bots/BotWeaponRank.h"
+#include "CryGame/Bots/BotUpgradeGate.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Game.h"
@@ -498,8 +499,11 @@ EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
 bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
 {
 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
+	// DS-038: a sniper-minded marksman with a rifle must keep searching; the old gate stopped after the FY71 at 1.3 s.
 	// force: the goal arbiter (C-032) already decided this tick is a weapon tick.
-	if (!socomQA && (force || ((!enemy || !m_combat.Visible()) && !BotWeapons::HasPrimary(actor))))
+	const bool hasPrimary=BotWeapons::HasPrimary(actor);
+	const bool sniperMind=PickupRange()>30.0f;
+	if (!socomQA && WarsBots::ShouldSearchUpgrade(hasPrimary,BotConfig::Get().weaponRank==1,sniperMind,force,enemy && m_combat.Visible()))
 	{
 		if (m_now >= m_nextUpgradeSearch && !m_upgradeTarget)
 		{
@@ -1034,6 +1038,10 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
     if(!m_link.Active() && BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){WBI(suitMode,NANOMODE_DEFENSE);m_speedTravel=false;}
     if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
+    // DS-040 (wb_bot_pro_fire): a visible enemy inside the hold range must not sprint. Native fire is blocked while
+    // sprinting; C-112 had 12 visible combat gaps / 116.5 s at 60-89 % sprint. After the suit policy on purpose.
+    if (BotConfig::Get().proFire==1 && m_blackboard.visible && m_blackboard.distance<=m_profile.holdRange && m_intent.jump==BotJump::None && m_intent.gait==BotGait::Sprint)
+    { WBI(gait,BotGait::Run); m_speedTravel=false; }
     if (m_cornerSlow && !m_link.Active() && m_intent.jump==BotJump::None)
     { // wb_bot_corners: no sprint / Speed into a sharp turn; after the suit policy on purpose (c071: 6.3 m/s down the 1 m Steelmill stair, overshoot)
         if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run);
@@ -1373,6 +1381,8 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
 	in.weaponGoalAvailable=item!=nullptr;
 	in.weaponGoalDistance=item ? (item->GetWorldPos()-feet).GetLength() : 1e9f;
 	in.weaponGoalValue=item ? FightValue(item->GetClass()->GetName(),PickupRange()) : 0.0f;
+	// DS-040: never shop for a gun while a visible enemy is inside the hold range; that was the 19.6 s sidearm gap.
+	if (BotConfig::Get().proFire==1 && in.enemyVisible && in.enemyDistance<=m_profile.holdRange) { in.weaponGoalAvailable=false; in.weaponGoalValue=0.0f; }
 	in.heldWeaponValue=BotWeapons::HeldValue(actor,PickupRange());
 	const ArbiterDecision d=m_arbiter.Update(in);
 	if (d.switched)

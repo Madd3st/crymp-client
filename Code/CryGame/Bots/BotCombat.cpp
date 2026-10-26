@@ -276,16 +276,32 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 		clear = ClearRay(actor, target, muzzleState.weaponPosition, shotPoint, obstruction);
 	}
 	m_shotBlocked = !clear;
-	if (!clear) { StopFire(); return false; }
+	if (!clear)
+	{
+		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=blocked distance=%.2f.",actor.GetEntityId(),target.GetEntityId(),(shotPoint-muzzleState.weaponPosition).GetLength()); }
+		StopFire(); return false;
+	}
 	if (BotWeapons::ReloadIfNeeded(actor, *weapon) || !BotWeapons::HasAmmunition(actor, *weapon))
-	{ StopFire(); return false; }
+	{
+		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=ammo distance=%.2f clip=%d.",actor.GetEntityId(),target.GetEntityId(),(shotPoint-muzzleState.weaponPosition).GetLength(),weapon->GetFireMode(weapon->GetCurrentFireMode())?weapon->GetFireMode(weapon->GetCurrentFireMode())->GetAmmoCount():-1); }
+		// DS-040: an empty weapon must not leave the bot standing; try another carried weapon next tick.
+		if (BotConfig::Get().proFire==1) BotWeapons::SelectAvailable(actor);
+		StopFire(); return false;
+	}
 	SMovementState state;
 	actor.GetMovementController()->GetMovementState(state);
 	Vec3 direction = (shotPoint - state.weaponPosition).GetNormalizedSafe(FORWARD_DIRECTION);
 	// wb_bot_difficulty: per-skill fire gate (Elite 2 deg, Beginner 20); old gate 0.96 dot (~16 deg) for everyone
-	const float gate=m_profile.turnRate>0.0f ? cosf(DEG2RAD(FireToleranceDeg(m_profile,(shotPoint-state.weaponPosition).GetLength()))) : 0.96f;
+	float tolDeg=FireToleranceDeg(m_profile,(shotPoint-state.weaponPosition).GetLength());
+	// DS-040: a close, clear target is a body-width target: 2 deg at <20 m stopped Elite fire for up to 2 s while
+	// the view settled. Keep the long-range 2 deg, widen only the close-range body gate to 5 deg.
+	if (BotConfig::Get().proFire==1 && m_profile.skill==BotSkill::Elite && (shotPoint-state.weaponPosition).GetLength()<20.0f) tolDeg=max(tolDeg,5.0f);
+	const float gate=m_profile.turnRate>0.0f ? cosf(DEG2RAD(tolDeg)) : 0.96f;
 	if (direction.Dot(state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)) < gate)
-	{ StopFire(); return false; }
+	{
+		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=aim distance=%.2f tol=%.1f dot=%.3f.",actor.GetEntityId(),target.GetEntityId(),(shotPoint-state.weaponPosition).GetLength(),tolDeg,direction.Dot(state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION))); }
+		StopFire(); return false;
+	}
 	IFireMode* mode=weapon->GetFireMode(weapon->GetCurrentFireMode());
     auto fire=BotFireControl::Plan(mode?mode->GetType():nullptr,mode?mode->GetFireRate():0,
         m_profile.reaction,m_burst,m_burstGap,mode?mode->GetSpinUpTime():0);
