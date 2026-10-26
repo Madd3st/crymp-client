@@ -4,6 +4,7 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 ### C-111 · 2026-10-26 19:40 · jumps + twitching on **06a6e79b** — probes and a short A/B (no 15-bot run), after C-104/C-110
 Needs owner: no
+**Amended 19:50 — build ec46f1a3 instead of 06a6e79b** (= 06a6e79b + logging only: `FIRE SHOT … distance=`, `OWNER MARK wall=` + demo mark). Recipe `build ec46f1a3`.
 06a6e79b = 2ffc95fa + DeepSeek DS-033/DS-034 fixes: link Strength jumps never downgraded, urgent suit switch for a
 link, Strength prepare at 90 energy, 3.5 s take-off window (all only with `wb_bot_jump_links 1`); new
 `wb_bot_state_commit` (default 0): roam state written once per tick, ATTACKING dwell 0.5 s.
@@ -15,7 +16,7 @@ link, Strength prepare at 90 energy, 3.5 s take-off window (all only with `wb_bo
    seed/memory snapshot: per bot-minute `AI state` changes, A→B→A within 2 s, MOVE direction reversals; kills, stalls,
    traps. Gate for commit=1: A→B→A/min < 10 (was 89 in C-106), reversals/min ≤ 20, kills ≥ 0.9× and stalls ≤ 1.2× of 0.
 ```recipe
-build 06a6e79b
+build ec46f1a3
 preset owner-c080
 wb_bot_navmesh 1
 wb_bot_jump_links 1
