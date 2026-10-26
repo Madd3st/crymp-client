@@ -1,0 +1,5 @@
+{"schema":1,"id":"sniper_reach_gauss","map":"multiplayer/ia/steelmill","duration_s":60,"repeat":3,
+ "why":"Gauss tower route (stairs + Strength links)",
+ "cvars":{"wb_bot_navmesh":1,"wb_bot_jump_links":1,"wb_bot_weapon_rank":1,"wb_bot_path_progress":1},
+ "setup":["wb_add 1 elite marksman","wb_teleport 1 1206.6 1331.8 136.2"],
+ "assert":[{"metric":"pickup:GaussRifle","op":"le_seconds","value":45},{"metric":"unreachable","op":"eq","value":0},{"metric":"stalls","op":"eq","value":0}]}

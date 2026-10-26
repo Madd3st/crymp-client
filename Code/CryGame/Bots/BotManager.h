@@ -119,6 +119,7 @@ private:
     static void ReviveAtCommand(IConsoleCmdArgs* args);
     static void SpawnBoxCommand(IConsoleCmdArgs* args);
     static void TeleportCommand(IConsoleCmdArgs* args);
+	static void ProbeItemCommand(IConsoleCmdArgs* args); // T-4 probe hook: wb_probe_item <class> x y z
     static void WatchCommand(IConsoleCmdArgs* args);
     static void WatchInfoCommand(IConsoleCmdArgs* args);
     static void WatchCheckCommand(IConsoleCmdArgs* args);

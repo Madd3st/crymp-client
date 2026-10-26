@@ -1,0 +1,5 @@
+{"schema":1,"id":"sniper_reach_dsg1","map":"multiplayer/ia/steelmill","duration_s":60,"repeat":3,
+ "why":"owner 25.10: no bot ever held DSG1/Gauss; path_progress fix (aebce3b7 + 1dc87ba3)",
+ "cvars":{"wb_bot_navmesh":1,"wb_bot_jump_links":1,"wb_bot_weapon_rank":1,"wb_bot_path_progress":1},
+ "setup":["wb_add 1 elite marksman","wb_teleport 1 1316.9 1339.0 138.8"],
+ "assert":[{"metric":"pickup:DSG1","op":"le_seconds","value":45},{"metric":"unreachable","op":"eq","value":0},{"metric":"stalls","op":"eq","value":0}]}

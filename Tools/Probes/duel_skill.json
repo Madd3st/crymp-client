@@ -1,0 +1,6 @@
+{"schema":1,"id":"duel_skill","map":"multiplayer/ia/steelmill","duration_s":90,"repeat":3,
+ "why":"D-014/DS-014: Elite must clearly beat Beginner (owner: difficulties felt the same)",
+ "cvars":{"wb_bot_difficulty":1,"wb_bot_perception":1,"wb_bot_aim_model":1,"wb_bot_turn_cap":1,"wb_bot_navmesh":1},
+ "setup":["wb_add 1 elite universal","wb_add 1 beginner universal","wb_teleport 1 1267.4 1339.4 136.3","wb_teleport 2 1290.0 1339.4 136.3",
+          "wb_probe_item SCAR 1267.4 1340.4 136.3","wb_probe_item SCAR 1290.0 1340.4 136.3"],
+ "assert":[{"metric":"kills:1","op":"ge_ratio_of","other":"kills:2","value":3.0}]}

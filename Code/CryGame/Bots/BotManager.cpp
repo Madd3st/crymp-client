@@ -61,7 +61,7 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
 const char* kCommands[] = { "wb_demo_start", "wb_demo_stop", "wb_demo_mark", "wb_qa_time_scale", "wb_nav_audit",
-	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
+	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_probe_item", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
@@ -103,6 +103,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->AddCommand("wb_spawn_box",SpawnBoxCommand,0,"wb_spawn_box <spawnId>: read-only local IA physics2m box names/classes/proxies");
     console->AddCommand("wb_revive_at",ReviveAtCommand,0,"wb_revive_at <spawnEntityId> [botNumber|me]: manual native kill/revive; selected bot by default; local IA only");
     console->AddCommand("wb_teleport",TeleportCommand,0,"wb_teleport <botNumber> x y z: manual owned live bot relocation; local IA only");
+    console->AddCommand("wb_probe_item",ProbeItemCommand,0,"wb_probe_item <class> x y z: T-4 scenario probe - place a pickup (e.g. SCAR, DSG1, GaussRifle) at a fixed point; local IA only");
 	console->AddCommand("wb_nav_explain", NavExplainCommand, 0, "wb_nav_explain <fromNode> <toNode> or after <seconds> <from> <to>: local IA bidirectional ray diagnostics");
     console->AddCommand("wb_qa_time_scale",QATimeScaleCommand,0,"Diagnostic only:1..8, password-protected local dedicated IA/no humans; resets on level end");
     console->AddCommand("wb_geom_export",GeometryExportCommand,0,"Offline local IA or PowerStruggle/no actors: static collision OBJ + spawn/item JSON; optional path.obj and play-area box x0 y0 x1 y1");
@@ -706,6 +707,20 @@ void BotManager::TeleportCommand(IConsoleCmdArgs* args)
     {WB_LOG(0,"[WarsBots] Usage: wb_teleport <botNumber> x y z");return;}
     BotInstance* bot=self->ByNumber(number);
     if(!bot || !bot->DebugTeleport(position))WB_LOG(0,"[WarsBots] DEBUG TELEPORT refused: owned live unfrozen bot without vehicle required");
+}
+
+// T-4 (PROBES_SPEC.md hook 1): scenario probes need a fixed item at a fixed point (weapon_pickup, sniper_reach).
+void BotManager::ProbeItemCommand(IConsoleCmdArgs* args)
+{
+    BotManager* self=Self(); Vec3 position(0,0,0);
+    if(!self || !self->CanRunLocalIA()) {WB_LOG(0,"[WarsBots] PROBE ITEM refused: local IA gate closed");return;}
+    if(!args || args->GetArgCount()!=5 || !ParsePosition(args,2,position)) {WB_LOG(0,"[WarsBots] Usage: wb_probe_item <class> x y z");return;}
+    IEntityClass* cls=gEnv->pEntitySystem->GetClassRegistry()->FindClass(args->GetArg(1));
+    if(!cls || !g_pGame->GetIGameFramework()->GetIItemSystem()->IsItemClass(args->GetArg(1))) {WB_LOG(0,"[WarsBots] PROBE ITEM refused: %s is not an item class",args->GetArg(1));return;}
+    static int serial=0; char name[64]; std::snprintf(name,sizeof name,"wb_probe_%s_%d",args->GetArg(1),++serial);
+    SEntitySpawnParams params; params.pClass=cls; params.sName=name; params.vPosition=position; params.qRotation=Quat::CreateIdentity();
+    IEntity* item=gEnv->pEntitySystem->SpawnEntity(params,true);
+    WB_LOG(0,"[WarsBots] PROBE ITEM %s id=%u at (%.2f,%.2f,%.2f)",args->GetArg(1),item?item->GetId():0u,position.x,position.y,position.z);
 }
 
 void BotManager::SpawnBoxCommand(IConsoleCmdArgs* args)
