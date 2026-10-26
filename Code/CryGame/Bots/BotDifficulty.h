@@ -58,6 +58,10 @@ inline void ApplyDifficulty(BotProfile& p)
 	p.engageRange *= d.rangeScale; p.holdRange *= d.rangeScale; p.fireRange *= d.rangeScale;
 	p.sightRange = d.sightM; p.coneDeg = d.coneDeg; p.hearScale = d.hearScale;
 	p.zoomScale = d.zoomScale; p.burst *= d.burstScale; p.burstGap *= d.gapScale;
+	// fight movement + reload discipline (DS-014 rows 'strafe/jump in fight'; owner video: he jump-strafes every duel)
+	static const float jump[] = {0.f, 0.f, 0.2f, 0.6f}; static const float reload[] = {0.f, 0.4f, 0.5f, 0.6f};
+	const int s = int(p.skill) >= 0 && int(p.skill) < 4 ? int(p.skill) : 1;
+	p.fightStrafe = s > 0; p.fightJump = jump[s]; p.reloadAt = reload[s];
 }
 
 inline AimSkill DifficultyAim(BotSkill skill)

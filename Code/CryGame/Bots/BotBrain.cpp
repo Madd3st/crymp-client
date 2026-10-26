@@ -341,7 +341,10 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	if (m_now<m_escapeUntil) enemy=nullptr; // A short, sensed-but-not-pursued local escape leg.
     if(BotConfig::Get().goalArbiter==1 && !socomQA && UpdateArbitrated(bot,actor,enemy,decisionTime,socomQA))return; // C-032
     if(UpdateUpgrade(bot,actor,enemy,decisionTime,socomQA))return;
-    if(!enemy){UpdateRoam(bot,actor,decisionTime);return;}
+    if(!enemy){
+        // between fights a player tops the clip up (wb_bot_difficulty: N 40 %, V 50 %, E 60 %; Beginner waits for empty)
+        if(m_profile.reloadAt>0.0f && m_now-m_combat.LastSeen()>2.0f) BotWeapons::TacticalReload(actor,m_profile.reloadAt);
+        UpdateRoam(bot,actor,decisionTime);return;}
     UpdateCombat(bot,actor,decisionTime);
 }
 
@@ -816,7 +819,9 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
             Vec3 toward=destination-actor.GetEntity()->GetWorldPos(); toward.z=0;
             toward.NormalizeSafe(FORWARD_DIRECTION);
             Vec3 lateral(-toward.y,toward.x,0);
-            Vec3 travel=lateral*float(m_strafeSide)+toward*clamp_tpl((distance-desiredRange)*0.1f,-0.5f,0.5f);
+            // wb_bot_difficulty: a Beginner does not strafe - only closes / opens the distance
+            Vec3 travel=lateral*float(m_profile.fightStrafe?m_strafeSide:0)+toward*clamp_tpl((distance-desiredRange)*0.1f,-0.5f,0.5f);
+            if (!m_profile.fightStrafe && travel.GetLengthSquared()<0.01f) travel=toward*0.05f;
             travel.NormalizeSafe(lateral);
             // Eyes see the target but the barrel is blocked by cover: step out (forward and to
             // the current strafe side) instead of standing and staring; flip side if it persists.
@@ -834,7 +839,7 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
             m_intent.strafe=true;
             // fragmovies: duels are strafe + hop, never standing in the open (normal jump: Armor only)
             if (BotConfig::Get().tactics==1 && m_blackboard.mode==NANOMODE_DEFENSE && m_intent.jump==BotJump::None &&
-                m_jumpStrafe.Want(m_now,m_blackboard.grounded,distance,m_traits.jumper,m_rng+unsigned(m_decisionSerial)*2654435761u))
+                m_jumpStrafe.Want(m_now,m_blackboard.grounded,distance,m_profile.fightJump>=0.0f?m_profile.fightJump:m_traits.jumper,m_rng+unsigned(m_decisionSerial)*2654435761u))
                 WBI(jump,BotJump::Normal);
         }
 		Change(State::ATTACKING);

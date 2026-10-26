@@ -40,6 +40,9 @@ struct BotProfile
     float sightRange = 80.0f;     // m: scan / perception range
     float coneDeg = 110.0f;       // perception view cone
     float hearScale = 1.0f;       // hearing distances multiplier
+    bool fightStrafe = true;      // strafe in a duel (Beginner stands and shoots with wb_bot_difficulty)
+    float fightJump = -1.0f;      // hop chance in a duel; < 0 = character trait (old behaviour)
+    float reloadAt = 0.0f;        // reload between fights when the clip is below this fraction (0 = only when empty)
     float zoomScale = 1.0f;       // zoom-in distance multiplier (Elite zooms SCAR from 8 m instead of 20 m)
 	// Chance to Strength-jump right after being hit in a fight (dodge), per hit event.
 	float dodgeChance = 0.3f;

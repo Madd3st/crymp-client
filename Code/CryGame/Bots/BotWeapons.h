@@ -23,6 +23,7 @@ struct BotWeapons
 	static bool GiveTestSCAR(CActor& actor);
 	static bool HasAmmunition(CActor& actor, IWeapon& weapon);
 	static bool ReloadIfNeeded(CActor& actor, IWeapon& weapon);
+	static bool TacticalReload(CActor& actor, float belowFraction); // between fights, clip < fraction -> reload
 	// C-022 weapon rank (BotWeaponRank.h): suitable inventory items, best fight value held, range-based selection.
 	static int Held(CActor& actor, HeldWeapon* out, int max, EntityId* ids = nullptr);
 	static float HeldValue(CActor& actor, float distance);

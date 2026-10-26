@@ -235,6 +235,18 @@ bool BotWeapons::SelectForRange(CActor& actor, float distance)
 	return true;
 }
 
+bool BotWeapons::TacticalReload(CActor& actor, float belowFraction)
+{
+	IWeapon* weapon = Current(actor);
+	if (!weapon || belowFraction <= 0.0f || weapon->IsReloading() || !weapon->CanReload()) return false;
+	IFireMode* mode = weapon->GetFireMode(weapon->GetCurrentFireMode());
+	if (!mode || mode->GetClipSize() <= 0 || !actor.GetInventory() || actor.GetInventory()->GetAmmoCount(mode->GetAmmoType()) <= 0) return false;
+	if (float(mode->GetAmmoCount()) >= belowFraction * float(mode->GetClipSize())) return false;
+	weapon->Reload(false);
+	WB_LOG(2, "[WarsBots] TACTICAL RELOAD actor=%u clip=%d/%d.", actor.GetEntityId(), mode->GetAmmoCount(), mode->GetClipSize());
+	return true;
+}
+
 bool BotWeapons::ReloadIfNeeded(CActor& actor, IWeapon& weapon)
 {
 	if (weapon.IsReloading()) return true;

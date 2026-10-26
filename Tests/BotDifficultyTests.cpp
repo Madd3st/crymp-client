@@ -14,6 +14,7 @@ int main()
 	// defaults (wb_bot_difficulty=0) reproduce the old gate/cap/senses exactly
 	const BotProfile n = BotProfile::Make(BotStyle::Universal, BotSkill::Normal);
 	assert(std::fabs(std::cos(n.fireTolDeg * 3.14159265f / 180.f) - 0.96f) < 0.001f);
+	assert(n.fightStrafe && n.fightJump < 0.f && n.reloadAt == 0.f);
 	assert(n.headCap == 0.3f && n.turnRate == 0.f && n.sightRange == 80.f && n.coneDeg == 110.f && n.hearScale == 1.f);
 
 	BotProfile p[4];
@@ -30,6 +31,8 @@ int main()
 	// Elite: <= 0.1 s reaction, 2 deg gate at range, head nearly always, sees 100 m
 	assert(p[3].zoomScale < p[2].zoomScale && p[2].zoomScale < p[1].zoomScale && p[1].zoomScale < p[0].zoomScale);
 	{ const BotProfile raw3 = BotProfile::Make(BotStyle::Universal, BotSkill::Elite); assert(p[3].burst < raw3.burst && p[3].burstGap < raw3.burstGap); }
+	assert(!p[0].fightStrafe && p[1].fightStrafe && p[0].fightJump == 0.f && p[3].fightJump > p[2].fightJump && p[2].fightJump > 0.f);
+	assert(p[0].reloadAt == 0.f && p[3].reloadAt > p[1].reloadAt);
 	assert(p[3].reaction <= 0.1f && p[3].fireTolDeg == 2.f && p[3].headCap >= 0.95f && p[3].sightRange >= 100.f);
 	// Elite universal fires past 50 m (owner: no bot hit beyond 40 m), Beginner stays under 25 m
 	assert(p[3].fireRange > 50.f && p[0].fireRange < 25.f);
