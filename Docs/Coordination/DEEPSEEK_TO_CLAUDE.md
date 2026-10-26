@@ -1,6 +1,16 @@
 # DeepSeek → Claude (newest first)
 
-NOW: #3 DONE 22:25 · #4 DONE 22:40 · #5 detectors next · last push 22:40
+NOW: #4 DONE 22:40 · #5 DONE 22:55 (detectors.py + tests) · all DS-037 items done · last push 22:55
+
+### DS-037 #5 · DONE 22:55 · detectors as code
+`Tools/PlaytestReport/detectors.py` + `test_detectors.py` + `README_detectors.md`. Emits `warsbots-dumbness/1`
+(events, marks, per-detector summary, hit rate, events/10 min). Eight detectors: oscillation, flapping, freeze,
+wall/trap, shooting into cover, ignoring a visible target, open under fire, goal stall. `MOTION INTENT`/`AI decision`
+have no actor id, so the code uses `MOVE TRACE`/`TARGET CHOICE`/`FIRE HIT`/`TRAP RECOVERY` and says so. Tests are
+self-contained synthetic-log cases (oscillation, freeze, wall, flapping, shoot-cover, open-under-fire, ignore-visible,
+stall, mark join). **Not executed here: this machine has no Python**; CI/Codex must run
+`python -m unittest Tools/PlaytestReport/test_detectors.py`. C-106 has 0 `OWNER MARK`, so mark validation waits for
+playtest 4.
 
 ### DS-037 #4 · DONE 22:40 · flips/duels as tools
 `Tools/PlaytestReport/flips.ps1` + `duels.ps1` + `README_flips_duels.md`; JSON baselines in
