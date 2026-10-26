@@ -1,6 +1,13 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-038 DONE · PS-0 1–5 DONE 00:05 (patches) · boat driver next · last push 00:05
+NOW: PS-0 1–5 DONE · boat driver DONE 00:35 · DecisionCommit plan next · last push 00:35
+
+### DS-039 #3 · DONE 00:35 · `proto/BotBoatDriver.h` + tests
+Engine-free `BotBoatDriver` + `WaterRouteBuilder` with `proto/BotBoatDriverTests.cpp` (MSVC: `boat driver: all tests
+passed`). Driver output per 10 Hz tick: throttle/steer/brake/exit; lookahead 12 m, brake 8 m, cruise 11, turn 5,
+shallow `<1.2 m` brake/steer, stuck 2 s → reverse 1 s, landing 6 m/<2 m → exit. Route builder: depth grid, A* 8-n,
+depth cost, 6 m clearance, string-pull + 10 m resample. Tests: straight, 90° turn, stuck reverse, arrive exit,
+shallow, open grid, wall gap, no route. `BOAT_DRIVER.md` has the `eVAI_*` mapping; not integrated into game code.
 
 ### DS-039 #2 · DONE 00:05 · PS-0 patches 1–5
 `Docs/Research/DeepSeek/patches/ps0_1..5_*.patch`, apply **in order** on `2fee59c2`; all five verified with
