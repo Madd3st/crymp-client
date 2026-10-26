@@ -65,6 +65,8 @@ Teams 3–4 bots, scaling; vehicles enter/exit mandatory in PS v1.
 
 ## Next for Claude (in order)
 
+0. When DeepSeek delivers DS-025 (`BEHAVIOUR_BIBLE.md`): turn it into a Claude Doc for the owner to read and comment (owner request 26.10 11:42), map gaps to tasks; new features should come from the bible, not from the last complaint.
+
 1. Verdict C-103 when it lands; if green, preset for the next playtest with ladder part 2–3.
 2. Snipers: probe runner works (C-100, `Tools/Run-WarsBotsProbe.ps1`, X-115). sniper_reach_dsg1 0/3 and _gauss 0/3: an Elite marksman spawned next to the routes **picks FY71/SCAR (1.4 s / 7.6 s) and never targets the sniper rifle** — weapon selection, not the path, is the first blocker (plus DS-023 for the path). duel_skill 1/3 with 0:0 kills — the duel coordinates probably have no LOS; fix the fixture first. Probes are the oracle: make them red→green before any soak.
 3. Grenades (bots never throw; target behind cover → frag at last known position, self-safety check). D-023: teammates may get hurt by accident, but no throw when a teammate is near the blast point. D-024: if Elite feels unfair, add a first-shot pause, keep accuracy. D-022: C-103 runs today.

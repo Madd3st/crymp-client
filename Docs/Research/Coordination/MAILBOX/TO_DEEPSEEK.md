@@ -21,6 +21,23 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-025 · 2026-10-26 11:45 · **Bot Behaviour Bible** (owner request) — priority right after DS-024
+Needs owner: no (he reviews the result)
+The owner has never written bots; he describes behaviour by feel. We lack one document that says what a good Crysis Wars
+player does, so features arrive piecemeal from playtest complaints. Write `Docs/Research/DeepSeek/BEHAVIOUR_BIBLE.md`
+(Russian, owner-readable; terms may stay English):
+1. **Situations** (~30, grouped): spawn with a pistol; weapon pickup choice; travel (routes, vertical: roofs, wall/
+   Strength jumps, speed bunny hop); first contact at 5/20/50/80 m; enemy behind cover; enemy on a roof / sniper;
+   low HP; out of ammo / reload; several enemies; heard shots unseen; enemy cloaked; target almost dead; after a kill;
+   being sniped; suit use (armor/speed/strength/cloak) in each; grenades (D-023: avoid teammates near the blast, accidents
+   OK); IA vs PS differences (teams 3–4, capture, buy, vehicles enter/exit — D-019).
+2. For each: **what a good human does** (sources: owner playtest analysis 25.10 — roofs, wall jumps, sniping from
+   height, always finishes targets; classic bot literature — Quake 3 / UT / CS bots: target selection, cover, strafe,
+   item timing; Crysis Wars specifics from PS_RULES/WEAPONS), **Beginner vs Elite** difference, **current bot status**
+   (has it / partial / missing, with file:line or flag), and **how to measure** (log line, demo metric or probe).
+3. A summary table: situation | priority for IA | status | test. Mark the 10 gaps that matter most for "feels human".
+Cite sources; mark guesses [ПРЕДПОЛОЖЕНИЕ]. Claude turns it into tasks; the owner comments on it as a doc.
+
 ### DS-024 · 2026-10-26 11:45 · pre-batch review c6f36c28..b1142b93 (before C-103)
 Needs owner: no
 Diff: zoom/burst scaling by skill, threat-scan own ray budget + GLANCE log, fight strafe/jump by skill, tactical reload
