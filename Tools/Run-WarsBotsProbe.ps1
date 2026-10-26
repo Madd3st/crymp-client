@@ -8,6 +8,7 @@ param(
  [ValidateRange(1024,49151)][int]$Port=46120
 )
 $ErrorActionPreference='Stop'
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 $repo=Split-Path $PSScriptRoot -Parent
 $spec=Get-Content -LiteralPath $Probe -Raw|ConvertFrom-Json
 if($spec.schema -ne 1 -or $spec.map -ne 'multiplayer/ia/steelmill'){throw 'Unsupported probe schema/map'}
