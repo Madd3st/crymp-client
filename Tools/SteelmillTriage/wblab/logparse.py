@@ -15,7 +15,7 @@ F = r"(-?[\d.]+)"
 V3 = rf"\(\s*{F},\s*{F},\s*{F}\)"
 
 PATTERNS = {
-    "created": re.compile(rf"#(\d+) created EntityId=(\d+) name=(\S+) profile=(\w+)/(\w+) position={V3}"),
+    "created": re.compile(rf"#(\d+) created EntityId=(\d+) name=(.+?) profile=(\w+)/(\w+) position={V3}"),
     "telemetry": re.compile(rf"AI telemetry EntityId=(\d+) state=(\w+) pos={V3} health=(-?\d+) weapon=(\d+) ammo=(-?\d+) target=(\d+)"),
     "nav_fallback": re.compile(rf"#(\d+) NAV fallback start={V3} goal={V3}"),
     "nav_build": re.compile(rf"NAV build started: (\d+)x(\d+) columns, cell {F} m, z {F}\.\.{F}"),
