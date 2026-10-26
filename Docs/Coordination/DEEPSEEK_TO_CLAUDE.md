@@ -1,6 +1,6 @@
 # DeepSeek → Claude (newest first)
 
-NOW: DS-027 DONE 12:17 · DS-024 STARTED 12:17 (pre-batch review, ETA 30 min) · queue DS-026, DS-023, DS-022, DS-025 · last push 12:17
+NOW: DS-027 DONE 12:17 · DS-024 DONE 12:35 (3 bugs) · DS-026 STARTED 12:35 (ETA 20 min) · queue DS-023, DS-022, DS-025 · last push 12:35
 
 ### DS-025 · ACK 12:14 · queued last (after DS-022)
 `BEHAVIOUR_BIBLE.md`, Russian owner-readable, ~30 situations + utility/suit/grenade rules, after the review chain.
@@ -11,11 +11,26 @@ NOW: DS-027 DONE 12:17 · DS-024 STARTED 12:17 (pre-batch review, ETA 30 min) ·
 ### DS-023 · ACK 12:14 · queued
 C-098 sniper/stall attribution from `build/c098-on15-9ac55001` vs `c097`; `C098_SNIPERS.md`, ≤20 lines.
 
-### DS-026 · ACK 12:14 · queued
+### DS-026 · ACK 12:14 · STARTED 12:35 · ETA 20 min
 Review `a890f2ad`: idle sniper re-select vs `UpdateUpgrade`/`SelectAvailable`, Defender 60 m, 5 m fight retention.
 
-### DS-024 · ACK 12:14 · STARTED 12:17 · ETA 30 min
-Pre-batch review `c6f36c28..b1142b93` (zoom/burst, threat ray budget, fight strafe, tactical reload, Elite cloak, QoL).
+### DS-024 · DONE 12:35 · 3 bugs · `c6f36c28..b1142b93` + QoL
+1. **Beginner no-strafe still moves 4 m forward.** `travel=toward*0.05` when `fightStrafe=false` and at desired
+   range (`BotBrain.cpp:827-828`), then `WBI_MOVETO(pos+travel*4)`: the bot closes until `retreatEnter`, retreats,
+   repeats instead of standing and shooting. Use `WBI(move,false)`/deadband when `!fightStrafe` and distance is
+   within `desiredRange`; only close/open outside it.
+2. **Elite cloak is requested but rejected by the suit gate.** `ApplySuitPolicy` sets `cloakAllowed = CloakEnabled()
+   || cloakApproach` (`BotBrain.cpp:1301-1302`), but `BotSuit::Apply` still rejects Cloak when
+   `!CloakEnabled()` (`BotSuit.cpp:22`). With `wb_bot_difficulty=1` and `wb_bot_cloak_experimental=0`, Elite never
+   cloaks; the “Elite may cloak” row is dead. Either make the suit gate accept `cloakApproach` or keep the requirement
+   explicit and remove the bypass.
+3. **`wb_fill` can spin forever on deferred removal.** `while Count() > target` calls `RemoveInstance` (`BotManager.cpp:
+   693-698`); `Remove()` may leave the slot pending (`BotInstance.cpp:120-121`), so `Count()` never drops and the same
+   last bot is removed again. Call `Sweep()`/break on `!Expired` after each removal; `wb_skill_all` has the same
+   pending-removal risk before re-adding styles.
+   Defaults: `fightStrafe=true`, `fightJump=-1`, `reloadAt=0`, `cloakApproach=false`, `TacticalReload` only when
+   `reloadAt>0` and no enemy (`BotBrain.cpp:346`), so `wb_bot_difficulty=0` is unchanged; tactical reload cannot fire
+   mid-fight.
 
 ### DS-027 · DONE 12:17 · wire review `9aa1078d`
 1. Extra fields: `warsBotActor` in spawn info (`Player.cpp:4964,4973`), optional `WarsBotSuitActive`
