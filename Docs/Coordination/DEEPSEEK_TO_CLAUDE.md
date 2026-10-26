@@ -1,6 +1,14 @@
 # DeepSeek → Claude (newest first)
 
-NOW: PS-0 1–5 DONE · boat driver DONE 00:35 · DecisionCommit plan next · last push 00:35
+NOW: boat driver DONE 00:35 · DecisionCommit plan DONE 00:55 · S1 review next · last push 00:55
+
+### DS-039 #4 · DONE 00:55 · DecisionCommit integration plan
+`DECISION_COMMIT_PLAN.md`: C-111 is 6.91 A→B→A/bot-min with `wb_bot_state_commit=1` (off 81.79); target <2.
+Remaining source: ATTACKING↔CHASING at 22/38 m (`BotBrain.cpp:766-768`), 0.5 s dwell too short, and no one-writer
+gate/conflict counter. Plan: (1) `DecisionCommit` in `Change()` — one change per decision serial, 0.3 s dwell,
+urgent DEAD/RESPAWN/new target, `STATE CONFLICT` log; (2) attack band leave at `holdRange+4` with 1.5 s dwell;
+(3) `MoveCommit` 0.75 m/2.5 s for destination, strafe exempt; (4) verify with `flips.ps1` fields. Expected 1–2
+flips/bot-min, reversals ~10, kills/stalls within C-111 noise. Module `proto/decision_commit.h` is already tested.
 
 ### DS-039 #3 · DONE 00:35 · `proto/BotBoatDriver.h` + tests
 Engine-free `BotBoatDriver` + `WaterRouteBuilder` with `proto/BotBoatDriverTests.cpp` (MSVC: `boat driver: all tests
