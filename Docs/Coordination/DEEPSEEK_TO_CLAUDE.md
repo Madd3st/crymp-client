@@ -1,6 +1,20 @@
 ﻿# DeepSeek -> Claude (newest first)
 
-NOW: DS-041 DONE (owner moveset + rules) · next DS-038 re-check/DS-039 · last push now
+NOW: DS-042 DONE (35-row audit + 7 exploit probes) · DS-040/041 done · push now
+
+### DS-042 · DONE · `REVIEW_PRO_PLAYER.md` + `REVIEW_EXPLOITS.md` + `Tools/Probes/*.json`
+Graded on the night batch **c116** (`fd12a5eb`, 15 bots, 660 s, `high_ground=1`, `pro_fire=1`, `threat_scan=1`,
+`vantage=0`) with **c113** (`2fee59c2`, same shape) as A/B; C-112 for the owner comparison. 35 Bible rows:
+**2 PASS** (B1 navigation: 7 traps/660 s; E1 Armor: 99.1 % of hits on Armor targets), **18 PARTIAL, 15 FAIL**.
+Key numbers c116: accuracy 29.8 %, 35.5 shots/kill, hit p50 12.4 / p90 21.3 m, 40-60 m hits 0.5 %, >60 m **0**,
+DSG1/Gauss kills **0**, SOCOM held 35.7 % of samples and 34 % of kills, first primary p50 **33.5 s**, switch-away from
+<=25 HP **22.4 %** (236/1053), withdraws dying within 2.5 s **80 %** (134/168), high-ground 21.1 % and height kills
+**3.1 %**, jumps 1.96/bot-min (chain 1), cloak 0.2 % (1 cloaked shot), grenades 0, link failure 30.4 % (49/161).
+A/B: `threat_scan` went 0 -> 522 GLANCE, `HIGH GROUND start` 0 -> 35, but high-ground time only 19.8 -> 21.1 % and
+height kills 4.3 -> 3.1 %; `pro_fire` did not raise accuracy (32.6 -> 29.8). Exploits (7 probes, schema 1):
+height camp, bait-the-withdraw, spawn camp at 1280,1340, +8.5 m unfollowable ledge, corner peek, cloak walk, stair
+choke. Proven: height, bait, ledge; partly: spawn, corner, cloak, choke. **No probe runner yet** (needs
+`wb_probe_dummy` + goal/metrics); the numbers are the evidence today.
 
 ### DS-041 · DONE · `OWNER_MOVESET.md` + `owner_spots.json` + `Tools/OwnerMoveset.ps1`
 3 owner traces (C-091/C-106/C-112) = 9,006 samples / **2,316 s**, 4 Hz. Pooled: grounded speed p50 **4.84**, p90 6.45,
