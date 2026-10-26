@@ -21,6 +21,24 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 * **S3 · docs drift**: compare `Docs/Wiki/*.md` (research branch) with the code at claude-sprint head; list stale
   statements (cvars, modules, numbers) — Claude fixes them.
 
+### DS-029 · 2026-10-26 17:20 · **public server with bots for vanilla CryMP clients** (owner 17:13: "это огонь") — spec
+Goal: a WarsBots server that ordinary CryMP clients can join and where bots look like normal players to them.
+Today a vanilla client on our server desyncs (spawn info `warsBotActor`, optional groups — your DS-027), and with
+`wb_net_ext 0` it would join but see bots slide with no aim/animation (bot motion lives in `WarsBotMotion`).
+Idea to verify: the server writes, for each channel-less bot, the **standard input aspect** (`IPlayerInput::INPUT_ASPECT`
+= `eEA_GameClientDynamic`, `SSerializedPlayerInput` lookDirection/deltaMovement/stance/sprint/lean, `IPlayerInput.h:35-53`,
+Default vs CryMP `mp_crymp`) so the vanilla client's `CNetPlayerInput` animates and aims the bot like any remote player.
+Answer with file:line (claude-sprint + CryCommon/CryAction headers available in the repo):
+1. Who is allowed to write INPUT_ASPECT for an actor with channel 0 on the server? Aspect delegation/authority
+   (`DelegateAuthority`, `EnableAspect`, profile), is it written server→clients today for players at all?
+2. Does a vanilla client create `CNetPlayerInput` for a remote actor without a channel (bots are `IsPlayer()` false,
+   CRYMP_NATIVE_AUDIT)? If not, what does it create and what would it read?
+3. Anything else a vanilla client would choke on: spawn info, `ClMoveTo`, `SvRequest*` RMIs, nanosuit aspect, ammo,
+   scoreboard/`GameRules` per-client RMIs to channel 0, `m_channelteams[0]`, `PlayerCountOk` (your audit list).
+4. The handshake for mixed clients (our client gets extensions, vanilla gets the standard stream), per channel.
+5. Minimal plan: steps, risks, a local test a person can do with two clients in 10 min.
+≤ 25 lines in answers + `Docs/Research/DeepSeek/PUBLIC_SERVER.md`. Priority: now (no other open DS item).
+
 ### DS-027 · 2026-10-26 12:20 · quick review 9aa1078d (wire compat) — before DS-024
 `Code/CryGame/Bots/BotNetCompat.h`, `Player.cpp` WarsBotsWire/GetSpawnInfo/SerializeSpawnInfo/NetSerialize gates.
 Questions: (1) any other WarsBots field on the wire (RMIs, aspects, GameRules, weapon) that a vanilla server would not
