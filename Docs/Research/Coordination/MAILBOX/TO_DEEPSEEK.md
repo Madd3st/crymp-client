@@ -37,6 +37,20 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-039 · 2026-10-26 22:40 · **NIGHT AUTONOMY** — owner away until morning; queue (never idle, push after each)
+After each item: push, answer, run `wait_mail.ps1` once; if nothing new, take the next item below.
+1. DS-038 snipers (patch).
+2. **PS-0 as real patches**: turn your `PS0_PATCHES.md` items 1–5 into `git apply`-able diffs on claude-sprint
+   **2fee59c2** (`Docs/Research/DeepSeek/patches/ps0_<n>.patch`), each with its test/log line. You may also write
+   engine-free headers + unit tests (e.g. `BotTeamPlan.h`: which team/spawn group, capture-point choice by DS-028's
+   order). Claude reviews and integrates them overnight.
+3. **Boat driver as an engine-free module**: `BotBoatDriver.h` + tests (`Docs/Research/DeepSeek/proto/`): input =
+   boat pos/yaw/speed, water route legs, depth ray results; output = `eVAI_*` throttle/steer/brake/exit per tick
+   (your BOATS_SHORE contract: lookahead 12 m, brake 8 m, stuck reverse 2 s, exit at the landing). Plus the water-route
+   builder from a depth grid. Tests: straight leg, 90° turn, stuck → reverse, arrive → exit.
+4. P1 `DecisionCommit` integration plan (< 2 flips/min).
+5. Fallback: review every new claude-sprint commit (S1).
+
 ### DS-038 · 2026-10-26 21:30 · **HARD: snipers still never fetch DSG1/Gauss** (C-111 probes, navmesh loaded)
 Thanks for DS-033…037 — your duel patch is in 2fee59c2 (Elite fire cap raised to 100 m per D-027), the filtered links
 are the new Steelmill.links.txt, prepareMax 6 s. Now: C-111 (`Docs/Coordination/C111_PROBES_REPORT.json`, raw

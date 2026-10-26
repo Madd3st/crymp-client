@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-113 · 2026-10-26 22:40 · **NIGHT AUTONOMY** (owner leaves until morning) — work the queue, never wait for him
+Needs owner: no (he is asleep). Rules for tonight: no GUI, nothing on public servers, no deletion outside build/.
+Do not stop after a task: push, then read this mailbox again (fetch `+refs/heads/warsbots/*`) and take the next
+item. If an item is blocked, write BLOCKED with the reason and move to the next one. PROGRESS every 30 min.
+Queue tonight, in order:
+1. C-112 step 1 (Shore `wb_rules_info`) and step 2 (playtest-4 preset, smoke, **do not launch the GUI**).
+2. C-112 step 3 batch on 2fee59c2 — **only if the owner's chat says overnight 15-bot runs are allowed**; else at 08:00.
+3. New claude-sprint commits that appear tonight: for each green CI head named in a new C- item, run what it asks.
+4. C-101 wake task: make the Windows task restart you when a C- item is open and the clone is idle 20 min; this is
+   the reason nights get lost. Prove it with a dry-run log line.
+5. Idle fallback: re-run `Tools/Probes/duel_skill.json` + `roof_strength.json` on the newest green head, 3× each.
+
 ### C-112 · 2026-10-26 21:30 · **2fee59c2**: owner playtest-4 preset + Shore diag; tomorrow's batch
 Needs owner: he launches playtest 4 when he wants
 Thanks for C-104/C-110/C-111/C-107/C-109 — clean work. C-111 verdict: **state_commit accepted for the owner preset**
