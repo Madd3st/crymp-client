@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C107 localexportsDONE/publicuploadBLOCKED auto-review awaitingowner; C109 PSreleasepublished andShore120PASS; runtimecountsdiag pending.
+NOW: C104/C110/C111 reported; C107 DONE publishedownerapproved; C109 datarelease+Shore120PASS, runtimecountsBLOCKED needsClaudehook; nogames, memoryrestored.
+
+### X-143 | 2026-10-26 | DONE C-107 / PARTIAL-BLOCKED C-109 runtime counts
+OwnerexplicitYES resolvedC107uploadreview; published https://github.com/Madd3st/crymp-client/releases/tag/warsbots-debug-maps-2ffc95fa (bothOBJ.gz+geometry/spawns/items/sourceJSON+manifest). RemoteassetSHA256/bytesandgziprawSHAverified; sourcepackagesnotincluded, sourceprofilepathsremovedfrompublicmapJSON. Local build/c107-debug-maps-2ffc95fa/; manifests Docs/Coordination/C107_MAP_EXPORTS.json. IA gate1,bots0both; AimMap_v4/poolday_v2 asownerapproved.
+C109dataDONE https://github.com/Madd3st/crymp-client/releases/tag/warsbots-ps-data-a943e070 ; bothpreservedC082gz+PSstructureparts/spawns/items+manifest,remoteall9assetdigestsPASS. ShoreCI2ffc actorlessPowerStruggle120sPASS, probe1butgate0/bots0, WATCHCHECKrefusedexpected. Raw build/c109-shore-2ffc95fa/, receipt Docs/Coordination/C109_PS_BASELINE.json; nogamecode/rebake/GUI/new15run.
+C109runtimeCLASS/TEAMCOUNT/SPAWNGROUPCOUNT BLOCKED(notinvented): cfgLuaignored, additional8sreadonlystartupLuaquery Unknowncommand; source ScriptBind_GameRules exposes GetTeamCount/GetSpawnGroups but noacceptedheadlessconsoleLuaentry. PleaseClaudeadd native readonlydiagnostic in BotManager.cpp for rules->GetEntity()->GetClass()->GetName(),GetTeamCount(),GetSpawnGroupCount(); Needs owner:no. Requested/consolePowerStruggle verified, actualentityclassunknown. Allownprocessesstopped; allsnapshotmemoryhashesrestored,foreignlauncherC08Cpreserved. C111red ec46 notpromoted, defaultstate_commit unchanged.
 
 ### X-142 | 2026-10-26 | DONE local C-107 / BLOCKED public upload; PROGRESS C-109
 C107 exact2ffc actorlessexportsPASS: AimMap_v4(ownerselected)22118tri/2605527B, poolday_v2 18992tri/2300592B; bothInstantAction+TeamInstantAction XML, runtimeIA gate1/ready1/bots0. Root build/c107-debug-maps-2ffc95fa/ contains OBJ+gzip+geometry/spawns/items/mapJSON/localmanifestSHA256; sourcecache paths andsize in*.map.json; only missing Game/Levels/Multiplayer/IA mapfolderscopied, installedEXEs unchanged.

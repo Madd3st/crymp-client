@@ -1,0 +1,176 @@
+{
+  "schema": "warsbots-debug-map-export/1",
+  "maps": [
+    {
+      "map": "AimMap_v4",
+      "source_sha": "2ffc95fa6431ae8fa6ba18d1f1ccad71eaf29d88",
+      "geometry": {
+        "bounds": [
+          [
+            5.0,
+            83.0,
+            -4096.0
+          ],
+          [
+            103.0,
+            166.0,
+            4096.0
+          ]
+        ],
+        "build": "v26-185-g2ffc95fa",
+        "collision_proxy_parts": 909,
+        "degenerate_skipped": 0,
+        "geometry_types": {
+          "0": 193,
+          "1": 591,
+          "2": 1,
+          "5": 124
+        },
+        "heightmap_unit": 2,
+        "map": "Multiplayer/IA/AimMap_v4",
+        "nonstatic_bodies": {},
+        "parts": 909,
+        "primitive_segments": 16,
+        "ps_bodies_added": 0,
+        "ps_structures": [],
+        "schema": "wbgeometry/1",
+        "sha": "2ffc95fa6431ae8fa6ba18d1f1ccad71eaf29d88",
+        "skipped_parts": 0,
+        "static_entities": 909,
+        "structure_classes": {},
+        "structure_entities": 0,
+        "terrain_cells": 16384,
+        "triangles": 22118,
+        "units": "metres",
+        "unsupported_parts": 0,
+        "up_axis": "Z",
+        "vertices": 66354
+      },
+      "files": [
+        {
+          "name": "AimMap_v4.obj",
+          "bytes": 2605527,
+          "sha256": "e1bb83628e8013a6db5fdee955e8cf5de3c196c67c04a9118ec9537cb201512a"
+        },
+        {
+          "name": "AimMap_v4.obj.gz",
+          "bytes": 317627,
+          "sha256": "3ba8349bc7f27695fee4c82cce31108481bb268e3fd1a29c0bb38edb0f63758b"
+        },
+        {
+          "name": "AimMap_v4.geometry.json",
+          "bytes": 788,
+          "sha256": "46497e4e4074345605098b9e83aa37e533dc881fe05abcdee6c4c5ef1c1aeef5"
+        },
+        {
+          "name": "AimMap_v4.spawns.json",
+          "bytes": 2839,
+          "sha256": "72e85f228e41c93b1e496e58ab8be44d956622fe313d13bcb6ca881f9c7e641d"
+        },
+        {
+          "name": "AimMap_v4.items.json",
+          "bytes": 54198,
+          "sha256": "69563f7a8c0a5e85774209ee1dad9e3cb9c2c54edd2af7e31ee6a0380e80a58b"
+        },
+        {
+          "name": "AimMap_v4.map.json",
+          "bytes": 18865,
+          "sha256": "58e27105db8ca8e267fa37735b9bc2c4ace7dd78aca8eddd8fc4c59c5937a663"
+        }
+      ],
+      "gate": "gate=1 levelReady=1 bots=0",
+      "source": "owner CryMP download cache; only missing IA directories copied, no original overwrite"
+    },
+    {
+      "map": "poolday_v2",
+      "source_sha": "2ffc95fa6431ae8fa6ba18d1f1ccad71eaf29d88",
+      "geometry": {
+        "bounds": [
+          [
+            105.0,
+            79.0,
+            -4096.0
+          ],
+          [
+            204.0,
+            159.0,
+            4096.0
+          ]
+        ],
+        "build": "v26-185-g2ffc95fa",
+        "collision_proxy_parts": 704,
+        "degenerate_skipped": 0,
+        "geometry_types": {
+          "0": 204,
+          "1": 441,
+          "2": 1,
+          "5": 58
+        },
+        "heightmap_unit": 2,
+        "map": "Multiplayer/IA/poolday_v2",
+        "nonstatic_bodies": {
+          "Door type=2 mass0": 8,
+          "FY71 type=2 moving": 2
+        },
+        "parts": 704,
+        "primitive_segments": 16,
+        "ps_bodies_added": 0,
+        "ps_structures": [],
+        "schema": "wbgeometry/1",
+        "sha": "2ffc95fa6431ae8fa6ba18d1f1ccad71eaf29d88",
+        "skipped_parts": 2,
+        "static_entities": 714,
+        "structure_classes": {},
+        "structure_entities": 0,
+        "terrain_cells": 16384,
+        "triangles": 18992,
+        "units": "metres",
+        "unsupported_parts": 0,
+        "up_axis": "Z",
+        "vertices": 56976
+      },
+      "files": [
+        {
+          "name": "poolday_v2.obj",
+          "bytes": 2300592,
+          "sha256": "1eef765d7b8b54d345c2ab5f91db609d1a5fe9fef011255b1b999b479f0d413d"
+        },
+        {
+          "name": "poolday_v2.obj.gz",
+          "bytes": 279749,
+          "sha256": "f5f4ee3c7af0e7e059c9f78e983f8965c7c5a8231fe52bcf24dc11ad9cedb3c9"
+        },
+        {
+          "name": "poolday_v2.geometry.json",
+          "bytes": 849,
+          "sha256": "a62468dd896b3c9d13b4e6dfb5f69f4fe94311c7825e9b0de75333d7a475205a"
+        },
+        {
+          "name": "poolday_v2.spawns.json",
+          "bytes": 1485,
+          "sha256": "586e1119cc89075b08050b21f07d9762f038775d2b1d4feb94be892ae8818f65"
+        },
+        {
+          "name": "poolday_v2.items.json",
+          "bytes": 17151,
+          "sha256": "e0e86d11edfc3ce9f485d1b639d9d6e310afedc8062a45a218f2ec6d296098e1"
+        },
+        {
+          "name": "poolday_v2.map.json",
+          "bytes": 9978,
+          "sha256": "d0b13f65e45dfdc2b8f90ff8295ecc5a4cd800b18f0daf37bc442e729aba20ee"
+        }
+      ],
+      "gate": "gate=1 levelReady=1 bots=0",
+      "source": "owner CryMP download cache; only missing IA directories copied, no original overwrite"
+    }
+  ],
+  "game_rules": [
+    "InstantAction",
+    "TeamInstantAction"
+  ],
+  "native_runtime_rules": "InstantAction",
+  "note": "Owner explicitly approved public upload; published gzip and JSON, no source map packages.",
+  "release_url": "https://github.com/Madd3st/crymp-client/releases/tag/warsbots-debug-maps-2ffc95fa",
+  "public_manifest_note": "Sanitized source-cache-relative metadata in build/c107-publication; its hashes differ from local map.json intentionally."
+}

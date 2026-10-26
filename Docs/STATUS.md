@@ -1,5 +1,11 @@
 # WarsBots for CryMP: status, 2026-10-25
 
+C107 DONE: AimMap_v4/poolday_v2 actorless IA exports and owner-approved GitHub release warsbots-debug-maps-2ffc95fa.
+C109 preservedPSdata release warsbots-ps-data-a943e070 DONE; ShorePS120s noactors PASS, gate0 expected.
+C109 runtimeclass/team/spawngroup counts BLOCKED: no supported console Lua; requested Claude native diagnostic.
+Docs/Coordination/C107_MAP_EXPORTS.json and C109_PS_BASELINE.json hold receipts.
+All own processes stopped, memory/nav restored, foreign launcher preserved.
+
 C111 ec46 DONE gatesFAIL: OFF->ON kills39->34 (<90%), stalls11->9,traps0.
 ABA/min81.79->6.91, reversals/min13.29->15.58; no promotion.
 Docs/Coordination/C111_STATE_COMPARISON.json and C111_PROBES_REPORT.json contain evidence.

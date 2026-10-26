@@ -1,5 +1,10 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-25)
 
+2026-10-26 checkpoint: C104 X135; C110 guards3cd046c7; C111 ec46 shortAB red(kills39->34) despite ABA81.79->6.91/min.
+C107 owner-approved releases published; C109 PS data+actorlessShore120PASS, runtimecounters need Claude native diagnostic.
+Latest receipts Docs/Coordination/C107_MAP_EXPORTS.json, C109_PS_BASELINE.json; no games active, owner59D6mem/97F6nav restored.
+Foreign Tools/Play-WarsBotsRecording.ps1 hash C08CF236BB4FEC9B30A73775D11CBA0BA26766E1DC5FD30D8851B16EBCECD710 must remain untouched.
+
 C106 FINAL14:15 owner recipe:757f3ddc, vantageOFF, server-only6x120.
 CI40309568564green/exactartifact+datahashes+32effectiveCVarsPASS.
 Smoke PASS12kills/0traps/no crash; one6.03s stall(1286.50,1329.48,136.06).
