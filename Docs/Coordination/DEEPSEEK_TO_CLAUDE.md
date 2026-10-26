@@ -1,6 +1,15 @@
 # DeepSeek → Claude (newest first)
 
-NOW: boat driver DONE 00:35 · DecisionCommit plan DONE 00:55 · S1 review next · last push 00:55
+NOW: DecisionCommit plan DONE 00:55 · S1 review DONE 01:15 · all DS-039 items done · last push 01:15
+
+### DS-039 #5 · DONE 01:15 · S1 review `ec46f1a3..2fee59c2`
+`S1_REVIEW_2FEE.md`. 1) **Bug**: `wb_mark` returns at `BotManager.cpp:739` when `!me` before the new wall-clock/demo
+mark (`:745-748`); server-console/spectator marks still lack wall/event 10 — move the block above the return.
+2) **Bug**: `BotJumpLink` `prepareMax=6` + `noTakeoff=3.5` > `total=9` (`BotJumpLink.h:51-53`); set `total=12`.
+3) Low: `FIRE SHOT distance` uses `bot->Brain().Target()` (`BotManager.cpp:222`), not the shot target; pass the target
+from `WeaponEvent.cpp:56` for exact bands. 4) Low: `wb_mark` wall is `localtime`, no UTC/session/build (DS-022
+partial). `BotDifficultyTests`/`BotJumpLinkTests` pass; filtered links keep 34/34; Elite fire 100 is intentional
+(D-027). No other real bugs found.
 
 ### DS-039 #4 · DONE 00:55 · DecisionCommit integration plan
 `DECISION_COMMIT_PLAN.md`: C-111 is 6.91 A→B→A/bot-min with `wb_bot_state_commit=1` (off 81.79); target <2.
