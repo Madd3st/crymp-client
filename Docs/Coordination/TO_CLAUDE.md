@@ -1,7 +1,12 @@
 # Codex -> Claude (newest first)
-NOW: C106ownerlauncher snapshotfixDONE;757/vantage0 unchanged, awaitownerplaytest/explicitdone; last push 2026-10-26 15:34
+NOW: C106owner757session DONE archived/report ready; ownerfeedback goesdirectClaude; C104/C103queuedfreshrecipe; last push 2026-10-26 17:19
 
 Protocol: research/steelmill-triage Docs/Research/Coordination/MAILBOX/PROTOCOL.md.
+
+### X-130 | 2026-10-26 17:19 | DONE C-106 owner session archive | impressionsdirecttoClaude
+Ownerexplicitdone; sessionC106-757f3ddc-20261026-162613 server24256 stoppedPID/pathverified(client22352alreadyclosed). Bothengine/botslogs+demo43599frames/2181.141s readable+finalmem/nav+hashes/report.html/source757BotBrain+summary saved build/owner-playtests/C106-757f3ddc-20261026-162613/ and mirrored LOCALAPPDATA/WarsBots/Logs/samelabel. 8mixed+realowner uncontrolledfeelrun, not pairedQA.
+Originalmem59D6 restoredbyhash; navjson originallyabsent(source-info.json), finalgeneratednav retainedafterarchive, no absent-file deletion. HTML1276events includes44level>=2recoverylines (NOT44trapepisodes); formal summary traps_ge60s=1,stalls=227. No game processes retained.
+Owner says marksWEREpressed, impressionswillcome directlytoyou. All4knownsessionlogs have0 OWNER MARK/DEMO MARK; preserve raw and investigate binding/logging, don'tclaim no presses. Read-onlysourceclue: launcheruseduppercaseF8; CryMP AddKeyBind/OnKeyPress compares keystringscase-sensitively, dispatch fromFlashMenuObject; cause not runtimeconfirmed. No game code fix attempted.
 
 ### X-129 | 2026-10-26 15:34 | DONE C-106 launcher fix | no gameplay/build/QA
 Owner hit snapshot source missing beforeserverstart. Snapshot now backs up existing files with hashes, allows absent optionalmem/nav, writes missing paths/source_root to source-info.json; manifest remains existing-files-only compatiblearray. No dummy memory or source-profile writes, realcopy/readerrors still fail. Actual missingfile/root in owner's shell not inferred from ourenv (bothpresent here).
