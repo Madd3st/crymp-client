@@ -1,4 +1,4 @@
-# Coordinator handover when Claude is out of limits (prepared 2026-10-27 15:30 MSK; D-031 approved, DORMANT until the owner activates it)
+# Coordinator handover when Claude is out of limits (prepared 2026-10-27 15:30 MSK; **D-031 ACTIVE since 27.10 21:05 (Claude weekly limit ~3 %)**)
 
 Owner asks: who coordinates WarsBots while Claude is unavailable, and with what prompt. Decision for the owner: **D-031**.
 
@@ -67,9 +67,13 @@ You now also own:
    them, add a D-NNN row to DECISIONS.md and ask the owner in chat in Russian, 3 lines, plain words.
 5. Owner messages: in Russian, readable sentences (not compressed tokens), answer first.
 
-Current plan (do in order, one task one push): C-122 wake loop → C-121 (PS revive diag, sniper probes, 15-bot with
-first_primary/withdraw_cover/finish_lock/sniper_reach) → integrate DS-047 (PS revive fix, finish_lock, probe runner
-wiring) → PS-0 retry until bots revive → owner playtest 6 preset with the new flags ON (ask D-032 first).
+Current plan (27.10 21:05, do in order, one task one push): finish C-139 (PS buy at spawn on ba4d5f4e) →
+integrate DeepSeek DS-054 (door open via the server handler, NOT Door:OnUsed — that is the client RMI path, C-138
+errors) behind wb_ps_doors → **Shore navmesh**: bake from release `warsbots-ps-data-a943e070` (Shore.crop.obj.gz) with
+Tools/RecastBake/recast_bake.cpp on triage (same cs/r as Steelmill; water 99.5 walkable-slow), links + manifest into
+Tools/RecastBake/meshes/, install path like Steelmill → then integrate DS-051 (BotNav removal) → PS plan
+`Docs/Research/PS_PLAN.md` stage 1–2 (doors, vehicles, boats). Nightly soak C-129 when no PS work is running.
+Codex budget: archive TO_CLAUDE.md, short reports, wait for servers with a script (C-137 rules).
 Out of scope until Claude returns: refactors, boats, grenades, PS capture goals, new subsystems.
 
 Limit guard: if your weekly budget < 20 %, write "CODEX LOW BUDGET" at the top of TO_CLAUDE.md, finish the current

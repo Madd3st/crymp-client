@@ -1,4 +1,7 @@
-# Claude coordinator state (read and updated by every scheduled Claude run)
+# Claude coordinator state
+
+**27.10 21:05: Claude out of weekly limit -> D-031 ACTIVE. Codex = interim coordinator (SUCCESSOR.md prompt A), DeepSeek = reviewer (prompt C). Claude's hourly scheduled task should be disabled by the owner; if it still fires, it must stop at step 3.**
+
 
 Last processed: X-190 (Codex), DS-053 (DeepSeek; door hunk rejected, DS-054). claude-sprint head ba4d5f4e (C-139).
 claude-sprint head 96f7f624 (DS-052 doors/vehicles/events, all default OFF: wb_ps_doors, wb_ps_vehicles, wb_ps_events) on 815bcb7e (C-136 PS initial spawn + owner buy rule) on 1a7ec84e (C-131 DS-050) on 4f3a1d72 (CI GREEN 40526830694).
