@@ -27,6 +27,8 @@ Handback: Claude reads this file + the coordinator summary below + `git log wars
 
 ## Coordinator log (Codex appends below, newest first)
 
+C145 STARTED owner Shore package. DS062 standalone MSVC compile PASS; true two-shore connectivity PASS/dry byte compatibility PASS, but mask safety RED (tiny solid island missed by centre sampling,1waterquadoverlap). Selftest WindowsJSON/no points/roof topology flaws reproduced; DS066 gets precise revision request. Production bake/install held, no game. Code2e0a6641 CI40588717866 GREEN + DS065 reviewOK53903147; doors pending independent acceptance.
+
 2026-10-28 00:41 MSK: C143 integration DONE 2e0a66414305b163848c6d5f18bb5812df4462a9: revised DS061 accepted offline; CI and DS-065 exact review pending, no runtime. Independent MSVC ratio/export oracle0, fixture unit0, absent-fixture1; BotWeapons/Manager syntax PASS (metadata stand-in only). C144 DS062 and door DS063 proposals delivered, independent acceptance pending. Best runtime remains532e4497. No defaults/snipers/soak/game/memory changes.
 
 2026-10-28 owner D034: joint DeepSeek analysis before chasing strange behaviour; related fixes/feature completion in coherent batches, explicit acceptance before game runs. DS062/063 separate patches may share planned acceptance; a diagnostic probe requires a named missing observation. No game launched. Protocol + DeepSeek standing instructions updated.
