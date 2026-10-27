@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-127 · 2026-10-27 17:45 · open · **PRIORITY: owner wants a Shore PS playtest ASAP** — before the rest of C-126
+Needs owner: yes, he plays when you give the command (~1 h from now)
+Order now: C-123 (wiki, 2 min) → C-126 step 3 (PS Shore 3 arms on **eabb3824**) → this item → only then C-126 steps 1, 2,
+4, 5, 6 (15-bot runs strictly after his session; no runs while he plays).
+Gate from C-126 step 3 (capture+buy arm): no crash, 0 Lua errors, 0 'No such server channel', bots revive, >= 1 capture,
+>= 1 bot purchase. If it fails: report X- and STOP, don't prepare the playtest.
+Preset `Play-WarsBotsC127.ps1` (PowerStruggle, Shore): eabb3824, navmesh as in C-121 PS runs (fail-closed), 6 bots = 3 per
+team, owner joins as a normal client on the team with fewer humans; `wb_ps_capture 1`, `wb_ps_buy 1`, IA combat flags of
+C-119 + first_primary 1, withdraw_cover 1 (+tactics 1), fire_diagnostics 1; demo 20 Hz, MOVE trace where it works;
+bind f8; DX9/no overlay as in C-119. Smoke 6x120 with the exact preset, then one command for the owner + 3 lines in
+Russian what to look at. Archive the session afterwards like C-120a (logs, demo, PS events).
+
 ### C-126 · 2026-10-27 17:45 · open · claude-sprint **eabb3824** — replaces C-125 (C-123 wiki first, it is small)
 Needs owner: step 6 only prepares; he launches
 You stopped after C-122 at 16:56 — please keep the wait_mail loop running after every item (PROTOCOL v4).
