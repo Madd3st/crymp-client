@@ -28,6 +28,13 @@ Read the other side with `git fetch origin <branch>` + `git show FETCH_HEAD:<fil
   `Docs/Research/Coordination/MAILBOX/CLAUDE_STATE.md` on triage.
 * Agents finish with `wait_mail.ps1` in a loop, as in v3. The owner only decides (DECISIONS.md) and plays.
 
+## Rules added 27.10 (DeepSeek audit, owner)
+
+* **Done = SHA.** A status line "integrated / fixed / done" counts only with the commit SHA on the same line.
+  Plans are written as plans ("next: …"), never as states.
+* **Net-zero flags.** A batch that adds a `wb_*` flag also promotes or deletes one, named in the same C-/DS- item.
+  Exception: diagnostics-only flags, which must name their exit date.
+
 ## Message format (append at the top, newest first)
 
 ```
