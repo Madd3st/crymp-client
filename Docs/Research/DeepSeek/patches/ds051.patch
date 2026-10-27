@@ -1,0 +1,411 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index b9fb3c53..cc141ad0 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index fae10683..f64ab0a4 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -96,23 +96,9 @@ void BotBrain::Change(State state,bool initialize,DecisionOwner owner)
+ 	if(initialize)
+ 	{
+ 		m_state=state;
+-		m_commit.Reset(); m_move.Reset(); m_moveOwner=DecisionOwner::Arbiter;
+-		m_commit.BeginTick(m_decisionSerial,m_now);
+ 		return;
+ 	}
+ 	if (m_state == state) return;
+-	if (BotConfig::Get().stateCommit>=2)
+-	{
+-		const DecisionOwner who = owner==DecisionOwner::Arbiter ? OwnerOf(state) : owner;
+-		if (!m_commit.Offer(who,ToCommit(state),m_now,IsUrgentCommit(state)))
+-		{
+-			if (m_commit.ShouldLogConflict(m_now))
+-				WB_LOG(1,"[WarsBots] #%d STATE CONFLICT first=%s second=%s owner=%d actor=%u.",
+-					m_number,NameOf(m_state),NameOf(state),int(who),m_actorId);
+-			return;
+-		}
+-		m_move.Reset(); m_moveOwner=who;
+-	}
+ 	m_state = state;
+ 	m_stateTime = m_now;
+ 	WB_LOG(2, "[WarsBots] #%d AI state=%s.", m_number, NameOf(state));
+@@ -158,30 +144,19 @@ void BotBrain::TravelGait(float distance)
+ 	if (!m_speedTravel) return;
+ 	WBI(suitMode,NANOMODE_SPEED);
+     }
+-	// Speed drains energy fast, so a ">160" threshold was almost never met: jump at >130 instead.
+-	// Owner playtest 25.10: 157 of 364 Strength jumps came from this random travel hop - "jumps in Strength for no
+-	// reason". wb_bot_jump_sanity drops it.
+-	if (BotConfig::Get().jumpSanity != 1 && distance > 15.0f && m_blackboard.grounded && m_blackboard.energy > 130.0f &&
+-		m_now >= m_blackboard.nextSuitChange && m_now >= m_nextTravelJump)
+-	{
+-		m_nextTravelJump = m_now + 5.0f + Rand01() * 5.0f;
+-		if (Rand01() < 0.7f) { WBI(jump,BotJump::Strength); WBI(suitMode,NANOMODE_STRENGTH); }
+-	}
+ }
+ 
+ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
+ {
+-	const BotNav& nav = g_pGame->GetBotManager().Nav();
+ 	NavMeshCore* mesh = CurrentNavMesh(); // P0, wb_bot_navmesh: Detour corners instead of the sparse ray graph
+ 	m_cornerSlow = false;
+-	if (!nav.Ready() && !mesh) return goal; // fallback: straight line + local avoidance
++	if (!mesh) return goal; // DS-051: navmesh-only, no BotNav fallback
+ 	// Failed paths also respect the two-second retry deadline. An empty failed path is
+ 	// a cached result, not a reason to repeat A* at the 0.75-second global throttle.
+ 	if (m_link.Active()) return Vec3(m_linkNow.b[0], m_linkNow.b[1], m_linkNow.b[2]); // C-036: the link executor owns movement
+ 	if (((goal - m_pathGoal).GetLengthSquared() > 16.0f || m_now >= m_nextRepath) && m_now >= m_minRepath)
+ 	{
+ 		m_minRepath = m_now + 0.75f;
+-		BotNav::PathTrace trace;
+ 		bool found = false;
+ 		m_meshPathActive = false;
+ 		if (mesh)
+@@ -193,19 +168,16 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
+ 			m_meshPathActive = found;
+ 			m_path.clear();
+ 			for (size_t i = 0; i + 2 < xyz.size(); i += 3) m_path.push_back(Vec3(xyz[i], xyz[i + 1], xyz[i + 2]));
+-			trace.reason = why;
+ 		}
+ 		if (!found) m_pathLinks.clear();
+-		if (!found && nav.Ready()) found = nav.FindPath(feet, goal, m_path, &trace);
+ 		m_pathIndex = 0; m_cornerFor = size_t(-1); m_pathStart = feet;
+ 		m_pathGoal = goal;
+ 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
+ 		if (!found)
+ 		{
+ 			m_path.clear();
+-			WB_LOG(2, "[WarsBots] #%d NAV fallback start=(%.2f,%.2f,%.2f) goal=(%.2f,%.2f,%.2f) retry=2.0. actor=%u reason=%s from=%d to=%d expanded=%d",
+-				m_number, feet.x, feet.y, feet.z, goal.x, goal.y, goal.z,
+-                m_actorId,trace.reason,trace.from,trace.to,trace.expanded);
++			WB_LOG(2, "[WarsBots] #%d NAVMESH path failed start=(%.2f,%.2f,%.2f) goal=(%.2f,%.2f,%.2f) retry=2.0. actor=%u reason=navmesh",
++				m_number, feet.x, feet.y, feet.z, goal.x, goal.y, goal.z, m_actorId);
+ 		}
+ 	}
+ 	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
+@@ -213,7 +185,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
+ 	// C-074: BotMovement::Move stops 0.8 m short of its destination; corners v2 passes a corner only within 0.35 m, so
+ 	// the bot stood 0.8 m short of every aim point (c074 stalls 343 -> 1704 s). Corner following owns arrival.
+ 	m_intent.arrive = 0.8f;
+-	if (mesh && m_meshPathActive && BotConfig::Get().corners == 1) { m_intent.arrive = 0.2f; return SteerCorners(*mesh, feet); }
++	if (mesh && m_meshPathActive) { m_intent.arrive = 0.2f; return SteerCorners(*mesh, feet); }
+ 	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
+ 	while (m_pathIndex + 1 < m_path.size())
+ 	{
+@@ -379,7 +351,6 @@ void BotBrain::Update(BotInstance& bot, float dt)
+ 	const float decisionTime = m_tick;
+     ++m_decisionSerial;
+ 	m_tick = 0;
+-	if (BotConfig::Get().stateCommit>=2) m_commit.BeginTick(m_decisionSerial,m_now);
+ 	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
+ 
+ 	m_intent=BotIntent();
+@@ -782,7 +753,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 			float snap[3];
+ 			if (mesh && !mesh->Project(from, snap)) mesh = nullptr; // off the mesh: keep the old goal choice
+ 			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q); };
+-			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot, &feet, actor.GetEntityId()) &&
++			if (!m_detour && (m_patrolStep & 1) && false &&
+ 				(hotspot - feet).GetLengthSquared2D() > 64.0f && reachable(hotspot))
+ 			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; picked = true; }
+ 			else if (count && !m_detour)
+@@ -811,7 +782,6 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 		if (bot.GetActor()!=&actor) return;
+ 		if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0)
+ 		{
+-			g_pGame->GetBotManager().Nav().ReportStuck(feet,actor.GetEntityId()); // learned: route around this spot next time
+ 			m_detour=true; m_patrolUntil=m_now; m_blockedSince=0; m_nextRepath=0;
+ 		}
+ 		else if (m_blackboard.blocked && m_blockedSince <= 0) m_blockedSince=m_now;
+@@ -989,11 +959,9 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 	}
+ 	// DS-034: a target moving around holdRange flipped ATTACKING/CHASING every decision (2,768 times in playtest 3);
+ 	// once attacking, keep attacking a visible target for at least 0.5 s.
+-	// DS-043 P1: stateCommit 2 widens the band to holdRange+4 (or preferredRange+6) and holds it for 1.5 s.
+-	const int commitMode=BotConfig::Get().stateCommit;
+-	const float attackHold=commitMode>=2?1.5f:0.5f;
+-	const bool attackDwell = commitMode>=1 && m_state == State::ATTACKING && m_now - m_stateTime < attackHold;
+-	const float leaveRange = commitMode>=2 ? max(m_profile.holdRange+4.0f,m_profile.preferredRange+6.0f) : m_profile.holdRange;
++	const float attackHold=0.5f;
++	const bool attackDwell = BotConfig::Get().stateCommit == 1 && m_state == State::ATTACKING && m_now - m_stateTime < attackHold;
++	const float leaveRange = m_profile.holdRange;
+ 	if (visible && (attackDwell || distance <= (m_state == State::ATTACKING ? leaveRange : m_profile.engageRange)))
+ 	{
+         UpdateAttacking(actor,destination,aim,distance,desiredRange);
+@@ -1120,7 +1088,6 @@ void BotBrain::UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3&
+ 		if (m_chaseBlockedSince>0 && m_now-m_chaseBlockedSince>m_profile.blockedChasePatience)
+ 		{
+ 			if (m_verbose) WB_LOG(1, "[WarsBots] #%d chase abandoned target=%u (blocked, not visible).", m_number, m_combat.Target());
+-			g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos(),actor.GetEntityId());
+ 			m_combat.Reset(); m_chaseBlockedSince=0; m_patrolUntil=0; m_detour=true;
+ 		}
+ 		if (!visible || BotPaceEnabled()) TravelGait(distance); // hunting a hidden target: Speed travel like a player
+@@ -1197,27 +1164,6 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
+ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+ {
+     if (RecoverTrap(actor)) return;
+-	// DS-043 P1: hold a destination inside one state. A new state resets the commit in Change(); trap/link override it.
+-	if (BotConfig::Get().stateCommit>=2)
+-	{
+-		if (m_link.Active() || m_trap.Level()>=2) m_move.Reset();
+-		else if (m_intent.move)
+-		{
+-			const Vec3 d=m_intent.destination;
+-			if (!m_move.Valid(d.x,d.y,d.z,m_now))
+-			{
+-				const DecisionOwner owner=OwnerOf(m_state);
+-				if (!m_move.Has() || m_moveOwner==owner) { m_move.Set(d.x,d.y,d.z,m_now); m_moveOwner=owner; }
+-				else
+-				{
+-					float x=0,y=0,z=0; m_move.Get(x,y,z);
+-					m_intent.MoveTo(Vec3(x,y,z),m_intent.aim);
+-					m_intent.why.move=short(__LINE__);
+-					if (m_verbose) WB_LOG(2,"[WarsBots] #%d MOVE COMMIT hold owner=%d actor=%u.",m_number,int(m_moveOwner),actor.GetEntityId());
+-				}
+-			}
+-		}
+-	}
+     ApplyLookPolicy(actor); // C-033, wb_bot_look
+ 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
+ 		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
+@@ -1228,7 +1174,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+ 	// wb_bot_jump_sanity: on a navmesh path the mesh already proved the way (jumps come from baked links); the low
+ 	// obstacle rays read stair steps as a wall and asked for Strength jumps at every staircase (149 of 364, owner
+ 	// playtest 25.10). Trap recovery still jumps (level 3) when stuck.
+-	const bool obstacleJumps=!(BotConfig::Get().jumpSanity==1 && m_intent.meshPath && m_trap.Level()<2);
++	const bool obstacleJumps=!(m_intent.meshPath && m_trap.Level()<2);
+ 	if (obstacleJumps && !m_link.Active() && m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
+         !(m_trap.Level()>=2 && m_now<m_trapStepUntil))
+ 	{
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index 8b78f3b5..71f0ff60 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -116,9 +116,6 @@ private:
+ 	bool m_fallbackGiven = false;
+ 	bool m_retreating = false;
+ 	State m_state = State::SPAWNING;
+-	DecisionCommit m_commit;              // DS-043 P1: one state change per decision serial
+-	MoveCommit m_move;                    // DS-043 P1: hold a destination inside one state
+-	DecisionOwner m_moveOwner = DecisionOwner::Arbiter;
+ 	float m_now = 0, m_tick = 0, m_stateTime = 0, m_weaponSearchStarted = 0, m_nextSearch = 0, m_deadTime = 0;
+ 	bool m_psReviveLogged = false;   // DS-043: PS revive wave owns the respawn
+ 	float m_nextTelemetry = 0;
+diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
+index 8b319330..ad2a5a88 100644
+--- a/Code/CryGame/Bots/BotConfig.cpp
++++ b/Code/CryGame/Bots/BotConfig.cpp
+@@ -20,9 +20,6 @@ const IntBinding kInts[]={
+  {"wb_bot_cloak_experimental",&BotConfig::cloakExperimental,"Experimental bot cloak, defaults OFF"},
+  {"wb_hotspot_all_nodes",&BotConfig::hotspotAllNodes,"Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak."},
+  {"wb_reachable_goals",&BotConfig::reachableGoals,"Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF."},
+- {"wb_bot_pace",&BotConfig::botPace,"C018 native pace: stance speed,sprint40/20,Speed130/60,Strength70; default ON; set0 for legacy pace."},
+- {"wb_revive_guard",&BotConfig::reviveGuard,"C014 candidate safety:2s post-revive check, max2 native retries; no kill/score change."},
+- {"wb_spawn_exclude195",&BotConfig::spawnExclude195,"C014 candidate safety: automatic bot spawn selection excludes195; humans/manual debug unaffected."},
+  {"wb_nav_knee_fix",&BotConfig::navKneeFix,"Export-only audit requested variant:0 OFF,1 knee0.8,2 conditional step; latched by wb_nav_audit; never normal AI."},
+  {"wb_move_trace",&BotConfig::moveTrace,"Diagnostic-only opt-in trace:1=4Hz humans/server bots;2=also per-frame client remote bots. IA/default0,200000line cap; entity/view in PostUpdate, not raw packets."},
+  {"wb_physics_diagnostics",&BotConfig::physicsDiagnostics,"Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF."},
+@@ -43,7 +40,6 @@ const IntBinding kInts[]={
+  {"wb_bot_vantage",&BotConfig::vantage,"Owner 25.10: Marksman/Defender bots holding a DSG1 or Gauss take, hold and rotate baked sniper spots (<Level>.spots.txt from Tools/RecastBake/tactical_spots, next to the navmesh); Marksmen value sniper rifles as pickups. 0 OFF default."},
+  {"wb_bot_tactics",&BotConfig::tactics,"Fragmovie patterns: a target that broke line of sight is held from a nearby cover spot that still sees it (needs <Level>.spots.txt), duels with jump-strafe by skill/style, dropped weapons near a kill are looted. 0 OFF default."},
+  {"wb_bot_path_progress",&BotConfig::pathProgress,"A weapon goal counts as progressing while the remaining navmesh path shrinks (not the straight distance): routes that first lead away - Steelmill DSG1 up the stairs - were dropped as unreachable after 8 s, so no bot ever held a sniper rifle. Requires wb_bot_navmesh 1. 0 OFF default."},
+- {"wb_bot_jump_sanity",&BotConfig::jumpSanity,"Owner playtest 25.10 (364 Strength jumps, 58 on baked links): no random Strength hop while travelling, and no obstacle-ray jumps while following a navmesh path (stair steps read as walls). Link jumps and trap-recovery jumps stay. 1 ON default (D-016: two paired 15x660 runs + owner playtest 25.10)."},
+  {"wb_move_trace_hz",&BotConfig::moveTraceHz,"C-084: sampling rate of the client MOVE TRACE for the local human (owner circle/wall jumps need >= 20). Server and bot rows stay at 4 Hz. Rows also carry stance now. 4 default."},
+  {"wb_bot_threat_scan",&BotConfig::threatScan,"Owner 25.10 (camped roofs with a sniper rifle, no bot ever looked up): without a visible target a bot glances for 0.6 s at a high sniper spot (tactical_spots flag 4) 10-70 m ahead and at least 2.5 m above its eye, only with a clear eye ray; every 8/5/3.5 s for Normal/Veteran/Elite, never for Beginner. Needs wb_bot_look 1, wb_bot_vantage 1 (loads the spots) and <Level>.spots.txt. 0 OFF default."},
+  {"wb_bot_spectator_aim",&BotConfig::spectatorAim,"DS-013 / owner 25.10 (bot aim late and crooked in first-person spectator): the spectator camera follows the same replicated aim as the tracer instead of a second 42/s lerp on top of BotReplicaSmooth. Client-side, visual only. 0 OFF default."},
+@@ -53,7 +49,6 @@ const IntBinding kInts[]={
+  {"wb_bot_withdraw_cover",&BotConfig::withdrawCover,"DS-044 #2 (audit: 80 % of withdraws die within 2.5 s): low HP backs off to the nearest cover spot (tactical_spots flag 1/2, PickCover) that breaks LOS to the threat and is reachable, keeps firing while moving, Armor; abort and fight if no cover within 8 m. Needs wb_bot_tactics 1 + <Level>.spots.txt. 0 OFF default. Exit: withdraw deaths < 50 %."},
+  {"wb_bot_finish_lock",&BotConfig::finishLock,"DS-044 #3 (audit: 22.4 % of target choices switch away from <=25 HP): keep a target at <=25 HP until it is dead or lost for > 1 s, unless a new enemy within 8 m is the one hitting us. 0 OFF default. Exit: switch-away from <=25 HP < 5 %."},
+  {"wb_bot_sniper_reach",&BotConfig::sniperReach,"DS-046 (C-117 X-157: 0/3 DSG1, 0/3 Gauss): a sniper-minded marksman searches the roof with a 32 m vertical proximity box (DSG1 is +20.3 m, Gauss +13.0 m above the bot; the old +-12 m box never listed them) and tries only DSG1/Gauss until one is held; the weapon goal gets 20 s progress / 90 s total instead of 8/60. 0 OFF default. Exit: DSG1/Gauss pickup > 2/3."},
+- {"wb_bot_corners",&BotConfig::corners,"Navmesh path corners v2 (BotCorners.h): each corner is aimed at 0.15 m to the outside of the turn (mesh erosion 0.3 m vs player capsule 0.4 m), passed only when reached (0.35 m) or crossed with the next leg in straight reach, and sharp turns drop sprint/Speed within 2.5 m. Targets the Steelmill stair-mouth and spawn-176 wedges. Requires wb_bot_navmesh 1. 1 ON default (D-016: two paired 15x660 runs + owner playtest 25.10)."},
+  {"wb_fire_diagnostics",&BotConfig::fireDiagnostics,"Opt-in shot/hit diagnostics; at most 20000 records per level; default OFF."},
+  {"wb_log",&BotConfig::logLevel,"WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file."},
+  {"wb_maxbots",&BotConfig::maxBots,"Maximum simultaneous WarsBots (1..16, default 6)"},
+diff --git a/Code/CryGame/Bots/BotConfig.h b/Code/CryGame/Bots/BotConfig.h
+index ae58bbf5..cd1138e4 100644
+--- a/Code/CryGame/Bots/BotConfig.h
++++ b/Code/CryGame/Bots/BotConfig.h
+@@ -15,9 +15,6 @@ struct BotConfig {
+  int physicsDiagnostics=0;
+  int moveTrace=0;
+  int navKneeFix=0;
+- int spawnExclude195=1;
+- int reviveGuard=1;
+- int botPace=1;
+  int reachableGoals=0;
+  int hotspotAllNodes=0;
+  int fireDiagnostics=0;
+@@ -41,7 +38,6 @@ struct BotConfig {
+  int vantage=0;
+  int tactics=0;        // fragmovie patterns: hold angles from cover, jump-strafe, loot after kills (BotTactics.h), default OFF
+  int pathProgress=0;   // weapon-goal progress by remaining navmesh path, not straight distance (snipers), default OFF
+- int jumpSanity=1;     // no random travel Strength hops, no obstacle jumps on navmesh paths (owner 25.10), default ON (D-016)
+  int moveTraceHz=4;    // C-084 client MOVE TRACE rate for the local human (1..30), default 4
+  int threatScan=0;    // owner 25.10 roof campers: short glances at high sniper spots ahead (BotThreatScan.h), default OFF
+  int spectatorAim=0;   // DS-013 FP spectator of a bot: camera uses the same aim as the tracer, no second smoothing, default OFF
+@@ -56,7 +52,6 @@ struct BotConfig {
+  int psCapture=0;      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
+  int withdrawFull=0;   // DS-049: withdraw only to full cover, re-pick every 0.5 s on the live threat, default OFF
+  int psBuy=0;         // DS-049: PS-2 revive buy (one primary by style/range, cheap ammo) via server-side Lua, default OFF
+- int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
+  static BotConfig& Get(){static BotConfig config;return config;}
+  void Register(IConsole& console);
+  void Unregister(IConsole& console);
+diff --git a/Code/CryGame/Bots/BotDemoRecorder.cpp b/Code/CryGame/Bots/BotDemoRecorder.cpp
+index 7d4d1258..30ddc019 100644
+--- a/Code/CryGame/Bots/BotDemoRecorder.cpp
++++ b/Code/CryGame/Bots/BotDemoRecorder.cpp
+@@ -108,7 +108,6 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
+   file=_wfopen(path.c_str(),L"wb");if(!file)throw std::runtime_error("cannot create demo");setvbuf(file,nullptr,_IOFBF,65536);
+   nlohmann::json flags=nlohmann::json::object();
+   const BotConfig& config=BotConfig::Get();
+-  flags["wb_bot_pace"]=config.botPace;
+   flags["wb_bot_look"]=config.botLook;
+   flags["wb_bot_turn_cap"]=config.botTurnCap;
+   flags["wb_bot_weapon_rank"]=config.weaponRank;
+@@ -116,8 +115,6 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
+   flags["wb_bot_navmesh"]=config.botNavmesh;
+   flags["wb_bot_perception"]=config.botPerception;
+   flags["wb_bot_aim_model"]=config.aimModel;
+-  flags["wb_spawn_exclude195"]=config.spawnExclude195;
+-  flags["wb_revive_guard"]=config.reviveGuard;
+   flags["wb_trap_recovery"]=config.trapRecovery;
+   flags["wb_reachable_goals"]=config.reachableGoals;
+   flags["wb_move_trace"]=config.moveTrace;
+diff --git a/Code/CryGame/Bots/BotInstance.cpp b/Code/CryGame/Bots/BotInstance.cpp
+index 6b530337..5aea5f50 100644
+--- a/Code/CryGame/Bots/BotInstance.cpp
++++ b/Code/CryGame/Bots/BotInstance.cpp
+@@ -358,21 +358,17 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
+ 		m_lastHitShooter = 0;
+ 		m_killPlayerObserved = false;
+         BeginPhysicsProbe("revive");
+-        const int& guard=BotConfig::Get().reviveGuard;
+-        if(guard==1){
+             if(!guardRetry)m_guardFailedSpawns.clear();
+             m_guardOrigin=revived->GetEntity()->GetWorldPos();
+             m_reviveGuard.Begin(gEnv->pTimer->GetFrameStartTime().GetSeconds(),!guardRetry);
+-        }else m_reviveGuard.Cancel();
+ 	}
+ 	return alive;
+ }
+ void BotInstance::CheckReviveGuard(float now)
+ {
+     if(!m_reviveGuard.Pending())return;
+-    const int& flag=BotConfig::Get().reviveGuard;
+     CActor* actor=GetActor();
+-    if(flag!=1 || !CanRunLocalIA() || !Owns(m_entityId) || !m_brain.Running() ||
++    if(!CanRunLocalIA() || !Owns(m_entityId) || !m_brain.Running() ||
+         !actor || actor->GetHealth()<=0 || actor->GetLinkedVehicle() || g_pGame->GetGameRules()->IsFrozen(m_entityId))
+     {m_reviveGuard.Cancel();return;}
+     const float moved=(actor->GetEntity()->GetWorldPos()-m_guardOrigin).GetLength();
+@@ -390,7 +386,7 @@ void BotInstance::CheckReviveGuard(float now)
+     if(Owns(m_entityId) && GetActor() && GetActor()->GetHealth()>0){
+         m_brain.Start(*this);
+         if(!revived)m_reviveGuard.Begin(now,false); // At most2 attempts even when no safe point is free.
+-    }else m_reviveGuard.Cancel();
++    }
+     WB_LOG(0,"[WarsBots] REVIVE GUARD result actor=%u spawn=%u retry=%u revived=%d nativeKill=0",m_entityId,m_lastSpawnLocation,m_reviveGuard.Retries(),revived?1:0);
+ }
+ 
+diff --git a/Code/CryGame/Bots/BotManager.cpp b/Code/CryGame/Bots/BotManager.cpp
+index 60438e68..bc05e9a5 100644
+--- a/Code/CryGame/Bots/BotManager.cpp
++++ b/Code/CryGame/Bots/BotManager.cpp
+@@ -307,7 +307,7 @@ EntityId BotManager::ChooseSpawnLocation(EntityId self, EntityId avoid, const st
+ 		for (int i = 0; i < count; ++i)
+ 		{
+ 			const EntityId candidate = rules->GetSpawnLocation((start + i) % count);
+-            if(BotConfig::Get().spawnExclude195==1 && candidate==195){
++            if(candidate==195){
+                 if(!m_spawnExcludeLogged){WB_LOG(0,"[WarsBots] SPAWN EXCLUDE id=195 reason=revive_freeze");m_spawnExcludeLogged=true;}
+                 continue;
+             }
+diff --git a/Code/CryGame/Bots/BotPace.h b/Code/CryGame/Bots/BotPace.h
+index ea02b279..5608c485 100644
+--- a/Code/CryGame/Bots/BotPace.h
++++ b/Code/CryGame/Bots/BotPace.h
+@@ -2,5 +2,5 @@
+ #include "BotConfig.h"
+ #include "BotPacePolicy.h"
+ namespace WarsBots {
+-inline bool BotPaceEnabled(){const BotConfig& config=BotConfig::Get();return config.registered && config.botPace==1;}
++inline bool BotPaceEnabled(){return true; /* D-033: C-119 native pace is the only path (flag removed) */}
+ }
+diff --git a/Code/CryGame/Bots/BotWeapons.cpp b/Code/CryGame/Bots/BotWeapons.cpp
+index c7bfb08b..fc2b417d 100644
+--- a/Code/CryGame/Bots/BotWeapons.cpp
++++ b/Code/CryGame/Bots/BotWeapons.cpp
+@@ -96,10 +96,6 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
+ 	float best = 1e10f;
+ 	// Proximity query instead of iterating every entity: matters with 10-16 bots searching.
+ 	const Vec3 origin = actor.GetEntity()->GetWorldPos();
+-    const BotNav& nav=g_pGame->GetBotManager().Nav();
+-    const int from=nav.GoalFilterEnabled()?nav.NodeAt(origin):-1;
+-    unsigned rejected=0;int first=-1;EntityId firstItem=0;
+-    BotGoalProjection firstTrace;Vec3 firstGoal(0,0,0);
+ 	NavMeshCore* mesh = CurrentNavMesh();
+ 	const float meshFrom[3] = {origin.x, origin.y, origin.z};
+ 	float meshSnap[3];
+@@ -152,7 +148,6 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
+                 }
+             }
+             BotGoalProjection trace;
+-            if(nav.KnownUnreachable(from,entity->GetWorldPos(),trace)) {++rejected;if(first<0){first=trace.to;firstItem=entity->GetId();firstTrace=trace;firstGoal=entity->GetWorldPos();}continue;}
+ 			// Prefer a different class, but keep travel cost significant. Stable within a life.
+ 			unsigned hash = entity->GetId()*1664525u + life*1013904223u;
+ 			hash ^= hash >> 16;
+@@ -168,7 +163,6 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
+ 		}
+ 	}
+     if(meshRejected) WB_LOG(2,"[WarsBots] GOAL SKIP navmesh kind=weapon actor=%u skipped=%d.",actor.GetEntityId(),meshRejected);
+-    if(rejected) WB_LOG(2,"[WarsBots] GOAL SKIP unreachable kind=weapon actor=%u id=%u fromScc=%d toScc=%d skipped=%u goal=(%.3f,%.3f,%.3f) toNode=%d toZ=%.3f candidates=%d reachableCandidates=%d",actor.GetEntityId(),firstItem,nav.Component(from),nav.Component(first),rejected,firstGoal.x,firstGoal.y,firstGoal.z,firstTrace.to,firstTrace.toZ,firstTrace.candidates,firstTrace.reachableCandidates);
+ 	return result;
+ }
+ 
+diff --git a/Tests/BotConfigTests.cpp b/Tests/BotConfigTests.cpp
+index e30da3f7..72934789 100644
+--- a/Tests/BotConfigTests.cpp
++++ b/Tests/BotConfigTests.cpp
+@@ -1,14 +1,22 @@
+ #include "CryGame/Bots/BotConfig.h"
+ #include "CryGame/Bots/BotPace.h"
+ #include <cassert>
++#include <cstdio>
+ using namespace WarsBots;
+-int main(){
+- auto& config=BotConfig::Get();assert(!config.registered && !BotPaceEnabled());
+- assert(config.botPace==1 && config.spawnExclude195==1 && config.reviveGuard==1);
+- assert(config.demoRecord==0 && config.demoHz==20 && config.gateOpen==0 && config.logLevel==1 && config.maxBots==6 && config.skill==1);
+- assert(config.botLook==0 && config.botTurnCap==0 && config.weaponRank==0 && config.goalArbiter==0);
+- assert(config.botNavmesh==0 && config.botPerception==0 && config.aimModel==0);
+- auto* const stable=&config;int* binding=&config.botPace;
+- config.registered=true;assert(BotPaceEnabled());*binding=0;assert(!BotPaceEnabled());*binding=2;assert(!BotPaceEnabled());*binding=1;assert(BotPaceEnabled());
+- config.registered=false;assert(!BotPaceEnabled());assert(&BotConfig::Get()==stable);
++int main()
++{
++    auto& config = BotConfig::Get();
++    assert(!config.registered);
++    assert(config.demoRecord == 0 && config.demoHz == 20 && config.gateOpen == 0 && config.logLevel == 1 && config.maxBots == 6 && config.skill == 1);
++    assert(config.botLook == 0 && config.botTurnCap == 0 && config.weaponRank == 0 && config.goalArbiter == 0);
++    assert(config.botNavmesh == 0 && config.botPerception == 0 && config.aimModel == 0);
++    assert(BotPaceEnabled()); // DS-051: native pace is the only path, no flag
++    auto* const stable = &config;
++    config.registered = true;
++    assert(BotPaceEnabled());
++    config.registered = false;
++    assert(BotPaceEnabled());
++    assert(&BotConfig::Get() == stable);
++    std::puts("BotConfigTests OK");
++    return 0;
+ }
