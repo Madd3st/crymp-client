@@ -5,7 +5,7 @@ REPO=${1:-.}; shift; cd "$REPO" || exit 2
 FILES=${@:-$(ls Code/CryGame/Bots/*.cpp) Code/CryGame/Actors/Player/Player.cpp Code/CryGame/GameRules.cpp Code/CryGame/ScriptBind_GameRules.cpp Code/CryGame/Actors/ScriptBind_Actor.cpp}
 R=ThirdParty/recastnavigation; SHIM=$(dirname $(readlink -f $0))/msvc_shim.h; FAIL=0
 for f in $FILES; do
-  if [ ! -f "$f" ]; then echo "== $f"; echo "missing file - treated as failure"; FAIL=1; continue; fi  # C-130
+  if [ ! -s "$f" ]; then echo "== $f"; echo "missing or empty file - treated as failure"; FAIL=1; continue; fi  # C-130
   raw=$(timeout 300 clang++ -fsyntax-only -std=c++20 -fms-extensions -ferror-limit=0 -DWARSBOTS_EXPERIMENTAL_SPAWNER \
     -include $SHIM -I. -ICode -ICode/CryCommon -ICode/CryGame -IThirdParty -I$(dirname $SHIM)/stub -I$R/Detour/Include -I$R/Recast/Include -Wno-everything "$f" 2>&1; echo "EXIT=$?")
   code=${raw##*EXIT=}

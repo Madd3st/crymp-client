@@ -18,44 +18,34 @@ struct PsBuyInput
 
 struct PsBuyPlan
 {
-    const char* primary = nullptr;   // buyList id (macs/fy71/shotgun/dsg1/gauss)
+    const char* primary = nullptr;   // buyList id: shotgun / smg
     int primaryPrice = 0;
-    const char* ammo = nullptr;      // buyList ammo id for the primary
+    const char* laser = nullptr;     // "lam" (LAMRifle attachment)
+    int laserPrice = 0;
+    const char* ammo = nullptr;      // ammoList id for the primary
     int ammoPrice = 0;
     bool buyPrimary = false;
+    bool buyLaser = false;
     bool buyAmmo = false;
     bool armorMode = true;           // PS has no armor item; the free suit mode is set on revive
 };
 
-// SNIPER (DSG1 200) for a marksman/sniper-mind; SCAR for a rifle fight; shotgun under 12 m or when PP is low;
-// FY71 as the mid fallback. Ammo is bought only when at least 40 PP remain after it ("when cheap").
+// C-136 (owner, ESL experience 27.10): the first money always goes to a shotgun or an SMG with a laser, plus ammo;
+// nobody stays with the pistol. Shotgun for close/aggressive styles (assault, flanker, hunter) or short preferred
+// range, SMG otherwise; SMG falls back to the shotgun when PP is short. Laser if 25 PP remain, ammo with the rest.
 inline PsBuyPlan ChoosePsBuy(const PsBuyInput& in)
 {
     PsBuyPlan p;
     if (in.alive || in.hasPrimary || in.pp < 50) return p;   // revive-buy only, one primary per life
-    const bool sniper = in.style == 2 || in.preferredRange > 30.f;
-    const bool close = in.preferredRange < 12.f;
-    if (sniper)
-    {
-        if (in.pp >= 200) { p.primary = "dsg1"; p.primaryPrice = 200; p.ammo = "sniperbullet"; p.ammoPrice = 10; }
-        else if (in.pp >= 125) { p.primary = "fy71"; p.primaryPrice = 125; p.ammo = "fybullet"; p.ammoPrice = 5; }
-        else { p.primary = "shotgun"; p.primaryPrice = 50; p.ammo = "shotgunshell"; p.ammoPrice = 5; }
-    }
-    else if (close || in.pp < 125)
-    {
-        p.primary = "shotgun"; p.primaryPrice = 50; p.ammo = "shotgunshell"; p.ammoPrice = 5;
-    }
-    else if (in.pp >= 150)
-    {
-        p.primary = "macs"; p.primaryPrice = 150; p.ammo = "bullet"; p.ammoPrice = 5;
-    }
-    else
-    {
-        p.primary = "fy71"; p.primaryPrice = 125; p.ammo = "fybullet"; p.ammoPrice = 5;
-    }
-    p.buyPrimary = p.primary && in.pp >= p.primaryPrice;
-    const int left = in.pp - (p.buyPrimary ? p.primaryPrice : 0);
-    p.buyAmmo = p.buyPrimary && p.ammo && left >= p.ammoPrice + 40;
+    const bool close = in.style == 1 || in.style == 3 || in.style == 5 || in.preferredRange < 12.f;
+    if (!close && in.pp >= 75) { p.primary = "smg"; p.primaryPrice = 75; p.ammo = "smgbullet"; p.ammoPrice = 5; }
+    else { p.primary = "shotgun"; p.primaryPrice = 50; p.ammo = "shotgunshell"; p.ammoPrice = 5; }
+    p.buyPrimary = in.pp >= p.primaryPrice;
+    int left = in.pp - (p.buyPrimary ? p.primaryPrice : 0);
+    p.laser = "lam"; p.laserPrice = 25;
+    p.buyLaser = p.buyPrimary && left >= p.laserPrice;
+    if (p.buyLaser) left -= p.laserPrice;
+    p.buyAmmo = p.buyPrimary && left >= p.ammoPrice;
     return p;
 }
 

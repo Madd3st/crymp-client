@@ -1,51 +1,27 @@
-// DS-049 #3: PS revive buy chooser tests (engine-free).
+// C-136: PS revive buy chooser — shotgun/SMG + laser + ammo (owner rule).
 #include "CryGame/Bots/BotPSBuy.h"
 #include <cstdio>
 #include <cstring>
-
+#define CHECK(x) do { if (!(x)) { std::printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #x); return 1; } } while (0)
 using namespace WarsBots;
-static int failures = 0;
-#define CHECK(c) do { if (!(c)) { std::printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #c); ++failures; } } while (0)
-
-static PsBuyInput In(int pp, int style, float range, int skill = 2)
-{
-    PsBuyInput i; i.pp = pp; i.style = style; i.preferredRange = range; i.skill = skill; return i;
-}
-
+static PsBuyInput In(int pp, int style, float range, bool alive = false, bool primary = false)
+{ PsBuyInput i; i.pp = pp; i.style = style; i.preferredRange = range; i.alive = alive; i.hasPrimary = primary; return i; }
 int main()
 {
-    CHECK(!ChoosePsBuy(In(0, 1, 20)).buyPrimary);
-    CHECK(!ChoosePsBuy(In(49, 1, 20)).buyPrimary);
-
-    PsBuyPlan p = ChoosePsBuy(In(50, 1, 20));
-    CHECK(p.buyPrimary && !std::strcmp(p.primary, "shotgun") && p.primaryPrice == 50);
-    CHECK(!p.buyAmmo);                    // 0 PP left
-
-    p = ChoosePsBuy(In(125, 1, 20));
-    CHECK(!std::strcmp(p.primary, "fy71") && !p.buyAmmo);
-
-    p = ChoosePsBuy(In(200, 1, 20));
-    CHECK(!std::strcmp(p.primary, "macs") && p.primaryPrice == 150);
-    CHECK(p.buyAmmo && !std::strcmp(p.ammo, "bullet"));   // 50 left, 5 ammo + 40 reserve
-
-    p = ChoosePsBuy(In(200, 2, 40));
-    CHECK(!std::strcmp(p.primary, "dsg1") && p.primaryPrice == 200 && !p.buyAmmo);
-
-    p = ChoosePsBuy(In(300, 2, 40));
-    CHECK(!std::strcmp(p.primary, "dsg1") && p.buyAmmo && !std::strcmp(p.ammo, "sniperbullet"));
-
-    p = ChoosePsBuy(In(160, 2, 40));
-    CHECK(!std::strcmp(p.primary, "fy71") && !p.buyAmmo);   // 35 left < ammo+40
-
-    p = ChoosePsBuy(In(400, 3, 9));
-    CHECK(!std::strcmp(p.primary, "shotgun") && p.buyAmmo);
-
-    PsBuyInput owned = In(400, 1, 20); owned.hasPrimary = true;
-    CHECK(!ChoosePsBuy(owned).buyPrimary);
-    PsBuyInput alive = In(400, 1, 20); alive.alive = true;
-    CHECK(!ChoosePsBuy(alive).buyPrimary);
-
-    if (failures) { std::printf("ps_buy: %d FAILURES\n", failures); return 1; }
-    std::printf("ps_buy: all tests passed\n");
+    CHECK(!ChoosePsBuy(In(0, 0, 20)).buyPrimary);
+    CHECK(!ChoosePsBuy(In(49, 0, 20)).buyPrimary);
+    CHECK(!ChoosePsBuy(In(100, 0, 20, true)).buyPrimary);          // alive: no revive buy
+    CHECK(!ChoosePsBuy(In(100, 0, 20, false, true)).buyPrimary);   // already has a primary
+    PsBuyPlan p = ChoosePsBuy(In(100, 0, 20));                       // universal, 100 PP: SMG + laser, no PP left
+    CHECK(p.buyPrimary && !std::strcmp(p.primary, "smg") && p.buyLaser && !std::strcmp(p.laser, "lam") && !p.buyAmmo);
+    p = ChoosePsBuy(In(100, 1, 20));                                 // assault: shotgun + laser + shells
+    CHECK(!std::strcmp(p.primary, "shotgun") && p.buyLaser && p.buyAmmo && !std::strcmp(p.ammo, "shotgunshell"));
+    p = ChoosePsBuy(In(100, 0, 8));                                  // short range -> shotgun
+    CHECK(!std::strcmp(p.primary, "shotgun"));
+    p = ChoosePsBuy(In(60, 0, 20));                                  // SMG unaffordable -> shotgun, no laser
+    CHECK(!std::strcmp(p.primary, "shotgun") && !p.buyLaser && p.buyAmmo);
+    p = ChoosePsBuy(In(120, 2, 40));                                 // marksman: SMG + laser + bullets
+    CHECK(!std::strcmp(p.primary, "smg") && p.buyLaser && p.buyAmmo && !std::strcmp(p.ammo, "smgbullet"));
+    std::puts("BotPSBuyTests OK");
     return 0;
 }

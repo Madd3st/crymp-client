@@ -493,6 +493,9 @@ function PowerStruggle:WarsBotsBuy(playerId, itemName)
 	if ((not player) or (self.game:GetTeam(playerId)==0)) then return false; end
 	if (self.game:IsFrozen(playerId)) then return false; end
 	if (not self:ItemExists(playerId, itemName)) then return false; end
+	-- C-136: ammo has no item class; BuyItem on it hit CheckVirtualInventoryRestrictions(nil) (C-135 Lua errors).
+	local def=self:GetItemDef(itemName);
+	if (def and def.category=="@mp_catAmmo") then return self:DoBuyAmmo(playerId, itemName); end
 	local alive=player.actor:GetHealth()>0;
 	if (self:IsVehicle(itemName)) then return false; end
 	if ((not alive) or self:IsInBuyZone(playerId)) then

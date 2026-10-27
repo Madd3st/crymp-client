@@ -12,6 +12,7 @@
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotMatch.h"
+#include "CryGame/Bots/BotTeamPlan.h"
 #include "CryGame/Bots/BotSpectator.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
 #include "CryGame/Game.h"
@@ -365,7 +366,8 @@ BotInstance* BotManager::Add(const Vec3* position, BotSkill skill, const BotStyl
 	}
 	const int number = FreeNumber();
 	if (!number) return nullptr;
-	if (!position && !ChooseSpawnLocation(0, 0))
+	const bool psGroups = g_pGame && g_pGame->GetGameRules() && BotMatch::Mode(*g_pGame->GetGameRules()).Policy().spawnGroups;
+	if (!position && !psGroups && !ChooseSpawnLocation(0, 0))   // C-136: PS picks inside the team group in AddWith
 	{
 		WB_LOG(0, "[WarsBots] Add deferred: no safe IA spawn point free of other players; try again or pass x y z.");
 		return nullptr;
@@ -381,10 +383,25 @@ BotInstance* BotManager::AddWith(const Vec3* position, const BotProfile& profile
 {
 	if (!number || ByNumber(number) || Count() >= MaxBots()) return nullptr;
 	Vec3 where(0,0,0);
+	// C-136 (C-135 X-183, DS-052 #1): the very first spawn happens here, before the PS team/spawn group exist on the
+	// actor; the IA picker put PS bots on neutral bunkers. In a spawn-group mode pick inside the slot's team default
+	// group (team base), the same team BotInstance::Spawn assigns (TeamForSlot).
+	EntityId groupSpawn = 0;
+	if (!position)
+		if (CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr)
+			if (BotMatch::Mode(*rules).Policy().spawnGroups)
+			{
+				const int team = TeamForSlot(number);
+				const EntityId group = rules->GetTeamDefaultSpawnGroup(team);
+				float zOff = 0.f;
+				groupSpawn = group ? rules->GetSpawnLocation(0, true, false, group, 0.f, Vec3(0,0,0), &zOff, 0) : 0;
+				WB_LOG(1, "[WarsBots] #%d PS initial spawn team=%d group=%u spawn=%u.", number, team, group, groupSpawn);
+				if (!groupSpawn) return nullptr;   // never the IA picker in PS
+			}
 	if (position) where = *position;
 	else
 	{
-		const EntityId spawnId = ChooseSpawnLocation(0, 0);
+		const EntityId spawnId = groupSpawn ? groupSpawn : ChooseSpawnLocation(0, 0);
 		IEntity* spawn = spawnId ? gEnv->pEntitySystem->GetEntity(spawnId) : nullptr;
 		if (!spawn) return nullptr;
 		where = spawn->GetWorldPos() + Vec3(0,0,0.2f);

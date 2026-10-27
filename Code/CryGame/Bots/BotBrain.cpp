@@ -526,9 +526,12 @@ void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
 		int ok=0; ss->EndCall(ok); return ok!=0;
 	};
 	const bool primary=buy(plan.primary);
-	const bool ammo=plan.buyAmmo?buy(plan.ammo):false; if (primary) ++m_psBuys; if (ammo) ++m_psBuys;
-	WB_LOG(1,"[WarsBots] #%d PS BUY pp=%d primary=%s price=%d ok=%d ammo=%s ok=%d actor=%u.",
-		m_number,pp,plan.primary,plan.primaryPrice,primary?1:0,plan.buyAmmo?plan.ammo:"-",ammo?1:0,id);
+	const bool laser=primary&&plan.buyLaser?buy(plan.laser):false;
+	const bool ammo=primary&&plan.buyAmmo?buy(plan.ammo):false;
+	m_psBuys+=int(primary)+int(laser)+int(ammo);
+	WB_LOG(1,"[WarsBots] #%d PS BUY pp=%d primary=%s price=%d ok=%d laser=%s ok=%d ammo=%s ok=%d actor=%u.",
+		m_number,pp,plan.primary,plan.primaryPrice,primary?1:0,plan.buyLaser?plan.laser:"-",laser?1:0,
+		plan.buyAmmo?plan.ammo:"-",ammo?1:0,id);
 	(void)bot;
 }
 
