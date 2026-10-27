@@ -1,5 +1,10 @@
 # Doors: open-only state, cooldown, path awareness (DS-053 #1)
 
+> **Superseded by DS-054 (`DS054_DOORS_RMI.md`).** The `OnUsed` call described here is the client use/RMI path and
+> errors on a server bot (`Door.lua:356`, "RMI via client ... not a client"). Use `ds054_doors.patch`, which calls the
+> stock server handler `Door:Open(user, DOOR_OPEN)` directly; the state check, per-door cooldown and path logic are
+> unchanged.
+
 Base `96f7f624`. Flag `wb_ps_doors` (default 0). Owner rule DS-052a: every door opens only with **use (F)**; a bot must
 open doors, never close one.
 

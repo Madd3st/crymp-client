@@ -1,0 +1,89 @@
+diff --git a/Code/CryGame/Bots/BotManager.cpp b/Code/CryGame/Bots/BotManager.cpp
+index e16ee672..b3d6ec25 100644
+--- a/Code/CryGame/Bots/BotManager.cpp
++++ b/Code/CryGame/Bots/BotManager.cpp
+@@ -159,7 +159,7 @@ void BotManager::Initialize(IGameFramework* framework)
+ 	// DS-047: BotProbeRunner.h host behind wb_probe_runner (default 0).
+ 	console->AddCommand("wb_probe_load", ProbeLoadCommand, 0, "wb_probe_load <scenario.json>: parse a probe v1 scenario (needs wb_probe_runner 1)");
+ 	console->AddCommand("wb_probe_start", ProbeStartCommand, 0, "wb_probe_start: run the loaded scenario setup and start the metrics window");
+-	console->AddCommand("wb_probe_run", ProbeRunCommand, 0, "wb_probe_run <id> <seconds>: start observing without a scenario file (external setup)");
++	console->AddCommand("wb_probe_run", ProbeRunCommand, 0, "wb_probe_run <id> [seconds]: start observing without a scenario file (external setup); seconds defaults to the loaded scenario duration");
+ 	console->AddCommand("wb_probe_stop", ProbeStopCommand, 0, "wb_probe_stop: stop the running probe without a result file");
+ 	console->AddCommand("wb_probe_runner_status", ProbeRunnerStatusCommand, 0, "Probe runner state: flag, loaded scenario, remaining seconds, live metrics");
+ 	console->AddCommand("wb_probe_goal", ProbeGoalCommand, 0, "wb_probe_goal x y z [radius]: arrival marker for the loaded scenario");
+@@ -1195,11 +1195,16 @@ void BotManager::ProbeRunCommand(IConsoleCmdArgs* args)
+ {
+ 	BotManager* self = Self();
+ 	if (!ProbeRunnerEnabled()) { WB_LOG(0, "[WarsBots] PROBE RUNNER OFF: set wb_probe_runner 1 first."); return; }
+-	if (!self || !args || args->GetArgCount() != 3)
+-	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_run <id> <seconds>."); return; }
++	if (!self || !args || (args->GetArgCount() != 2 && args->GetArgCount() != 3))
++	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_run <id> [seconds]."); return; }
+ 	float seconds = 0;
+-	if (!ParseCoordinate(args->GetArg(2), seconds) || seconds <= 0 || seconds > 3600)
+-	{ WB_LOG(0, "[WarsBots] wb_probe_run: duration must be 0..3600 s."); return; }
++	if (args->GetArgCount() == 3)
++	{
++		if (!ParseCoordinate(args->GetArg(2), seconds) || seconds <= 0 || seconds > 3600)
++		{ WB_LOG(0, "[WarsBots] wb_probe_run: duration must be 0..3600 s."); return; }
++	}
++	else if (self->m_probe.loaded && self->m_probe.scenario.duration > 0) seconds = float(self->m_probe.scenario.duration);
++	else seconds = 60.0f;
+ 	if (self->m_probe.Running())
+ 	{ WB_LOG(0, "[WarsBots] PROBE RUN refused: already running id=%s.", self->m_probe.scenario.id.c_str()); return; }
+ 	if (!self->m_probe.loaded) { self->m_probe.scenario = Probe::Scenario(); self->m_probe.loaded = true; }
+diff --git a/Code/CryGame/Bots/BotProbeRunner.h b/Code/CryGame/Bots/BotProbeRunner.h
+index 8da0013c..551f536a 100644
+--- a/Code/CryGame/Bots/BotProbeRunner.h
++++ b/Code/CryGame/Bots/BotProbeRunner.h
+@@ -175,6 +175,7 @@ struct Scenario
+     std::vector<PeekSpec> peeks;
+     std::vector<CloakSpec> cloaks;
+     std::map<std::string, std::string> cvars;   // already formatted values
++    std::vector<std::string> setup;              // raw console commands from the repo JSON "setup" array
+     std::vector<Assertion> assertions;
+     bool hasGoal = false;
+     double goal[3] = { 0, 0, 0 };
+@@ -268,6 +269,9 @@ inline bool ParseScenario(const std::string& text, Scenario& out, std::string* e
+             else if (v.type == Json::Number) out.cvars[it->first] = NumberText(v.number);
+             else if (v.type == Json::String) out.cvars[it->first] = v.text;
+         }
++    if (const Json* setup = root.Get("setup"))
++        for (size_t i = 0; i < setup->array.size(); ++i)
++            if (setup->array[i].type == Json::String) out.setup.push_back(setup->array[i].text);
+     // DS-047: the repo probe files use "assert"; the test scenario uses "assertions". Accept both.
+     const Json* as = root.Get("assertions");
+     if (!as) as = root.Get("assert");
+@@ -296,6 +300,10 @@ inline std::vector<std::string> BuildSetupCommands(const Scenario& s)
+     std::vector<std::string> out;
+     for (std::map<std::string, std::string>::const_iterator it = s.cvars.begin(); it != s.cvars.end(); ++it)
+         out.push_back(it->first + " " + it->second);
++    // C-126 recipes carry wb_add/wb_teleport in a raw "setup" array; run it after the cvars.
++    for (size_t i = 0; i < s.setup.size(); ++i)
++        if (s.setup[i].compare(0, 12, "wb_probe_run") != 0)
++            out.push_back(s.setup[i]);
+     for (size_t i = 0; i < s.bots.size(); ++i)
+     {
+         const BotSpec& b = s.bots[i];
+diff --git a/Tests/BotProbeRunnerTests.cpp b/Tests/BotProbeRunnerTests.cpp
+index 8cc5f594..97a9b972 100644
+--- a/Tests/BotProbeRunnerTests.cpp
++++ b/Tests/BotProbeRunnerTests.cpp
+@@ -108,6 +108,17 @@ int main()
+     CHECK(!Evaluate(m, unknown, ur));
+     CHECK(!ur.pass);
+ 
++    // DS-053: repo recipes carry raw setup commands (wb_add/wb_teleport).
++    Scenario recipe;
++    CHECK(ParseScenario("{\"id\":\"r\",\"setup\":[\"wb_add 1 elite marksman\",\"wb_teleport 1 1 2 3\"],\"duration_s\":5}", recipe, &err));
++    CHECK(recipe.setup.size() == 2 && recipe.setup[0] == "wb_add 1 elite marksman");
++    {
++        const std::vector<std::string> cmds = BuildSetupCommands(recipe);
++        bool hasAdd = false, hasTp = false;
++        for (size_t i = 0; i < cmds.size(); ++i) { hasAdd |= cmds[i] == "wb_add 1 elite marksman"; hasTp |= cmds[i] == "wb_teleport 1 1 2 3"; }
++        CHECK(hasAdd && hasTp);
++    }
++
+     // Malformed JSON is rejected.
+     Json j;
+     CHECK(!ParseJson("{ \"id\": ", j, &err));
