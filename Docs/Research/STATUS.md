@@ -17,7 +17,7 @@ reviews every Codex code push. Prompts and current plan: `Docs/Research/Coordina
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (interim coordinator + QA) | C142 purchase PASS12/12 on532e4497, reviewed CI GREEN; C140 mapped NK exit FAIL0/6 | Validate DS061 revised runner; integrate/test water and door repairs, then Shore QA |
+| Codex (interim coordinator + QA) | C143 integrated 2e0a6641, offline PASS; CI/DS-065 pending, no runtime | Independently validate DS062 water + DS063 door proposals, plan D034 acceptance |
 | DeepSeek (analysis, patches, reviewer) | DS061 revision2ef03358 delivered, acceptance pending | Night DS062 water support -> DS063 door exit -> DS064 capture eligibility audit; exact-SHA reviews first |
 | Claude | out of limits; handback via CLAUDE_STATE.md | — |
 

@@ -4,9 +4,9 @@
 (SUCCESSOR.md prompt A), DeepSeek = reviewer of every Codex code push (prompt C). Claude's hourly cloud task
 (trig_01ABKXcowTTiHUd7wwLt9Lxz, minute 19) must be OFF; if it still fires, it reads this file and exits.
 
-Last processed by Claude: X-191, DS-054. Last processed by Codex: X-204; DS061 revised patch2ef03358 received, not yet accepted.
+Last processed by Claude: X-191, DS-054. Last processed by Codex: X-207; DS0612ef03358 integrated 2e0a66414305b163848c6d5f18bb5812df4462a9; DS-065 exact review requested. DS062f8dd3a1f and DS063b43db987 received, not integrated.
 
-claude-sprint head **532e4497d018cb7f6fea61b6ad92e4d4390849d7**: CI40574773650 GREEN, DS058 OK; C142 primary/LAM purchase PASS12/12. No subsequent game-code integration. C140 mapped NK spawn-room exit20 FAIL0/6; C143 awaits independent offline validation of DS061 revision; C144 water extension awaits DS062.
+claude-sprint head **2e0a66414305b163848c6d5f18bb5812df4462a9**: C143 revised runner, CI + DS-065 review pending; no game. Last runtime-reviewed source532e4497 CI40574773650GREEN/DS058OK, C142 purchasesPASS12/12. C140 mapped exit20FAIL0/6.
 on 96f7f624 (DS-052 doors/vehicles/events, all default OFF) on 815bcb7e (C-136 PS team spawn + owner buy rule)
 on 1a7ec84e (C-134) on 493f2cab (C-131 DS-050 fundament) on 4f3a1d72 (CI green).
 
@@ -26,6 +26,8 @@ Open:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+2026-10-28 00:41 MSK: C143 integration DONE 2e0a66414305b163848c6d5f18bb5812df4462a9: revised DS061 accepted offline; CI and DS-065 exact review pending, no runtime. Independent MSVC ratio/export oracle0, fixture unit0, absent-fixture1; BotWeapons/Manager syntax PASS (metadata stand-in only). C144 DS062 and door DS063 proposals delivered, independent acceptance pending. Best runtime remains532e4497. No defaults/snipers/soak/game/memory changes.
 
 2026-10-28 owner D034: joint DeepSeek analysis before chasing strange behaviour; related fixes/feature completion in coherent batches, explicit acceptance before game runs. DS062/063 separate patches may share planned acceptance; a diagnostic probe requires a named missing observation. No game launched. Protocol + DeepSeek standing instructions updated.
 
