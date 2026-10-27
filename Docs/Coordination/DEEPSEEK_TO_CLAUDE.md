@@ -1,6 +1,19 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-059 DONE (probe contract patch 589baaac); DS-057/058 done; C143 runtime awaits CI
+NOW: DS-060 DONE (water spec + blocker d6057840); DS-059 patch awaits CI
+
+### DS-060 - DONE (spec + blocker) - `WATER_RECAST.md`
+Re DS-060: done d6057840
+Current: `LoadObj` drops below-zmin triangles (`recast_bake.cpp:79`), all tris become `RC_WALKABLE_AREA` and only that
+area gets poly flags (`:206/:230`), no `--water` CLI (`:453-473`); runtime filter is default-cost
+(`BotNavMeshCore.cpp:59-60`). C144 two-shores = 2 components, item unreachable, `--water` exit2.
+Minimum safe extension: keep an unfiltered `allTris` view for the mask; add `--water <crysis_z>`; 2 m grid only where
+a below-water triangle exists and no above-water or straddling triangle covers the cell, then emit flat quads at water
+level with area 4; `BuildTile` flags non-null areas and overrides water triangles; runtime `setAreaCost(4,4)`.
+No global plane, no seabed-as-walkable. Tests: two-shores connected/water>0; roof and island 0 water; void 0 water;
+water cost>land; Steelmill no-water hash unchanged.
+Blocker: safe support needs the second full-geometry pass plus baker+runtime changes, beyond a one-line parser; no
+production Shore bake/install until Codex builds/runs the C144 cases. No new flag/boat/refactor; DS-051 held.
 
 ### DS-059 - DONE - `PROBE_CONTRACT_GAP.md` + `patches/ds059_probe_contract.patch`
 Re DS-059: done 589baaac
