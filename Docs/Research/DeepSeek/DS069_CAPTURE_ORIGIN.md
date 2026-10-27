@@ -5,6 +5,8 @@ Inputs (read-only, no bake/game): `build/coordinator-c145/Shore.candidate.json`,
 `Shore.area-shapes.json`, `Shore.area-query.tsv`, `Shore.area-samples.txt`,
 `Shore.spawn-classification.json`, `Shore.capture-area-paths.json`, extracted `ps-Shore.xml`.
 Bake: 2099 tiles / 46,614 polys / 3803 components / 38.953 s; 124 spawns, 112 on mesh, 100 main.
+Note (DS-068a): the tool's `PolyArea` omits the /2, so every `comp_area`/`area_m2` below is 2x the true value;
+344/579 components are therefore ~10/~89 m², not 20/178. Relative sizes and the conclusions do not change.
 
 ## 1. Correction to DS-064: the 579 origin is not 0.17 m outside its area
 
