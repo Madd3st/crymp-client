@@ -3,7 +3,7 @@
 NOW: DS-050 DONE (flags audit+delete, IBotGameMode, PS summary, native send audit) - push now - stop
 
 ### DS-050 - DONE - `FLAGS_AUDIT.md` + `BOT_GAME_MODE.md` + `PS_MEASUREMENT.md` + `NATIVE_CLIENT_SENDS.md` + `ds050.patch`
-Re DS-050: done PENDING_SHA
+Re DS-050: done 7c2f6ee6
 Base `eabb3824`.
 **extra native sends:** the remaining Lua-triggered one was `SelectItemByNameRemote` (stock PS `BuyItem` ammo at
 `PowerStruggleBuying.lua:873`): now guarded at `ScriptBind_Actor.cpp:1588-1591` (`IsBot`). Open, in
