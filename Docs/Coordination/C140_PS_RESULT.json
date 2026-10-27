@@ -459,7 +459,7 @@
       "max_displacement_first20_m": 8.400529986188886
     }
   ],
-  "nk_exit_le20_gate": null,
+  "nk_exit_le20_gate": false,
   "nk_exit_note": "No authoritative NK base polygon/boundary in the task. Raw spawn and near20s positions/displacements provided; do not call displacement a proven base exit. Only door open occurred31.50s after first spawn, beyond20s; separate reset spawn set also reported.",
   "lua_error_lines": [],
   "stability_pass": true,
@@ -684,6 +684,13 @@
   "memory_hashes_restored": true,
   "memory_absent_state_restored": true,
   "same_initial_memory_as_C139": false,
-  "overall_acceptance": "PARTIAL: stability/door-call/stalls-traps PASS; NK exit<=20s UNKNOWN, no full gate acceptance",
-  "promoted_defaults": false
+  "overall_acceptance": "FAIL mapped NK spawn-room exit20 gate0/6; stability/door-call/stalls/traps PASS",
+  "promoted_defaults": false,
+  "nk_exit_classification": {
+    "source": "DS057 e7af4a4f C140_NK_EXIT.md",
+    "criterion": "spawn-room Door104 threshold y>1255.3259 at aperture within5m",
+    "count": 0,
+    "observations": 6,
+    "full_base_perimeter": "UNKNOWN"
+  }
 }

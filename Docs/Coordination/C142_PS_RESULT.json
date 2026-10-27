@@ -1,0 +1,1097 @@
+{
+  "root": "build\\c142-Shore-532e4497",
+  "complete": true,
+  "frames": 6019,
+  "duration_s": 300.95799999999997,
+  "events": {
+    "suit": 337,
+    "land": 22
+  },
+  "kills": 0,
+  "stalls": 84,
+  "traps": 1,
+  "aba": 0,
+  "reversals": 0,
+  "first_primary_p50": 0.069,
+  "first_primary_p90": 0.069,
+  "primary_observed": 6,
+  "primary_eligible": 6,
+  "primary_lives": [
+    {
+      "actor": 65461,
+      "birth": 0.213,
+      "end": 301.171,
+      "first_primary": 0.213,
+      "censored_birth": true
+    },
+    {
+      "actor": 65466,
+      "birth": 0.213,
+      "end": 301.171,
+      "first_primary": 0.213,
+      "censored_birth": true
+    },
+    {
+      "actor": 65471,
+      "birth": 0.213,
+      "end": 301.171,
+      "first_primary": 0.213,
+      "censored_birth": true
+    },
+    {
+      "actor": 65476,
+      "birth": 0.213,
+      "end": 301.171,
+      "first_primary": 0.213,
+      "censored_birth": true
+    },
+    {
+      "actor": 65481,
+      "birth": 0.213,
+      "end": 301.171,
+      "first_primary": 0.213,
+      "censored_birth": true
+    },
+    {
+      "actor": 65486,
+      "birth": 0.213,
+      "end": 301.171,
+      "first_primary": 0.213,
+      "censored_birth": true
+    },
+    {
+      "actor": 130993,
+      "birth": 31.678,
+      "end": 301.171,
+      "first_primary": 31.747,
+      "censored_birth": false
+    },
+    {
+      "actor": 130998,
+      "birth": 31.678,
+      "end": 301.171,
+      "first_primary": 31.747,
+      "censored_birth": false
+    },
+    {
+      "actor": 131003,
+      "birth": 31.678,
+      "end": 301.171,
+      "first_primary": 31.747,
+      "censored_birth": false
+    },
+    {
+      "actor": 131008,
+      "birth": 31.678,
+      "end": 301.171,
+      "first_primary": 31.747,
+      "censored_birth": false
+    },
+    {
+      "actor": 131013,
+      "birth": 31.678,
+      "end": 301.171,
+      "first_primary": 31.747,
+      "censored_birth": false
+    },
+    {
+      "actor": 131018,
+      "birth": 31.678,
+      "end": 301.171,
+      "first_primary": 31.747,
+      "censored_birth": false
+    }
+  ],
+  "buy_attempts": [
+    {
+      "t": 0.21,
+      "bot": 1,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65486,
+      "position": [
+        1841.283447265625,
+        1234.690673828125,
+        111.46236419677734
+      ],
+      "position_frame_t": 0.213
+    },
+    {
+      "t": 0.21,
+      "bot": 2,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "shotgunshell",
+      "ammo_ok": 1,
+      "actor": 65481,
+      "position": [
+        2106.875,
+        1885.875,
+        103.36710357666016
+      ],
+      "position_frame_t": 0.213
+    },
+    {
+      "t": 0.21,
+      "bot": 3,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65476,
+      "position": [
+        1838.6326904296875,
+        1231.4375,
+        114.68115997314453
+      ],
+      "position_frame_t": 0.213
+    },
+    {
+      "t": 0.21,
+      "bot": 4,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "shotgunshell",
+      "ammo_ok": 1,
+      "actor": 65471,
+      "position": [
+        2131.625,
+        1885.375,
+        90.49210357666016
+      ],
+      "position_frame_t": 0.213
+    },
+    {
+      "t": 0.21,
+      "bot": 5,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65466,
+      "position": [
+        1841.4813232421875,
+        1243.37548828125,
+        114.68115997314453
+      ],
+      "position_frame_t": 0.213
+    },
+    {
+      "t": 0.21,
+      "bot": 6,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "shotgunshell",
+      "ammo_ok": 1,
+      "actor": 65461,
+      "position": [
+        2121.875,
+        1883.0,
+        99.99210357666016
+      ],
+      "position_frame_t": 0.213
+    },
+    {
+      "t": 31.75,
+      "bot": 1,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 130993,
+      "position": [
+        1838.9698486328125,
+        1244.6783447265625,
+        111.75801086425781
+      ],
+      "position_frame_t": 31.747
+    },
+    {
+      "t": 31.75,
+      "bot": 2,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "shotgunshell",
+      "ammo_ok": 1,
+      "actor": 130998,
+      "position": [
+        2109.0,
+        1882.5,
+        103.42671203613281
+      ],
+      "position_frame_t": 31.747
+    },
+    {
+      "t": 31.75,
+      "bot": 3,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 131003,
+      "position": [
+        1838.9697265625,
+        1241.481689453125,
+        115.01000213623047
+      ],
+      "position_frame_t": 31.747
+    },
+    {
+      "t": 31.75,
+      "bot": 4,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "shotgunshell",
+      "ammo_ok": 1,
+      "actor": 131008,
+      "position": [
+        2117.25,
+        1880.625,
+        90.55171203613281
+      ],
+      "position_frame_t": 31.747
+    },
+    {
+      "t": 31.75,
+      "bot": 5,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 131013,
+      "position": [
+        1841.54833984375,
+        1235.64599609375,
+        115.01000213623047
+      ],
+      "position_frame_t": 31.747
+    },
+    {
+      "t": 31.75,
+      "bot": 6,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 1,
+      "laser": "lam",
+      "laser_ok": 1,
+      "ammo": "shotgunshell",
+      "ammo_ok": 1,
+      "actor": 131018,
+      "position": [
+        2121.875,
+        1883.0,
+        100.05171203613281
+      ],
+      "position_frame_t": 31.747
+    }
+  ],
+  "successful_items": 30,
+  "successful_primary_bots": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "lua_episodes": 0,
+  "error_stack_lines": 0,
+  "channel_errors": 0,
+  "crash": false,
+  "deaths": 0,
+  "wave_seen": 0,
+  "ps_summary_lines": [
+    "0.06 [WarsBots] PS SUMMARY points=5 team1_held=0 team2_held=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=1 id=65486 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=2 id=65481 team=2 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=3 id=65476 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=4 id=65471 team=2 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=5 id=65466 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=6 id=65461 team=2 pp=100 rank=1 buys=0."
+  ],
+  "memory": [
+    {
+      "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+      "name": "Multiplayer_IA_Steelmill.mem"
+    },
+    {
+      "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+      "name": "Multiplayer_IA_Steelmill.nav.json"
+    },
+    {
+      "sha256": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9",
+      "name": "Multiplayer_PS_Plantation.mem"
+    },
+    {
+      "sha256": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39",
+      "name": "Multiplayer_PS_Shore.mem"
+    }
+  ],
+  "native_rng": "independent, not seeded or paired",
+  "first_primary_definition": "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+  "hashes": {
+    "analysis.log": "9fa7693bc6b287ee50d52af6d9d855e13cea37c128293bfb6498d2a7b68b2437",
+    "c142-532e4497-preflight.bots.log": "c6e8d832de0e240fc8f21cab0912941e2e4f51815b7d438a538edf24bef69737",
+    "c142-532e4497-preflight.log": "b99eeb3330a21bd94b90be7db3540611f02c499598fd508c224ca62a59b2f368",
+    "c142-532e4497-run.bots.log": "e9be6121129cc141ca26d318d73cab8f2a204e69d7ea3fa1683731a1510fdf20",
+    "c142-532e4497-run.log": "db1e2678798a3bfd8a30faf27a361b749bdf90b3ce8e7be2d0f6314e5f23b626",
+    "errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "flips.json": "3f6a11144cb8b9c83f683810c75168c059b7233f0798a8e71b8be9b67cde9bc2",
+    "memory-restored.json": "f8f04f7a847b413230e7698ae1aeb53f51ea0fdc51ce79c90aebdec41059e244",
+    "Multiplayer_PS_Shore-20261027-231644-1.wbdemo": "ebbba5ce867e9b986c08cd564fefca44c434454187309d2df8be13995bebae59",
+    "preflight-arguments.txt": "0f8a2912d079b9150a16720cfd686104b500a32b886c49e3f38f64ad6f18166e",
+    "preflight-effective.json": "ee60fa79b33a46aa71d1579d5f5d711dc56adfe493279ab34f751d18f9fd7762",
+    "preflight-pid.txt": "4111f99db764357fdd287ec67b80279920849f6f5b480838b05d2af60b3f2a60",
+    "ps-evidence.log": "bf603213ed8195e30a7db49d40f7e8114ac3d8d51f79bf2b75d2c8385bbe5ddc",
+    "recipe.json": "c09f1258b2685bda6e75194e85a7682b96c27da87e5c4f357ce5cdd7e202f4fc",
+    "run-arguments.txt": "1aea56085ffde4d836a09fb61336ff004847b6add4c30a051e1d88e15156eb22",
+    "run-complete.json": "1717494f8d8f6eadee2102070b5e059bc5a35fe37aa782eed0dd481df95364c3",
+    "run-effective.json": "ee60fa79b33a46aa71d1579d5f5d711dc56adfe493279ab34f751d18f9fd7762",
+    "run-pid.txt": "827d892dfb7607321445f9d8cbd41da66a743d893935590e276aeeced4fa68c5",
+    "summary.json": "9fa7693bc6b287ee50d52af6d9d855e13cea37c128293bfb6498d2a7b68b2437"
+  },
+  "successful_laser_bots": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "buy_skips": [],
+  "primary_owned_skip_bots": [],
+  "inventory_classes_by_actor": {
+    "65461": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "65466": [
+      "SMG",
+      "SOCOM"
+    ],
+    "65471": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "65476": [
+      "SMG",
+      "SOCOM"
+    ],
+    "65481": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "65486": [
+      "SMG",
+      "SOCOM"
+    ],
+    "130993": [
+      "SMG",
+      "SOCOM"
+    ],
+    "130998": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "131003": [
+      "SMG",
+      "SOCOM"
+    ],
+    "131008": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "131013": [
+      "SMG",
+      "SOCOM"
+    ],
+    "131018": [
+      "SOCOM",
+      "Shotgun"
+    ]
+  },
+  "primary_selected_by_actor": {
+    "65461": [
+      "Shotgun"
+    ],
+    "65466": [
+      "SMG"
+    ],
+    "65471": [
+      "Shotgun"
+    ],
+    "65476": [
+      "SMG"
+    ],
+    "65481": [
+      "Shotgun"
+    ],
+    "65486": [
+      "SMG"
+    ],
+    "130993": [
+      "SMG"
+    ],
+    "130998": [
+      "Shotgun"
+    ],
+    "131003": [
+      "SMG"
+    ],
+    "131008": [
+      "Shotgun"
+    ],
+    "131013": [
+      "SMG"
+    ],
+    "131018": [
+      "Shotgun"
+    ]
+  },
+  "initial_spawns": [
+    {
+      "bot": 1,
+      "team": 1,
+      "group": 120,
+      "spawn": 109
+    },
+    {
+      "bot": 2,
+      "team": 2,
+      "group": 537,
+      "spawn": 526
+    },
+    {
+      "bot": 3,
+      "team": 1,
+      "group": 120,
+      "spawn": 149
+    },
+    {
+      "bot": 4,
+      "team": 2,
+      "group": 537,
+      "spawn": 562
+    },
+    {
+      "bot": 5,
+      "team": 1,
+      "group": 120,
+      "spawn": 139
+    },
+    {
+      "bot": 6,
+      "team": 2,
+      "group": 537,
+      "spawn": 544
+    },
+    {
+      "bot": 6,
+      "team": 2,
+      "group": 537,
+      "spawn": 544
+    },
+    {
+      "bot": 5,
+      "team": 1,
+      "group": 120,
+      "spawn": 112
+    },
+    {
+      "bot": 4,
+      "team": 2,
+      "group": 537,
+      "spawn": 527
+    },
+    {
+      "bot": 3,
+      "team": 1,
+      "group": 120,
+      "spawn": 127
+    },
+    {
+      "bot": 2,
+      "team": 2,
+      "group": 537,
+      "spawn": 563
+    },
+    {
+      "bot": 1,
+      "team": 1,
+      "group": 120,
+      "spawn": 138
+    }
+  ],
+  "initial_spawn_groups_pass": true,
+  "purchase_gate_pass": true,
+  "lua_error_lines": [],
+  "stability_pass": true,
+  "ps_events": [
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFCE",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFCE item=smg price=75 alive=true",
+      "actor": 65486
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFCE",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFCE item=lam price=25 alive=true",
+      "actor": 65486
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFC9",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFC9 item=shotgun price=50 alive=true",
+      "actor": 65481
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFC9",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFC9 item=lam price=25 alive=true",
+      "actor": 65481
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFC4",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFC4 item=smg price=75 alive=true",
+      "actor": 65476
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFC4",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFC4 item=lam price=25 alive=true",
+      "actor": 65476
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFBF",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFBF item=shotgun price=50 alive=true",
+      "actor": 65471
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFBF",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFBF item=lam price=25 alive=true",
+      "actor": 65471
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFBA",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFBA item=smg price=75 alive=true",
+      "actor": 65466
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFBA",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFBA item=lam price=25 alive=true",
+      "actor": 65466
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFB5",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFB5 item=shotgun price=50 alive=true",
+      "actor": 65461
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFB5",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFB5 item=lam price=25 alive=true",
+      "actor": 65461
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFB1",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFB1 item=smg price=75 alive=true",
+      "actor": 130993
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFB1",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFB1 item=lam price=25 alive=true",
+      "actor": 130993
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFB6",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFB6 item=shotgun price=50 alive=true",
+      "actor": 130998
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFB6",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFB6 item=lam price=25 alive=true",
+      "actor": 130998
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFBB",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFBB item=smg price=75 alive=true",
+      "actor": 131003
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFBB",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFBB item=lam price=25 alive=true",
+      "actor": 131003
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFC0",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFC0 item=shotgun price=50 alive=true",
+      "actor": 131008
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFC0",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFC0 item=lam price=25 alive=true",
+      "actor": 131008
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFC5",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFC5 item=smg price=75 alive=true",
+      "actor": 131013
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFC5",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFC5 item=lam price=25 alive=true",
+      "actor": 131013
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFCA",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFCA item=shotgun price=50 alive=true",
+      "actor": 131018
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFCA",
+        "item": "lam",
+        "price": "25",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFCA item=lam price=25 alive=true",
+      "actor": 131018
+    }
+  ],
+  "purchase_event_actors": [
+    65461,
+    65466,
+    65471,
+    65476,
+    65481,
+    65486,
+    130993,
+    130998,
+    131003,
+    131008,
+    131013,
+    131018
+  ],
+  "ps_event_counts": {
+    "purchase": 24
+  },
+  "event_parser_exercised": true,
+  "traps_gate_pass": true,
+  "ci": {
+    "conclusion": "success",
+    "headSha": "532e4497d018cb7f6fea61b6ad92e4d4390849d7",
+    "status": "completed"
+  },
+  "memory_actual_hashes": {
+    "Multiplayer_IA_Steelmill.mem": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+    "Multiplayer_IA_Steelmill.nav.json": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+    "Multiplayer_PS_Plantation.mem": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9",
+    "Multiplayer_PS_Shore.mem": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39"
+  },
+  "memory_hashes_restored": true,
+  "nav_hashes_after": {
+    "Armada.links.txt": "ce3326caf751661cf43f820560a390cc2ee5ee008c2d56e9e67d11cee7f34247",
+    "Armada.manifest.json": "5ed27f25f015095bd9ad11d9fe5888f61a7411f9dc17b17ad3722cc8c37fb861",
+    "Armada.navmesh": "87f0438cca0b531f6f227f83d640916afb93667802973e763333f73d78957590",
+    "Armada.spots.txt": "71ac48ed80c2068f6273868966362d1aefbebc0db5d34599cf0e121da53c1293",
+    "Outpost.links.txt": "0e6651a3da7536b5a20d3f1e9f81bc8ee588d0366d84e196c1e1b6dad0dc4d23",
+    "Outpost.manifest.json": "fa57ed4f696ce19334c2d447826e1b9d63de9a7425ef35927a547f7c43eef0e6",
+    "Outpost.navmesh": "944297ac9d51e5614b05401350df107a436b7606ff8174905057ba973468d18a",
+    "Outpost.spots.txt": "f041dbab3924403df302bdaf6169c180257cad8c49822bef044f6a980225e681",
+    "Quarry.links.txt": "2daa4f3ad189b0e90ffdb11312156c1b229cab67d6f49a20e642608e00d053e1",
+    "Quarry.manifest.json": "39bedf0452d93ca4982feb3434ba4c3c4342df3ba0c7ad42e6c1408725fdda2a",
+    "Quarry.navmesh": "3a2f6d50ffadf13238d80429e2269193857cc93eb9d7735574a131c4c7dc98e7",
+    "Quarry.spots.txt": "2a4e9c01df4f8653ab576c2695f1ffc3a2e72a9dbf7e5e355e1a3f0727a4addb",
+    "Steelmill.links.txt": "554072102e6e39797a4dd67754384106a2e297ff863f88ab8833d67f3c3d7c1b",
+    "Steelmill.manifest.json": "d0bedbaba64f76d43761205c22567790dd22f78039116af12df2fc8297bae2da",
+    "Steelmill.navmesh": "cfc11810626c6fa0859a055592e6c5ab12d12777f40f52aeb8c6208eefaf503b",
+    "Steelmill.spots.txt": "25c3eecf0699b9795bb214b322e9155b6bf5f207bc5e29e41479655a25cef4b5"
+  },
+  "nav_unchanged_since_during_run_snapshot": null,
+  "map_explicit_buy_zones": [
+    {
+      "Name": "BuyZone_US13",
+      "Pos": "2128.5,1883.75,100.5",
+      "EntityClass": "BuyZone",
+      "EntityId": "557",
+      "EntityGuid": "4BA61F381A2F2A1B",
+      "CastShadow": "0",
+      "Layer": "Submarine_US",
+      "properties": {
+        "buyAreaId": "1",
+        "bEnabled": "1",
+        "teamName": "black"
+      }
+    }
+  ],
+  "map_mission_sha256": "5dd40691dc72b690deeab5bfc7cbf174b79c7b4620ebd29b8f5cc0de546db7e0",
+  "overall_pass": true,
+  "per_actor_purchase_proof": [
+    {
+      "actor": 65461,
+      "bot": 6,
+      "buy_t": 0.21,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "shotgun"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "Shotgun"
+      ]
+    },
+    {
+      "actor": 65466,
+      "bot": 5,
+      "buy_t": 0.21,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "smg"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "SMG"
+      ]
+    },
+    {
+      "actor": 65471,
+      "bot": 4,
+      "buy_t": 0.21,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "shotgun"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "Shotgun"
+      ]
+    },
+    {
+      "actor": 65476,
+      "bot": 3,
+      "buy_t": 0.21,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "smg"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "SMG"
+      ]
+    },
+    {
+      "actor": 65481,
+      "bot": 2,
+      "buy_t": 0.21,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "shotgun"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "Shotgun"
+      ]
+    },
+    {
+      "actor": 65486,
+      "bot": 1,
+      "buy_t": 0.21,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "smg"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "SMG"
+      ]
+    },
+    {
+      "actor": 130993,
+      "bot": 1,
+      "buy_t": 31.75,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "smg"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "SMG"
+      ]
+    },
+    {
+      "actor": 130998,
+      "bot": 2,
+      "buy_t": 31.75,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "shotgun"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "Shotgun"
+      ]
+    },
+    {
+      "actor": 131003,
+      "bot": 3,
+      "buy_t": 31.75,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "smg"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "SMG"
+      ]
+    },
+    {
+      "actor": 131008,
+      "bot": 4,
+      "buy_t": 31.75,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "shotgun"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "Shotgun"
+      ]
+    },
+    {
+      "actor": 131013,
+      "bot": 5,
+      "buy_t": 31.75,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "smg"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "SMG"
+      ]
+    },
+    {
+      "actor": 131018,
+      "bot": 6,
+      "buy_t": 31.75,
+      "primary_return": 1,
+      "laser_return": 1,
+      "primary_events": [
+        "shotgun"
+      ],
+      "lam_events": 1,
+      "selected_primary": [
+        "Shotgun"
+      ]
+    }
+  ],
+  "all12_actor_primary_and_lam_purchase_proven": true,
+  "accessory_inventory_note": "Demo records weapons only: BotDemoRecorder.cpp:138 skips !IWeapon. NoLAM in demo inventory is not evidence of missing accessory; native PS EVENT item=lam + correctly decoded boolean success prove purchase. Attachment/laser beam visual state UNKNOWN.",
+  "pp_after_note": "Incoming PP100 and native price events primary75/50+LAM25 recorded; actual after-purchase PP not sampled in this run, do not claim observed delta. Stock source performs charging; ammo returned success6. No PP grant/bypass used.",
+  "memory_absent_state_restored": true,
+  "native_return_patch_review": "DS058 OK, CI40574773650 GREEN"
+}

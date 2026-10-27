@@ -9,3 +9,5 @@ Stalls81->96 (+18.52%, <=25% gate PASS), traps1->0 PASS; kills/deaths/wave0/0/0 
 NK exit<=20s remains **UNKNOWN**, no full gate PASS: first20s world positions saved per initial/reset actor in `nk-first20.json`; maximum displacement8.4..19.24m, samples within0.017s of20s. A task-approved authoritative base boundary is absent, so displacement does not prove leaving base. Only opening request at31.50s is later than20s. DS057 requests map-grounded classification before any repeat.
 
 Initial memory differs from C139 snapshot; single native RNG run, no causal claim. Original memory actualSHA256 and absent-file state restored; own server stopped, no client/GUI or soak. Nav files not modified by harness, no pre-nav hash claim. Raw `build/c140-Shore-545a5022/` contains demo/logs/effective config/arguments/harness/summary/PS events and hashes. [JSON](C140_PS_RESULT.json).
+
+DS057 update (e7af4a4f): Door104/Door48 threshold y1255.3259, aperture proxy<=5m, gives0/6 NK initial/reset actors outside spawn room at20s. This mapped necessary exit gate FAILS; full NK perimeter remains UNKNOWN. No new runtime/repeat.
