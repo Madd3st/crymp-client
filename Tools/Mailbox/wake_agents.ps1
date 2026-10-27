@@ -17,7 +17,7 @@ function Wake($agent,$repo,$prefix,$outbox){
  if(-not $repo){return}
  $stateFile=Join-Path $dir "wake-$agent-v2.json";$old=$null
  if(Test-Path $stateFile){$old=Get-Content $stateFile -Raw -Encoding UTF8|ConvertFrom-Json}
- if($old -and $old.worker){$p=Get-CimInstance Win32_Process -Filter "ProcessId=$($old.worker)";if($p -and $p.CommandLine -like '*run_mailbox_wake.ps1*'){Log "${agent}: previous worker active, skip";return}}
+ if($old -and $old.worker){$p=Get-CimInstance Win32_Process -Filter "ProcessId=$($old.worker)";if($p -and $p.CommandLine -like '*run_mailbox_wake.ps1*' -and $p.CommandLine -like "* -Agent $agent *"){Log "${agent}: previous worker active, skip";return}}
  git -C $repo fetch -q origin '+refs/heads/warsbots/*:refs/remotes/origin/warsbots/*';if($LASTEXITCODE){throw 'Mailbox fetch failed'}
  $inbox=(git -C $repo show "origin/warsbots/research/steelmill-triage:Docs/Research/Coordination/MAILBOX/TO_$($agent.ToUpperInvariant()).md")-join "`n"
  $answers=Get-Content -LiteralPath (Join-Path $repo $outbox) -Raw -Encoding UTF8;$states=@{}
@@ -26,17 +26,22 @@ function Wake($agent,$repo,$prefix,$outbox){
   if($idMatch.Success -and $status.Success -and -not $states.ContainsKey($idMatch.Groups[1].Value)){$states[$idMatch.Groups[1].Value]=$status.Value}
  }
  $known=@{};if($old -and $old.sections){foreach($p in $old.sections.PSObject.Properties){$known[$p.Name]=$p.Value}}
- $pending=@();$all=@{}
+ $pending=@();$all=@{};$seen=@{}
  foreach($section in [regex]::Matches($inbox,"(?ms)^### $prefix-(\d+)[^\r\n]*\r?\n.*?(?=^### $prefix-|\z)")){
-  $id=[int]$section.Groups[1].Value;$key=[string]$id;$body=$section.Value.Substring($section.Value.IndexOf("`n")+1).Trim();$hash=Hash $body;$all[$key]=$hash
+  $id=[int]$section.Groups[1].Value;$key=[string]$id;if($seen.ContainsKey($key)){continue};$seen[$key]=$true;$body=$section.Value.Substring($section.Value.IndexOf("`n")+1).Trim();$hash=Hash $body;$all[$key]=$hash
+  $historical=$agent -eq 'deepseek' -and $id -lt 47
+  if($historical -and -not $known.ContainsKey($key)){$known[$key]=$hash} # migration baseline before already-done DS047; amendments remain detectable
   $terminal=$states[$key] -in @('DONE','BLOCKED','REJECTED') -or $section.Value.Split("`n")[0] -match '(?i)\bdone\b'
   if($terminal -and -not $known.ContainsKey($key)){$known[$key]=$hash}
   $changed=$known.ContainsKey($key) -and $known[$key] -ne $hash
   $skipMeta=$agent -eq 'codex' -and ($id -lt 112 -or $id -eq 113)
-  if(-not $skipMeta -and (-not $terminal -or $changed)){$pending+=$id}
+  if(-not $skipMeta -and ((-not $terminal -and (-not $known.ContainsKey($key) -or (-not $historical -and $states[$key] -in @('ACK','STARTED','PROGRESS')))) -or $changed)){$pending+=$id}
  }
  if($agent -eq 'codex'){Log ("codex: C-121="+$states['121']+' C-122='+$states['122']+' (outbox checked; no literal open-header requirement)')}
+ @{sections=$known;checked=[DateTime]::UtcNow.ToString('o')}|ConvertTo-Json -Depth 5|Set-Content $stateFile -Encoding UTF8
  $busy=Recent-Repo $repo
+ $doneFile=Join-Path $dir "$agent-last-completion-v2.json"
+ if(Test-Path $doneFile){$done=Get-Content $doneFile -Raw -Encoding UTF8|ConvertFrom-Json;if([DateTime]::Parse($done.finished).ToUniversalTime() -gt [DateTime]::UtcNow.AddMinutes(-[int]$cfg.IdleMin)){$busy='recent worker completion; cooldown'}}
  if($agent -eq 'codex' -and (Test-Path $cfg.HostThreadFile) -and (Get-Item $cfg.HostThreadFile).LastWriteTimeUtc -gt [DateTime]::UtcNow.AddMinutes(-[int]$cfg.IdleMin)){$busy='desktop thread recently active'}
  if($agent -eq 'deepseek'){
   $session=& $cfg.Python (Join-Path $PSScriptRoot 'session_state.py') --session $cfg.DeepSeekSession|ConvertFrom-Json

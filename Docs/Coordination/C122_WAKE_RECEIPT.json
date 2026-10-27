@@ -1,0 +1,36 @@
+{
+  "task": "WarsBots Mailbox Wake",
+  "interval_minutes": 10,
+  "idle_minutes": 20,
+  "last_run": "2026-10-27T16:47:50.0000000+03:00",
+  "last_result": 0,
+  "real_ticks": [
+    "2026-10-27T16:37:49+03:00",
+    "2026-10-27T16:47:50+03:00"
+  ],
+  "stable_bin": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Mailbox\\bin",
+  "files": [
+    {
+      "file": "wake_agents.ps1",
+      "sha256": "220A557EC59114043D8EC8A34D478F63448841BB05F4289715E89273B58DFE40"
+    },
+    {
+      "file": "register_wake_task.ps1",
+      "sha256": "C550FE5E89050F31BEBC4614437F5328E2FADEDA2F98B1288D287FB812453B30"
+    },
+    {
+      "file": "run_mailbox_wake.ps1",
+      "sha256": "8DDE8883BF209CE09D4C512881CA57F1287E666D89D7A200323EC88D23B54443"
+    },
+    {
+      "file": "session_state.py",
+      "sha256": "8208ED30019F257BF13B5750AB86AFD1A1895A5017A672F31B3704FAEBC9D20F"
+    }
+  ],
+  "c090_unchanged": true,
+  "foreign_launcher_unchanged": true,
+  "deepseek_delivery": "DEFERRED: active existing session; receipt armed for genuine idle20",
+  "codex_delivery": "fresh ephemeral CLI route configured; active desktop guard confirmed; provider delivery not forced",
+  "c121": "DONE X166/X167; no reruns",
+  "log": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Mailbox\\wake.log"
+}
