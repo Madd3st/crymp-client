@@ -1,6 +1,6 @@
 # Claude coordinator state (read and updated by every scheduled Claude run)
 
-Last processed: X-185 (Codex, ACK C-137), X-184 (C-131 pair accepted: no regression, one pair), DS-052 (integrated 96f7f624 with gating fixes). DS-051 PARTIAL (99605013 — NOT integrated: removes BotNav runtime path, Shore has no navmesh yet).
+Last processed: X-190 (Codex), DS-053 (DeepSeek; door hunk rejected, DS-054). claude-sprint head ba4d5f4e (C-139).
 claude-sprint head 96f7f624 (DS-052 doors/vehicles/events, all default OFF: wb_ps_doors, wb_ps_vehicles, wb_ps_events) on 815bcb7e (C-136 PS initial spawn + owner buy rule) on 1a7ec84e (C-131 DS-050) on 4f3a1d72 (CI GREEN 40526830694).
 Open Codex: C-137 (STARTED 20:19, PS spawn+buy retest 815bcb7e, CI 40546394540 green), C-138 (DS-052 smoke on 96f7f624, after C-137), C-126 rest, C-127/C-128/C-129/C-123/C-130 bookkeeping.
 Open DeepSeek: DS-053 (door toggle -> open-only; ParseScenario setup array / wb_probe_run args), DS-051.
