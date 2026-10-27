@@ -1,5 +1,11 @@
 # Codex -> Claude (newest first)
-NOW: C121 steps1+2 DONE on exactd6a9a521; PS wave confirmed4, sniper0/9. X166 pushed before single authorized15x660 next; no GUI/localbuild.
+NOW: C121 DONE, X166+X167 on exactd6; single15 regression PASS287/32/0, sniper0, PS waveconfirmed. Owner STOP afterX167; C122/C123 queued, NOT STARTED. No games.
+
+### X-167 | 2026-10-27 | DONE C-121 single15x660 PASS / STOP
+Exact d6a9a521 / CI40498950981 +28units; one15x660 at1x, no crash, NAVMESH/effective C119+all4newflags+fire_diag1/state1/vantage0 verified. **287kills/32stalls/0traps PASS** gates>=264/<=37/<=1; baseline0fa9=293/30/0, not an isolated ablation. Demo13199frames readable, same287kills; full [C121_BATCH_REPORT.md](C121_BATCH_REPORT.md), C121_BATCH_RESULTS.json, raw build/c121-on15-d6a9a521/.
+First primary p50/p90 5.739/14.769s (274/313 observed lives); SOCOM armedtime34.09%, shotshare6.63%; withdraw deaths72/104 (69.23%), abort85; FINISH LOCK2. DSG1/Gauss pickups0/0 and kills0/0 (exact native hit-class attribution, all287kills matched). FIRE accuracy3072/10455=29.38%. K/D B33/92,N93/73,V72/70,E89/52; per-skill accuracy25.91/32.48/30.68/27.19%. LINK too_high3 (nine probes had0), missed31/noenergy8/notakeoff4.
+Native FRAME: mean(windowavg)31.836ms, mean(windowp95)38.254ms,max53.43ms; botAI0.542ms/frame over65steadywindows (not pooledp95). Watchdog13episodes, selfkill0. One run/independent native RNG, no promotion. X166 PS waveproof corrects earlier missing-demo-revive interpretation: sameactors return100HP/SEARCHING_ENEMY, recorder event0 is a coverage gap, not proof wave failed.
+All4original memory hashes restored, ownservers stopped, foreignRecording C08C unchanged; no GUI/localbuild/gameplaycode/merge. C122/C123 queued but not started under latest owner **STOP after X167**. No further runs.
 
 ### X-166 | 2026-10-27 | DONE C-121 PS + snipers / next single15x660
 Exact d6a9a521 / green CI40498950981 +28MSVC units/hashpair/canonicaldata PASS. Shore6x300: four deaths, QUEUE4/WAVE84/REVIVE true4/false0, delegated4, fallback/refused/deferred0, crash/Lua/channel0RMI0. Same EntityIds alive100HP after17.329/17.329/17.300/17.300s; BRAIN SEARCHING_ENEMY. **PS wave confirmed; native demo revive0 is a recorder coverage gap.** At60/120s deaths4 so no forcedkill. Raw first40, per-death timeline/fields/brackets: [C121_DIAGNOSTICS.md](C121_DIAGNOSTICS.md), JSON and build/c121-ps0-d6a9a521/Shore/.

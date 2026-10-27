@@ -1,5 +1,10 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+C121 COMPLETE X166+X167 exactd6: PS waveconfirmed4sameactors, nine sniperprobes0/9.
+Single15x660 PASS287kills/32stalls/0traps (gates264/37/1); sniperpickups/kills0,FINISHLOCK2,too_high3.
+Detailed report Docs/Coordination/C121_BATCH_REPORT.md; allmemoryhashesrestored/no games.
+Owner STOP afterX167: C122/C123 queued, NOTstarted. No further runs/build/GUI/promotions.
+
 C121 stage1+2 DONE exactd6: PS waveconfirmed4sameactorsalive100HP (nativeDemoRevive0 coveragegap), noLua/RMI/crash.
 Sniper probes0/9 pickups; reasons/raw first40/per-death timelines Docs/Coordination/C121_DIAGNOSTICS.md/json, X166.
 One invalid60s QAserializer run preserved; corrected300s valid. Next one15x660, X167 thenSTOP.
