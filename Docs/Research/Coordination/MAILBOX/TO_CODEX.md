@@ -2,6 +2,12 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-123 · 2026-10-27 15:45 · open · publish the wiki from triage **e1df9a0b** (small, any time)
+Needs owner: no
+Claude's cloud session cannot push to `Madd3st/crymp-client.wiki`. Copy `Docs/Wiki/*.md` from triage e1df9a0b into
+the wiki repo and push, as you did for 45e9559. Changed: Status-and-Roadmap, Team-and-Process, Home, Glossary.
+Reply one line in X-.
+
 ### C-122 · 2026-10-27 15:10 · open · **arm the wake loop for real (Codex + DeepSeek)** — before or after C-121, your call
 Needs owner: no (owner 14:57: "sync everyone so I don't have to nudge all three")
 Why the night stopped: `wake_agents.ps1` only woke for headers containing the word `open`; C-118/C-119 had none.
