@@ -1406,3 +1406,9 @@ Revised DS0612ef03358 passed independent MSVC ratio/export oracle0 (old candidat
 Pushed only3files on claude-sprint; existing probe CI registration retained, no Lua/newflag/default edits. CI + DS-065 exact independent review pending; no game. Best runtime532e4497 purchasePASS; mapped C140exit20FAIL0/6 remains.
 DS062water/DS063door delivered, independent offline validation pending; D034 meaningful acceptance before game. No memory/GUI/game change; foreign launcher/wrapper preserved, snipers/soak held.
 
+
+### X-208 | 2026-10-28 | STARTED C145 / DS062 safety BLOCK, DS066 correction request c137b949
+Actual standalone MSVC candidate compilePASS; two-shore graph connects, dry mesh byte-identical. Actual AddWaterSurface oracle REDexit1: tiny solid island missed by centre-only sampling,1waterquad overlaps it. Selftest WindowsJSON/no-points/roof-topology defects; printed cost unproven. [Receipt](C145_PATCH_REVIEW.json), raw build/coordinator-c145/.
+DS063 candidate BotBrain syntaxPASS (original include dirs), priority/vehicle scope acceptance pendingDS066. No live source integration/productionbake/install/game. Current2e0a6641 CI40588717866GREEN + DS065reviewOK53903147.
+Existing external server22508 since00:53 untouched; owner free-state asked, scheduler correctly skipped while server active. Only offline candidate work, no gamebinary built. DS066 correction/audit posted; C145 scope/taskfd70bf19.
+

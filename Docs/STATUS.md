@@ -1,4 +1,10 @@
-# WarsBots for CryMP: QA status, 2026-10-27
+# WarsBots for CryMP: QA status, 2026-10-28
+
+D-031 ACTIVE, C145 Shore coherent package in progress (D034). CodeHEAD2e0a6641 CI40588717866GREEN/DS065OK; last runtime532e4497 purchasePASS. Tool eed85fb1 reviewedDS071OK, Shore candidate653f5e1e baked37.297s/observedpeak1.967GB, NOT accepted/installed: NK20/20main, US0/23main (12offmesh). Nativecore16384 reaches actual interior floors of all5capture areas; target/hold repair DS072 pending. Do not repeat known-failing game runs.
+
+OWN uncommitted C145 code at C:/Users/Magic8/WarsBotsBuild/crymp-coordinator-sprint: doors067d/f, cost4/search16k/status, DS070 policy/nativeoxygen plus ready-mesh/stale-jump/no-sprint/swimstance fixes, water trace, unit/CI updates. Offline affected units and PlayerON/OFF/5botCPP syntax PASS. No local gamebinary build/runtime/default changes. Patch backup build/coordinator-c145/C145-prepared-code.patch. Do not reset/overwrite these changes; finish packet after DS072, then exact SHA CI+review before runtime.
+
+Owner confirmed not playing; abandoned C127server22508 stopped. Foreign QA recording/wrapper edits preserved. Next: DS072 native Area binding/destination/hold (captureAreaId1 is local number, not entityID), final packet/review/CI, named submarine/water/door physics observations. No Playable claim yet.
 
 C143 integration DONE 2e0a66414305b163848c6d5f18bb5812df4462a9: revised DS061 accepted offline; CI and DS-065 exact review pending, no runtime. Independent MSVC ratio/export oracle0, fixture unit0, absent-fixture1; BotWeapons/Manager syntax PASS (metadata stand-in only). C144 DS062 and door DS063 proposals delivered, independent acceptance pending. Best runtime remains532e4497. No defaults/snipers/soak/game/memory changes.
 
