@@ -102,6 +102,106 @@ int main()
     CHECK(results[1].pass);  // first shot 0.6 > 0.5
     CHECK(std::fabs(results[0].actual - 1.0) < 1e-6);
 
+    // DS-059/C143: per-bot kills, class pickups with first time, LINK done/failed, landing_z, unreachable.
+    Metrics c143;
+    c143.Begin(10.0);
+    for (int i = 0; i < 3; ++i)
+        c143.ObserveLine("10.50 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
+    c143.ObserveLine("10.60 [WarsBots] #2 combat kill shooter=2 target=3 via stock GameRules::KillPlayer.");
+    c143.ObserveLine("11.00 [WarsBots] #1 LINK done kind=jump at=(1318.00,1369.00,138.90) actor=1.");
+    c143.ObserveLine("11.50 [WarsBots] #1 LINK failed kind=jump reason=missed_landing at=(1318.00,1369.00,137.00) actor=1.");
+    c143.ObserveLine("12.00 [WarsBots] REAL PICKUP actor=1 item=42 acquired=1 class=DSG1.");
+    c143.ObserveLine("13.00 [WarsBots] REAL PICKUP actor=1 item=43 acquired=1 class=GaussRifle.");
+    c143.ObserveLine("13.10 [WarsBots] REAL PICKUP actor=1 item=44 acquired=0 class=DSG1.");
+    c143.ObserveLine("14.00 [WarsBots] GOAL SKIP unreachable kind=weapon actor=1 id=42 skipped=1.");
+    CHECK(c143.Value("kills:1") == 3 && c143.Value("kills:2") == 1);
+    CHECK(c143.Value("pickup:DSG1") == 1 && c143.Value("pickup:GaussRifle") == 1);
+    CHECK(std::fabs(c143.FirstEventTime("pickup:DSG1") - 2.0) < 1e-6);
+    CHECK(std::fabs(c143.FirstEventTime("pickup:GaussRifle") - 3.0) < 1e-6);
+    CHECK(c143.Value("link:jump:done") == 1 && c143.Value("link:failed") == 1);
+    CHECK(std::fabs(c143.Value("landing_z") - 138.90) < 1e-3);
+    CHECK(c143.Value("unreachable") == 1);
+
+    Assertion ratio; ratio.metric = "kills:1"; ratio.op = "ge_ratio_of"; ratio.other = "kills:2"; ratio.value = 3.0;
+    AssertionResult rr;
+    CHECK(Evaluate(c143, ratio, rr) && rr.pass && std::fabs(rr.actual - 3.0) < 1e-6);
+    Assertion ratioFail = ratio; ratioFail.value = 4.0;
+    CHECK(!Evaluate(c143, ratioFail, rr) && !rr.pass);
+
+    // Legacy ratio semantics (Run-WarsBotsProbe.ps1:125): positive:0 passes, 0:0 fails, 2:1 fails.
+    Metrics zeroDen;
+    zeroDen.Begin(0.0);
+    zeroDen.ObserveLine("0.50 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
+    zeroDen.ObserveLine("0.60 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
+    Assertion zeroRatio = ratio; zeroRatio.value = 3.0;
+    CHECK(Evaluate(zeroDen, zeroRatio, rr) && rr.pass && rr.lhs == 2 && rr.rhs == 0 && std::fabs(rr.actual - 2.0) < 1e-6);
+    Metrics none;
+    none.Begin(0.0);
+    CHECK(!Evaluate(none, zeroRatio, rr) && !rr.pass); // 0:0
+    Metrics twoOne;
+    twoOne.Begin(0.0);
+    twoOne.ObserveLine("0.50 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
+    twoOne.ObserveLine("0.60 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
+    twoOne.ObserveLine("0.70 [WarsBots] #2 combat kill shooter=2 target=3 via stock GameRules::KillPlayer.");
+    CHECK(!Evaluate(twoOne, zeroRatio, rr) && !rr.pass); // 2:1 < 3
+    Assertion missingOther = ratio; missingOther.other = "does_not_exist";
+    CHECK(!Evaluate(c143, missingOther, rr) && !rr.pass);
+    Assertion invalidOther = ratio; invalidOther.other = "not_a_metric";
+    CHECK(!Evaluate(c143, invalidOther, rr) && !rr.pass);
+
+    // landing_z is supported by name but has no measured value before a LINK.
+    Metrics noLink;
+    CHECK(noLink.SupportsMetric("landing_z"));
+    CHECK(std::isnan(noLink.Value("landing_z")));
+    Assertion land; land.metric = "landing_z"; land.op = "ge"; land.value = 136.9;
+    CHECK(!Evaluate(noLink, land, rr) && !rr.pass);
+    CHECK(Evaluate(c143, land, rr) && rr.pass);
+
+    // link_failed is the JSON export name; it must measure, not go null after a real LINK failed.
+    Runtime linkRt;
+    CHECK(linkRt.Load("{\"id\":\"link\",\"duration_s\":1,\"assert\":[{\"metric\":\"link_failed\",\"op\":\"ge\",\"value\":1}]}", &err));
+    CHECK(linkRt.Start(0.0));
+    linkRt.Observe("0.50 [WarsBots] #1 LINK failed kind=jump reason=missed_landing at=(0,0,0) actor=1.");
+    const std::string linkJson = linkRt.Finish(1.0);
+    CHECK(linkJson.find("\"link_failed\": 1") != std::string::npos);
+    CHECK(linkJson.find("\"pass\": true") != std::string::npos);
+
+    Assertion firstDsg; firstDsg.metric = "pickup:DSG1"; firstDsg.op = "le_seconds"; firstDsg.value = 2.5;
+    CHECK(Evaluate(c143, firstDsg, rr) && rr.pass);
+    Assertion firstDsgFail = firstDsg; firstDsgFail.value = 1.5;
+    CHECK(!Evaluate(c143, firstDsgFail, rr) && !rr.pass);
+    Assertion noPickup; noPickup.metric = "pickup:Missing"; noPickup.op = "le_seconds"; noPickup.value = 10.0;
+    CHECK(!Evaluate(c143, noPickup, rr) && !rr.pass); // no event is a fail, not 0 s
+
+    Scenario ratioParsed;
+    CHECK(ParseScenario("{\"id\":\"ratio\",\"assert\":[{\"metric\":\"kills:1\",\"op\":\"ge_ratio_of\",\"other\":\"kills:2\",\"value\":3.0}]}", ratioParsed, &err));
+    CHECK(ratioParsed.assertions.size() == 1 && ratioParsed.assertions[0].other == "kills:2");
+    CHECK(!IsSupportedOperator("bogus"));
+
+    // DS-059: every real C143 fixture must name a supported metric and operator on an empty Metrics.
+    static const char* const kProbeFiles[] = {
+        "Tools/Probes/duel_skill.json", "Tools/Probes/fence_hop.json", "Tools/Probes/roof_strength.json",
+        "Tools/Probes/sniper_reach_dsg1.json", "Tools/Probes/sniper_reach_gauss.json"
+    };
+    for (size_t i = 0; i < sizeof kProbeFiles / sizeof kProbeFiles[0]; ++i)
+    {
+        FILE* pf = std::fopen(kProbeFiles[i], "rb");
+        CHECK(pf != nullptr);   // missing fixture must fail this binary, even from an empty CWD
+        if (!pf) continue;
+        std::string text;
+        char buf[4096];
+        size_t n;
+        while ((n = std::fread(buf, 1, sizeof buf, pf)) > 0) text.append(buf, n);
+        std::fclose(pf);
+        Scenario fs;
+        CHECK(ParseScenario(text, fs, &err));
+        for (size_t j = 0; j < fs.assertions.size(); ++j)
+        {
+            CHECK(Metrics().SupportsMetric(fs.assertions[j].metric));
+            CHECK(IsSupportedOperator(fs.assertions[j].op));
+        }
+    }
+
     // Unknown metric must fail, not pass by default.
     Assertion unknown; unknown.metric = "does_not_exist"; unknown.op = "eq"; unknown.value = 0;
     AssertionResult ur;

@@ -190,7 +190,9 @@ bool BotWeapons::PickUp(CActor& actor, EntityId id, float holdRange)
 	item = Items()->GetItem(id);
 	const bool acquired = item && item->GetOwnerId() == actor.GetEntityId() && actor.GetInventory() &&
 		actor.GetInventory()->FindItem(id) >= 0;
-	WB_LOG(2, "[WarsBots] REAL PICKUP actor=%u item=%u acquired=%d.", actor.GetEntityId(), id, acquired ? 1 : 0);
+	const char* itemClass = item && item->GetEntity() && item->GetEntity()->GetClass()
+		? item->GetEntity()->GetClass()->GetName() : "unknown";
+	WB_LOG(2, "[WarsBots] REAL PICKUP actor=%u item=%u acquired=%d class=%s.", actor.GetEntityId(), id, acquired ? 1 : 0, itemClass);
     // Bots use IItem::PickUp directly, bypassing CActor's eGE_ItemPickedUp wrapper.
     if(acquired)g_pGame->GetBotManager().Demo().Pickup(actor.GetEntityId(),id);
 	// Switch to what we just picked up (SelectAvailable prefers primaries anyway).

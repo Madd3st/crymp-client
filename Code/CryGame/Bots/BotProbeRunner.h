@@ -161,7 +161,7 @@ struct ItemSpec { std::string cls; double x = 0, y = 0, z = 0; };
 struct BurstSpec { int actor = 0; int shots = 1; double interval = 0.1; };
 struct PeekSpec { int actor = 0; double x = 0, y = 0, z = 0; double expose = 0.4; double hide = 1.0; };
 struct CloakSpec { int actor = 0; bool on = true; };
-struct Assertion { std::string metric, op; double value = 0; };
+struct Assertion { std::string metric, op, other; double value = 0; }; // other: denominator for ge_ratio_of
 
 struct Scenario
 {
@@ -282,6 +282,7 @@ inline bool ParseScenario(const std::string& text, Scenario& out, std::string* e
             Assertion s;
             if (const Json* v = a.Get("metric")) s.metric = v->StringOr("");
             if (const Json* v = a.Get("op")) s.op = v->StringOr("eq");
+            if (const Json* v = a.Get("other")) s.other = v->StringOr("");
             if (const Json* v = a.Get("value")) s.value = v->NumberOr(0);
             out.assertions.push_back(s);
         }
@@ -340,6 +341,12 @@ struct Metrics
     int shots = 0, hits = 0, kills = 0, deaths = 0, pickups = 0, revives = 0;
     int stalls = 0, stuckEvents = 0, trapMax = 0, linkAttempts = 0, vantageHolds = 0, glances = 0, heard = 0;
     int headshots = 0;
+    std::map<int, int> killsByBot;                       // #N combat kill
+    std::map<std::string, int> pickupsByClass;           // REAL PICKUP acquired=1 class=...
+    std::map<std::string, double> firstPickupByClass;    // seconds since Begin()
+    std::map<std::string, int> linksDone;                // LINK done kind=...
+    int linkFailed = 0, unreachable = 0;
+    double landingZ = std::numeric_limits<double>::quiet_NaN(); // unknown until a LINK done
     std::vector<double> hitDistances, targetDistances;
 
     void Begin(double t) { start = t; firstShot = -1; }
@@ -362,9 +369,28 @@ struct Metrics
             const double d = FindDouble(line, "distance=");
             if (d > 0) hitDistances.push_back(d);
         }
-        if (std::strstr(p, "combat kill")) ++kills;
+        if (std::strstr(p, "combat kill"))
+        {
+            ++kills;
+            const int bot = BotNumber(line);
+            if (bot > 0) ++killsByBot[bot];   // #N is the shooter bot
+        }
         if (std::strstr(p, "death observed")) ++deaths;
-        if (std::strstr(p, "REAL PICKUP")) ++pickups;
+        if (std::strstr(p, "REAL PICKUP"))
+        {
+            ++pickups;
+            if (std::strstr(p, "acquired=1"))
+            {
+                const std::string cls = FindToken(line, "class=");
+                if (!cls.empty())
+                {
+                    ++pickupsByClass[cls];
+                    if (firstPickupByClass.find(cls) == firstPickupByClass.end())
+                        firstPickupByClass[cls] = t - start;
+                }
+            }
+        }
+        if (std::strstr(p, "GOAL SKIP unreachable") || std::strstr(p, "unreachable; skipping it")) ++unreachable;
         if (std::strstr(p, "revive result") && std::strstr(p, "alive=1")) ++revives;
         // DS-047: in PowerStruggle the Lua wave calls GameRules::RevivePlayer directly, so BotInstance::DoRevive
         // never logs "revive result". The external revive is visible as PS REVIVE SEEN; count it as a revive.
@@ -377,6 +403,16 @@ struct Metrics
             if (l > trapMax) trapMax = l;
         }
         if (std::strstr(p, "LINK start")) ++linkAttempts;
+        if (const char* done = std::strstr(p, "LINK done kind="))
+        {
+            char kind[32] = { 0 }; float x = 0, y = 0, z = 0;
+            if (std::sscanf(done, "LINK done kind=%31s at=(%f,%f,%f)", kind, &x, &y, &z) == 4)
+            {
+                ++linksDone[kind];
+                landingZ = z;   // last completed link; NaN until one completes
+            }
+        }
+        if (std::strstr(p, "LINK failed")) ++linkFailed;
         if (std::strstr(p, "VANTAGE")) ++vantageHolds;
         if (std::strstr(p, "GLANCE spot=")) ++glances;
         if (std::strstr(p, "HEARD gunshot")) ++heard;
@@ -398,8 +434,57 @@ struct Metrics
     double TargetDistanceP50() const { return Percentile(targetDistances, 0.5); }
     double TargetDistanceP90() const { return Percentile(targetDistances, 0.9); }
 
+    // Support is a name/contract question; availability is a measured-value question. Keep them separate:
+    // landing_z is supported before a LINK but its value is unknown (NaN), not a fake 0.
+    bool SupportsMetric(const std::string& metric) const
+    {
+        static const char* const names[] = {
+            "shots", "hits", "kills", "deaths", "pickup", "revive", "time_to_first_shot", "goal_time",
+            "stalls", "stuck_events", "trap_level_max", "link_attempts", "link:failed", "link_failed",
+            "landing_z", "unreachable", "vantage_holds", "glances", "heard", "detected_at_m", "exposed_s",
+            "accuracy", "headshots", "hit_distance_p50", "hit_distance_p90", "target_distance_p50", "target_distance_p90"
+        };
+        for (size_t i = 0; i < sizeof names / sizeof names[0]; ++i) if (metric == names[i]) return true;
+        if (metric.compare(0, 6, "kills:") == 0 && metric.size() > 6) return true;
+        if (metric.compare(0, 7, "pickup:") == 0 && metric.size() > 7) return true;
+        return metric.size() > 10 && metric.compare(0, 5, "link:") == 0 &&
+            metric.compare(metric.size() - 5, 5, ":done") == 0;
+    }
+
+    // le_seconds: first event time for metrics where "how long until" is the question (pickup:<class>).
+    // A missing event is NaN, never a silent 0.
+    double FirstEventTime(const std::string& metric) const
+    {
+        if (metric.compare(0, 7, "pickup:") == 0)
+        {
+            std::map<std::string, double>::const_iterator it = firstPickupByClass.find(metric.substr(7));
+            return it == firstPickupByClass.end() ? std::numeric_limits<double>::quiet_NaN() : it->second;
+        }
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+
     double Value(const std::string& metric) const
     {
+        if (metric.compare(0, 6, "kills:") == 0)
+        {
+            const int bot = std::atoi(metric.c_str() + 6);
+            std::map<int, int>::const_iterator it = killsByBot.find(bot);
+            return it == killsByBot.end() ? 0 : it->second;
+        }
+        if (metric.compare(0, 7, "pickup:") == 0)
+        {
+            std::map<std::string, int>::const_iterator it = pickupsByClass.find(metric.substr(7));
+            return it == pickupsByClass.end() ? 0 : it->second;
+        }
+        if (metric == "link:failed" || metric == "link_failed") return linkFailed;
+        if (metric.size() > 10 && metric.compare(0, 5, "link:") == 0 &&
+            metric.compare(metric.size() - 5, 5, ":done") == 0)
+        {
+            std::map<std::string, int>::const_iterator it = linksDone.find(metric.substr(5, metric.size() - 10));
+            return it == linksDone.end() ? 0 : it->second;
+        }
+        if (metric == "landing_z") return landingZ; // NaN until the first LINK done
+        if (metric == "unreachable") return unreachable;
         if (metric == "shots") return shots;
         if (metric == "hits") return hits;
         if (metric == "kills") return kills;
@@ -427,6 +512,20 @@ struct Metrics
     }
 
 private:
+    static int BotNumber(const std::string& line)
+    {
+        const size_t p = line.find('#');
+        return p == std::string::npos ? 0 : std::atoi(line.c_str() + p + 1);
+    }
+    static std::string FindToken(const std::string& line, const char* key)
+    {
+        const size_t p = line.find(key);
+        if (p == std::string::npos) return std::string();
+        const size_t s = p + std::strlen(key);
+        size_t e = s;
+        while (e < line.size() && line[e] != ' ' && line[e] != '.' && line[e] != '\r' && line[e] != '\n') ++e;
+        return line.substr(s, e - s);
+    }
     static double FindDouble(const std::string& line, const char* key)
     {
         const size_t n = std::strlen(key);
@@ -446,14 +545,40 @@ private:
     }
 };
 
-struct AssertionResult { std::string metric, op; double expected = 0, actual = 0; bool pass = false; };
+struct AssertionResult { std::string metric, op; double expected = 0, actual = 0; double lhs = 0, rhs = 0; bool ratio = false; bool pass = false; };
+
+inline bool IsSupportedOperator(const std::string& op)
+{
+    return op == "eq" || op == "ne" || op == "lt" || op == "le" || op == "gt" || op == "ge" ||
+        op == "ge_ratio_of" || op == "le_seconds";
+}
 
 inline bool Evaluate(const Metrics& m, const Assertion& a, AssertionResult& r)
 {
     r.metric = a.metric; r.op = a.op; r.expected = a.value;
+    if (!IsSupportedOperator(a.op)) { r.actual = std::numeric_limits<double>::quiet_NaN(); r.pass = false; return false; }
+    const double e = 1e-6;
+    if (a.op == "le_seconds")
+    {
+        r.actual = m.FirstEventTime(a.metric);
+        if (std::isnan(r.actual)) { r.pass = false; return false; }
+        r.pass = r.actual <= a.value + e;
+        return r.pass;
+    }
     r.actual = m.Value(a.metric);
     if (std::isnan(r.actual)) { r.pass = false; return false; }
-    const double e = 1e-6;
+    if (a.op == "ge_ratio_of")
+    {
+        // Legacy Run-WarsBotsProbe.ps1:125 semantics: lhs > 0 && lhs >= factor*rhs. A positive lhs with rhs=0
+        // passes (2:0); 0:0 fails; a missing/NaN side fails. actual is finite: ratio when rhs>0, lhs otherwise.
+        const double left = m.Value(a.metric);
+        const double right = m.Value(a.other);
+        r.ratio = true; r.lhs = left; r.rhs = right;
+        if (std::isnan(left) || std::isnan(right) || left <= 0) { r.actual = std::numeric_limits<double>::quiet_NaN(); r.pass = false; return false; }
+        r.actual = right > 0 ? left / right : left;
+        r.pass = left >= a.value * right - e;
+        return r.pass;
+    }
     if (a.op == "lt") r.pass = r.actual < a.value - e;
     else if (a.op == "le") r.pass = r.actual <= a.value + e;
     else if (a.op == "gt") r.pass = r.actual > a.value + e;
@@ -557,7 +682,8 @@ struct Runtime
         out += ",\n  \"metrics\": {";
         static const char* const names[] = {
             "shots", "hits", "kills", "deaths", "pickup", "revive", "time_to_first_shot", "goal_time",
-            "stalls", "stuck_events", "trap_level_max", "link_attempts", "vantage_holds", "glances", "heard",
+            "stalls", "stuck_events", "trap_level_max", "link_attempts", "link_failed", "unreachable", "landing_z",
+            "vantage_holds", "glances", "heard",
             "detected_at_m", "exposed_s", "accuracy", "headshots", "hit_distance_p50", "hit_distance_p90",
             "target_distance_p50", "target_distance_p90"
         };
@@ -576,6 +702,7 @@ struct Runtime
             out += ", \"op\": "; out += JsonQuote(r.op);
             out += ", \"expected\": "; JsonNumber(out, r.expected);
             out += ", \"actual\": "; JsonNumber(out, r.actual);
+            if (r.ratio) { out += ", \"lhs\": "; JsonNumber(out, r.lhs); out += ", \"rhs\": "; JsonNumber(out, r.rhs); }
             out += ", \"pass\": "; out += r.pass ? "true" : "false";
             out += "}";
         }
