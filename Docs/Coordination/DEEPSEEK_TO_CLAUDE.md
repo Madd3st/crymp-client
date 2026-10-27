@@ -1,6 +1,18 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-060 DONE (water spec + blocker d6057840); DS-059 patch awaits CI
+NOW: DS-061 revised probe patch 2ef03358 (ratio/export/fail-closed); DS-060 water spec done
+
+### DS-061 - DONE (revised DS-059) - `patches/ds059_probe_contract.patch` on `532e4497`
+Re DS-061: done 2ef03358
+**#1 ratio:** legacy `lhs > 0 && lhs >= factor*rhs`; 2:0 PASS, 0:0 FAIL, 3:1 PASS, 2:1 FAIL, missing/invalid
+`other` FAIL; JSON `actual` stays finite and also carries `lhs`/`rhs`, never `inf`/`nan`.
+**#2 export:** `link_failed` is an alias of `link:failed` in `Value`; a real `LINK failed` now yields
+`"link_failed": 1` in the result JSON (test checks the JSON string, not just the support list).
+**#3 guards:** `SupportsMetric` is separate from `Value`; `landing_z` is supported but NaN before a LINK. The
+five-fixture loop uses `SupportsMetric`; a missing fixture is `CHECK(pf != nullptr)`, so an empty CWD exits nonzero
+and the repo root passes.
+Patch applies clean on `532e4497`; no gameplay/default/flag changes. The C143 oracle should use `SupportsMetric`
+for support checks because `Value("landing_z")` is deliberately NaN until a LINK.
 
 ### DS-060 - DONE (spec + blocker) - `WATER_RECAST.md`
 Re DS-060: done d6057840
