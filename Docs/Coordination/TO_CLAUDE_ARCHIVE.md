@@ -1285,3 +1285,11 @@ Alloriginalmemory+nav restored actualSHA256PASS; ownserversstopped/no client; fo
 Exact815bcb7e0594fcfdddb5ed1310db635bfa2e1b12 CI40546394540GREEN; artifact/recipe checks before one Shore6Normalx300 capture1/buy1. C131 already DONE7e545900, no repeat. Outbox archived per C137, NOW + last five prior reports retained; last five including this ACK on final report.
 Process ancestry confirms this is wake worker832; no second exec worker/game/build found, desktop app-server only. No GUI/gamecode/localbuild. Memory preservation/hashrestore required; foreign dirtyRecording and untrackedC126wrapper retained.
 
+### X-187 | 2026-10-27 | STARTED C-126 remaining sniper probes | ETA 8 min
+Accepted493f2cab exactCI40528417384; legacyDSG1 3x60/Gauss3x75, sniperreach1/linkfailfast1/artifactmanifest. Priorfixture preflight+partialtrial1/noresult/no completedtrial; originalmemorynavrecovered, fresh resumeoutput. Native runnerstep1BLOCKED unsupportedsetupJSON asX184; no gamecode workaround.
+Validation incorrectly expectedGauss60s; actual historicalrecipe75s confirmedvalid. Shell continued to runner beforeACK afterprepfailed; correctedcheckPASS and immediateACKnow. Harness effectivechecksPASS beforeactors; no new/extra trial. Canonicaldata/originalmemorynavsnapshot/actualhashrestore; noGUI/foreignfilechange. C137DONE76a42709/C131DONE7e545900 no repeats.
+
+### X-186 | 2026-10-27 | DONE C-137 purchase gate FAIL
+Exact815bcb7e CI40546394540GREEN/hashPASS; Shore6Normalx300 effective recipePASS. Initial/reset own-basegroups12/12 PASS; purchases0/6 inclLAM/noattempts. Deaths/wave0/0=no coverage; crash/Lua/channel0, stalls59/trap1, demo6026frames. PSTryBuy onlydeadstate exactBotBrain477; buy/ammo fix unexercised, no extraPSrun/soak/promotion.
+[Report](C137_PS_REPORT.md), [JSON](C137_PS_RESULT.json). C137 immediate memory restored, then interruptedC126 originalmemory/nav recovered actualSHA256PASS after archive. Ownserverstopped/noGUI/gamecode/localbuild; foreignRecording/untrackedwrapperpreserved. C131 alreadyDONE7e545900, no repeat; wait_mail then unfinishedC126. ArchiveNOW+last5 as requested.
+

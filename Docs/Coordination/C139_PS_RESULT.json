@@ -1,0 +1,892 @@
+{
+  "root": "build\\c139-Shore-ba4d5f4e",
+  "complete": true,
+  "frames": 6040,
+  "duration_s": 302.013,
+  "events": {
+    "suit": 341,
+    "land": 22
+  },
+  "kills": 0,
+  "stalls": 81,
+  "traps": 1,
+  "aba": 0,
+  "reversals": 0,
+  "first_primary_p50": 0.069,
+  "first_primary_p90": 0.069,
+  "primary_observed": 6,
+  "primary_eligible": 6,
+  "primary_lives": [
+    {
+      "actor": 65461,
+      "birth": 0.211,
+      "end": 302.224,
+      "first_primary": 0.211,
+      "censored_birth": true
+    },
+    {
+      "actor": 65466,
+      "birth": 0.211,
+      "end": 302.224,
+      "first_primary": 0.211,
+      "censored_birth": true
+    },
+    {
+      "actor": 65471,
+      "birth": 0.211,
+      "end": 302.224,
+      "first_primary": 0.211,
+      "censored_birth": true
+    },
+    {
+      "actor": 65476,
+      "birth": 0.211,
+      "end": 302.224,
+      "first_primary": 0.211,
+      "censored_birth": true
+    },
+    {
+      "actor": 65481,
+      "birth": 0.211,
+      "end": 302.224,
+      "first_primary": 0.211,
+      "censored_birth": true
+    },
+    {
+      "actor": 65486,
+      "birth": 0.211,
+      "end": 302.224,
+      "first_primary": 0.211,
+      "censored_birth": true
+    },
+    {
+      "actor": 130993,
+      "birth": 31.666,
+      "end": 302.224,
+      "first_primary": 31.735,
+      "censored_birth": false
+    },
+    {
+      "actor": 130998,
+      "birth": 31.666,
+      "end": 302.224,
+      "first_primary": 31.735,
+      "censored_birth": false
+    },
+    {
+      "actor": 131003,
+      "birth": 31.666,
+      "end": 302.224,
+      "first_primary": 31.735,
+      "censored_birth": false
+    },
+    {
+      "actor": 131008,
+      "birth": 31.666,
+      "end": 302.224,
+      "first_primary": 31.735,
+      "censored_birth": false
+    },
+    {
+      "actor": 131013,
+      "birth": 31.666,
+      "end": 302.224,
+      "first_primary": 31.735,
+      "censored_birth": false
+    },
+    {
+      "actor": 131018,
+      "birth": 31.666,
+      "end": 302.224,
+      "first_primary": 31.735,
+      "censored_birth": false
+    }
+  ],
+  "buy_attempts": [
+    {
+      "t": 0.21,
+      "bot": 1,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65486,
+      "position": [
+        1841.4434814453125,
+        1240.727294921875,
+        114.68115997314453
+      ],
+      "position_frame_t": 0.211
+    },
+    {
+      "t": 0.21,
+      "bot": 2,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 65481,
+      "position": [
+        2108.125,
+        1882.875,
+        90.49210357666016
+      ],
+      "position_frame_t": 0.211
+    },
+    {
+      "t": 0.21,
+      "bot": 3,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65476,
+      "position": [
+        1841.76123046875,
+        1238.215576171875,
+        114.68115997314453
+      ],
+      "position_frame_t": 0.211
+    },
+    {
+      "t": 0.21,
+      "bot": 4,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 65471,
+      "position": [
+        2119.5,
+        1880.625,
+        90.49210357666016
+      ],
+      "position_frame_t": 0.211
+    },
+    {
+      "t": 0.21,
+      "bot": 5,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65466,
+      "position": [
+        1839.3360595703125,
+        1245.053466796875,
+        114.68115997314453
+      ],
+      "position_frame_t": 0.211
+    },
+    {
+      "t": 0.21,
+      "bot": 6,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 65461,
+      "position": [
+        2131.625,
+        1885.375,
+        90.49210357666016
+      ],
+      "position_frame_t": 0.211
+    },
+    {
+      "t": 31.74,
+      "bot": 1,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 130993,
+      "position": [
+        1841.5531005859375,
+        1238.4969482421875,
+        115.0079574584961
+      ],
+      "position_frame_t": 31.735
+    },
+    {
+      "t": 31.74,
+      "bot": 2,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 130998,
+      "position": [
+        2131.625,
+        1885.375,
+        90.55103302001953
+      ],
+      "position_frame_t": 31.735
+    },
+    {
+      "t": 31.74,
+      "bot": 3,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 131003,
+      "position": [
+        1844.295166015625,
+        1235.460205078125,
+        111.7579574584961
+      ],
+      "position_frame_t": 31.735
+    },
+    {
+      "t": 31.74,
+      "bot": 4,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 131008,
+      "position": [
+        2107.625,
+        1882.5,
+        103.42603302001953
+      ],
+      "position_frame_t": 31.735
+    },
+    {
+      "t": 31.74,
+      "bot": 5,
+      "team": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 131013,
+      "position": [
+        1841.4813232421875,
+        1243.37548828125,
+        115.01000213623047
+      ],
+      "position_frame_t": 31.735
+    },
+    {
+      "t": 31.74,
+      "bot": 6,
+      "team": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 131018,
+      "position": [
+        2121.875,
+        1883.0,
+        100.05103302001953
+      ],
+      "position_frame_t": 31.735
+    }
+  ],
+  "successful_items": 0,
+  "successful_primary_bots": [],
+  "lua_episodes": 0,
+  "error_stack_lines": 0,
+  "channel_errors": 0,
+  "crash": false,
+  "deaths": 0,
+  "wave_seen": 0,
+  "ps_summary_lines": [
+    "0.06 [WarsBots] PS SUMMARY points=5 team1_held=0 team2_held=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=1 id=65486 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=2 id=65481 team=2 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=3 id=65476 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=4 id=65471 team=2 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=5 id=65466 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=6 id=65461 team=2 pp=100 rank=1 buys=0."
+  ],
+  "memory": [
+    {
+      "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+      "name": "Multiplayer_IA_Steelmill.mem"
+    },
+    {
+      "sha256": "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D",
+      "name": "Multiplayer_PS_Shore.mem"
+    }
+  ],
+  "native_rng": "independent, not seeded or paired",
+  "first_primary_definition": "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+  "hashes": {
+    "analysis.log": "20618d500ced75249e5ab00df98f61d68fcc804f636945bcc939ed53305a8b0c",
+    "c139-ba4d5f4e-preflight.bots.log": "627ff4232a48f0772ebbf037e85ad7545dcc630aac3b2767246d2248432ddeb5",
+    "c139-ba4d5f4e-preflight.log": "71e80d7db8f0bb7be9127f0605e52dbcce5ebfe81736396f73428a9d6a648da2",
+    "c139-ba4d5f4e-run.bots.log": "9def73c6a3a53e8693b05b8a0ac042fc04c289ef8dd1614cdaad8768a68e37d7",
+    "c139-ba4d5f4e-run.log": "d5338ebf38f9c0127605a48c744a9f16f7db719d1aa6a40758fde538b94fa42f",
+    "errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "flips.json": "e169369db02412ca2b659b6d8c205d8c9debbdd8a45f50a5003a38e22f2d5122",
+    "memory-restored.json": "18c5f990a63594e59cc8e94ac3226f2930dea65f805f877614e49fa5e2a5d002",
+    "Multiplayer_PS_Shore-20261027-210956-1.wbdemo": "f534c1bbce3003f0e143ea0f5f6cda9226204a55fcaf4c589dfc2af65253731d",
+    "nav-during-run.json": "a02b9e8a45bbbe81d6d290fc736451751e607fd335139d98ce8c83baabfe42bd",
+    "preflight-arguments.txt": "648a94d098d6a9e9e57f8ca7aa8da40d9470ea25958ca747a6a42498e776eee0",
+    "preflight-effective.json": "59ff2ca8a8ab19b6bc42a47e159fea2f7f91d49865ac12947811d2a61a6d512b",
+    "preflight-pid.txt": "5f76e34d1aa1d593ab58137b4013e08d5087171b40a91c7977c40a7c8a84a3b3",
+    "ps-evidence.log": "8d6368d6eb0c1ef0b600c065c27a4798cff448aac42d79339da2ccc074c73c74",
+    "recipe.json": "5499767a95a64c65b6a92e4f8065ebb10053245116203c1274620c9b7790f1ea",
+    "run-arguments.txt": "dae57877c917e35f736304030b6f59c9e9792b8218676ff3cc1a63054840d697",
+    "run-complete.json": "b3c33cf98f636783cd2e869fe44c5e44e0059b87c58136f5e371d9e16c1064f8",
+    "run-effective.json": "59ff2ca8a8ab19b6bc42a47e159fea2f7f91d49865ac12947811d2a61a6d512b",
+    "run-pid.txt": "884309ead7d93e5ac2913f5b35159f24c72ef0a4eae5401a5c1f2d751970c838",
+    "summary.json": "20618d500ced75249e5ab00df98f61d68fcc804f636945bcc939ed53305a8b0c"
+  },
+  "successful_laser_bots": [],
+  "buy_skips": [
+    "2.26 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "2.26 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "2.26 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "2.26 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "2.26 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "2.26 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "4.32 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "4.32 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "4.32 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "4.32 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "4.32 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "4.32 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "6.43 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "6.43 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "6.43 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "6.43 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "6.43 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "6.43 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "8.51 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "8.51 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "8.51 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "8.51 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "8.51 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "8.51 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "10.60 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "10.60 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "10.60 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "10.60 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "10.60 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "10.60 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "12.62 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "12.62 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "12.62 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "12.62 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "12.62 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "12.62 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "14.70 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "14.70 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "14.70 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "14.70 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "14.70 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "14.70 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "16.76 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "16.76 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "16.76 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "16.76 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "16.76 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "16.76 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "18.78 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "18.78 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "18.78 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "18.78 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "18.78 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "18.78 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "33.74 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "33.74 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "33.74 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "33.74 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "33.74 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "33.74 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "35.81 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "35.81 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "35.81 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "35.81 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "35.81 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "35.81 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "37.89 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "37.89 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "37.89 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "37.89 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "37.89 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "37.89 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "39.91 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "39.91 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "39.91 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "39.91 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "39.91 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "39.91 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "41.97 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "41.97 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "41.97 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "41.97 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "41.97 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "41.97 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "43.99 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "43.99 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "43.99 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "43.99 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "43.99 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "43.99 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "46.03 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "46.03 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "46.03 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "46.03 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "46.03 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "46.03 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "48.08 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "48.08 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "48.08 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "48.08 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "48.08 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "48.08 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1.",
+    "50.12 [WarsBots] #1 PS BUY skip pp=25 style=universal range=20 primary=1.",
+    "50.12 [WarsBots] #2 PS BUY skip pp=50 style=assault range=20 primary=1.",
+    "50.12 [WarsBots] #3 PS BUY skip pp=25 style=marksman range=20 primary=1.",
+    "50.12 [WarsBots] #4 PS BUY skip pp=50 style=flanker range=20 primary=1.",
+    "50.12 [WarsBots] #5 PS BUY skip pp=25 style=defender range=20 primary=1.",
+    "50.12 [WarsBots] #6 PS BUY skip pp=50 style=hunter range=20 primary=1."
+  ],
+  "primary_owned_skip_bots": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "inventory_classes_by_actor": {
+    "65461": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "65466": [
+      "SMG",
+      "SOCOM"
+    ],
+    "65471": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "65476": [
+      "SMG",
+      "SOCOM"
+    ],
+    "65481": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "65486": [
+      "SMG",
+      "SOCOM"
+    ],
+    "130993": [
+      "SMG",
+      "SOCOM"
+    ],
+    "130998": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "131003": [
+      "SMG",
+      "SOCOM"
+    ],
+    "131008": [
+      "SOCOM",
+      "Shotgun"
+    ],
+    "131013": [
+      "SMG",
+      "SOCOM"
+    ],
+    "131018": [
+      "SOCOM",
+      "Shotgun"
+    ]
+  },
+  "primary_selected_by_actor": {
+    "65461": [
+      "Shotgun"
+    ],
+    "65466": [
+      "SMG"
+    ],
+    "65471": [
+      "Shotgun"
+    ],
+    "65476": [
+      "SMG"
+    ],
+    "65481": [
+      "Shotgun"
+    ],
+    "65486": [
+      "SMG"
+    ],
+    "130993": [
+      "SMG"
+    ],
+    "130998": [
+      "Shotgun"
+    ],
+    "131003": [
+      "SMG"
+    ],
+    "131008": [
+      "Shotgun"
+    ],
+    "131013": [
+      "SMG"
+    ],
+    "131018": [
+      "Shotgun"
+    ]
+  },
+  "initial_spawns": [
+    {
+      "bot": 1,
+      "team": 1,
+      "group": 120,
+      "spawn": 132
+    },
+    {
+      "bot": 2,
+      "team": 2,
+      "group": 537,
+      "spawn": 525
+    },
+    {
+      "bot": 3,
+      "team": 1,
+      "group": 120,
+      "spawn": 137
+    },
+    {
+      "bot": 4,
+      "team": 2,
+      "group": 537,
+      "spawn": 539
+    },
+    {
+      "bot": 5,
+      "team": 1,
+      "group": 120,
+      "spawn": 122
+    },
+    {
+      "bot": 6,
+      "team": 2,
+      "group": 537,
+      "spawn": 562
+    },
+    {
+      "bot": 6,
+      "team": 2,
+      "group": 537,
+      "spawn": 544
+    },
+    {
+      "bot": 5,
+      "team": 1,
+      "group": 120,
+      "spawn": 139
+    },
+    {
+      "bot": 4,
+      "team": 2,
+      "group": 537,
+      "spawn": 513
+    },
+    {
+      "bot": 3,
+      "team": 1,
+      "group": 120,
+      "spawn": 126
+    },
+    {
+      "bot": 2,
+      "team": 2,
+      "group": 537,
+      "spawn": 562
+    },
+    {
+      "bot": 1,
+      "team": 1,
+      "group": 120,
+      "spawn": 137
+    }
+  ],
+  "initial_spawn_groups_pass": true,
+  "purchase_gate_pass": false,
+  "lua_error_lines": [],
+  "stability_pass": true,
+  "ps_events": [
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFCE",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFCE item=smg price=75 alive=true",
+      "actor": 65486
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFC9",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFC9 item=shotgun price=50 alive=true",
+      "actor": 65481
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFC4",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFC4 item=smg price=75 alive=true",
+      "actor": 65476
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFBF",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFBF item=shotgun price=50 alive=true",
+      "actor": 65471
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFBA",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFBA item=smg price=75 alive=true",
+      "actor": 65466
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000000FFB5",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFB5 item=shotgun price=50 alive=true",
+      "actor": 65461
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFB1",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFB1 item=smg price=75 alive=true",
+      "actor": 130993
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFB6",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFB6 item=shotgun price=50 alive=true",
+      "actor": 130998
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFBB",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFBB item=smg price=75 alive=true",
+      "actor": 131003
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFC0",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFC0 item=shotgun price=50 alive=true",
+      "actor": 131008
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFC5",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFC5 item=smg price=75 alive=true",
+      "actor": 131013
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata: 000000000001FFCA",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFCA item=shotgun price=50 alive=true",
+      "actor": 131018
+    }
+  ],
+  "purchase_event_actors": [
+    65461,
+    65466,
+    65471,
+    65476,
+    65481,
+    65486,
+    130993,
+    130998,
+    131003,
+    131008,
+    131013,
+    131018
+  ],
+  "ps_event_counts": {
+    "purchase": 12
+  },
+  "event_parser_exercised": true,
+  "traps_gate_pass": true,
+  "ci": {
+    "run": 40555474395,
+    "files": [
+      {
+        "sha256": "DA004E0F48FB4D0C5910EFE6E8F91A9C3AF44ECFFB8654F87B78991C9BC404A1",
+        "file": "CryMP-Client64.exe"
+      },
+      {
+        "sha256": "E973C0B70DBA9972C02E078A4D7C00CA110763ED608E66DE73D53456D6E47968",
+        "file": "CryMP-Server64.exe"
+      }
+    ],
+    "sha": "ba4d5f4e837e38aeeafe4bd332fdc099957c720c"
+  },
+  "memory_actual_hashes": {
+    "Multiplayer_IA_Steelmill.mem": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+    "Multiplayer_PS_Shore.mem": "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D"
+  },
+  "memory_hashes_restored": true,
+  "nav_hashes_after": {
+    "Armada.links.txt": "ce3326caf751661cf43f820560a390cc2ee5ee008c2d56e9e67d11cee7f34247",
+    "Armada.manifest.json": "5ed27f25f015095bd9ad11d9fe5888f61a7411f9dc17b17ad3722cc8c37fb861",
+    "Armada.navmesh": "87f0438cca0b531f6f227f83d640916afb93667802973e763333f73d78957590",
+    "Armada.spots.txt": "71ac48ed80c2068f6273868966362d1aefbebc0db5d34599cf0e121da53c1293",
+    "Outpost.links.txt": "0e6651a3da7536b5a20d3f1e9f81bc8ee588d0366d84e196c1e1b6dad0dc4d23",
+    "Outpost.manifest.json": "fa57ed4f696ce19334c2d447826e1b9d63de9a7425ef35927a547f7c43eef0e6",
+    "Outpost.navmesh": "944297ac9d51e5614b05401350df107a436b7606ff8174905057ba973468d18a",
+    "Outpost.spots.txt": "f041dbab3924403df302bdaf6169c180257cad8c49822bef044f6a980225e681",
+    "Quarry.links.txt": "2daa4f3ad189b0e90ffdb11312156c1b229cab67d6f49a20e642608e00d053e1",
+    "Quarry.manifest.json": "39bedf0452d93ca4982feb3434ba4c3c4342df3ba0c7ad42e6c1408725fdda2a",
+    "Quarry.navmesh": "3a2f6d50ffadf13238d80429e2269193857cc93eb9d7735574a131c4c7dc98e7",
+    "Quarry.spots.txt": "2a4e9c01df4f8653ab576c2695f1ffc3a2e72a9dbf7e5e355e1a3f0727a4addb",
+    "Steelmill.links.txt": "7c384d12ff693bced574015a0e0067f8cb5c1a4a9a81881c1aff9088ec6b67e4",
+    "Steelmill.manifest.json": "546abe5829dde03b8057bc7fd9406d8791eac6e8858f4fa37a857edc25bf9241",
+    "Steelmill.navmesh": "cfc11810626c6fa0859a055592e6c5ab12d12777f40f52aeb8c6208eefaf503b",
+    "Steelmill.spots.txt": "25c3eecf0699b9795bb214b322e9155b6bf5f207bc5e29e41479655a25cef4b5"
+  },
+  "nav_unchanged_since_during_run_snapshot": true,
+  "map_explicit_buy_zones": [
+    {
+      "Name": "BuyZone_US13",
+      "Pos": "2128.5,1883.75,100.5",
+      "EntityClass": "BuyZone",
+      "EntityId": "557",
+      "EntityGuid": "4BA61F381A2F2A1B",
+      "CastShadow": "0",
+      "Layer": "Submarine_US",
+      "properties": {
+        "buyAreaId": "1",
+        "bEnabled": "1",
+        "teamName": "black"
+      }
+    }
+  ],
+  "map_mission_sha256": "5dd40691dc72b690deeab5bfc7cbf174b79c7b4620ebd29b8f5cc0de546db7e0",
+  "overall_pass": false
+}

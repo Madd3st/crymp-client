@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
+C139 DONE FAIL exactba4d5f4e CI40555474395: actualprimary6/6 bothspawnsets/events12 but allbuyok0/LAM0. Shore6x300 basegroups12/12; crash/Lua/RMI/channel0, stalls81/trap1PASS. Memoryactualhashrestored/no game; X192, snipersparked/no repeats/soak.
+
 C138 DONE FAIL exact96f7f624 CI40550812670: Shore6x300 doors2->2Lua/RMIepisodes SvRequestOpen Door.lua356; crash/channel0. PS EVENT0/unexercised, vehiclepairs0/reachUNKNOWN. Stalls59->73PASS/traps1->2FAIL; demo6042frames. Memoryactualhashrestored/no game; X190.
 
 C126 step2 DONE FAIL exact493f2cab CI40528417384: DSG1/Gauss observedpickups0/3both (DSG1gate>=2/3); LINKfailures3/13, reasonsmissedlanding/noenergy/notakeoff. Native runnerstep1recipeBLOCKED; no15bot/ownerpreset/soak afterfailedprobe. Originalmemory/nav actualhashrestored; X188.
