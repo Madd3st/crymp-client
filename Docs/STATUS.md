@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
+D031 C140 integration DONE 545a5022 (DS054 door/probe patches); 43unit/3syntax/red-green PASS; CI and DS-056 review PENDING, no game run. C139 FAIL laser/return persists, DS055 analysis queued. No defaults/newflags/Lua/gamebinary edits.
+
 C139 DONE FAIL exactba4d5f4e CI40555474395: actualprimary6/6 bothspawnsets/events12 but allbuyok0/LAM0. Shore6x300 basegroups12/12; crash/Lua/RMI/channel0, stalls81/trap1PASS. Memoryactualhashrestored/no game; X192, snipersparked/no repeats/soak.
 
 C138 DONE FAIL exact96f7f624 CI40550812670: Shore6x300 doors2->2Lua/RMIepisodes SvRequestOpen Door.lua356; crash/channel0. PS EVENT0/unexercised, vehiclepairs0/reachUNKNOWN. Stalls59->73PASS/traps1->2FAIL; demo6042frames. Memoryactualhashrestored/no game; X190.

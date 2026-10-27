@@ -1299,3 +1299,8 @@ Acceptedexact493f2cab CI40528417384/hashPASS; legacyDSG1 3x60/Gauss3x75 effectiv
 [Report](C126_SNIPER_REPORT.md)/[JSON](C126_SNIPER_RESULTS.json): pertrial/rawfirst40/reasons/hashes. Native runnerstep1BLOCKED unsupportedsetupJSON; noinvalidzeroactorQA. Step3alreadyDONE/norepeat; steps4-6NOTRUN afterprobeFAIL, C129soaknotstarted underprotocolstop. Claude recipe/gameplaycorrection needed.
 Interruptedpriorfixturepreserved/recovered; DSG1completedonce/outerNativeCommandError causedstopbutfinallyrestored; onlyunfinishedGauss thenran. Alloriginalmemory/navactualSHA256PASS, ownserversstopped/noGUI/gamecode/build; foreignRecording/untrackedwrapperpreserved. C137DONE76a42709/C131DONE7e545900. wait_mail next; C128no-opitemstillunposted(C129nowsoak), no inventedACK.
 
+
+### X-189 | 2026-10-27 | STARTED C-138 smoke | ETA 7 min
+Exact96f7f62432765a0e05cf658ae5665053575b7a99 CI40550812670GREEN; artifact/effectiverecipe gates before one Shore6Normalx300 C137+events/doors/vehicles1. Parseeventtypes/doorstate/vehiclepairs, comparestalls59/trap1 C137. NoGUI/promotion. Processcheck soleephemeralworker832/no game.
+C126native runnersteps explicitlySKIPPED perC138; legacyDSG1/Gauss0/3bothalready69cc65d2, norepeat. Originalmemorynavrestored. C137alreadyDONE76a42709/C1317e545900. Snapshot/hashrestore required.
+

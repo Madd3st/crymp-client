@@ -1,0 +1,79 @@
+{
+  "schema": "warsbots-integration-checks/1",
+  "source": "545a5022d06ce1edf219df3d57a9470e4f8295a5",
+  "parent": "ba4d5f4e837e38aeeafe4bd332fdc099957c720c",
+  "contribution": "DeepSeek6a74b8e5 ds054_doors.patch + ds053_probe_setup.patch only",
+  "units": {
+    "skipped": [
+      "BotAimControlTests",
+      "BotProfileTests"
+    ],
+    "passed": [
+      "BotAimInterpTests",
+      "BotAimModelTests",
+      "BotAuditFixesTests",
+      "BotBoatDriverTests",
+      "BotConfigTests",
+      "BotCornersTests",
+      "BotDecisionCommitTests",
+      "BotDemoCodecTests",
+      "BotDifficultyTests",
+      "BotFireControlTests",
+      "BotGameModeTests",
+      "BotGeometryMeshTests",
+      "BotGoalArbiterTests",
+      "BotGoalProjectionTests",
+      "BotHotspotTests",
+      "BotJumpLinkTests",
+      "BotKneePolicyTests",
+      "BotLookPolicyTests",
+      "BotModePlanTests",
+      "BotMoveTraceTests",
+      "BotNavMeshCoreTests",
+      "BotNetCompatTests",
+      "BotPacePolicyTests",
+      "BotPerceptionTests",
+      "BotPhysicsProbeTests",
+      "BotProbeRunnerTests",
+      "BotPSBuyTests",
+      "BotPSCaptureTests",
+      "BotReachabilityTests",
+      "BotReplicaSmoothTests",
+      "BotReviveGuardTests",
+      "BotSniperReachTests",
+      "BotSpectatorTests",
+      "BotSuitPolicyTests",
+      "BotTacticsTests",
+      "BotTeamPlanTests",
+      "BotThreatScanTests",
+      "BotTraitsTests",
+      "BotTrapWatchdogTests",
+      "BotUpgradeGateTests",
+      "BotVantageTests",
+      "BotWeaponHandlingTests",
+      "BotWeaponRankTests"
+    ]
+  },
+  "syntax_files": [
+    "BotBrain.cpp",
+    "BotConfig.cpp",
+    "BotManager.cpp"
+  ],
+  "syntax_note": "MSVC /Zs only; BotManager uses generated metadata stand-in version.h; no game binary linked",
+  "oracle": {
+    "baseline_runtime_exit": 1,
+    "patched_runtime_exit": 0,
+    "meaning": "ParseScenario setup array emits wb_add+wb_teleport, RED on original parser, GREEN on patched parser"
+  },
+  "lua_files_changed": false,
+  "new_flags": 0,
+  "defaults_changed": false,
+  "review_item": "DS-056",
+  "review": "PENDING",
+  "ci": "PENDING",
+  "logs": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\coordinator-ds054",
+  "patch_sha256": {
+    "ds054_doors.patch": "7525f3da7d855e1ed7021d04f62cb6df53477a5f312ae9d36ea689c3c01095e8",
+    "ds053_probe_setup.patch": "b6c94c808f1a5eda7e6ed413e6ef10ba7029733911ab167ff85caf9ba5a68af6"
+  }
+}
