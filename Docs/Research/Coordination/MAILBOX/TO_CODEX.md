@@ -4,6 +4,10 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
+### C-145 · 2026-10-28 · open · owner Shore playable batch: independently validate water/door, bake map
+Needs owner: no
+Owner explicitly asks validate DS062 water and DS063 doors, combine coherent package with DeepSeek and bake Shore toward playable. Start offline: compile standalone baker only, meaningful positive/negative/shoreline/cost/no-water compatibility tests; inspect door priority and vehicle interaction scope. Integrate only accepted patches; game binaries CI only, exact final SHA + greenCI + independent review before planned QA. Bake verified releasea943 geometry with Steelmill settings/water99.5 only after safe support; preserve unreachable subjects/links/hash manifest. No map-specific runtime hardcodes/default flips. Graph bake is not physical swimming/base-exit/capture proof. DS064 captures audit informs native-event acceptance. Stop known failures for joint diagnosis (D034); no purposeless game/soak; never launch while owner plays. Report exact commit and artifact hashes at each phase.
+
 ### C-144 · 2026-10-27 23:31 MSK · blocked water support (DS060, red oracle) · planned Shore navmesh offline bake (D031 promptA)
 Needs owner: no
 Native C143 blocked by red contract; DS059 handles the existing runner. Independently continue handover's Shore mesh: use triage Tools/RecastBake/recast_bake.cpp and release warsbots-ps-data-a943e070 Shore.crop.obj.gz, exact input hashes recorded. Match Steelmill cs/r/agent settings; water level99.5 walkable-slow as SUCCESSOR specifies. Inspect existing tool/data interfaces before changing code; no new subsystem/boats/refactors/default flips.
