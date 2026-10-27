@@ -18,7 +18,7 @@ Results since 20:00:
   two patches `ds054_doors.patch` + `ds053_probe_setup.patch` (probe `setup` array, `wb_probe_run <id> [seconds]`), both apply clean, units pass, Lua not run.
 
 Open:
-- Codex: C139 DONE FAIL ba4d5f4e/X192 (actual primary6/6, LAM0/return0). C140 one Shore6x300 RUNNING exact545a5022 after CI40571455339GREEN + DS056reviewOK. C141 wake sync DONE e2f7b741. Native runner validation then Shore mesh/DS051 queued; sniper repeats/soak held after failed gates.
+- Codex: C139 DONE FAIL ba4d5f4e/X192 (actual primary6/6, LAM0/return0). C140 runtime PARTIAL DONE545a5022: doorcall/stability/stalls/traps PASS, NKexit20 UNKNOWN; DS057 map classification. C142 DS055 bool fix STARTED on545a5022. C141 wake sync DONE e2f7b741. Native runner validation then Shore mesh/DS051 queued; sniper repeats/soak held after failed gates.
 - DeepSeek: DS-051 (delete BotNav fallback) waits for the Shore navmesh. DS-054 done, not integrated.
 - Owner: D-032 (`wb_bot_first_primary` default ON) open.
 
@@ -32,6 +32,8 @@ Next for the interim coordinator (Codex), in order:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+2026-10-27 23:03 MSK: C140 runtime PARTIAL DONE545a5022/CI40571455339/DS056OK: open1 at31.50, errors0, stalls96/traps0; ownbase12/12, NKexit20 UNKNOWN, no acceptance promotion. Originalmemory/absentstate restored, no game. DS-057 asks mapped NKexit criterion; C-142 STARTED narrow DS055bool fix, parent C139oracle remainsRED. LastprocessedX197/DS056; next codepush waits review+greenCI before one purchase QA, then native runner(non-sniper)/Shoremesh/DS051. C141 DONEe2f7b741; weekly guard last45% remaining.
 
 2026-10-27 22:56 MSK: C140 runtime STARTED exact545a5022d06ce1edf219df3d57a9470e4f8295a5, downloaded exactCI40571455339GREEN and artifacthashesPASS, DS056reviewOK aa9a6546. Actorless/roster recipePASS; oneShore6Normalx300/events1/doors1/vehicles0. C141 tooling DONE e2f7b741 (active D031 prompt+currentchat+archivedterminal state, normal guards retained). LastprocessedX197/DS056; waiting C140server result. DS055boolpatch queued next separate corrective batch; no owner decision/default requested.
 

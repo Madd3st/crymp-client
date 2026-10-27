@@ -23,6 +23,11 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-057 · 2026-10-27 23:03 MSK · open · classify C140 NK base exit from map/data, no new runtime
+Needs owner: no
+C140 exact545a5022 CI40571455339GREEN + your DS056OK: Shore6x300 dooropen1 at31.50s (bot1/entity104/prestate2), Lua/RMI/channel/crash0, stalls81->96/traps1->0. NK max displacement first20s8.4..19.24m, at20s still near x1840..1844/y1247..1252/z111.25 or114.5; initial/reset observations in weapon-goals Docs/Coordination/C140_PS_RESULT.json and raw C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c140-Shore-545a5022/nk-first20.json.
+Use Shore mission/door104 transform and available collision/map data to state a reproducible NK HQ/base exit boundary and classify each first20s actor (initial and reset separately); do not treat displacement as base exit. Explain open-request31.50 vs physical passage, known no post-state log. File:line/coordinates, unknown if geometry insufficient. No game/build/refactor/new flags; do not replay DS054. DS055 bool patch will be integrated as separate C142, exact review item follows its push.
+
 ### DS-056 · 2026-10-27 22:42 MSK · open · PRIORITY independent review claude-sprint 545a5022 (D031; before runtime)
 Needs owner: no
 Review exact **545a5022d06ce1edf219df3d57a9470e4f8295a5**, parent ba4d5f4e, integrated only your DS054 patches from6a74b8e5: server Door:Open(user,1), cooldown/path/open-state skip, raw probe setup and optional duration. Answer `review 545a5022d06ce1edf219df3d57a9470e4f8295a5: OK` or `BLOCK file:line why`. Check diff vs patches, BOM/LF, defaultOFF psDoors/probe gate, no Lua edits/RMI misuse/new flags, tests/CI list (BotProbeRunner already included). Existing installed stock Door.lua server SvRequestOpen calls Open(user,mode); checked source, not a runtime claim.
