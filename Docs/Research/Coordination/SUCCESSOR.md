@@ -67,12 +67,14 @@ You now also own:
    them, add a D-NNN row to DECISIONS.md and ask the owner in chat in Russian, 3 lines, plain words.
 5. Owner messages: in Russian, readable sentences (not compressed tokens), answer first.
 
-Current plan (27.10 21:05, do in order, one task one push): finish C-139 (PS buy at spawn on ba4d5f4e) →
-integrate DeepSeek DS-054 (door open via the server handler, NOT Door:OnUsed — that is the client RMI path, C-138
-errors) behind wb_ps_doors → **Shore navmesh**: bake from release `warsbots-ps-data-a943e070` (Shore.crop.obj.gz) with
+Current plan (27.10 21:20, do in order, one task one push): C-139 verdict (PS buy at spawn on ba4d5f4e, STARTED 21:09) →
+integrate DeepSeek DS-054 (6a74b8e5): patches/ds054_doors.patch (server Door:Open(user,1), NOT Door:OnUsed — client RMI,
+C-138 errors; do NOT take the ds053.patch door hunk) then patches/ds053_probe_setup.patch (probe setup array,
+wb_probe_run <id> [seconds]); CI green; DeepSeek review; Shore 6x300 with wb_ps_doors 1 → C-126 remaining steps
+with the native probe runner → **Shore navmesh**: bake from release `warsbots-ps-data-a943e070` (Shore.crop.obj.gz) with
 Tools/RecastBake/recast_bake.cpp on triage (same cs/r as Steelmill; water 99.5 walkable-slow), links + manifest into
 Tools/RecastBake/meshes/, install path like Steelmill → then integrate DS-051 (BotNav removal) → PS plan
-`Docs/Research/PS_PLAN.md` stage 1–2 (doors, vehicles, boats). Nightly soak C-129 when no PS work is running.
+`Docs/Research/PS_PLAN.md` stage 1–2 (doors, vehicles). Snipers parked (X-188). Nightly soak C-129 when no PS work runs.
 Codex budget: archive TO_CLAUDE.md, short reports, wait for servers with a script (C-137 rules).
 Out of scope until Claude returns: refactors, boats, grenades, PS capture goals, new subsystems.
 

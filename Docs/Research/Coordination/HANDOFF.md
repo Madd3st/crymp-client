@@ -1,82 +1,58 @@
-# Handoff for the next Claude coordinator session (updated 2026-10-26 11:35 MSK)
+# Handoff for the next coordinator (updated 2026-10-27 21:20 MSK)
 
-Repo `Madd3st/crymp-client` (public). Read this file, then `Docs/Research/STATUS.md`, `MAILBOX/DECISIONS.md`
-(D-001…D-021), `MAILBOX/PROTOCOL.md` (v4 states + task cycle v5), and run `python3 Tools/Mailbox/board.py`.
-Do not re-derive history; everything older is in git and in the journals.
+**D-031 is ACTIVE since 27.10 21:05** (Claude weekly limit ~3 %): Codex coordinates and integrates
+(`SUCCESSOR.md` prompt A), DeepSeek reviews every Codex code push (prompt C). Live state and the ordered plan:
+`MAILBOX/CLAUDE_STATE.md`. When Claude returns it reads that file first.
+
+Repo `Madd3st/crymp-client` (public, fork of `crymp-net/crymp-client`). Read this file, then on
+`warsbots/research/steelmill-triage`: `MAILBOX/CLAUDE_STATE.md`, `DECISIONS.md` (D-001…D-033), `PROTOCOL.md` (Sync v4),
+`Docs/Research/STATUS.md`, and run `python3 Tools/Mailbox/board.py`. Fetch ALWAYS with
+`git fetch origin '+refs/heads/warsbots/*:refs/remotes/origin/warsbots/*'` (a plain fetch hides other agents' work).
 
 ## Owner and style
 
-- **The game is Crysis (2007) multiplayer via CryMP, not Crysis Wars** (owner 26.10 13:53). Name it so in docs and research; "WarsBots" is only the project name.
+- **The game is Crysis (2007) multiplayer via CryMP, not Crysis Wars.** "WarsBots" is only the project name.
+- Owner = Magic8 (madd3st). Russian, humour, mild swearing OK, short chat, details in files. Phone screen: answer first.
+- Owner decides (DECISIONS.md) and plays 10-minute "feel" playtests; impressions are signals, not specs. Before every
+  playtest give him a short checklist of what changed and what to look at.
+- Owner's PC is the only game machine. No runs while he plays; otherwise runs any time, incl. 15-bot (D-029).
 
-- Owner = Magic8 (madd3st). Russian, humour, mild swearing OK, short chat, details in files.
-- Status format: who does what now / done / next / priorities / roadmap stage.
-- Owner decides (DECISIONS.md) and plays "feel" playtests; never regression hunting (D-020).
-- Owner's PC is the only game machine. Computer use is possible but hides his windows — avoid when he is working.
+## Roles
 
-## Roles (D-013/D-014, still valid)
-
-| Agent | Does | Writes to |
+| Agent | Normally | While D-031 is active |
 | --- | --- | --- |
-| Claude (you) | all game code (`warsbots/feature/claude-sprint`), coordination, verdicts, docs, tools | triage branch (mailbox/docs), claude-sprint |
-| Codex (ChatGPT app on owner PC) | MSVC builds, runs/batches/probes, presets, merges to weapon-goals, wiki publish | `warsbots/feature/weapon-goals` → `Docs/Coordination/TO_CLAUDE.md` (X-xxx) |
-| DeepSeek (OpenCode app, V4.1 Flash) | read-only review of every diff before a batch, specs, log analysis | `warsbots/research/deepseek` → `Docs/Coordination/DEEPSEEK_TO_CLAUDE.md` |
+| Claude | game code (`warsbots/feature/claude-sprint`), coordination, verdicts, docs, DeepSeek patch integration | out |
+| Codex (ChatGPT app, owner PC) | CI artifacts (no local builds), runs/probes/presets, playtest archives → `weapon-goals:Docs/Coordination/TO_CLAUDE.md` (X-) | + coordinator: C-/DS- items, verdicts, integrates DeepSeek patches into claude-sprint |
+| DeepSeek (OpenCode, owner PC) | raw-log analysis, `git apply`-able patches, engine-free modules + tests in `warsbots/research/deepseek` → `DEEPSEEK_TO_CLAUDE.md` | + reviewer of every claude-sprint SHA Codex pushes (OK / BLOCK file:line) |
 
-Mailbox: triage `Docs/Research/Coordination/MAILBOX/TO_CODEX.md` (C-xxx), `TO_DEEPSEEK.md` (DS-xxx), `DECISIONS.md`.
-IDs from `python3 Tools/Mailbox/next_id.py C|DS|D`; `--check` before every push (duplicates happened 26.10).
-Run items carry a ```recipe block (`Tools/Mailbox/recipe.py`). Always `git fetch origin '+refs/heads/warsbots/*:refs/remotes/origin/warsbots/*'` —
-a plain fetch left stale refs and hid Codex's work for an hour on 26.10.
+Integrating DeepSeek patches: `git apply --3way`, strip BOMs, keep LF, `Pak/**/PowerStruggle*.lua` stay Latin-1, every
+behaviour change behind a default-OFF `wb_*` flag, new tests into `.github/workflows/warsbots-ci.yml`, never push over
+red CI. PS Lua: guard per-client RMIs with `WarsBotsIsBot`, never by channel 0 (DS-045). **A bot must only call server
+methods of stock scripts** (e.g. `Door:Open`), never the client use path (`OnUsed` → `self.server:Sv…` = RMI from a
+client the bot does not have; C-138). No luac in the cloud: Lua is checked by the first PS server start.
 
-## Rules that bite
+## Sync (D-030)
 
-- **One 15-bot run per day** (D-020) unless the owner allows more; probes/short runs do not count.
-- Oracle before code, default-OFF flag, offline green (`Tools/OfflineCheck/run_units.sh`, `compile_check.sh`), DeepSeek
-  review, one build per batch. CI: `.github/workflows/warsbots-ci.yml` builds every push to `warsbots/feature/**`
-  (units + client/server); a newer push cancels the older run.
-- Keep CRLF/LF of each file (python `open(..., newline='')`).
-- A run recipe must include the owner preset feature set (navmesh etc. are still default 0 in code) — the
-  "defaults-only" C-087 run was invalid.
-- Agents go idle: Codex heartbeat automation (30 min, `~/.codex/automations/warsbots-claude/automation.toml`, short
-  static prompt — do not let Codex put state in it) missed C-097 for 8 h on 26.10 night. C-101 asks Codex to fix the
-  Windows wake task. If an agent is silent, ask the owner to paste a one-line nudge.
+- Every task is a mailbox item (C-/DS-), never only chat. IDs: `python3 Tools/Mailbox/next_id.py C|DS|D`.
+- Wake loop on the owner PC wakes Codex and the newest DeepSeek session on any new item.
+- Claude's hourly cloud task (trig_01ABKXcowTTiHUd7wwLt9Lxz) should be OFF while D-031 is active.
+- Codex budget (C-137): mailboxes archived to open items, X- reports ≤ 6 lines, one Codex instance at a time.
+- Wiki source `Docs/Wiki` on triage; Codex publishes it to the GitHub wiki.
 
-## State at handoff (26.10 11:35)
+## State (27.10 21:20)
 
-Code (claude-sprint head **b1142b93**):
-- D-016 corners v2.1 + jump sanity **default ON** (5b90bfb6), confirmed C-088 (278 kills / 18 stalls / 0 traps).
-- `wb_bot_difficulty` ladder (BotDifficulty.h): reaction/turn/aim/head/fire gate/range/senses (1e0f4072, 7179ec36) —
-  **C-093 PASS**: kills 276, stalls 19, traps 0, Elite 70 vs Beginner 24, 13 hits > 40 m; Elite headshots only 7.8 %.
-  Part 2–3 (c6f36c28, 5f1a6c88, b1142b93): zoom/burst by skill, fight strafe/jump by skill, tactical reload,
-  Elite cloak approach — **not run yet** (C-103 queued, DS-024 review queued).
-- `wb_bot_finish` (target switches 641 → 398), `wb_bot_spectator_aim` (camera = tracer), `wb_bot_path_progress`
-  (+ 1dc87ba3 fix), `wb_bot_threat_scan` (glance fix c6f36c28, logs `#n GLANCE`) — C-098 FAIL: no bot ever holds
-  DSG1/Gauss (12 unreachable), stalls 39 vs 19, glances 0 (bug fixed since). DS-023 analysing why.
-- QoL console: `wb_mark` (F8 for the owner), `wb_fill`, `wb_skill_all`, `wb_kick_bots` (40bd9f60). Probe hook
-  `wb_probe_item` + `Tools/Probes/*.json` (ceb6e5b2); Codex builds the runner (C-100).
-- Owner client MOVE TRACE at `wb_move_trace_hz` + stance (bb172f34).
+claude-sprint head **ba4d5f4e** (C-139 PS buy alive at spawn) on 96f7f624 (DS-052 doors/vehicles/events, default OFF)
+on 815bcb7e (C-136 team spawn + owner buy rule) on 1a7ec84e on 493f2cab (DS-050 fundament) on 4f3a1d72.
+- PS: spawns 12/12 own base PASS (X-186); revive waves work (X-166); buys 0 → C-139 running; doors FAIL (client RMI,
+  X-190) → DS-054 fix ready; vehicles untested; Shore has no navmesh.
+- IA: 15×660 on d6a9a521 287/32/0 PASS; snipers 0/3 parked (X-188).
+- Open: Codex C-139, C-126 rest, C-129 soak; DeepSeek DS-051; owner D-032.
 
-Waiting on agents:
-- Codex: C-102 owner playtest preset on 40bd9f60 (difficulty+finish+spectator_aim) → C-101 (wake task + one-click
-  launcher with F8 mark + auto report) → C-100 probe runner → C-103 batch b1142b93 (owner must allow today or tomorrow).
-- DeepSeek: DS-022 (what a mark card shows), DS-023 (snipers + stalls in C-098), DS-024 (review of b1142b93).
+## Next (in order)
 
-Power Struggle (parallel track, D-018/D-019): specs done by DeepSeek (`PS_T0_SPEC.md`, `T0_GAMEMODE.md`,
-`VEHICLES.md`, `PS_MIN.md` on deepseek branch). Shore/Plantation navmesh baked from a943e070 crops (Claude's
-workspace only: `/home/claude/ps/shore2`, `plantation2`; Shore has a cut-off base around (2100,1900): 24 spawns +
-4 items outside the main mesh). Shore 3D v4 artifact: https://claude.ai/artifact/QcDCZtqHXh3NFPY3xBRCKY.
-Teams 3–4 bots, scaling; vehicles enter/exit mandatory in PS v1.
+1. C-139 verdict. 2. Integrate DS-054 (`ds054_doors.patch`, then `ds053_probe_setup.patch`), CI, review, Shore 6x300
+`wb_ps_doors 1`. 3. C-126 rest. 4. Shore navmesh bake → DS-051. 5. PS plan stage 1–2 (`Docs/Research/PS_PLAN.md`).
+6. If D-032 yes: flip only `wb_bot_first_primary` default 1.
 
-## Next for Claude (in order)
-
-0. When DeepSeek delivers DS-025 (`BEHAVIOUR_BIBLE.md`): turn it into a Claude Doc for the owner to read and comment (owner request 26.10 11:42), map gaps to tasks; new features should come from the bible, not from the last complaint.
-
-1. Verdict C-103 when it lands; if green, preset for the next playtest with ladder part 2–3.
-2. Snipers: probe runner works (C-100, `Tools/Run-WarsBotsProbe.ps1`, X-115). sniper_reach_dsg1 0/3 and _gauss 0/3: an Elite marksman spawned next to the routes **picks FY71/SCAR (1.4 s / 7.6 s) and never targets the sniper rifle** — weapon selection, not the path, is the first blocker (plus DS-023 for the path). duel_skill 1/3 with 0:0 kills — the duel coordinates probably have no LOS; fix the fixture first. Probes are the oracle: make them red→green before any soak.
-3. Grenades (bots never throw; target behind cover → frag at last known position, self-safety check). D-023: teammates may get hurt by accident, but no throw when a teammate is near the blast point. D-024: if Elite feels unfair, add a first-shot pause, keep accuracy. D-022: C-103 runs today.
-4. "Flags die" cleanup from `DeepSeek/FLAGS.md` (41 flags): promote accepted ones, delete dead paths.
-5. Owner playtest marks (F8) → playtest report cards (DS-022 spec) in `Tools/PlaytestReport`.
-6. T-1 (one writer per control channel, DeepSeek `T1_WRITERS.md`), then T-3 network (incl. spectator HUD line), then
-   T-0 IBotGameMode, then PS navmesh into the repo (big files as release assets, D-021 #8).
-7. Wave 2 QoL: browser demo viewer on the 3D map; one-command map pipeline.
-
-Tools for the owner: Telegram notifier `Tools/Notify/` (owner has not installed it yet). Wiki is human-readable now
-(`Docs/Wiki/Status-and-Roadmap.md`, published by Codex).
+Docs: Bible (Claude Doc) https://claude.ai/artifact/JucfPiM9E5cmV7qoM2du8U; PS plan `Docs/Research/PS_PLAN.md`;
+upstream plan `Docs/Research/UPSTREAM_READINESS.md`; architecture review `Docs/Research/Reviews/CLAUDE-ARCH-2026-10-27.md`.

@@ -1,4 +1,4 @@
-# WarsBots project status — 2026-10-27 15:40 MSK
+# WarsBots project status — 2026-10-27 21:20 MSK
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
@@ -11,14 +11,30 @@ decisions and aim. Map-specific fixes only as data, never code.
 
 ## Who does what now
 
+**D-031 ACTIVE since 27.10 21:05** (Claude weekly limit ~3 %): Codex = interim coordinator + integrator, DeepSeek
+reviews every Codex code push. Prompts and current plan: `Docs/Research/Coordination/SUCCESSOR.md`; live state:
+`MAILBOX/CLAUDE_STATE.md`.
+
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (QA, runs, playtest archives) | C-120 done (X-164 playtest-5 archive, X-165 PS retry + 3-flag A/B); waiting for its wake | C-122 wake loop for real → C-121 (PS revive diag, sniper probes, 15-bot with new flags) |
-| DeepSeek (analysis + patches, D-014) | DS-046 done (sniper reach, Veteran K/D = noise) | DS-047: PS revive root cause, finish_lock reachability, probe runner wiring |
-| Claude (game code, integration, verdicts, docs) | claude-sprint **d6a9a521** (DS-044/045/046 integrated, PS revive diag); sync v4; successor handover | verdicts C-121/DS-047; D-031 (who coordinates when Claude is out) |
+| Codex (interim coordinator + QA) | C-139 STARTED 21:09: Shore 6x300 on claude-sprint **ba4d5f4e** (PS buy alive at spawn) | C-139 verdict → integrate DS-054 (doors + probe setup) → Shore door run → C-126 rest → Shore navmesh → DS-051 |
+| DeepSeek (analysis, patches, reviewer) | DS-054 done (6a74b8e5): doors via server `Door:Open`, probe `setup` patch | review every claude-sprint SHA Codex pushes; DS-051 after the Shore navmesh |
+| Claude | out of limits; handback via CLAUDE_STATE.md | — |
 
-Interim coordinator if Claude is out of limits: `Docs/Research/Coordination/SUCCESSOR.md` (recommended Codex + DeepSeek
-as reviewer, D-031). Roadmap: wiki `Status-and-Roadmap`.
+## 27.10 afternoon → evening (key results)
+
+| Area | Result | Evidence |
+| --- | --- | --- |
+| 15-bot with 4 new flags (d6a9a521) | 287 kills / 32 stalls / 0 traps PASS; first primary p50 5.7 s, SOCOM shot share 6.6 %; withdraw deaths 69 % (no gain); DSG1/Gauss kills 0 | server (X-167) |
+| PS revive | **works**: wave revives confirmed (same actors back at 100 HP after ~17 s); "no revive" was a demo recorder gap | server (X-166) |
+| Fundament (D-033) | DS-050 integrated behaviour-identical (IBotGameMode, flag delete, PS summary, native send guard); Steelmill pair kills 39→44, stalls 5→5 | server (X-184) |
+| Owner Shore playtest (4f3a1d72) | stable; bots spawned on neutral bunkers, bought nothing (Lua error powerstrugglebuying:984), never left base (doors), no vehicles | client + server (X-181) |
+| PS spawn | C-134/C-136: initial and revive spawn in the team group → **12/12 own base PASS** | server (X-186) |
+| PS buy | C-136 buy = shotgun/SMG + LAM + ammo via DoBuyAmmo; 0/6 buys because buying ran only while dead → ba4d5f4e buys alive at spawn, C-139 running | server (X-186) |
+| PS doors | DS-052 used stock `Door:OnUsed` = client RMI → "RMI via client… not a client", traps 1→2 (C-138 FAIL); DS-053 same mistake; **DS-054 fix: server `Door:Open(user,1)`**, not integrated yet | server (X-190) + src |
+| Snipers | probes DSG1 0/3, Gauss 0/3 (missed landings, no energy) → parked until Shore navmesh/IA cleanup | server (X-188) |
+| Probe runner | native ParseScenario ignored the JSON `setup` array; fix in `ds053_probe_setup.patch` (DS-054), not integrated | src |
+| Process | Codex budget rules (archive mailboxes, X- ≤ 6 lines, one instance); D-031 activated 21:05 | — |
 
 ## 26.10 day → 27.10 (key results)
 
@@ -73,6 +89,9 @@ fast simulation).
 
 ## Mistakes we made
 
+11. **Integrated a patch without checking the call path (27.10)**: DS-052 doors went through stock `Door:OnUsed`,
+    which is the client RMI path, and C-138 failed. → for every stock Lua call from a bot, check it is a server method
+    (not `self.server:Sv…`) before integrating.
 8. **Tasks sent only via chat (27.10)**: Claude gave the owner prompts to paste instead of mailbox items, so the wake
    loop had nothing to wake on and the owner had to nudge all three. → every task is a C-/DS- item (PROTOCOL v4).
 9. **Wake loop never fired at night**: `wake_agents.ps1` required the word "open" in headers that never had it. →
@@ -112,7 +131,7 @@ fast simulation).
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
 | Claude runs out of limits | coordination and code integration stop | `SUCCESSOR.md`: Codex interim coordinator, DeepSeek reviewer; D-031 |
-| PS bots never revive | Power Struggle unusable | diag logs d6a9a521, DS-047 root cause, 30 s fallback must work |
+| PS bots cannot leave base / no vehicles | Power Struggle unplayable | DS-054 doors via server Door:Open; vehicles (DS-052) untested; Shore navmesh |
 | Navmesh may not reproduce stairs/catwalks/roofs better than the graph | navigation stays dumb | offline comparison on 4 maps before any switch; owner jumps as off-mesh links; shadow mode first |
 | Geometry files are 0.3–1.2 GB OBJ | cannot be staged to Triage (400 MB/file limit) | C-028 cropped/binary export |
 | Codex weekly limit (61 % at 17:16, resets 30 Oct; 2 manual resets left) | work stops mid-task | narrow tasks, research/review moved to OpenCode and Claude, no idle wake-ups |
@@ -136,15 +155,13 @@ Acceptance: unit tests pass, one paired run with `summary` and demo metrics unch
 **Wave 2 — after the navmesh switch:** delete BotNav graph build/knee audit/reachability/goal projection/most watchdog
 levels (list: OpenCode DETOUR_INTEGRATION.md §5), R2 `BotConsole.cpp`, R5 legacy single-bot commands, R8 one revive path.
 
-## Queue (27.10, in order)
+## Queue (27.10 21:20, in order — run by Codex as interim coordinator)
 
-1. C-122 wake loop (Codex + DeepSeek) — nobody waits for the owner. 2. C-121: PS revive diag, sniper probes,
-15-bot with first_primary / withdraw_cover / finish_lock / sniper_reach. 3. DS-047 → integrate (PS revive fix,
-finish_lock reachability, probe runner wiring). 4. PS-0 until bots revive → Shore navmesh rebake → PS-1 capture goals.
-5. Owner playtest 6 with the new flags ON → D-032 promote defaults (first_primary, withdraw_cover, sniper_reach,
-pro_fire, high_ground). 6. Exploit probes via the runner (height camp, bait the withdraw, spawn camp, ledge, peek,
-cloak, choke). 7. Long-range fights (> 40 m), grenades (D-023), boats (BotBoatDriver.h). 8. Flags cleanup.
-Older queue (D-008) is done or folded in.
+1. C-139 verdict (PS buy at spawn, ba4d5f4e). 2. Integrate DS-054 (`ds054_doors.patch`, then `ds053_probe_setup.patch`;
+not the ds053.patch door hunk), CI green, DeepSeek review, Shore 6x300 `wb_ps_doors 1`. 3. C-126 rest with the native
+probe runner. 4. Shore navmesh bake (Tools/RecastBake, release warsbots-ps-data-a943e070) → DS-051 (delete BotNav
+fallback). 5. PS plan stage 1–2 (doors, vehicles): `Docs/Research/PS_PLAN.md`. 6. Owner D-032 (first_primary default).
+7. Soak C-129 when no PS work runs. Out of scope while Claude is out: refactors, boats, grenades, capture goals, new subsystems.
 
 ## Rules
 
@@ -168,6 +185,14 @@ workaround + parked ticket. One task, one push, stop. Questions to the owner: D-
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-27 21:20 | `MAILBOX/CLAUDE_STATE.md` | handover refresh: D-031 active, Codex coordinates, plan in SUCCESSOR.md |
+| 10-27 21:04 | DS-054 | doors via server Door:Open + probe setup patch (base ba4d5f4e) |
+| 10-27 20:57 | C-139 | ba4d5f4e: PS buy alive at spawn |
+| 10-27 20:45 | X-190 | C-138 FAIL: doors = client RMI |
+| 10-27 20:28 | X-186 / X-188 | PS spawns 12/12 PASS, buys 0; snipers 0/3 parked |
+| 10-27 20:00 | C-136 | 815bcb7e: PS team spawn + owner buy rule |
+| 10-27 18:06 | C-131 | 493f2cab: DS-050 fundament (IBotGameMode, flags, PS summary) |
+| 10-27 17:52 | D-033 | upstream readiness plan `UPSTREAM_READINESS.md` |
 | 10-27 15:30 | `Coordination/SUCCESSOR.md` | handover prompts if Claude is out of limits (D-031) |
 | 10-27 15:10 | PROTOCOL v4, C-122 | sync: mailbox-only tasks, wake loop fixed (deepseek, any new item) |
 | 10-27 14:50 | C-121 / DS-047 | d6a9a521: DS-046 sniper reach + PS revive diag |
