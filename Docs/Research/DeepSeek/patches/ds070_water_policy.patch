@@ -1,0 +1,330 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index b9fb3c53..9fc030b2 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6011ff27..3112a135 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1226,6 +1226,7 @@ if(WARSBOTS_EXPERIMENTAL_SPAWNER)
+         Code/CryGame/Bots/CryMPEngineAdapter.cpp
+         Code/CryGame/Bots/BotMatch.cpp
+         Code/CryGame/Bots/BotBlackboard.cpp
++ Code/CryGame/Bots/BotWaterPolicy.cpp
+         Code/CryGame/Bots/BotBrain.cpp
+         Code/CryGame/Bots/BotCombat.cpp
+         Code/CryGame/Bots/BotLocomotion.cpp
+diff --git a/Code/CryGame/Actors/Player/Player.cpp b/Code/CryGame/Actors/Player/Player.cpp
+index b15ffac0..21a5ca23 100644
+--- a/Code/CryGame/Actors/Player/Player.cpp
++++ b/Code/CryGame/Actors/Player/Player.cpp
+@@ -16,6 +16,7 @@ History:
+ #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+ #include "CryGame/Bots/BotPace.h"
+ #include "CryGame/Bots/BotConfig.h"
++#include "CryGame/Bots/BotWaterPolicy.h"
+ #endif
+ #include "CryGame/Game.h"
+ #include "CryGame/GameCVars.h"
+@@ -3057,8 +3058,16 @@ void CPlayer::UpdateSwimStats(float frameTime)
+ //------------------------------------------------------------------------
+ void CPlayer::UpdateUWBreathing(float frameTime, Vec3 worldBreathPos)
+ {
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++	// DS-070: only the gated owned-PS bot runs the native oxygen/drowning path (timer -> suit energy -> health);
++	// stock AI, IA and unowned actors keep the original early-out. The singleplayer 30 HP/s branch is not touched.
++	const bool warsBotWater = !IsPlayer() && WarsBots::BotWaterAllowedFor(*this);
++	if (!IsPlayer() && !warsBotWater)
++		return;
++#else
+ 	if (!IsPlayer())
+ 		return;
++#endif
+ 
+ 	bool debugSwimming = (g_pGameCVars->cl_debugSwimming != 0);
+ 
+diff --git a/Code/CryGame/Bots/BotBlackboard.cpp b/Code/CryGame/Bots/BotBlackboard.cpp
+index 2c60b9c5..0983130a 100644
+--- a/Code/CryGame/Bots/BotBlackboard.cpp
++++ b/Code/CryGame/Bots/BotBlackboard.cpp
+@@ -1,5 +1,6 @@
+ #include "PortIncludes.h"
+ #include "CryGame/Bots/BotBlackboard.h"
++#include "CryGame/Bots/BotWaterPolicy.h"
+ #include "CryGame/Actors/Player/Player.h"
+ 
+ namespace WarsBots
+@@ -17,9 +18,13 @@ void BotBlackboard::Sample(CPlayer& actor, float now)
+ 	pe_status_dynamics dynamics;
+ 	if (actor.GetEntity()->GetPhysics() && actor.GetEntity()->GetPhysics()->GetStatus(&dynamics)) velocity = dynamics.v;
+ 	moving = velocity.GetLengthSquared2D() > 0.09f;
++	// DS-070: the water exceptions are a shared policy, not a raw ShouldSwim(). OFF/IA/human/unowned stay impassable.
++	waterAllowed = BotWaterAllowedFor(actor);
++	swimming = actor.ShouldSwim();
++	waterMovement = waterAllowed && swimming;
+ 	canMove = health > 0 && !actor.IsFrozen() && !stats.isRagDoll && !stats.isOnLadder.Value() &&
+ 		stats.inFreefall.Value() <= 0 && !stats.inZeroG && !stats.isGrabbed && !stats.animationControlled &&
+-		!stats.spectatorMode && !stats.flyMode && !actor.GetLinkedEntity() && !actor.ShouldSwim();
++		!stats.spectatorMode && !stats.flyMode && !actor.GetLinkedEntity() && (waterAllowed || !swimming);
+ 	CNanoSuit* suit = actor.GetNanoSuit();
+ 	suitActive = suit && suit->IsActive();
+ 	energy = suit ? suit->GetSuitEnergy() : 0;
+diff --git a/Code/CryGame/Bots/BotBlackboard.h b/Code/CryGame/Bots/BotBlackboard.h
+index 35ebbd39..299cf852 100644
+--- a/Code/CryGame/Bots/BotBlackboard.h
++++ b/Code/CryGame/Bots/BotBlackboard.h
+@@ -14,6 +14,9 @@ struct BotBlackboard
+ 	ENanoMode mode = NANOMODE_DEFENSE;
+ 	bool suitActive = false, grounded = false, moving = false, blocked = false, visible = false;
+ 	bool canMove = false;
++	// DS-070: one gated water policy. `swimming` records the native ShouldSwim() state; `waterMovement` is the only
++	// exception used by movement, trap recovery and native oxygen, and it is false unless BotWaterAllowed().
++	bool waterAllowed = false, swimming = false, waterMovement = false;
+ 	BotJump obstacleJump = BotJump::None;
+ 	void Sample(CPlayer& actor, float now);
+ };
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index e2624827..2478d013 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -1232,7 +1232,8 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
+         !g_pGame->GetBotManager().Owns(actor.GetEntityId()) || !g_pGame->GetBotManager().CanRunLocalIA())
+     { m_trap.Reset(); m_trapStepUntil=0; return false; }
+     const Vec3 p=actor.GetEntity()->GetWorldPos();
+-    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove,false);
++    // DS-070: a gated swimmer making no progress is not a land trap; the same policy disables the watchdog here.
++    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove && !m_blackboard.waterMovement,false);
+     if (level)
+     {
+         WB_LOG(1,"[WarsBots] TRAP RECOVERY level=%d actor=%u age=%.2f pos=(%.2f,%.2f,%.2f) blocked=%d speed=%.2f grounded=%d sink=%d.",
+diff --git a/Code/CryGame/Bots/BotLocomotion.cpp b/Code/CryGame/Bots/BotLocomotion.cpp
+index 5fef1e07..6a413d59 100644
+--- a/Code/CryGame/Bots/BotLocomotion.cpp
++++ b/Code/CryGame/Bots/BotLocomotion.cpp
+@@ -106,7 +106,8 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
+ 	bool jump=false;
+ 	if (intent.jump!=BotJump::None)
+ 	{
+-		if (!state.grounded || m_pending || m_airborne) Refused(actor,"jump_not_grounded_or_pending",now);
++		if (state.waterMovement) Refused(actor,"jump_swimming",now);
++		else if (!state.grounded || m_pending || m_airborne) Refused(actor,"jump_not_grounded_or_pending",now);
+ 		else if (intent.stance==STANCE_PRONE || actor.GetStance()==STANCE_PRONE) Refused(actor,"jump_prone",now);
+ 		else if (now<state.nextJump) Refused(actor,"jump_cooldown",now);
+ 		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<(pace?70.f:90.f))) Refused(actor,"jump_strength_mode_or_energy",now);
+@@ -129,7 +130,10 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
+     if(intent.move){
+         const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(intent.stance):2.5f);
+         const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
+-        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo,intent.meshPath,intent.arrive);
++        // DS-070: ProcessSwimming applies the request in view space (PlayerMovement.cpp:835-836) and the WarsBot view
++        // follows the aim while strafing (Player.cpp:5085-5090), so strafing in water would swim toward the aim.
++        const bool strafe=intent.strafe && !state.waterMovement;
++        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,strafe,pseudo,intent.meshPath,intent.arrive,state.waterMovement);
+     }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
+ 	state.blocked=intent.move && !accepted;
+ 	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,intent.stance);
+diff --git a/Code/CryGame/Bots/BotMovement.cpp b/Code/CryGame/Bots/BotMovement.cpp
+index e912294c..6bf503c4 100644
+--- a/Code/CryGame/Bots/BotMovement.cpp
++++ b/Code/CryGame/Bots/BotMovement.cpp
+@@ -52,7 +52,7 @@ void BotMovement::Look(CActor& actor, const Vec3& target)
+ 	}
+ }
+ 
+-bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided, float slope) const
++bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided, float slope, bool waterMovement) const
+ {
+ 	if (!gEnv->pPhysicalWorld || !actor.GetEntity()->GetPhysics())
+ 		return false;
+@@ -69,13 +69,17 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bo
+ 		if (!(meshGuided && height < 1.0f) && gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), (direction + Vec3(0,0,slope)) * probe,
+ 			ent_all, flags, &hit, 1, actor.GetEntity()->GetPhysics(), heldPhysics))
+ 			return false;
++	// DS-070: in gated deep water the ground probe cannot hit (the seabed is far below); the stock movement
++	// controller owns buoyancy. Only this ray is skipped - the nine body/cliff rays above still refuse a wall,
++	// a quay or a held item, and a dry cliff keeps the old branch.
++	if (waterMovement) return true;
+ 	// Stop at real cliffs only: drops up to ~3 m are taken (Armor absorbs the landing, see BotBrain).
+ 	return gEnv->pPhysicalWorld->RayWorldIntersection(feet + direction * (probe-0.3f) + Vec3(0,0,0.6f),
+ 		Vec3(0,0,-3.6f), ent_terrain | ent_static | ent_rigid | ent_sleeping_rigid,
+ 		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
+ }
+ 
+-bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided, float arrive)
++bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided, float arrive, bool waterMovement)
+ {
+ 	auto* controller = actor.GetMovementController();
+ 	if (!controller) return false;
+@@ -115,7 +119,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
+ 		m_sampleTime = 0;
+ 	}
+ 	m_avoidTime = max(0.0f, m_avoidTime - dt);
+-	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided, slope));
++	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided, slope, waterMovement));
+ 	m_turned = false;
+ 	if (!safe)
+ 	{
+@@ -123,7 +127,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
+ 		for (float angle : {m_side * 0.8f, -m_side * 0.8f, m_side * 1.57f, -m_side * 1.57f, m_side * 2.36f, -m_side * 2.36f, 3.14159f})
+ 		{
+ 			Vec3 candidate = Quat::CreateRotationZ(angle) * direction;
+-			if (SafeStep(actor, candidate, probe, meshGuided)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
++			if (SafeStep(actor, candidate, probe, meshGuided, 0.f, waterMovement)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
+ 		}
+ 	}
+ 	if (!safe) { Stop(actor); Aim(actor, lookAt); return false; }
+diff --git a/Code/CryGame/Bots/BotMovement.h b/Code/CryGame/Bots/BotMovement.h
+index 9bfb5225..dcbf3227 100644
+--- a/Code/CryGame/Bots/BotMovement.h
++++ b/Code/CryGame/Bots/BotMovement.h
+@@ -11,12 +11,13 @@ public:
+ 	void Reset();
+ 	void Stop(CActor& actor);
+ 	// Returns whether a safe local movement request was accepted, not arrival.
+-	bool Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed=2.5f, EStance stance=STANCE_STAND, float probe=1.5f, bool jumpTraverse=false, bool strafe=false, float pseudo=-1.f, bool meshGuided=false, float arrive=0.8f);
++	bool Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed=2.5f, EStance stance=STANCE_STAND, float probe=1.5f, bool jumpTraverse=false, bool strafe=false, float pseudo=-1.f, bool meshGuided=false, float arrive=0.8f, bool waterMovement=false);
+ 	void Aim(CActor& actor, const Vec3& target);
+ 	// Look-only request (view/aim/fire targets); move target, speed and body target stay as requested last.
+ 	void Look(CActor& actor, const Vec3& target);
+ private:
+-	bool SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided=false, float slope=0) const;
++	// DS-070: `waterMovement` is the gated policy result (BotWaterPolicy.h), never raw ShouldSwim().
++	bool SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided=false, float slope=0, bool waterMovement=false) const;
+ 	Vec3 m_sample = Vec3(0,0,0);
+ 	float m_sampleTime = 0;
+ 	float m_avoidTime = 0;
+diff --git a/Code/CryGame/Bots/BotWaterPolicy.cpp b/Code/CryGame/Bots/BotWaterPolicy.cpp
+new file mode 100644
+index 00000000..2ec62cdb
+--- /dev/null
++++ b/Code/CryGame/Bots/BotWaterPolicy.cpp
+@@ -0,0 +1,30 @@
++#include "PortIncludes.h"
++#include "CryGame/Bots/BotWaterPolicy.h"
++#include "CryGame/Bots/BotConfig.h"
++#include "CryGame/Bots/BotManager.h"
++#include "CryGame/Bots/BotMatch.h"
++#include "CryGame/Actors/Player/Player.h"
++#include "CryGame/Game.h"
++#include "CryGame/GameRules.h"
++
++namespace WarsBots
++{
++BotWaterFacts BotWaterFactsFor(const CPlayer& actor)
++{
++	BotWaterFacts f;
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++	f.experimentalBuild = true;
++#endif
++	const CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
++	f.multiplayer = gEnv && gEnv->bMultiplayer;
++	f.powerStruggle = rules && BotMatch::IsPowerStruggle(*rules);
++	f.owned = g_pGame && g_pGame->GetBotManager().Owns(actor.GetEntityId());
++	f.botActor = actor.IsWarsBotActor();
++	f.captureEnabled = BotConfig::Get().psCapture == 1;
++	f.navMeshEnabled = BotConfig::Get().botNavmesh == 1;
++	f.hasNanoSuit = actor.GetNanoSuit() != nullptr;
++	return f;
++}
++
++bool BotWaterAllowedFor(const CPlayer& actor) { return BotWaterAllowed(BotWaterFactsFor(actor)); }
++}
+diff --git a/Code/CryGame/Bots/BotWaterPolicy.h b/Code/CryGame/Bots/BotWaterPolicy.h
+new file mode 100644
+index 00000000..c7d9e90f
+--- /dev/null
++++ b/Code/CryGame/Bots/BotWaterPolicy.h
+@@ -0,0 +1,32 @@
++// DS-070: the single policy for the owned PowerStruggle bot's native water handling.
++// Every water exception (canMove, SafeStep ground ray, trap watchdog, native oxygen/drowning) must call
++// BotWaterAllowed with these facts, so one false field disables all of them together and OFF/IA/human/unowned
++// actors keep the old "water is impassable" behaviour. Engine-free: Tests/BotWaterPolicyTests.cpp.
++#pragma once
++
++class CPlayer;
++
++namespace WarsBots
++{
++struct BotWaterFacts
++{
++	bool experimentalBuild = false; // built with WARSBOTS_EXPERIMENTAL_SPAWNER
++	bool multiplayer = false;       // gEnv->bMultiplayer
++	bool powerStruggle = false;     // BotMatch::IsPowerStruggle
++	bool owned = false;             // BotManager::Owns on this server
++	bool botActor = false;          // CPlayer::IsWarsBotActor (our channelId-0 actor)
++	bool captureEnabled = false;    // BotConfig::psCapture == 1
++	bool navMeshEnabled = false;    // BotConfig::botNavmesh == 1
++	bool hasNanoSuit = false;       // the native oxygen path dereferences the suit
++};
++
++inline bool BotWaterAllowed(const BotWaterFacts& f)
++{
++	return f.experimentalBuild && f.multiplayer && f.powerStruggle && f.owned && f.botActor &&
++		f.captureEnabled && f.navMeshEnabled && f.hasNanoSuit;
++}
++
++// Engine-side facts for one actor. Defined in BotWaterPolicy.cpp; the pure truth table above links without it.
++BotWaterFacts BotWaterFactsFor(const CPlayer& actor);
++bool BotWaterAllowedFor(const CPlayer& actor);
++}
+diff --git a/Tests/BotWaterPolicyTests.cpp b/Tests/BotWaterPolicyTests.cpp
+new file mode 100644
+index 00000000..f8643950
+--- /dev/null
++++ b/Tests/BotWaterPolicyTests.cpp
+@@ -0,0 +1,46 @@
++// DS-070: one gated water policy for the owned PowerStruggle bot (engine-free).
++// The same truth table gates canMove, the SafeStep ground ray, trap recovery and the native oxygen path, so an OFF
++// build, Instant Action, a human or an unowned actor can never get any of the exceptions.
++#include "CryGame/Bots/BotWaterPolicy.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++static BotWaterFacts AllOn()
++{
++	BotWaterFacts f;
++	f.experimentalBuild = true;
++	f.multiplayer = true;
++	f.powerStruggle = true;
++	f.owned = true;
++	f.botActor = true;
++	f.captureEnabled = true;
++	f.navMeshEnabled = true;
++	f.hasNanoSuit = true;
++	return f;
++}
++
++int main()
++{
++	// Positive: the owned PowerStruggle bot on a multiplayer server with both existing switches on.
++	assert(BotWaterAllowed(AllOn()));
++
++	// Every field is required: flipping any one off disables all water exceptions together.
++	{
++		BotWaterFacts f = AllOn(); f.experimentalBuild = false; assert(!BotWaterAllowed(f)); // OFF build
++		f = AllOn(); f.multiplayer = false;      assert(!BotWaterAllowed(f));              // Instant Action
++		f = AllOn(); f.powerStruggle = false;    assert(!BotWaterAllowed(f));              // non-PS mode
++		f = AllOn(); f.owned = false;            assert(!BotWaterAllowed(f));              // replica/unowned
++		f = AllOn(); f.botActor = false;         assert(!BotWaterAllowed(f));              // human actor
++		f = AllOn(); f.captureEnabled = false;   assert(!BotWaterAllowed(f));              // wb_ps_capture 0
++		f = AllOn(); f.navMeshEnabled = false;   assert(!BotWaterAllowed(f));              // wb_bot_navmesh 0
++		f = AllOn(); f.hasNanoSuit = false;      assert(!BotWaterAllowed(f));              // oxygen path needs a suit
++	}
++
++	// The default struct (all false) can never enable water.
++	{ BotWaterFacts f; assert(!BotWaterAllowed(f)); }
++
++	std::puts("BotWaterPolicyTests OK");
++	return 0;
++}
