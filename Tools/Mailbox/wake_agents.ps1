@@ -44,8 +44,9 @@ function Wake($agent,$repo,$prefix,$outbox){
  if(Test-Path $doneFile){$done=Get-Content $doneFile -Raw -Encoding UTF8|ConvertFrom-Json;if([DateTime]::Parse($done.finished).ToUniversalTime() -gt [DateTime]::UtcNow.AddMinutes(-[int]$cfg.IdleMin)){$busy='recent worker completion; cooldown'}}
  if($agent -eq 'codex' -and (Test-Path $cfg.HostThreadFile) -and (Get-Item $cfg.HostThreadFile).LastWriteTimeUtc -gt [DateTime]::UtcNow.AddMinutes(-[int]$cfg.IdleMin)){$busy='desktop thread recently active'}
  if($agent -eq 'deepseek'){
-  $session=& $cfg.Python (Join-Path $PSScriptRoot 'session_state.py') --session $cfg.DeepSeekSession|ConvertFrom-Json
+  $session=& $cfg.Python (Join-Path $PSScriptRoot 'session_state.py') --session $cfg.DeepSeekSession --latest|ConvertFrom-Json
   if($LASTEXITCODE){throw 'OpenCode session metadata lookup failed'}
+  Log "deepseek: current session=$($session.session)"
   if(-not $session.idle -or $session.age_seconds -lt $cfg.IdleMin*60){$busy="session recent/active age=$([int]$session.age_seconds)s pending=$($session.pending)"}
  }
  $verify=$agent -eq 'deepseek' -and (Test-Path (Join-Path $dir 'c122-deepseek-verification.request.json'))

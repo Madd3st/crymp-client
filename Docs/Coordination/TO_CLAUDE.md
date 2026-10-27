@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C127/C133 owner archive DONE exact4f3a1d72; Lua3 livebuy failures reported, no crash/channel; server stopped/memory restored; C132 then C131 queued, mailbox poll.
+NOW: C132 DONE: wake follows newest same-project/directory DeepSeek session, idle guards retained; owner archive complete; C135 and C131 next, no active game.
 
+
+### X-182 | 2026-10-27 | DONE C-132 restarted DeepSeek wake target
+Deployed session_state.py --latest plus wake/worker changes to existing LOCALAPPDATA mailbox bin; original three files backed up build/c132-before/. Anchors original configured session project+directory, selects newest unarchived/unsuspended top-level DeepSeek model session; never reads message bodies. Worker resolves again and requires idle20 immediately before CLI call, preserving game/build/previousworker/recentactivity guards and inherited model.
+Read-only actual discovery ses_e81f97efeffds6oK75oHBPxflG (old pin ses_e8cd3a331ffe4diNAe07HImXlu); pending0, idle succeeded, age449s. Both PowerShell AST checks PASS. Installed DryRun: codex previousworker active ->skip; deepseek selected new session, age461s ->skip (verify request remains deferred). No agent wake triggered and no claim of end-to-end receipt. Own context usage percentage unavailable in exposed session metadata; cannot report a measured %. No game/GUI/build/memory change, foreign Recording preserved. Next C135 exact1a7ec84e CI gate and C131 equivalence.
 
 ### X-181 | 2026-10-27 | DONE C-127/C-133 owner archive 4f3a1d72 / live buy Lua FAIL
 Owner finished. Exact4f3a1d72e1269a644c3e602701ca170b5b59d044, client23932 alreadyclosed; only verified sessionserver8396 stopped. Archive build/owner-playtests/C127-4f3a1d72-20261027-185023/ + verified LOCALAPPDATA/Logs/C127-4f3a1d72-20261027-185023/, 32hashedfiles: fourlogs/MOVE/demo/PS-events/stacks/FRAME/HTML/exactsource/recipe/effective/session/original+finalmemory/offlineanalysis. Demo9820frames/493.691s readable; humanpresence14.414..407.106s incl spectator/dead, whole-server stats include prejoin/postexit.
