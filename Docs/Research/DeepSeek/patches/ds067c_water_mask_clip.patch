@@ -1,0 +1,126 @@
+diff --git a/Tools/RecastBake/recast_bake.cpp b/Tools/RecastBake/recast_bake.cpp
+index 21a407a..5cf2724 100644
+--- a/Tools/RecastBake/recast_bake.cpp
++++ b/Tools/RecastBake/recast_bake.cpp
+@@ -332,56 +332,57 @@ struct TriGrid {
+ 
+ struct WaterStats { int cells = 0, tris = 0, blockedCells = 0; };
+ 
+-// DS-067 (C145 mask-oracle RED): a 2 m cell must be tested as a whole rectangle, not by its centre. The Codex
+-// oracle island x20.1..20.5 / y4.1..4.5 sits inside one cell and was missed by centre sampling, so its water quad
+-// overlapped solid ground. SAT over the triangle and the cell: touch counts as overlap (conservative).
+-static bool TriOverlapsRect(const float* a, const float* b, const float* c, float x0, float x1, float z0, float z1)
++// DS-067c: exact triangle/rectangle intersection. The first revision used SAT + boundary-inclusive contact, so the
++// two-shores shore edge lying exactly on the cell border blocked the neighbouring water cell and disconnected the
++// shores (C145 selftest RED). Sutherland-Hodgman clipping gives the *positive* overlap polygon: a zero-area touch is
++// ignored, and the clipped polygon carries the exact local min/max height (not a whole-triangle bbox or a sample).
++struct TriClip
+ {
+-	const float* p[3] = { a, b, c };
+-	float lo[2] = { 1e30f, 1e30f }, hi[2] = { -1e30f, -1e30f };
+-	for (int i = 0; i < 3; ++i)
+-	{
+-		lo[0] = std::min(lo[0], p[i][0]); hi[0] = std::max(hi[0], p[i][0]);
+-		lo[1] = std::min(lo[1], p[i][2]); hi[1] = std::max(hi[1], p[i][2]);
+-	}
+-	if (hi[0] < x0 || lo[0] > x1 || hi[1] < z0 || lo[1] > z1) return false;
+-	for (int i = 0; i < 3; ++i)
++	float x[8], y[8], z[8]; int n = 0;
++	float area = 0.f, minY = 0.f, maxY = 0.f;
++};
++
++static void ClipPoly(TriClip& p, int axis, float value, bool keepGreater)
++{
++	TriClip out;
++	for (int i = 0; i < p.n; ++i)
+ 	{
+-		const float* u = p[i]; const float* w = p[(i + 1) % 3];
+-		const float nx = w[2] - u[2], nz = -(w[0] - u[0]);
+-		if (fabsf(nx) + fabsf(nz) < 1e-9f) continue;
+-		float tmin = 1e30f, tmax = -1e30f;
+-		for (int j = 0; j < 3; ++j) { const float d = nx * p[j][0] + nz * p[j][2]; tmin = std::min(tmin, d); tmax = std::max(tmax, d); }
+-		float rmin = 1e30f, rmax = -1e30f;
+-		for (int cx = 0; cx < 2; ++cx) for (int cz = 0; cz < 2; ++cz)
+-		{ const float d = nx * (cx ? x1 : x0) + nz * (cz ? z1 : z0); rmin = std::min(rmin, d); rmax = std::max(rmax, d); }
+-		if (tmax < rmin - 1e-4f || rmax < tmin - 1e-4f) return false;
++		const int j = (i + 1) % p.n;
++		const float vi = axis == 0 ? p.x[i] : p.z[i];
++		const float vj = axis == 0 ? p.x[j] : p.z[j];
++		const bool ini = keepGreater ? (vi >= value) : (vi <= value);
++		const bool inj = keepGreater ? (vj >= value) : (vj <= value);
++		if (ini) { out.x[out.n] = p.x[i]; out.y[out.n] = p.y[i]; out.z[out.n] = p.z[i]; ++out.n; }
++		if (ini != inj)
++		{
++			const float t = (value - vi) / (vj - vi);
++			out.x[out.n] = p.x[i] + (p.x[j] - p.x[i]) * t;
++			out.y[out.n] = p.y[i] + (p.y[j] - p.y[i]) * t;
++			out.z[out.n] = p.z[i] + (p.z[j] - p.z[i]) * t;
++			++out.n;
++		}
+ 	}
+-	return true;
++	p = out;
+ }
+ 
+-// DS-067: highest triangle surface inside the cell (plane sampled at cell corners and contained vertices). +inf for
+-// a vertical/degenerate projection keeps the caller conservative.
+-static float MaxTriYInRect(const float* a, const float* b, const float* c, float x0, float x1, float z0, float z1)
++static bool TriClipToRect(const float* a, const float* b, const float* c, float x0, float x1, float z0, float z1, TriClip& out)
+ {
+-	float m = -1e30f;
+ 	const float* v[3] = { a, b, c };
+-	for (int i = 0; i < 3; ++i)
+-		if (v[i][0] >= x0 && v[i][0] <= x1 && v[i][2] >= z0 && v[i][2] <= z1) m = std::max(m, v[i][1]);
+-	const float den = (b[2] - c[2]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[2] - c[2]);
+-	if (fabsf(den) < 1e-6f) return 1e30f;
+-	const float pxAll[5] = { x0, x1, x0, x1, (x0 + x1) * 0.5f };
+-	const float pzAll[5] = { z0, z0, z1, z1, (z0 + z1) * 0.5f };
+-	for (int s = 0; s < 5; ++s)
++	out.n = 0;
++	for (int i = 0; i < 3; ++i) { out.x[out.n] = v[i][0]; out.y[out.n] = v[i][1]; out.z[out.n] = v[i][2]; ++out.n; }
++	ClipPoly(out, 0, x0, true); ClipPoly(out, 0, x1, false);
++	ClipPoly(out, 2, z0, true); ClipPoly(out, 2, z1, false);
++	if (out.n < 3) return false;
++	float twice = 0.f; out.minY = 1e30f; out.maxY = -1e30f;
++	for (int i = 0; i < out.n; ++i)
+ 	{
+-		const float px = pxAll[s], pz = pzAll[s];
+-		const float w0 = ((b[2] - c[2]) * (px - c[0]) + (c[0] - b[0]) * (pz - c[2])) / den;
+-		const float w1 = ((c[2] - a[2]) * (px - c[0]) + (a[0] - c[0]) * (pz - c[2])) / den;
+-		const float w2 = 1.f - w0 - w1;
+-		if (w0 < -1e-4f || w1 < -1e-4f || w2 < -1e-4f) continue;
+-		m = std::max(m, w0 * a[1] + w1 * b[1] + w2 * c[1]);
++		const int j = (i + 1) % out.n;
++		twice += out.x[i] * out.z[j] - out.x[j] * out.z[i];
++		out.minY = std::min(out.minY, out.y[i]);
++		out.maxY = std::max(out.maxY, out.y[i]);
+ 	}
+-	return m < -1e29f ? 1e30f : m; // crossing sliver with no sample inside: stay conservative
++	out.area = fabsf(twice) * 0.5f;
++	return out.area > 1e-4f; // 1 cm^2: a shared cell border is not coverage
+ }
+ 
+ // Recast frame: y is up.
+@@ -430,15 +431,14 @@ static void AddWaterSurface(const std::vector<float>& verts, const std::vector<i
+ 				const float* a = &verts[allTris[ti * 3] * 3];
+ 				const float* b = &verts[allTris[ti * 3 + 1] * 3];
+ 				const float* d = &verts[allTris[ti * 3 + 2] * 3];
+-				if (!TriOverlapsRect(a, b, d, x0, x1, z0, z1)) continue;
+-				const float lo = std::min(a[1], std::min(b[1], d[1]));
+-				const float hi = std::max(a[1], std::max(b[1], d[1]));
+-				if (lo > c.waterZ + eps) { blocked = true; break; }        // island/roof/deck/plateau above water
+-				if (hi < c.waterZ - eps) { below = true; continue; }       // submerged seabed or terrain
+-				// Triangle crosses the waterline: a cliff or quay would put water inside a wall; a slope rising more
+-				// than one climb step inside the cell would leave a walkable water tunnel under the hill.
++				TriClip cl;
++				if (!TriClipToRect(a, b, d, x0, x1, z0, z1, cl)) continue; // zero-area border touch is not coverage
++				if (cl.minY > c.waterZ + eps) { blocked = true; break; }   // solid above water inside this cell
++				if (cl.maxY < c.waterZ - eps) { below = true; continue; }  // submerged ground inside this cell
++				// The clipped part crosses the waterline: a cliff or quay would put water inside a wall; a slope rising
++				// more than one climb step inside the cell would leave a walkable water tunnel under the hill.
+ 				if (!TriSlopeOk(a, b, d, c.slope)) { blocked = true; break; }
+-				if (MaxTriYInRect(a, b, d, x0, x1, z0, z1) > c.waterZ + c.climb + eps) { blocked = true; break; }
++				if (cl.maxY > c.waterZ + c.climb + eps) { blocked = true; break; }
+ 				below = true;                                              // shallow shoreline: water reaches the edge
+ 			}
+ 			if (blocked) { ++stats.blockedCells; continue; }

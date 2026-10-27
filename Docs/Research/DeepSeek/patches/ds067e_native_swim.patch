@@ -1,0 +1,164 @@
+diff --git a/Code/CryGame/Actors/Player/Player.cpp b/Code/CryGame/Actors/Player/Player.cpp
+index b15ffac..e498965 100644
+--- a/Code/CryGame/Actors/Player/Player.cpp
++++ b/Code/CryGame/Actors/Player/Player.cpp
+@@ -2958,7 +2958,9 @@ void CPlayer::UpdateSwimStats(float frameTime)
+ 	if (ShouldSwim())
+ 	{
+ 		//by design : AI cannot swim and drowns no matter what
+-		if ((GetHealth() > 0) && !isClient && !gEnv->bMultiplayer)
++		// DS-067e: a WarsBots actor is an AI-driven player with the native swim path enabled below, so the stock
++		// instant AI drown does not apply to it. Stock/campaign AI keeps the original behaviour.
++		if ((GetHealth() > 0) && !isClient && !gEnv->bMultiplayer && !IsWarsBotActor())
+ 		{
+ 			// apply damage same way as all the other kinds
+ 			HitInfo hitInfo;
+@@ -3057,7 +3059,12 @@ void CPlayer::UpdateSwimStats(float frameTime)
+ //------------------------------------------------------------------------
+ void CPlayer::UpdateUWBreathing(float frameTime, Vec3 worldBreathPos)
+ {
+-	if (!IsPlayer())
++	// DS-067e: bots are IsPlayer=false but must use the same oxygen/drowning timer as a human player. This is not an
++	// immunity switch: headUnderWaterTimer still starts the native 60 s energy/health drown, and no HP is granted.
++	// Without a nanosuit the native path would dereference null, so keep the old early-out for that case.
++	if (!IsPlayer() && !IsWarsBotActor())
++		return;
++	if (!m_pNanoSuit)
+ 		return;
+ 
+ 	bool debugSwimming = (g_pGameCVars->cl_debugSwimming != 0);
+diff --git a/Code/CryGame/Bots/BotBlackboard.cpp b/Code/CryGame/Bots/BotBlackboard.cpp
+index 2c60b9c..e66fc49 100644
+--- a/Code/CryGame/Bots/BotBlackboard.cpp
++++ b/Code/CryGame/Bots/BotBlackboard.cpp
+@@ -17,9 +17,12 @@ void BotBlackboard::Sample(CPlayer& actor, float now)
+ 	pe_status_dynamics dynamics;
+ 	if (actor.GetEntity()->GetPhysics() && actor.GetEntity()->GetPhysics()->GetStatus(&dynamics)) velocity = dynamics.v;
+ 	moving = velocity.GetLengthSquared2D() > 0.09f;
++	swimming = actor.ShouldSwim();
++	// DS-067e: swimming is a movement state, not "cannot act". Keep every other guard; the land cliff/body
++	// protection stays in BotMovement::SafeStep and still runs while swimming.
+ 	canMove = health > 0 && !actor.IsFrozen() && !stats.isRagDoll && !stats.isOnLadder.Value() &&
+ 		stats.inFreefall.Value() <= 0 && !stats.inZeroG && !stats.isGrabbed && !stats.animationControlled &&
+-		!stats.spectatorMode && !stats.flyMode && !actor.GetLinkedEntity() && !actor.ShouldSwim();
++		!stats.spectatorMode && !stats.flyMode && !actor.GetLinkedEntity();
+ 	CNanoSuit* suit = actor.GetNanoSuit();
+ 	suitActive = suit && suit->IsActive();
+ 	energy = suit ? suit->GetSuitEnergy() : 0;
+diff --git a/Code/CryGame/Bots/BotBlackboard.h b/Code/CryGame/Bots/BotBlackboard.h
+index 35ebbd3..627c418 100644
+--- a/Code/CryGame/Bots/BotBlackboard.h
++++ b/Code/CryGame/Bots/BotBlackboard.h
+@@ -14,6 +14,7 @@ struct BotBlackboard
+ 	ENanoMode mode = NANOMODE_DEFENSE;
+ 	bool suitActive = false, grounded = false, moving = false, blocked = false, visible = false;
+ 	bool canMove = false;
++	bool swimming = false; // DS-067e: deep water; Move skips only the ground probe, never body collisions
+ 	BotJump obstacleJump = BotJump::None;
+ 	void Sample(CPlayer& actor, float now);
+ };
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index e262482..63805b2 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -1232,7 +1232,8 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
+         !g_pGame->GetBotManager().Owns(actor.GetEntityId()) || !g_pGame->GetBotManager().CanRunLocalIA())
+     { m_trap.Reset(); m_trapStepUntil=0; return false; }
+     const Vec3 p=actor.GetEntity()->GetWorldPos();
+-    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove,false);
++    // DS-067e: a swimmer that makes no progress is not a land trap; never escalate to level 4 (self-kill) in water.
++    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove && !m_blackboard.swimming,false);
+     if (level)
+     {
+         WB_LOG(1,"[WarsBots] TRAP RECOVERY level=%d actor=%u age=%.2f pos=(%.2f,%.2f,%.2f) blocked=%d speed=%.2f grounded=%d sink=%d.",
+diff --git a/Code/CryGame/Bots/BotLocomotion.cpp b/Code/CryGame/Bots/BotLocomotion.cpp
+index 5fef1e0..c2209cd 100644
+--- a/Code/CryGame/Bots/BotLocomotion.cpp
++++ b/Code/CryGame/Bots/BotLocomotion.cpp
+@@ -106,7 +106,8 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
+ 	bool jump=false;
+ 	if (intent.jump!=BotJump::None)
+ 	{
+-		if (!state.grounded || m_pending || m_airborne) Refused(actor,"jump_not_grounded_or_pending",now);
++		if (state.swimming) Refused(actor,"jump_swimming",now);
++		else if (!state.grounded || m_pending || m_airborne) Refused(actor,"jump_not_grounded_or_pending",now);
+ 		else if (intent.stance==STANCE_PRONE || actor.GetStance()==STANCE_PRONE) Refused(actor,"jump_prone",now);
+ 		else if (now<state.nextJump) Refused(actor,"jump_cooldown",now);
+ 		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<(pace?70.f:90.f))) Refused(actor,"jump_strength_mode_or_energy",now);
+@@ -129,7 +130,7 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
+     if(intent.move){
+         const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(intent.stance):2.5f);
+         const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
+-        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo,intent.meshPath,intent.arrive);
++        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo,intent.meshPath,intent.arrive,state.swimming);
+     }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
+ 	state.blocked=intent.move && !accepted;
+ 	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,intent.stance);
+diff --git a/Code/CryGame/Bots/BotMovement.cpp b/Code/CryGame/Bots/BotMovement.cpp
+index e912294..582d616 100644
+--- a/Code/CryGame/Bots/BotMovement.cpp
++++ b/Code/CryGame/Bots/BotMovement.cpp
+@@ -52,7 +52,7 @@ void BotMovement::Look(CActor& actor, const Vec3& target)
+ 	}
+ }
+ 
+-bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided, float slope) const
++bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided, float slope, bool swimming) const
+ {
+ 	if (!gEnv->pPhysicalWorld || !actor.GetEntity()->GetPhysics())
+ 		return false;
+@@ -69,13 +69,16 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bo
+ 		if (!(meshGuided && height < 1.0f) && gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), (direction + Vec3(0,0,slope)) * probe,
+ 			ent_all, flags, &hit, 1, actor.GetEntity()->GetPhysics(), heldPhysics))
+ 			return false;
++	// DS-067e: in deep water the ground probe cannot hit (seabed is far below); the stock movement controller owns
++	// buoyancy. Only this ray is skipped - the body/cliff rays above already returned false on a wall or held item.
++	if (swimming) return true;
+ 	// Stop at real cliffs only: drops up to ~3 m are taken (Armor absorbs the landing, see BotBrain).
+ 	return gEnv->pPhysicalWorld->RayWorldIntersection(feet + direction * (probe-0.3f) + Vec3(0,0,0.6f),
+ 		Vec3(0,0,-3.6f), ent_terrain | ent_static | ent_rigid | ent_sleeping_rigid,
+ 		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
+ }
+ 
+-bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided, float arrive)
++bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided, float arrive, bool swimming)
+ {
+ 	auto* controller = actor.GetMovementController();
+ 	if (!controller) return false;
+@@ -115,7 +118,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
+ 		m_sampleTime = 0;
+ 	}
+ 	m_avoidTime = max(0.0f, m_avoidTime - dt);
+-	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided, slope));
++	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided, slope, swimming));
+ 	m_turned = false;
+ 	if (!safe)
+ 	{
+@@ -123,7 +126,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
+ 		for (float angle : {m_side * 0.8f, -m_side * 0.8f, m_side * 1.57f, -m_side * 1.57f, m_side * 2.36f, -m_side * 2.36f, 3.14159f})
+ 		{
+ 			Vec3 candidate = Quat::CreateRotationZ(angle) * direction;
+-			if (SafeStep(actor, candidate, probe, meshGuided)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
++			if (SafeStep(actor, candidate, probe, meshGuided, 0.f, swimming)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
+ 		}
+ 	}
+ 	if (!safe) { Stop(actor); Aim(actor, lookAt); return false; }
+diff --git a/Code/CryGame/Bots/BotMovement.h b/Code/CryGame/Bots/BotMovement.h
+index 9bfb522..c75c981 100644
+--- a/Code/CryGame/Bots/BotMovement.h
++++ b/Code/CryGame/Bots/BotMovement.h
+@@ -11,12 +11,12 @@ public:
+ 	void Reset();
+ 	void Stop(CActor& actor);
+ 	// Returns whether a safe local movement request was accepted, not arrival.
+-	bool Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed=2.5f, EStance stance=STANCE_STAND, float probe=1.5f, bool jumpTraverse=false, bool strafe=false, float pseudo=-1.f, bool meshGuided=false, float arrive=0.8f);
++	bool Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed=2.5f, EStance stance=STANCE_STAND, float probe=1.5f, bool jumpTraverse=false, bool strafe=false, float pseudo=-1.f, bool meshGuided=false, float arrive=0.8f, bool swimming=false);
+ 	void Aim(CActor& actor, const Vec3& target);
+ 	// Look-only request (view/aim/fire targets); move target, speed and body target stay as requested last.
+ 	void Look(CActor& actor, const Vec3& target);
+ private:
+-	bool SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided=false, float slope=0) const;
++	bool SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided=false, float slope=0, bool swimming=false) const;
+ 	Vec3 m_sample = Vec3(0,0,0);
+ 	float m_sampleTime = 0;
+ 	float m_avoidTime = 0;

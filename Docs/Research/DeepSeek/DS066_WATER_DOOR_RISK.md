@@ -102,11 +102,11 @@ water mesh install for a capture run before gate D.
 
 ## 5. Smallest next evidence (in order)
 
-1. Codex: compile + run DS-067a/b selftest; publish `fixture-results.json` and the two patch SHAs.
+1. Codex: apply 067c on 067a/b, rebuild, rerun the selftest; publish `fixture-results.json` and the patch SHAs.
 2. If gentle-shore is red: choose off-mesh links vs `--water-cell 1` from the measured component report.
 3. Bake Shore offline; publish components/blocked_cells and per-point route costs; do not install.
-4. Door: one C140-style replay with the DS-063 patch, adding a rejection log, to prove (1) the 20 s open and (2) the
-   physical crossing. This is the named missing observation; no other run is justified before it.
+4. Door: one C140-style replay with 067d (not ds063) to prove (1) the 20 s open, (2) the physical crossing, and (3)
+   vehicles-on does not preempt capture. This is the named missing observation.
 5. Water traversal stays a separate decision (swim policy below). Not part of C145 and not a new flag until the
    owner/Codex accept the scope; without it, keep water polygons out of bot paths (fail-closed) rather than ship a
    freeze/drown route.
@@ -156,3 +156,64 @@ promotes/deletes a flag in the same item (net-zero rule). Owner decision; not pa
   and the filter cost at `WB_LOG(2)` (diagnostic, no flag), so a run can be compared 1:1 with the tool's `path` JSON.
 * `waterCost` must stay one constant in both places; the DS-067 docs carry the pair, and the selftest asserts 4 vs 1
   behaviour rather than the printed number.
+
+## 8. DS-067 follow-up after the C145 selftest RED
+
+### 8.1 Mask: boundary contact is not coverage (`ds067c_water_mask_clip.patch`)
+
+The first 067a revision used SAT with inclusive contact, so a shore edge lying exactly on a cell border counted as
+coverage: the two-shores shore triangle at `x=10` blocked the water cell `x=10..12`, every edge cell was removed and the
+positive case disconnected (Codex: selftest RED at positive two-shores). The fix replaces both helpers with exact
+Sutherland-Hodgman clipping of the triangle against the cell (`TriClipToRect`): the overlap polygon must have area
+> 1 cm^2 (a shared border is 0), and `minY`/`maxY` are taken over the *clipped* polygon instead of the whole-triangle
+bbox or sampled corners. Consequences: boundary-only contact is ignored, a tiny island still has positive area and
+blocks its cell, and a large triangle is classified by its local height inside the cell. Expected: two-shores
+water `1 component / item reachable`; roof `0` water / 3 components; tiny-island footprint untouched; gentle shore
+`1` component; detour cost 4 -> `water_polys 0`, cost 1 -> `>0`. Applies after 067a+067b; no interface change.
+Not compiled here; this is the exact RED fix Codex asked for.
+
+### 8.2 Door-only ordering (`ds067d_door_only_order.patch`, base `2e0a6641`, supersedes `ds063_door_priority.patch`)
+
+The combined `UpdatePSInteract` returns true for vehicles, so moving the whole function before capture gives vehicles
+priority over capture. 067d splits it: `UpdatePSDoors` (door block, always returns false) is called before
+`UpdatePSCapture`; `UpdatePSInteract` keeps only the vehicle enter/exit and stays **after** capture, exactly as today.
+`UpdateRoam` order becomes doors -> capture -> vehicles (`BotBrain.cpp:845-847` in the patched file). It also bounds
+the 10 Hz proximity scan (`m_nextDoorUse=m_now+0.25f` at scan start), keeps the 2 s per-door cooldown, and folds in
+the DS-063 `pre/post/dist/positions` log plus a `WB_LOG(2) ... reason=ahead` rejection line. Do **not** apply it on
+top of ds063 (same hunks); use it as the door patch for C145. Vehicles-on priority is unchanged, so a `wb_ps_vehicles 1`
+run remains a separate acceptance case.
+
+### 8.3 Native swim (`ds067e_native_swim.patch`, base `2e0a6641`, applies after 067d)
+
+The blocker chain is proven: `ShouldSwim()` -> `canMove=false` (`BotBlackboard.cpp:20-22`) -> `Stop` every tick
+(`BotLocomotion.cpp:103`), and `SafeStep`'s ground ray cannot hit in deep water (`BotMovement.cpp:73-75`). The stock
+AI drown is 30 HP/s (`Player.cpp:2958-2970`), but the native oxygen path is disabled for bots by `if (!IsPlayer())
+return;` (`Player.cpp:3060`). Skipping the AI damage alone would therefore make bots immortal in water, which is
+forbidden; deleting all drowning is also forbidden.
+
+067e instead routes the bot through the native path:
+* `BotBlackboard`: add `swimming=ShouldSwim()`; remove only `!ShouldSwim` from `canMove` (health/frozen/ragdoll/
+  ladder/freefall/grab/spectator/vehicle guards stay).
+* `BotMovement::SafeStep`: `swimming` skips **only** the downward ground ray at `:73-75`; the nine body/cliff rays at
+  `:67-71` still return false, so a dry cliff or a quay wall is still refused. `Move` forwards the flag.
+* `BotLocomotion`: passes `state.swimming`, refuses `jump_swimming`; sprint already requires `grounded` (false in water).
+* `Player.cpp`: skip the instant AI drown only for `IsWarsBotActor()` in the `ShouldSwim` branch, and let
+  `UpdateUWBreathing` run for `IsWarsBotActor()` with a `m_pNanoSuit` guard. The bot now uses the human timer:
+  60 s head-under-water -> 30 s nanosuit energy drain -> 10 s health drain. No HP is granted, no damage is removed,
+  stock/campaign AI is unchanged. `UpdateSwimStats` is called for every actor (`Player.cpp:3241`), so the timers are
+  real for a server-side bot (C140 logged health/spectator from the same stats).
+* `BotBrain::RecoverTrap`: the trap watchdog sees `canMove` true in water; pass `canMove && !swimming` so it cannot
+  escalate to level 4 (self-kill) while swimming.
+
+Entry/exit: entry only when `ShouldSwim()` turns true (bottom depth >= 1.3 m); shallow water keeps the old ground path.
+Exit needs a navmesh landing within `climb` (`NavMeshCore::Project`, side 1.5, up 1.0, down 3.0) and clear body rays;
+a quay higher than `climb` remains a cliff. Residual risks: combat/suit behaviour while swimming is not gated (the
+bot may fire from water); a bot that falls into water in a non-PS map now swims instead of freezing (repair, but a
+behaviour change); the native breathing path plays sounds on a server actor (guarded by `gEnv->bServer` for damage).
+Flag: no new `wb_*`; active only when the existing default-OFF capture/navmesh path puts a bot in deep water.
+
+Engine-free evidence plan: a pure decision table `WaterStep(swimming, bodyBlocked, groundHit, depth)`:
+land+ground -> normal; land+no ground -> refuse (cliff/void); swimming+bodyBlocked -> refuse (dry-cliff negative);
+swimming+no body+depth>=1.3 -> allow; depth<1.3 -> wade/ground. Runtime (one planned scenario, after exact-SHA CI +
+review): land-cliff MOVE TRACE negative (speed ~0, no fall), >=30 m water leg positive (speed >0.5 m/s, HP unchanged,
+exit on land), and a submerged hold to observe the native 60 s drown (do not ship if it never damages).
