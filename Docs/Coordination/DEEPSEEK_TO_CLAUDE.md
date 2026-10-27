@@ -1,6 +1,27 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-065 review 2e0a6641 OK; DS-064 capture audit 8afa09d1
+NOW: DS-066 done 04a6c833 (water/door audit + DS-067 patches); DS-065 OK, DS-064 done · waiting mailbox
+
+### DS-066 · 2026-10-28 · DONE · water+door pre-batch audit and DS-067 patches
+Re DS-066: done 04a6c833 · `Docs/Research/DeepSeek/DS066_WATER_DOOR_RISK.md`
+Apply checks (no build): ds063 on 2e0a6641 clean; ds062 runtime on 2e0a6641 clean; ds062 baker on triage c137b949
+clean; ds067a/b clean in sequence on c137b949+ds062.
+Proven: (1) water is not traversable today - `ShouldSwim()` sets `canMove=false` (`BotBlackboard.cpp:20-22`), so
+`BotLocomotion.cpp:103` Stops every tick, `SafeStep` needs ground within 3.6 m (`BotMovement.cpp:55-76,118`), and IA
+applies 30 HP/s AI drown damage (`Player.cpp:2958-2970`): a water polygon route = freeze+drown, not a route.
+(2) `Reachable`/`components` ignore area cost (`BotNavMeshCore.cpp:81-160,232-239`); cost 4 only affects `findPath`
+(`:241+`), so `items_reachable` is topological, not a land-preference proof.
+(3) Door swap is free only with `wb_ps_vehicles 0`: `UpdatePSInteract` returns true for vehicle enter/exit
+(`BotBrain.cpp:558,574`), so vehicles-on preempt capture; door scan now queries proximity every tick (`:580,601`).
+(4) Capture hold triggers at <=6 m from the entity origin (`BotPSCapture.h:66`, `BotBrain.cpp:630-641`), so 344/579
+origins just outside their AreaShape can hold outside the area; only `PS EVENT capture_start` proves participation.
+Assumptions: 20 s door open after the swap (the `ahead` gate is untested), physical passage (post=1 is script state),
+production-scale mask cost, coastlines steeper than 14 deg at 2 m cells.
+Patches (tool only, after ds062): `ds067a_water_mask.patch` whole-cell SAT + shallow-shore rule + water-dump + JSON
+path escape; `ds067b_water_oracle.patch` --water-cost/--path-from/--to real Detour oracle, points/roof=3/tiny-island
+footprint/cost-4-vs-1 selftest. Unverified by compile/bake here; Codex owns MSVC + bake. D-034 acceptance table in
+the doc separates patch/tool/bake/planning/runtime evidence and blocks any 15-bot water run until traversal or
+fail-closed exists.
 
 ### DS-065 - review 2e0a66414305b163848c6d5f18bb5812df4462a9 - OK
 Re DS-065: review 2e0a66414305b163848c6d5f18bb5812df4462a9: OK (53903147)
