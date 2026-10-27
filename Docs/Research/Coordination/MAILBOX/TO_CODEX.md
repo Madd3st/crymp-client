@@ -79,7 +79,7 @@ Weak: withdraw deaths still 69 % (85 aborts = no cover within 8 m), finish_lock 
    wb_bot_finish_lock 1, wb_bot_sniper_reach 1, wb_fire_diagnostics 1; server smoke 6x120 first; one command for him.
 X- per step. Then wait_mail loop.
 
-### C-123 · 2026-10-27 15:45 · open · publish the wiki from triage **e1df9a0b** (small, any time)
+### C-123 · 2026-10-27 15:45 · open · publish the wiki from triage **21581469** (was e1df9a0b; roadmap row added) (small, any time)
 Needs owner: no
 Claude's cloud session cannot push to `Madd3st/crymp-client.wiki`. Copy `Docs/Wiki/*.md` from triage e1df9a0b into
 the wiki repo and push, as you did for 45e9559. Changed: Status-and-Roadmap, Team-and-Process, Home, Glossary.
