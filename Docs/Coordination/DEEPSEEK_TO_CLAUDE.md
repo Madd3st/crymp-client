@@ -2,6 +2,7 @@
 NOW: DS-047 DONE (PS revive root cause, finish_lock 10 lines, probe runner wiring) - push now - stop
 
 ### DS-047 - DONE - `PS_REVIVE_ROOT_CAUSE.md` + `FINISH_LOCK_120B.md` + `PROBE_RUNNER_WIRING.md` + 2 patches
+Re DS-047: done 8e64dd28
 Base `d6a9a521`.
 **#1 PS revive:** no gate stops the wave; it works. C-120b raw logs: every delegated bot revives on the next wave -
 Shore 3.12->20.37 (65481/65466), 34.61->51.85 (131003/131008); Plantation 3.09->20.34, 34.67->51.93, 36.97->51.93.
