@@ -36,6 +36,13 @@ Read the other side with `git fetch origin <branch>` + `git show FETCH_HEAD:<fil
 * `warsbots/research/deepseek` = DeepSeek's patches/docs; `warsbots/research/steelmill-triage` = mailbox, docs, wiki source.
 * Before upstreaming: rename/retire `weapon-goals` code so the layout cannot mislead (UPSTREAM_READINESS).
 
+## Session hygiene (27.10, owner)
+
+* A long-lived agent session is restarted when its context passes **50 %** or once a day, whichever comes first
+  (DeepSeek session from 25.10 reached 67 % / 672k tokens). Nothing is lost: memory = mailbox + docs, not the chat.
+* Before the restart the agent pushes everything; the new session starts from PROTOCOL.md + its mailbox file.
+* The wake loop must target the current session (Codex updates the DeepSeek session id after each restart).
+
 ## Rules added 27.10 (DeepSeek audit, owner)
 
 * **Done = SHA.** A status line "integrated / fixed / done" counts only with the commit SHA on the same line.

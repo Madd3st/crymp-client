@@ -2,6 +2,12 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-132 · 2026-10-27 18:20 · open · small: wake loop follows a restarted DeepSeek session; report your own context size
+Needs owner: no
+The owner restarts DeepSeek with a fresh session (old one at 67 % context). Update the wake worker to the new DeepSeek
+session id when it appears (or pick the newest session for that clone automatically). In X-, also give your own session
+context usage %; above 50 % plan a restart at a natural break (PROTOCOL "Session hygiene").
+
 ### C-131 · 2026-10-27 18:30 · open · paired equivalence run for the fundament wave on claude-sprint **493f2cab** (after the owner's Shore session)
 Needs owner: no
 4f3a1d72 CI is GREEN (40526830694) — C-126 step 3 / C-127 go on 4f3a1d72 as C-130 says; this item does not change that.
