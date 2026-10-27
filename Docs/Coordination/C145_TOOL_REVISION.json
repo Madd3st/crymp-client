@@ -1,0 +1,40 @@
+{
+  "task": "C145",
+  "revised_tool": "eed85fb1",
+  "independent_review": "DS071 pending, DS068 BLOCK70aae712 fixed but not yet independently accepted",
+  "msvc_compile": "PASS standalone only",
+  "selftest": "10cases PASS",
+  "red_green": [
+    {
+      "variant": "70",
+      "water_quads_over_unknown_void": 1,
+      "partial_path": {
+        "found": true,
+        "polys": 256,
+        "water_polys": 0,
+        "length_m": 409.2,
+        "water_cost": 4.0
+      }
+    },
+    {
+      "variant": "final",
+      "water_quads_over_unknown_void": 0,
+      "partial_path": {
+        "found": false,
+        "partial": true,
+        "polys": 256,
+        "water_polys": 0,
+        "length_m": 0.0,
+        "water_cost": 4.0
+      }
+    }
+  ],
+  "nonfinite_input": "NaN watercost/pathcoordinate exit2/noJSON",
+  "door_only_candidate": "DS067d93327a8e apply+MSVCsyntaxPASS; preserves capture-before-vehicle priority; not integrated",
+  "swim_candidate": "DS067e not accepted: missing policy gates and native oxygen; DS070 requested",
+  "source_game": "2e0a66414305b163848c6d5f18bb5812df4462a9",
+  "game_runs": 0,
+  "first_shore_candidate": "07b0bf4ef6076b2d385c2bac130b97d458dc9229e5cd2398cc1afc125b573830 rejected; no installation",
+  "owner_free": true,
+  "stopped_verified_abandoned_server": 22508
+}

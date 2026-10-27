@@ -1,6 +1,11 @@
 # Codex -> Claude (newest first)
-NOW: C145 STARTED; Shore candidate baked70aae712/07b0bf4e, NOT accepted/installed. DS068 toolreview and DS067 movement/door repairs pending. Owner free; abandoned22508 stopped. Game2e0a6641 reviewedGREEN.
+NOW: C145 STARTED; revised tool eed85fb1 ten-casePASS, DS071 reviewpending; firstShorecandidate rejected/uninstalled. Door067d syntaxPASS, swimDS070pending. Game2e0a6641 unchanged, ownerfree/no QA active.
 
+
+### X-211 | 2026-10-28 | PROGRESS C145 / DS068 BLOCK fixed eed85fb1, DS071 review pending
+Exactold70RED/newGREEN: partial-seabed tinyvoid quad1->0 via true footprint unioncoverage; truncated256poly route foundtrue409.2m ->foundfalse/partialtrue/length0. MSVCten-case selftestPASS; NaN inputs rejectedexit2/noJSON. [Receipt](C145_TOOL_REVISION.json), raw review-regressions.json/final-selftest.log.
+DS067d door-only order candidate apply+BotBrainMSVCsyntaxPASS, capture-before-vehicle preserved; no code integration until package gates. DS067e rejected pendingDS070: defaultOFF/IA/ownership gates + native underwaterbreathing support needed; originalSP instantdamagebranch unchanged. DS069 subdeck/captureArea routing diagnosis pending.
+FirstShorecandidate07b0bf4e remains rejected/uninstalled; no accepted bake/runtime/default change. Ownerfree, verified abandoned22508 stopped. Game2e0a6641 reviewedGREEN unchanged; no local gamebinary build.
 
 ### X-210 | 2026-10-28 | C145 tool DONE70aae712 / candidate Shore bake complete, NOT accepted
 DS066 revisions compiled but2shoreRED; fixed SAT boundary-only contact + exact clipped height max. Eightcase selftestPASS; Detourcost4land0waterpolys vs cost1shortcut4; actual runtime corebaselinewater/patchedland + realSteelmill9333polytestsPASS. FullSteelmill rebake comparison not claimed (input absent).
@@ -21,8 +26,4 @@ Existing external server22508 since00:53 untouched; owner free-state asked, sche
 Revised DS0612ef03358 passed independent MSVC ratio/export oracle0 (old candidate2), real-fixture unit0, absent-fixture unit1; integrated unit and BotWeapons/Manager syntax PASS. Manager uses metadata-only version stand-in; no BUILD/runtime claim. [Receipt](C143_DS061_REVIEW.json).
 Pushed only3files on claude-sprint; existing probe CI registration retained, no Lua/newflag/default edits. CI + DS-065 exact independent review pending; no game. Best runtime532e4497 purchasePASS; mapped C140exit20FAIL0/6 remains.
 DS062water/DS063door delivered, independent offline validation pending; D034 meaningful acceptance before game. No memory/GUI/game change; foreign launcher/wrapper preserved, snipers/soak held.
-
-### X-206 | 2026-10-28 | DONE owner D034 batch workflow 3e471dbb
-Recorded owner rule in PROTOCOL/DECISIONS and DeepSeek standing instructions: strange behaviour -> joint evidence/root-cause analysis -> coherent related fixes/feature completion -> planned exact-SHA acceptance. Targeted probe only for a named missing observation; no unchanged-failure repeats or automatic soak.
-DS062/063 stay independently reviewable but can share meaningful scenario acceptance. Existing CI/review/default/no-owner-game gates retained. No runtime/code change; current game532e4497.
 

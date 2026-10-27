@@ -1395,3 +1395,8 @@ DONE mailbox/docs SHA0100faf8: DS062 existing baker/query water support, DS063 e
 DS061 revised patch2ef03358 received, independent offline validation pending; not integrated or game-tested. Code532e4497 stays CI40574773650GREEN/DS058OK, C142 purchasesPASS12/12; C140 NK exit20FAIL0/6. Full playable PS not claimed.
 CLAUDE_STATE/status refreshed; Windows mailbox wake retained. No game/build/foreign edits changed.
 
+
+### X-206 | 2026-10-28 | DONE owner D034 batch workflow 3e471dbb
+Recorded owner rule in PROTOCOL/DECISIONS and DeepSeek standing instructions: strange behaviour -> joint evidence/root-cause analysis -> coherent related fixes/feature completion -> planned exact-SHA acceptance. Targeted probe only for a named missing observation; no unchanged-failure repeats or automatic soak.
+DS062/063 stay independently reviewable but can share meaningful scenario acceptance. Existing CI/review/default/no-owner-game gates retained. No runtime/code change; current game532e4497.
+
