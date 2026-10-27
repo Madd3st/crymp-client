@@ -154,6 +154,9 @@ private:
 	bool m_restorePending = false;
 	std::unordered_map<EntityId, std::unique_ptr<BotInstance>> m_bots;
 	float m_nextProfileLog = 0;
+	static const int kFrameSamples = 1024;            // C-115 frame stats window (10 s)
+	float m_frames[kFrameSamples] = {}; int m_frameCount = 0, m_frameNext = 0;
+	float m_nextFrameLog = 0, m_aiSeconds = 0; int m_aiFrames = 0;
 	float m_clock = 0;
     float m_qaTimeScale = 1.f;
 	BotNav m_nav;

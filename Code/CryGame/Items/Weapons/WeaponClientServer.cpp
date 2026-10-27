@@ -707,6 +707,13 @@ IMPLEMENT_RMI(CWeapon, SvRequestReload)
 //------------------------------------------------------------------------
 IMPLEMENT_RMI(CWeapon, ClReload)
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	// C-115: a client sees a channel-less (WarsBot) owner's reload - proof that the server broadcast arrives
+	if (!gEnv->bServer)
+		if (CActor* owner = GetOwnerActor())
+			if (owner->GetChannelId() == 0)
+				CryLogAlways("[WarsBots] CLIENT RELOAD seen actor=%u weapon=%s", owner->GetEntityId(), GetEntity()->GetClass()->GetName());
+#endif
 	if (m_fm)
 	{
 		if(m_zm)

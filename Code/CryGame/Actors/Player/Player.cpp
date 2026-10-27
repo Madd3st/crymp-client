@@ -2325,6 +2325,9 @@ void CPlayer::EnableFpSpectatorTarget(bool activate)
 {
 	if (IsClient())
 		return;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	CryLogAlways("[WarsBots] SPECTATOR FP %s target=%u bot=%d", activate ? "on" : "off", GetEntityId(), IsWarsBotActor() ? 1 : 0); // C-115 camera mode
+#endif
 
 	if (!activate)
 	{

@@ -19,6 +19,7 @@
 #include "CryGame/Items/Weapons/WeaponSystem.h"
 #include "CryGame/Items/Weapons/Projectile.h"
 #include <ctime>
+#include <chrono>
 #include <algorithm>
 #include <cerrno>
 #include <cmath>
@@ -434,9 +435,24 @@ void BotManager::OnPostUpdate(float dt)
 	// IA game resets, so only level changes discard it.
 	if (m_levelReady && CanRunLocalIA()) { m_nav.Begin(); m_nav.Step(2.0f); m_nav.Tick(dt); }
 	m_clock += dt;
+	// C-115: server frame time and bot AI cost, logged every 10 s (Codex had no native frame timer)
+	const float realFrame = gEnv->pTimer->GetRealFrameTime();
+	if (m_frameCount < kFrameSamples) m_frames[m_frameCount++] = realFrame; else m_frames[(m_frameNext++) % kFrameSamples] = realFrame;
+	const auto aiStart = std::chrono::steady_clock::now();
 	// Stable order by display number; vector copy keeps iteration valid if a callback sweeps.
 	for (BotInstance* bot : Ordered()) bot->Update(dt);
+	m_aiSeconds += std::chrono::duration<float>(std::chrono::steady_clock::now() - aiStart).count(); ++m_aiFrames;
 	Sweep();
+	if (m_clock >= m_nextFrameLog && m_frameCount > 0)
+	{
+		m_nextFrameLog = m_clock + 10.0f;
+		std::vector<float> f(m_frames, m_frames + m_frameCount); std::sort(f.begin(), f.end());
+		float sum = 0; for (float x : f) sum += x;
+		WB_LOG(1, "[WarsBots] FRAME avg=%.2fms p95=%.2fms max=%.2fms botAI=%.3fms/frame bots=%d server=%d.",
+			1000.f * sum / f.size(), 1000.f * f[size_t(0.95f * (f.size() - 1))], 1000.f * f.back(),
+			m_aiFrames ? 1000.f * m_aiSeconds / m_aiFrames : 0.f, Count(), gEnv->bServer ? 1 : 0);
+		m_frameCount = 0; m_frameNext = 0; m_aiSeconds = 0; m_aiFrames = 0;
+	}
 	if (m_defaultVerbose && m_clock >= m_nextProfileLog)
 	{
 		StatusReport();
