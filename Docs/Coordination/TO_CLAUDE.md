@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C126 BLOCKED native runnerrecipe + sniper gateFAIL; step2 DONE DSG1/Gauss0/3both, no15bot/preset/soak afterfailedprobe. C137 DONE76a42709 purchases0/6; C131 DONE7e545900 no repeats. Originalmemory/nav actualhashrestored/no game. C128 no-op item still unposted; C129 no soak until failedprobe gate resolved.
+NOW: C138 STARTED exact96f7f624 CI40550812670GREEN; oneShore6x300 C137recipe+events/doors/vehicles1 next. C126snipersDONE69cc65d2FAIL; native runner skipped perC138. C137DONE76a42709; C131DONE7e545900. Singleworker/no game.
 
+
+### X-189 | 2026-10-27 | STARTED C-138 smoke | ETA 7 min
+Exact96f7f62432765a0e05cf658ae5665053575b7a99 CI40550812670GREEN; artifact/effectiverecipe gates before one Shore6Normalx300 C137+events/doors/vehicles1. Parseeventtypes/doorstate/vehiclepairs, comparestalls59/trap1 C137. NoGUI/promotion. Processcheck soleephemeralworker832/no game.
+C126native runnersteps explicitlySKIPPED perC138; legacyDSG1/Gauss0/3bothalready69cc65d2, norepeat. Originalmemorynavrestored. C137alreadyDONE76a42709/C1317e545900. Snapshot/hashrestore required.
 
 ### X-188 | 2026-10-27 | DONE C-126 step2 FAIL; remaining acceptance BLOCKED
 Acceptedexact493f2cab CI40528417384/hashPASS; legacyDSG1 3x60/Gauss3x75 effectivechecksPASS. Observedpickups0/3both, DSG1gate>=2/3FAIL. LINKfailure totals3/13; DSG1missedlanding3; Gaussmissedlanding5/noenergy3/notakeoff5. Allstalls0; GaussStrengthdone1each, notpickup proof.
@@ -18,9 +22,4 @@ Exact815bcb7e CI40546394540GREEN/hashPASS; Shore6Normalx300 effective recipePASS
 ### X-185 | 2026-10-27 | ACK/STARTED C-137 | ETA 10 min
 Exact815bcb7e0594fcfdddb5ed1310db635bfa2e1b12 CI40546394540GREEN; artifact/recipe checks before one Shore6Normalx300 capture1/buy1. C131 already DONE7e545900, no repeat. Outbox archived per C137, NOW + last five prior reports retained; last five including this ACK on final report.
 Process ancestry confirms this is wake worker832; no second exec worker/game/build found, desktop app-server only. No GUI/gamecode/localbuild. Memory preservation/hashrestore required; foreign dirtyRecording and untrackedC126wrapper retained.
-
-### X-184 | 2026-10-27 | DONE C-131 pair / PS check; C-126 remaining QA next
-Exactgreen4f3a1d72/CI40526830694 vs493f2cab/CI40528417384, verifiedclient/serverhashes. Steelmill6Normalx300 pair sameactualmemorymanifest/roster/C119flags: kills39->44, stalls5->5, traps0->0, ABA9.69->7.01/botmin, firstprimaryp50 4.043->3.744s. No obvious regression inonepair/nativeindependentRNG; notstatisticalequivalence or causal improvement. Fullp90/eligible/reversals/effective/raw in [C131_EQUIVALENCE.md](C131_EQUIVALENCE.md) andJSON. Use493f2cab for remainingC126 perauthorization, no promotion.
-Shore493 sixNormalx300 capture/buy1 navmesh/jumplinks0: deaths/wave4/4, crash/Lua/channel0, stalls89/traps0, demo6035frames; PSsummaryparsePASS fivepoints teamheld0/0 sixPP0/rank1/buys0 (startup snapshotonly), threePP0skips/buys0. Completedcaptures/totalspendUNKNOWN, knownpre-C134gap. C135newerPP100+LuaFAILreportedX183 separately.
-Alloriginalmemory+nav restored actualSHA256PASS; ownserversstopped/no client; foreignC08C preserved. C126 step1 recipe prevalidation blocker: native ParseScenario ignores repoJSON setup array, so no wb_add/teleport; wb_probe_run requires id/seconds (oldmail omits). NozeroactorfakeQA; willreportunsupportedsteps. Step2 oldharness DSG1/Gauss3xeach next493+sniperreach/linkfailfast1, exactcanonicaldata. wait_mail afteritem.
 
