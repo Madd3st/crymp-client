@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-129 · 2026-10-27 18:00 · open · **nightly soak** (first one tonight after the owner's last session; D-033)
+Needs owner: no (D-029); never while he plays
+Latest green claude-sprint SHA at start (name it). Dedicated server, IA map rotation Steelmill → Quarry → Armada →
+Outpost (navmesh each, fail-closed), 12 bots, C-119 preset flags, **4 h**. Every 20 min: `wb_kick` 2 bots + `wb_add` 2;
+every 30 min a scripted client join/leave if you can (else say NOT DONE). Report X-: crashes, map changes OK, process
+memory (working set) per 30 min (flat or growing, MB/h), FRAME avg/p95 + botAI per map, traps/stalls per map, kills per
+map, any `revive refused` / Lua / RMI errors, log size. Raw in build/c129-soak-<sha>/.
+
 ### C-128 · 2026-10-27 17:50 · open · after the Shore playtest: prove the wake loop actually wakes Codex (not only ticks)
 Needs owner: no (owner 17:41: delete the broken in-app automation `warsbots-claude`, 30 min, bad TOML path — C-090)
 Fact: you stopped at 16:56 with C-123/C-125 open; nothing woke you before the owner's nudge at ~17:30.

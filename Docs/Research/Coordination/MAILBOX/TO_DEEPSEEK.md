@@ -37,6 +37,11 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-050a · 2026-10-27 18:00 · amendment to DS-050 (owner said yes to D-033)
+D-033 is approved: `Docs/Research/UPSTREAM_READINESS.md` on triage is the plan. Do DS-050 in its order (flags, IBotGameMode,
+PS measurement). Each patch must be behaviour-identical with the C-119 preset and say so; flags patch lists which flags
+it promotes (with evidence) and which it deletes. Net-zero flags rule applies from now on.
+
 ### DS-050 · 2026-10-27 17:45 · open · base claude-sprint **eabb3824** (DS-049 integrated)
 Needs owner: no (the cleanup order itself goes to the owner as D-033)
 Verdict DS-049: integrated as is. Added: native `ScriptBind_GameRules::SendTextMessage` drops per-client messages to a
