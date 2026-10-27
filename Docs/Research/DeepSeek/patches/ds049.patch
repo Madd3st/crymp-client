@@ -1,0 +1,389 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index 7fefd28e..9d260817 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 61c1e606..f8cb494a 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -19,6 +19,8 @@
+ #include "CryGame/Bots/BotNavMesh.h"
+ #include "CryGame/Bots/BotNavMeshCore.h"
+ #include "CryGame/Bots/BotPSCaptureRuntime.h"
++#include "CryGame/Bots/BotPSBuy.h"
++#include "CryCommon/CryScriptSystem/IScriptSystem.h"
+ #include "CryGame/Game.h"
+ #include "CryGame/GameRules.h"
+ #include "CryGame/Actors/Actor.h"
+@@ -299,7 +301,7 @@ void BotBrain::ResetLife()
+ 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
+ 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
+ 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
+-	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear();
++	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false;
+ 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
+ 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
+ 	++m_life;
+@@ -472,6 +474,7 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
+ 		// DS-043: in PowerStruggle the PS revive wave owns the respawn; the 5 s self-revive double-revived a bot that
+ 		// the wave then revived again. Keep a 30 s fallback so a broken queue cannot leave a bot dead for the match.
+ 		const bool ps = g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules());
++		if (ps && BotConfig::Get().psBuy==1 && !m_psBought && m_deadTime>=2.0f) { m_psBought=true; PSTryBuy(bot,actor); }
+ 		if (ps && !m_psReviveLogged && m_deadTime >= 5.0f)
+ 		{
+ 			m_psReviveLogged = true;
+@@ -496,6 +499,40 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
+     return false;
+ }
+ 
++void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
++{
++	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
++	IEntity* rulesEntity=rules?rules->GetEntity():nullptr;
++	IScriptTable* table=rulesEntity?rulesEntity->GetScriptTable():nullptr;
++	if(!table || !gEnv || !gEnv->pScriptSystem)return;
++	IScriptSystem* ss=gEnv->pScriptSystem;
++	const EntityId id=actor.GetEntityId();
++	int pp=0;
++	if(ss->BeginCall(table,"GetPlayerPP")) { ss->PushFuncParam(table); ss->PushFuncParam(ScriptHandle(id)); ss->EndCall(pp); }
++	PsBuyInput in;
++	in.pp=pp; in.style=int(m_profile.style); in.skill=int(m_profile.skill);
++	in.preferredRange=PickupRange(); in.hasPrimary=BotWeapons::HasPrimary(actor); in.alive=actor.GetHealth()>0;
++	const PsBuyPlan plan=ChoosePsBuy(in);
++	if(!plan.buyPrimary)
++	{
++		WB_LOG(1,"[WarsBots] #%d PS BUY skip pp=%d style=%s range=%.0f primary=%d.",m_number,pp,
++			BotProfile::StyleName(m_profile.style),in.preferredRange,in.hasPrimary?1:0);
++		return;
++	}
++	auto buy=[&](const char* item)->bool {
++		if(!item)return false;
++		if(!ss->BeginCall(table,"WarsBotsBuy"))return false;
++		ss->PushFuncParam(table); ss->PushFuncParam(ScriptHandle(id)); ss->PushFuncParam(item);
++		int ok=0; ss->EndCall(ok); return ok!=0;
++	};
++	const bool primary=buy(plan.primary);
++	const bool ammo=plan.buyAmmo?buy(plan.ammo):false;
++	WB_LOG(1,"[WarsBots] #%d PS BUY pp=%d primary=%s price=%d ok=%d ammo=%s ok=%d actor=%u.",
++		m_number,pp,plan.primary,plan.primaryPrice,primary?1:0,plan.buyAmmo?plan.ammo:"-",ammo?1:0,id);
++	(void)bot;
++}
++
++
+ bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime)
+ {
+ 	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+@@ -886,8 +923,8 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 				[&](const TVec& p){
+ 					const float q[3]={p.x,p.y,p.z};
+ 					return (!mesh || mesh->Reachable(from,q)) && !EyeRayClear(actor,Vec3(p.x,p.y,p.z+1.6f),chest);
+-				}, 8.0f) : -1;
+-			if (i>=0) { m_withdrawCover=Vec3(spots[i].p.x,spots[i].p.y,spots[i].p.z); m_withdrawCoverValid=true; }
++				}, 8.0f, 6, BotConfig::Get().withdrawFull==1?1u:0u) : -1;
++			if (i>=0) { m_withdrawCover=Vec3(spots[i].p.x,spots[i].p.y,spots[i].p.z); m_withdrawCoverValid=true; m_nextWithdrawPick=m_now+0.5f; }
+ 			else { m_withdrawUntil=0; }
+ 		}
+ 		const bool aborted=BotConfig::Get().withdrawCover==1 && !m_withdrawCoverValid;
+@@ -897,6 +934,23 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 	}
+ 	if (m_now<m_withdrawUntil)
+ 	{
++		// DS-049: the threat moves during the 1.4 s approach; re-pick full cover on the live threat, abort if none.
++		if (BotConfig::Get().withdrawFull==1 && m_now>=m_nextWithdrawPick)
++		{
++			m_nextWithdrawPick=m_now+0.5f;
++			int n2=0; const CoverCandidate* s2=CurrentCover(n2);
++			const Vec3 b2=actor.GetEntity()->GetWorldPos(); const Vec3 chest2=destination+Vec3(0,0,1.3f);
++			NavMeshCore* mesh2=CurrentNavMesh(); const float from2[3]={b2.x,b2.y,b2.z};
++			const int j=s2 ? PickCover(s2,n2,TVec{b2.x,b2.y,b2.z},TVec{destination.x,destination.y,destination.z},desiredRange,
++				[&](const TVec& p){ const float q[3]={p.x,p.y,p.z}; return (!mesh2 || mesh2->Reachable(from2,q)) && !EyeRayClear(actor,Vec3(p.x,p.y,p.z+1.6f),chest2); }, 8.0f, 6, 1u) : -1;
++			if (j>=0)
++			{
++				const Vec3 np(s2[j].p.x,s2[j].p.y,s2[j].p.z);
++				if (!m_withdrawCoverValid || (np-m_withdrawCover).GetLength()>1.5f) m_withdrawCover=np;
++				m_withdrawCoverValid=true;
++			}
++			else { m_withdrawCoverValid=false; m_withdrawUntil=0; return; }
++		}
+ 		if (BotConfig::Get().withdrawCover==1 && m_withdrawCoverValid)
+ 		{
+ 			const Vec3 feet=actor.GetEntity()->GetWorldPos();
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index 89b2ef4d..9296fced 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -18,6 +18,7 @@
+ #include "CryGame/Bots/BotCorners.h"
+ #include "CryGame/Bots/BotDecisionCommit.h"
+ #include "CryGame/Bots/BotPSCapture.h"
++#include "CryGame/Bots/BotPSBuy.h"
+ struct IConsoleCmdArgs;
+ class CPlayer;
+ struct IActor;
+@@ -63,6 +64,7 @@ private:
+     bool UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force=false);
+     void UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime);
+ 	bool UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-048 #3
++	void PSTryBuy(BotInstance& bot,CPlayer& actor); // DS-049 #3
+     void UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime);
+     void UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange);
+     void UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,bool visible);
+@@ -162,10 +164,10 @@ private:
+ 	float Rand01();
+ 	unsigned m_rng = 1;
+ 	bool m_speedTravel = false;
+-	float m_withdrawUntil=0, m_nextWithdraw=0;
++	float m_withdrawUntil=0, m_nextWithdraw=0, m_nextWithdrawPick=0;
+ 	Vec3 m_withdrawCover=Vec3(0,0,0);
+ 	bool m_withdrawCoverValid=false;
+-	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0;
++	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false;
+ 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
+ 	EntityId m_upgradeTarget = 0;
+ 	float m_upgradeSince = 0;
+diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
+index 94585716..0ba8b774 100644
+--- a/Code/CryGame/Bots/BotConfig.cpp
++++ b/Code/CryGame/Bots/BotConfig.cpp
+@@ -15,6 +15,8 @@ const IntBinding kInts[]={
+  {"wb_probe_runner",&BotConfig::probeRunner,"DS-047: engine adapter for BotProbeRunner.h, default OFF. When 1: wb_probe_load file, wb_probe_start, wb_probe_runner_status, wb_probe_stop, wb_probe_run id seconds. WarsBots log lines feed the scenario metrics; the result JSON is written next to the bot log and PROBE RESULT is logged."},
+  {"wb_bot_link_failfast",&BotConfig::linkFailFast,"DS-048: a jump link whose take-off is blocked (railing/step, speed < 0.3 m/s within 2 m or in Act) fails in 0.6-0.8 s instead of 3.5 s so the bot bans it and repaths; the goal timer does not age while a link runs. 0 OFF default. Exit: sniper_reach_dsg1 >= 2/3 without more link failures."},
+  {"wb_ps_capture",&BotConfig::psCapture,"DS-048 PS-1: in PowerStruggle a bot without a visible enemy walks to the nearest capturable point not owned by its team (value/power weighted), holds inside 6 m until the team owns it, then moves to the next. 0 OFF default. Needs the PS capture entities; exit: capture/uncapture events with no extra stalls."},
++ {"wb_bot_withdraw_full",&BotConfig::withdrawFull,"DS-049 (C-121: 72/104 withdraw deaths; 10/25 at-cover deaths were low cover, 52/72 shooters outside the chosen cover sector): withdraw only to full cover (tactical_spots flag 1), re-pick the spot every 0.5 s against the live threat, abort and fight if none. 0 OFF default. Exit: withdraw deaths <= 50 %."},
++ {"wb_ps_buy",&BotConfig::psBuy,"DS-049 PS-2: on death in PowerStruggle, while dead, buy one primary (SCAR/FY71/shotgun/DSG1 by style and range preference) and cheap ammo through the server-side Lua WarsBotsBuy (no client RMI); the stock revive queue applies it on revive. 0 OFF default. Exit: bots revive with a primary and PP spend matches the plan."},
+  {"wb_bot_cloak_experimental",&BotConfig::cloakExperimental,"Experimental bot cloak, defaults OFF"},
+  {"wb_hotspot_all_nodes",&BotConfig::hotspotAllNodes,"Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak."},
+  {"wb_reachable_goals",&BotConfig::reachableGoals,"Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF."},
+diff --git a/Code/CryGame/Bots/BotConfig.h b/Code/CryGame/Bots/BotConfig.h
+index 90fb1083..8babd840 100644
+--- a/Code/CryGame/Bots/BotConfig.h
++++ b/Code/CryGame/Bots/BotConfig.h
+@@ -54,7 +54,9 @@ struct BotConfig {
+  int sniperReach=0;    // DS-046: sniper-mind upgrade searches the roof (32 m vertical box) and only DSG1/Gauss first, default OFF
+  int probeRunner=0;    // DS-047: engine adapter for BotProbeRunner.h (wb_probe_load/start/...), default OFF
+  int linkFailFast=0;   // DS-048: blocked jump link fails fast + goal does not age while a link runs
+- int psCapture=0;      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
++ int psCapture=0;
++ int withdrawFull=0;
++ int psBuy=0;         // DS-049: PS-2 revive buy (one primary by style/range, cheap ammo) via server-side Lua, default OFF  // DS-049: withdraw only to full cover (flag 1), re-pick every 0.5 s on the live threat      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
+  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
+  static BotConfig& Get(){static BotConfig config;return config;}
+  void Register(IConsole& console);
+diff --git a/Code/CryGame/Bots/BotNavMesh.cpp b/Code/CryGame/Bots/BotNavMesh.cpp
+index e3b79c63..0a076a91 100644
+--- a/Code/CryGame/Bots/BotNavMesh.cpp
++++ b/Code/CryGame/Bots/BotNavMesh.cpp
+@@ -142,7 +142,7 @@ const CoverCandidate* CurrentCover(int& count)
+ 			const std::string line = text.substr(p0, p1 - p0); p0 = p1 + 1;
+ 			if (line.empty() || line[0] == '#') continue;
+ 			CoverCandidate c; unsigned flags = 0, mask = 0;
+-			if (sscanf(line.c_str(), "%f %f %f %u %u", &c.p.x, &c.p.y, &c.p.z, &flags, &mask) == 5 && (flags & 3)) { c.coverMask = mask; spots.push_back(c); }
++			if (sscanf(line.c_str(), "%f %f %f %u %u", &c.p.x, &c.p.y, &c.p.z, &flags, &mask) == 5 && (flags & 3)) { c.coverMask = mask; c.flags = flags; spots.push_back(c); }
+ 		}
+ 		WB_LOG(0, "[WarsBots] COVER %d spots for %s.", int(spots.size()), name.c_str());
+ 	}
+diff --git a/Code/CryGame/Bots/BotPSBuy.h b/Code/CryGame/Bots/BotPSBuy.h
+new file mode 100644
+index 00000000..62f5d28e
+--- /dev/null
++++ b/Code/CryGame/Bots/BotPSBuy.h
+@@ -0,0 +1,62 @@
++// DS-049 #3: PS-2 revive buying. Engine-free chooser: one primary by style/skill/range preference, then cheap ammo.
++// Prices/ids are the stock PowerStruggleBuying buyList (SCAR 150, FY71 125, shotgun 50, DSG1 200, Gauss 600;
++// ammo 5/10, Gauss 50). The engine adapter calls the server-side Lua `WarsBotsBuy` only, never SvBuy/RMI.
++#pragma once
++#include <cstring>
++
++namespace WarsBots {
++
++struct PsBuyInput
++{
++    int pp = 0;
++    int skill = 1;            // 0 beginner .. 3 elite
++    int style = 0;            // BotStyle enum: 0 universal, 1 assault, 2 marksman, 3 flanker, 4 defender, 5 hunter
++    float preferredRange = 20.f;
++    bool hasPrimary = false;
++    bool alive = false;
++};
++
++struct PsBuyPlan
++{
++    const char* primary = nullptr;   // buyList id (macs/fy71/shotgun/dsg1/gauss)
++    int primaryPrice = 0;
++    const char* ammo = nullptr;      // buyList ammo id for the primary
++    int ammoPrice = 0;
++    bool buyPrimary = false;
++    bool buyAmmo = false;
++    bool armorMode = true;           // PS has no armor item; the free suit mode is set on revive
++};
++
++// SNIPER (DSG1 200) for a marksman/sniper-mind; SCAR for a rifle fight; shotgun under 12 m or when PP is low;
++// FY71 as the mid fallback. Ammo is bought only when at least 40 PP remain after it ("when cheap").
++inline PsBuyPlan ChoosePsBuy(const PsBuyInput& in)
++{
++    PsBuyPlan p;
++    if (in.alive || in.hasPrimary || in.pp < 50) return p;   // revive-buy only, one primary per life
++    const bool sniper = in.style == 2 || in.preferredRange > 30.f;
++    const bool close = in.preferredRange < 12.f;
++    if (sniper)
++    {
++        if (in.pp >= 200) { p.primary = "dsg1"; p.primaryPrice = 200; p.ammo = "sniperbullet"; p.ammoPrice = 10; }
++        else if (in.pp >= 125) { p.primary = "fy71"; p.primaryPrice = 125; p.ammo = "fybullet"; p.ammoPrice = 5; }
++        else { p.primary = "shotgun"; p.primaryPrice = 50; p.ammo = "shotgunshell"; p.ammoPrice = 5; }
++    }
++    else if (close || in.pp < 125)
++    {
++        p.primary = "shotgun"; p.primaryPrice = 50; p.ammo = "shotgunshell"; p.ammoPrice = 5;
++    }
++    else if (in.pp >= 150)
++    {
++        p.primary = "macs"; p.primaryPrice = 150; p.ammo = "bullet"; p.ammoPrice = 5;
++    }
++    else
++    {
++        p.primary = "fy71"; p.primaryPrice = 125; p.ammo = "fybullet"; p.ammoPrice = 5;
++    }
++    p.buyPrimary = p.primary && in.pp >= p.primaryPrice;
++    const int left = in.pp - (p.buyPrimary ? p.primaryPrice : 0);
++    p.buyAmmo = p.buyPrimary && p.ammo && left >= p.ammoPrice + 40;
++    return p;
++}
++
++} // namespace WarsBots
+diff --git a/Code/CryGame/Bots/BotTactics.h b/Code/CryGame/Bots/BotTactics.h
+index 2de1b38d..a14854ca 100644
+--- a/Code/CryGame/Bots/BotTactics.h
++++ b/Code/CryGame/Bots/BotTactics.h
+@@ -14,17 +14,18 @@ namespace WarsBots {
+ struct TVec { float x = 0, y = 0, z = 0; };
+ inline float TDist(const TVec& a, const TVec& b) { return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z)); }
+ 
+-struct CoverCandidate { TVec p; unsigned coverMask = 0; };
++struct CoverCandidate { TVec p; unsigned coverMask = 0; unsigned flags = 0; };
+ 
+ // Best cover spot to hold `threat` from, or -1. `sees(spot)` = eye ray from the spot to the threat is clear.
+ // coverMask bit k = protected side at yaw k*22.5 deg (0 = +Y, clockwise), as written by tactical_spots.
+ template <class Sees>
+ int PickCover(const CoverCandidate* c, int n, const TVec& bot, const TVec& threat, float preferred, Sees sees,
+-	float maxMove = 12.f, int maxRays = 6)
++	float maxMove = 12.f, int maxRays = 6, unsigned minFlags = 0)
+ {
+ 	struct S { int i; float s; } best[8]; int nb = 0;
+ 	for (int i = 0; i < n; ++i)
+ 	{
++		if (minFlags && (c[i].flags & minFlags) == 0) continue;   // DS-049: full cover only for withdraw
+ 		const float move = TDist(c[i].p, bot), range = TDist(c[i].p, threat);
+ 		if (move > maxMove || range < 6.f || range > 50.f) continue;
+ 		const float yaw = std::atan2(threat.x - c[i].p.x, threat.y - c[i].p.y) * 57.2957795f;
+diff --git a/Pak/CryMP/Scripts/GameRules/PowerStruggleBuying.lua b/Pak/CryMP/Scripts/GameRules/PowerStruggleBuying.lua
+index 42afc6c0..c20c67b7 100644
+--- a/Pak/CryMP/Scripts/GameRules/PowerStruggleBuying.lua
++++ b/Pak/CryMP/Scripts/GameRules/PowerStruggleBuying.lua
+@@ -486,6 +486,24 @@ end
+ 
+ 
+ ----------------------------------------------------------------------------------------------------
++-- DS-049 PS-2: server-side buy for a bot. Same checks as SvBuy, but no ClBuyOk/ClBuyError RMI to channel 0.
++function PowerStruggle:WarsBotsBuy(playerId, itemName)
++	if (not WarsBotsIsBot(self, playerId)) then return false; end
++	local player=System.GetEntity(playerId);
++	if ((not player) or (self.game:GetTeam(playerId)==0)) then return false; end
++	if (self.game:IsFrozen(playerId)) then return false; end
++	if (not self:ItemExists(playerId, itemName)) then return false; end
++	local alive=player.actor:GetHealth()>0;
++	if (self:IsVehicle(itemName)) then return false; end
++	if ((not alive) or self:IsInBuyZone(playerId)) then
++		if (self:EnoughPP(playerId, itemName)) then
++			return self:BuyItem(playerId, itemName);
++		end
++	end
++	return false;
++end
++
++
+ function PowerStruggle.Client:ClBuyError(itemName)
+ 	HUD.OnItemBought(false, itemName);
+ end
+diff --git a/Tests/BotPSBuyTests.cpp b/Tests/BotPSBuyTests.cpp
+new file mode 100644
+index 00000000..18fe8d7a
+--- /dev/null
++++ b/Tests/BotPSBuyTests.cpp
+@@ -0,0 +1,51 @@
++// DS-049 #3: PS revive buy chooser tests (engine-free).
++#include "CryGame/Bots/BotPSBuy.h"
++#include <cstdio>
++#include <cstring>
++
++using namespace WarsBots;
++static int failures = 0;
++#define CHECK(c) do { if (!(c)) { std::printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #c); ++failures; } } while (0)
++
++static PsBuyInput In(int pp, int style, float range, int skill = 2)
++{
++    PsBuyInput i; i.pp = pp; i.style = style; i.preferredRange = range; i.skill = skill; return i;
++}
++
++int main()
++{
++    CHECK(!ChoosePsBuy(In(0, 1, 20)).buyPrimary);
++    CHECK(!ChoosePsBuy(In(49, 1, 20)).buyPrimary);
++
++    PsBuyPlan p = ChoosePsBuy(In(50, 1, 20));
++    CHECK(p.buyPrimary && !std::strcmp(p.primary, "shotgun") && p.primaryPrice == 50);
++    CHECK(!p.buyAmmo);                    // 0 PP left
++
++    p = ChoosePsBuy(In(125, 1, 20));
++    CHECK(!std::strcmp(p.primary, "fy71") && !p.buyAmmo);
++
++    p = ChoosePsBuy(In(200, 1, 20));
++    CHECK(!std::strcmp(p.primary, "macs") && p.primaryPrice == 150);
++    CHECK(p.buyAmmo && !std::strcmp(p.ammo, "bullet"));   // 50 left, 5 ammo + 40 reserve
++
++    p = ChoosePsBuy(In(200, 2, 40));
++    CHECK(!std::strcmp(p.primary, "dsg1") && p.primaryPrice == 200 && !p.buyAmmo);
++
++    p = ChoosePsBuy(In(300, 2, 40));
++    CHECK(!std::strcmp(p.primary, "dsg1") && p.buyAmmo && !std::strcmp(p.ammo, "sniperbullet"));
++
++    p = ChoosePsBuy(In(160, 2, 40));
++    CHECK(!std::strcmp(p.primary, "fy71") && !p.buyAmmo);   // 35 left < ammo+40
++
++    p = ChoosePsBuy(In(400, 3, 9));
++    CHECK(!std::strcmp(p.primary, "shotgun") && p.buyAmmo);
++
++    PsBuyInput owned = In(400, 1, 20); owned.hasPrimary = true;
++    CHECK(!ChoosePsBuy(owned).buyPrimary);
++    PsBuyInput alive = In(400, 1, 20); alive.alive = true;
++    CHECK(!ChoosePsBuy(alive).buyPrimary);
++
++    if (failures) { std::printf("ps_buy: %d FAILURES\n", failures); return 1; }
++    std::printf("ps_buy: all tests passed\n");
++    return 0;
++}
+diff --git a/Tests/BotTacticsTests.cpp b/Tests/BotTacticsTests.cpp
+index 741e4a20..ab333b01 100644
+--- a/Tests/BotTacticsTests.cpp
++++ b/Tests/BotTacticsTests.cpp
+@@ -33,6 +33,12 @@ int main()
+ 	BotJumpStrafe j; assert(!j.Want(0, false, 10, 1, 5));
+ 	assert(j.Want(0, true, 10, 1.f, 5) && !j.Want(0.5f, true, 10, 1.f, 5));
+ 	assert(!BotJumpStrafe().Want(0, true, 50, 1.f, 5));
++	// DS-049: withdraw full-cover filter (flag 1); low cover (flag 2) is not accepted for a withdraw.
++	CoverCandidate f[2];
++	f[0].p = {2, 1, 0}; f[0].coverMask = 1u; f[0].flags = 2;
++	f[1].p = {4, 1, 0}; f[1].coverMask = 1u; f[1].flags = 1;
++	assert(PickCover(f, 2, bot, threat, 15.f, [](const TVec&) { return true; }, 8.f, 6, 1u) == 1);
++	assert(PickCover(f, 2, bot, threat, 15.f, [](const TVec&) { return true; }, 8.f, 6, 2u) == 0);
+ 	std::puts("BotTacticsTests OK");
+ 	return 0;
+ }
