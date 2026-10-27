@@ -301,7 +301,7 @@ void BotBrain::ResetLife()
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
-	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0;
+	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_lifeStartedAt=m_now; m_nextAliveBuy=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	++m_life;
@@ -500,12 +500,12 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
     return false;
 }
 
-void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
+bool BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
 {
 	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
 	IEntity* rulesEntity=rules?rules->GetEntity():nullptr;
 	IScriptTable* table=rulesEntity?rulesEntity->GetScriptTable():nullptr;
-	if(!table || !gEnv || !gEnv->pScriptSystem)return;
+	if(!table || !gEnv || !gEnv->pScriptSystem)return false;
 	IScriptSystem* ss=gEnv->pScriptSystem;
 	const EntityId id=actor.GetEntityId();
 	int pp=0;
@@ -518,7 +518,7 @@ void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
 	{
 		WB_LOG(1,"[WarsBots] #%d PS BUY skip pp=%d style=%s range=%.0f primary=%d.",m_number,pp,
 			BotProfile::StyleName(m_profile.style),in.preferredRange,in.hasPrimary?1:0);
-		return;
+		return false;
 	}
 	auto buy=[&](const char* item)->bool {
 		if(!item)return false;
@@ -534,6 +534,7 @@ void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
 		m_number,pp,plan.primary,plan.primaryPrice,primary?1:0,plan.buyLaser?plan.laser:"-",laser?1:0,
 		plan.buyAmmo?plan.ammo:"-",ammo?1:0,id);
 	(void)bot;
+	return primary;
 }
 
 
@@ -804,6 +805,11 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		if (BotConfig::Get().tactics==1 && m_upgradeTarget && UpdateUpgrade(bot,actor,nullptr,decisionTime,false,true)) return;
 		if (commit) Change(State::SEARCHING_ENEMY);
 		// DS-048 #3: PS-1 capture goal; roam only runs with no visible enemy, so combat still wins.
+		// C-139 (owner: first money goes to a weapon at once; C-137: 0 buys because nobody died): also buy alive,
+		// every 2 s for the first 20 s of a life; stock WarsBotsBuy refuses outside a buy zone.
+		if (BotConfig::Get().psBuy==1 && !m_psBought && m_now>=m_nextAliveBuy && g_pGame && g_pGame->GetGameRules() &&
+			BotMatch::Mode(*g_pGame->GetGameRules()).Policy().reviveBuy && m_now-m_lifeStartedAt<20.f)
+		{ m_nextAliveBuy=m_now+2.f; if (PSTryBuy(bot,actor)) m_psBought=true; }
 		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::Mode(*g_pGame->GetGameRules()).Policy().captureGoals && UpdatePSCapture(bot,actor,decisionTime)) return;
 		if ((BotConfig::Get().psDoors==1 || BotConfig::Get().psVehicles==1) && UpdatePSInteract(bot,actor,decisionTime)) return;
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.

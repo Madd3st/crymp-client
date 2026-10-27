@@ -36,7 +36,7 @@ struct PsBuyPlan
 inline PsBuyPlan ChoosePsBuy(const PsBuyInput& in)
 {
     PsBuyPlan p;
-    if (in.alive || in.hasPrimary || in.pp < 50) return p;   // revive-buy only, one primary per life
+    if (in.hasPrimary || in.pp < 50) return p;   // one primary per life; C-139: alive in a buy zone too
     const bool close = in.style == 1 || in.style == 3 || in.style == 5 || in.preferredRange < 12.f;
     if (!close && in.pp >= 75) { p.primary = "smg"; p.primaryPrice = 75; p.ammo = "smgbullet"; p.ammoPrice = 5; }
     else { p.primary = "shotgun"; p.primaryPrice = 50; p.ammo = "shotgunshell"; p.ammoPrice = 5; }

@@ -10,7 +10,7 @@ int main()
 {
     CHECK(!ChoosePsBuy(In(0, 0, 20)).buyPrimary);
     CHECK(!ChoosePsBuy(In(49, 0, 20)).buyPrimary);
-    CHECK(!ChoosePsBuy(In(100, 0, 20, true)).buyPrimary);          // alive: no revive buy
+    CHECK(ChoosePsBuy(In(100, 0, 20, true)).buyPrimary);           // C-139: alive buy (buy zone checked in Lua)
     CHECK(!ChoosePsBuy(In(100, 0, 20, false, true)).buyPrimary);   // already has a primary
     PsBuyPlan p = ChoosePsBuy(In(100, 0, 20));                       // universal, 100 PP: SMG + laser, no PP left
     CHECK(p.buyPrimary && !std::strcmp(p.primary, "smg") && p.buyLaser && !std::strcmp(p.laser, "lam") && !p.buyAmmo);
