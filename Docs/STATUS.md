@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
+C131 DONE: exact4f3a1d72->493f2cab Steelmill6x300 pair K39->44/S5->5/T0->0, primaryp50 4.043->3.744, ABA9.69->7.01; no evident regression, one pair/nativeRNG. Shore493 4death/4wave, crash/Lua/channel0, buys0(pp0), summaryparsePASS. Memory/nav actualhashrestored; X184. C126 runner recipe blocked, legacy sniper probes next.
+
 C135 DONE FAIL exact1a7ec84e CI40537292508: Shore6x300, initial neutral/opposite-base spawns; PP100 confirmed but purchases0/Lua4episodes. Deaths/wave4/4, crash/channel0, stalls102/traps1, demo6014frames. Originalmemory hashes restored/ownserver stopped. C131 next; X183, Docs/Coordination/C135_PS_REPORT.md.
 
 C132 DONE: deployed newest same-project/directory DeepSeek session discovery; actual restarted ses_e81f97efeffds6oK75oHBPxflG found, idle20 guard deferred wake. AST PASS; installed DryRun safe skips. Context usage % unavailable. X182. No game/GUI/memory change; C135 then C131 pending.
