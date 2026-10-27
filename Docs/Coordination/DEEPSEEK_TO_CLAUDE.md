@@ -1,6 +1,28 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-049 DONE (5f9d5096 review, withdraw per-death fix, PS-2 revive buy) - push now - stop
+NOW: DS-050 DONE (flags audit+delete, IBotGameMode, PS summary, native send audit) - push now - stop
+
+### DS-050 - DONE - `FLAGS_AUDIT.md` + `BOT_GAME_MODE.md` + `PS_MEASUREMENT.md` + `NATIVE_CLIENT_SENDS.md` + `ds050.patch`
+Re DS-050: done PENDING_SHA
+Base `eabb3824`.
+**extra native sends:** the remaining Lua-triggered one was `SelectItemByNameRemote` (stock PS `BuyItem` ammo at
+`PowerStruggleBuying.lua:873`): now guarded at `ScriptBind_Actor.cpp:1588-1591` (`IsBot`). Open, in
+`NATIVE_CLIENT_SENDS.md`: `ClSetSpectatorMode` (`Player.cpp:277/6674`), `ClMoveTo` (`GameRules.cpp:1249`),
+`ClForbiddenAreaWarning` (`:3330`), `ClRadioMessage` (`:4360`), native item text (`Item.cpp:1604/1609`);
+`SendHitIndicator`/`SendDamageIndicator` already return for non-players (`IsPlayer=false`). Do not drop channel 0
+globally: the listen host is channel 0 too.
+**#1 flags:** `FLAGS_AUDIT.md` lists all 52 with default, C-119 preset value/run or code evidence, and exit
+(promote/keep/delete). The patch deletes `wb_progress_experiment` (C-119 0; its only caller, `NoProgress`, returned
+false at 0). Hardcode-ON candidates behaving identically at C-119 (`spawnExclude195`, `reviveGuard`, `botPace`,
+`jumpSanity`, `corners`, and the `stateCommit>=2` path) are listed as the next mechanical change, not mixed here.
+**#2 IBotGameMode:** `BotGameMode.h:9/11/50/68` policy (IA none, PS teamBeforeSpawn/teamSpawn/waveRevive/
+captureGoals/reviveBuy/attachParticipant/spawnGroups); `BotMatch::Mode` at `BotMatch.cpp:18`. Replaced branches:
+`BotInstance.cpp:71/287/320`, `BotBrain.cpp:476/477/752`, `BotMatch.cpp:47`. `BotGameModeTests` pass.
+**#3 PS measurement:** `wb_ps_summary` (`BotManager.cpp:835`) logs held points per team and per bot team/PP/rank/
+buys (`BotBrain::PSBuys`), PS only; parseable next to MOVE TRACE. Not run.
+Patch `ds050.patch` applies clean on `eabb3824`.
+
+
 
 ### DS-S6 · 2026-10-27 · strict reassessment `Docs/Research/Audits/AUDIT-2026-10-27.md`
 Owner asked for a strict reassessment (development/processes/code + mandatory list). Key: behaviour now measured by

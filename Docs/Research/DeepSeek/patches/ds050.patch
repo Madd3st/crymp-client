@@ -1,0 +1,497 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index 9d260817..b9fb3c53 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+diff --git a/Code/CryGame/Actors/ScriptBind_Actor.cpp b/Code/CryGame/Actors/ScriptBind_Actor.cpp
+index 3d51272b..3f137006 100644
+--- a/Code/CryGame/Actors/ScriptBind_Actor.cpp
++++ b/Code/CryGame/Actors/ScriptBind_Actor.cpp
+@@ -17,6 +17,9 @@
+ #include "CryGame/Items/Item.h"
+ #include "CryGame/HUD/HUD.h"
+ #include "CryGame/Game.h"
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++#include "CryGame/Bots/BotMatch.h"
++#endif
+ #include "Player/Player.h"
+ #include "Alien/Alien.h"
+ #include "CryGame/GameCVars.h"
+@@ -1581,6 +1584,10 @@ int CScriptBind_Actor::SelectItemByNameRemote(IFunctionHandler* pH, const char*
+ 
+ 	//Only send to this client
+ 	if (gEnv->bServer)
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++		// DS-050: a bot has no client; stock BuyItem selects ammo via this Lua path and would RMI channel 0.
++		if (!WarsBots::BotMatch::IsBot(*g_pGame->GetGameRules(), pActor->GetEntityId()))
++#endif
+ 		pActor->GetGameObject()->InvokeRMI(CActor::ClSelectItemByName(), CActor::SelectItemParams(name), eRMI_ToClientChannel, pActor->GetGameObject()->GetChannelId());
+ 
+ 	return pH->EndFunction();
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index f8cb494a..fae10683 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -113,7 +113,6 @@ void BotBrain::Change(State state,bool initialize,DecisionOwner owner)
+ 		}
+ 		m_move.Reset(); m_moveOwner=who;
+ 	}
+-	m_progress.Reset();
+ 	m_state = state;
+ 	m_stateTime = m_now;
+ 	WB_LOG(2, "[WarsBots] #%d AI state=%s.", m_number, NameOf(state));
+@@ -288,7 +287,7 @@ void BotBrain::Configure(const BotProfile& profile, int number)
+ 
+ void BotBrain::ResetLife()
+ {
+-	m_progress.Reset(); m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
++	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
+ 	m_locomotion.Reset();
+ 	m_suit.Reset(); m_blackboard=BotBlackboard(); m_intent=BotIntent();
+ 	m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
+@@ -301,7 +300,7 @@ void BotBrain::ResetLife()
+ 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
+ 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
+ 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
+-	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false;
++	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0;
+ 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
+ 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
+ 	++m_life;
+@@ -473,8 +472,9 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
+ 		m_deadTime += dt;
+ 		// DS-043: in PowerStruggle the PS revive wave owns the respawn; the 5 s self-revive double-revived a bot that
+ 		// the wave then revived again. Keep a 30 s fallback so a broken queue cannot leave a bot dead for the match.
+-		const bool ps = g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules());
+-		if (ps && BotConfig::Get().psBuy==1 && !m_psBought && m_deadTime>=2.0f) { m_psBought=true; PSTryBuy(bot,actor); }
++		BotGameModePolicy mode; if (g_pGame && g_pGame->GetGameRules()) mode = BotMatch::Mode(*g_pGame->GetGameRules()).Policy();
++		const bool ps = mode.waveRevive;
++		if (ps && mode.reviveBuy && BotConfig::Get().psBuy==1 && !m_psBought && m_deadTime>=2.0f) { m_psBought=true; PSTryBuy(bot,actor); }
+ 		if (ps && !m_psReviveLogged && m_deadTime >= 5.0f)
+ 		{
+ 			m_psReviveLogged = true;
+@@ -526,7 +526,7 @@ void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
+ 		int ok=0; ss->EndCall(ok); return ok!=0;
+ 	};
+ 	const bool primary=buy(plan.primary);
+-	const bool ammo=plan.buyAmmo?buy(plan.ammo):false;
++	const bool ammo=plan.buyAmmo?buy(plan.ammo):false; if (primary) ++m_psBuys; if (ammo) ++m_psBuys;
+ 	WB_LOG(1,"[WarsBots] #%d PS BUY pp=%d primary=%s price=%d ok=%d ammo=%s ok=%d actor=%u.",
+ 		m_number,pp,plan.primary,plan.primaryPrice,primary?1:0,plan.buyAmmo?plan.ammo:"-",ammo?1:0,id);
+ 	(void)bot;
+@@ -749,7 +749,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 		if (BotConfig::Get().tactics==1 && m_upgradeTarget && UpdateUpgrade(bot,actor,nullptr,decisionTime,false,true)) return;
+ 		if (commit) Change(State::SEARCHING_ENEMY);
+ 		// DS-048 #3: PS-1 capture goal; roam only runs with no visible enemy, so combat still wins.
+-		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules()) && UpdatePSCapture(bot,actor,decisionTime)) return;
++		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::Mode(*g_pGame->GetGameRules()).Policy().captureGoals && UpdatePSCapture(bot,actor,decisionTime)) return;
+ 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
+ 		Vec3 heard;
+ 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
+@@ -1143,28 +1143,9 @@ void BotBrain::UpdateCombatPost(BotInstance& bot,CPlayer& actor,float decisionTi
+ 	IWeapon* activeWeapon=BotWeapons::Current(actor);
+ 	const bool protect=m_now-m_combat.LastBurstRequest()<4.0f ||
+ 		m_now-m_combat.SelectedAt()<0.75f || (activeWeapon && activeWeapon->IsReloading());
+-	if (m_intent.move && NoProgress(actor,"combat",m_combat.Target(),protect))
+-	{
+-		g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos(),actor.GetEntityId());
+-		m_combat.AvoidCurrent(m_now,8.0f); m_escapeUntil=m_now+1.5f;
+-		m_detour=true; m_patrolUntil=0; m_nextRepath=0;
+-	}
+ 
+ }
+ 
+-bool BotBrain::NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect)
+-{
+-	const int& experiment=BotConfig::Get().progressExperiment;
+-	if (experiment!=1) { m_progress.Reset(); return false; }
+-	if (!m_blackboard.canMove) { m_progress.Reset(); return false; }
+-	const Vec3 p=actor.GetEntity()->GetWorldPos();
+-	const float timeout=6.0f-2.0f*m_profile.targetJudgement;
+-	if (!m_progress.Stalled(p.x,p.y,p.z,m_now,timeout) || protect) return false;
+-	WB_LOG(2,"[WarsBots] PROGRESS ESCAPE actor=%u kind=%s goal=%u pos=(%.2f,%.2f,%.2f) age=%.2f.",
+-		actor.GetEntityId(),kind,goal,p.x,p.y,p.z,m_progress.Age(m_now));
+-	m_progress.Reset();
+-	return true;
+-}
+ 
+ bool BotBrain::RecoverTrap(CPlayer& actor)
+ {
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index 9296fced..8b78f3b5 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -4,7 +4,6 @@
+ #include "CryGame/Bots/BotCombat.h"
+ #include "CryGame/Bots/BotProfile.h"
+ #include <vector>
+-#include "CryGame/Bots/BotProgress.h"
+ #include "CryGame/Bots/BotTrapWatchdog.h"
+ #include "CryGame/Bots/BotLookPolicy.h"
+ #include "CryGame/Bots/BotGoalArbiter.h"
+@@ -43,6 +42,7 @@ public:
+     bool RequestsMovement() const { return m_running && m_intent.move; }
+ 	void SetVerbose(bool enabled) { m_verbose = enabled; }
+ 	const char* StateName() const;
++	int PSBuys() const { return m_psBuys; }
+ 	EntityId Target() const { return m_combat.Target(); }
+     // Read-only diagnostic snapshot, consumed after this instance's decision tick.
+     unsigned DecisionSerial()const{return m_decisionSerial;}
+@@ -96,8 +96,6 @@ private:
+ 	EntityId m_aimModelTarget = 0;
+ 	float m_prevTargetYaw = 0, m_prevTargetPitch = 0;
+ 	Vec3 AimModelPoint(CPlayer& actor, const Vec3& observed, float distance, float dt);
+-	bool NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect=false);
+-	BotProgress m_progress;
+     bool RecoverTrap(CPlayer& actor);
+     BotTrapWatchdog m_trap;
+     Vec3 m_trapDirection=Vec3(0,1,0);
+@@ -167,7 +165,7 @@ private:
+ 	float m_withdrawUntil=0, m_nextWithdraw=0, m_nextWithdrawPick=0;
+ 	Vec3 m_withdrawCover=Vec3(0,0,0);
+ 	bool m_withdrawCoverValid=false;
+-	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false;
++	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false; int m_psBuys=0;
+ 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
+ 	EntityId m_upgradeTarget = 0;
+ 	float m_upgradeSince = 0;
+diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
+index 0ba8b774..8b319330 100644
+--- a/Code/CryGame/Bots/BotConfig.cpp
++++ b/Code/CryGame/Bots/BotConfig.cpp
+@@ -27,7 +27,6 @@ const IntBinding kInts[]={
+  {"wb_move_trace",&BotConfig::moveTrace,"Diagnostic-only opt-in trace:1=4Hz humans/server bots;2=also per-frame client remote bots. IA/default0,200000line cap; entity/view in PostUpdate, not raw packets."},
+  {"wb_physics_diagnostics",&BotConfig::physicsDiagnostics,"Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF."},
+  {"wb_trap_recovery",&BotConfig::trapRecovery,"Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak."},
+- {"wb_progress_experiment",&BotConfig::progressExperiment,"Experimental stationary-combat recovery: 0 OFF (default), 1 ON; local IA bots only."},
+  {"wb_qa_socom_only",&BotConfig::qaSocomOnly,"Local IA test only: suppress weapon upgrades/fallback, retain native SOCOM/ammo; default OFF."},
+  {"wb_bot_look",&BotConfig::botLook,"C-033 look policy: without a visible target look ~3 m ahead along the path; points of interest only with a clear eye ray. 0 OFF default. Exit: promote only after owner playtest; retire gate/legacy path when validated."},
+  {"wb_bot_turn_cap",&BotConfig::botTurnCap,"C-044 per-frame view turn-rate cap by skill (beginner 400 .. elite 900 deg/s) instead of 10 Hz look snaps. 0 OFF default. Exit: promote only after owner playtest; retire gate/legacy path when validated."},
+diff --git a/Code/CryGame/Bots/BotConfig.h b/Code/CryGame/Bots/BotConfig.h
+index c23ec8a1..ae58bbf5 100644
+--- a/Code/CryGame/Bots/BotConfig.h
++++ b/Code/CryGame/Bots/BotConfig.h
+@@ -11,7 +11,6 @@ struct BotConfig {
+  int skill=1;
+  int demoRecord=0;
+  int demoHz=20;
+- int progressExperiment=0;
+  int trapRecovery=0;
+  int physicsDiagnostics=0;
+  int moveTrace=0;
+diff --git a/Code/CryGame/Bots/BotDemoRecorder.cpp b/Code/CryGame/Bots/BotDemoRecorder.cpp
+index bd01ee73..7d4d1258 100644
+--- a/Code/CryGame/Bots/BotDemoRecorder.cpp
++++ b/Code/CryGame/Bots/BotDemoRecorder.cpp
+@@ -120,7 +120,6 @@ struct BotDemoRecorder::Impl final:IGameplayListener {
+   flags["wb_revive_guard"]=config.reviveGuard;
+   flags["wb_trap_recovery"]=config.trapRecovery;
+   flags["wb_reachable_goals"]=config.reachableGoals;
+-  flags["wb_progress_experiment"]=config.progressExperiment;
+   flags["wb_move_trace"]=config.moveTrace;
+   flags["wb_qa_socom_only"]=config.qaSocomOnly;
+   flags["wb_demo_record"]=1;flags["wb_demo_hz"]=hz;
+diff --git a/Code/CryGame/Bots/BotGameMode.h b/Code/CryGame/Bots/BotGameMode.h
+new file mode 100644
+index 00000000..8f57b621
+--- /dev/null
++++ b/Code/CryGame/Bots/BotGameMode.h
+@@ -0,0 +1,79 @@
++// DS-050 #2: one game-mode policy for InstantAction and PowerStruggle. Replaces the scattered
++// `strcmp("PowerStruggle")` / `IsPowerStruggle` branches with a policy object. Engine-free (pure string in,
++// policy out) and unit-tested in Tests/BotGameModeTests.cpp.
++#pragma once
++#include "CryGame/Bots/BotModePlan.h"
++
++namespace WarsBots {
++
++enum class BotGameModeKind { Unknown = 0, InstantAction, PowerStruggle };
++
++struct BotGameModePolicy
++{
++    BotGameModeKind kind = BotGameModeKind::Unknown;
++    bool botRules = false;           // InstantAction or PowerStruggle
++    bool teamBeforeSpawn = false;    // PS-0: SetTeam/spawn group before registration
++    bool teamSpawn = false;          // PS: GetSpawnLocationTeam instead of the IA spawn picker
++    bool waveRevive = false;         // PS: the Lua wave owns the revive; 30 s fallback only
++    bool captureGoals = false;       // PS-1: wb_ps_capture roam goal
++    bool reviveBuy = false;          // PS-2: wb_ps_buy revive purchase
++    bool attachParticipant = false;  // PS: WarsBotsPS register/attach
++    bool spawnGroups = false;        // rules use spawn groups (PS)
++};
++
++inline BotGameModePolicy PolicyForGameRulesClass(const char* className)
++{
++    BotGameModePolicy p;
++    if (!className) return p;
++    if (!std::strcmp(className, "InstantAction"))
++    {
++        p.kind = BotGameModeKind::InstantAction;
++        p.botRules = true;
++        return p;
++    }
++    if (!std::strcmp(className, "PowerStruggle"))
++    {
++        p.kind = BotGameModeKind::PowerStruggle;
++        p.botRules = true;
++        p.teamBeforeSpawn = true;
++        p.teamSpawn = true;
++        p.waveRevive = true;
++        p.captureGoals = true;
++        p.reviveBuy = true;
++        p.attachParticipant = true;
++        p.spawnGroups = true;
++        return p;
++    }
++    return p;
++}
++
++class IBotGameMode
++{
++public:
++    virtual ~IBotGameMode() {}
++    virtual BotGameModeKind Kind() const = 0;
++    virtual const BotGameModePolicy& Policy() const = 0;
++};
++
++class BotGameModeStatic final : public IBotGameMode
++{
++public:
++    explicit BotGameModeStatic(const BotGameModePolicy& policy) : m_policy(policy) {}
++    BotGameModeKind Kind() const override { return m_policy.kind; }
++    const BotGameModePolicy& Policy() const override { return m_policy; }
++private:
++    BotGameModePolicy m_policy;
++};
++
++inline const IBotGameMode& BotGameModeFor(const char* className)
++{
++    static const BotGameModeStatic unknown(PolicyForGameRulesClass(nullptr));
++    static const BotGameModeStatic instantAction(PolicyForGameRulesClass("InstantAction"));
++    static const BotGameModeStatic powerStruggle(PolicyForGameRulesClass("PowerStruggle"));
++    if (className && !std::strcmp(className, "InstantAction")) return instantAction;
++    if (className && !std::strcmp(className, "PowerStruggle")) return powerStruggle;
++    (void)unknown;
++    return unknown;
++}
++
++} // namespace WarsBots
+diff --git a/Code/CryGame/Bots/BotInstance.cpp b/Code/CryGame/Bots/BotInstance.cpp
+index ae8df63d..6b530337 100644
+--- a/Code/CryGame/Bots/BotInstance.cpp
++++ b/Code/CryGame/Bots/BotInstance.cpp
+@@ -68,7 +68,7 @@ bool BotInstance::Spawn(const Vec3& position)
+ 	m_owner.Adopt(*this);
+ 	// PS-0 #2: team before registration/spawn; CanEnterVehicle and GetSpawnLocationTeam read it.
+ 	if (CGameRules* rules = g_pGame->GetGameRules())
+-		if (BotMatch::IsPowerStruggle(*rules))
++		if (BotMatch::Mode(*rules).Policy().teamBeforeSpawn)
+ 		{
+ 			const int team = TeamForSlot(m_number);
+ 			rules->SetTeam(team, m_entityId);
+@@ -284,7 +284,7 @@ void BotInstance::Update(float dt)
+ 				const bool self = m_selfRevivePending;
+ 				m_selfRevivePending = false;
+ 				CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
+-				if (!self && rules && BotMatch::IsPowerStruggle(*rules))
++				if (!self && rules && BotMatch::Mode(*rules).Policy().waveRevive)
+ 					WB_LOG(1, "[WarsBots] PS REVIVE SEEN EntityId=%u health=%d source=wave.", m_entityId, health);
+ 				WB_LOG(2, "[WarsBots] #%d alive transition EntityId=%u health=%d.", m_number, m_entityId, health);
+ 			}
+@@ -317,7 +317,7 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
+ 		return false;
+ 	}
+ 	const EntityId id = m_entityId;
+-	const bool ps = BotMatch::IsPowerStruggle(*rules);
++	const bool ps = BotMatch::Mode(*rules).Policy().teamSpawn;
+ 	const EntityId chosen = forcedSpawn ? forcedSpawn :
+ 		(ps ? rules->GetSpawnLocationTeam(id, m_spawnPosition)
+ 		    : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation,guardRetry?&m_guardFailedSpawns:nullptr));
+diff --git a/Code/CryGame/Bots/BotManager.cpp b/Code/CryGame/Bots/BotManager.cpp
+index 2b162523..60438e68 100644
+--- a/Code/CryGame/Bots/BotManager.cpp
++++ b/Code/CryGame/Bots/BotManager.cpp
+@@ -5,6 +5,8 @@
+ #include "CryGame/Bots/BotConfig.h"
+ #include "CryGame/Bots/BotDataPath.h"
+ #include "CryGame/Bots/BotProbeRunner.h"
++#include "CryGame/Bots/BotPSCaptureRuntime.h"
++#include "CryCommon/CryScriptSystem/IScriptSystem.h"
+ #include "CryGame/Bots/BotGeometryExport.h"
+ #include "version.h"
+ #include "CryGame/Bots/BotCombat.h"
+@@ -94,7 +96,7 @@ bool ProbeSetupSupported(const std::string& command)
+ const char* kCommands[] = { "wb_demo_start", "wb_demo_stop", "wb_demo_mark", "wb_qa_time_scale", "wb_nav_audit",
+ 	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_probe_item", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
+ 	"wb_add", "wb_remove", "wb_remove_all", "wb_kick_bots", "wb_fill", "wb_skill_all", "wb_mark", "wb_rules_info", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
+-	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
++	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive", "wb_ps_summary",
+ 	"wb_probe_load", "wb_probe_start", "wb_probe_run", "wb_probe_stop", "wb_probe_runner_status", "wb_probe_goal",
+ 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
+ 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
+@@ -152,6 +154,7 @@ void BotManager::Initialize(IGameFramework* framework)
+ 	console->AddCommand("wb_probe_remove", ProbeRemoveCommand, 0, "Remove the selected bot");
+ 	console->AddCommand("wb_probe_status", ProbeStatusCommand, 0, "Status of the selected bot");
+ 	console->AddCommand("wb_probe_revive", ProbeReviveCommand, 0, "Revive the selected dead bot");
++	console->AddCommand("wb_ps_summary", PSSummaryCommand, 0, "PowerStruggle only: log team/PP/rank/buys per bot and owned capture points");
+ 	// DS-047: BotProbeRunner.h host behind wb_probe_runner (default 0).
+ 	console->AddCommand("wb_probe_load", ProbeLoadCommand, 0, "wb_probe_load <scenario.json>: parse a probe v1 scenario (needs wb_probe_runner 1)");
+ 	console->AddCommand("wb_probe_start", ProbeStartCommand, 0, "wb_probe_start: run the loaded scenario setup and start the metrics window");
+@@ -564,8 +567,8 @@ void BotManager::StatusReport()
+ 		if (bot->UpdateCount()) total += bot->TotalUpdateMs() / float(bot->UpdateCount());
+ 		worst = max(worst, bot->MaxUpdateMs());
+ 	}
+-	WB_LOG(0, "[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u progressExperiment=%d (since last report).",
+-		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount(), BotConfig::Get().progressExperiment);
++	WB_LOG(0, "[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u (since last report).",
++		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount());
+ 	for (BotInstance* bot : Ordered()) bot->ResetProfile();
+ }
+ 
+@@ -817,6 +820,40 @@ void BotManager::RulesInfoCommand(IConsoleCmdArgs*)
+ 		rules->GetEntity() ? rules->GetEntity()->GetClass()->GetName() : "?", teams, names.c_str(), rules->GetSpawnGroupCount());
+ }
+ 
++int PsLuaInt(CGameRules* rules, EntityId id, const char* func)
++{
++	if (!rules || !gEnv || !gEnv->pScriptSystem) return -1;
++	IEntity* entity = rules->GetEntity();
++	IScriptTable* table = entity ? entity->GetScriptTable() : nullptr;
++	if (!table) return -1;
++	IScriptSystem* ss = gEnv->pScriptSystem;
++	int value = -1;
++	if (ss->BeginCall(table, func)) { ss->PushFuncParam(table); ss->PushFuncParam(ScriptHandle(id)); ss->EndCall(value); }
++	return value;
++}
++
++void BotManager::PSSummaryCommand(IConsoleCmdArgs*)
++{
++	BotManager* self = Self();
++	CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
++	if (!self || !rules) return;
++	if (!BotMatch::IsPowerStruggle(*rules)) { WB_LOG(0, "[WarsBots] PS SUMMARY skipped: not PowerStruggle."); return; }
++	std::vector<PsCapturePoint> points;
++	PSCaptureSnapshot(points, *rules);
++	int held[3] = {0, 0, 0};
++	for (const PsCapturePoint& point : points) if (point.ownerTeam >= 0 && point.ownerTeam < 3) ++held[point.ownerTeam];
++	WB_LOG(0, "[WarsBots] PS SUMMARY points=%d team1_held=%d team2_held=%d.", int(points.size()), held[1], held[2]);
++	for (BotInstance* bot : self->Ordered())
++	{
++		CActor* actor = bot->GetActor();
++		if (!actor) continue;
++		const EntityId id = actor->GetEntityId();
++		WB_LOG(0, "[WarsBots] PS SUMMARY bot=%d id=%u team=%d pp=%d rank=%d buys=%d.",
++			bot->Number(), id, rules->GetTeam(id), PsLuaInt(rules, id, "GetPlayerPP"), PsLuaInt(rules, id, "GetPlayerRank"), bot->Brain().PSBuys());
++	}
++}
++
++
+ void BotManager::ListCommand(IConsoleCmdArgs*) { if (BotManager* self = Self()) self->List(); }
+ 
+ void BotManager::StatusCommand(IConsoleCmdArgs*)
+diff --git a/Code/CryGame/Bots/BotManager.h b/Code/CryGame/Bots/BotManager.h
+index f6d186a5..08a5cf0e 100644
+--- a/Code/CryGame/Bots/BotManager.h
++++ b/Code/CryGame/Bots/BotManager.h
+@@ -134,6 +134,7 @@ private:
+     static void WatchCheckCommand(IConsoleCmdArgs* args);
+ 	void ResetNav() { m_nav.Reset(); }
+ 	// Legacy single-bot test commands, now addressed to the selected bot.
++	static void PSSummaryCommand(IConsoleCmdArgs* args); // DS-050 #3
+ 	static void ProbeSpawnCommand(IConsoleCmdArgs* args);
+ 	static void ProbeRemoveCommand(IConsoleCmdArgs* args);
+ 	static void ProbeStatusCommand(IConsoleCmdArgs* args);
+diff --git a/Code/CryGame/Bots/BotMatch.cpp b/Code/CryGame/Bots/BotMatch.cpp
+index e6b20e40..b69e7850 100644
+--- a/Code/CryGame/Bots/BotMatch.cpp
++++ b/Code/CryGame/Bots/BotMatch.cpp
+@@ -15,10 +15,14 @@ bool BotMatch::IsBotMode(const CGameRules& rules)
+     const char* name=rules.GetEntity() && rules.GetEntity()->GetClass() ? rules.GetEntity()->GetClass()->GetName() : "";
+     return IsBotRulesClass(name);
+ }
+-bool BotMatch::IsPowerStruggle(const CGameRules& rules)
++const IBotGameMode& BotMatch::Mode(const CGameRules& rules)
+ {
+     const char* name=rules.GetEntity() && rules.GetEntity()->GetClass() ? rules.GetEntity()->GetClass()->GetName() : "";
+-    return IsPowerStruggleClass(name);
++    return BotGameModeFor(name);
++}
++bool BotMatch::IsPowerStruggle(const CGameRules& rules)
++{
++    return Mode(rules).Kind()==BotGameModeKind::PowerStruggle;
+ }
+ bool BotMatch::IsBot(const CGameRules& rules, EntityId id)
+ {
+@@ -43,7 +47,8 @@ bool BotMatch::Register(CGameRules& rules, IActor& actor)
+     if (!rulesTable || !actorTable) return false;
+     bool groups=false;
+     rulesTable->GetValue("USE_SPAWN_GROUPS",groups);
+-    const bool ps=IsPowerStruggle(rules);
++    const BotGameModePolicy mode=Mode(rules).Policy();
++    const bool ps=mode.attachParticipant;
+     if (groups && !ps) { WB_LOG(0, "[WarsBots] IA registration refused: spawn-group channel callbacks unsupported."); return false; }
+     SmartScriptTable hooks;
+     if (ps)
+diff --git a/Code/CryGame/Bots/BotMatch.h b/Code/CryGame/Bots/BotMatch.h
+index efa7c0aa..cc776077 100644
+--- a/Code/CryGame/Bots/BotMatch.h
++++ b/Code/CryGame/Bots/BotMatch.h
+@@ -1,4 +1,5 @@
+ #pragma once
++#include "CryGame/Bots/BotGameMode.h"
+ #include "CryCommon/CryEntitySystem/IEntity.h"
+ #include <vector>
+ class CGameRules;
+@@ -9,6 +10,7 @@ class BotMatch {
+ public:
+     static bool IsBotMode(const CGameRules& rules);       // InstantAction or PowerStruggle
+     static bool IsPowerStruggle(const CGameRules& rules);
++    static const IBotGameMode& Mode(const CGameRules& rules);
+     static bool IsBot(const CGameRules& rules, EntityId id);
+     static void Collect(const CGameRules& rules, std::vector<EntityId>& bots);
+     static bool Register(CGameRules& rules, IActor& actor);
+diff --git a/Tests/BotGameModeTests.cpp b/Tests/BotGameModeTests.cpp
+new file mode 100644
+index 00000000..3426bdea
+--- /dev/null
++++ b/Tests/BotGameModeTests.cpp
+@@ -0,0 +1,31 @@
++// DS-050 #2: game-mode policy tests (engine-free).
++#include "CryGame/Bots/BotGameMode.h"
++#include <cstdio>
++
++using namespace WarsBots;
++static int failures = 0;
++#define CHECK(c) do { if (!(c)) { std::printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #c); ++failures; } } while (0)
++
++int main()
++{
++    const BotGameModePolicy ia = PolicyForGameRulesClass("InstantAction");
++    CHECK(ia.kind == BotGameModeKind::InstantAction && ia.botRules);
++    CHECK(!ia.teamBeforeSpawn && !ia.teamSpawn && !ia.waveRevive && !ia.captureGoals && !ia.reviveBuy && !ia.spawnGroups);
++
++    const BotGameModePolicy ps = PolicyForGameRulesClass("PowerStruggle");
++    CHECK(ps.kind == BotGameModeKind::PowerStruggle && ps.botRules);
++    CHECK(ps.teamBeforeSpawn && ps.teamSpawn && ps.waveRevive && ps.captureGoals && ps.reviveBuy && ps.attachParticipant && ps.spawnGroups);
++
++    const BotGameModePolicy none = PolicyForGameRulesClass(nullptr);
++    CHECK(none.kind == BotGameModeKind::Unknown && !none.botRules);
++
++    CHECK(BotGameModeFor("InstantAction").Kind() == BotGameModeKind::InstantAction);
++    CHECK(BotGameModeFor("PowerStruggle").Kind() == BotGameModeKind::PowerStruggle);
++    CHECK(BotGameModeFor("SomethingElse").Kind() == BotGameModeKind::Unknown);
++    CHECK(BotGameModeFor(nullptr).Kind() == BotGameModeKind::Unknown);
++    CHECK(BotGameModeFor("PowerStruggle").Policy().reviveBuy);
++
++    if (failures) { std::printf("game_mode: %d FAILURES\n", failures); return 1; }
++    std::printf("game_mode: all tests passed\n");
++    return 0;
++}
