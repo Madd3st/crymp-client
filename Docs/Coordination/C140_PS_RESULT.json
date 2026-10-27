@@ -1,0 +1,689 @@
+{
+  "root": "build\\c140-Shore-545a5022",
+  "complete": true,
+  "frames": 6026,
+  "duration_s": 301.305,
+  "events": {
+    "suit": 406,
+    "land": 14
+  },
+  "kills": 0,
+  "stalls": 96,
+  "traps": 0,
+  "aba": 0,
+  "reversals": 0,
+  "first_primary_p50": 0.067,
+  "first_primary_p90": 0.067,
+  "primary_observed": 6,
+  "primary_eligible": 6,
+  "primary_lives": [
+    {
+      "actor": 65461,
+      "birth": 0.224,
+      "end": 301.529,
+      "first_primary": 0.224,
+      "censored_birth": true
+    },
+    {
+      "actor": 65466,
+      "birth": 0.224,
+      "end": 301.529,
+      "first_primary": 0.224,
+      "censored_birth": true
+    },
+    {
+      "actor": 65471,
+      "birth": 0.224,
+      "end": 301.529,
+      "first_primary": 0.224,
+      "censored_birth": true
+    },
+    {
+      "actor": 65476,
+      "birth": 0.224,
+      "end": 301.529,
+      "first_primary": 0.224,
+      "censored_birth": true
+    },
+    {
+      "actor": 65481,
+      "birth": 0.224,
+      "end": 301.529,
+      "first_primary": 0.224,
+      "censored_birth": true
+    },
+    {
+      "actor": 65486,
+      "birth": 0.224,
+      "end": 301.529,
+      "first_primary": 0.224,
+      "censored_birth": true
+    },
+    {
+      "actor": 130993,
+      "birth": 31.53,
+      "end": 301.529,
+      "first_primary": 31.597,
+      "censored_birth": false
+    },
+    {
+      "actor": 130998,
+      "birth": 31.53,
+      "end": 301.529,
+      "first_primary": 31.597,
+      "censored_birth": false
+    },
+    {
+      "actor": 131003,
+      "birth": 31.53,
+      "end": 301.529,
+      "first_primary": 31.597,
+      "censored_birth": false
+    },
+    {
+      "actor": 131008,
+      "birth": 31.53,
+      "end": 301.529,
+      "first_primary": 31.597,
+      "censored_birth": false
+    },
+    {
+      "actor": 131013,
+      "birth": 31.53,
+      "end": 301.529,
+      "first_primary": 31.597,
+      "censored_birth": false
+    },
+    {
+      "actor": 131018,
+      "birth": 31.53,
+      "end": 301.529,
+      "first_primary": 31.597,
+      "censored_birth": false
+    }
+  ],
+  "buy_attempts": [
+    {
+      "t": 0.22,
+      "bot": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65486
+    },
+    {
+      "t": 0.22,
+      "bot": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 65481
+    },
+    {
+      "t": 0.22,
+      "bot": 3,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65476
+    },
+    {
+      "t": 0.22,
+      "bot": 4,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 65471
+    },
+    {
+      "t": 0.22,
+      "bot": 5,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 65466
+    },
+    {
+      "t": 0.22,
+      "bot": 6,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 65461
+    },
+    {
+      "t": 31.6,
+      "bot": 1,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 130993
+    },
+    {
+      "t": 31.6,
+      "bot": 2,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 130998
+    },
+    {
+      "t": 31.6,
+      "bot": 3,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 131003
+    },
+    {
+      "t": 31.6,
+      "bot": 4,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 131008
+    },
+    {
+      "t": 31.6,
+      "bot": 5,
+      "pp": 100,
+      "primary": "smg",
+      "price": 75,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "-",
+      "ammo_ok": 0,
+      "actor": 131013
+    },
+    {
+      "t": 31.6,
+      "bot": 6,
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "laser": "lam",
+      "laser_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 131018
+    }
+  ],
+  "successful_items": 0,
+  "successful_primary_bots": [],
+  "lua_episodes": 0,
+  "error_stack_lines": 0,
+  "channel_errors": 0,
+  "crash": false,
+  "deaths": 0,
+  "wave_seen": 0,
+  "ps_summary_lines": [
+    "0.06 [WarsBots] PS SUMMARY points=5 team1_held=0 team2_held=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=1 id=65486 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=2 id=65481 team=2 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=3 id=65476 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=4 id=65471 team=2 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=5 id=65466 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=6 id=65461 team=2 pp=100 rank=1 buys=0."
+  ],
+  "memory": [
+    {
+      "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+      "name": "Multiplayer_IA_Steelmill.mem"
+    },
+    {
+      "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+      "name": "Multiplayer_IA_Steelmill.nav.json"
+    },
+    {
+      "sha256": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9",
+      "name": "Multiplayer_PS_Plantation.mem"
+    },
+    {
+      "sha256": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39",
+      "name": "Multiplayer_PS_Shore.mem"
+    }
+  ],
+  "native_rng": "independent, not seeded or paired",
+  "first_primary_definition": "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+  "hashes": {
+    "analysis.log": "e4ba702275f38470e52676e1f39c12a3ef0acc7b4c80c7d2d357a45ceaa954a5",
+    "analyze.py": "9ade42ea1889ef226230f3e40f8c2fa99372ad4238674343ae1a3413ee67ccf4",
+    "c140-545a5022-preflight.bots.log": "3c214d0d056435905a0a1bbf7c195d7112ea1c1c3eb923b5f3c3050d51c89578",
+    "c140-545a5022-preflight.log": "7914284992003b3de0d37748932371af491cc9ea835d7b065702362ed3521f06",
+    "c140-545a5022-run.bots.log": "c5d38aa9412f719e593d4b922c016b051eba1aa65d73d7d463fd5a2e1b291643",
+    "c140-545a5022-run.log": "6d210347720ab4a89b9c714ff76c993569a3d981f9ba5e42dd6efd1f43d4ff56",
+    "door-evidence.log": "0924186bc39cb1f29f43b2e9971e9dc271286def5aca579a674d349498212d05",
+    "errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "flips.json": "58b0b8924650939b23ab0cb13a569781a5cf427a9ad37f67ef1b645041ea9117",
+    "memory-restored.json": "f8f04f7a847b413230e7698ae1aeb53f51ea0fdc51ce79c90aebdec41059e244",
+    "Multiplayer_PS_Shore-20261027-225444-1.wbdemo": "2b487d96a8620bfd61b6c8d1207185ef79a09b9f997738ea5f986a9a59610ce0",
+    "nk-first20.json": "ae4c6a203a0b013b5188d6175d04463c4b4177ec8e543ca89377e929968329fd",
+    "preflight-arguments.txt": "88756aee55671ef72495fa1a178f295e5a84b40931f85f02a9f936d5aaa8f8df",
+    "preflight-effective.json": "c63c1acd39f0c175c7dd023d1bb7fba8553dcbde6a0106f3d9a08a9cc12c0fc8",
+    "preflight-pid.txt": "10ef57e251732198a227d822b05ee97d82128f4a73aba6e0ab166da60488168c",
+    "ps-evidence.log": "d427f92ce70ff66c098b4e774d3897db1736826abcf398f429111d4a7eb8411d",
+    "recipe.json": "85a1911550c0de934518447b8989ad2eac665779de3cf96152368a3de7fcd5ef",
+    "run-arguments.txt": "6bd9bc3f6e9d1c9839a9c190897eadd3a164ad8a6b8789ea45664a561d535574",
+    "run-complete.json": "5717593b4c1ea9cb8cd837975faec1ccbe98ab2a5b5aaae00e3e0df80d1d1e8f",
+    "run-effective.json": "c63c1acd39f0c175c7dd023d1bb7fba8553dcbde6a0106f3d9a08a9cc12c0fc8",
+    "run-harness.ps1": "e2475bed1c246da73e1a7ec388a3daabe3f27d65e7e2c129809ff63d1c63627f",
+    "run-pid.txt": "3b5d24d3d0e128a61cae421de22e76a29ea1b5859fa338c6efd454d1d73a0716",
+    "summary.json": "e4ba702275f38470e52676e1f39c12a3ef0acc7b4c80c7d2d357a45ceaa954a5"
+  },
+  "source": "545a5022d06ce1edf219df3d57a9470e4f8295a5",
+  "ci_run": 40571455339,
+  "independent_review": {
+    "item": "DS-056",
+    "verdict": "OK",
+    "commit": "aa9a65466ca8e044cd6f665db1c1d56f9a9b80ef"
+  },
+  "doors": [
+    {
+      "t": 31.5,
+      "bot": 1,
+      "entity": 104,
+      "actor": 65486,
+      "pre_action": 2
+    }
+  ],
+  "door_old_use_lines": [],
+  "door_rmi_lines": [],
+  "door_open_event_gate_pass": true,
+  "door_physical_state": "UNKNOWN: open log records handler call/pre-action2; no post-action/pose telemetry or visual proof",
+  "bot_close_writes": "No close request in reviewed code; runtime physical closed-state coverage UNKNOWN",
+  "nk_first20_observations": [
+    {
+      "t": 0.06,
+      "bot": 1,
+      "actor": 65486,
+      "position": [
+        1841.283,
+        1234.691,
+        111.545
+      ],
+      "team": 1,
+      "frame_near_20_t": 20.077,
+      "position_near_20": [
+        1840.25341796875,
+        1251.77099609375,
+        111.25
+      ],
+      "frame_delta_20": 0.017000000000003013,
+      "max_displacement_first20_m": 19.23917331601229
+    },
+    {
+      "t": 0.06,
+      "bot": 3,
+      "actor": 65476,
+      "position": [
+        1839.669,
+        1239.997,
+        114.764
+      ],
+      "team": 1,
+      "frame_near_20_t": 20.077,
+      "position_near_20": [
+        1843.08056640625,
+        1250.7156982421875,
+        114.5
+      ],
+      "frame_delta_20": 0.017000000000003013,
+      "max_displacement_first20_m": 11.913228946673506
+    },
+    {
+      "t": 0.06,
+      "bot": 5,
+      "actor": 65466,
+      "position": [
+        1841.316,
+        1245.005,
+        111.545
+      ],
+      "team": 1,
+      "frame_near_20_t": 20.077,
+      "position_near_20": [
+        1841.13671875,
+        1251.810546875,
+        111.25
+      ],
+      "frame_delta_20": 0.017000000000003013,
+      "max_displacement_first20_m": 8.7721328457228
+    },
+    {
+      "t": 31.53,
+      "bot": 5,
+      "actor": 131013,
+      "position": [
+        1839.669,
+        1239.997,
+        114.764
+      ],
+      "team": 1,
+      "frame_near_20_t": 51.518,
+      "position_near_20": [
+        1840.038818359375,
+        1249.7232666015625,
+        114.5
+      ],
+      "frame_delta_20": -0.012000000000000455,
+      "max_displacement_first20_m": 11.01042421913664
+    },
+    {
+      "t": 31.53,
+      "bot": 3,
+      "actor": 131003,
+      "position": [
+        1843.069,
+        1234.181,
+        114.764
+      ],
+      "team": 1,
+      "frame_near_20_t": 51.518,
+      "position_near_20": [
+        1843.624267578125,
+        1247.6741943359375,
+        114.4978256225586
+      ],
+      "frame_delta_20": -0.012000000000000455,
+      "max_displacement_first20_m": 17.81277721834249
+    },
+    {
+      "t": 31.53,
+      "bot": 1,
+      "actor": 130993,
+      "position": [
+        1841.481,
+        1243.375,
+        114.764
+      ],
+      "team": 1,
+      "frame_near_20_t": 51.518,
+      "position_near_20": [
+        1840.3134765625,
+        1250.6031494140625,
+        114.5
+      ],
+      "frame_delta_20": -0.012000000000000455,
+      "max_displacement_first20_m": 8.400529986188886
+    }
+  ],
+  "nk_exit_le20_gate": null,
+  "nk_exit_note": "No authoritative NK base polygon/boundary in the task. Raw spawn and near20s positions/displacements provided; do not call displacement a proven base exit. Only door open occurred31.50s after first spawn, beyond20s; separate reset spawn set also reported.",
+  "lua_error_lines": [],
+  "stability_pass": true,
+  "ps_events": [
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFCE item=smg price=75 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFC9 item=shotgun price=50 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFC4 item=smg price=75 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFBF item=shotgun price=50 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFBA item=smg price=75 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000000FFB5 item=shotgun price=50 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFB1 item=smg price=75 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFB6 item=shotgun price=50 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFBB item=smg price=75 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFC0 item=shotgun price=50 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "smg",
+        "price": "75",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFC5 item=smg price=75 alive=true"
+    },
+    {
+      "kind": "purchase",
+      "fields": {
+        "player": "userdata:",
+        "item": "shotgun",
+        "price": "50",
+        "alive": "true"
+      },
+      "raw": "[WarsBots] PS EVENT purchase player=userdata: 000000000001FFCA item=shotgun price=50 alive=true"
+    }
+  ],
+  "ps_event_counts": {
+    "purchase": 12
+  },
+  "reported_successful_items": 0,
+  "buy_gate_note": "Inherited DS055 bool result bug; reportedok0 is not proof of no primary delivery. C139 return/laser gate remains unaccepted; this C140 is a door/probe integration run.",
+  "stalls_traps_gate": {
+    "control": "C139 ba4d5f4e",
+    "baseline_stalls": 81,
+    "baseline_traps": 1,
+    "candidate_stalls": 96,
+    "candidate_traps": 0,
+    "max_stalls": 101.25,
+    "max_traps": 1.25,
+    "pass": true
+  },
+  "initial_spawns": [
+    {
+      "bot": 1,
+      "team": 1,
+      "group": 120,
+      "spawn": 109
+    },
+    {
+      "bot": 2,
+      "team": 2,
+      "group": 537,
+      "spawn": 522
+    },
+    {
+      "bot": 3,
+      "team": 1,
+      "group": 120,
+      "spawn": 134
+    },
+    {
+      "bot": 4,
+      "team": 2,
+      "group": 537,
+      "spawn": 525
+    },
+    {
+      "bot": 5,
+      "team": 1,
+      "group": 120,
+      "spawn": 131
+    },
+    {
+      "bot": 6,
+      "team": 2,
+      "group": 537,
+      "spawn": 507
+    },
+    {
+      "bot": 6,
+      "team": 2,
+      "group": 537,
+      "spawn": 507
+    },
+    {
+      "bot": 5,
+      "team": 1,
+      "group": 120,
+      "spawn": 134
+    },
+    {
+      "bot": 4,
+      "team": 2,
+      "group": 537,
+      "spawn": 522
+    },
+    {
+      "bot": 3,
+      "team": 1,
+      "group": 120,
+      "spawn": 124
+    },
+    {
+      "bot": 2,
+      "team": 2,
+      "group": 537,
+      "spawn": 543
+    },
+    {
+      "bot": 1,
+      "team": 1,
+      "group": 120,
+      "spawn": 139
+    }
+  ],
+  "initial_spawn_groups_pass": true,
+  "memory_actual_sha256": {
+    "Multiplayer_IA_Steelmill.mem": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+    "Multiplayer_IA_Steelmill.nav.json": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+    "Multiplayer_PS_Plantation.mem": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9",
+    "Multiplayer_PS_Shore.mem": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39"
+  },
+  "memory_hashes_restored": true,
+  "memory_absent_state_restored": true,
+  "same_initial_memory_as_C139": false,
+  "overall_acceptance": "PARTIAL: stability/door-call/stalls-traps PASS; NK exit<=20s UNKNOWN, no full gate acceptance",
+  "promoted_defaults": false
+}
