@@ -1,5 +1,7 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+C135 DONE FAIL exact1a7ec84e CI40537292508: Shore6x300, initial neutral/opposite-base spawns; PP100 confirmed but purchases0/Lua4episodes. Deaths/wave4/4, crash/channel0, stalls102/traps1, demo6014frames. Originalmemory hashes restored/ownserver stopped. C131 next; X183, Docs/Coordination/C135_PS_REPORT.md.
+
 C132 DONE: deployed newest same-project/directory DeepSeek session discovery; actual restarted ses_e81f97efeffds6oK75oHBPxflG found, idle20 guard deferred wake. AST PASS; installed DryRun safe skips. Context usage % unavailable. X182. No game/GUI/memory change; C135 then C131 pending.
 
 C127/C133 owner session ARCHIVED exact4f3a1d72: demo9820frames/493.691s, bot deaths/wave6/6, crash/channel0; LIVE Lua3episodes (12stacklines) CheckVirtualInventoryRestrictions Null item name, purchases0 despite PP100/200. Raw+HTML+metrics+hashes and verified LOCALAPPDATA mirror preserved. Original1memoryfile restored/3absent-snapshot files retained; ownserver stopped/clientclosed. Docs/Coordination/C127_OWNER_ARCHIVE.md. C132 then C131 remain queued; no new game run started.
