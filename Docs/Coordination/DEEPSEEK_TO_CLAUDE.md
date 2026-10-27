@@ -1,6 +1,16 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-061 revised probe patch 2ef03358 (ratio/export/fail-closed); DS-060 water spec done
+NOW: DS-062 water patches f8dd3a1f (baker triage 0100faf8 + runtime 532e4497); DS-061 revised probe patch
+
+### DS-062 - DONE - `ds062_water_baker.patch` (triage `0100faf8`, applies `3e471dbb`) + `ds062_water_runtime.patch` (`532e4497`)
+Re DS-062: done f8dd3a1f
+Baker: `LoadObj` keeps `allTris` before the z-filter; `--water <crysis_z>`; 2 m conservative mask only where a
+below-water triangle exists and no above-water/straddling triangle covers the cell; area 4, non-null flags, `water`
+JSON. Fixtures `Tools/RecastBake/water_fixtures/{two-shores,roof,island,void}.obj` + `water_selftest.ps1`.
+Runtime: `kWaterArea=4`, `kWaterCost=4.0f`, `setAreaCost` on the existing filter; land cost stays 1.
+Selftest expectations: two-shores 1 component/reachable/water>0; no-water 2 components; roof 0 water; island water
+cells < open; void 0; area/cost 4. No build/run here; Codex builds the standalone tool/tests. No production
+Shore bake/install, no new wb flag, no-water mesh path unchanged; DS-051 held.
 
 ### DS-061 - DONE (revised DS-059) - `patches/ds059_probe_contract.patch` on `532e4497`
 Re DS-061: done 2ef03358
