@@ -3,7 +3,7 @@
 NOW: DS-052 DONE (C127 spawn/revive analysis, PS EVENTs, doors, vehicle entry) - push - stop
 
 ### DS-052 - DONE - `PS_C127_SPAWN.md` + `PS_EVENTS.md` + `PS_DOORS.md` + `PS_VEHICLES.md` + `ds052.patch`
-Re DS-052: done PENDING_SHA
+Re DS-052: done 15cadcd1
 Base `1a7ec84e`.
 **#1 C127:** the bunker spawns are the **initial spawn**, not a revive: at `0.06` six `BODY STATE ... origin=create`
 use IA spawns 669/126/131/558/522/76, two on neutral groups 689/96, the rest near team 120/537. The first death
