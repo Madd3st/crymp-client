@@ -1,6 +1,20 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-063 door scan patch b43db987; DS-062 water patches f8dd3a1f
+NOW: DS-064 capture eligibility audit 8afa09d1; DS-063 door patch b43db987; DS-062 water f8dd3a1f
+
+### DS-064 - DONE (analysis, no patch) - `SHORE_CAPTURE_ELIGIBILITY.md`
+Re DS-064: done 8afa09d1
+All five explicit Shore points (64/316/654/344/579) have `bCapturable=1`, `captureAreaId=1`, `captureRequirement=1`
+(15/15/30/30 s, index 1/1/3/2); `PS_PLAN.md:17`'s "2 players" is stale for Shore. Each has an `Area Id=1` entity
+(39/291/629/330+323/569); 344 and 579 origins sit 0.2-0.3 m outside their polygon but the 6 m hold ring overlaps.
+Native rules: `PowerStruggleUtils.lua:112-127` adds the entering id to `inside`; `UpdateCapture:174-208` filters only
+dead/spectator/team, no IsPlayer/channel/GetPlayerCount, and `ok=count>=captureRequirement`; `OnEnterCaptureArea`
+(`PowerStruggleAlert.lua:655-657`) skips only the client RMI for IsPlayer=false; `Capture:412-418` awards PP/CP with
+no IsPlayer gate.
+So rule-level eligibility is **yes**, but no C140 bot reached an area and there are no `capture_start`/`captured`
+events: participation is unproven, with DS-063's door/path as the immediate blocker. Missing observation: one bot
+inside `Area Id=1` plus `inside` membership. `BotPSCapture` ignores captureRequirement (fine for req=1; latent for a
+future req=2); no repair patch from this audit, no new capture goal/subsystem.
 
 ### DS-063 - DONE - `DOOR_EXIT_ORDER.md` + `patches/ds063_door_priority.patch` (`532e4497`)
 Re DS-063: done b43db987
