@@ -107,7 +107,52 @@ water mesh install for a capture run before gate D.
 3. Bake Shore offline; publish components/blocked_cells and per-point route costs; do not install.
 4. Door: one C140-style replay with the DS-063 patch, adding a rejection log, to prove (1) the 20 s open and (2) the
    physical crossing. This is the named missing observation; no other run is justified before it.
-5. Water traversal stays a separate decision (swim policy: `canMove` split, no `SafeStep` ground ray in water, a
-   WarsBots-only drown exception in `Player.cpp:2958`, shoreline exit). Not part of C145 and not a new flag until the
+5. Water traversal stays a separate decision (swim policy below). Not part of C145 and not a new flag until the
    owner/Codex accept the scope; without it, keep water polygons out of bot paths (fail-closed) rather than ship a
    freeze/drown route.
+
+## 6. Narrow water-traversal adaptation (proposal, not shipped)
+
+The goal is to reuse the movement controller, not add a swim controller: stock `CPlayer` already swims, the bot path
+is already a horizontal destination, and the only blockers are a state gate, a ground probe and the stock AI drown
+branch. Four small existing-file changes, each separately reviewable:
+
+1. `BotBlackboard.cpp:20-22` — add `bool swimming = actor.ShouldSwim();` and remove `!actor.ShouldSwim()` from
+   `canMove` (keep every other guard: health, frozen, ragdoll, ladder, freefall, spectator, vehicle). `canMove` then
+   answers "the actor can act", not "the actor is on ground".
+2. `BotMovement::SafeStep` (`BotMovement.cpp:55-76`) — take `bool swimming`; when true, keep all nine horizontal body
+   rays (`:67-71`, cliffs, walls, held item) and skip **only** the downward ground-hit return at `:73-75`. Never skip
+   collision rays, never teleport, never change `ent_*` flags globally.
+3. `BotLocomotion::Execute` (`:100-141`) — pass `state.swimming` to `Move`; while swimming refuse jump/strength
+   (`:107-121`) and sprint, and do not request a land stance (the stock movement controller already selects swim from
+   the actor stats; verify whether `STANCE_SWIM` is accepted before sending it). On shore (`ShouldSwim()` false) the
+   old path is unchanged.
+4. `Player.cpp:2958-2970` — add `&& !IsWarsBotActor()` to the stock AI drown branch. `CPlayer::IsWarsBotActor()` is
+   already used for identity guards (`BotMatch.cpp:32`, `BotMoveTrace.cpp:36`); stock/campaign AI still drowns.
+   Without this line an IA bot takes 30 HP/s and dies in ~3.3 s even if it can move.
+
+Shore entry/exit caveats: enter only where `relativeBottomDepth` crosses 1.3 m; exit only where the navmesh projects a
+landing within `climb` (`NavMeshCore::Project`, side 1.5, up 1.0, down 3.0) and the body rays are clear. A quay higher
+than `climb` is a cliff and must stay refused. The existing trap watchdog (`BotBrain.cpp:1228-1270`) now sees
+`canMove=true` in water, so "no progress while swimming" can reach level 4 (self-kill); that must be measured, not
+assumed benign.
+
+Engine-free oracle for the decision (pure helper, no physics): `WaterStep(swimming, groundHit, wallHit, depth)`.
+Required table: land + ground + not swimming -> normal; land + no ground + not swimming -> refuse (cliff/void
+negative); swimming + wallHit -> refuse (land-cliff negative); swimming + no wall + depth>=1.3 -> allow; depth<1.3 ->
+ground path (shallow wade). Plus a land-cliff MOVE TRACE (speed ~0, no fall) and a real water positive (>=30 m leg,
+speed >0.5 m/s, HP unchanged, exit on land) as runtime evidence.
+
+Flag discipline: no new `wb_*` for this. Either it rides the water-mesh package while that is default-OFF, or it
+promotes/deletes a flag in the same item (net-zero rule). Owner decision; not part of DS-067.
+
+## 7. Query consistency (tool vs runtime)
+
+* Tool points/components filter at `recast_bake.cpp:608` keeps default area costs 1.0; `items_reachable`/`components`
+  are therefore **not** route-preference evidence. Only `--path-from/--path-to` (DS-067b) applies `--water-cost`
+  (default 4, same as `BotNavMeshCore.cpp:60`).
+* Runtime `NavMeshCore::FindPath` uses `m_filter` with `setAreaCost(4,4)`; `Reachable`/`BuildComponents`
+  (`:81-160,232-239`) use flags only. A runtime route log should therefore print the chosen path's water polygon count
+  and the filter cost at `WB_LOG(2)` (diagnostic, no flag), so a run can be compared 1:1 with the tool's `path` JSON.
+* `waterCost` must stay one constant in both places; the DS-067 docs carry the pair, and the selftest asserts 4 vs 1
+  behaviour rather than the printed number.
