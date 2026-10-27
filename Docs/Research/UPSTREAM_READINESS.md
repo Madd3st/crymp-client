@@ -18,6 +18,7 @@ Goal: a demo good enough for the CryMP maintainers, then a small series of PRs t
 | Performance | bot AI 0.54 ms/frame, 15 bots (< 2 % of a 31 ms frame) | measure on a weak server; budget 1 ms/frame for 16 bots |
 | Stability | 11-min runs, one map | **4 h soak: map rotation, joins/leaves, bot add/kick, memory per hour flat** |
 | Tests / CI | 44 unit test files, CI every push; Lua and ScriptBind_* not checked offline | Lua syntax + all touched game files compiled in CI |
+| Branches | code in `claude-sprint`, stale code in `weapon-goals` (misled DS-S7) | one integration branch; report branches without game code |
 | Data | navmesh/links/spots per map from our Python Recast tools | reproducible bake, documented, shipped with the server pak |
 
 ## Fundament wave (order, each behaviour-identical, gated by a paired run)
@@ -30,6 +31,12 @@ Goal: a demo good enough for the CryMP maintainers, then a small series of PRs t
 6. Split `BotBrain` (per state) and `BotManager` (console, spawn, match).
 7. Lua: replace stock copies with hooks.
 8. Soak test nightly (C-129).
+
+## Progress measure (DS-S7)
+
+Bible rows (DS-042): 2 PASS / 18 PARTIAL / 15 FAIL on 26.10 → 4 / 16 / 15 on 27.10 (first primary, finish). Moved little;
+grade every playtest and soak on the Bible, PS rows included once PS is measured. Promotions need a paired run on the
+same build (C-121 was single).
 
 ## Questions the maintainers will ask (answer before the demo)
 

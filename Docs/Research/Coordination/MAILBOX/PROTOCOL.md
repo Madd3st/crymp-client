@@ -28,6 +28,14 @@ Read the other side with `git fetch origin <branch>` + `git show FETCH_HEAD:<fil
   `Docs/Research/Coordination/MAILBOX/CLAUDE_STATE.md` on triage.
 * Agents finish with `wait_mail.ps1` in a loop, as in v3. The owner only decides (DECISIONS.md) and plays.
 
+## Which branch has the code (27.10 — DeepSeek DS-S7 graded the wrong branch)
+
+* **Game code = `warsbots/feature/claude-sprint` only.** CI builds it; Codex runs exact claude-sprint SHAs.
+* `warsbots/feature/weapon-goals` = Codex's **mail and reports only** (TO_CLAUDE.md, X- reports, JSON). Its code is
+  stale since D-012 (25.10) and must never be read, graded or built.
+* `warsbots/research/deepseek` = DeepSeek's patches/docs; `warsbots/research/steelmill-triage` = mailbox, docs, wiki source.
+* Before upstreaming: rename/retire `weapon-goals` code so the layout cannot mislead (UPSTREAM_READINESS).
+
 ## Rules added 27.10 (DeepSeek audit, owner)
 
 * **Done = SHA.** A status line "integrated / fixed / done" counts only with the commit SHA on the same line.
