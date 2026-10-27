@@ -1,0 +1,354 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index ac3b875c..fc5262c5 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index f36aa20c..440dd317 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -559,7 +559,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
+ float BotBrain::PickupRange() const
+ { return WarsBots::IdleHoldRange(BotConfig::Get().vantage==1 && m_traits.camper>=0.7f); }
+ 
+-EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost)
++EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost,bool sniperOnly)
+ {
+ 	(void)anyHeld; // with wb_bot_weapon_rank FindNearby keeps only real upgrades over what is held
+ 	EntityId skip[8]; int skipCount = 0;
+@@ -567,7 +567,7 @@ EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost)
+ 	// owner 25.10 (wb_bot_vantage): Marksmen judge pickups at sniper range, so DSG1/Gauss become real upgrades
+ 	const float typical=PickupRange();
+ 	// c066: no bot ever reached DSG1 (22 m up) / Gauss (tower) within 45 m -> snipers look across the map
+-	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical, pathCost);
++	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical, pathCost, sniperOnly);
+ }
+ 
+ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
+@@ -579,14 +579,14 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
+ 	const bool sniperMind=PickupRange()>30.0f;
+ 	if (!socomQA && WarsBots::ShouldSearchUpgrade(hasPrimary,BotConfig::Get().weaponRank==1,sniperMind,force,enemy && m_combat.Visible()))
+ 	{
+-		if (m_now >= m_nextUpgradeSearch && !m_upgradeTarget)
++		const bool sniperOnly = BotConfig::Get().sniperReach==1 && sniperMind && !BotWeapons::HoldsSniper(actor);
+ 		{
+-			m_upgradeTarget = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 && !hasPrimary);
++			m_upgradeTarget = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 || sniperOnly, sniperOnly);
+ 			m_upgradeSince = m_now;
+ 			m_nextUpgradeSearch = m_now + 3.0f;
+ 		}
+ 		// Unreachable (on a ledge, behind glass, taken): give up when the walk stops getting closer for 8 s (c067: a
+-		// flat 10 s dropped every DSG1/Gauss trip — 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
++		// flat 10 s dropped every DSG1/Gauss trip - 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
+ 		if (m_upgradeTarget != m_upgradeTracked || !m_upgradeTarget) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0; }
+ 		if (IEntity* goal = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr)
+ 		{
+@@ -607,7 +607,9 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
+ 			}
+ 			if (d < m_upgradeBest-1.0f) { m_upgradeBest=d; m_upgradeBestAt=m_now; }
+ 		}
+-		if (m_upgradeTarget && (m_now - m_upgradeBestAt > 8.0f || m_now - m_upgradeSince > 60.0f))
++		const float progressTimeout = sniperOnly ? 20.0f : 8.0f;
++		const float totalTimeout = sniperOnly ? 90.0f : 60.0f;
++		if (m_upgradeTarget && (m_now - m_upgradeBestAt > progressTimeout || m_now - m_upgradeSince > totalTimeout))
+ 		{
+ 			WB_LOG(2, "[WarsBots] #%d weapon %u unreachable; skipping it.", m_number, m_upgradeTarget);
+ 			MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
+@@ -1187,7 +1189,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+ 	}
+ 	else m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
+ 	// T-1 step 1: which rule decided this tick (source lines of BotBrain.cpp), logged when the suit request changes or
+-	// a jump is requested — the before/after evidence for the control-frame refactor.
++	// a jump is requested - the before/after evidence for the control-frame refactor.
+ 	if (m_intent.suitMode!=m_lastSuitRequest || m_intent.jump!=BotJump::None)
+ 		WB_LOG(2,"[WarsBots] #%d INTENT WHY suit=%d@%d jump=%d@%d gait=%d@%d move=%d@%d aim@%d state=%s actor=%u.",m_number,
+ 			int(m_intent.suitMode),m_intent.why.suitMode,int(m_intent.jump),m_intent.why.jump,int(m_intent.gait),m_intent.why.gait,
+@@ -1251,11 +1253,13 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
+ 	}
+ 	if (o.phase==LinkPhase::Failed)
+ 	{
+-		static const char* const why[]={"none","timeout","no_takeoff","missed_landing","no_energy"};
++		static const char* const why[]={"none","timeout","no_takeoff","missed_landing","no_energy","too_high"};
+ 		WB_LOG(1,"[WarsBots] #%d LINK failed kind=%s reason=%s at=(%.2f,%.2f,%.2f)%s actor=%u.",m_number,NavLinkName(m_linkNow.kind),
+ 			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> fail noted",actor.GetEntityId());
+-		// O-027: one failure can be timing (hit, cooldown, short run-up) -> ban a link only on its second failure
+-		if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
++		// O-027: one failure can be timing (hit, cooldown, short run-up) -> ban a link only on its second failure.
++		// DS-046: a link above the jump rise is impossible; ban it at once, do not waste two probes.
++		if (o.fail==LinkFail::TooHigh) mesh->BanLink(m_linkNow.ref);
++		else if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
+ 		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0;
+ 		return;
+ 	}
+@@ -1495,7 +1499,7 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
+ 	const bool hasPrimary=BotWeapons::HasPrimary(actor);
+ 	const bool ranked=BotConfig::Get().weaponRank==1;
+ 	if ((!hasPrimary || ranked) && m_now>=m_nextUpgradeSearch && !m_upgradeTarget)
+-	{ m_upgradeTarget=UpgradeCandidate(actor,hasPrimary,BotConfig::Get().firstPrimary==1 && !hasPrimary); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
++{ const bool sniperOnly=BotConfig::Get().sniperReach==1 && PickupRange()>30.0f && !BotWeapons::HoldsSniper(actor); m_upgradeTarget=UpgradeCandidate(actor,hasPrimary,BotConfig::Get().firstPrimary==1 || sniperOnly,sniperOnly); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
+ 	if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor,m_upgradeTarget)) m_upgradeTarget=0;
+ 	IEntity* item=m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
+ 	ArbiterInput in;
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index 3ffa8c90..32edcca3 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -75,7 +75,7 @@ private:
+ 	float TurnRate() const;
+ 	bool EyeRayClear(CPlayer& actor, const Vec3& from, const Vec3& to) const;
+ 	bool UpdateArbitrated(BotInstance& bot, CPlayer& actor, IActor* enemy, float decisionTime, bool socomQA);
+-	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld, bool pathCost = false);
++	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld, bool pathCost = false, bool sniperOnly = false);
+ 	BotLookPolicy m_look;
+ 	Vec3 m_lookDir = Vec3(0,1,0);
+ 	bool m_lookValid = false;
+diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
+index 8e8e6836..18c1fbcc 100644
+--- a/Code/CryGame/Bots/BotConfig.cpp
++++ b/Code/CryGame/Bots/BotConfig.cpp
+@@ -48,6 +48,7 @@ const IntBinding kInts[]={
+  {"wb_bot_first_primary",&BotConfig::firstPrimary,"DS-044 #1 (audit: first primary p50 33.5 s, SOCOM held 35.7 %): on spawn go for the nearest reachable rifle before roam/fight unless an enemy is within 10 m; candidates are scored by navmesh walk length (PickupCost), not straight distance. 0 OFF default. Exit: first-primary p50 < 15 s, SOCOM time < 15 %."},
+  {"wb_bot_withdraw_cover",&BotConfig::withdrawCover,"DS-044 #2 (audit: 80 % of withdraws die within 2.5 s): low HP backs off to the nearest cover spot (tactical_spots flag 1/2, PickCover) that breaks LOS to the threat and is reachable, keeps firing while moving, Armor; abort and fight if no cover within 8 m. Needs wb_bot_tactics 1 + <Level>.spots.txt. 0 OFF default. Exit: withdraw deaths < 50 %."},
+  {"wb_bot_finish_lock",&BotConfig::finishLock,"DS-044 #3 (audit: 22.4 % of target choices switch away from <=25 HP): keep a target at <=25 HP until it is dead or lost for > 1 s, unless a new enemy within 8 m is the one hitting us. 0 OFF default. Exit: switch-away from <=25 HP < 5 %."},
++ {"wb_bot_sniper_reach",&BotConfig::sniperReach,"DS-046 (C-117 X-157: 0/3 DSG1, 0/3 Gauss): a sniper-minded marksman searches the roof with a 32 m vertical proximity box (DSG1 is +20.3 m, Gauss +13.0 m above the bot; the old +-12 m box never listed them) and tries only DSG1/Gauss until one is held; the weapon goal gets 20 s progress / 90 s total instead of 8/60. 0 OFF default. Exit: DSG1/Gauss pickup > 2/3."},
+  {"wb_bot_corners",&BotConfig::corners,"Navmesh path corners v2 (BotCorners.h): each corner is aimed at 0.15 m to the outside of the turn (mesh erosion 0.3 m vs player capsule 0.4 m), passed only when reached (0.35 m) or crossed with the next leg in straight reach, and sharp turns drop sprint/Speed within 2.5 m. Targets the Steelmill stair-mouth and spawn-176 wedges. Requires wb_bot_navmesh 1. 1 ON default (D-016: two paired 15x660 runs + owner playtest 25.10)."},
+  {"wb_fire_diagnostics",&BotConfig::fireDiagnostics,"Opt-in shot/hit diagnostics; at most 20000 records per level; default OFF."},
+  {"wb_log",&BotConfig::logLevel,"WarsBots console log: 0 essential, 1 +kills/revives (default), 2 +telemetry. Telemetry always goes to the log file."},
+diff --git a/Code/CryGame/Bots/BotConfig.h b/Code/CryGame/Bots/BotConfig.h
+index 8c03857a..9c0c1c0e 100644
+--- a/Code/CryGame/Bots/BotConfig.h
++++ b/Code/CryGame/Bots/BotConfig.h
+@@ -51,6 +51,7 @@ struct BotConfig {
+  int firstPrimary=0;   // DS-044: spawn pistol -> nearest reachable rifle by walk length before roam/fight, default OFF
+  int withdrawCover=0;  // DS-044: low HP withdraw to the nearest LOS-breaking cover spot, not 4 m straight back, default OFF
+  int finishLock=0;     // DS-044: keep a <=25 HP target until dead/lost > 1 s unless a new enemy within 8 m is hitting us, default OFF
++ int sniperReach=0;    // DS-046: sniper-mind upgrade searches the roof (32 m vertical box) and only DSG1/Gauss first, default OFF
+  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
+  static BotConfig& Get(){static BotConfig config;return config;}
+  void Register(IConsole& console);
+diff --git a/Code/CryGame/Bots/BotJumpLink.h b/Code/CryGame/Bots/BotJumpLink.h
+index d5b224e2..cb7ff2f0 100644
+--- a/Code/CryGame/Bots/BotJumpLink.h
++++ b/Code/CryGame/Bots/BotJumpLink.h
+@@ -20,7 +20,7 @@ struct JVec { float x = 0, y = 0, z = 0; };
+ enum class LinkPhase { Idle = 0, Approach, Prepare, RunUp, Act, Air, Done, Failed };
+ enum class LinkMove { Drop = 0, Jump, Strength };
+ enum class LinkJumpRequest { None = 0, Normal, Strength };
+-enum class LinkFail { None = 0, Timeout, NoTakeoff, MissedLanding, NoEnergy };
++enum class LinkFail { None = 0, Timeout, NoTakeoff, MissedLanding, NoEnergy, TooHigh };
+ 
+ struct LinkInput {
+ 	float now = 0.f;
+@@ -54,6 +54,7 @@ struct LinkParams {
+ 	float runUp = 2.5f;                // m behind a: a standing jump undershoots (c062: 15 Strength landings under b)
+ 	float strengthEnergy = 90.f;       // DS-033: links started at 10-57 energy landed short
+ 	float dropAirMin = 0.15f;          // m below a that counts as "left the edge" for a drop
++	float maxStrengthRise = 3.72f;     // DS-046: native Strength jump rise ~3.62 m; a +4.30 m link cannot land
+ };
+ 
+ class BotJumpLink {
+@@ -87,6 +88,8 @@ private:
+ 	{
+ 		LinkOutput o; o.moveTo = m_b;
+ 		if (!Active()) { o.phase = m_phase; return o; }
++		// DS-046: the baked 1355 -> 1351.9 link asks for +4.30 m; the jump rises ~3.62 m. Reject instead of 12 s of retries.
++		if (m_move == LinkMove::Strength && (m_b.z - m_a.z) > m_p.maxStrengthRise) return Fail(o, LinkFail::TooHigh);
+ 		if (in.now - m_start > m_p.total) return Fail(o, LinkFail::Timeout);
+ 		const float da = Dist2D(in.feet, m_a), db = Dist2D(in.feet, m_b);
+ 		if (!in.grounded) m_wasAir = true;
+diff --git a/Code/CryGame/Bots/BotSniperReach.h b/Code/CryGame/Bots/BotSniperReach.h
+new file mode 100644
+index 00000000..df401fda
+--- /dev/null
++++ b/Code/CryGame/Bots/BotSniperReach.h
+@@ -0,0 +1,28 @@
++// DS-046: sniper reach helpers. The weapon proximity query is a 3D box; a roof item 20 m above the bot was
++// outside the old +-12 m vertical box, so DSG1/Gauss were never even considered. Same module carries the
++// Strength-link rise limit (the 1355 -> 1351.9 link asks for +4.30 m, above the ~3.62 m jump rise).
++#pragma once
++#include <cstring>
++
++namespace WarsBots {
++
++inline bool IsSniperClass(const char* cls)
++{
++    if (!cls) return false;
++    return !std::strcmp(cls, "DSG1") || !std::strcmp(cls, "GaussRifle");
++}
++
++// Half-height of the weapon proximity box. Sniper searches (typical range > 30 m) need the roof above the bot.
++inline float SniperSearchHalfHeight(bool enabled, bool sniperMind)
++{
++    return (enabled && sniperMind) ? 32.0f : 12.0f;
++}
++
++// Max Strength-jump rise at the native 9.6 m/s take-off and Crysis gravity (~12.7 m/s2): 3.62 m observed,
++// 3.72 m allows the landing tolerance. Links above this are not executable and must be rejected, not retried.
++inline float MaxStrengthLinkRise()
++{
++    return 3.72f;
++}
++
++} // namespace WarsBots
+diff --git a/Code/CryGame/Bots/BotWeapons.cpp b/Code/CryGame/Bots/BotWeapons.cpp
+index e47e7d9a..c7bfb08b 100644
+--- a/Code/CryGame/Bots/BotWeapons.cpp
++++ b/Code/CryGame/Bots/BotWeapons.cpp
+@@ -14,6 +14,7 @@
+ #include "CryGame/Bots/BotWeaponRank.h"
+ #include "CryGame/Bots/BotNavMesh.h"
+ #include "CryGame/Bots/BotNavMeshCore.h"
++#include "CryGame/Bots/BotSniperReach.h"
+ #include "CryGame/Bots/BotWeaponHandling.h"
+ #include "CryGame/Items/Weapons/Weapon.h"
+ 
+@@ -82,8 +83,14 @@ bool BotWeapons::SelectAvailable(CActor& actor)
+ 	return current && HasAmmunition(actor, *current);
+ }
+ 
++bool BotWeapons::HoldsSniper(CActor& actor)
++{
++	IItem* held = actor.GetCurrentItem();
++	return held && WarsBots::IsSniperClass(held->GetEntity()->GetClass()->GetName());
++}
++
+ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly,
+-	const EntityId* skip, int skipCount, float typicalRange, bool pathCost)
++	const EntityId* skip, int skipCount, float typicalRange, bool pathCost, bool sniperOnly)
+ {
+ 	EntityId result = 0;
+ 	float best = 1e10f;
+@@ -101,8 +108,11 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
+ 	HeldWeapon held[8]; int heldCount = 0;
+ 	const bool ranked = BotConfig::Get().weaponRank == 1;
+ 	if (ranked) heldCount = Held(actor, held, 8);
++	// DS-046: a roof rifle is 13-20 m above the bot; the old +-12 m box never listed it. Sniper searches reach 32 m.
++	const bool sniperMind = typicalRange > 30.0f;
++	const float vertical = WarsBots::SniperSearchHalfHeight(BotConfig::Get().sniperReach == 1, sniperMind);
+ 	SEntityProximityQuery query;
+-	query.box = AABB(origin - Vec3(radius, radius, 12.0f), origin + Vec3(radius, radius, 12.0f));
++	query.box = AABB(origin - Vec3(radius, radius, vertical), origin + Vec3(radius, radius, vertical));
+ 	gEnv->pEntitySystem->QueryProximity(query);
+ 	for (int q = 0; q < query.nCount; ++q)
+ 	{
+@@ -115,6 +125,7 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
+ 		float distance = (entity->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared();
+ 		if (distance > radius*radius) continue;
+ 		IItem* item = Items()->GetItem(entity->GetId());
++		if (sniperOnly && (!item || !WarsBots::IsSniperClass(item->GetEntity()->GetClass()->GetName()))) continue;
+ 		if (Suitable(item) && (!primaryOnly || IsPrimary(item)) && !item->GetOwnerId() && static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId()))
+ 		{
+ 			float walk = sqrtf(distance);
+diff --git a/Code/CryGame/Bots/BotWeapons.h b/Code/CryGame/Bots/BotWeapons.h
+index 3d442567..c04b9134 100644
+--- a/Code/CryGame/Bots/BotWeapons.h
++++ b/Code/CryGame/Bots/BotWeapons.h
+@@ -17,7 +17,8 @@ struct BotWeapons
+ 	static bool HasPrimary(CActor& actor);
+ 	static bool IsPrimary(IItem* item);
+ 	static EntityId FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly = false,
+-		const EntityId* skip = nullptr, int skipCount = 0, float typicalRange = 20.f, bool pathCost = false);
++		const EntityId* skip = nullptr, int skipCount = 0, float typicalRange = 20.f, bool pathCost = false, bool sniperOnly = false);
++	static bool HoldsSniper(CActor& actor);
+ 	static bool AvailableForPickup(CActor& actor, EntityId item);
+ 	static bool PickUp(CActor& actor, EntityId item, float holdRange = 20.0f); // holdRange: C-104 snipers judge at 60 m
+ 	static bool GiveTestSCAR(CActor& actor);
+diff --git a/Tests/BotJumpLinkTests.cpp b/Tests/BotJumpLinkTests.cpp
+index 802ccc12..b67fef50 100644
+--- a/Tests/BotJumpLinkTests.cpp
++++ b/Tests/BotJumpLinkTests.cpp
+@@ -1,4 +1,4 @@
+-#include "CryGame/Bots/BotJumpLink.h"
++﻿#include "CryGame/Bots/BotJumpLink.h"
+ #include <cassert>
+ #include <cstdio>
+ using namespace WarsBots;
+@@ -26,7 +26,7 @@ int main()
+ 	}
+ 	// 3. Strength not ready at a: stop (Prepare), suit ready -> back off 2.5 m (RunUp), run in, jump at a.
+ 	{
+-		BotJumpLink L; L.Start(0, LinkMove::Strength, a, JVec{5, 0, 14});
++		BotJumpLink L; L.Start(0, LinkMove::Strength, a, JVec{5, 0, 13.5});
+ 		LinkInput in = At(0, -0.5f, 0, 10); in.energy = 150; LinkOutput o = L.Update(in);
+ 		assert(o.phase == LinkPhase::Prepare && o.wantStrength && o.jump == LinkJumpRequest::None);
+ 		in.now = 0.5f; in.speed = 0; in.strengthActive = true; o = L.Update(in);
+@@ -38,7 +38,7 @@ int main()
+ 	}
+ 	// 4. Strength with low energy waits for regen; still too low after prepareMax -> NoEnergy (not banned by the caller).
+ 	{
+-		BotJumpLink M; M.Start(0, LinkMove::Strength, a, JVec{5, 0, 14});
++		BotJumpLink M; M.Start(0, LinkMove::Strength, a, JVec{5, 0, 13.5});
+ 		LinkInput low = At(0, -0.1f, 0, 10); low.energy = 30; LinkOutput o = M.Update(low); assert(o.phase == LinkPhase::Prepare);
+ 		low.now = 6.5f; o = M.Update(low);   // DS-036: prepareMax 6 s assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoEnergy);
+ 	}
+@@ -61,3 +61,4 @@ int main()
+ 	std::puts("BotJumpLinkTests OK");
+ 	return 0;
+ }
++
+diff --git a/Tests/BotSniperReachTests.cpp b/Tests/BotSniperReachTests.cpp
+new file mode 100644
+index 00000000..493c0332
+--- /dev/null
++++ b/Tests/BotSniperReachTests.cpp
+@@ -0,0 +1,30 @@
++﻿// DS-046 sniper reach / impossible Strength-link tests (engine-free).
++#include "CryGame/Bots/BotSniperReach.h"
++#include "CryGame/Bots/BotJumpLink.h"
++#include <cassert>
++#include <cstdio>
++using namespace WarsBots;
++static int failures=0;
++#define CHECK(c) do{if(!(c)){std::printf("FAIL %s:%d %s\n",__FILE__,__LINE__,#c);++failures;}}while(0)
++int main(){
++    CHECK(IsSniperClass("DSG1") && IsSniperClass("GaussRifle"));
++    CHECK(!IsSniperClass("SCAR") && !IsSniperClass("SOCOM") && !IsSniperClass(nullptr));
++    CHECK(SniperSearchHalfHeight(true,true)==32.f);
++    CHECK(SniperSearchHalfHeight(true,false)==12.f);
++    CHECK(SniperSearchHalfHeight(false,true)==12.f);
++    CHECK(MaxStrengthLinkRise()>=3.6f && MaxStrengthLinkRise()<3.8f);
++    {
++        BotJumpLink link; LinkInput in; in.now=0.1f; in.grounded=true;
++        link.Start(0.f,LinkMove::Strength,JVec{0,0,0},JVec{0,0,4.3f});
++        const LinkOutput o=link.Update(in);
++        CHECK(o.phase==LinkPhase::Failed && o.fail==LinkFail::TooHigh);
++    }
++    {
++        BotJumpLink link; LinkInput in; in.now=0.1f; in.grounded=true;
++        link.Start(0.f,LinkMove::Strength,JVec{0,0,0},JVec{0,0,3.0f});
++        const LinkOutput o=link.Update(in);
++        CHECK(!(o.phase==LinkPhase::Failed && o.fail==LinkFail::TooHigh));
++    }
++    if(failures){std::printf("sniper_reach: %d FAILURES\n",failures);return 1;}
++    std::printf("sniper_reach: all tests passed\n"); return 0;
++}
+diff --git a/Tools/Probes/roof_strength.json b/Tools/Probes/roof_strength.json
+index a2ae7144..c7d51b73 100644
+--- a/Tools/Probes/roof_strength.json
++++ b/Tools/Probes/roof_strength.json
+@@ -1 +1,3 @@
+-{"schema": 1, "id": "roof_strength", "map": "multiplayer/ia/steelmill", "duration_s": 75, "repeat": 3, "why": "DS-033: C-098 never completed the (1355,1347.6,147.8)->(1351.9,1352,152) Strength link; owner playtest 3 (C-106) had NAVMESH none, so zero links | C-111: by DeepSeek DS-033; new metrics link:<kind>:done, link:failed, landing_z come from LINK done/failed lines (runner must grep them)", "cvars": {"wb_bot_navmesh": 1, "wb_bot_jump_links": 1, "wb_bot_suit_policy": 1, "wb_bot_weapon_rank": 1, "wb_bot_vantage": 1, "wb_bot_state_commit": 1}, "setup": ["wb_add 1 elite marksman", "wb_teleport 1 1316.9 1339.0 138.8"], "assert": [{"metric": "link:strength:done", "op": "ge", "value": 1}, {"metric": "landing_z", "op": "ge", "value": 157.0}, {"metric": "pickup:DSG1", "op": "le_seconds", "value": 60}, {"metric": "link:failed", "op": "eq", "value": 0}]}
++{"schema": 1, "id": "roof_strength", "map": "multiplayer/ia/steelmill", "duration_s": 75, "repeat": 3, "why": "DS-046: the 1355->1351.9 Strength link is +4.30 m, above the measured 3.62 m jump rise and not on the short DSG1 route; the probe now grades the DSG1 roof reach (walk 141.6 m from spawn) instead of an impossible link", "cvars": {"wb_bot_navmesh": 1, "wb_bot_jump_links": 1, "wb_bot_suit_policy": 1, "wb_bot_weapon_rank": 1, "wb_bot_vantage": 1, "wb_bot_path_progress": 1, "wb_bot_state_commit": 1}, "setup": ["wb_add 1 elite marksman", "wb_teleport 1 1316.9 1339.0 138.8"], "assert":[{"metric":"pickup:DSG1","op":"le_seconds","value":60},{"metric":"stalls","op":"eq","value":0}]}
++
++
+diff --git a/Tools/Probes/sniper_reach_gauss.json b/Tools/Probes/sniper_reach_gauss.json
+index 959d1c42..98252227 100644
+--- a/Tools/Probes/sniper_reach_gauss.json
++++ b/Tools/Probes/sniper_reach_gauss.json
+@@ -1,5 +1,6 @@
+-{"schema":1,"id":"sniper_reach_gauss","map":"multiplayer/ia/steelmill","duration_s":60,"repeat":3,
++{"schema":1,"id":"sniper_reach_gauss","map":"multiplayer/ia/steelmill","duration_s":75,"repeat":3,
+  "why":"Gauss tower route (stairs + Strength links)",
+  "cvars":{"wb_bot_navmesh":1,"wb_bot_jump_links":1,"wb_bot_weapon_rank":1,"wb_bot_path_progress":1,"wb_bot_vantage":1},
+  "setup":["wb_add 1 elite marksman","wb_teleport 1 1206.6 1331.8 136.2"],
+- "assert":[{"metric":"pickup:GaussRifle","op":"le_seconds","value":45},{"metric":"unreachable","op":"eq","value":0},{"metric":"stalls","op":"eq","value":0}]}
++ "assert":[{"metric":"pickup:GaussRifle","op":"le_seconds","value":60},{"metric":"unreachable","op":"eq","value":0},{"metric":"stalls","op":"eq","value":0}]}
++

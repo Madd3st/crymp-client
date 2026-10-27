@@ -1,6 +1,26 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-045 DONE (PS RMI inventory+patch, C-119 re-grade, probe runner) · one push · stop
+NOW: DS-046 DONE (4d review, sniper reach patch, Veteran K/D) · push now · stop
+
+### DS-046 · DONE · `REVIEW_4D399CF4.md` + `SNIPER_REACH.md` + `PLAYTEST5_VETERAN.md` + `ds046_sniper_reach.patch`
+**#1 integration `4d399cf4`:** 10 lines, no functional divergence. DS-044 flags/logic at `BotBrain.cpp:386-394/826-861`,
+`BotCombat.cpp:241-254`, `BotWeapons.cpp:111-115`; DS-045 Lua guards and `WarsBotsIsBot` exact; Buying/Rank only guarded
+lines (`:296/1159/1171/1211/1219`, `:189/192`); CI has `BotAuditFixes`+`BotProbeRunner`; only BOMs stripped in
+`BotProbeRunner.*`; `ds044_ps_host_rmi` superseded, no duplicate. Residual: full Buying/Rank freeze stock.
+**#2 snipers:** per-trial raw logs: **goal never chosen** — `FindNearby` z-box was +-12 m; DSG1 is +20.3 m, Gauss +13.0 m
+above the spawn, so `GOAL SKIP skipped=5` and the bot took FY71/SCAR; no trial ever started the 1355 link (all links
+1292/1236/1229). Offline NavMeshCore: DSG1 reachable by a 141.6 m walk (last z157.94), Gauss 166.2 m with 6 links.
+The 1355->1351.9 link is +4.30 m, above the measured Strength rise 3.62-3.65 m, and is not on the short DSG1 route;
+secondary 1236->1229 failures are `no_energy` (28-35), `no_takeoff` (3.5 s), `missed_landing` (dz0.00). Patch
+`ds046_sniper_reach.patch` (default OFF `wb_bot_sniper_reach=1`): 32 m vertical box + `sniperOnly` DSG1/Gauss first,
+pathCost, 20 s progress/90 s total, `LinkFail::TooHigh` (3.72 m) bans impossible links, probe `roof_strength` now grades
+DSG1 reach (pickup <=60 s, stalls 0), Gauss 75 s/60 s; `BotSniperReachTests` + `BotJumpLinkTests` pass MSVC; applies
+clean on `4d399cf4`. Target roof_strength 2/3; engine probe not run here.
+**#3 Veteran K/D:** per-bot owner window: N 131007 **18/10** (1.80), 131028 **12/13** (0.92); V 131012 **3/13** (0.23),
+131033 **15/10** (1.50). One Veteran and one Normal are the outliers: **2 bots each = per-bot noise**, not a 12-kill
+skill effect. Parameters do change style (Veteran holdScale 1.3/rangeScale 1.4/reaction 0.28 vs Normal 1.0/1.0/0.50;
+accuracy 26.36 % vs 35.19 %, hit p50 14.81 vs 10.59 m), but K/D 0.23 vs 1.50 within one skill is the individual bot.
+Recommend >=6 bots/skill or same-style pairing before retuning.
 
 ### DS-045 · DONE · `PS_RMI_INVENTORY.md` + `REVIEW_PLAYTEST5.md` + `PROBE_RUNNER.md` + 2 patches
 Base `6e2713f9`.
