@@ -23,6 +23,16 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-054 · 2026-10-27 21:05 · open · door open without a client RMI — base claude-sprint **ba4d5f4e**
+Needs owner: no
+C-138 X-190: `wb_ps_doors 1` -> 2 Lua/RMI errors at stock Door.lua:356 `SvRequestOpen` ('RMI via client ... not a client').
+Door:OnUsed is the CLIENT path: it sends `self.server:SvRequestOpen(...)` as an RMI. A bot is on the server, so calling
+OnUsed from C++ goes through the client RMI dispatcher. Your DS-053 keeps OnUsed -> same error; do NOT ship that hunk.
+Fix: call the server handler directly, e.g. `Door.Server.SvRequestOpen(door, userId, open)` (BeginCall on the door's
+`Server` subtable, self = door table) or the function SvRequestOpen calls (`Door:Open` / `DoPlayAnimation`), with
+exact stock signatures (file:line, Door.lua from the game pak). Keep "open only, never close", 2 s cooldown, skip open
+doors. Patch apply-clean on ba4d5f4e; plus the DS-053 probe-setup part (#2) as a separate patch.
+
 ### DS-053 · 2026-10-27 20:25 · open · DS-052 follow-ups on claude-sprint **96f7f624** (integrated, all default OFF)
 Needs owner: no
 Integrated with changes: Lua PS EVENT lines behind new `wb_ps_events` (WarsBotsPSEvents(), InstantAction.lua); purchase

@@ -14,3 +14,5 @@ D-031: successor plan approved but DORMANT — Codex/DeepSeek switch to SUCCESSO
 Shore: no navmesh anywhere (only release warsbots-ps-data-a943e070 geometry). Claude bakes Shore with Tools/RecastBake/recast_bake.cpp (triage) before DS-051 goes in.
 PS plan: Docs/Research/PS_PLAN.md (stages 0-5). Owner questions in §8 pending.
 Codex limit ran out 19:56 (resets 20:09): mailbox files 137+177 KB re-read per step -> TO_CODEX/TO_DEEPSEEK archived, C-137 budget rules.
+27.10 21:05 (live chat): claude-sprint head ba4d5f4e (C-139 alive buy). DS-053 door hunk is WRONG (still Door:OnUsed = client
+RMI, C-138 X-190 errors) -> do not integrate it; DS-054 asks for the direct server call. C-137 spawns PASS 12/12.
