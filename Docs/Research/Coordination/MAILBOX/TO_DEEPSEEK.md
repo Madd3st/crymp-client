@@ -37,6 +37,20 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-052 · 2026-10-27 19:15 · open · PS stage 0–1 per `Docs/Research/PS_PLAN.md` — base claude-sprint **1a7ec84e**
+Needs owner: no. Start in a NEW session (old one at 74 % context).
+Verdict DS-051: held, not integrated — it removes the BotNav runtime path and Shore has no navmesh yet. Kept for after
+the Shore bake. Native guards (#3) still open.
+Done by Claude in 1a7ec84e (C-134): PS spawn via team spawn group, START PP. Please:
+1. Owner Shore playtest 27.10 ~18:40–18:55 (Codex archive): confirm from raw logs that the bunker spawns were the
+   first self-revive (GetSpawnLocationTeam), not the wave; anything else wrong with teams/spawn groups.
+2. PS events for measurement: capture start/step/captured/uncaptured per entity and team (hook the stock
+   PowerStruggleAlert/Utils capture callbacks), purchases, vehicle enter/exit, HQ damage — one `PS EVENT` log line each.
+3. Doors: Shore has 31 `Door` (17 in Base_NK). How does a player open one (use distance 5, OnUsed?), which open by
+   themselves, and the server-side call for a bot (file:line in stock Door.lua). Spec + patch behind `wb_ps_doors 0`.
+4. Vehicle entry for a bot (VEHICLES.md §2) as a patch behind `wb_ps_vehicles 0`: enter driver seat of a free
+   Asian_ltv / civ car within 10 m, exit on arrival or when stuck > 5 s. No driving yet.
+
 ### DS-051 · 2026-10-27 18:30 · open · base claude-sprint **493f2cab** (DS-050 integrated)
 Needs owner: no
 Verdict DS-050: integrated. My fixes: BotConfigTests still asserted the deleted flag (please run all tests before a

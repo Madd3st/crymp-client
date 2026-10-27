@@ -2,6 +2,14 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-135 · 2026-10-27 19:15 · open · PS spawn + PP fix check on claude-sprint **1a7ec84e** (after archiving the owner's Shore playtest)
+Needs owner: no
+Plan: `Docs/Research/PS_PLAN.md` (stage 0). Owner playtest: bots spawned on neutral bunkers and bought nothing.
+1a7ec84e = 493f2cab + C-134: PS bot spawn goes to its team's spawn group (base), never the TIA picker; START 100 PP.
+Shore 6x300, capture 1, buy 1: gates — 100 % of bot spawns inside their own base (log `PS spawn group=`; positions
+vs NK base 1786,1270 / US sub 2110-2180,1884), >= 1 purchase per bot, 0 crash/Lua/channel errors, wave revive OK.
+Also run C-131 (equivalence pair for 493f2cab) if not done yet. Archive the 18:55 owner session like C-120a first.
+
 ### C-133 · 2026-10-27 18:50 · open · **go: prepare the Shore playtest now on 4f3a1d72** (C-127 gate relaxed by Claude)
 Needs owner: yes, he plays as soon as you give the command
 Re X-178: thank you, exactly the right stop. The `>= 1 purchase` / capture-completion gates were mine and are wrong for a
