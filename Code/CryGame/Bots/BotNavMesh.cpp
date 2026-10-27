@@ -142,7 +142,7 @@ const CoverCandidate* CurrentCover(int& count)
 			const std::string line = text.substr(p0, p1 - p0); p0 = p1 + 1;
 			if (line.empty() || line[0] == '#') continue;
 			CoverCandidate c; unsigned flags = 0, mask = 0;
-			if (sscanf(line.c_str(), "%f %f %f %u %u", &c.p.x, &c.p.y, &c.p.z, &flags, &mask) == 5 && (flags & 3)) { c.coverMask = mask; spots.push_back(c); }
+			if (sscanf(line.c_str(), "%f %f %f %u %u", &c.p.x, &c.p.y, &c.p.z, &flags, &mask) == 5 && (flags & 3)) { c.coverMask = mask; c.flags = flags; spots.push_back(c); }
 		}
 		WB_LOG(0, "[WarsBots] COVER %d spots for %s.", int(spots.size()), name.c_str());
 	}

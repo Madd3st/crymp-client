@@ -19,6 +19,8 @@
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotPSCaptureRuntime.h"
+#include "CryGame/Bots/BotPSBuy.h"
+#include "CryCommon/CryScriptSystem/IScriptSystem.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Actor.h"
@@ -299,7 +301,7 @@ void BotBrain::ResetLife()
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
-	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear();
+	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	++m_life;
@@ -472,6 +474,7 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
 		// DS-043: in PowerStruggle the PS revive wave owns the respawn; the 5 s self-revive double-revived a bot that
 		// the wave then revived again. Keep a 30 s fallback so a broken queue cannot leave a bot dead for the match.
 		const bool ps = g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules());
+		if (ps && BotConfig::Get().psBuy==1 && !m_psBought && m_deadTime>=2.0f) { m_psBought=true; PSTryBuy(bot,actor); }
 		if (ps && !m_psReviveLogged && m_deadTime >= 5.0f)
 		{
 			m_psReviveLogged = true;
@@ -495,6 +498,40 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
 
     return false;
 }
+
+void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
+{
+	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+	IEntity* rulesEntity=rules?rules->GetEntity():nullptr;
+	IScriptTable* table=rulesEntity?rulesEntity->GetScriptTable():nullptr;
+	if(!table || !gEnv || !gEnv->pScriptSystem)return;
+	IScriptSystem* ss=gEnv->pScriptSystem;
+	const EntityId id=actor.GetEntityId();
+	int pp=0;
+	if(ss->BeginCall(table,"GetPlayerPP")) { ss->PushFuncParam(table); ss->PushFuncParam(ScriptHandle(id)); ss->EndCall(pp); }
+	PsBuyInput in;
+	in.pp=pp; in.style=int(m_profile.style); in.skill=int(m_profile.skill);
+	in.preferredRange=PickupRange(); in.hasPrimary=BotWeapons::HasPrimary(actor); in.alive=actor.GetHealth()>0;
+	const PsBuyPlan plan=ChoosePsBuy(in);
+	if(!plan.buyPrimary)
+	{
+		WB_LOG(1,"[WarsBots] #%d PS BUY skip pp=%d style=%s range=%.0f primary=%d.",m_number,pp,
+			BotProfile::StyleName(m_profile.style),in.preferredRange,in.hasPrimary?1:0);
+		return;
+	}
+	auto buy=[&](const char* item)->bool {
+		if(!item)return false;
+		if(!ss->BeginCall(table,"WarsBotsBuy"))return false;
+		ss->PushFuncParam(table); ss->PushFuncParam(ScriptHandle(id)); ss->PushFuncParam(item);
+		int ok=0; ss->EndCall(ok); return ok!=0;
+	};
+	const bool primary=buy(plan.primary);
+	const bool ammo=plan.buyAmmo?buy(plan.ammo):false;
+	WB_LOG(1,"[WarsBots] #%d PS BUY pp=%d primary=%s price=%d ok=%d ammo=%s ok=%d actor=%u.",
+		m_number,pp,plan.primary,plan.primaryPrice,primary?1:0,plan.buyAmmo?plan.ammo:"-",ammo?1:0,id);
+	(void)bot;
+}
+
 
 bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime)
 {
@@ -886,8 +923,8 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 				[&](const TVec& p){
 					const float q[3]={p.x,p.y,p.z};
 					return (!mesh || mesh->Reachable(from,q)) && !EyeRayClear(actor,Vec3(p.x,p.y,p.z+1.6f),chest);
-				}, 8.0f) : -1;
-			if (i>=0) { m_withdrawCover=Vec3(spots[i].p.x,spots[i].p.y,spots[i].p.z); m_withdrawCoverValid=true; }
+				}, 8.0f, 6, BotConfig::Get().withdrawFull==1?1u:0u) : -1;
+			if (i>=0) { m_withdrawCover=Vec3(spots[i].p.x,spots[i].p.y,spots[i].p.z); m_withdrawCoverValid=true; m_nextWithdrawPick=m_now+0.5f; }
 			else { m_withdrawUntil=0; }
 		}
 		const bool aborted=BotConfig::Get().withdrawCover==1 && !m_withdrawCoverValid;
@@ -897,6 +934,23 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 	}
 	if (m_now<m_withdrawUntil)
 	{
+		// DS-049: the threat moves during the 1.4 s approach; re-pick full cover on the live threat, abort if none.
+		if (BotConfig::Get().withdrawFull==1 && m_now>=m_nextWithdrawPick)
+		{
+			m_nextWithdrawPick=m_now+0.5f;
+			int n2=0; const CoverCandidate* s2=CurrentCover(n2);
+			const Vec3 b2=actor.GetEntity()->GetWorldPos(); const Vec3 chest2=destination+Vec3(0,0,1.3f);
+			NavMeshCore* mesh2=CurrentNavMesh(); const float from2[3]={b2.x,b2.y,b2.z};
+			const int j=s2 ? PickCover(s2,n2,TVec{b2.x,b2.y,b2.z},TVec{destination.x,destination.y,destination.z},desiredRange,
+				[&](const TVec& p){ const float q[3]={p.x,p.y,p.z}; return (!mesh2 || mesh2->Reachable(from2,q)) && !EyeRayClear(actor,Vec3(p.x,p.y,p.z+1.6f),chest2); }, 8.0f, 6, 1u) : -1;
+			if (j>=0)
+			{
+				const Vec3 np(s2[j].p.x,s2[j].p.y,s2[j].p.z);
+				if (!m_withdrawCoverValid || (np-m_withdrawCover).GetLength()>1.5f) m_withdrawCover=np;
+				m_withdrawCoverValid=true;
+			}
+			else { m_withdrawCoverValid=false; m_withdrawUntil=0; return; }
+		}
 		if (BotConfig::Get().withdrawCover==1 && m_withdrawCoverValid)
 		{
 			const Vec3 feet=actor.GetEntity()->GetWorldPos();

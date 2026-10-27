@@ -33,6 +33,12 @@ int main()
 	BotJumpStrafe j; assert(!j.Want(0, false, 10, 1, 5));
 	assert(j.Want(0, true, 10, 1.f, 5) && !j.Want(0.5f, true, 10, 1.f, 5));
 	assert(!BotJumpStrafe().Want(0, true, 50, 1.f, 5));
+	// DS-049: withdraw full-cover filter (flag 1); low cover (flag 2) is not accepted for a withdraw.
+	CoverCandidate f[2];
+	f[0].p = {2, 1, 0}; f[0].coverMask = 1u; f[0].flags = 2;
+	f[1].p = {4, 1, 0}; f[1].coverMask = 1u; f[1].flags = 1;
+	assert(PickCover(f, 2, bot, threat, 15.f, [](const TVec&) { return true; }, 8.f, 6, 1u) == 1);
+	assert(PickCover(f, 2, bot, threat, 15.f, [](const TVec&) { return true; }, 8.f, 6, 2u) == 0);
 	std::puts("BotTacticsTests OK");
 	return 0;
 }

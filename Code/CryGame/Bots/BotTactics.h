@@ -14,17 +14,18 @@ namespace WarsBots {
 struct TVec { float x = 0, y = 0, z = 0; };
 inline float TDist(const TVec& a, const TVec& b) { return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z)); }
 
-struct CoverCandidate { TVec p; unsigned coverMask = 0; };
+struct CoverCandidate { TVec p; unsigned coverMask = 0; unsigned flags = 0; };
 
 // Best cover spot to hold `threat` from, or -1. `sees(spot)` = eye ray from the spot to the threat is clear.
 // coverMask bit k = protected side at yaw k*22.5 deg (0 = +Y, clockwise), as written by tactical_spots.
 template <class Sees>
 int PickCover(const CoverCandidate* c, int n, const TVec& bot, const TVec& threat, float preferred, Sees sees,
-	float maxMove = 12.f, int maxRays = 6)
+	float maxMove = 12.f, int maxRays = 6, unsigned minFlags = 0)
 {
 	struct S { int i; float s; } best[8]; int nb = 0;
 	for (int i = 0; i < n; ++i)
 	{
+		if (minFlags && (c[i].flags & minFlags) == 0) continue;   // DS-049: full cover only for withdraw
 		const float move = TDist(c[i].p, bot), range = TDist(c[i].p, threat);
 		if (move > maxMove || range < 6.f || range > 50.f) continue;
 		const float yaw = std::atan2(threat.x - c[i].p.x, threat.y - c[i].p.y) * 57.2957795f;

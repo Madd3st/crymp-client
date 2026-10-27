@@ -486,6 +486,24 @@ end
 
 
 ----------------------------------------------------------------------------------------------------
+-- DS-049 PS-2: server-side buy for a bot. Same checks as SvBuy, but no ClBuyOk/ClBuyError RMI to channel 0.
+function PowerStruggle:WarsBotsBuy(playerId, itemName)
+	if (not WarsBotsIsBot(self, playerId)) then return false; end
+	local player=System.GetEntity(playerId);
+	if ((not player) or (self.game:GetTeam(playerId)==0)) then return false; end
+	if (self.game:IsFrozen(playerId)) then return false; end
+	if (not self:ItemExists(playerId, itemName)) then return false; end
+	local alive=player.actor:GetHealth()>0;
+	if (self:IsVehicle(itemName)) then return false; end
+	if ((not alive) or self:IsInBuyZone(playerId)) then
+		if (self:EnoughPP(playerId, itemName)) then
+			return self:BuyItem(playerId, itemName);
+		end
+	end
+	return false;
+end
+
+
 function PowerStruggle.Client:ClBuyError(itemName)
 	HUD.OnItemBought(false, itemName);
 end

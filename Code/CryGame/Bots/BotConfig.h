@@ -55,6 +55,8 @@ struct BotConfig {
  int probeRunner=0;    // DS-047: engine adapter for BotProbeRunner.h (wb_probe_load/start/...), default OFF
  int linkFailFast=0;   // DS-048: blocked jump link fails fast + goal does not age while a link runs
  int psCapture=0;      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
+ int withdrawFull=0;   // DS-049: withdraw only to full cover, re-pick every 0.5 s on the live threat, default OFF
+ int psBuy=0;         // DS-049: PS-2 revive buy (one primary by style/range, cheap ammo) via server-side Lua, default OFF
  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);
