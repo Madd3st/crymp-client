@@ -108,6 +108,9 @@ needs 105 PP (or ammo-first at 80, no laser) - a plan decision, not this bug.
   buys is not logged, so its equipment flag is unproven. If the correction run gets `lam ok=0` **with no PP drop**, the
   cause is the zone/flags or `CheckInventoryRestrictions("LAMRifle")`, not the return type; the mismatch oracle stays
   silent in that case. Do not widen the patch for it until the run shows it.
+- Attachment compatibility is not the blocker: both primaries list `LAMRifle` as an accessory (`SMG.xml:546`,
+  `Shotgun.xml:507`), and `LAMRifle.xml:1` is the stock `LAMRifle` item. The acceptance above checks delivery
+  (`LAMRifle` in the inventory, like C139 checks); whether the bot then attaches it is a separate behaviour item.
 - Dead-buy coverage is still absent in C139 (0 deaths); a revive-buy run needs inventory-after-revive, not PP.
 
 ## Review duty

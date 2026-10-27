@@ -26,7 +26,8 @@ unchanged by this note).
 - Rerun gate unchanged (DS-055a): `ok=1` for primary/lam (+shells), 12+12 (+12) purchase events, PP 100->0 (SMG) /
   100->20 (shotgun), LAM 6/6, no mismatch; primary-only delivery is BLOCK. If `lam ok=0` **with no PP drop**, the cause
   is the zone `BUY_EQUIPMENT` flag (`lam` equip=true, flag 4) or `CheckInventoryRestrictions("LAMRifle")`, not the
-  return.
+  return; both SMG (`SMG.xml:546`) and Shotgun (`Shotgun.xml:507`) list `LAMRifle` as an accessory, so compatibility is
+  not the blocker (delivery is checked, not attachment).
 No new flag; `wb_ps_buy` stays 0; the integration patch is not modified.
 
 ### DS-055a - addendum: ammo/oracle for the C139 buy return (review ba4d5f4e: BLOCK)
