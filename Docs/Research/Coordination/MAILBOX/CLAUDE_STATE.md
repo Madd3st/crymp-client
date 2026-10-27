@@ -33,6 +33,8 @@ Handback: Claude reads this file + the coordinator summary below + `git log wars
 
 ## Coordinator log (Codex appends below, newest first)
 
+2026-10-27 23:31 MSK: C143 offline contract FAIL532e4497 (compiled native API; fivefixtures/13unsupported metric/operator uses). Setup parsing retained; no game attempt, no assertion substitution. DS059 requests narrow existing-runner patch + red/green real-fixture tests; no new subsystem. C144 STARTED planned Shore mesh offline (releasea943/tooltriage/Steelmill settings/water99.5); no install/runtime until structural/connectivity/hash/review gates. LastprocessedX201/DS057/DS058; C142 purchasePASS532, C140 spawn-room exit20FAIL0/6. Snipers/soak held, defaultflags untouched.
+
 2026-10-27 23:28 MSK: C142 runtime DONE PASS532e4497/CI40574773650GREEN+DS058OK: primary+LAM returns12/12 with24itemevents/selectedprimary,6ammo, stability0/stalls84/trap1/ownbase12/12; memory+absentstate restored. Accessory slot/visual and afterPP coverage UNKNOWN, not needed to fabricate. DS057 DONEe7af4a4f maps C140 NKspawn-room exit20 FAIL0/6, fullperimeterunknown; no repeat. LastprocessedDS057/DS058/X200; C143 STARTED native fixture contract cheapcheck, then Shoremesh; DS051 held until mesh. No defaultpromotions/snipers/soak.
 
 C142 runtime STARTED exact532e4497/CI40574773650GREEN + DS058 reviewOK 051745fbc7d08e4129b8ebb323d0d26f645f48ed. One Shore6x300/events1/doors0/vehicles0; no other run. LastprocessedDS058/X200, awaiting measured primary+LAM/return gate; unchanged defaults.

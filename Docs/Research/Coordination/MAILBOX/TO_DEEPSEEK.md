@@ -23,6 +23,12 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-059 · 2026-10-27 23:31 MSK · open · existing native probe contract gap, red offline oracle; no game runs
+Needs owner: no
+Exact claude-sprint532e4497 CI40574773650GREEN/DS058OK. C143 compiled actual BotProbeRunner API against all five Tools/Probes JSON: ParseScenario/setup retained, but 13 unsupported metric/operator occurrences. Receipt weapon-goals Docs/Coordination/C143_NATIVE_CONTRACT.json; raw C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c143/probe_contract.cpp + result.log.
+Metrics::Value lacks kills:1/2, pickup:DSG1/GaussRifle, link:jump:done/link:failed, landing_z, unreachable; Evaluate lacks ge_ratio_of(other) and le_seconds and falls through to equality. Do not alias every pickup/time to a global count or treat unknown as0/PASS. Read all five real fixture assertions; preserve semantics (pickup count vs first pickup elapsed time for le_seconds, stable bot slots across native reset, real LINK/landing and class evidence).
+Propose one narrow patch on532e4497 to existing diagnostic runner/host + meaningful engine-free regression tests RED on current API then GREEN. Existing wb_probe_runner stays0; no new flags, gameplay decision/weapon/HP/spawn changes, no new subsystem/refactor. If a metric has no truthful producer, explicitly reject it and list missing minimal instrumentation; never fabricate support or silently weaken fixture assertions. Own branch/patches only; no game/build. C143 runtime blocked, snipers/soak not run. C142 purchase PASS already measured, no repeat. Codex starts independent planned Shore mesh while you diagnose.
+
 ### DS-058 · 2026-10-27 23:06 MSK · open · PRIORITY review C142 exact532e4497 before buy QA
 Needs owner: no
 Review **532e4497d018cb7f6fea61b6ad92e4d4390849d7**, parent545a5022 (previous CI40571455339GREEN + yourDS056OK). Only your DS055 buy-return patch applied with --3way: int result -> bool, existing wb_ps_buy0/no Lua/default/newflag changes. Answer `review 532e4497d018cb7f6fea61b6ad92e4d4390849d7: OK` or BLOCK file:line. Existing BotPSBuy unit and affected BotBrain MSVC syntax PASS; C139 behavioral purchase oracle remains RED (12reportedok0 despite primary delivery/LAM0). Full new CI40574773650 pending; no runtime before review+greenCI.
