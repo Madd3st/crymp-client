@@ -13,10 +13,11 @@ revive_guard=1, `state_commit 1`).
 | `wb_bot_corners` | `BotBrain::Steer` always uses `SteerCorners` on a mesh path | 1 |
 | `stateCommit>=2` | `DecisionCommit`/`MoveCommit` branches removed; `stateCommit` is 0/1 only | 1 |
 
-`wb_bot_state_commit` stays 0/1; the 1.5 s attack-hold/wide-leave-range mode 2 (C-118 FAIL) is gone. CI drops
-`BotDecisionCommit`; the test file remains for the module, no runtime path uses it. `BotConfigTests` updated
+`wb_bot_state_commit` stays 0/1; the 1.5 s attack-hold/wide-leave-range mode 2 (C-118 FAIL) is gone. The dead
+`ToCommit`/`IsUrgentCommit`/`OwnerOf` helpers and the `BotDecisionCommit.h` include are removed from `BotBrain`; CI
+drops `BotDecisionCommit` and the engine-free module + test stay in the tree, unwired. `BotConfigTests` updated
 (`BotPaceEnabled()` is now unconditional).
 
-Verification: all 30 engine-free suites pass (incl. `BotConfigTests`, `BotConfigTests` compile, `BotNavMeshCore`
-with Detour sources), and BotBrain/BotInstance/BotConfig/BotManager/BotDemoRecorder/BotPace users/Player compile
-with `WARSBOTS_EXPERIMENTAL_SPAWNER=ON`.
+Verification on the final patch: all 30 engine-free suites pass (incl. `BotConfigTests`, `BotAuditFixes` and
+`BotNavMeshCore` with Detour sources); the MSVC `WARSBOTS_EXPERIMENTAL_SPAWNER=ON` client+server build links green
+(645/645 ninja objects). `ds051.patch` applies clean on `493f2cab`.

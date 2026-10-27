@@ -11,11 +11,116 @@ index b9fb3c53..cc141ad0 100644
                       'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
                       'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
            $failed = @()
+diff --git a/Code/CryGame/Actors/Player/Player.cpp b/Code/CryGame/Actors/Player/Player.cpp
+index b15ffac0..68abfe30 100644
+--- a/Code/CryGame/Actors/Player/Player.cpp
++++ b/Code/CryGame/Actors/Player/Player.cpp
+@@ -13,6 +13,7 @@ History:
+ #include "CryCommon/CrySystem/ISystem.h"
+ #include "CryGame/Bots/BotNetCompat.h"
+ #include "CryGame/Bots/BotLog.h"
++#include "CryGame/Bots/BotClientSend.h"
+ #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+ #include "CryGame/Bots/BotPace.h"
+ #include "CryGame/Bots/BotConfig.h"
+@@ -274,7 +275,9 @@ void CPlayer::PostInit(IGameObject* pGameObject)
+ 
+ void CPlayer::InitClient(int channelId)
+ {
+-	GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(GetSpectatorMode(), 0), eRMI_ToClientChannel | eRMI_NoLocalCalls, channelId);
++	// DS-051: a bot has no client connection; channel 0 belongs to the listen host.
++	if (WarsBots::PerClientSendAllowed(IsWarsBotActor()))
++		GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(GetSpectatorMode(), 0), eRMI_ToClientChannel | eRMI_NoLocalCalls, channelId);
+ 
+ 	CActor::InitClient(channelId);
+ }
+@@ -6602,6 +6605,8 @@ void CPlayer::SetSpectatorMode(uint8 mode, EntityId targetId)
+ 	const EntityId oldSpectatorTarget = m_stats.spectatorTarget;
+ 	uint8 oldSpectatorMode = m_stats.spectatorMode;
+ 	bool server = gEnv->bServer;
++	// DS-051: keep the local mode change, but never RMI a bot's spectator state to channel 0 (the listen host).
++	const bool perClient = WarsBots::PerClientSendAllowed(IsWarsBotActor());
+ 	if (server)
+ 		m_stats.spectatorHealth = -1;	// set this in all cases to trigger a send if necessary
+ 
+@@ -6625,7 +6630,8 @@ void CPlayer::SetSpectatorMode(uint8 mode, EntityId targetId)
+ 		if (server)
+ 		{
+ 			GetGameObject()->SetAspectProfile(eEA_Physics, eAP_Spectator);
+-			GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToAllClients | eRMI_NoLocalCalls);
++			if (perClient)
++				GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToAllClients | eRMI_NoLocalCalls);
+ 		}
+ 
+ 		Draw(false);
+@@ -6647,7 +6653,8 @@ void CPlayer::SetSpectatorMode(uint8 mode, EntityId targetId)
+ 		if (server)
+ 		{
+ 			GetGameObject()->SetAspectProfile(eEA_Physics, eAP_Alive);
+-			GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToAllClients | eRMI_NoLocalCalls);
++			if (perClient)
++				GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToAllClients | eRMI_NoLocalCalls);
+ 		}
+ 
+ 		Draw(true);
+@@ -6671,7 +6678,8 @@ void CPlayer::SetSpectatorMode(uint8 mode, EntityId targetId)
+ 		if (server)
+ 		{
+ 			//SetHealth(GetMaxHealth());
+-			GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToClientChannel | eRMI_NoLocalCalls, GetChannelId());
++			if (perClient)
++				GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToClientChannel | eRMI_NoLocalCalls, GetChannelId());
+ 		}
+ 
+ 		if (mode == CActor::eASM_Follow)
 diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
-index fae10683..f64ab0a4 100644
+index fae10683..3c24b9d0 100644
 --- a/Code/CryGame/Bots/BotBrain.cpp
 +++ b/Code/CryGame/Bots/BotBrain.cpp
-@@ -96,23 +96,9 @@ void BotBrain::Change(State state,bool initialize,DecisionOwner owner)
+@@ -54,65 +54,15 @@ const char* NameOf(BotBrain::State state)
+ }
+ }
+ 
+-DecisionState BotBrain::ToCommit(State s)
+-{
+-	switch (s)
+-	{
+-	case State::SPAWNING: return DecisionState::Spawning;
+-	case State::SEEKING_WEAPON: return DecisionState::SeekWeapon;
+-	case State::MOVING_TO_WEAPON: return DecisionState::MoveToWeapon;
+-	case State::SEARCHING_ENEMY: return DecisionState::Search;
+-	case State::CHASING_ENEMY: return DecisionState::Chase;
+-	case State::ATTACKING: return DecisionState::Attack;
+-	case State::DEAD: return DecisionState::Dead;
+-	case State::RESPAWNING: return DecisionState::Respawn;
+-	}
+-	return DecisionState::Search;
+-}
+-
+-bool BotBrain::IsUrgentCommit(State s) const
+-{
+-	// Death/respawn must never wait for a dwell; a visible target may enter ATTACKING at once.
+-	return s == State::DEAD || s == State::RESPAWNING || s == State::SPAWNING ||
+-		(s == State::ATTACKING && m_combat.Target() != 0);
+-}
+-
+-DecisionOwner BotBrain::OwnerOf(State s) const
+-{
+-	switch (s)
+-	{
+-	case State::SEEKING_WEAPON:
+-	case State::MOVING_TO_WEAPON: return DecisionOwner::Upgrade;
+-	case State::SEARCHING_ENEMY: return DecisionOwner::Roam;
+-	case State::CHASING_ENEMY:
+-	case State::ATTACKING: return DecisionOwner::Combat;
+-	default: return DecisionOwner::Arbiter;
+-	}
+-}
+-
+-void BotBrain::Change(State state,bool initialize,DecisionOwner owner)
++void BotBrain::Change(State state,bool initialize)
+ {
+ 	// Preserve Start's former silent initialization; normal transitions keep their exact effects.
  	if(initialize)
  	{
  		m_state=state;
@@ -39,7 +144,7 @@ index fae10683..f64ab0a4 100644
  	m_state = state;
  	m_stateTime = m_now;
  	WB_LOG(2, "[WarsBots] #%d AI state=%s.", m_number, NameOf(state));
-@@ -158,30 +144,19 @@ void BotBrain::TravelGait(float distance)
+@@ -158,30 +108,19 @@ void BotBrain::TravelGait(float distance)
  	if (!m_speedTravel) return;
  	WBI(suitMode,NANOMODE_SPEED);
      }
@@ -71,7 +176,7 @@ index fae10683..f64ab0a4 100644
  		bool found = false;
  		m_meshPathActive = false;
  		if (mesh)
-@@ -193,19 +168,16 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
+@@ -193,19 +132,16 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
  			m_meshPathActive = found;
  			m_path.clear();
  			for (size_t i = 0; i + 2 < xyz.size(); i += 3) m_path.push_back(Vec3(xyz[i], xyz[i + 1], xyz[i + 2]));
@@ -93,7 +198,7 @@ index fae10683..f64ab0a4 100644
  		}
  	}
  	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
-@@ -213,7 +185,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
+@@ -213,7 +149,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
  	// C-074: BotMovement::Move stops 0.8 m short of its destination; corners v2 passes a corner only within 0.35 m, so
  	// the bot stood 0.8 m short of every aim point (c074 stalls 343 -> 1704 s). Corner following owns arrival.
  	m_intent.arrive = 0.8f;
@@ -102,7 +207,7 @@ index fae10683..f64ab0a4 100644
  	// Advance past reached waypoints; skip ahead when the next-but-one is directly reachable.
  	while (m_pathIndex + 1 < m_path.size())
  	{
-@@ -379,7 +351,6 @@ void BotBrain::Update(BotInstance& bot, float dt)
+@@ -379,7 +315,6 @@ void BotBrain::Update(BotInstance& bot, float dt)
  	const float decisionTime = m_tick;
      ++m_decisionSerial;
  	m_tick = 0;
@@ -110,7 +215,7 @@ index fae10683..f64ab0a4 100644
  	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
  
  	m_intent=BotIntent();
-@@ -782,7 +753,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+@@ -782,7 +717,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
  			float snap[3];
  			if (mesh && !mesh->Project(from, snap)) mesh = nullptr; // off the mesh: keep the old goal choice
  			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q); };
@@ -119,7 +224,7 @@ index fae10683..f64ab0a4 100644
  				(hotspot - feet).GetLengthSquared2D() > 64.0f && reachable(hotspot))
  			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; picked = true; }
  			else if (count && !m_detour)
-@@ -811,7 +782,6 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+@@ -811,7 +746,6 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
  		if (bot.GetActor()!=&actor) return;
  		if (m_blackboard.blocked && m_now - m_blockedSince > 1.5f && m_blockedSince > 0)
  		{
@@ -127,7 +232,7 @@ index fae10683..f64ab0a4 100644
  			m_detour=true; m_patrolUntil=m_now; m_blockedSince=0; m_nextRepath=0;
  		}
  		else if (m_blackboard.blocked && m_blockedSince <= 0) m_blockedSince=m_now;
-@@ -989,11 +959,9 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
+@@ -989,11 +923,9 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
  	}
  	// DS-034: a target moving around holdRange flipped ATTACKING/CHASING every decision (2,768 times in playtest 3);
  	// once attacking, keep attacking a visible target for at least 0.5 s.
@@ -142,7 +247,7 @@ index fae10683..f64ab0a4 100644
  	if (visible && (attackDwell || distance <= (m_state == State::ATTACKING ? leaveRange : m_profile.engageRange)))
  	{
          UpdateAttacking(actor,destination,aim,distance,desiredRange);
-@@ -1120,7 +1088,6 @@ void BotBrain::UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3&
+@@ -1120,7 +1052,6 @@ void BotBrain::UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3&
  		if (m_chaseBlockedSince>0 && m_now-m_chaseBlockedSince>m_profile.blockedChasePatience)
  		{
  			if (m_verbose) WB_LOG(1, "[WarsBots] #%d chase abandoned target=%u (blocked, not visible).", m_number, m_combat.Target());
@@ -150,7 +255,7 @@ index fae10683..f64ab0a4 100644
  			m_combat.Reset(); m_chaseBlockedSince=0; m_patrolUntil=0; m_detour=true;
  		}
  		if (!visible || BotPaceEnabled()) TravelGait(distance); // hunting a hidden target: Speed travel like a player
-@@ -1197,27 +1164,6 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
+@@ -1197,27 +1128,6 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
  void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
  {
      if (RecoverTrap(actor)) return;
@@ -178,7 +283,7 @@ index fae10683..f64ab0a4 100644
      ApplyLookPolicy(actor); // C-033, wb_bot_look
  	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
  		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
-@@ -1228,7 +1174,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+@@ -1228,7 +1138,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
  	// wb_bot_jump_sanity: on a navmesh path the mesh already proved the way (jumps come from baked links); the low
  	// obstacle rays read stair steps as a wall and asked for Strength jumps at every staircase (149 of 364, owner
  	// playtest 25.10). Trap recovery still jumps (level 3) when stuck.
@@ -188,10 +293,31 @@ index fae10683..f64ab0a4 100644
          !(m_trap.Level()>=2 && m_now<m_trapStepUntil))
  	{
 diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
-index 8b78f3b5..71f0ff60 100644
+index 8b78f3b5..c3fb4993 100644
 --- a/Code/CryGame/Bots/BotBrain.h
 +++ b/Code/CryGame/Bots/BotBrain.h
-@@ -116,9 +116,6 @@ private:
+@@ -15,7 +15,7 @@
+ #include "CryGame/Bots/BotTraits.h"
+ #include "CryGame/Bots/BotNavMeshCore.h"
+ #include "CryGame/Bots/BotCorners.h"
+-#include "CryGame/Bots/BotDecisionCommit.h"
++
+ #include "CryGame/Bots/BotPSCapture.h"
+ #include "CryGame/Bots/BotPSBuy.h"
+ struct IConsoleCmdArgs;
+@@ -53,10 +53,7 @@ public:
+ 
+ private:
+     unsigned m_lookDiagnostics=0;float m_nextLookDiagnostic=0; // <=128 rows per instance, opt-in MOVE TRACE only
+-	void Change(State state,bool initialize=false,DecisionOwner owner=DecisionOwner::Arbiter);
+-	static DecisionState ToCommit(State s);
+-	bool IsUrgentCommit(State s) const;
+-	DecisionOwner OwnerOf(State s) const;
++	void Change(State state,bool initialize=false);
+     void UpdateTelemetry(CPlayer& actor);
+     bool UpdateDead(BotInstance& bot,CPlayer& actor,float dt);
+     bool UpdateTest(CPlayer& actor,float decisionTime);
+@@ -116,9 +113,6 @@ private:
  	bool m_fallbackGiven = false;
  	bool m_retreating = false;
  	State m_state = State::SPAWNING;
@@ -201,6 +327,24 @@ index 8b78f3b5..71f0ff60 100644
  	float m_now = 0, m_tick = 0, m_stateTime = 0, m_weaponSearchStarted = 0, m_nextSearch = 0, m_deadTime = 0;
  	bool m_psReviveLogged = false;   // DS-043: PS revive wave owns the respawn
  	float m_nextTelemetry = 0;
+diff --git a/Code/CryGame/Bots/BotClientSend.h b/Code/CryGame/Bots/BotClientSend.h
+new file mode 100644
+index 00000000..7e90bd41
+--- /dev/null
++++ b/Code/CryGame/Bots/BotClientSend.h
+@@ -0,0 +1,12 @@
++// DS-051: per-client RMIs are only for actors with a real client connection.
++// A bot has no client, but its entity has channelId 0 like the listen host, so the
++// decision must use bot identity, never the channel id. Engine-free; tested in
++// Tests/BotAuditFixesTests.cpp.
++#pragma once
++
++namespace WarsBots {
++inline bool PerClientSendAllowed(bool isBot)
++{
++    return !isBot;
++}
++} // namespace WarsBots
 diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
 index 8b319330..ad2a5a88 100644
 --- a/Code/CryGame/Bots/BotConfig.cpp
@@ -373,6 +517,118 @@ index c7bfb08b..fc2b417d 100644
  	return result;
  }
  
+diff --git a/Code/CryGame/GameRules.cpp b/Code/CryGame/GameRules.cpp
+index 49f45eba..56d08354 100644
+--- a/Code/CryGame/GameRules.cpp
++++ b/Code/CryGame/GameRules.cpp
+@@ -14,6 +14,7 @@
+ #include "ScriptBind_GameRules.h"
+ #include "GameRules.h"
+ #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++#include "Bots/BotClientSend.h"
+ #include "Bots/BotMatch.h"
+ #endif
+ #include "Game.h"
+@@ -1246,7 +1247,11 @@ void CGameRules::KillPlayer(CActor* pActor, bool dropItem, bool ragdoll, EntityI
+ void CGameRules::MovePlayer(CActor* pActor, const Vec3& pos, const Ang3& angles)
+ {
+ 	CActor::MoveParams params(pos, Quat(angles));
+-	pActor->GetGameObject()->InvokeRMI(CActor::ClMoveTo(), params, eRMI_ToClientChannel | eRMI_NoLocalCalls, pActor->GetChannelId());
++	// DS-051: a bot has no client; move the server entity without an RMI to channel 0.
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++	if (WarsBots::PerClientSendAllowed(WarsBots::BotMatch::IsBot(*this, pActor->GetEntityId())))
++#endif
++		pActor->GetGameObject()->InvokeRMI(CActor::ClMoveTo(), params, eRMI_ToClientChannel | eRMI_NoLocalCalls, pActor->GetChannelId());
+ 	pActor->GetEntity()->SetWorldTM(Matrix34::Create(Vec3(1, 1, 1), params.rot, params.pos));
+ }
+ 
+@@ -3327,6 +3332,10 @@ void CGameRules::SendChatMessage(EChatMessageType type, EntityId sourceId, Entit
+ //------------------------------------------------------------------------
+ void CGameRules::ForbiddenAreaWarning(bool active, int timer, EntityId targetId)
+ {
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++	if (!WarsBots::PerClientSendAllowed(WarsBots::BotMatch::IsBot(*this, targetId)))
++		return; // DS-051: a bot has no client channel (channel 0 is the listen host)
++#endif
+ 	GetGameObject()->InvokeRMI(ClForbiddenAreaWarning(), ForbiddenAreaWarningParams(active, timer), eRMI_ToClientChannel, GetChannelId(targetId));
+ }
+ 
+@@ -4357,7 +4366,13 @@ void CGameRules::SendRadioMessage(const EntityId sourceId, const int msg)
+ 				if (tit != m_playerteams.end())
+ 				{
+ 					for (TPlayers::const_iterator it = tit->second.begin(); it != tit->second.end(); ++it)
++					{
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++						if (!WarsBots::PerClientSendAllowed(WarsBots::BotMatch::IsBot(*this, *it)))
++							continue; // DS-051: team list includes bots; they have no client
++#endif
+ 						GetGameObject()->InvokeRMIWithDependentObject(ClRadioMessage(), params, eRMI_ToClientChannel, *it, GetChannelId(*it));
++					}
+ 				}
+ 			}
+ 		}
+diff --git a/Code/CryGame/Items/Item.cpp b/Code/CryGame/Items/Item.cpp
+index 6e6e602c..ab903d5d 100644
+--- a/Code/CryGame/Items/Item.cpp
++++ b/Code/CryGame/Items/Item.cpp
+@@ -33,6 +33,10 @@
+ #include "Weapons/Binocular.h"
+ #include "Weapons/OffHand.h"
+ #include "CryGame/Actors/Player/WeaponAttachmentManager.h"
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++#include "CryGame/Bots/BotClientSend.h"
++#include "CryGame/Bots/BotMatch.h"
++#endif
+ 
+ 
+ #pragma warning(disable: 4355)	// ŽthisŽ used in base member initializer list
+@@ -1599,14 +1603,22 @@ void CItem::PickUp(EntityId pickerId, bool sound, bool select, bool keepHistory)
+ 	//1) First check inventory restrictions (only in the server)
+ 	if (IsServer())
+ 	{
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++		// DS-051: a bot has no client; its channel 0 is the listen host.
++		const bool perClient = WarsBots::PerClientSendAllowed(WarsBots::BotMatch::IsBot(*g_pGame->GetGameRules(), pActor->GetEntityId()));
++#else
++		const bool perClient = true;
++#endif
+ 		if (!pActor->CheckInventoryRestrictions(GetEntity()->GetClass()->GetName()))
+ 		{
+-			g_pGame->GetGameRules()->SendTextMessage(eTextMessageError, "@mp_CannotCarryMore", eRMI_ToClientChannel, pActor->GetChannelId());
++			if (perClient)
++				g_pGame->GetGameRules()->SendTextMessage(eTextMessageError, "@mp_CannotCarryMore", eRMI_ToClientChannel, pActor->GetChannelId());
+ 			return;
+ 		}
+ 		else if (!CheckAmmoRestrictions(pickerId))
+ 		{
+-			g_pGame->GetGameRules()->SendTextMessage(eTextMessageCenter, "@ammo_maxed_out", eRMI_ToClientChannel, pActor->GetChannelId(), (string("@") + GetEntity()->GetClass()->GetName()).c_str());
++			if (perClient)
++				g_pGame->GetGameRules()->SendTextMessage(eTextMessageCenter, "@ammo_maxed_out", eRMI_ToClientChannel, pActor->GetChannelId(), (string("@") + GetEntity()->GetClass()->GetName()).c_str());
+ 			return;
+ 		}
+ 	}
+diff --git a/Tests/BotAuditFixesTests.cpp b/Tests/BotAuditFixesTests.cpp
+index efa27bf0..911d3603 100644
+--- a/Tests/BotAuditFixesTests.cpp
++++ b/Tests/BotAuditFixesTests.cpp
+@@ -1,5 +1,6 @@
+ // DS-044 audit-fix tests: first primary, finish lock and the withdraw cover rule (engine-free).
+ #include "CryGame/Bots/BotAuditFixes.h"
++#include "CryGame/Bots/BotClientSend.h"
+ #include "CryGame/Bots/BotTactics.h"
+ #include <cassert>
+ #include <cstdio>
+@@ -43,6 +44,10 @@ int main()
+         CHECK(none < 0); // no cover within 8 m -> abort the withdraw and fight
+     }
+ 
++    // DS-051: per-client sends go to actors with a client; bots never receive them (channel 0 is the listen host).
++    CHECK(!PerClientSendAllowed(true));
++    CHECK(PerClientSendAllowed(false));
++
+     if (failures) { std::printf("audit_fixes: %d FAILURES\n", failures); return 1; }
+     std::printf("audit_fixes: all tests passed\n");
+     return 0;
 diff --git a/Tests/BotConfigTests.cpp b/Tests/BotConfigTests.cpp
 index e30da3f7..72934789 100644
 --- a/Tests/BotConfigTests.cpp
