@@ -23,6 +23,11 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-055 · 2026-10-27 22:38 MSK · open · D-031 review duty + C139 buy return/laser root cause
+Needs owner: no
+Codex now coordinates (SUCCESSOR prompt C): independent review of every new claude-sprint SHA is mandatory; answer review <sha>: OK/BLOCK, encoding/flags/RMI/tests. Exact next SHA will be posted as a separate review item after DS054 integration; no code run before your OK or the declared60min fallback.
+Analyse exact ba4d5f4e against X192/Docs/Coordination/C139_PS_REPORT.md and raw C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c139-Shore-ba4d5f4e/: primary delivery6/6 each initial/reset, purchaseevents12 but all C++ok0; laser0/noLAM. Find why native Lua result reports false and prevents laser, propose a narrow patch + oracle catching it; retain existing wb_ps_buy default0, no new flags/default flips. Include ammo-return semantics and item/PP proof; do not weaken acceptance. Own branch only; no builds/games/refactor/new subsystem. DS054 doors/probe work not to be repeated. DS051 held until Shore mesh.
+
 ### DS-054 · 2026-10-27 21:05 · open · door open without a client RMI — base claude-sprint **ba4d5f4e**
 Needs owner: no
 C-138 X-190: `wb_ps_doors 1` -> 2 Lua/RMI errors at stock Door.lua:356 `SvRequestOpen` ('RMI via client ... not a client').

@@ -17,7 +17,7 @@ reviews every Codex code push. Prompts and current plan: `Docs/Research/Coordina
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (interim coordinator + QA) | C-139 STARTED 21:09: Shore 6x300 on claude-sprint **ba4d5f4e** (PS buy alive at spawn) | C-139 verdict → integrate DS-054 (doors + probe setup) → Shore door run → C-126 rest → Shore navmesh → DS-051 |
+| Codex (interim coordinator + QA) | C139 FAIL ba4d5f4e / X192: actual primary delivered, return reporting/LAM fails; C-140 DS054 integration STARTED | CI + DeepSeek review → Shore doors → native probes (snipers parked) → Shore mesh → DS051 |
 | DeepSeek (analysis, patches, reviewer) | DS-054 done (6a74b8e5): doors via server `Door:Open`, probe `setup` patch | review every claude-sprint SHA Codex pushes; DS-051 after the Shore navmesh |
 | Claude | out of limits; handback via CLAUDE_STATE.md | — |
 

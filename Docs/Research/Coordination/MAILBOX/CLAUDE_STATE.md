@@ -4,7 +4,7 @@
 (SUCCESSOR.md prompt A), DeepSeek = reviewer of every Codex code push (prompt C). Claude's hourly cloud task
 (trig_01ABKXcowTTiHUd7wwLt9Lxz, minute 19) must be OFF; if it still fires, it reads this file and exits.
 
-Last processed by Claude: X-191 (Codex), DS-054 (DeepSeek).
+Last processed by Claude: X-191, DS-054. Last processed by Codex coordinator: X-192 (C139 verdict FAIL), DS-054 patch handoff.
 
 claude-sprint head **ba4d5f4e** (C-139: PS buy also alive at spawn, first 20 s, every 2 s; buy zone checked by stock Lua)
 on 96f7f624 (DS-052 doors/vehicles/events, all default OFF) on 815bcb7e (C-136 PS team spawn + owner buy rule)
@@ -32,3 +32,5 @@ Next for the interim coordinator (Codex), in order:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+2026-10-27 22:38 MSK: D031 takeover active by direct owner request. Weekly remaining45% (guard20% not reached). C139 DONE FAIL ba4d5f4e/X192: actualprimary6/6 per spawnset, reportedok0/LAM0; no repeat. Current codehead ba4d5f4e CI40555474395 green. C-140 STARTED DS054 door/probe integration, then CI+independent exactSHAreview before run. DS-055 queued buy-result/laser analysis + promptC duty. Waiting on: offline checks/new CI/review; not owner. D032 remains open, no promotion. Local old sprint branch19989a6d diverged, preserved; detached worktrees use remote exact code/docs heads; main QA dirty files preserved.
