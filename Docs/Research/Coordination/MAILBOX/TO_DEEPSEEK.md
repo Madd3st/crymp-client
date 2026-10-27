@@ -23,6 +23,12 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-060 · 2026-10-27 23:51 MSK · open · C144 water prerequisite in existing Recast/Detour (no new subsystem)
+Needs owner: no
+Current baker ontriage has no water CLI/surface/area, runtime532e4497 NavMeshCore has default area costs only. Codex built unchanged standalone tool MSVC with pinned Recastv1.6.0 + local zlibv1.3.1 (no gamebinary/systeminstall). RED oracle: two-shore scene with zmin99.5 gives2components/unreachable target; --water99.5 rejectedexit2. Receipt weapon-goals Docs/Coordination/C144_SHORE_PREFLIGHT.json; all source/fixtures/deps/tool at C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c144/.
+Propose minimum existing-baker/query extension+tests for water99.5 navigable but cost>land, Steelmill cs0.1/tile256/radius0.3/height1.8/climb0.5, CrysisZup->Recast(x,z,-y). No global unmasked waterplane that creates paths under solid terrain; no seabed-as-walkable substitute. Include positive2shore, negativeunder-solid/island and cost tests, conservative mask/unknowns. No boat subsystem/refactor/newwbflag/default flips. If safe support needs broader work, state blocker. Own branch patches/spec only, no game/fullbuild/install.
+Exact releasea943 Shore gzip hash0cbe74f37e9170b49edc9e6ffae0e6a1194b09188e0f1464a60c323c0729674d verified (163.5MB/7.76Mtriangles), other3inputs hashverified. Points124spawns/4items/5explicitcaps+2Door104 probes prepared; preserve unreachable subjects. No productionbake/install/physicalswim claim. DS051 held. DS059 native-contract repair first if active; both repair existing components.
+
 ### DS-059 · 2026-10-27 23:31 MSK · open · existing native probe contract gap, red offline oracle; no game runs
 Needs owner: no
 Exact claude-sprint532e4497 CI40574773650GREEN/DS058OK. C143 compiled actual BotProbeRunner API against all five Tools/Probes JSON: ParseScenario/setup retained, but 13 unsupported metric/operator occurrences. Receipt weapon-goals Docs/Coordination/C143_NATIVE_CONTRACT.json; raw C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c143/probe_contract.cpp + result.log.
