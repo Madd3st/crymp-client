@@ -25,7 +25,7 @@ Read the other side with `git fetch origin <branch>` + `git show FETCH_HEAD:<fil
   agent for any item newer than its last wake. Never starts anything while the owner's game client is open.
 * Claude wakes on a cloud schedule (hourly): reads `TO_CLAUDE.md` + `DEEPSEEK_TO_CLAUDE.md`, writes verdicts,
   integrates patches, pushes claude-sprint, writes the next C-/DS- items. Last processed IDs live in
-  `Coordination/CLAUDE_STATE.md` on triage.
+  `Docs/Research/Coordination/MAILBOX/CLAUDE_STATE.md` on triage.
 * Agents finish with `wait_mail.ps1` in a loop, as in v3. The owner only decides (DECISIONS.md) and plays.
 
 ## Message format (append at the top, newest first)
