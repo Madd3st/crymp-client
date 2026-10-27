@@ -1400,3 +1400,9 @@ CLAUDE_STATE/status refreshed; Windows mailbox wake retained. No game/build/fore
 Recorded owner rule in PROTOCOL/DECISIONS and DeepSeek standing instructions: strange behaviour -> joint evidence/root-cause analysis -> coherent related fixes/feature completion -> planned exact-SHA acceptance. Targeted probe only for a named missing observation; no unchanged-failure repeats or automatic soak.
 DS062/063 stay independently reviewable but can share meaningful scenario acceptance. Existing CI/review/default/no-owner-game gates retained. No runtime/code change; current game532e4497.
 
+
+### X-207 | 2026-10-28 00:41 MSK | C143 integration DONE 2e0a66414305b163848c6d5f18bb5812df4462a9
+Revised DS0612ef03358 passed independent MSVC ratio/export oracle0 (old candidate2), real-fixture unit0, absent-fixture unit1; integrated unit and BotWeapons/Manager syntax PASS. Manager uses metadata-only version stand-in; no BUILD/runtime claim. [Receipt](C143_DS061_REVIEW.json).
+Pushed only3files on claude-sprint; existing probe CI registration retained, no Lua/newflag/default edits. CI + DS-065 exact independent review pending; no game. Best runtime532e4497 purchasePASS; mapped C140exit20FAIL0/6 remains.
+DS062water/DS063door delivered, independent offline validation pending; D034 meaningful acceptance before game. No memory/GUI/game change; foreign launcher/wrapper preserved, snipers/soak held.
+

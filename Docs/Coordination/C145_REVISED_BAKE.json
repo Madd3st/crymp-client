@@ -1,0 +1,175 @@
+{
+  "source": "eed85fb1",
+  "review": "DS071 pending, offline candidate only",
+  "command": [
+    "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\coordinator-c145\\recast_bake-final.exe",
+    "--obj",
+    "C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c072-ps-export/a943e070/crop/Shore.crop.obj.gz",
+    "--points",
+    "C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c144/Shore.preflight.pts",
+    "--zmin",
+    "99.5",
+    "--water",
+    "99.5",
+    "--cs",
+    "0.1",
+    "--ch",
+    "0.1",
+    "--radius",
+    "0.3",
+    "--height",
+    "1.8",
+    "--climb",
+    "0.5",
+    "--slope",
+    "45",
+    "--tile",
+    "256",
+    "--min-region",
+    "2",
+    "--out-bin",
+    "C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c145/Shore.eed85fb1.candidate.navmesh"
+  ],
+  "tool_sha256": "6bf88c990c87cb4691e544c4c7700edfb5cd8df961a6f48b1fd5a09cc5aa5cde",
+  "installed": false,
+  "game_runs": 0,
+  "exit": 0,
+  "elapsed_seconds": 37.297,
+  "observed_peak_working_set_bytes": 1967505408,
+  "mesh": {
+    "tiles": 2099,
+    "tiles_grid": [
+      46,
+      46
+    ],
+    "polys": 46614,
+    "max_tile_polys": 301,
+    "components": 3803,
+    "area_m2": 2380477,
+    "main_area_m2": 2111095,
+    "two_way_area_m2": 2111095,
+    "offmesh_links": 0,
+    "generated": {
+      "drop": 0,
+      "jump": 0,
+      "strength": 0
+    }
+  },
+  "water": {
+    "z": 99.5,
+    "cell": 2.0,
+    "cells": 189169,
+    "blocked_cells": 148679,
+    "unknown_cells": 2622,
+    "surface_tris": 378338,
+    "area": 4,
+    "area_cost": 4.0
+  },
+  "summary": {
+    "spawns": 124,
+    "spawns_on_mesh": 112,
+    "spawns_in_main": 100,
+    "spawns_two_way": 100,
+    "items": 4,
+    "items_on_mesh": 2,
+    "items_two_way": 2,
+    "items_reachable": 2
+  },
+  "navmesh_sha256": "653f5e1e130e4cc4ca70aba63fbde545c3b19d487f55b41140b1d36be02ad87e",
+  "independent_tool_review": "DS071 revieweed85fb1 OK",
+  "source_release": "warsbots-ps-data-a943e070",
+  "geometry_sha256": "0cbe74f37e9170b49edc9e6ffae0e6a1194b09188e0f1464a60c323c0729674d",
+  "navmesh_bytes": 9762060,
+  "map_accepted": false,
+  "area_metrics_note": "inherited PolyArea reports 2x area_m2; divide all area fields by2 before geometric-area claims",
+  "runtime_core_capacity_oracle": {
+    "4096": "onlyenergy64path;316/654exhausted",
+    "8192": "64/316path;654exhausted",
+    "16384": "all3paths end at floor projections"
+  },
+  "capture_area_floor_routes": {
+    "654": {
+      "samples": 424,
+      "on_mesh": 420,
+      "inside_area_floor": 419,
+      "from_NK": 402,
+      "from_US": 0,
+      "representative_NK": {
+        "pos": [
+          1774.875,
+          1678.0,
+          101.345299
+        ],
+        "shape": 629,
+        "sample": 1
+      }
+    },
+    "579": {
+      "samples": 55,
+      "on_mesh": 54,
+      "inside_area_floor": 47,
+      "from_NK": 45,
+      "from_US": 0,
+      "representative_NK": {
+        "pos": [
+          2212.568604,
+          1335.23877,
+          124.511292
+        ],
+        "shape": 569,
+        "sample": 425
+      }
+    },
+    "344": {
+      "samples": 123,
+      "on_mesh": 100,
+      "inside_area_floor": 98,
+      "from_NK": 87,
+      "from_US": 0,
+      "representative_NK": {
+        "pos": [
+          2126.071533,
+          1481.26355,
+          111.111298
+        ],
+        "shape": 330,
+        "sample": 480
+      }
+    },
+    "64": {
+      "samples": 438,
+      "on_mesh": 428,
+      "inside_area_floor": 417,
+      "from_NK": 397,
+      "from_US": 0,
+      "representative_NK": {
+        "pos": [
+          1943.75,
+          1367.25,
+          105.356186
+        ],
+        "shape": 39,
+        "sample": 537
+      }
+    },
+    "316": {
+      "samples": 421,
+      "on_mesh": 388,
+      "inside_area_floor": 388,
+      "from_NK": 367,
+      "from_US": 0,
+      "representative_NK": {
+        "pos": [
+          2054.865967,
+          1297.793945,
+          125.149033
+        ],
+        "shape": 291,
+        "sample": 982
+      }
+    }
+  },
+  "game_code": "2e0a66414305b163848c6d5f18bb5812df4462a9",
+  "code_worktree": "C:/Users/Magic8/WarsBotsBuild/crymp-coordinator-sprint",
+  "uncommitted_code_owner": "this Codex C145; cost/query16k/status, doors067d/f, water MOVE TRACE, watercost test/CI prepared; do not reset/overwrite"
+}
