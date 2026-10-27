@@ -3,7 +3,7 @@
 NOW: DS-054 DONE (door via server Door:Open; probe setup as a separate patch) - push - stop
 
 ### DS-054 - DONE - `DS054_DOORS_RMI.md` + `patches/ds054_doors.patch` + `patches/ds053_probe_setup.patch`
-Re DS-054: done PENDING_SHA
+Re DS-054: done 6a74b8e5
 Base `ba4d5f4e`.
 **Door RMI:** confirmed. `Door:OnUsed` (`Door.lua:342-357`) is the client use path: `self.server:SvRequestOpen(...)` at
 `:356` is a client->server RMI, and a bot has no channel -> "RMI via client ... not a client". Server side is
