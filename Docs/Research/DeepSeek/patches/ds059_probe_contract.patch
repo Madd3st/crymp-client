@@ -1,0 +1,277 @@
+diff --git a/Code/CryGame/Bots/BotProbeRunner.h b/Code/CryGame/Bots/BotProbeRunner.h
+index 551f536a..4f4aebb8 100644
+--- a/Code/CryGame/Bots/BotProbeRunner.h
++++ b/Code/CryGame/Bots/BotProbeRunner.h
+@@ -161,7 +161,7 @@ struct ItemSpec { std::string cls; double x = 0, y = 0, z = 0; };
+ struct BurstSpec { int actor = 0; int shots = 1; double interval = 0.1; };
+ struct PeekSpec { int actor = 0; double x = 0, y = 0, z = 0; double expose = 0.4; double hide = 1.0; };
+ struct CloakSpec { int actor = 0; bool on = true; };
+-struct Assertion { std::string metric, op; double value = 0; };
++struct Assertion { std::string metric, op, other; double value = 0; }; // other: denominator for ge_ratio_of
+ 
+ struct Scenario
+ {
+@@ -282,6 +282,7 @@ inline bool ParseScenario(const std::string& text, Scenario& out, std::string* e
+             Assertion s;
+             if (const Json* v = a.Get("metric")) s.metric = v->StringOr("");
+             if (const Json* v = a.Get("op")) s.op = v->StringOr("eq");
++            if (const Json* v = a.Get("other")) s.other = v->StringOr("");
+             if (const Json* v = a.Get("value")) s.value = v->NumberOr(0);
+             out.assertions.push_back(s);
+         }
+@@ -340,6 +341,12 @@ struct Metrics
+     int shots = 0, hits = 0, kills = 0, deaths = 0, pickups = 0, revives = 0;
+     int stalls = 0, stuckEvents = 0, trapMax = 0, linkAttempts = 0, vantageHolds = 0, glances = 0, heard = 0;
+     int headshots = 0;
++    std::map<int, int> killsByBot;                       // #N combat kill
++    std::map<std::string, int> pickupsByClass;           // REAL PICKUP acquired=1 class=...
++    std::map<std::string, double> firstPickupByClass;    // seconds since Begin()
++    std::map<std::string, int> linksDone;                // LINK done kind=...
++    int linkFailed = 0, unreachable = 0;
++    double landingZ = 0;                                 // last LINK done z; 0 when no link
+     std::vector<double> hitDistances, targetDistances;
+ 
+     void Begin(double t) { start = t; firstShot = -1; }
+@@ -362,9 +369,28 @@ struct Metrics
+             const double d = FindDouble(line, "distance=");
+             if (d > 0) hitDistances.push_back(d);
+         }
+-        if (std::strstr(p, "combat kill")) ++kills;
++        if (std::strstr(p, "combat kill"))
++        {
++            ++kills;
++            const int bot = BotNumber(line);
++            if (bot > 0) ++killsByBot[bot];   // #N is the shooter bot
++        }
+         if (std::strstr(p, "death observed")) ++deaths;
+-        if (std::strstr(p, "REAL PICKUP")) ++pickups;
++        if (std::strstr(p, "REAL PICKUP"))
++        {
++            ++pickups;
++            if (std::strstr(p, "acquired=1"))
++            {
++                const std::string cls = FindToken(line, "class=");
++                if (!cls.empty())
++                {
++                    ++pickupsByClass[cls];
++                    if (firstPickupByClass.find(cls) == firstPickupByClass.end())
++                        firstPickupByClass[cls] = t - start;
++                }
++            }
++        }
++        if (std::strstr(p, "GOAL SKIP unreachable") || std::strstr(p, "unreachable; skipping it")) ++unreachable;
+         if (std::strstr(p, "revive result") && std::strstr(p, "alive=1")) ++revives;
+         // DS-047: in PowerStruggle the Lua wave calls GameRules::RevivePlayer directly, so BotInstance::DoRevive
+         // never logs "revive result". The external revive is visible as PS REVIVE SEEN; count it as a revive.
+@@ -377,6 +403,16 @@ struct Metrics
+             if (l > trapMax) trapMax = l;
+         }
+         if (std::strstr(p, "LINK start")) ++linkAttempts;
++        if (const char* done = std::strstr(p, "LINK done kind="))
++        {
++            char kind[32] = { 0 }; float x = 0, y = 0, z = 0;
++            if (std::sscanf(done, "LINK done kind=%31s at=(%f,%f,%f)", kind, &x, &y, &z) == 4)
++            {
++                ++linksDone[kind];
++                landingZ = z;   // last completed link; 0 when none
++            }
++        }
++        if (std::strstr(p, "LINK failed")) ++linkFailed;
+         if (std::strstr(p, "VANTAGE")) ++vantageHolds;
+         if (std::strstr(p, "GLANCE spot=")) ++glances;
+         if (std::strstr(p, "HEARD gunshot")) ++heard;
+@@ -398,8 +434,40 @@ struct Metrics
+     double TargetDistanceP50() const { return Percentile(targetDistances, 0.5); }
+     double TargetDistanceP90() const { return Percentile(targetDistances, 0.9); }
+ 
++    // le_seconds: first event time for metrics where "how long until" is the question (pickup:<class>).
++    // A missing event is NaN, never a silent 0.
++    double FirstEventTime(const std::string& metric) const
++    {
++        if (metric.compare(0, 7, "pickup:") == 0)
++        {
++            std::map<std::string, double>::const_iterator it = firstPickupByClass.find(metric.substr(7));
++            return it == firstPickupByClass.end() ? std::numeric_limits<double>::quiet_NaN() : it->second;
++        }
++        return std::numeric_limits<double>::quiet_NaN();
++    }
++
+     double Value(const std::string& metric) const
+     {
++        if (metric.compare(0, 6, "kills:") == 0)
++        {
++            const int bot = std::atoi(metric.c_str() + 6);
++            std::map<int, int>::const_iterator it = killsByBot.find(bot);
++            return it == killsByBot.end() ? 0 : it->second;
++        }
++        if (metric.compare(0, 7, "pickup:") == 0)
++        {
++            std::map<std::string, int>::const_iterator it = pickupsByClass.find(metric.substr(7));
++            return it == pickupsByClass.end() ? 0 : it->second;
++        }
++        if (metric == "link:failed") return linkFailed;
++        if (metric.size() > 10 && metric.compare(0, 5, "link:") == 0 &&
++            metric.compare(metric.size() - 5, 5, ":done") == 0)
++        {
++            std::map<std::string, int>::const_iterator it = linksDone.find(metric.substr(5, metric.size() - 10));
++            return it == linksDone.end() ? 0 : it->second;
++        }
++        if (metric == "landing_z") return landingZ;
++        if (metric == "unreachable") return unreachable;
+         if (metric == "shots") return shots;
+         if (metric == "hits") return hits;
+         if (metric == "kills") return kills;
+@@ -427,6 +495,20 @@ struct Metrics
+     }
+ 
+ private:
++    static int BotNumber(const std::string& line)
++    {
++        const size_t p = line.find('#');
++        return p == std::string::npos ? 0 : std::atoi(line.c_str() + p + 1);
++    }
++    static std::string FindToken(const std::string& line, const char* key)
++    {
++        const size_t p = line.find(key);
++        if (p == std::string::npos) return std::string();
++        const size_t s = p + std::strlen(key);
++        size_t e = s;
++        while (e < line.size() && line[e] != ' ' && line[e] != '.' && line[e] != '\r' && line[e] != '\n') ++e;
++        return line.substr(s, e - s);
++    }
+     static double FindDouble(const std::string& line, const char* key)
+     {
+         const size_t n = std::strlen(key);
+@@ -448,12 +530,34 @@ private:
+ 
+ struct AssertionResult { std::string metric, op; double expected = 0, actual = 0; bool pass = false; };
+ 
++inline bool IsSupportedOperator(const std::string& op)
++{
++    return op == "eq" || op == "ne" || op == "lt" || op == "le" || op == "gt" || op == "ge" ||
++        op == "ge_ratio_of" || op == "le_seconds";
++}
++
+ inline bool Evaluate(const Metrics& m, const Assertion& a, AssertionResult& r)
+ {
+     r.metric = a.metric; r.op = a.op; r.expected = a.value;
++    if (!IsSupportedOperator(a.op)) { r.actual = std::numeric_limits<double>::quiet_NaN(); r.pass = false; return false; }
++    const double e = 1e-6;
++    if (a.op == "le_seconds")
++    {
++        r.actual = m.FirstEventTime(a.metric);
++        if (std::isnan(r.actual)) { r.pass = false; return false; }
++        r.pass = r.actual <= a.value + e;
++        return r.pass;
++    }
+     r.actual = m.Value(a.metric);
+     if (std::isnan(r.actual)) { r.pass = false; return false; }
+-    const double e = 1e-6;
++    if (a.op == "ge_ratio_of")
++    {
++        const double denominator = m.Value(a.other);
++        if (std::isnan(denominator) || denominator <= 0) { r.actual = std::numeric_limits<double>::quiet_NaN(); r.pass = false; return false; }
++        r.actual /= denominator;
++        r.pass = r.actual >= a.value - e;
++        return r.pass;
++    }
+     if (a.op == "lt") r.pass = r.actual < a.value - e;
+     else if (a.op == "le") r.pass = r.actual <= a.value + e;
+     else if (a.op == "gt") r.pass = r.actual > a.value + e;
+@@ -557,7 +661,8 @@ struct Runtime
+         out += ",\n  \"metrics\": {";
+         static const char* const names[] = {
+             "shots", "hits", "kills", "deaths", "pickup", "revive", "time_to_first_shot", "goal_time",
+-            "stalls", "stuck_events", "trap_level_max", "link_attempts", "vantage_holds", "glances", "heard",
++            "stalls", "stuck_events", "trap_level_max", "link_attempts", "link_failed", "unreachable", "landing_z",
++            "vantage_holds", "glances", "heard",
+             "detected_at_m", "exposed_s", "accuracy", "headshots", "hit_distance_p50", "hit_distance_p90",
+             "target_distance_p50", "target_distance_p90"
+         };
+diff --git a/Code/CryGame/Bots/BotWeapons.cpp b/Code/CryGame/Bots/BotWeapons.cpp
+index c7bfb08b..e0e634d8 100644
+--- a/Code/CryGame/Bots/BotWeapons.cpp
++++ b/Code/CryGame/Bots/BotWeapons.cpp
+@@ -190,7 +190,9 @@ bool BotWeapons::PickUp(CActor& actor, EntityId id, float holdRange)
+ 	item = Items()->GetItem(id);
+ 	const bool acquired = item && item->GetOwnerId() == actor.GetEntityId() && actor.GetInventory() &&
+ 		actor.GetInventory()->FindItem(id) >= 0;
+-	WB_LOG(2, "[WarsBots] REAL PICKUP actor=%u item=%u acquired=%d.", actor.GetEntityId(), id, acquired ? 1 : 0);
++	const char* itemClass = item && item->GetEntity() && item->GetEntity()->GetClass()
++		? item->GetEntity()->GetClass()->GetName() : "unknown";
++	WB_LOG(2, "[WarsBots] REAL PICKUP actor=%u item=%u acquired=%d class=%s.", actor.GetEntityId(), id, acquired ? 1 : 0, itemClass);
+     // Bots use IItem::PickUp directly, bypassing CActor's eGE_ItemPickedUp wrapper.
+     if(acquired)g_pGame->GetBotManager().Demo().Pickup(actor.GetEntityId(),id);
+ 	// Switch to what we just picked up (SelectAvailable prefers primaries anyway).
+diff --git a/Tests/BotProbeRunnerTests.cpp b/Tests/BotProbeRunnerTests.cpp
+index 97a9b972..c5975b11 100644
+--- a/Tests/BotProbeRunnerTests.cpp
++++ b/Tests/BotProbeRunnerTests.cpp
+@@ -102,6 +102,67 @@ int main()
+     CHECK(results[1].pass);  // first shot 0.6 > 0.5
+     CHECK(std::fabs(results[0].actual - 1.0) < 1e-6);
+ 
++    // DS-059/C143: per-bot kills, class pickups with first time, LINK done/failed, landing_z, unreachable.
++    Metrics c143;
++    c143.Begin(10.0);
++    for (int i = 0; i < 3; ++i)
++        c143.ObserveLine("10.50 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
++    c143.ObserveLine("10.60 [WarsBots] #2 combat kill shooter=2 target=3 via stock GameRules::KillPlayer.");
++    c143.ObserveLine("11.00 [WarsBots] #1 LINK done kind=jump at=(1318.00,1369.00,138.90) actor=1.");
++    c143.ObserveLine("11.50 [WarsBots] #1 LINK failed kind=jump reason=missed_landing at=(1318.00,1369.00,137.00) actor=1.");
++    c143.ObserveLine("12.00 [WarsBots] REAL PICKUP actor=1 item=42 acquired=1 class=DSG1.");
++    c143.ObserveLine("13.00 [WarsBots] REAL PICKUP actor=1 item=43 acquired=1 class=GaussRifle.");
++    c143.ObserveLine("13.10 [WarsBots] REAL PICKUP actor=1 item=44 acquired=0 class=DSG1.");
++    c143.ObserveLine("14.00 [WarsBots] GOAL SKIP unreachable kind=weapon actor=1 id=42 skipped=1.");
++    CHECK(c143.Value("kills:1") == 3 && c143.Value("kills:2") == 1);
++    CHECK(c143.Value("pickup:DSG1") == 1 && c143.Value("pickup:GaussRifle") == 1);
++    CHECK(std::fabs(c143.FirstEventTime("pickup:DSG1") - 2.0) < 1e-6);
++    CHECK(std::fabs(c143.FirstEventTime("pickup:GaussRifle") - 3.0) < 1e-6);
++    CHECK(c143.Value("link:jump:done") == 1 && c143.Value("link:failed") == 1);
++    CHECK(std::fabs(c143.Value("landing_z") - 138.90) < 1e-3);
++    CHECK(c143.Value("unreachable") == 1);
++
++    Assertion ratio; ratio.metric = "kills:1"; ratio.op = "ge_ratio_of"; ratio.other = "kills:2"; ratio.value = 3.0;
++    AssertionResult rr;
++    CHECK(Evaluate(c143, ratio, rr) && rr.pass && std::fabs(rr.actual - 3.0) < 1e-6);
++    Assertion ratioFail = ratio; ratioFail.value = 4.0;
++    CHECK(!Evaluate(c143, ratioFail, rr) && !rr.pass);
++
++    Assertion firstDsg; firstDsg.metric = "pickup:DSG1"; firstDsg.op = "le_seconds"; firstDsg.value = 2.5;
++    CHECK(Evaluate(c143, firstDsg, rr) && rr.pass);
++    Assertion firstDsgFail = firstDsg; firstDsgFail.value = 1.5;
++    CHECK(!Evaluate(c143, firstDsgFail, rr) && !rr.pass);
++    Assertion noPickup; noPickup.metric = "pickup:Missing"; noPickup.op = "le_seconds"; noPickup.value = 10.0;
++    CHECK(!Evaluate(c143, noPickup, rr) && !rr.pass); // no event is a fail, not 0 s
++
++    Scenario ratioParsed;
++    CHECK(ParseScenario("{\"id\":\"ratio\",\"assert\":[{\"metric\":\"kills:1\",\"op\":\"ge_ratio_of\",\"other\":\"kills:2\",\"value\":3.0}]}", ratioParsed, &err));
++    CHECK(ratioParsed.assertions.size() == 1 && ratioParsed.assertions[0].other == "kills:2");
++    CHECK(!IsSupportedOperator("bogus"));
++
++    // DS-059: every real C143 fixture must name a supported metric and operator on an empty Metrics.
++    static const char* const kProbeFiles[] = {
++        "Tools/Probes/duel_skill.json", "Tools/Probes/fence_hop.json", "Tools/Probes/roof_strength.json",
++        "Tools/Probes/sniper_reach_dsg1.json", "Tools/Probes/sniper_reach_gauss.json"
++    };
++    for (size_t i = 0; i < sizeof kProbeFiles / sizeof kProbeFiles[0]; ++i)
++    {
++        FILE* pf = std::fopen(kProbeFiles[i], "rb");
++        if (!pf) continue;
++        std::string text;
++        char buf[4096];
++        size_t n;
++        while ((n = std::fread(buf, 1, sizeof buf, pf)) > 0) text.append(buf, n);
++        std::fclose(pf);
++        Scenario fs;
++        CHECK(ParseScenario(text, fs, &err));
++        for (size_t j = 0; j < fs.assertions.size(); ++j)
++        {
++            CHECK(!std::isnan(Metrics().Value(fs.assertions[j].metric)));
++            CHECK(IsSupportedOperator(fs.assertions[j].op));
++        }
++    }
++
+     // Unknown metric must fail, not pass by default.
+     Assertion unknown; unknown.metric = "does_not_exist"; unknown.op = "eq"; unknown.value = 0;
+     AssertionResult ur;
