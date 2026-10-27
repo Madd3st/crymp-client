@@ -75,7 +75,7 @@ private:
 	float TurnRate() const;
 	bool EyeRayClear(CPlayer& actor, const Vec3& from, const Vec3& to) const;
 	bool UpdateArbitrated(BotInstance& bot, CPlayer& actor, IActor* enemy, float decisionTime, bool socomQA);
-	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld, bool pathCost = false);
+	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld, bool pathCost = false, bool sniperOnly = false);
 	BotLookPolicy m_look;
 	Vec3 m_lookDir = Vec3(0,1,0);
 	bool m_lookValid = false;

@@ -478,7 +478,9 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
 		if (m_deadTime >= (ps ? 30.0f : 5.0f))
 		{
 			Change(State::RESPAWNING);
-			if (bot.Revive())
+			const bool revived = bot.Revive();
+			if (ps) WB_LOG(1, "[WarsBots] #%d PS fallback revive after %.1f s: %s.", m_number, m_deadTime, revived ? "ok" : "refused"); // C-121
+			if (revived)
 			{
 				ResetLife();
 				actor.GetGameObject()->EnablePrePhysicsUpdate(ePPU_Always);
@@ -559,7 +561,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 float BotBrain::PickupRange() const
 { return WarsBots::IdleHoldRange(BotConfig::Get().vantage==1 && m_traits.camper>=0.7f); }
 
-EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost)
+EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost,bool sniperOnly)
 {
 	(void)anyHeld; // with wb_bot_weapon_rank FindNearby keeps only real upgrades over what is held
 	EntityId skip[8]; int skipCount = 0;
@@ -567,7 +569,7 @@ EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost)
 	// owner 25.10 (wb_bot_vantage): Marksmen judge pickups at sniper range, so DSG1/Gauss become real upgrades
 	const float typical=PickupRange();
 	// c066: no bot ever reached DSG1 (22 m up) / Gauss (tower) within 45 m -> snipers look across the map
-	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical, pathCost);
+	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical, pathCost, sniperOnly);
 }
 
 bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
@@ -579,14 +581,14 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 	const bool sniperMind=PickupRange()>30.0f;
 	if (!socomQA && WarsBots::ShouldSearchUpgrade(hasPrimary,BotConfig::Get().weaponRank==1,sniperMind,force,enemy && m_combat.Visible()))
 	{
-		if (m_now >= m_nextUpgradeSearch && !m_upgradeTarget)
+		const bool sniperOnly = BotConfig::Get().sniperReach==1 && sniperMind && !BotWeapons::HoldsSniper(actor);
 		{
-			m_upgradeTarget = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 && !hasPrimary);
+			m_upgradeTarget = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 || sniperOnly, sniperOnly);
 			m_upgradeSince = m_now;
 			m_nextUpgradeSearch = m_now + 3.0f;
 		}
 		// Unreachable (on a ledge, behind glass, taken): give up when the walk stops getting closer for 8 s (c067: a
-		// flat 10 s dropped every DSG1/Gauss trip — 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
+		// flat 10 s dropped every DSG1/Gauss trip - 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
 		if (m_upgradeTarget != m_upgradeTracked || !m_upgradeTarget) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0; }
 		if (IEntity* goal = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr)
 		{
@@ -607,7 +609,9 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 			}
 			if (d < m_upgradeBest-1.0f) { m_upgradeBest=d; m_upgradeBestAt=m_now; }
 		}
-		if (m_upgradeTarget && (m_now - m_upgradeBestAt > 8.0f || m_now - m_upgradeSince > 60.0f))
+		const float progressTimeout = sniperOnly ? 20.0f : 8.0f;
+		const float totalTimeout = sniperOnly ? 90.0f : 60.0f;
+		if (m_upgradeTarget && (m_now - m_upgradeBestAt > progressTimeout || m_now - m_upgradeSince > totalTimeout))
 		{
 			WB_LOG(2, "[WarsBots] #%d weapon %u unreachable; skipping it.", m_number, m_upgradeTarget);
 			MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
@@ -1187,7 +1191,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	}
 	else m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
 	// T-1 step 1: which rule decided this tick (source lines of BotBrain.cpp), logged when the suit request changes or
-	// a jump is requested — the before/after evidence for the control-frame refactor.
+	// a jump is requested - the before/after evidence for the control-frame refactor.
 	if (m_intent.suitMode!=m_lastSuitRequest || m_intent.jump!=BotJump::None)
 		WB_LOG(2,"[WarsBots] #%d INTENT WHY suit=%d@%d jump=%d@%d gait=%d@%d move=%d@%d aim@%d state=%s actor=%u.",m_number,
 			int(m_intent.suitMode),m_intent.why.suitMode,int(m_intent.jump),m_intent.why.jump,int(m_intent.gait),m_intent.why.gait,
@@ -1251,11 +1255,13 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 	}
 	if (o.phase==LinkPhase::Failed)
 	{
-		static const char* const why[]={"none","timeout","no_takeoff","missed_landing","no_energy"};
+		static const char* const why[]={"none","timeout","no_takeoff","missed_landing","no_energy","too_high"};
 		WB_LOG(1,"[WarsBots] #%d LINK failed kind=%s reason=%s at=(%.2f,%.2f,%.2f)%s actor=%u.",m_number,NavLinkName(m_linkNow.kind),
 			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> fail noted",actor.GetEntityId());
-		// O-027: one failure can be timing (hit, cooldown, short run-up) -> ban a link only on its second failure
-		if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
+		// O-027: one failure can be timing (hit, cooldown, short run-up) -> ban a link only on its second failure.
+		// DS-046: a link above the jump rise is impossible; ban it at once, do not waste two probes.
+		if (o.fail==LinkFail::TooHigh) mesh->BanLink(m_linkNow.ref);
+		else if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
 		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0;
 		return;
 	}
@@ -1495,7 +1501,7 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
 	const bool hasPrimary=BotWeapons::HasPrimary(actor);
 	const bool ranked=BotConfig::Get().weaponRank==1;
 	if ((!hasPrimary || ranked) && m_now>=m_nextUpgradeSearch && !m_upgradeTarget)
-	{ m_upgradeTarget=UpgradeCandidate(actor,hasPrimary,BotConfig::Get().firstPrimary==1 && !hasPrimary); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
+{ const bool sniperOnly=BotConfig::Get().sniperReach==1 && PickupRange()>30.0f && !BotWeapons::HoldsSniper(actor); m_upgradeTarget=UpgradeCandidate(actor,hasPrimary,BotConfig::Get().firstPrimary==1 || sniperOnly,sniperOnly); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
 	if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor,m_upgradeTarget)) m_upgradeTarget=0;
 	IEntity* item=m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
 	ArbiterInput in;

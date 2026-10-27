@@ -20,7 +20,7 @@ struct JVec { float x = 0, y = 0, z = 0; };
 enum class LinkPhase { Idle = 0, Approach, Prepare, RunUp, Act, Air, Done, Failed };
 enum class LinkMove { Drop = 0, Jump, Strength };
 enum class LinkJumpRequest { None = 0, Normal, Strength };
-enum class LinkFail { None = 0, Timeout, NoTakeoff, MissedLanding, NoEnergy };
+enum class LinkFail { None = 0, Timeout, NoTakeoff, MissedLanding, NoEnergy, TooHigh };
 
 struct LinkInput {
 	float now = 0.f;
@@ -54,6 +54,7 @@ struct LinkParams {
 	float runUp = 2.5f;                // m behind a: a standing jump undershoots (c062: 15 Strength landings under b)
 	float strengthEnergy = 90.f;       // DS-033: links started at 10-57 energy landed short
 	float dropAirMin = 0.15f;          // m below a that counts as "left the edge" for a drop
+	float maxStrengthRise = 3.72f;     // DS-046: native Strength jump rise ~3.62 m; a +4.30 m link cannot land
 };
 
 class BotJumpLink {
@@ -87,6 +88,8 @@ private:
 	{
 		LinkOutput o; o.moveTo = m_b;
 		if (!Active()) { o.phase = m_phase; return o; }
+		// DS-046: the baked 1355 -> 1351.9 link asks for +4.30 m; the jump rises ~3.62 m. Reject instead of 12 s of retries.
+		if (m_move == LinkMove::Strength && (m_b.z - m_a.z) > m_p.maxStrengthRise) return Fail(o, LinkFail::TooHigh);
 		if (in.now - m_start > m_p.total) return Fail(o, LinkFail::Timeout);
 		const float da = Dist2D(in.feet, m_a), db = Dist2D(in.feet, m_b);
 		if (!in.grounded) m_wasAir = true;

@@ -26,7 +26,7 @@ int main()
 	}
 	// 3. Strength not ready at a: stop (Prepare), suit ready -> back off 2.5 m (RunUp), run in, jump at a.
 	{
-		BotJumpLink L; L.Start(0, LinkMove::Strength, a, JVec{5, 0, 14});
+		BotJumpLink L; L.Start(0, LinkMove::Strength, a, JVec{5, 0, 13.5});
 		LinkInput in = At(0, -0.5f, 0, 10); in.energy = 150; LinkOutput o = L.Update(in);
 		assert(o.phase == LinkPhase::Prepare && o.wantStrength && o.jump == LinkJumpRequest::None);
 		in.now = 0.5f; in.speed = 0; in.strengthActive = true; o = L.Update(in);
@@ -38,7 +38,7 @@ int main()
 	}
 	// 4. Strength with low energy waits for regen; still too low after prepareMax -> NoEnergy (not banned by the caller).
 	{
-		BotJumpLink M; M.Start(0, LinkMove::Strength, a, JVec{5, 0, 14});
+		BotJumpLink M; M.Start(0, LinkMove::Strength, a, JVec{5, 0, 13.5});
 		LinkInput low = At(0, -0.1f, 0, 10); low.energy = 30; LinkOutput o = M.Update(low); assert(o.phase == LinkPhase::Prepare);
 		low.now = 6.5f; o = M.Update(low);   // DS-036: prepareMax 6 s assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoEnergy);
 	}
@@ -61,3 +61,4 @@ int main()
 	std::puts("BotJumpLinkTests OK");
 	return 0;
 }
+

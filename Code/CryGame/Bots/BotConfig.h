@@ -51,6 +51,7 @@ struct BotConfig {
  int firstPrimary=0;   // DS-044: spawn pistol -> nearest reachable rifle by walk length before roam/fight, default OFF
  int withdrawCover=0;  // DS-044: low HP withdraw to the nearest LOS-breaking cover spot, not 4 m straight back, default OFF
  int finishLock=0;     // DS-044: keep a <=25 HP target until dead/lost > 1 s unless a new enemy within 8 m is hitting us, default OFF
+ int sniperReach=0;    // DS-046: sniper-mind upgrade searches the roof (32 m vertical box) and only DSG1/Gauss first, default OFF
  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);

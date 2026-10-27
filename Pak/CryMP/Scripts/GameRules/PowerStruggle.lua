@@ -781,6 +781,9 @@ function PowerStruggle:QueueRevive(playerId)
 	revive.active=true;
 	
 	local player=System.GetEntity(playerId);
+	if (player and WarsBotsIsBot(self, playerId)) then -- WarsBots C-121 diagnostics
+		System.LogAlways(string.format("[WarsBots] PS QUEUE add %s group=%s team=%s", tostring(player:GetName()), tostring(player.spawnGroupId), tostring(self.game:GetTeam(playerId))));
+	end
 	if (player) then
 		self.channelSpectatorMode[player.actor:GetChannel()]=nil;
 	end
@@ -955,6 +958,12 @@ function PowerStruggle:UpdateReviveQueue()
 
 	if (reviveTimer<=0) then
 		self.game:ResetReviveCycleTime();
+		for playerId,revive in pairs(self.reviveQueue) do -- WarsBots C-121 diagnostics: one line per queued bot per wave
+			if (WarsBotsIsBot(self, playerId)) then
+				local p=System.GetEntity(playerId);
+				System.LogAlways(string.format("[WarsBots] PS WAVE %s active=%s canRevive=%s group=%s dead=%s spec=%s overdue=%s", p and tostring(p:GetName()) or tostring(playerId), tostring(revive.active), tostring(p and self:CanRevive(playerId)), tostring(p and p.spawnGroupId), tostring(p and p:IsDead()), tostring(p and p.actor:GetSpectatorMode()), tostring(revive.overdue)));
+			end
+		end
 		
 		for i,teamId in ipairs(self.teamId) do
 			self:UpdateTeamRanks(teamId);
@@ -988,7 +997,8 @@ end
 function PowerStruggle:RevivePlayerInQueue(player, revive)
 	revive.active=false;
 	
-	self:RevivePlayer(player.actor:GetChannel(), player);
+	local wbResult=self:RevivePlayer(player.actor:GetChannel(), player);
+	if (WarsBotsIsBot(self, player.id)) then System.LogAlways(string.format("[WarsBots] PS REVIVE %s result=%s", tostring(player:GetName()), tostring(wbResult))); end -- WarsBots C-121
 	if (not revive.tk) then
 		local rank=self.rankList[self:GetPlayerRank(player.id)];
 		if (rank and rank.min_pp and rank.min_pp>0) then

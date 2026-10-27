@@ -14,6 +14,7 @@
 #include "CryGame/Bots/BotWeaponRank.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotSniperReach.h"
 #include "CryGame/Bots/BotWeaponHandling.h"
 #include "CryGame/Items/Weapons/Weapon.h"
 
@@ -82,8 +83,14 @@ bool BotWeapons::SelectAvailable(CActor& actor)
 	return current && HasAmmunition(actor, *current);
 }
 
+bool BotWeapons::HoldsSniper(CActor& actor)
+{
+	IItem* held = actor.GetCurrentItem();
+	return held && WarsBots::IsSniperClass(held->GetEntity()->GetClass()->GetName());
+}
+
 EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly,
-	const EntityId* skip, int skipCount, float typicalRange, bool pathCost)
+	const EntityId* skip, int skipCount, float typicalRange, bool pathCost, bool sniperOnly)
 {
 	EntityId result = 0;
 	float best = 1e10f;
@@ -101,8 +108,11 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 	HeldWeapon held[8]; int heldCount = 0;
 	const bool ranked = BotConfig::Get().weaponRank == 1;
 	if (ranked) heldCount = Held(actor, held, 8);
+	// DS-046: a roof rifle is 13-20 m above the bot; the old +-12 m box never listed it. Sniper searches reach 32 m.
+	const bool sniperMind = typicalRange > 30.0f;
+	const float vertical = WarsBots::SniperSearchHalfHeight(BotConfig::Get().sniperReach == 1, sniperMind);
 	SEntityProximityQuery query;
-	query.box = AABB(origin - Vec3(radius, radius, 12.0f), origin + Vec3(radius, radius, 12.0f));
+	query.box = AABB(origin - Vec3(radius, radius, vertical), origin + Vec3(radius, radius, vertical));
 	gEnv->pEntitySystem->QueryProximity(query);
 	for (int q = 0; q < query.nCount; ++q)
 	{
@@ -115,6 +125,7 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 		float distance = (entity->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared();
 		if (distance > radius*radius) continue;
 		IItem* item = Items()->GetItem(entity->GetId());
+		if (sniperOnly && (!item || !WarsBots::IsSniperClass(item->GetEntity()->GetClass()->GetName()))) continue;
 		if (Suitable(item) && (!primaryOnly || IsPrimary(item)) && !item->GetOwnerId() && static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId()))
 		{
 			float walk = sqrtf(distance);
