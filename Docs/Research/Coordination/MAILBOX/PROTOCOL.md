@@ -139,3 +139,6 @@ time per agent unless the item says otherwise. Claude reads the board with `pyth
 
 Owner: decisions (`DECISIONS.md`) and feel playtests only — never regression hunting. A "defaults-only" run without the
 feature preset is not a valid acceptance run.
+
+## Owner rule 28.10 — analyse together, fix and validate in batches (D-034)
+No standalone game run without a concrete question and acceptance criteria. On strange bot behaviour, preserve logs/demo and ask DeepSeek for root-cause analysis across related symptoms before another run. Prepare a coherent batch of related fixes or feature completion with cheap regression oracles, independent review and one exact-SHA CI artifact for planned scenario coverage. Keep changes separately reviewable; do not mix unrelated subsystems just to enlarge a batch. A small diagnostic probe is justified only when an explicit missing observation blocks diagnosis; state what decision its result changes. Do not repeat known-failing scenarios without a relevant change or new hypothesis. Failures return to joint analysis; no automatic soak. This changes the execution cadence, not exact-SHA/green-CI/review/default-OFF/no-game-while-owner-plays gates.

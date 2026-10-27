@@ -27,6 +27,8 @@ Handback: Claude reads this file + the coordinator summary below + `git log wars
 
 ## Coordinator log (Codex appends below, newest first)
 
+2026-10-28 owner D034: joint DeepSeek analysis before chasing strange behaviour; related fixes/feature completion in coherent batches, explicit acceptance before game runs. DS062/063 separate patches may share planned acceptance; a diagnostic probe requires a named missing observation. No game launched. Protocol + DeepSeek standing instructions updated.
+
 2026-10-28: Owner requested more DeepSeek/night work. Assigned DS062-064 (water implementation, existing door exit, capture eligibility audit); independent code reviews preempt. DS0612ef03358 received, offline re-review next; no integration/game/default changes. Code532e4497 remains reviewed GREEN/purchasePASS. Queue assignment is not implementation acceptance.
 
 2026-10-28 00:00 MSK: DS059589baaac received, pre-integration review BLOCK: positive2:0 ratio changed vslegacy, link_failed JSON null despite1collected, missing realfixtures silently passunit0. Reproduced isolated MSVCoracle2failures + emptyCWD unit0; DS061 revision requested incl unavailablelandingZ. No livecheckout/codepush/game; codehead532e4497 still CI40574773650GREEN/DS058OK and purchasePASS. C143 awaitsDS061, C144 awaitsDS060 water support; DS051held. LastprocessedDS059/X203, no defaults/sniper/soak. Mailbox/wake active; no owner action required.

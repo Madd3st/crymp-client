@@ -12,6 +12,8 @@ never touch `warsbots/feature/*`. Code to read: `warsbots/feature/claude-sprint`
 `warsbots/research/steelmill-triage` (≥ 1b2de254 knows `-Agent deepseek`); copies on other branches are stale — see DS-008. When no DS- item is open, work the **standing backlog**
 below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in your answers file.
 
+**Owner D-034 (28.10): batch diagnosis and completion.** When Codex reports strange bot behaviour, analyse existing logs/demo across related symptoms and propose a coherent repair/feature-completion batch with red/green oracles and shared acceptance scenarios. Identify any truly missing observation before requesting a runtime probe. DS062/063 remain separately reviewable patches; Codex plans joint acceptance where useful instead of an automatic game run after every patch. No purposeless isolated runs or unchanged failure repeats; exact-SHA review gates remain. Push each diagnosis/deliverable promptly so integration can proceed.
+
 #### Standing backlog (always open)
 * **S1 · review every new claude-sprint commit** since the last one you reviewed (`git log`): bugs first, ≤ 15 lines,
   file:line; write the last reviewed SHA at the top of your answer.
