@@ -1,0 +1,2793 @@
+{
+  "source": "d6a9a5219a04629b959fecd6285aab499baef2ed",
+  "ci": 40498950981,
+  "units": 28,
+  "ps": {
+    "source": "d6a9a5219a04629b959fecd6285aab499baef2ed",
+    "deaths": 4,
+    "native_revives": 0,
+    "diagnostic_counts": {
+      "PS QUEUE add": 4,
+      "PS WAVE": 84,
+      "PS REVIVE": 4,
+      "PS fallback revive": 0,
+      "revive refused": 0,
+      "revive deferred": 0,
+      "PS revive delegated": 4
+    },
+    "wave_signatures": {
+      "{\"active\": \"false\", \"canRevive\": \"true\", \"dead\": \"false\", \"group\": \"userdata: 0000000000000219\", \"overdue\": \"nil\", \"spec\": \"0\"}": 40,
+      "{\"active\": \"false\", \"canRevive\": \"true\", \"dead\": \"false\", \"group\": \"userdata: 0000000000000078\", \"overdue\": \"nil\", \"spec\": \"0\"}": 40,
+      "{\"active\": \"true\", \"canRevive\": \"true\", \"dead\": \"true\", \"group\": \"userdata: 0000000000000078\", \"overdue\": \"nil\", \"spec\": \"3\"}": 2,
+      "{\"active\": \"true\", \"canRevive\": \"true\", \"dead\": \"true\", \"group\": \"userdata: 0000000000000219\", \"overdue\": \"nil\", \"spec\": \"3\"}": 2
+    },
+    "first40": [
+      {
+        "engine_line": 201,
+        "raw": "[WarsBots] PS QUEUE add WarsBot_02 [Normal/Assault] group=userdata: 0000000000000219 team=2",
+        "t_bracket": [
+          3.12,
+          3.12
+        ],
+        "slot": 2,
+        "fields": {
+          "group": "userdata: 0000000000000219 team=2"
+        }
+      },
+      {
+        "engine_line": 206,
+        "raw": "[WarsBots] PS QUEUE add WarsBot_05 [Normal/Defender] group=userdata: 0000000000000078 team=1",
+        "t_bracket": [
+          3.12,
+          3.12
+        ],
+        "slot": 5,
+        "fields": {
+          "group": "userdata: 0000000000000078 team=1"
+        }
+      },
+      {
+        "engine_line": 219,
+        "raw": "[WarsBots] #2 PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=65481.",
+        "t_bracket": [
+          8.09,
+          8.09
+        ],
+        "slot": 2,
+        "fields": {}
+      },
+      {
+        "engine_line": 220,
+        "raw": "[WarsBots] #5 PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=65466.",
+        "t_bracket": [
+          8.09,
+          8.09
+        ],
+        "slot": 5,
+        "fields": {}
+      },
+      {
+        "engine_line": 231,
+        "raw": "[WarsBots] PS WAVE WarsBot_04 [Normal/Flanker] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "slot": 4,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 232,
+        "raw": "[WarsBots] PS WAVE WarsBot_01 [Normal/Universal] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "slot": 1,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 233,
+        "raw": "[WarsBots] PS WAVE WarsBot_05 [Normal/Defender] active=true canRevive=true group=userdata: 0000000000000078 dead=true spec=3 overdue=nil",
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "slot": 5,
+        "fields": {
+          "active": "true",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "true",
+          "spec": "3",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 234,
+        "raw": "[WarsBots] PS WAVE WarsBot_02 [Normal/Assault] active=true canRevive=true group=userdata: 0000000000000219 dead=true spec=3 overdue=nil",
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "slot": 2,
+        "fields": {
+          "active": "true",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "true",
+          "spec": "3",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 235,
+        "raw": "[WarsBots] PS WAVE WarsBot_06 [Normal/Hunter] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "slot": 6,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 236,
+        "raw": "[WarsBots] PS WAVE WarsBot_03 [Normal/Marksman] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "slot": 3,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 237,
+        "raw": "[WarsBots] PS REVIVE WarsBot_05 [Normal/Defender] result=true",
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "slot": 5,
+        "fields": {
+          "result": "true"
+        }
+      },
+      {
+        "engine_line": 238,
+        "raw": "[WarsBots] PS REVIVE WarsBot_02 [Normal/Assault] result=true",
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "slot": 2,
+        "fields": {
+          "result": "true"
+        }
+      },
+      {
+        "engine_line": 300,
+        "raw": "[WarsBots] PS QUEUE add WarsBot_02 [Normal/Assault] group=userdata: 0000000000000219 team=2",
+        "t_bracket": [
+          34.68,
+          34.68
+        ],
+        "slot": 2,
+        "fields": {
+          "group": "userdata: 0000000000000219 team=2"
+        }
+      },
+      {
+        "engine_line": 305,
+        "raw": "[WarsBots] PS QUEUE add WarsBot_01 [Normal/Universal] group=userdata: 0000000000000078 team=1",
+        "t_bracket": [
+          34.68,
+          34.68
+        ],
+        "slot": 1,
+        "fields": {
+          "group": "userdata: 0000000000000078 team=1"
+        }
+      },
+      {
+        "engine_line": 318,
+        "raw": "[WarsBots] #1 PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=130993.",
+        "t_bracket": [
+          39.65,
+          39.65
+        ],
+        "slot": 1,
+        "fields": {}
+      },
+      {
+        "engine_line": 319,
+        "raw": "[WarsBots] #2 PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=130998.",
+        "t_bracket": [
+          39.65,
+          39.65
+        ],
+        "slot": 2,
+        "fields": {}
+      },
+      {
+        "engine_line": 328,
+        "raw": "[WarsBots] PS WAVE WarsBot_06 [Normal/Hunter] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "slot": 6,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 329,
+        "raw": "[WarsBots] PS WAVE WarsBot_05 [Normal/Defender] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "slot": 5,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 330,
+        "raw": "[WarsBots] PS WAVE WarsBot_01 [Normal/Universal] active=true canRevive=true group=userdata: 0000000000000078 dead=true spec=3 overdue=nil",
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "slot": 1,
+        "fields": {
+          "active": "true",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "true",
+          "spec": "3",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 331,
+        "raw": "[WarsBots] PS WAVE WarsBot_04 [Normal/Flanker] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "slot": 4,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 332,
+        "raw": "[WarsBots] PS WAVE WarsBot_03 [Normal/Marksman] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "slot": 3,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 333,
+        "raw": "[WarsBots] PS WAVE WarsBot_02 [Normal/Assault] active=true canRevive=true group=userdata: 0000000000000219 dead=true spec=3 overdue=nil",
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "slot": 2,
+        "fields": {
+          "active": "true",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "true",
+          "spec": "3",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 334,
+        "raw": "[WarsBots] PS REVIVE WarsBot_01 [Normal/Universal] result=true",
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "slot": 1,
+        "fields": {
+          "result": "true"
+        }
+      },
+      {
+        "engine_line": 335,
+        "raw": "[WarsBots] PS REVIVE WarsBot_02 [Normal/Assault] result=true",
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "slot": 2,
+        "fields": {
+          "result": "true"
+        }
+      },
+      {
+        "engine_line": 344,
+        "raw": "[WarsBots] PS WAVE WarsBot_06 [Normal/Hunter] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          70.36,
+          80.2
+        ],
+        "slot": 6,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 345,
+        "raw": "[WarsBots] PS WAVE WarsBot_05 [Normal/Defender] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          70.36,
+          80.2
+        ],
+        "slot": 5,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 346,
+        "raw": "[WarsBots] PS WAVE WarsBot_01 [Normal/Universal] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          70.36,
+          80.2
+        ],
+        "slot": 1,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 347,
+        "raw": "[WarsBots] PS WAVE WarsBot_04 [Normal/Flanker] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          70.36,
+          80.2
+        ],
+        "slot": 4,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 348,
+        "raw": "[WarsBots] PS WAVE WarsBot_03 [Normal/Marksman] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          70.36,
+          80.2
+        ],
+        "slot": 3,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 349,
+        "raw": "[WarsBots] PS WAVE WarsBot_02 [Normal/Assault] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          70.36,
+          80.2
+        ],
+        "slot": 2,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 358,
+        "raw": "[WarsBots] PS WAVE WarsBot_06 [Normal/Hunter] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          90.39,
+          100.23
+        ],
+        "slot": 6,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 359,
+        "raw": "[WarsBots] PS WAVE WarsBot_05 [Normal/Defender] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          90.39,
+          100.23
+        ],
+        "slot": 5,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 360,
+        "raw": "[WarsBots] PS WAVE WarsBot_01 [Normal/Universal] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          90.39,
+          100.23
+        ],
+        "slot": 1,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 361,
+        "raw": "[WarsBots] PS WAVE WarsBot_04 [Normal/Flanker] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          90.39,
+          100.23
+        ],
+        "slot": 4,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 362,
+        "raw": "[WarsBots] PS WAVE WarsBot_03 [Normal/Marksman] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          90.39,
+          100.23
+        ],
+        "slot": 3,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 363,
+        "raw": "[WarsBots] PS WAVE WarsBot_02 [Normal/Assault] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          90.39,
+          100.23
+        ],
+        "slot": 2,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 372,
+        "raw": "[WarsBots] PS WAVE WarsBot_06 [Normal/Hunter] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          110.41,
+          120.24
+        ],
+        "slot": 6,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 373,
+        "raw": "[WarsBots] PS WAVE WarsBot_05 [Normal/Defender] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          110.41,
+          120.24
+        ],
+        "slot": 5,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 374,
+        "raw": "[WarsBots] PS WAVE WarsBot_01 [Normal/Universal] active=false canRevive=true group=userdata: 0000000000000078 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          110.41,
+          120.24
+        ],
+        "slot": 1,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000078",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      },
+      {
+        "engine_line": 375,
+        "raw": "[WarsBots] PS WAVE WarsBot_04 [Normal/Flanker] active=false canRevive=true group=userdata: 0000000000000219 dead=false spec=0 overdue=nil",
+        "t_bracket": [
+          110.41,
+          120.24
+        ],
+        "slot": 4,
+        "fields": {
+          "active": "false",
+          "canRevive": "true",
+          "group": "userdata: 0000000000000219",
+          "dead": "false",
+          "spec": "0",
+          "overdue": "nil"
+        }
+      }
+    ],
+    "timelines": [
+      {
+        "actor": 65481,
+        "slot": 2,
+        "death": 3.119,
+        "end": 31.64,
+        "end_note": "Next same-slot actor recreation / same-actor revive / run end; reset is not a wave revive.",
+        "records": [
+          {
+            "engine_line": 201,
+            "raw": "[WarsBots] PS QUEUE add WarsBot_02 [Normal/Assault] group=userdata: 0000000000000219 team=2",
+            "t_bracket": [
+              3.12,
+              3.12
+            ],
+            "slot": 2,
+            "fields": {
+              "group": "userdata: 0000000000000219 team=2"
+            }
+          },
+          {
+            "engine_line": 219,
+            "raw": "[WarsBots] #2 PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=65481.",
+            "t_bracket": [
+              8.09,
+              8.09
+            ],
+            "slot": 2,
+            "fields": {}
+          },
+          {
+            "engine_line": 234,
+            "raw": "[WarsBots] PS WAVE WarsBot_02 [Normal/Assault] active=true canRevive=true group=userdata: 0000000000000219 dead=true spec=3 overdue=nil",
+            "t_bracket": [
+              20.24,
+              30.12
+            ],
+            "slot": 2,
+            "fields": {
+              "active": "true",
+              "canRevive": "true",
+              "group": "userdata: 0000000000000219",
+              "dead": "true",
+              "spec": "3",
+              "overdue": "nil"
+            }
+          },
+          {
+            "engine_line": 238,
+            "raw": "[WarsBots] PS REVIVE WarsBot_02 [Normal/Assault] result=true",
+            "t_bracket": [
+              20.24,
+              30.12
+            ],
+            "slot": 2,
+            "fields": {
+              "result": "true"
+            }
+          }
+        ],
+        "counts": {
+          "PS QUEUE add": 1,
+          "PS WAVE": 1,
+          "PS REVIVE": 1,
+          "PS fallback revive": 0,
+          "revive refused": 0,
+          "revive deferred": 0,
+          "PS revive delegated": 1
+        },
+        "same_actor_alive_at": 20.448,
+        "death_to_alive_s": 17.329,
+        "post_wave_health": 100
+      },
+      {
+        "actor": 65466,
+        "slot": 5,
+        "death": 3.119,
+        "end": 31.64,
+        "end_note": "Next same-slot actor recreation / same-actor revive / run end; reset is not a wave revive.",
+        "records": [
+          {
+            "engine_line": 206,
+            "raw": "[WarsBots] PS QUEUE add WarsBot_05 [Normal/Defender] group=userdata: 0000000000000078 team=1",
+            "t_bracket": [
+              3.12,
+              3.12
+            ],
+            "slot": 5,
+            "fields": {
+              "group": "userdata: 0000000000000078 team=1"
+            }
+          },
+          {
+            "engine_line": 220,
+            "raw": "[WarsBots] #5 PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=65466.",
+            "t_bracket": [
+              8.09,
+              8.09
+            ],
+            "slot": 5,
+            "fields": {}
+          },
+          {
+            "engine_line": 233,
+            "raw": "[WarsBots] PS WAVE WarsBot_05 [Normal/Defender] active=true canRevive=true group=userdata: 0000000000000078 dead=true spec=3 overdue=nil",
+            "t_bracket": [
+              20.24,
+              30.12
+            ],
+            "slot": 5,
+            "fields": {
+              "active": "true",
+              "canRevive": "true",
+              "group": "userdata: 0000000000000078",
+              "dead": "true",
+              "spec": "3",
+              "overdue": "nil"
+            }
+          },
+          {
+            "engine_line": 237,
+            "raw": "[WarsBots] PS REVIVE WarsBot_05 [Normal/Defender] result=true",
+            "t_bracket": [
+              20.24,
+              30.12
+            ],
+            "slot": 5,
+            "fields": {
+              "result": "true"
+            }
+          }
+        ],
+        "counts": {
+          "PS QUEUE add": 1,
+          "PS WAVE": 1,
+          "PS REVIVE": 1,
+          "PS fallback revive": 0,
+          "revive refused": 0,
+          "revive deferred": 0,
+          "PS revive delegated": 1
+        },
+        "same_actor_alive_at": 20.448,
+        "death_to_alive_s": 17.329,
+        "post_wave_health": 100
+      },
+      {
+        "actor": 130998,
+        "slot": 2,
+        "death": 34.681,
+        "end": 302.983,
+        "end_note": "Next same-slot actor recreation / same-actor revive / run end; reset is not a wave revive.",
+        "records": [
+          {
+            "engine_line": 300,
+            "raw": "[WarsBots] PS QUEUE add WarsBot_02 [Normal/Assault] group=userdata: 0000000000000219 team=2",
+            "t_bracket": [
+              34.68,
+              34.68
+            ],
+            "slot": 2,
+            "fields": {
+              "group": "userdata: 0000000000000219 team=2"
+            }
+          },
+          {
+            "engine_line": 319,
+            "raw": "[WarsBots] #2 PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=130998.",
+            "t_bracket": [
+              39.65,
+              39.65
+            ],
+            "slot": 2,
+            "fields": {}
+          },
+          {
+            "engine_line": 333,
+            "raw": "[WarsBots] PS WAVE WarsBot_02 [Normal/Assault] active=true canRevive=true group=userdata: 0000000000000219 dead=true spec=3 overdue=nil",
+            "t_bracket": [
+              50.31,
+              60.17
+            ],
+            "slot": 2,
+            "fields": {
+              "active": "true",
+              "canRevive": "true",
+              "group": "userdata: 0000000000000219",
+              "dead": "true",
+              "spec": "3",
+              "overdue": "nil"
+            }
+          },
+          {
+            "engine_line": 335,
+            "raw": "[WarsBots] PS REVIVE WarsBot_02 [Normal/Assault] result=true",
+            "t_bracket": [
+              50.31,
+              60.17
+            ],
+            "slot": 2,
+            "fields": {
+              "result": "true"
+            }
+          }
+        ],
+        "counts": {
+          "PS QUEUE add": 1,
+          "PS WAVE": 1,
+          "PS REVIVE": 1,
+          "PS fallback revive": 0,
+          "revive refused": 0,
+          "revive deferred": 0,
+          "PS revive delegated": 1
+        },
+        "same_actor_alive_at": 51.981,
+        "death_to_alive_s": 17.300000000000004,
+        "post_wave_health": 100
+      },
+      {
+        "actor": 130993,
+        "slot": 1,
+        "death": 34.681,
+        "end": 302.983,
+        "end_note": "Next same-slot actor recreation / same-actor revive / run end; reset is not a wave revive.",
+        "records": [
+          {
+            "engine_line": 305,
+            "raw": "[WarsBots] PS QUEUE add WarsBot_01 [Normal/Universal] group=userdata: 0000000000000078 team=1",
+            "t_bracket": [
+              34.68,
+              34.68
+            ],
+            "slot": 1,
+            "fields": {
+              "group": "userdata: 0000000000000078 team=1"
+            }
+          },
+          {
+            "engine_line": 318,
+            "raw": "[WarsBots] #1 PS revive delegated to the wave (5 s self-revive skipped, fallback 30 s) actor=130993.",
+            "t_bracket": [
+              39.65,
+              39.65
+            ],
+            "slot": 1,
+            "fields": {}
+          },
+          {
+            "engine_line": 330,
+            "raw": "[WarsBots] PS WAVE WarsBot_01 [Normal/Universal] active=true canRevive=true group=userdata: 0000000000000078 dead=true spec=3 overdue=nil",
+            "t_bracket": [
+              50.31,
+              60.17
+            ],
+            "slot": 1,
+            "fields": {
+              "active": "true",
+              "canRevive": "true",
+              "group": "userdata: 0000000000000078",
+              "dead": "true",
+              "spec": "3",
+              "overdue": "nil"
+            }
+          },
+          {
+            "engine_line": 334,
+            "raw": "[WarsBots] PS REVIVE WarsBot_01 [Normal/Universal] result=true",
+            "t_bracket": [
+              50.31,
+              60.17
+            ],
+            "slot": 1,
+            "fields": {
+              "result": "true"
+            }
+          }
+        ],
+        "counts": {
+          "PS QUEUE add": 1,
+          "PS WAVE": 1,
+          "PS REVIVE": 1,
+          "PS fallback revive": 0,
+          "revive refused": 0,
+          "revive deferred": 0,
+          "PS revive delegated": 1
+        },
+        "same_actor_alive_at": 51.981,
+        "death_to_alive_s": 17.300000000000004,
+        "post_wave_health": 100
+      }
+    ],
+    "error_counts": {},
+    "rmi_channel0": 0,
+    "crash": false,
+    "threshold_checks": [
+      {
+        "elapsed": 120.2456823,
+        "deaths": 4,
+        "action": "No wb_kill needed: >=4 deaths"
+      },
+      {
+        "elapsed": 60.103276199999996,
+        "deaths": 4,
+        "action": "No wb_kill needed: >=4 deaths"
+      }
+    ],
+    "time_note": "Lua System.LogAlways has no sidecar time; brackets from adjacent matching native engine/trace lines, not fabricated exact callback times. Full raw engine log + line numbers retained.",
+    "wave_confirmed_by_same_actor_alive": 4,
+    "revive_result_true": 4,
+    "revive_result_false": 0,
+    "post_lua_revive_samples": [
+      {
+        "engine_line": 237,
+        "slot": 5,
+        "actor": 65466,
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "samples": [
+          {
+            "t": 30.232,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          },
+          {
+            "t": 31.139,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          },
+          {
+            "t": 35.14,
+            "health": null,
+            "alive": null,
+            "brain": null
+          }
+        ]
+      },
+      {
+        "engine_line": 238,
+        "slot": 2,
+        "actor": 65481,
+        "t_bracket": [
+          20.24,
+          30.12
+        ],
+        "samples": [
+          {
+            "t": 30.232,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          },
+          {
+            "t": 31.139,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          },
+          {
+            "t": 35.14,
+            "health": null,
+            "alive": null,
+            "brain": null
+          }
+        ]
+      },
+      {
+        "engine_line": 334,
+        "slot": 1,
+        "actor": 130993,
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "samples": [
+          {
+            "t": 60.328,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          },
+          {
+            "t": 61.19,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          },
+          {
+            "t": 65.232,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          }
+        ]
+      },
+      {
+        "engine_line": 335,
+        "slot": 2,
+        "actor": 130998,
+        "t_bracket": [
+          50.31,
+          60.17
+        ],
+        "samples": [
+          {
+            "t": 60.328,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          },
+          {
+            "t": 61.19,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          },
+          {
+            "t": 65.232,
+            "health": 100,
+            "alive": true,
+            "brain": "SEARCHING_ENEMY"
+          }
+        ]
+      }
+    ]
+  },
+  "snipers": {
+    "rows": [
+      {
+        "id": "roof_strength",
+        "pass_all": false,
+        "runtime_error": null,
+        "source": "d6a9a5219a04629b959fecd6285aab499baef2ed",
+        "recipe": {
+          "wb_probe_local_test": 1,
+          "wb_move_trace": 1,
+          "wb_demo_record": 1,
+          "wb_bot_navmesh": 1,
+          "wb_bot_jump_links": 1,
+          "wb_bot_suit_policy": 1,
+          "wb_bot_weapon_rank": 1,
+          "wb_bot_vantage": 1,
+          "wb_bot_path_progress": 1,
+          "wb_bot_state_commit": 1,
+          "wb_bot_arbiter": 0,
+          "wb_bot_sniper_reach": 1
+        },
+        "trials": [
+          {
+            "repeat": 1,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 1,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 3,
+              "link:drop:done": 2,
+              "link:jump:done": 1,
+              "link:strength:done": 1,
+              "landing_z": 139.09
+            },
+            "assertions": [
+              {
+                "expected": 60,
+                "op": "le_seconds",
+                "metric": "pickup:DSG1",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "missed_landing": 2,
+              "no_energy": 1
+            },
+            "too_high": 0,
+            "goal_skips": [
+              "28.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1."
+            ],
+            "unreachable_lines": [
+              "25.49 [WarsBots] #1 weapon 98 unreachable; skipping it."
+            ],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-roof_strength-d6a9a521\\Probe-roof_strength-07b40d26-repeat-1.bots.wbdemo",
+              "frames": 1501,
+              "events": {
+                "suit": 19,
+                "land": 7,
+                "jump": 4
+              },
+              "sha256": "1fea79630b03c78c9e303bf6f448a0caa60a67c502b4bbd30759857eb60094e0"
+            }
+          },
+          {
+            "repeat": 2,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 1,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 2,
+              "link:drop:done": 0,
+              "link:jump:done": 1,
+              "link:strength:done": 2,
+              "landing_z": 141.85
+            },
+            "assertions": [
+              {
+                "expected": 60,
+                "op": "le_seconds",
+                "metric": "pickup:DSG1",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "missed_landing": 1,
+              "no_energy": 1
+            },
+            "too_high": 0,
+            "goal_skips": [
+              "38.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.80 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1."
+            ],
+            "unreachable_lines": [
+              "35.63 [WarsBots] #1 weapon 98 unreachable; skipping it."
+            ],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-roof_strength-d6a9a521\\Probe-roof_strength-b59028ea-repeat-2.bots.wbdemo",
+              "frames": 1504,
+              "events": {
+                "suit": 26,
+                "land": 6,
+                "jump": 4
+              },
+              "sha256": "9fb5a2bbf3d958b7837a0c74ed0256fec95ee1226ec360c763b777b14f7b3524"
+            }
+          },
+          {
+            "repeat": 3,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 1,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 3,
+              "link:drop:done": 1,
+              "link:jump:done": 1,
+              "link:strength:done": 2,
+              "landing_z": 139.09
+            },
+            "assertions": [
+              {
+                "expected": 60,
+                "op": "le_seconds",
+                "metric": "pickup:DSG1",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "no_takeoff": 2,
+              "no_energy": 1
+            },
+            "too_high": 0,
+            "goal_skips": [
+              "34.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1."
+            ],
+            "unreachable_lines": [
+              "25.58 [WarsBots] #1 weapon 98 unreachable; skipping it."
+            ],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-roof_strength-d6a9a521\\Probe-roof_strength-308eceb2-repeat-3.bots.wbdemo",
+              "frames": 1500,
+              "events": {
+                "suit": 18,
+                "land": 6,
+                "jump": 3
+              },
+              "sha256": "dcf58abebdd2e031a55e5517706988d26bad4d4ba3654d8a6fd309e21a226df4"
+            }
+          }
+        ],
+        "memory_restored": true,
+        "note": "Pinned source fixture, plus explicit C117 sniper flags/arbiter0/state1/sniper_reach1. Roof fixture now grades DSG1 pickup<=60s, not old impossible+4.3m link."
+      },
+      {
+        "id": "sniper_reach_dsg1",
+        "pass_all": false,
+        "runtime_error": null,
+        "source": "d6a9a5219a04629b959fecd6285aab499baef2ed",
+        "recipe": {
+          "wb_probe_local_test": 1,
+          "wb_move_trace": 1,
+          "wb_demo_record": 1,
+          "wb_bot_navmesh": 1,
+          "wb_bot_jump_links": 1,
+          "wb_bot_weapon_rank": 1,
+          "wb_bot_path_progress": 1,
+          "wb_bot_vantage": 1,
+          "wb_bot_arbiter": 0,
+          "wb_bot_state_commit": 1,
+          "wb_bot_sniper_reach": 1
+        },
+        "trials": [
+          {
+            "repeat": 1,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 1,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 2,
+              "link:drop:done": 0,
+              "link:jump:done": 0,
+              "link:strength:done": 0
+            },
+            "assertions": [
+              {
+                "expected": 45,
+                "op": "le_seconds",
+                "metric": "pickup:DSG1",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "unreachable",
+                "pass": false,
+                "actual": 1
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "no_takeoff": 2
+            },
+            "too_high": 0,
+            "goal_skips": [],
+            "unreachable_lines": [
+              "35.67 [WarsBots] #1 weapon 98 unreachable; skipping it."
+            ],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-sniper_reach_dsg1-d6a9a521\\Probe-sniper_reach_dsg1-a047ba03-repeat-1.bots.wbdemo",
+              "frames": 1196,
+              "events": {
+                "suit": 9,
+                "land": 1
+              },
+              "sha256": "f80dd198af7662a4d72c1d67317c093f1721f6dd058f15595c0bd7c9438e3e58"
+            }
+          },
+          {
+            "repeat": 2,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 1,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 2,
+              "link:drop:done": 2,
+              "link:jump:done": 1,
+              "link:strength:done": 1,
+              "landing_z": 139.1
+            },
+            "assertions": [
+              {
+                "expected": 45,
+                "op": "le_seconds",
+                "metric": "pickup:DSG1",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "unreachable",
+                "pass": false,
+                "actual": 1
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "no_takeoff": 1,
+              "missed_landing": 1
+            },
+            "too_high": 0,
+            "goal_skips": [
+              "36.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1."
+            ],
+            "unreachable_lines": [
+              "25.40 [WarsBots] #1 weapon 98 unreachable; skipping it."
+            ],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-sniper_reach_dsg1-d6a9a521\\Probe-sniper_reach_dsg1-6a80b4fe-repeat-2.bots.wbdemo",
+              "frames": 1196,
+              "events": {
+                "suit": 17,
+                "land": 6,
+                "jump": 3
+              },
+              "sha256": "15d910e643dfdd1bca9b57ec776af343dc8cbe884c8e393fb35304e61a33bc4a"
+            }
+          },
+          {
+            "repeat": 3,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 1,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 1,
+              "link:drop:done": 0,
+              "link:jump:done": 1,
+              "link:strength:done": 1,
+              "landing_z": 139.1
+            },
+            "assertions": [
+              {
+                "expected": 45,
+                "op": "le_seconds",
+                "metric": "pickup:DSG1",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "unreachable",
+                "pass": false,
+                "actual": 1
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "missed_landing": 1
+            },
+            "too_high": 0,
+            "goal_skips": [
+              "28.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.43 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "28.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1."
+            ],
+            "unreachable_lines": [
+              "25.50 [WarsBots] #1 weapon 98 unreachable; skipping it."
+            ],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-sniper_reach_dsg1-d6a9a521\\Probe-sniper_reach_dsg1-8c530882-repeat-3.bots.wbdemo",
+              "frames": 1193,
+              "events": {
+                "suit": 16,
+                "land": 5,
+                "jump": 4
+              },
+              "sha256": "5e8a53e8100b6f103a60f93aa8aba09e2a713aaf7e60b9915c9c3ef34b2dc8eb"
+            }
+          }
+        ],
+        "memory_restored": true,
+        "note": "Pinned source fixture, plus explicit C117 sniper flags/arbiter0/state1/sniper_reach1. Roof fixture now grades DSG1 pickup<=60s, not old impossible+4.3m link."
+      },
+      {
+        "id": "sniper_reach_gauss",
+        "pass_all": false,
+        "runtime_error": null,
+        "source": "d6a9a5219a04629b959fecd6285aab499baef2ed",
+        "recipe": {
+          "wb_probe_local_test": 1,
+          "wb_move_trace": 1,
+          "wb_demo_record": 1,
+          "wb_bot_navmesh": 1,
+          "wb_bot_jump_links": 1,
+          "wb_bot_weapon_rank": 1,
+          "wb_bot_path_progress": 1,
+          "wb_bot_vantage": 1,
+          "wb_bot_arbiter": 0,
+          "wb_bot_state_commit": 1,
+          "wb_bot_sniper_reach": 1
+        },
+        "trials": [
+          {
+            "repeat": 1,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 0,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 3,
+              "link:drop:done": 0,
+              "link:jump:done": 0,
+              "link:strength:done": 1,
+              "landing_z": 139.11
+            },
+            "assertions": [
+              {
+                "expected": 60,
+                "op": "le_seconds",
+                "metric": "pickup:GaussRifle",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "unreachable",
+                "pass": true,
+                "actual": 0
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "no_energy": 1,
+              "no_takeoff": 1,
+              "missed_landing": 1
+            },
+            "too_high": 0,
+            "goal_skips": [
+              "31.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "31.94 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.43 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.77 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.12 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.94 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.00 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.38 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.25 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.74 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.44 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.90 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.34 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.38 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.49 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.80 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.34 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.18 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.31 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.12 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.25 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.35 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.01 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.12 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.25 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.49 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.01 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.74 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.34 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.31 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.00 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.12 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.35 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.34 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.38 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.49 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.80 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.90 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.00 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.44 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.00 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.49 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.94 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.49 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.74 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.84 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.18 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.38 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.63 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.74 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.18 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.90 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.31 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1."
+            ],
+            "unreachable_lines": [],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-sniper_reach_gauss-d6a9a521\\Probe-sniper_reach_gauss-d79bb2c6-repeat-1.bots.wbdemo",
+              "frames": 1502,
+              "events": {
+                "suit": 23,
+                "jump": 2,
+                "land": 3
+              },
+              "sha256": "57750a1e80746a3dd02ce6a430ac448435ed0a6370514756d1b9113ae1ddcb75"
+            }
+          },
+          {
+            "repeat": 2,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 0,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 3,
+              "link:drop:done": 1,
+              "link:jump:done": 0,
+              "link:strength:done": 1,
+              "landing_z": 136
+            },
+            "assertions": [
+              {
+                "expected": 60,
+                "op": "le_seconds",
+                "metric": "pickup:GaussRifle",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "unreachable",
+                "pass": true,
+                "actual": 0
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "no_energy": 1,
+              "no_takeoff": 2
+            },
+            "too_high": 0,
+            "goal_skips": [
+              "31.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "31.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.63 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.74 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.84 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.94 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.18 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.87 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.07 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.43 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.01 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.12 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.84 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.44 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.63 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.34 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.44 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.01 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.34 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.94 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.34 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.87 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.44 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.80 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.90 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.01 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.35 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.80 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.18 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.38 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.31 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.84 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.44 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.18 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.25 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.35 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.44 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.77 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.25 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.35 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.38 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.48 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.84 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.74 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.01 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.24 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.50 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.88 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.12 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.25 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.38 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.77 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.90 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.94 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.25 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.35 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.71 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.84 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.12 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.22 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.58 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.28 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.74 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.18 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1."
+            ],
+            "unreachable_lines": [],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-sniper_reach_gauss-d6a9a521\\Probe-sniper_reach_gauss-1afbaef7-repeat-2.bots.wbdemo",
+              "frames": 1501,
+              "events": {
+                "suit": 21,
+                "jump": 1,
+                "land": 2
+              },
+              "sha256": "78338b06bac2d096bb133b2eacadcc2ef69e25547f2ed7d8bec2538fdf6fdc34"
+            }
+          },
+          {
+            "repeat": 3,
+            "pass_all": false,
+            "metrics": {
+              "unreachable": 0,
+              "stalls": 0,
+              "glances": 0,
+              "link:failed": 3,
+              "link:drop:done": 0,
+              "link:jump:done": 0,
+              "link:strength:done": 1,
+              "landing_z": 139.08
+            },
+            "assertions": [
+              {
+                "expected": 60,
+                "op": "le_seconds",
+                "metric": "pickup:GaussRifle",
+                "pass": false,
+                "actual": null
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "unreachable",
+                "pass": true,
+                "actual": 0
+              },
+              {
+                "expected": 0,
+                "op": "eq",
+                "metric": "stalls",
+                "pass": true,
+                "actual": 0
+              }
+            ],
+            "link_reasons": {
+              "no_energy": 1,
+              "no_takeoff": 1,
+              "missed_landing": 1
+            },
+            "too_high": 0,
+            "goal_skips": [
+              "31.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "31.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "31.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "31.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "31.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "32.95 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "33.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.77 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "34.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.11 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "35.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.31 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.65 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "36.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "37.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.49 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "38.94 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.63 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "39.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.51 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.63 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "40.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "41.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.44 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "42.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.43 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "43.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.43 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.54 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "44.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.80 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "45.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.50 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "46.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.35 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.59 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "47.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.72 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "48.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.12 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.23 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.49 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "49.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.50 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.63 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.76 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "50.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.07 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "51.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.77 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "52.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.50 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.87 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "53.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.43 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "54.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.04 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.50 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.63 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.77 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.87 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "55.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.07 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.82 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "56.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.50 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.61 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.84 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "57.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.21 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.34 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.47 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "58.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "59.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.26 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.36 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.46 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.57 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.69 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.81 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "60.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.50 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "61.96 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.07 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.63 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "62.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.10 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.43 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.56 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.77 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "63.89 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.01 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.14 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.37 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.50 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.60 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.70 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.80 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "64.94 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.30 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.80 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "65.90 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.00 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.13 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.40 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.86 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "66.97 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.08 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.20 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.33 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.43 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.77 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "67.90 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.03 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.16 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.53 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "68.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.64 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.75 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.87 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "69.99 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.68 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "70.92 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.17 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.73 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.83 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "71.93 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.06 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.29 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.42 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.67 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.78 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "72.91 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.05 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.18 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.31 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.41 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.52 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.62 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.74 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.85 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "73.98 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.09 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.19 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.32 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.45 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.55 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.66 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.79 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "74.90 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.02 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.15 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.27 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1.",
+              "75.39 [WarsBots] GOAL SKIP navmesh kind=weapon actor=65501 skipped=1."
+            ],
+            "unreachable_lines": [],
+            "pickup_select_lines": [],
+            "demo": {
+              "file": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c121-sniper_reach_gauss-d6a9a521\\Probe-sniper_reach_gauss-3c74f631-repeat-3.bots.wbdemo",
+              "frames": 1501,
+              "events": {
+                "suit": 25,
+                "jump": 2,
+                "land": 3
+              },
+              "sha256": "5d1b0327dd7ef6910880924544c15e249305c2b50fe8f55dbe7e49ed347bc22f"
+            }
+          }
+        ],
+        "memory_restored": true,
+        "note": "Pinned source fixture, plus explicit C117 sniper flags/arbiter0/state1/sniper_reach1. Roof fixture now grades DSG1 pickup<=60s, not old impossible+4.3m link."
+      }
+    ],
+    "source": "d6a9a5219a04629b959fecd6285aab499baef2ed"
+  },
+  "invalid_ps": "build/c121-ps-harness-invalid-60s/invalid-run.json",
+  "note": "One60s harness-invalid PS attempt (numeric-key JSON write error), fixed tooling only and repeated as one valid300s run. No valid probe repeated. No gameplay edits."
+}

@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C120b DONE exact4d399cf4; PS RMI/Lua/stability pass but waveFAIL; IA pair complete, runnerNOT WIRED. Onepush thenSTOP, no games.
+NOW: C121 steps1+2 DONE on exactd6a9a521; PS wave confirmed4, sniper0/9. X166 pushed before single authorized15x660 next; no GUI/localbuild.
+
+### X-166 | 2026-10-27 | DONE C-121 PS + snipers / next single15x660
+Exact d6a9a521 / green CI40498950981 +28MSVC units/hashpair/canonicaldata PASS. Shore6x300: four deaths, QUEUE4/WAVE84/REVIVE true4/false0, delegated4, fallback/refused/deferred0, crash/Lua/channel0RMI0. Same EntityIds alive100HP after17.329/17.329/17.300/17.300s; BRAIN SEARCHING_ENEMY. **PS wave confirmed; native demo revive0 is a recorder coverage gap.** At60/120s deaths4 so no forcedkill. Raw first40, per-death timeline/fields/brackets: [C121_DIAGNOSTICS.md](C121_DIAGNOSTICS.md), JSON and build/c121-ps0-d6a9a521/Shore/.
+All9 sniper trials complete, runtime errors0; roof/DSG1/Gauss each0/3 pickups/fullcriteria. LINK: missed_landing/no_takeoff/no_energy; too_high0 (not exercised); GOALSKIP/unreachable/raw reasons pertrial preserved in JSON and build/c121-{roof_strength,sniper_reach_dsg1,sniper_reach_gauss}-d6a9a521/. Updated roof fixture now grades DSG1 reach, not old impossiblejump.
+One initial PS60s run invalid from QA hashtable numeric-key JSON error, archived build/c121-ps-harness-invalid-60s; tooling-only serializer fixed, only invalidrun repeated. Owner-authorized client5284 had already closed; no GUI launched. Memory hashes restored/foreignC08C preserved. Next one15x660 on sameSHA, requestedC119+all4newflags/firediag1, gates264/37/1; X167 thenSTOP.
 
 ### X-165 | 2026-10-27 | DONE C-120b / PS revive FAIL / Probe NOT WIRED / STOP
 Exact `4d399cf4`, green CI 40488976371, 27 unit suites and matching artifact/data hashes verified. Shore first: no startup Lua errors. Both PS maps: 6 bots x 240 s, 6 registered, no crash/RMI-channel0/Lua errors; native revives 0/0 despite 4/5 delegation logs, no fallback/request logs. **PS revive-wave gate FAIL; PP changes UNKNOWN.** First spawns, per-error counts, demos: `build/c120b-ps0-4d399cf4/`, `Docs/Coordination/C120B_RESULTS.json`.

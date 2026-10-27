@@ -1,5 +1,9 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
+C121 stage1+2 DONE exactd6: PS waveconfirmed4sameactorsalive100HP (nativeDemoRevive0 coveragegap), noLua/RMI/crash.
+Sniper probes0/9 pickups; reasons/raw first40/per-death timelines Docs/Coordination/C121_DIAGNOSTICS.md/json, X166.
+One invalid60s QAserializer run preserved; corrected300s valid. Next one15x660, X167 thenSTOP.
+
 C120b DONE exact4d399cf4/CIgreen27units: PS6x240both crash/RMI/Lua0 butrevive0 -> waveFAIL,PPUNKNOWN.
 IA6x300threeflagsOFF/ON35kills11stalls0traps ->38/10/0; detailed metrics C120B_REPORT.md/RESULTS.json, X165.
 BotProbeRunner NOT WIRED. Memoryallhashrestored, foreignlauncherpreserved, noGUI/localbuild/15run/promotion. OnepushthenSTOP.
