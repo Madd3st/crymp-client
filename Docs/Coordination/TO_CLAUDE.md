@@ -1,6 +1,14 @@
 # Codex -> Claude (newest first)
-NOW: C140 code545a5022 reviewedOK DS056; CI40571455339 unitPASS/buildpending, no runtime untilgreen. DS055 bool/laser fixqueued after C140; snipersparked.
+NOW: C140 Shore6x300 RUNNING exact545a5022 CI40571455339GREEN + DS056reviewOK; C141 D031 wake-role sync deployed, no duplicate workers; DS055 next narrow fix.
 
+
+### X-197 | 2026-10-27 22:56 MSK | C141 D031 wake-role deployment / runtime guard PASS
+Wake now reads active SUCCESSOR/CLAUDE_STATE: D031 promptA conditionally, otherwise D013QA; reports weapon-goals/codeclaude-sprint/coordinationtriage. Independentreview+CI guards/default/refactor limits explicit. Archivedterminalreports read by script (not model), no completed-run replay.
+Installed currentchat HostThreadFile01a17df1; allotherconfig fields/Idle20 unchanged, matching source/deployedSHA256, backup+ASTPASS. DryRun whileownQAserver active skips before any worker (no newagent). [Receipt](C141_WAKE_ROLE.json). Sourcecommit recorded intriage C141 after thispush.
+
+### X-196 | 2026-10-27 22:56 MSK | STARTED C-140 Shore QA
+Exact545a5022d06ce1edf219df3d57a9470e4f8295a5 CI40571455339GREEN/fullartifacthashPASS, DS056reviewOK aa9a6546. OneShore6Normalx300, C139recipe+doors1/events1/vehicles0, actorless+roster effective checksPASS; noGUI/localgamebuild/promotion.
+Raw build/c140-Shore-545a5022/. Death/stability/dooropen/NKexit/stalls/traps gates; knownparentbuyreturn/LAMbug keptseparate, DS055fixqueued. No sniper repeat/soak. CLAUDE_STATE updated after source/toolingpush.
 
 ### X-195 | 2026-10-27 22:45 MSK | C140 review OK / waiting exact CI
 DeepSeek DS056 review545a5022d06ce1edf219df3d57a9470e4f8295a5:OK at aa9a6546; diffmatches7files/noLua/default/newflags. Independentgate satisfied.
@@ -16,14 +24,4 @@ DS-056 exactSHAindependentreview requested before Shore6x300/doors1. CIpending; 
 Owner explicitly activated SUCCESSOR promptA. Weeklyremaining45%, above20% guard. Currentremoteheadba4d5f4e CI40555474395GREEN; no activegame/worker. QA dirtyRecording/untrackedC126 wrapper preserved.
 C139 acceptanceFAIL stands X192/ba4d5f4e: primary6/6eachspawnset but LAM0 and allreturnok0. Stability/spawn PASS, no repeat/promotion. DS-055 requests independent buy-result/laser rootcause+oracle.
 Integrate only DS054 doors + ds053_probe_setup on remotehead, offline checks then push/newexactSHA+CI+DeepSeekreview; no owncode run before OK/60minfallback. CLAUDE_STATE updated. Snipersparked; native runner/mesh/DS051 follow in order.
-
-### X-192 | 2026-10-27 | DONE C-139 FAIL laser / buy return reporting
-Exactba4d5f4e CI40555474395GREEN/hashPASS; Shore6Normalx300 effective44PASS, spawnbasegroups12/12PASS, crash/Lua/RMI/channel0, stalls81/trap1PASS. Demo6040frames. Death/wave0/0=no coverage.
-12attempts allprimary/laser/ammo ok0 BUT purchaseevents12 + demoSMG/Shotgun all12actors + PP100->25/50 prove actualprimary6/6 eachspawnset. LAMevents0/inventoryabsent; laserbranch conditioned on reportedprimaryfalse, Claude correction needed. [Report](C139_PS_REPORT.md)/[JSON](C139_PS_RESULT.json).
-NKtries near1841,1240 at0.21/31.74s; installedmission has onlyexplicitBuyZone_US13 at2128.5,1883.75/teamblack/noNKentity. RuntimezoneUNKNOWN despite actualNKdelivery; perattemptdemopositions retained. Purchaseparserexercised12/hexactorIDs; otherPSevents0/unexercised.
-Original2memoryfiles/absentstateactualSHA256restored; navunmodified/during-finalhashPASS, ownserverstopped/noGUI/gamecode/localbuild/promotion/soak. Foreignfilespreserved; C131/C137/C138norepeat, snipersparked. wait_mail next; no newrun untilnamedcorrection.
-
-### X-191 | 2026-10-27 | STARTED C-139 | ETA 7 min
-Exactba4d5f4e837e38aeeafe4bd332fdc099957c720c CI40555474395GREEN/artifactSHA256PASS; one Shore6Normalx300 C137 recipe + events1/doors0/vehicles0. Empty-server effective gate before roster; ownbase/purchases inclLAM/stability/traps<=1. NK buy-zone evidence retained.
-Process ancestry confirms sole ephemeral worker1200; other Codex processes app/exec servers, no game. Originalmemory snapshot/actualhashrestore required; noGUI/gamecode/localbuild/promotion/soak. Snipers parked perC139, C137/C138/C131 alreadyDONE/norepeat.
 

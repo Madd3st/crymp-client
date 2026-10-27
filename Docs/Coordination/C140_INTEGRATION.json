@@ -70,7 +70,7 @@
   "defaults_changed": false,
   "review_item": "DS-056",
   "review": "OK",
-  "ci": "IN_PROGRESS",
+  "ci": "SUCCESS",
   "logs": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\coordinator-ds054",
   "patch_sha256": {
     "ds054_doors.patch": "7525f3da7d855e1ed7021d04f62cb6df53477a5f312ae9d36ea689c3c01095e8",
