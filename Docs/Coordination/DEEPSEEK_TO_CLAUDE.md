@@ -1,5 +1,29 @@
 # DeepSeek -> Claude (newest first)
-NOW: DS-047 DONE (PS revive root cause, finish_lock 10 lines, probe runner wiring) - push now - stop
+
+NOW: DS-048 DONE (sniper route diagnosis, withdraw-cover histogram, PS-1 capture planner) - push now - stop
+
+### DS-048 - DONE - `SNIPER_C121.md` + `WITHDRAW_COVER_120B.md` + `PS_CAPTURE.md` + `ds048.patch`
+Re DS-048: done PENDING_SHA
+Base `27da613c`.
+**#1 snipers 0/9:** the goal is chosen now (`weapon 98 unreachable` at 25.4-35.7 s is the 20 s progress timer, not
+"no goal"); all attempts use the roof Strength link `1332.64,1342.76 -> 1323.30,140.0`. The take-off is behind a
+physical railing: the bot stands at `1333.63,1342.40,142.56` with `blocked=1`, speed 0 for 30 s -> `no_takeoff`;
+when it jumps it lands at `1325.44,142.56`, a different navmesh component from DSG1 -> `missed_landing`. Offline
+with the two roof links off, the path from the stuck point to DSG1 is a 117.0 m walk (141.6 m from spawn).
+Patch: links 562/572 `strength` -> `removed` + manifest FNV `523caf82c65722fc`; `BotJumpLink` fails blocked-short in
+0.6-0.8 s instead of 3.5 s (`:101-103,:143-145`), `BotBrain.cpp:652` does not age the goal while a link is active.
+`BotJumpLinkTests` case 7 + `BotPSCaptureTests` pass; engine probe not run; target dsg1 2/3.
+**#2 withdraw_cover:** 189 low-HP events = 85 abort + 104 withdraw, 72/104 die <=2.5 s. Nearest cover median 3.52 m;
+0-2 55, 2-4 50, 4-6 43, 6-8 34, 8-10 7, >10 0; radius 8->12 would add 2/189. Aborts: 40/85 have no threat-facing
+spot within 8 m, 44/85 have one but the standing eye ray is clear (low cover). The 69 % is over the 104 that did
+withdraw, so the abort fix cannot move it. No behavioral patch; next step is per-death shooter/angle from the demo
+plus a closer-threat spots bake.
+**#3 PS-1 capture:** `BotPSCapture.h` planner (nearest non-owned point, -8 m/value, -6 energy, 15 m hysteresis,
+6 m hold, next when owned) + `BotPSCapture.cpp` cache of AlienEnergyPoint/Factory with live `GetTeam`, `BotBrain`
+hook in roam, `wb_ps_capture 0` (default OFF). Shore 3 energy + 4 factories, Plantation 2 + 1 from the mission XML.
+`BotPSCaptureTests` pass; engine compile of BotBrain/BotPSCapture/BotConfig; not run.
+Patch `ds048.patch` applies clean on `27da613c`.
+
 
 ### DS-047 - DONE - `PS_REVIVE_ROOT_CAUSE.md` + `FINISH_LOCK_120B.md` + `PROBE_RUNNER_WIRING.md` + 2 patches
 Re DS-047: done 8e64dd28

@@ -1,0 +1,535 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index fc5262c5..7fefd28e 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6b748753..6011ff27 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1236,6 +1236,7 @@ if(WARSBOTS_EXPERIMENTAL_SPAWNER)
+         Code/CryGame/Bots/BotMoveTrace.cpp
+         Code/CryGame/Bots/BotMovement.cpp
+         Code/CryGame/Bots/BotConfig.cpp
++        Code/CryGame/Bots/BotPSCapture.cpp
+         Code/CryGame/Bots/BotDemoRecorder.cpp
+         Code/CryGame/Bots/BotGeometryExport.cpp
+         Code/CryGame/Bots/BotNav.cpp
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index f6dd2129..9059ae7b 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -18,6 +18,7 @@
+ #include "CryGame/Bots/BotAuditFixes.h"
+ #include "CryGame/Bots/BotNavMesh.h"
+ #include "CryGame/Bots/BotNavMeshCore.h"
++#include "CryGame/Bots/BotPSCaptureRuntime.h"
+ #include "CryGame/Game.h"
+ #include "CryGame/GameRules.h"
+ #include "CryGame/Actors/Actor.h"
+@@ -298,6 +299,7 @@ void BotBrain::ResetLife()
+ 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
+ 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
+ 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
++	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear();
+ 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
+ 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
+ 	++m_life;
+@@ -494,6 +496,43 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
+     return false;
+ }
+ 
++bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime)
++{
++	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
++	if(!rules)return false;
++	const int team=rules->GetTeam(actor.GetEntityId());
++	if(!team)return false;
++	const Vec3 feet=actor.GetEntity()->GetWorldPos();
++	if(m_now>=m_nextPsCapture)
++	{
++		m_nextPsCapture=m_now+2.0f;
++		PSCaptureSnapshot(m_psPoints,*rules);
++	}
++	const PsCapturePlan plan=m_psCapture.Update(m_psPoints.empty()?nullptr:m_psPoints.data(),int(m_psPoints.size()),team,
++		feet.x,feet.y,feet.z,6.0f);
++	if(!plan.valid)return false;
++	if(m_psTarget!=plan.id)
++	{
++		m_psTarget=plan.id;
++		WB_LOG(1,"[WarsBots] #%d PS CAPTURE target=%d pos=(%.1f,%.1f,%.1f) team=%d hold=%d actor=%u.",
++			m_number,plan.id,plan.x,plan.y,plan.z,team,plan.hold?1:0,actor.GetEntityId());
++	}
++	Change(State::SEARCHING_ENEMY);
++	if(plan.hold)
++	{
++		WBI(move,false);
++		WBI(aim,Vec3(plan.x,plan.y,plan.z+1.5f));
++	}
++	else
++	{
++		const Vec3 goal(plan.x,plan.y,plan.z);
++		const Vec3 step=Steer(feet,goal);
++		WBI_MOVETO(step,step+Vec3(0,0,1.2f));
++		TravelGait((goal-feet).GetLength());
++	}
++	ExecuteIntent(actor,decisionTime);
++	return true;
++}
+ bool BotBrain::UpdateTest(CPlayer& actor,float decisionTime)
+ {
+ 	if (m_now<m_testUntil)
+@@ -609,6 +648,8 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
+ 			}
+ 			if (d < m_upgradeBest-1.0f) { m_upgradeBest=d; m_upgradeBestAt=m_now; }
+ 		}
++		// DS-048: while a jump link owns movement the bot cannot progress along the path; do not age the goal.
++		if (m_link.Active()) m_upgradeBestAt = m_now;
+ 		const float progressTimeout = sniperOnly ? 20.0f : 8.0f;
+ 		const float totalTimeout = sniperOnly ? 90.0f : 60.0f;
+ 		if (m_upgradeTarget && (m_now - m_upgradeBestAt > progressTimeout || m_now - m_upgradeSince > totalTimeout))
+@@ -670,6 +711,8 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 		}
+ 		if (BotConfig::Get().tactics==1 && m_upgradeTarget && UpdateUpgrade(bot,actor,nullptr,decisionTime,false,true)) return;
+ 		if (commit) Change(State::SEARCHING_ENEMY);
++		// DS-048 #3: PS-1 capture goal; roam only runs with no visible enemy, so combat still wins.
++		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules()) && UpdatePSCapture(bot,actor,decisionTime)) return;
+ 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
+ 		Vec3 heard;
+ 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index 32edcca3..89b2ef4d 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -17,6 +17,7 @@
+ #include "CryGame/Bots/BotNavMeshCore.h"
+ #include "CryGame/Bots/BotCorners.h"
+ #include "CryGame/Bots/BotDecisionCommit.h"
++#include "CryGame/Bots/BotPSCapture.h"
+ struct IConsoleCmdArgs;
+ class CPlayer;
+ struct IActor;
+@@ -61,6 +62,7 @@ private:
+     bool UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA);
+     bool UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force=false);
+     void UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime);
++	bool UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-048 #3
+     void UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime);
+     void UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange);
+     void UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,bool visible);
+@@ -163,6 +165,7 @@ private:
+ 	float m_withdrawUntil=0, m_nextWithdraw=0;
+ 	Vec3 m_withdrawCover=Vec3(0,0,0);
+ 	bool m_withdrawCoverValid=false;
++	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0;
+ 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
+ 	EntityId m_upgradeTarget = 0;
+ 	float m_upgradeSince = 0;
+diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
+index e3934291..cf50ef71 100644
+--- a/Code/CryGame/Bots/BotConfig.cpp
++++ b/Code/CryGame/Bots/BotConfig.cpp
+@@ -13,6 +13,7 @@ const IntBinding kInts[]={
+  {"wb_demo_hz",&BotConfig::demoHz,"Diagnostic demo sample rate10..60; default20"},
+  {"wb_probe_local_test",&BotConfig::gateOpen,"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction."},
+  {"wb_probe_runner",&BotConfig::probeRunner,"DS-047: engine adapter for BotProbeRunner.h, default OFF. When 1: wb_probe_load file, wb_probe_start, wb_probe_runner_status, wb_probe_stop, wb_probe_run id seconds. WarsBots log lines feed the scenario metrics; the result JSON is written next to the bot log and PROBE RESULT is logged."},
++ {"wb_ps_capture",&BotConfig::psCapture,"DS-048 PS-1: in PowerStruggle a bot without a visible enemy walks to the nearest capturable point not owned by its team (value/power weighted), holds inside 6 m until the team owns it, then moves to the next. 0 OFF default. Needs the PS capture entities; exit: capture/uncapture events with no extra stalls."},
+  {"wb_bot_cloak_experimental",&BotConfig::cloakExperimental,"Experimental bot cloak, defaults OFF"},
+  {"wb_hotspot_all_nodes",&BotConfig::hotspotAllNodes,"Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak."},
+  {"wb_reachable_goals",&BotConfig::reachableGoals,"Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF."},
+diff --git a/Code/CryGame/Bots/BotConfig.h b/Code/CryGame/Bots/BotConfig.h
+index 7b6fa4fb..602504ff 100644
+--- a/Code/CryGame/Bots/BotConfig.h
++++ b/Code/CryGame/Bots/BotConfig.h
+@@ -53,6 +53,7 @@ struct BotConfig {
+  int finishLock=0;     // DS-044: keep a <=25 HP target until dead/lost > 1 s unless a new enemy within 8 m is hitting us, default OFF
+  int sniperReach=0;    // DS-046: sniper-mind upgrade searches the roof (32 m vertical box) and only DSG1/Gauss first, default OFF
+  int probeRunner=0;    // DS-047: engine adapter for BotProbeRunner.h (wb_probe_load/start/...), default OFF
++ int psCapture=0;      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
+  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
+  static BotConfig& Get(){static BotConfig config;return config;}
+  void Register(IConsole& console);
+diff --git a/Code/CryGame/Bots/BotJumpLink.h b/Code/CryGame/Bots/BotJumpLink.h
+index cb7ff2f0..92326ac6 100644
+--- a/Code/CryGame/Bots/BotJumpLink.h
++++ b/Code/CryGame/Bots/BotJumpLink.h
+@@ -67,7 +67,7 @@ public:
+ 
+ 	void Start(float now, LinkMove move, const JVec& a, const JVec& b)
+ 	{
+-		m_move = move; m_a = a; m_b = b; m_start = now; m_phase = LinkPhase::Approach; m_phaseAt = now; m_wasAir = false; m_stillSince = -1.f;
++		m_move = move; m_a = a; m_b = b; m_start = now; m_phase = LinkPhase::Approach; m_phaseAt = now; m_wasAir = false; m_stillSince = -1.f; m_blockedSince = -1.f;
+ 	}
+ 
+ 	// Phase changes Approach -> Prepare -> Act can chain within one tick.
+@@ -97,6 +97,10 @@ private:
+ 		{
+ 		case LinkPhase::Approach:
+ 			o.moveTo = m_a; o.slow = m_move == LinkMove::Drop && da < 2.f;   // jumps keep running into the take-off
++			// DS-048: a navmesh take-off point can sit behind a railing/step; fail fast so the caller bans it and repaths.
++			if (da <= 2.0f && in.speed < 0.3f) { if (m_blockedSince < 0.f) m_blockedSince = in.now; }
++			else m_blockedSince = -1.f;
++			if (m_blockedSince >= 0.f && in.now - m_blockedSince > 0.8f) return Fail(o, LinkFail::NoTakeoff);
+ 			if (m_move == LinkMove::Strength) o.wantStrength = in.energy >= m_p.strengthEnergy;
+ 			if (m_move == LinkMove::Jump) o.wantArmor = true;
+ 			if (da <= m_p.nearRadius && in.speed < 0.3f) { if (m_stillSince < 0.f) m_stillSince = in.now; }
+@@ -136,6 +140,9 @@ private:
+ 			}
+ 			else
+ 			{
++				if (da > 0.6f && in.speed < 0.3f) { if (m_blockedSince < 0.f) m_blockedSince = in.now; }
++				else m_blockedSince = -1.f;
++				if (m_blockedSince >= 0.f && in.now - m_blockedSince > 0.6f) return Fail(o, LinkFail::NoTakeoff);
+ 				const float along = (in.feet.x - m_a.x) * d.x + (in.feet.y - m_a.y) * d.y;    // > 0: past the take-off
+ 				if (!in.grounded) Enter(LinkPhase::Air, in.now);
+ 				else if (in.now - m_phaseAt > m_p.noTakeoff) return Fail(o, LinkFail::NoTakeoff);
+@@ -163,7 +170,7 @@ public:
+ 	static float Dist2D(const JVec& a, const JVec& b) { return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)); }
+ 
+ private:
+-	void Enter(LinkPhase p, float now) { m_phase = p; m_phaseAt = now; }
++	void Enter(LinkPhase p, float now) { m_phase = p; m_phaseAt = now; if (p != LinkPhase::Act) m_blockedSince = -1.f; }
+ 	bool Ready(const LinkInput& in) const
+ 	{
+ 		if (m_move == LinkMove::Strength) return in.strengthActive && in.energy >= m_p.strengthEnergy;
+@@ -183,7 +190,7 @@ private:
+ 	JVec m_a, m_b;
+ 	float m_start = 0.f, m_phaseAt = 0.f;
+ 	bool m_wasAir = false;
+-	float m_stillSince = -1.f;
++	float m_stillSince = -1.f, m_blockedSince = -1.f;
+ };
+ 
+ } // namespace WarsBots
+diff --git a/Code/CryGame/Bots/BotPSCapture.cpp b/Code/CryGame/Bots/BotPSCapture.cpp
+new file mode 100644
+index 00000000..5eecddc7
+--- /dev/null
++++ b/Code/CryGame/Bots/BotPSCapture.cpp
+@@ -0,0 +1,71 @@
++// DS-048 #3: PS-1 capture goal data. Caches the capturable entities once per level (class, index, capture time,
++// position) and refreshes only their owner team, which changes during the match.
++#include "PortIncludes.h"
++#include "CryGame/Bots/BotPSCaptureRuntime.h"
++#include "CryGame/Bots/BotLog.h"
++#include "CryGame/Game.h"
++#include "CryGame/GameRules.h"
++#include "CryCommon/CryAction/ILevelSystem.h"
++#include "CryCommon/CryEntitySystem/IEntitySystem.h"
++#include "CryCommon/CryScriptSystem/IScriptSystem.h"
++#include <cstring>
++#include <string>
++#include <vector>
++
++namespace WarsBots {
++namespace {
++
++const std::vector<PsCapturePoint>& BasePoints()
++{
++	static std::string levelName;
++	static std::vector<PsCapturePoint> points;
++	if (!g_pGame || !g_pGame->GetIGameFramework()) return points;
++	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
++	const char* name = level && level->GetLevelInfo() ? level->GetLevelInfo()->GetName() : nullptr;
++	const std::string current = name ? name : "";
++	if (current == levelName && !points.empty()) return points;
++	levelName = current;
++	points.clear();
++	if (!gEnv || !gEnv->pEntitySystem) return points;
++
++	IEntityClass* energy = gEnv->pEntitySystem->GetClassRegistry()->FindClass("AlienEnergyPoint");
++	IEntityClass* factory = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Factory");
++	IEntityItPtr it = gEnv->pEntitySystem->GetEntityIterator();
++	while (IEntity* entity = it->Next())
++	{
++		IEntityClass* cls = entity->GetClass();
++		const bool isEnergy = cls && cls == energy;
++		const bool isFactory = cls && cls == factory;
++		if (!isEnergy && !isFactory) continue;
++		IScriptTable* table = entity->GetScriptTable();
++		if (!table) continue;
++		SmartScriptTable props;
++		if (!table->GetValue("Properties", props)) continue;
++		int capturable = 0, index = 1;
++		float captureTime = 15.f;
++		props->GetValue("bCapturable", capturable);
++		if (!capturable) continue;
++		props->GetValue("nCaptureIndex", index);
++		props->GetValue("captureTime", captureTime);
++		const Vec3 pos = entity->GetWorldPos();
++		PsCapturePoint point;
++		point.id = int(entity->GetId());
++		point.value = index > 0 ? index : 1;
++		point.captureSeconds = int(captureTime);
++		point.power = isEnergy;
++		point.x = pos.x; point.y = pos.y; point.z = pos.z;
++		points.push_back(point);
++	}
++	WB_LOG(0, "[WarsBots] PS CAPTURE %d capturable points for %s.", int(points.size()), current.c_str());
++	return points;
++}
++
++} // namespace
++
++void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules)
++{
++	out = BasePoints();
++	for (PsCapturePoint& point : out) point.ownerTeam = rules.GetTeam(EntityId(point.id));
++}
++
++} // namespace WarsBots
+diff --git a/Code/CryGame/Bots/BotPSCapture.h b/Code/CryGame/Bots/BotPSCapture.h
+new file mode 100644
+index 00000000..9a201a2d
+--- /dev/null
++++ b/Code/CryGame/Bots/BotPSCapture.h
+@@ -0,0 +1,76 @@
++// DS-048 #3: PS-1 capture goal. Engine-free planner: pick the nearest capturable point that is not owned by the
++// bot's team, weighted by the point value (nCaptureIndex) and by power generation, then hold it until captured and
++// move to the next. The engine adapter (BotPSCapture.cpp) supplies the live owner teams; no engine includes here.
++#pragma once
++#include <cmath>
++
++namespace WarsBots {
++
++struct PsCapturePoint
++{
++    int id = 0;              // entity id (flag/factory/alien energy point)
++    int ownerTeam = 0;       // 0 = neutral
++    int value = 1;           // nCaptureIndex 1..3 (100/200/300 PP per DS-028)
++    int captureSeconds = 15; // informational
++    bool capturable = true;
++    bool power = false;      // AlienEnergyPoint: power is the first objective
++    float x = 0, y = 0, z = 0;
++};
++
++struct PsCapturePlan
++{
++    bool valid = false;
++    bool hold = false;       // already inside the capture radius
++    int id = 0;
++    float x = 0, y = 0, z = 0;
++};
++
++class BotPSCapture
++{
++public:
++    void Reset() { m_target = 0; }
++    int Target() const { return m_target; }
++
++    // Nearest point not owned by `team`; value/power bonus -8 m/-6 m. Keeps the current target while it is still
++    // capturable and not beaten by more than `switchMargin` metres (no oscillation between equal points).
++    PsCapturePlan Update(const PsCapturePoint* points, int count, int team, float bx, float by, float bz,
++                         float holdRadius = 6.f, float switchMargin = 15.f)
++    {
++        PsCapturePlan plan;
++        if (!points || count <= 0 || team == 0) { m_target = 0; return plan; }
++        int best = 0, current = 0;
++        float bestScore = 1e9f, bestDist = 0, currentScore = 1e9f, currentDist = 0;
++        for (int i = 0; i < count; ++i)
++        {
++            const PsCapturePoint& p = points[i];
++            if (!p.capturable || p.ownerTeam == team) continue;
++            const float dx = p.x - bx, dy = p.y - by, dz = p.z - bz;
++            const float d = std::sqrt(dx * dx + dy * dy + dz * dz);
++            const float score = d - 8.0f * float(p.value > 0 ? p.value : 1) - (p.power ? 6.0f : 0.0f);
++            if (p.id == m_target) { current = p.id; currentScore = score; currentDist = d; }
++            if (score < bestScore) { best = p.id; bestScore = score; bestDist = d; }
++        }
++        if (!best) { m_target = 0; return plan; }
++        // Hysteresis: keep a valid current target unless the alternative is clearly better.
++        if (current && best != current && currentScore <= bestScore + switchMargin)
++        {
++            best = current; bestScore = currentScore; bestDist = currentDist;
++        }
++        m_target = best;
++        for (int i = 0; i < count; ++i)
++        {
++            if (points[i].id != best) continue;
++            plan.valid = true;
++            plan.id = best;
++            plan.x = points[i].x; plan.y = points[i].y; plan.z = points[i].z;
++            plan.hold = bestDist <= holdRadius;
++            break;
++        }
++        return plan;
++    }
++
++private:
++    int m_target = 0;
++};
++
++} // namespace WarsBots
+diff --git a/Code/CryGame/Bots/BotPSCaptureRuntime.h b/Code/CryGame/Bots/BotPSCaptureRuntime.h
+new file mode 100644
+index 00000000..88648bae
+--- /dev/null
++++ b/Code/CryGame/Bots/BotPSCaptureRuntime.h
+@@ -0,0 +1,11 @@
++// DS-048 #3: engine side of the PS-1 capture goal. Supplies the live capture points (entity id, owner team,
++// value, position) to the engine-free BotPSCapture planner.
++#pragma once
++#include "CryGame/Bots/BotPSCapture.h"
++#include <vector>
++
++class CGameRules;
++
++namespace WarsBots {
++void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules);
++}
+diff --git a/Tests/BotJumpLinkTests.cpp b/Tests/BotJumpLinkTests.cpp
+index 7cf6a451..4f578880 100644
+--- a/Tests/BotJumpLinkTests.cpp
++++ b/Tests/BotJumpLinkTests.cpp
+@@ -58,6 +58,16 @@ int main()
+ 		L.Update(At(0, -1.5f, 0, 10, true, 0.f));
+ 		LinkOutput o = L.Update(At(0.5f, -1.5f, 0, 10, true, 0.f)); assert(o.phase == LinkPhase::Act);
+ 	}
++	// 7. DS-048: blocked 1 m short of the take-off (railing/step) fails fast instead of waiting 3.5 s and retrying.
++	{
++		BotJumpLink L; L.Start(0, LinkMove::Strength, JVec{0, 0, 0}, JVec{10, 0, 0});
++		LinkInput in = At(0, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; L.Update(in);
++		in = At(0.5f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; L.Update(in);
++		in = At(1.8f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; LinkOutput o = L.Update(in);
++		assert(o.phase == LinkPhase::Act && o.jump == LinkJumpRequest::None);
++		in = At(2.5f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; o = L.Update(in);
++		assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoTakeoff);
++	}
+ 	std::puts("BotJumpLinkTests OK");
+ 	return 0;
+ }
+diff --git a/Tests/BotPSCaptureTests.cpp b/Tests/BotPSCaptureTests.cpp
+new file mode 100644
+index 00000000..c8985749
+--- /dev/null
++++ b/Tests/BotPSCaptureTests.cpp
+@@ -0,0 +1,82 @@
++// DS-048 #3: PS-1 capture goal planner tests (engine-free).
++#include "CryGame/Bots/BotPSCapture.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++static int failures = 0;
++#define CHECK(c) do { if (!(c)) { std::printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #c); ++failures; } } while (0)
++
++static PsCapturePoint P(int id, int owner, int value, float x, float y, bool power = false)
++{
++    PsCapturePoint p;
++    p.id = id; p.ownerTeam = owner; p.value = value; p.x = x; p.y = y; p.z = 0; p.power = power;
++    return p;
++}
++
++int main()
++{
++    // 1. Own points are ignored; the nearest non-owned point wins.
++    {
++        PsCapturePoint pts[3] = { P(1, 1, 1, 5, 0), P(2, 0, 1, 20, 0), P(3, 2, 1, 10, 0) };
++        BotPSCapture c;
++        const PsCapturePlan plan = c.Update(pts, 3, 1, 0, 0, 0);
++        CHECK(plan.valid && plan.id == 3);
++        CHECK(!plan.hold);
++        CHECK(c.Target() == 3);
++    }
++
++    // 2. Hold when inside the capture radius.
++    {
++        PsCapturePoint pts[1] = { P(7, 0, 1, 3, 0) };
++        BotPSCapture c;
++        const PsCapturePlan plan = c.Update(pts, 1, 2, 0, 0, 0, 6.f);
++        CHECK(plan.valid && plan.id == 7 && plan.hold);
++    }
++
++    // 3. Value and power weight an otherwise farther point.
++    {
++        PsCapturePoint pts[2] = { P(10, 0, 1, 12, 0, false), P(11, 0, 3, 30, 0, false) };
++        BotPSCapture c;
++        // 12 - 8 = 4 vs 30 - 24 = 6 -> the low-value point is still first.
++        CHECK(c.Update(pts, 2, 1, 0, 0, 0).id == 10);
++        pts[1].power = true; // 30 - 24 - 6 = 0 -> power point wins
++        BotPSCapture c2;     // fresh commitment: the hysteresis must not hide the weighted choice
++        CHECK(c2.Update(pts, 2, 1, 0, 0, 0).id == 11);
++    }
++
++    // 4. Hysteresis: a slightly closer point does not cause a switch; a much closer one does.
++    {
++        PsCapturePoint pts[2] = { P(20, 0, 1, 20, 0), P(21, 0, 1, 10, 0) };
++        BotPSCapture c;
++        CHECK(c.Update(pts, 2, 1, 0, 0, 0).id == 21);
++        // Reorder: make the current 20 m away and the alternative 10 m away (10 m better < 15 m margin).
++        pts[0] = P(21, 0, 1, 20, 0); pts[1] = P(20, 0, 1, 10, 0);
++        CHECK(c.Update(pts, 2, 1, 0, 0, 0).id == 21);
++        // Alternative 1 m away (19 m better) -> switch.
++        pts[1] = P(20, 0, 1, 1, 0);
++        CHECK(c.Update(pts, 2, 1, 0, 0, 0).id == 20);
++    }
++
++    // 5. A captured target is dropped and the next point is selected.
++    {
++        PsCapturePoint pts[2] = { P(30, 0, 1, 5, 0), P(31, 0, 1, 9, 0) };
++        BotPSCapture c;
++        CHECK(c.Update(pts, 2, 1, 0, 0, 0).id == 30);
++        pts[0].ownerTeam = 1;
++        CHECK(c.Update(pts, 2, 1, 0, 0, 0).id == 31);
++    }
++
++    // 6. No team / no points -> invalid, no crash.
++    {
++        PsCapturePoint p = P(1, 0, 1, 1, 1);
++        BotPSCapture c;
++        CHECK(!c.Update(&p, 1, 0, 0, 0, 0).valid);
++        CHECK(!c.Update(nullptr, 0, 1, 0, 0, 0).valid);
++    }
++
++    if (failures) { std::printf("ps_capture: %d FAILURES\n", failures); return 1; }
++    std::printf("ps_capture: all tests passed\n");
++    return 0;
++}
+diff --git a/Tools/RecastBake/meshes/Steelmill.links.txt b/Tools/RecastBake/meshes/Steelmill.links.txt
+index d99fde25..953714c5 100644
+--- a/Tools/RecastBake/meshes/Steelmill.links.txt
++++ b/Tools/RecastBake/meshes/Steelmill.links.txt
+@@ -559,7 +559,7 @@
+ 1314.97 1353.75 148.59 1312.66 1359.03 146.14 0 jump
+ 1314.97 1353.75 148.59 1316.15 1359.67 145.60 0 jump
+ 1324.94 1335.10 144.77 1325.34 1340.68 142.64 0 jump
+-1332.64 1344.55 143.31 1323.01 1344.55 141.24 0 strength
++1332.64 1344.55 143.31 1323.01 1344.55 141.24 0 removed
+ 1351.69 1335.70 151.44 1351.84 1332.73 152.04 0 jump
+ 1324.84 1350.85 141.24 1327.50 1352.71 138.54 0 drop
+ 1324.51 1351.20 141.24 1320.74 1357.00 144.93 0 strength
+@@ -569,7 +569,7 @@
+ 1325.59 1349.60 142.64 1325.59 1357.52 144.22 0 strength
+ 1322.92 1343.90 141.24 1322.92 1340.66 138.54 0 drop
+ 1322.92 1343.90 141.24 1324.27 1342.11 139.74 0 drop
+-1332.64 1342.76 142.41 1323.30 1342.71 140.00 0 strength
++1332.64 1342.76 142.41 1323.30 1342.71 140.00 0 removed
+ 1323.39 1342.64 139.74 1321.57 1341.65 138.54 0 drop
+ 1334.33 1335.21 152.04 1335.67 1335.27 151.44 0 drop
+ 1316.34 1329.27 150.44 1319.24 1329.40 148.34 0 drop
+diff --git a/Tools/RecastBake/meshes/Steelmill.manifest.json b/Tools/RecastBake/meshes/Steelmill.manifest.json
+index 3df181d9..2e18bfa2 100644
+--- a/Tools/RecastBake/meshes/Steelmill.manifest.json
++++ b/Tools/RecastBake/meshes/Steelmill.manifest.json
+@@ -13,9 +13,9 @@
+   },
+   "links": {
+    "name": "Steelmill.links.txt",
+-   "bytes": 57087,
+-   "fnv64": "399fe0d705d1c1b8",
+-   "sha256": "7c384d12ff693bced574015a0e0067f8cb5c1a4a9a81881c1aff9088ec6b67e4"
++   "bytes": 57085,
++   "fnv64": "523caf82c65722fc",
++   "sha256": "554072102e6e39797a4dd67754384106a2e297ff863f88ab8833d67f3c3d7c1b"
+   },
+   "spots": {
+    "name": "Steelmill.spots.txt",
