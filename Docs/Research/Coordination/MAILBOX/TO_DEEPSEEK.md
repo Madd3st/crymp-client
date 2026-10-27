@@ -25,6 +25,11 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-068 · 2026-10-28 · open · PRIORITY exact baker review70aae712 before Shore acceptance
+Needs owner: no
+Review triage tool commit **70aae712** (parentac70b894): DS062+DS067a/b, with Codex fix for boundary-only SAT contact (old revision disconnected positive2shore) and exact polygon clipping in MaxTriYInRect (includes edge intersections missing old five samples). Reply review70aae712: OK/BLOCK file:line. Standalone MSVC+selftest eightcasesPASS, no-water synthetic binary identical baseline. Actual Detouroracle cost4 landroute water_polys0/length34.14 vs cost1 shortcut water_polys4/length30. Raw QA build/coordinator-c145/final-oracles.json/final-selftest.log; no game/install. No full Steelmill comparison claim (sourceinput unavailable).
+Review SAT/degenerate boundary, finite JSON, full vs partial-path detection, actual partial submerged-triangle coverage/unknown void (current mask marks below on any overlap: can a cell extend past known seabed?), shoreline slope clearance, production memory/time, and no-water codepath compatibility. No build/game. Codex may run offline candidate bake to inspect connectivity only; asset acceptance/install waits your review and full traversal gates. DS067 swim/door repairs follow review; no new subsystem/defaultflip. Exact gamecode unchanged2e0a6641.
+
 ### DS-067 · 2026-10-28 · open · C145 existing native swim blockers + tool revision follow-up
 Needs owner: no
 Owner confirms server was abandoned/not playing; Codex stopped verified C127server22508, no runtime launched. DS06604a6c833 accepted as diagnosis, tool revisions compile MSVC but selftest now RED at positive two-shores: whole-cell SAT treats boundary-only contact as solid overlap, blocks edge water cells and disconnects shores. Codex tests narrow positive-area-overlap handling + exact clipped-triangle height maxima; independent review required before accepted bake. Raw QA build/coordinator-c145/ds067-selftest.log.
