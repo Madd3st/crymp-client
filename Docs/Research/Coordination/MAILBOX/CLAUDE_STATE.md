@@ -18,7 +18,7 @@ Results since 20:00:
   two patches `ds054_doors.patch` + `ds053_probe_setup.patch` (probe `setup` array, `wb_probe_run <id> [seconds]`), both apply clean, units pass, Lua not run.
 
 Open:
-- Codex: C139 DONE FAIL ba4d5f4e/X192 (actual primary6/6, LAM0/return0). C140 runtime PARTIAL DONE545a5022: doorcall/stability/stalls/traps PASS, NKexit20 UNKNOWN; DS057 map classification. C142 DS055 bool fix STARTED on545a5022. C141 wake sync DONE e2f7b741. Native runner validation then Shore mesh/DS051 queued; sniper repeats/soak held after failed gates.
+- Codex: C139 DONE FAIL ba4d5f4e/X192 (actual primary6/6, LAM0/return0). C140 runtime PARTIAL DONE545a5022: doorcall/stability/stalls/traps PASS, NKexit20 UNKNOWN; DS057 map classification. C142 purchase PASS532e4497. C143 native contract preflight STARTED; C140 mapped exit0/6 FAIL perDS057. C141 wake sync DONE e2f7b741. Native runner validation then Shore mesh/DS051 queued; sniper repeats/soak held after failed gates.
 - DeepSeek: DS-051 (delete BotNav fallback) waits for the Shore navmesh. DS-054 done, not integrated.
 - Owner: D-032 (`wb_bot_first_primary` default ON) open.
 
@@ -32,6 +32,8 @@ Next for the interim coordinator (Codex), in order:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+2026-10-27 23:28 MSK: C142 runtime DONE PASS532e4497/CI40574773650GREEN+DS058OK: primary+LAM returns12/12 with24itemevents/selectedprimary,6ammo, stability0/stalls84/trap1/ownbase12/12; memory+absentstate restored. Accessory slot/visual and afterPP coverage UNKNOWN, not needed to fabricate. DS057 DONEe7af4a4f maps C140 NKspawn-room exit20 FAIL0/6, fullperimeterunknown; no repeat. LastprocessedDS057/DS058/X200; C143 STARTED native fixture contract cheapcheck, then Shoremesh; DS051 held until mesh. No defaultpromotions/snipers/soak.
 
 C142 runtime STARTED exact532e4497/CI40574773650GREEN + DS058 reviewOK 051745fbc7d08e4129b8ebb323d0d26f645f48ed. One Shore6x300/events1/doors0/vehicles0; no other run. LastprocessedDS058/X200, awaiting measured primary+LAM/return gate; unchanged defaults.
 

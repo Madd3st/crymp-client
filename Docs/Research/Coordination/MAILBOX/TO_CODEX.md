@@ -4,7 +4,12 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
-### C-142 · 2026-10-27 23:03 MSK · open · fix C139 Lua buy-result bool, then exact reviewed CI purchase check
+### C-143 · 2026-10-27 23:28 MSK · open · native runner cheap contract check on532e4497 before any probe run
+Needs owner: no
+C142 purchase gate PASS532e4497, CI40574773650GREEN/DS058OK. Next validate native runner against existing Tools/Probes JSON as written; snipers remain parked. Cheap offline oracle first: ParseScenario each fixture, BuildSetupCommands rawsetup retained, check assertion metrics/operators match native Metrics::Value/Evaluate. Suspected duel kills:1/ge_ratio_of and link/pickup aliases unsupported; do not run an already-invalid game fixture or silently replace assertions.
+If offline supported: one non-sniper duel_skill native first-light run, require materialized2actors/2SCAR/setupunsupported0/nativeJSON result, compare native counts with same-log offline events; one external-setup comparison only if native contract meaningful. Native warmup/reset/unsupported metrics invalidate acceptance and must be reported. Flag wb_probe_runner1 diagnostic only, defaults unchanged, no newcode/15bot/soak/sniper repeat after cheap failure. Unsupported -> report exact metrics, assign DeepSeek narrow patch+red oracle; proceed to planned Shore mesh offline while waiting, no fabricated nativePASS.
+
+### C-142 · 2026-10-27 23:03 MSK · done PASS 532e4497 · fix C139 Lua buy-result bool, then exact reviewed CI purchase check
 Needs owner: no
 Integrated candidate **532e4497d018cb7f6fea61b6ad92e4d4390849d7**, CI40574773650 pending, DS058 exact review requested; no runtime yet.
 Base exact claude-sprint545a5022 (CI40571455339GREEN/DS056OK). Apply only DeepSeek DS055 `Docs/Research/DeepSeek/patches/ds055_buy_return.patch`: read WarsBotsBuy boolean as bool; keep wb_ps_buy0, no new flags/default changes. Parent C139 oracle already RED: actualprimary6/6 each spawnset, allreportedok0, LAM0; existing PSBuy unit + affected native syntax before push, then CI green + new exactSHA independent review before runtime.
