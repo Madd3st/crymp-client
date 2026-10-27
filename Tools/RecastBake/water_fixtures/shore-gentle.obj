@@ -1,0 +1,19 @@
+# DS-067 shoreline connectivity: beach from the land plateau (100.5) down through the 99.5 waterline to the seabed.
+# The crossing 2 m cell rises only 0.4 m (11 deg), i.e. within one 0.5 m climb step, so water must be emitted up to
+# the waterline and the land/water polygons must meet. A steeper beach is intentionally NOT connected by this patch
+# (cell <= climb/tan(slope): use --water-cell 1 for shores up to ~26 deg).
+v 0 0 90
+v 40 0 90
+v 40 10 90
+v 0 10 90
+f 1 2 3 4
+v -10 0 100.5
+v 0 0 100.5
+v 0 10 100.5
+v -10 10 100.5
+f 5 6 7 8
+v 0 0 100.5
+v 10 0 98.5
+v 10 10 98.5
+v 0 10 100.5
+f 9 10 11 12

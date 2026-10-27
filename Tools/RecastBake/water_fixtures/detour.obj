@@ -1,0 +1,22 @@
+# DS-067 area-cost oracle: two shores 20 m apart over water, plus a 42 m land detour along the y<0 deck.
+# With --water-cost 4 the query must choose land (water_polys 0); with --water-cost 1 it must choose water.
+v 10 0 90
+v 30 0 90
+v 30 10 90
+v 10 10 90
+f 1 2 3 4
+v 0 0 100
+v 10 0 100
+v 10 10 100
+v 0 10 100
+f 5 6 7 8
+v 30 0 100
+v 40 0 100
+v 40 10 100
+v 30 10 100
+f 9 10 11 12
+v 0 -2 100
+v 40 -2 100
+v 40 0 100
+v 0 0 100
+f 13 14 15 16

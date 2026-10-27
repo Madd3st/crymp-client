@@ -1,0 +1,13 @@
+# DS-067 RED oracle (C145 mask-oracle.cpp): a 0.4 m solid island at x20.1..20.5 y4.1..4.5 z100 sits inside one
+# 2 m water cell; centre sampling missed it and its water quad overlapped solid ground. Whole-cell overlap must block
+# that cell, so no water rectangle may intersect the island footprint.
+v 0 0 90
+v 40 0 90
+v 40 10 90
+v 0 10 90
+f 1 2 3 4
+v 20.1 4.1 100
+v 20.5 4.1 100
+v 20.5 4.5 100
+v 20.1 4.5 100
+f 5 6 7 8

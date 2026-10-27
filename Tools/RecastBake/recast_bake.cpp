@@ -7,7 +7,8 @@
 // Frame: Crysis (x, y, z) -> Recast (x, z, -y). This is a rotation, so triangle winding (normals up) is kept.
 //
 // Usage: recast_bake --obj map.crop.obj.gz [--points pts.txt] [--links links.txt] [--out-obj mesh.obj]
-//                    [--out-bin map.navmesh] [--zmin z] [--zmax z] [--cs 0.2] [--ch 0.1] [--radius 0.4]
+//                    [--out-bin map.navmesh] [--zmin z] [--zmax z] [--water z] [--water-cell m] [--water-dump f]
+//                    [--water-cost c] [--cs 0.2] [--ch 0.1] [--radius 0.4]
 //                    [--height 1.8] [--climb 0.5] [--slope 45] [--tile 128] [--min-region 2] [--monotone]
 // pts.txt: lines "kind id x y z" (kind = spawn | item | probe), Crysis frame.
 // links.txt: lines "x0 y0 z0 x1 y1 z1 bidir kind" (Crysis frame), kind is a free label (jump, strength...).
@@ -27,6 +28,9 @@
 #include <algorithm>
 #include <numeric>
 
+// Detour area id used only by the optional water surface. Keep in sync with BotNavMeshCore.cpp.
+static const unsigned char kWaterArea = 4;
+
 struct Pt { std::string kind; int id; float p[3]; };     // p in Recast frame
 struct Link { float a[3], b[3]; int bidir; std::string kind; };
 
@@ -44,7 +48,7 @@ static void ToRecast(float x, float y, float z, float* o) { o[0] = x; o[1] = z; 
 static void ToCrysis(const float* r, float* o) { o[0] = r[0]; o[1] = -r[2]; o[2] = r[1]; }
 
 static bool LoadObj(const std::string& path, float zmin, float zmax, std::vector<float>& verts, std::vector<int>& tris,
-	int& dropped)
+	int& dropped, std::vector<int>* allTris = nullptr)
 {
 	std::string s;
 	if (!ReadAll(path, s)) return false;
@@ -74,6 +78,8 @@ static bool LoadObj(const std::string& path, float zmin, float zmax, std::vector
 			for (size_t k = 1; k + 1 < idx.size(); ++k)
 			{
 				const int a = idx[0], b = idx[k], c = idx[k + 1];
+				// Water mask needs the seabed even when the normal bake drops it with zmin.
+				if (allTris) { allTris->push_back(a); allTris->push_back(b); allTris->push_back(c); }
 				const float za = v[a * 3 + 2], zb = v[b * 3 + 2], zc = v[c * 3 + 2];
 				const float lo = std::min(za, std::min(zb, zc)), hi = std::max(za, std::max(zb, zc));
 				if (lo > zmax || hi < zmin) { ++dropped; continue; }
@@ -94,6 +100,10 @@ struct Cfg {
 	float vh = 4.5f;      // horizontal take-off speed for generated links (run 4.5, sprint 6.75 m/s)
 	float wallRadius = 0.f; // > radius: extra clearance from walls only (player capsule 0.4 m), ledges keep `radius`
 	float capBottom = 0.5f, capTop = 1.9f; // player capsule span above the feet (player.lua: heightCollider 1.2, size 0.4/0.3)
+	bool water = false;   // --water <crysis z>: add only open water at that level, area kWaterArea
+	float waterZ = 0.f;   // Crysis z = Recast y
+	float waterCell = 2.f; // conservative water sampling grid; cell <= climb/tan(shore slope) to keep the waterline
+	float waterCost = 4.0f; // must match BotNavMeshCore.cpp kWaterCost
 };
 
 // Walls vs ledges (C-071 follow-up): Recast erodes every boundary by one radius. The player capsule is 0.4 m but its
@@ -169,7 +179,7 @@ static void ErodeWalls(const rcCompactHeightfield& chf, const Cfg& c)
 
 // Off-mesh links for one tile: those whose start lies in the tile's xz box.
 static unsigned char* BuildTile(rcContext& ctx, const Cfg& c, const std::vector<float>& verts, const std::vector<int>& tris,
-	const std::vector<int>& triIdx, const float* bmin, const float* bmax, int tx, int ty,
+	const std::vector<unsigned char>& isWater, const std::vector<int>& triIdx, const float* bmin, const float* bmax, int tx, int ty,
 	const std::vector<Link>& links, int& dataSize, int& polys)
 {
 	rcConfig cfg; memset(&cfg, 0, sizeof cfg);
@@ -204,6 +214,7 @@ static unsigned char* BuildTile(rcContext& ctx, const Cfg& c, const std::vector<
 	const int nt = (int)triIdx.size();
 	std::vector<unsigned char> areas(nt, 0);
 	rcMarkWalkableTriangles(&ctx, cfg.walkableSlopeAngle, verts.data(), (int)verts.size() / 3, t.data(), nt, areas.data());
+	for (int k = 0; k < nt; ++k) if (isWater[triIdx[k]]) areas[k] = kWaterArea; // optional water surface
 	rcRasterizeTriangles(&ctx, verts.data(), (int)verts.size() / 3, t.data(), areas.data(), nt, *hf, cfg.walkableClimb);
 	rcFilterLowHangingWalkableObstacles(&ctx, cfg.walkableClimb, *hf);
 	rcFilterLedgeSpans(&ctx, cfg.walkableHeight, cfg.walkableClimb, *hf);
@@ -227,7 +238,7 @@ static unsigned char* BuildTile(rcContext& ctx, const Cfg& c, const std::vector<
 		rcBuildPolyMeshDetail(&ctx, *pm, *chf, cfg.detailSampleDist, cfg.detailSampleMaxError, *dm);
 	rcFreeContourSet(cset); rcFreeCompactHeightfield(chf);
 	if (!okp || pm->npolys == 0) { rcFreePolyMesh(pm); rcFreePolyMeshDetail(dm); return nullptr; }
-	for (int i = 0; i < pm->npolys; ++i) { if (pm->areas[i] == RC_WALKABLE_AREA) pm->flags[i] = 1; }
+	for (int i = 0; i < pm->npolys; ++i) { if (pm->areas[i] != RC_NULL_AREA) pm->flags[i] = 1; }
 
 	// off-mesh links starting in this tile (xz without border)
 	std::vector<float> omv; std::vector<float> omr; std::vector<unsigned char> omdir, omarea; std::vector<unsigned short> omflags;
@@ -318,6 +329,132 @@ struct TriGrid {
 		return false;
 	}
 };
+
+struct WaterStats { int cells = 0, tris = 0, blockedCells = 0; };
+
+// DS-067 (C145 mask-oracle RED): a 2 m cell must be tested as a whole rectangle, not by its centre. The Codex
+// oracle island x20.1..20.5 / y4.1..4.5 sits inside one cell and was missed by centre sampling, so its water quad
+// overlapped solid ground. SAT over the triangle and the cell: touch counts as overlap (conservative).
+static bool TriOverlapsRect(const float* a, const float* b, const float* c, float x0, float x1, float z0, float z1)
+{
+	const float* p[3] = { a, b, c };
+	float lo[2] = { 1e30f, 1e30f }, hi[2] = { -1e30f, -1e30f };
+	for (int i = 0; i < 3; ++i)
+	{
+		lo[0] = std::min(lo[0], p[i][0]); hi[0] = std::max(hi[0], p[i][0]);
+		lo[1] = std::min(lo[1], p[i][2]); hi[1] = std::max(hi[1], p[i][2]);
+	}
+	if (hi[0] <= x0 || lo[0] >= x1 || hi[1] <= z0 || lo[1] >= z1) return false;
+	for (int i = 0; i < 3; ++i)
+	{
+		const float* u = p[i]; const float* w = p[(i + 1) % 3];
+		const float nx = w[2] - u[2], nz = -(w[0] - u[0]);
+		if (fabsf(nx) + fabsf(nz) < 1e-9f) continue;
+		float tmin = 1e30f, tmax = -1e30f;
+		for (int j = 0; j < 3; ++j) { const float d = nx * p[j][0] + nz * p[j][2]; tmin = std::min(tmin, d); tmax = std::max(tmax, d); }
+		float rmin = 1e30f, rmax = -1e30f;
+		for (int cx = 0; cx < 2; ++cx) for (int cz = 0; cz < 2; ++cz)
+		{ const float d = nx * (cx ? x1 : x0) + nz * (cz ? z1 : z0); rmin = std::min(rmin, d); rmax = std::max(rmax, d); }
+		if (tmax <= rmin || rmax <= tmin) return false;
+	}
+	return true;
+}
+
+// Highest triangle surface inside the cell, including clipped edge intersections. Empty clips fail closed.
+static float MaxTriYInRect(const float* a, const float* b, const float* c, float x0, float x1, float z0, float z1)
+{
+ // Clip the triangle against all four cell planes. Height extrema of the resulting convex polygon are at
+ // its vertices, including edge intersections missed by corner/centre-only sampling.
+ struct P { float x,y,z; };
+ std::vector<P> poly = { {a[0],a[1],a[2]}, {b[0],b[1],b[2]}, {c[0],c[1],c[2]} };
+ for (int side=0; side<4; ++side) {
+  auto dist=[&](const P& p) { return side==0 ? p.x-x0 : side==1 ? x1-p.x : side==2 ? p.z-z0 : z1-p.z; };
+  std::vector<P> clipped;
+  if(poly.empty()) return 1e30f;
+  P prev=poly.back(); float dp=dist(prev);
+  for(const P& cur:poly) {
+   const float dc=dist(cur);
+   if((dp>=0)!=(dc>=0)) { const float t=dp/(dp-dc); clipped.push_back({prev.x+t*(cur.x-prev.x),prev.y+t*(cur.y-prev.y),prev.z+t*(cur.z-prev.z)}); }
+   if(dc>=0)clipped.push_back(cur);
+   prev=cur;dp=dc;
+  }
+  poly.swap(clipped);
+ }
+ float top=-1e30f;
+ for(const P& p:poly) top=std::max(top,p.y);
+ return poly.empty()?1e30f:top;
+}
+
+// Recast frame: y is up.
+static bool TriSlopeOk(const float* a, const float* b, const float* c, float slopeDeg)
+{
+	const float e1[3] = { b[0] - a[0], b[1] - a[1], b[2] - a[2] };
+	const float e2[3] = { c[0] - a[0], c[1] - a[1], c[2] - a[2] };
+	const float nx = e1[1] * e2[2] - e1[2] * e2[1];
+	const float ny = e1[2] * e2[0] - e1[0] * e2[2];
+	const float nz = e1[0] * e2[1] - e1[1] * e2[0];
+	const float len = sqrtf(nx * nx + ny * ny + nz * nz);
+	if (len < 1e-6f) return false;
+	return fabsf(ny) / len >= cosf(slopeDeg * 0.01745329252f);
+}
+
+// DS-062/067: conservative water surface. A cell gets a flat quad only if the unfiltered geometry has submerged or
+// shallow-shoreline ground under it and no solid above-water triangle overlaps the cell. Void, islands, roofs,
+// bridge decks and quays therefore get no water; the seabed is never made walkable by itself. A shoreline triangle
+// is accepted only on a walkable slope whose surface rises at most one climb step inside the cell: that keeps water
+// at the waterline (so the shore connects) without creating a walkable water tunnel under a hillside (Recast drops a
+// span with less than one agent height of ceiling).
+static void AddWaterSurface(const std::vector<float>& verts, const std::vector<int>& allTris, const Cfg& c,
+	std::vector<float>& waterVerts, std::vector<int>& waterTris, WaterStats& stats, std::vector<float>* quads)
+{
+	if (allTris.empty()) return;
+	float bmin[3] = { 1e30f, 1e30f, 1e30f }, bmax[3] = { -1e30f, -1e30f, -1e30f };
+	for (int i : allTris) for (int k = 0; k < 3; ++k)
+	{
+		bmin[k] = std::min(bmin[k], verts[i * 3 + k]);
+		bmax[k] = std::max(bmax[k], verts[i * 3 + k]);
+	}
+	TriGrid grid;
+	grid.cell = c.waterCell;
+	grid.Build(verts, allTris, bmin, bmax);
+	const float eps = 0.01f;
+	for (int gz = 0; gz < grid.nz; ++gz)
+		for (int gx = 0; gx < grid.nx; ++gx)
+		{
+			const float x0 = bmin[0] + gx * grid.cell, x1 = x0 + grid.cell;
+			const float z0 = bmin[2] + gz * grid.cell, z1 = z0 + grid.cell;
+			if (x1 > bmax[0] + eps || z1 > bmax[2] + eps) continue;
+			bool below = false, blocked = false;
+			const std::vector<int>& cell = grid.cells[size_t(gz) * grid.nx + gx];
+			for (int ti : cell)
+			{
+				const float* a = &verts[allTris[ti * 3] * 3];
+				const float* b = &verts[allTris[ti * 3 + 1] * 3];
+				const float* d = &verts[allTris[ti * 3 + 2] * 3];
+				if (!TriOverlapsRect(a, b, d, x0, x1, z0, z1)) continue;
+				const float lo = std::min(a[1], std::min(b[1], d[1]));
+				const float hi = std::max(a[1], std::max(b[1], d[1]));
+				if (lo > c.waterZ + eps) { blocked = true; break; }        // island/roof/deck/plateau above water
+				if (hi < c.waterZ - eps) { below = true; continue; }       // submerged seabed or terrain
+				// Triangle crosses the waterline: a cliff or quay would put water inside a wall; a slope rising more
+				// than one climb step inside the cell would leave a walkable water tunnel under the hill.
+				if (!TriSlopeOk(a, b, d, c.slope)) { blocked = true; break; }
+				if (MaxTriYInRect(a, b, d, x0, x1, z0, z1) > c.waterZ + c.climb + eps) { blocked = true; break; }
+				below = true;                                              // shallow shoreline: water reaches the edge
+			}
+			if (blocked) { ++stats.blockedCells; continue; }
+			if (!below) continue;
+			const int base = int(waterVerts.size() / 3);
+			const float q[4][3] = {
+				{ x0, c.waterZ, z0 }, { x1, c.waterZ, z0 }, { x1, c.waterZ, z1 }, { x0, c.waterZ, z1 }
+			};
+			for (int k = 0; k < 4; ++k) for (int j = 0; j < 3; ++j) waterVerts.push_back(q[k][j]);
+			waterTris.push_back(base + 0); waterTris.push_back(base + 2); waterTris.push_back(base + 1);
+			waterTris.push_back(base + 0); waterTris.push_back(base + 3); waterTris.push_back(base + 2);
+			if (quads) { quads->push_back(x0); quads->push_back(-z1); quads->push_back(x1); quads->push_back(-z0); }
+			++stats.cells; stats.tris += 2;
+		}
+}
 
 static std::vector<int> GroundComponents(const dtNavMesh* nav, std::map<dtPolyRef, int>& index, std::vector<dtPolyRef>& refs)
 {
@@ -452,16 +589,25 @@ static float PolyArea(const dtMeshTile* t, const dtPoly* poly)
 
 int main(int argc, char** argv)
 {
-	std::string obj, ptsPath, linksPath, outObj, outBin, linksOut; bool genJumps = false;
+	std::string obj, ptsPath, linksPath, outObj, outBin, linksOut, waterDump; bool genJumps = false;
 	float zmin = -1e9f, zmax = 1e9f;
+	float pathFrom[3] = { 0, 0, 0 }, pathTo[3] = { 0, 0, 0 };
+	bool havePathFrom = false, havePathTo = false;
 	Cfg c;
 	for (int i = 1; i < argc; ++i)
 	{
 		std::string a = argv[i];
 		auto nx = [&]() { return std::string(i + 1 < argc ? argv[++i] : ""); };
+		auto nx3 = [&](float* out) { for (int k = 0; k < 3 && i + 1 < argc; ++k) out[k] = std::stof(argv[++i]); };
 		if (a == "--obj") obj = nx(); else if (a == "--points") ptsPath = nx(); else if (a == "--links") linksPath = nx();
 		else if (a == "--out-obj") outObj = nx(); else if (a == "--out-bin") outBin = nx();
 		else if (a == "--zmin") zmin = std::stof(nx()); else if (a == "--zmax") zmax = std::stof(nx());
+		else if (a == "--water") { c.water = true; c.waterZ = std::stof(nx()); }
+		else if (a == "--water-cell") c.waterCell = std::stof(nx());
+		else if (a == "--water-dump") waterDump = nx();
+		else if (a == "--water-cost") c.waterCost = std::stof(nx());
+		else if (a == "--path-from") { nx3(pathFrom); havePathFrom = true; }
+		else if (a == "--path-to") { nx3(pathTo); havePathTo = true; }
 		else if (a == "--cs") c.cs = std::stof(nx()); else if (a == "--ch") c.ch = std::stof(nx());
 		else if (a == "--radius") c.radius = std::stof(nx()); else if (a == "--height") c.height = std::stof(nx());
 		else if (a == "--climb") c.climb = std::stof(nx()); else if (a == "--slope") c.slope = std::stof(nx());
@@ -474,7 +620,21 @@ int main(int argc, char** argv)
 	}
 	if (obj.empty()) { fprintf(stderr, "usage: recast_bake --obj file.obj[.gz] ...\n"); return 2; }
 	std::vector<float> verts; std::vector<int> tris; int dropped = 0;
-	if (!LoadObj(obj, zmin, zmax, verts, tris, dropped)) { fprintf(stderr, "cannot read %s\n", obj.c_str()); return 1; }
+	std::vector<int> allTris;
+	if (!LoadObj(obj, zmin, zmax, verts, tris, dropped, c.water ? &allTris : nullptr)) { fprintf(stderr, "cannot read %s\n", obj.c_str()); return 1; }
+	const int inputTris = (int)tris.size() / 3;
+	std::vector<unsigned char> isWater(inputTris, 0);
+	WaterStats waterStats;
+	std::vector<float> waterQuads; // xmin ymin xmax ymax in Crysis XY, one per emitted cell (test footprint oracle)
+	if (c.water)
+	{
+		std::vector<float> wv; std::vector<int> wt;
+		AddWaterSurface(verts, allTris, c, wv, wt, waterStats, &waterQuads);
+		const int base = (int)verts.size() / 3;
+		verts.insert(verts.end(), wv.begin(), wv.end());
+		for (size_t i = 0; i < wt.size(); ++i) tris.push_back(base + wt[i]);
+		isWater.resize(tris.size() / 3, 1);
+	}
 	const int nt = (int)tris.size() / 3;
 	float bmin[3], bmax[3];
 	rcCalcBounds(verts.data(), (int)verts.size() / 3, bmin, bmax);
@@ -525,7 +685,7 @@ int main(int argc, char** argv)
 		for (int y = 0; y < tilesY; ++y) for (int x = 0; x < tilesX; ++x)
 		{
 			int ds = 0, np_ = 0;
-			unsigned char* data = BuildTile(ctx, c, verts, tris, bucket[y * tilesX + x], bmin, bmax, x, y, L, ds, np_);
+			unsigned char* data = BuildTile(ctx, c, verts, tris, isWater, bucket[y * tilesX + x], bmin, bmax, x, y, L, ds, np_);
 			if (!data) continue;
 			if (dtStatusFailed(nm->addTile(data, ds, DT_TILE_FREE_DATA, 0, nullptr))) { dtFree(data); continue; }
 			totalPolys += np_; ++builtTiles; maxTilePolys = std::max(maxTilePolys, np_);
@@ -633,6 +793,33 @@ int main(int argc, char** argv)
 	float totalArea = 0, mainArea = 0, twoWayArea = 0;
 	for (int n = 0; n < N; ++n) { totalArea += area[n]; if (comp[n] == mainComp) mainArea += area[n]; if (fwd[n] && bwd[n]) twoWayArea += area[n]; }
 
+	// DS-067 (C145): a real area-cost oracle. The printed area_cost is a constant, not proof that the query prefers
+	// land. This probe runs Detour's findPath with the same filter cost as BotNavMeshCore (kWaterCost) and reports the
+	// chosen polygons, so a test can assert land is chosen at cost 4 and water at cost 1 on the same bake.
+	bool pathFound = false; int pathPolys = 0, pathWaterPolys = 0; float pathLength = 0.f;
+	if (havePathFrom && havePathTo)
+	{
+		dtQueryFilter pf; pf.setIncludeFlags(0xffff); pf.setAreaCost(kWaterArea, c.waterCost);
+		float s[3], e[3]; ToRecast(pathFrom[0], pathFrom[1], pathFrom[2], s); ToRecast(pathTo[0], pathTo[1], pathTo[2], e);
+		const float ext[3] = { 2.f, 3.f, 2.f }; dtPolyRef a = 0, b = 0; float ns[3], ne[3];
+		q->findNearestPoly(s, ext, &pf, &a, ns); q->findNearestPoly(e, ext, &pf, &b, ne);
+		dtPolyRef polys[256];
+		if (a && b && dtStatusSucceed(q->findPath(a, b, ns, ne, &pf, polys, &pathPolys, 256)) && pathPolys > 0)
+		{
+			pathFound = true;
+			for (int k = 0; k < pathPolys; ++k)
+			{
+				const dtMeshTile* t; const dtPoly* p;
+				if (dtStatusSucceed(cnav->getTileAndPolyByRef(polys[k], &t, &p)) && p->getType() == DT_POLYTYPE_GROUND && p->getArea() == kWaterArea)
+					++pathWaterPolys;
+			}
+			float corners[64 * 3]; unsigned char flags[64]; dtPolyRef cps[64]; int nc = 0;
+			if (dtStatusSucceed(q->findStraightPath(ns, ne, polys, pathPolys, corners, flags, cps, &nc, 64)))
+				for (int k = 1; k < nc; ++k) pathLength += dtVdist(&corners[(k - 1) * 3], &corners[k * 3]);
+		}
+	}
+
+
 	// outputs
 	if (!outObj.empty())
 	{
@@ -668,14 +855,35 @@ int main(int argc, char** argv)
 		fclose(f);
 	}
 
-	// JSON report
+	if (!waterDump.empty())
+	{
+		// One line per emitted water cell: xmin ymin xmax ymax (Crysis XY). The C145 safety oracle compares these
+		// rectangles with the solid footprint instead of trusting a cell count.
+		FILE* f = fopen(waterDump.c_str(), "w");
+		if (f)
+		{
+			for (size_t i = 0; i + 3 < waterQuads.size(); i += 4)
+				fprintf(f, "%.3f %.3f %.3f %.3f\n", waterQuads[i], waterQuads[i + 1], waterQuads[i + 2], waterQuads[i + 3]);
+			fclose(f);
+		}
+	}
+
+	// JSON report. DS-067: escape Windows separators, the C145 runner failed ConvertFrom-Json on "C:\...".
+	std::string objJson; objJson.reserve(obj.size());
+	for (char ch : obj) objJson += (ch == '\\' || ch == '"') ? '/' : ch;
 	int sp = 0, spIn = 0, spOn = 0, it = 0, itOn = 0, itTwo = 0, itFwd = 0, spTwo = 0;
 	printf("{\n \"input\": {\"obj\": \"%s\", \"triangles\": %d, \"dropped_by_z\": %d, \"bounds_crysis\": [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]},\n",
-		obj.c_str(), nt, dropped, bmin[0], -bmax[2], bmin[1], bmax[0], -bmin[2], bmax[1]);
+		objJson.c_str(), inputTris, dropped, bmin[0], -bmax[2], bmin[1], bmax[0], -bmin[2], bmax[1]);
+	if (c.water)
+		printf(" \"water\": {\"z\": %.2f, \"cell\": %.2f, \"cells\": %d, \"blocked_cells\": %d, \"surface_tris\": %d, \"area\": %u, \"area_cost\": %.2f},\n",
+			c.waterZ, c.waterCell, waterStats.cells, waterStats.blockedCells, waterStats.tris, unsigned(kWaterArea), c.waterCost);
 	printf(" \"params\": {\"cs\": %.2f, \"ch\": %.2f, \"radius\": %.2f, \"wall_radius\": %.2f, \"height\": %.2f, \"climb\": %.2f, \"slope\": %.1f, \"tile\": %d, \"min_region\": %d, \"partition\": \"%s\", \"recast\": \"v1.6.0\"},\n",
 		c.cs, c.ch, c.radius, c.wallRadius, c.height, c.climb, c.slope, c.tile, c.minRegion, c.monotone ? "monotone" : "watershed");
 	printf(" \"mesh\": {\"tiles\": %d, \"tiles_grid\": [%d, %d], \"polys\": %d, \"max_tile_polys\": %d, \"components\": %d, \"area_m2\": %.0f, \"main_area_m2\": %.0f, \"two_way_area_m2\": %.0f, \"offmesh_links\": %zu, \"generated\": {\"drop\": %d, \"jump\": %d, \"strength\": %d}},\n",
 		builtTiles, tilesX, tilesY, totalPolys, maxTilePolys, ncomp, totalArea, mainArea, twoWayArea, links.size(), genStats[0], genStats[1], genStats[2]);
+	if (havePathFrom && havePathTo)
+		printf(" \"path\": {\"found\": %s, \"polys\": %d, \"water_polys\": %d, \"length_m\": %.2f, \"water_cost\": %.2f},\n",
+			pathFound ? "true" : "false", pathPolys, pathWaterPolys, pathLength, c.waterCost);
 	printf(" \"points\": [\n");
 	for (size_t i = 0; i < pts.size(); ++i)
 	{
