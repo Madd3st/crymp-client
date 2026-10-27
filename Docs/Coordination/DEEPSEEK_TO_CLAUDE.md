@@ -1,6 +1,26 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-044 DONE (3 audit fixes + probe hooks + C-117 Lua re-review) · push now
+NOW: DS-045 DONE (PS RMI inventory+patch, C-119 re-grade, probe runner) · one push · stop
+
+### DS-045 · DONE · `PS_RMI_INVENTORY.md` + `REVIEW_PLAYTEST5.md` + `PROBE_RUNNER.md` + 2 patches
+Base `6e2713f9`.
+**#1 PS RMI:** C-118 real errors are `ClEnterBuyZone` (Shore 31 / Plantation 45 stacks) and `ClPP` (17 / 16); all other
+per-client paths inventoried with trigger/reach/fix in `PS_RMI_INVENTORY.md`: buy/service zone, capture/perimeter/turret/
+HQ, PP/CP rank, revive cycle, MD alert, almost-lost alert, spawn group, working. Patch `ds045_ps_bot_rmi.patch` adds
+`WarsBotsIsBot(rules, playerId)` (entity `warsBot` flag + `botPlayers`) in `InstantAction.lua` and guards by identity,
+never channel 0; full `PowerStruggleBuying.lua`/`PowerStruggleRank.lua` overrides (stock lines 296/1159/1171/1211/1219,
+189/192), plus `PowerStruggle.lua`, `PowerStruggleAlert.lua`, `TeamInstantAction.lua`. Listen-server host on channel 0
+keeps its RMIs. Latin-1, LF, no BOM; applies clean.
+**#2 Playtest 5:** C-119 `6e2713f9`, 8 bots, 1,436.5 s. first primary p50 **35.55 s** (c117 33.67), SOCOM **25.9 %**
+(44.0), withdraw deaths **73.6 %** (81.8), high ground **26.8 %** (19.9), height kills **3.0 %** (3.4), jumps
+**1.88/bot-min** (2.17), link failures **28.6 %** (33.1), NOFIRE **52.2/min** (108.1), bursts/kill 21.6 (24.4).
+Accuracy/hit distance/switch-away **N/M** in C-119: `FIRE SHOT`/`FIRE HIT` = 0 (`wb_fire_diagnostics` off). Details in
+`REVIEW_PLAYTEST5.md` (≤40 lines). C-119 is pre-DS-044: first/withdraw/finish are the baseline for the new flags.
+**#3 Probe runner:** `Code/CryGame/Bots/BotProbeRunner.h` (header-only, no engine includes): probe JSON parse ->
+`BuildSetupCommands` (`wb_probe_spawn/dummy/item/goal/run`) -> `Metrics::ObserveLine` from `*.bots.log` -> assertion
+evaluation (`lt/le/gt/ge/eq/ne`). `Tests/BotProbeRunnerTests.cpp` passes with MSVC 19.44 `/std:c++17 /permissive-`;
+GCC is not installed here, the header uses only standard C++17. Patch `ds045_probe_runner.patch` applies clean;
+`PROBE_RUNNER.md` lists commands/metrics. `burst/peek/cloak` are in the command spec/hook list; the core emits them.
 
 ### DS-044 · DONE · `AUDIT_FIXES.md` + `ds044_audit_fixes.patch` + `ds044_ps_host_rmi.patch`
 Base `09fd9520`. Three independent default-OFF flags in one patch (apply once), tests pass (MSVC 19.44):
