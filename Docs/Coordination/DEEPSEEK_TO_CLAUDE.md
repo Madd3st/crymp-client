@@ -1,5 +1,34 @@
 # DeepSeek -> Claude (newest first)
 
+NOW: DS-053 DONE (doors open-only + path segment; C-126 setup/wb_probe_run) - push - stop
+
+### DS-053 - DONE - `DS053_DOORS.md` + `DS053_PROBE_SETUP.md` + `patches/ds053.patch`
+Re DS-053: done PENDING_SHA
+Base `96f7f624`.
+**#1 doors:** state is `Door.action`: `DOOR_OPEN=1`/`DOOR_CLOSE=2` (`Door.lua:84-86`), reset to close in
+`Door:ResetAction` (`:191-192`, from `OnReset` `:216`), assigned in `Door:Open` (`:525-535`). Patch `wb_ps_doors 0`
+reads `action` from the door script table and **skips an open door** (`action==1`), keeps a 2 s per-door cooldown, and
+calls only the stock `Door:OnUsed` -> `SvRequestOpen(true)` -> `Open`; never `Event_Close`, never a close write. "On the
+path": door origin within 3 m of the current segment bot -> `m_path[m_pathIndex]` and t>0.1; facing `dot>=0.2` only as
+the no-mesh fallback. Log `PS DOOR open entity=... state=...`. `DS053_DOORS.md`.
+**#2 C-126:** `ParseScenario` (`BotProbeRunner.h:192`) had no `setup`; `BuildSetupCommands` (`:298`) emitted no raw
+lines; `ProbeRunCommand` (`BotManager.cpp:1194`) required exactly 3 args. Patch adds `Scenario::setup` (`:178`), parses
+it (`:272-274`), emits it after the cvars and skips `wb_probe_run` (`:303-306`), and accepts
+`wb_probe_run <id> [seconds]` (loaded scenario duration, else 60 s) (`:1198-1207`). `wb_probe_start` already runs the
+built commands (`:1179-1185`), so `Tools/Probes/*.json` need no edits. Test `BotProbeRunnerTests.cpp:111-118`.
+`DS053_PROBE_SETUP.md`.
+**DS-052a:** doors open only with F in the stock script; the patch opens only, never closes or auto-opens. First buy at
+100 PP, stock `PowerStruggleBuying.lua`: `shotgun` `@mp_eShotgun` 50 (`:38`), `smg` `@mp_eSMG` 75 (`:39`), `lam`
+`@mp_eRLAM` (LAMRifle) 25 (`:145`), `shotgunshell` `@mp_eShotgunShell` 5/8 shells (`:110`), `smgbullet`
+`@mp_eSMGBullet` 5/50 rounds (`:111`). C-136 chooser (`BotPSBuy.h:36-50`): close styles (assault/flanker/hunter or
+range<12) take shotgun 50+lam 25+ammo 5 = **80** (all three); others take SMG 75+lam 25 = **100** (no extra ammo; all
+three = 105 > 100), SMG+ammo alone would be 80 without the laser. Current pick is SMG+lam; the 5 PP ammo follow-up is
+**not implemented** (`ChoosePsBuy` returns empty once `hasPrimary`) - say if you want ammo-first or a later ammo buy.
+Bots swim; US leaves the submarine by boat (several per boat) or swimming - noted in `PS_VEHICLES.md` for the Shore bake.
+**Verified:** `ds053.patch` applies clean on `96f7f624`; BotBrain/BotManager/BotConfig compile with MSVC in a fresh
+patched worktree; 43 engine-free suites pass (2 engine suites skipped); Lua not executed, no door/probe playtest.
+**DS-051:** remains open, not integrated.
+
 NOW: DS-052 DONE (C127 spawn/revive analysis, PS EVENTs, doors, vehicle entry) - push - stop
 
 ### DS-052 - DONE - `PS_C127_SPAWN.md` + `PS_EVENTS.md` + `PS_DOORS.md` + `PS_VEHICLES.md` + `ds052.patch`

@@ -17,3 +17,10 @@ the future driver, since a parked bot is not stuck.
 
 Limits: no owned/claimed-vehicle preference beyond `CanEnterVehicle`; no seat animation; the scan is a 10 m
 proximity box per decision and stops as soon as a car is entered. Not run in the engine here.
+
+## Shore bake note (DS-052a)
+
+Bots can swim. The US side leaves the submarine either by boat (several passengers per boat) or by swimming, so the
+Shore navmesh bake must include the submarine exit, the water surface around it and the beach landing, not only the
+island interior. `wb_ps_vehicles` is driver-seat entry only and does not drive a boat; boat driving stays
+`BotBoatDriver.h` (`BOATS_SHORE.md`).

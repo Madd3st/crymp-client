@@ -1,0 +1,166 @@
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 860ad157..6c9d8dea 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -301,7 +301,7 @@ void BotBrain::ResetLife()
+ 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
+ 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
+ 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
+-	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0;
++	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_doorUsed.clear();
+ 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
+ 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
+ 	++m_life;
+@@ -579,10 +579,21 @@ bool BotBrain::UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTi
+ 		{
+ 			IEntity* e=query.pEntities[i]; if(!e || e->IsHidden())continue;
+ 			const char* cls=e->GetClass()?e->GetClass()->GetName():""; if(std::strcmp(cls,"Door"))continue;
+-			const Vec3 d=e->GetWorldPos()-feet; if(d.GetLengthSquared2D()>25.0f || d.GetLength2D()<0.1f)continue;
+-			const Vec3 fwd=actor.GetEntity()->GetWorldRotation().GetColumn1(); if(fwd.Dot(d.GetNormalizedSafe(fwd))<0.2f)continue;
+-			if(IScriptTable* dt=e->GetScriptTable()) Script::CallMethod(dt,"OnUsed",actor.GetEntity()->GetScriptTable());
+-			m_nextDoorUse=m_now+1.0f; WB_LOG(2,"[WarsBots] #%d PS DOOR use entity=%u actor=%u.",m_number,e->GetId(),id); break;
++			IScriptTable* dt=e->GetScriptTable(); if(!dt)continue;
++			int action=-1; dt->GetValue("action",action); if(action==1)continue; // DOOR_OPEN
++			auto used=m_doorUsed.find(e->GetId()); if(used!=m_doorUsed.end() && m_now<used->second)continue;
++			const Vec3 to=e->GetWorldPos()-feet; if(to.GetLengthSquared2D()>25.0f)continue;
++			bool ahead=false;
++			if (m_meshPathActive && m_pathIndex<m_path.size())
++			{
++				const Vec3 seg=m_path[m_pathIndex]-feet; const float len2=seg.GetLengthSquared2D();
++				if (len2>0.01f) { const float t=clamp_tpl(to.Dot(seg)/len2,0.f,1.f); const Vec3 on=feet+seg*t; ahead=t>0.1f && (e->GetWorldPos()-on).GetLength2D()<=3.0f; }
++			}
++			else { const Vec3 fwd=actor.GetEntity()->GetWorldRotation().GetColumn1(); ahead=fwd.Dot(to.GetNormalizedSafe(fwd))>=0.2f; }
++			if(!ahead)continue;
++			Script::CallMethod(dt,"OnUsed",actor.GetEntity()->GetScriptTable());
++			m_doorUsed[e->GetId()]=m_now+2.0f; m_nextDoorUse=m_now+0.5f;
++			WB_LOG(2,"[WarsBots] #%d PS DOOR open entity=%u actor=%u state=%d.",m_number,e->GetId(),id,action); break;
+ 		}
+ 	}
+ 	return false;
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index 43faed7e..8b1bcbb4 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -4,6 +4,7 @@
+ #include "CryGame/Bots/BotCombat.h"
+ #include "CryGame/Bots/BotProfile.h"
+ #include <vector>
++#include <unordered_map>
+ #include "CryGame/Bots/BotTrapWatchdog.h"
+ #include "CryGame/Bots/BotLookPolicy.h"
+ #include "CryGame/Bots/BotGoalArbiter.h"
+@@ -166,7 +167,7 @@ private:
+ 	float m_withdrawUntil=0, m_nextWithdraw=0, m_nextWithdrawPick=0;
+ 	Vec3 m_withdrawCover=Vec3(0,0,0);
+ 	bool m_withdrawCoverValid=false;
+-	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false; int m_psBuys=0; float m_nextDoorUse=0, m_nextVehicle=0, m_vehicleExitAt=0;
++	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false; int m_psBuys=0; float m_nextDoorUse=0, m_nextVehicle=0, m_vehicleExitAt=0; std::unordered_map<EntityId,float> m_doorUsed;
+ 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
+ 	EntityId m_upgradeTarget = 0;
+ 	float m_upgradeSince = 0;
+diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
+index 2f872bd4..94ac37f4 100644
+--- a/Code/CryGame/Bots/BotConfig.cpp
++++ b/Code/CryGame/Bots/BotConfig.cpp
+@@ -17,7 +17,7 @@ const IntBinding kInts[]={
+  {"wb_ps_capture",&BotConfig::psCapture,"DS-048 PS-1: in PowerStruggle a bot without a visible enemy walks to the nearest capturable point not owned by its team (value/power weighted), holds inside 6 m until the team owns it, then moves to the next. 0 OFF default. Needs the PS capture entities; exit: capture/uncapture events with no extra stalls."},
+  {"wb_bot_withdraw_full",&BotConfig::withdrawFull,"DS-049 (C-121: 72/104 withdraw deaths; 10/25 at-cover deaths were low cover, 52/72 shooters outside the chosen cover sector): withdraw only to full cover (tactical_spots flag 1), re-pick the spot every 0.5 s against the live threat, abort and fight if none. 0 OFF default. Exit: withdraw deaths <= 50 %."},
+  {"wb_ps_buy",&BotConfig::psBuy,"DS-049 PS-2: on death in PowerStruggle, while dead, buy one primary (SCAR/FY71/shotgun/DSG1 by style and range preference) and cheap ammo through the server-side Lua WarsBotsBuy (no client RMI); the stock revive queue applies it on revive. 0 OFF default. Exit: bots revive with a primary and PP spend matches the plan."},
+- {"wb_ps_doors",&BotConfig::psDoors,"DS-052: in PowerStruggle a bot walking at an unlocked Door within 5 m calls the stock Door:OnUsed server path (SvRequestOpen -> Open); no client RMI. 0 OFF default."},
++ {"wb_ps_doors",&BotConfig::psDoors,"DS-052/DS-053: in PowerStruggle a bot opens (never closes) a closed Door ahead within 5 m via the stock Door:OnUsed server path (SvRequestOpen -> Open), 2 s per-door cooldown, no client RMI. 0 OFF default."},
+  {"wb_ps_vehicles",&BotConfig::psVehicles,"DS-052: in PowerStruggle a bot enters a free driver seat (seat 1) of Asian_ltv/Civ_car1 within 10 m via IVehicleSeat::Enter after the stock CanEnterVehicle check, and exits after 3 s; no driving. 0 OFF default."},
+  {"wb_ps_events",&BotConfig::psEvents,"DS-052: PowerStruggle Lua logs one [WarsBots] PS EVENT line per capture start/step/captured/uncaptured, purchase, vehicle enter/exit and HQ hit. Diagnostic only. 0 OFF default."},
+  {"wb_bot_cloak_experimental",&BotConfig::cloakExperimental,"Experimental bot cloak, defaults OFF"},
+diff --git a/Code/CryGame/Bots/BotConfig.h b/Code/CryGame/Bots/BotConfig.h
+index 582d3f2d..68c47c4e 100644
+--- a/Code/CryGame/Bots/BotConfig.h
++++ b/Code/CryGame/Bots/BotConfig.h
+@@ -56,7 +56,7 @@ struct BotConfig {
+  int psCapture=0;      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
+  int withdrawFull=0;   // DS-049: withdraw only to full cover, re-pick every 0.5 s on the live threat, default OFF
+  int psBuy=0;         // DS-049: PS-2 revive buy (one primary by style/range, cheap ammo) via server-side Lua, default OFF
+- int psDoors=0;       // DS-052: PS bots use unlocked doors within 5 m, default OFF
++ int psDoors=0;       // DS-052/DS-053: PS bots open (never close) a closed door ahead within 5 m, default OFF
+  int psVehicles=0;    // DS-052: PS bots enter a free car driver seat within 10 m and exit after 3 s, default OFF
+  int psEvents=0;      // DS-052: Lua PS EVENT log lines (capture/purchase/vehicle/hq_hit), default OFF
+  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
+diff --git a/Code/CryGame/Bots/BotManager.cpp b/Code/CryGame/Bots/BotManager.cpp
+index e16ee672..798ab9d3 100644
+--- a/Code/CryGame/Bots/BotManager.cpp
++++ b/Code/CryGame/Bots/BotManager.cpp
+@@ -1195,11 +1195,16 @@ void BotManager::ProbeRunCommand(IConsoleCmdArgs* args)
+ {
+ 	BotManager* self = Self();
+ 	if (!ProbeRunnerEnabled()) { WB_LOG(0, "[WarsBots] PROBE RUNNER OFF: set wb_probe_runner 1 first."); return; }
+-	if (!self || !args || args->GetArgCount() != 3)
+-	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_run <id> <seconds>."); return; }
++	if (!self || !args || (args->GetArgCount() != 2 && args->GetArgCount() != 3))
++	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_run <id> [seconds]."); return; }
+ 	float seconds = 0;
+-	if (!ParseCoordinate(args->GetArg(2), seconds) || seconds <= 0 || seconds > 3600)
+-	{ WB_LOG(0, "[WarsBots] wb_probe_run: duration must be 0..3600 s."); return; }
++	if (args->GetArgCount() == 3)
++	{
++		if (!ParseCoordinate(args->GetArg(2), seconds) || seconds <= 0 || seconds > 3600)
++		{ WB_LOG(0, "[WarsBots] wb_probe_run: duration must be 0..3600 s."); return; }
++	}
++	else if (self->m_probe.loaded && self->m_probe.scenario.duration > 0) seconds = float(self->m_probe.scenario.duration);
++	else seconds = 60.0f;
+ 	if (self->m_probe.Running())
+ 	{ WB_LOG(0, "[WarsBots] PROBE RUN refused: already running id=%s.", self->m_probe.scenario.id.c_str()); return; }
+ 	if (!self->m_probe.loaded) { self->m_probe.scenario = Probe::Scenario(); self->m_probe.loaded = true; }
+diff --git a/Code/CryGame/Bots/BotProbeRunner.h b/Code/CryGame/Bots/BotProbeRunner.h
+index 8da0013c..551f536a 100644
+--- a/Code/CryGame/Bots/BotProbeRunner.h
++++ b/Code/CryGame/Bots/BotProbeRunner.h
+@@ -175,6 +175,7 @@ struct Scenario
+     std::vector<PeekSpec> peeks;
+     std::vector<CloakSpec> cloaks;
+     std::map<std::string, std::string> cvars;   // already formatted values
++    std::vector<std::string> setup;              // raw console commands from the repo JSON "setup" array
+     std::vector<Assertion> assertions;
+     bool hasGoal = false;
+     double goal[3] = { 0, 0, 0 };
+@@ -268,6 +269,9 @@ inline bool ParseScenario(const std::string& text, Scenario& out, std::string* e
+             else if (v.type == Json::Number) out.cvars[it->first] = NumberText(v.number);
+             else if (v.type == Json::String) out.cvars[it->first] = v.text;
+         }
++    if (const Json* setup = root.Get("setup"))
++        for (size_t i = 0; i < setup->array.size(); ++i)
++            if (setup->array[i].type == Json::String) out.setup.push_back(setup->array[i].text);
+     // DS-047: the repo probe files use "assert"; the test scenario uses "assertions". Accept both.
+     const Json* as = root.Get("assertions");
+     if (!as) as = root.Get("assert");
+@@ -296,6 +300,10 @@ inline std::vector<std::string> BuildSetupCommands(const Scenario& s)
+     std::vector<std::string> out;
+     for (std::map<std::string, std::string>::const_iterator it = s.cvars.begin(); it != s.cvars.end(); ++it)
+         out.push_back(it->first + " " + it->second);
++    // C-126 recipes carry wb_add/wb_teleport in a raw "setup" array; run it after the cvars.
++    for (size_t i = 0; i < s.setup.size(); ++i)
++        if (s.setup[i].compare(0, 12, "wb_probe_run") != 0)
++            out.push_back(s.setup[i]);
+     for (size_t i = 0; i < s.bots.size(); ++i)
+     {
+         const BotSpec& b = s.bots[i];
+diff --git a/Tests/BotProbeRunnerTests.cpp b/Tests/BotProbeRunnerTests.cpp
+index 8cc5f594..97a9b972 100644
+--- a/Tests/BotProbeRunnerTests.cpp
++++ b/Tests/BotProbeRunnerTests.cpp
+@@ -108,6 +108,17 @@ int main()
+     CHECK(!Evaluate(m, unknown, ur));
+     CHECK(!ur.pass);
+ 
++    // DS-053: repo recipes carry raw setup commands (wb_add/wb_teleport).
++    Scenario recipe;
++    CHECK(ParseScenario("{\"id\":\"r\",\"setup\":[\"wb_add 1 elite marksman\",\"wb_teleport 1 1 2 3\"],\"duration_s\":5}", recipe, &err));
++    CHECK(recipe.setup.size() == 2 && recipe.setup[0] == "wb_add 1 elite marksman");
++    {
++        const std::vector<std::string> cmds = BuildSetupCommands(recipe);
++        bool hasAdd = false, hasTp = false;
++        for (size_t i = 0; i < cmds.size(); ++i) { hasAdd |= cmds[i] == "wb_add 1 elite marksman"; hasTp |= cmds[i] == "wb_teleport 1 1 2 3"; }
++        CHECK(hasAdd && hasTp);
++    }
++
+     // Malformed JSON is rejected.
+     Json j;
+     CHECK(!ParseJson("{ \"id\": ", j, &err));
