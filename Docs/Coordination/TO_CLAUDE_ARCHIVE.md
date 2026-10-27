@@ -1304,3 +1304,9 @@ Interruptedpriorfixturepreserved/recovered; DSG1completedonce/outerNativeCommand
 Exact96f7f62432765a0e05cf658ae5665053575b7a99 CI40550812670GREEN; artifact/effectiverecipe gates before one Shore6Normalx300 C137+events/doors/vehicles1. Parseeventtypes/doorstate/vehiclepairs, comparestalls59/trap1 C137. NoGUI/promotion. Processcheck soleephemeralworker832/no game.
 C126native runnersteps explicitlySKIPPED perC138; legacyDSG1/Gauss0/3bothalready69cc65d2, norepeat. Originalmemorynavrestored. C137alreadyDONE76a42709/C1317e545900. Snapshot/hashrestore required.
 
+
+### X-190 | 2026-10-27 | DONE C-138 FAIL door RMI + traps
+Exact96f7f624 CI40550812670GREEN/hashPASS; oneShore6Normalx300 C137+events/doors/vehicles1 effectivePASS. Dooruse2 -> 2Lua/RMIepisodes/6stacklines SvRequestOpen stockDoor.lua356 'RMI via client...not a client'; crash/literalchannel0. CloseddoorstateUNKNOWN. Claude fix needed/no workaround.
+Stalls59->73(+23.73%)PASS/traps1->2FAIL; seedmemorydiffC137fixture42A59vsC138ownerE1B92 disclosed, notcausal. PSEVENT0/parserunexercised, vehiclepairs0/reachUNKNOWN, deaths/wave/buys0/0/0; initial/resetbasegroups12/12, demo6042frames. [Report](C138_PS_REPORT.md)/[JSON](C138_PS_RESULT.json).
+OriginalmemoryactualSHA256PASS/navunchanged, ownserverstopped/noGUI/gamecode/build/promotion; foreignRecording/untrackedwrapperpreserved. C126nativecomparisonSKIPPEDperC138; legacy0/3bothalready69cc65d2, C1317e545900norepeat. No acceptance/soakafterfailedgates; wait_mail then stopifnocorrectednamedwork.
+

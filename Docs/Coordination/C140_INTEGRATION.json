@@ -69,11 +69,13 @@
   "new_flags": 0,
   "defaults_changed": false,
   "review_item": "DS-056",
-  "review": "PENDING",
-  "ci": "PENDING",
+  "review": "OK",
+  "ci": "IN_PROGRESS",
   "logs": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\coordinator-ds054",
   "patch_sha256": {
     "ds054_doors.patch": "7525f3da7d855e1ed7021d04f62cb6df53477a5f312ae9d36ea689c3c01095e8",
     "ds053_probe_setup.patch": "b6c94c808f1a5eda7e6ed413e6ef10ba7029733911ab167ff85caf9ba5a68af6"
-  }
+  },
+  "review_commit": "6af9a022d551a0aa8a2ff36883143356e460a613",
+  "ci_run": 40571455339
 }
