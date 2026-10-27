@@ -2,6 +2,11 @@
 NOW: C145 STARTED; DS062 water safety BLOCK (tiny-island overlap), correction requestedDS066; DS063 syntaxPASS/reviewpending. Gamecode2e0a6641 CI40588717866GREEN/DS065OK. Existing external server22508 untouched; no QA launched.
 
 
+### X-209 | 2026-10-28 | PROGRESS C145 package acceptance plan 1b099d69 / DS066 awaiting
+Published SHORE_ACCEPTANCE_C145.md (geometry, water/land actual movement, physical door crossing, native capture, death/buy cycle); corrected stale Shore requirement2 -> actual1 perDS064. DS066 request17bc314a includes existing SafeStep ground-ray deepwater blocker and real area-cost query test, no new swim subsystem.
+Water unsafe candidate not integrated/baked/installed; door syntaxPASS but vehicle/capture precedence needs review. Code remains2e0a6641 CI40588717866GREEN/DS065OK. No QA/gamebinary build launched; existing C127 server22508 untouched, owner free-state question pending. Wake correctly skipped active server; no duplicate worker forced.
+Next: DS066 corrected patch/oracles -> coherent integration/review/CI -> safe Shore bake+hash/connectivity -> planned free-PC runtime acceptance. C145 remains STARTED, no Playable claim; latest read DeepSeek stillDS065.
+
 ### X-208 | 2026-10-28 | STARTED C145 / DS062 safety BLOCK, DS066 correction request c137b949
 Actual standalone MSVC candidate compilePASS; two-shore graph connects, dry mesh byte-identical. Actual AddWaterSurface oracle REDexit1: tiny solid island missed by centre-only sampling,1waterquad overlaps it. Selftest WindowsJSON/no-points/roof-topology defects; printed cost unproven. [Receipt](C145_PATCH_REVIEW.json), raw build/coordinator-c145/.
 DS063 candidate BotBrain syntaxPASS (original include dirs), priority/vehicle scope acceptance pendingDS066. No live source integration/productionbake/install/game. Current2e0a6641 CI40588717866GREEN + DS065reviewOK53903147.
@@ -20,9 +25,4 @@ DS062/063 stay independently reviewable but can share meaningful scenario accept
 DONE mailbox/docs SHA0100faf8: DS062 existing baker/query water support, DS063 existing NK door/path exit repair, DS064 native capture eligibility audit. Exact-SHA code reviews preempt queue; no boats/new capture-goal subsystem/default promotion.
 DS061 revised patch2ef03358 received, independent offline validation pending; not integrated or game-tested. Code532e4497 stays CI40574773650GREEN/DS058OK, C142 purchasesPASS12/12; C140 NK exit20FAIL0/6. Full playable PS not claimed.
 CLAUDE_STATE/status refreshed; Windows mailbox wake retained. No game/build/foreign edits changed.
-
-### X-204 | 2026-10-28 00:00 MSK | C143 pre-integration BLOCK DS059 / DS061 corrections
-Candidate589baaac tested only ignored fixturecheckout; no livecode/push/game. Actual MSVC oracle2fails: legacyvalid2:0 nowFAIL; link:failed collected1 but JSONlink_failed=null. Candidateunit with all5fixtures absent still exit0. [Receipt](C143_DS059_REVIEW.json), raw build/coordinator-ds059-candidate/.
-DS061 requests preserved legacy ratio (positive:0PASS/0:0FAIL), truthful export, missingfixture failclosed, unknownlanding availability. Correct before integration/newCI/review. Currentcode532e4497 stays reviewedGREEN/purchasePASS; no defaultpromotion.
-C144 blockedDS060 water prerequisite; no incomplete mesh installed. No activegame/sniper/soak. CLAUDE_STATE+status updated; pending work routed through mailbox/wake, no owner decision needed.
 

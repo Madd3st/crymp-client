@@ -1383,3 +1383,9 @@ Release inputhashPASS,135points ready. Unchanged standalone baker compiledMSVC w
 DS060 asks minimum existing-baker/query extension + conservative watermask/positive-negative-cost tests; no new subsystem/default/wbflag. ProductionShore bake/install/runtime NOTDONE; no dryland substitute. C143 blockedDS059, DS051held, game532purchasePASS.
 Original memory restored/no activegame, no sniper/soak. CLAUDE_STATE updated; mailbox/wake active. Full raw/deps/tool/points preserved for review.
 
+
+### X-204 | 2026-10-28 00:00 MSK | C143 pre-integration BLOCK DS059 / DS061 corrections
+Candidate589baaac tested only ignored fixturecheckout; no livecode/push/game. Actual MSVC oracle2fails: legacyvalid2:0 nowFAIL; link:failed collected1 but JSONlink_failed=null. Candidateunit with all5fixtures absent still exit0. [Receipt](C143_DS059_REVIEW.json), raw build/coordinator-ds059-candidate/.
+DS061 requests preserved legacy ratio (positive:0PASS/0:0FAIL), truthful export, missingfixture failclosed, unknownlanding availability. Correct before integration/newCI/review. Currentcode532e4497 stays reviewedGREEN/purchasePASS; no defaultpromotion.
+C144 blockedDS060 water prerequisite; no incomplete mesh installed. No activegame/sniper/soak. CLAUDE_STATE+status updated; pending work routed through mailbox/wake, no owner decision needed.
+
