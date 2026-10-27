@@ -1,0 +1,328 @@
+diff --git a/Tools/RecastBake/recast_bake.cpp b/Tools/RecastBake/recast_bake.cpp
+index 304269dc..2a5fdced 100644
+--- a/Tools/RecastBake/recast_bake.cpp
++++ b/Tools/RecastBake/recast_bake.cpp
+@@ -7,7 +7,7 @@
+ // Frame: Crysis (x, y, z) -> Recast (x, z, -y). This is a rotation, so triangle winding (normals up) is kept.
+ //
+ // Usage: recast_bake --obj map.crop.obj.gz [--points pts.txt] [--links links.txt] [--out-obj mesh.obj]
+-//                    [--out-bin map.navmesh] [--zmin z] [--zmax z] [--cs 0.2] [--ch 0.1] [--radius 0.4]
++//                    [--out-bin map.navmesh] [--zmin z] [--zmax z] [--water z] [--cs 0.2] [--ch 0.1] [--radius 0.4]
+ //                    [--height 1.8] [--climb 0.5] [--slope 45] [--tile 128] [--min-region 2] [--monotone]
+ // pts.txt: lines "kind id x y z" (kind = spawn | item | probe), Crysis frame.
+ // links.txt: lines "x0 y0 z0 x1 y1 z1 bidir kind" (Crysis frame), kind is a free label (jump, strength...).
+@@ -27,6 +27,9 @@
+ #include <algorithm>
+ #include <numeric>
+ 
++// Detour area id used only by the optional water surface. Keep in sync with BotNavMeshCore.cpp.
++static const unsigned char kWaterArea = 4;
++
+ struct Pt { std::string kind; int id; float p[3]; };     // p in Recast frame
+ struct Link { float a[3], b[3]; int bidir; std::string kind; };
+ 
+@@ -44,7 +47,7 @@ static void ToRecast(float x, float y, float z, float* o) { o[0] = x; o[1] = z;
+ static void ToCrysis(const float* r, float* o) { o[0] = r[0]; o[1] = -r[2]; o[2] = r[1]; }
+ 
+ static bool LoadObj(const std::string& path, float zmin, float zmax, std::vector<float>& verts, std::vector<int>& tris,
+-	int& dropped)
++	int& dropped, std::vector<int>* allTris = nullptr)
+ {
+ 	std::string s;
+ 	if (!ReadAll(path, s)) return false;
+@@ -74,6 +77,8 @@ static bool LoadObj(const std::string& path, float zmin, float zmax, std::vector
+ 			for (size_t k = 1; k + 1 < idx.size(); ++k)
+ 			{
+ 				const int a = idx[0], b = idx[k], c = idx[k + 1];
++				// Water mask needs the seabed even when the normal bake drops it with zmin.
++				if (allTris) { allTris->push_back(a); allTris->push_back(b); allTris->push_back(c); }
+ 				const float za = v[a * 3 + 2], zb = v[b * 3 + 2], zc = v[c * 3 + 2];
+ 				const float lo = std::min(za, std::min(zb, zc)), hi = std::max(za, std::max(zb, zc));
+ 				if (lo > zmax || hi < zmin) { ++dropped; continue; }
+@@ -94,6 +99,9 @@ struct Cfg {
+ 	float vh = 4.5f;      // horizontal take-off speed for generated links (run 4.5, sprint 6.75 m/s)
+ 	float wallRadius = 0.f; // > radius: extra clearance from walls only (player capsule 0.4 m), ledges keep `radius`
+ 	float capBottom = 0.5f, capTop = 1.9f; // player capsule span above the feet (player.lua: heightCollider 1.2, size 0.4/0.3)
++	bool water = false;   // --water <crysis z>: add only open water at that level, area kWaterArea
++	float waterZ = 0.f;   // Crysis z = Recast y
++	float waterCell = 2.f; // conservative 2 m water sampling grid
+ };
+ 
+ // Walls vs ledges (C-071 follow-up): Recast erodes every boundary by one radius. The player capsule is 0.4 m but its
+@@ -169,7 +177,7 @@ static void ErodeWalls(const rcCompactHeightfield& chf, const Cfg& c)
+ 
+ // Off-mesh links for one tile: those whose start lies in the tile's xz box.
+ static unsigned char* BuildTile(rcContext& ctx, const Cfg& c, const std::vector<float>& verts, const std::vector<int>& tris,
+-	const std::vector<int>& triIdx, const float* bmin, const float* bmax, int tx, int ty,
++	const std::vector<unsigned char>& isWater, const std::vector<int>& triIdx, const float* bmin, const float* bmax, int tx, int ty,
+ 	const std::vector<Link>& links, int& dataSize, int& polys)
+ {
+ 	rcConfig cfg; memset(&cfg, 0, sizeof cfg);
+@@ -204,6 +212,7 @@ static unsigned char* BuildTile(rcContext& ctx, const Cfg& c, const std::vector<
+ 	const int nt = (int)triIdx.size();
+ 	std::vector<unsigned char> areas(nt, 0);
+ 	rcMarkWalkableTriangles(&ctx, cfg.walkableSlopeAngle, verts.data(), (int)verts.size() / 3, t.data(), nt, areas.data());
++	for (int k = 0; k < nt; ++k) if (isWater[triIdx[k]]) areas[k] = kWaterArea; // optional water surface
+ 	rcRasterizeTriangles(&ctx, verts.data(), (int)verts.size() / 3, t.data(), areas.data(), nt, *hf, cfg.walkableClimb);
+ 	rcFilterLowHangingWalkableObstacles(&ctx, cfg.walkableClimb, *hf);
+ 	rcFilterLedgeSpans(&ctx, cfg.walkableHeight, cfg.walkableClimb, *hf);
+@@ -227,7 +236,7 @@ static unsigned char* BuildTile(rcContext& ctx, const Cfg& c, const std::vector<
+ 		rcBuildPolyMeshDetail(&ctx, *pm, *chf, cfg.detailSampleDist, cfg.detailSampleMaxError, *dm);
+ 	rcFreeContourSet(cset); rcFreeCompactHeightfield(chf);
+ 	if (!okp || pm->npolys == 0) { rcFreePolyMesh(pm); rcFreePolyMeshDetail(dm); return nullptr; }
+-	for (int i = 0; i < pm->npolys; ++i) { if (pm->areas[i] == RC_WALKABLE_AREA) pm->flags[i] = 1; }
++	for (int i = 0; i < pm->npolys; ++i) { if (pm->areas[i] != RC_NULL_AREA) pm->flags[i] = 1; }
+ 
+ 	// off-mesh links starting in this tile (xz without border)
+ 	std::vector<float> omv; std::vector<float> omr; std::vector<unsigned char> omdir, omarea; std::vector<unsigned short> omflags;
+@@ -319,6 +328,68 @@ struct TriGrid {
+ 	}
+ };
+ 
++struct WaterStats { int cells = 0, tris = 0; };
++
++static bool PointInTri2D(float px, float pz, const float* a, const float* b, const float* c)
++{
++	auto cross = [](float ax, float az, float bx, float bz, float px, float pz) { return (bx - ax) * (pz - az) - (bz - az) * (px - ax); };
++	const float d1 = cross(a[0], a[2], b[0], b[2], px, pz);
++	const float d2 = cross(b[0], b[2], c[0], c[2], px, pz);
++	const float d3 = cross(c[0], c[2], a[0], a[2], px, pz);
++	const bool neg = d1 < 0 || d2 < 0 || d3 < 0, pos = d1 > 0 || d2 > 0 || d3 > 0;
++	return !(neg && pos);
++}
++
++// DS-062: conservative water surface. A 2 m cell gets a flat quad only when the unfiltered geometry has a
++// below-water triangle under it and no above-water or water-straddling triangle covers it. Void cells, islands,
++// roofs and bridges therefore get no water; the seabed is never made walkable by itself.
++static void AddWaterSurface(const std::vector<float>& verts, const std::vector<int>& allTris, const Cfg& c,
++	std::vector<float>& waterVerts, std::vector<int>& waterTris, WaterStats& stats)
++{
++	if (allTris.empty()) return;
++	float bmin[3] = { 1e30f, 1e30f, 1e30f }, bmax[3] = { -1e30f, -1e30f, -1e30f };
++	for (int i : allTris) for (int k = 0; k < 3; ++k)
++	{
++		bmin[k] = std::min(bmin[k], verts[i * 3 + k]);
++		bmax[k] = std::max(bmax[k], verts[i * 3 + k]);
++	}
++	TriGrid grid;
++	grid.cell = c.waterCell;
++	grid.Build(verts, allTris, bmin, bmax);
++	const float eps = 0.01f;
++	for (int gz = 0; gz < grid.nz; ++gz)
++		for (int gx = 0; gx < grid.nx; ++gx)
++		{
++			const float x0 = bmin[0] + gx * grid.cell, x1 = x0 + grid.cell;
++			const float z0 = bmin[2] + gz * grid.cell, z1 = z0 + grid.cell;
++			if (x1 > bmax[0] + eps || z1 > bmax[2] + eps) continue;
++			const float px = (x0 + x1) * 0.5f, pz = (z0 + z1) * 0.5f;
++			bool below = false, blocked = false;
++			const std::vector<int>& cell = grid.cells[size_t(gz) * grid.nx + gx];
++			for (int ti : cell)
++			{
++				const float* a = &verts[allTris[ti * 3] * 3];
++				const float* b = &verts[allTris[ti * 3 + 1] * 3];
++				const float* d = &verts[allTris[ti * 3 + 2] * 3];
++				if (!PointInTri2D(px, pz, a, b, d)) continue;
++				const float lo = std::min(a[1], std::min(b[1], d[1])), hi = std::max(a[1], std::max(b[1], d[1]));
++				if (lo > c.waterZ + eps) blocked = true;                 // land/roof above water
++				else if (hi < c.waterZ - eps) below = true;              // seabed/terrain below water
++				else blocked = true;                                     // shoreline/straddling unknown
++				if (blocked) break;
++			}
++			if (blocked || !below) continue;
++			const int base = int(waterVerts.size() / 3);
++			const float q[4][3] = {
++				{ x0, c.waterZ, z0 }, { x1, c.waterZ, z0 }, { x1, c.waterZ, z1 }, { x0, c.waterZ, z1 }
++			};
++			for (int k = 0; k < 4; ++k) for (int j = 0; j < 3; ++j) waterVerts.push_back(q[k][j]);
++			waterTris.push_back(base + 0); waterTris.push_back(base + 2); waterTris.push_back(base + 1);
++			waterTris.push_back(base + 0); waterTris.push_back(base + 3); waterTris.push_back(base + 2);
++			++stats.cells; stats.tris += 2;
++		}
++}
++
+ static std::vector<int> GroundComponents(const dtNavMesh* nav, std::map<dtPolyRef, int>& index, std::vector<dtPolyRef>& refs)
+ {
+ 	index.clear(); refs.clear();
+@@ -462,6 +533,7 @@ int main(int argc, char** argv)
+ 		if (a == "--obj") obj = nx(); else if (a == "--points") ptsPath = nx(); else if (a == "--links") linksPath = nx();
+ 		else if (a == "--out-obj") outObj = nx(); else if (a == "--out-bin") outBin = nx();
+ 		else if (a == "--zmin") zmin = std::stof(nx()); else if (a == "--zmax") zmax = std::stof(nx());
++		else if (a == "--water") { c.water = true; c.waterZ = std::stof(nx()); }
+ 		else if (a == "--cs") c.cs = std::stof(nx()); else if (a == "--ch") c.ch = std::stof(nx());
+ 		else if (a == "--radius") c.radius = std::stof(nx()); else if (a == "--height") c.height = std::stof(nx());
+ 		else if (a == "--climb") c.climb = std::stof(nx()); else if (a == "--slope") c.slope = std::stof(nx());
+@@ -474,7 +546,20 @@ int main(int argc, char** argv)
+ 	}
+ 	if (obj.empty()) { fprintf(stderr, "usage: recast_bake --obj file.obj[.gz] ...\n"); return 2; }
+ 	std::vector<float> verts; std::vector<int> tris; int dropped = 0;
+-	if (!LoadObj(obj, zmin, zmax, verts, tris, dropped)) { fprintf(stderr, "cannot read %s\n", obj.c_str()); return 1; }
++	std::vector<int> allTris;
++	if (!LoadObj(obj, zmin, zmax, verts, tris, dropped, c.water ? &allTris : nullptr)) { fprintf(stderr, "cannot read %s\n", obj.c_str()); return 1; }
++	const int inputTris = (int)tris.size() / 3;
++	std::vector<unsigned char> isWater(inputTris, 0);
++	WaterStats waterStats;
++	if (c.water)
++	{
++		std::vector<float> wv; std::vector<int> wt;
++		AddWaterSurface(verts, allTris, c, wv, wt, waterStats);
++		const int base = (int)verts.size() / 3;
++		verts.insert(verts.end(), wv.begin(), wv.end());
++		for (size_t i = 0; i < wt.size(); ++i) tris.push_back(base + wt[i]);
++		isWater.resize(tris.size() / 3, 1);
++	}
+ 	const int nt = (int)tris.size() / 3;
+ 	float bmin[3], bmax[3];
+ 	rcCalcBounds(verts.data(), (int)verts.size() / 3, bmin, bmax);
+@@ -525,7 +610,7 @@ int main(int argc, char** argv)
+ 		for (int y = 0; y < tilesY; ++y) for (int x = 0; x < tilesX; ++x)
+ 		{
+ 			int ds = 0, np_ = 0;
+-			unsigned char* data = BuildTile(ctx, c, verts, tris, bucket[y * tilesX + x], bmin, bmax, x, y, L, ds, np_);
++			unsigned char* data = BuildTile(ctx, c, verts, tris, isWater, bucket[y * tilesX + x], bmin, bmax, x, y, L, ds, np_);
+ 			if (!data) continue;
+ 			if (dtStatusFailed(nm->addTile(data, ds, DT_TILE_FREE_DATA, 0, nullptr))) { dtFree(data); continue; }
+ 			totalPolys += np_; ++builtTiles; maxTilePolys = std::max(maxTilePolys, np_);
+@@ -671,7 +756,10 @@ int main(int argc, char** argv)
+ 	// JSON report
+ 	int sp = 0, spIn = 0, spOn = 0, it = 0, itOn = 0, itTwo = 0, itFwd = 0, spTwo = 0;
+ 	printf("{\n \"input\": {\"obj\": \"%s\", \"triangles\": %d, \"dropped_by_z\": %d, \"bounds_crysis\": [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]},\n",
+-		obj.c_str(), nt, dropped, bmin[0], -bmax[2], bmin[1], bmax[0], -bmin[2], bmax[1]);
++		obj.c_str(), inputTris, dropped, bmin[0], -bmax[2], bmin[1], bmax[0], -bmin[2], bmax[1]);
++	if (c.water)
++		printf(" \"water\": {\"z\": %.2f, \"cells\": %d, \"surface_tris\": %d, \"area\": %u, \"area_cost\": 4.0},\n",
++			c.waterZ, waterStats.cells, waterStats.tris, unsigned(kWaterArea));
+ 	printf(" \"params\": {\"cs\": %.2f, \"ch\": %.2f, \"radius\": %.2f, \"wall_radius\": %.2f, \"height\": %.2f, \"climb\": %.2f, \"slope\": %.1f, \"tile\": %d, \"min_region\": %d, \"partition\": \"%s\", \"recast\": \"v1.6.0\"},\n",
+ 		c.cs, c.ch, c.radius, c.wallRadius, c.height, c.climb, c.slope, c.tile, c.minRegion, c.monotone ? "monotone" : "watershed");
+ 	printf(" \"mesh\": {\"tiles\": %d, \"tiles_grid\": [%d, %d], \"polys\": %d, \"max_tile_polys\": %d, \"components\": %d, \"area_m2\": %.0f, \"main_area_m2\": %.0f, \"two_way_area_m2\": %.0f, \"offmesh_links\": %zu, \"generated\": {\"drop\": %d, \"jump\": %d, \"strength\": %d}},\n",
+diff --git a/Tools/RecastBake/water_fixtures/island.obj b/Tools/RecastBake/water_fixtures/island.obj
+new file mode 100644
+index 00000000..96f054f8
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/island.obj
+@@ -0,0 +1,21 @@
++# DS-062 negative: land island at z=100 inside the water gap -> no water on the island
++v 0 0 90
++v 40 0 90
++v 40 10 90
++v 0 10 90
++f 1 2 3 4
++v 0 0 100
++v 10 0 100
++v 10 10 100
++v 0 10 100
++f 5 6 7 8
++v 30 0 100
++v 40 0 100
++v 40 10 100
++v 30 10 100
++f 9 10 11 12
++v 18 3 100
++v 22 3 100
++v 22 7 100
++v 18 7 100
++f 13 14 15 16
+diff --git a/Tools/RecastBake/water_fixtures/roof.obj b/Tools/RecastBake/water_fixtures/roof.obj
+new file mode 100644
+index 00000000..208d3c4d
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/roof.obj
+@@ -0,0 +1,21 @@
++# DS-062 negative: the water gap is covered by a roof at z=105 -> no water there
++v 0 0 90
++v 40 0 90
++v 40 10 90
++v 0 10 90
++f 1 2 3 4
++v 0 0 100
++v 10 0 100
++v 10 10 100
++v 0 10 100
++f 5 6 7 8
++v 30 0 100
++v 40 0 100
++v 40 10 100
++v 30 10 100
++f 9 10 11 12
++v 10 0 105
++v 30 0 105
++v 30 10 105
++v 10 10 105
++f 13 14 15 16
+diff --git a/Tools/RecastBake/water_fixtures/two-shores.obj b/Tools/RecastBake/water_fixtures/two-shores.obj
+new file mode 100644
+index 00000000..096650de
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/two-shores.obj
+@@ -0,0 +1,16 @@
++# DS-062 positive: seabed at 90, two shores at 100, gap x=10..30
++v 0 0 90
++v 40 0 90
++v 40 10 90
++v 0 10 90
++f 1 2 3 4
++v 0 0 100
++v 10 0 100
++v 10 10 100
++v 0 10 100
++f 5 6 7 8
++v 30 0 100
++v 40 0 100
++v 40 10 100
++v 30 10 100
++f 9 10 11 12
+diff --git a/Tools/RecastBake/water_fixtures/void.obj b/Tools/RecastBake/water_fixtures/void.obj
+new file mode 100644
+index 00000000..45354636
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/void.obj
+@@ -0,0 +1,11 @@
++# DS-062 negative: two shores with no seabed -> unknown void, never a global water surface
++v 0 0 100
++v 10 0 100
++v 10 10 100
++v 0 10 100
++f 1 2 3 4
++v 30 0 100
++v 40 0 100
++v 40 10 100
++v 30 10 100
++f 5 6 7 8
+diff --git a/Tools/RecastBake/water_selftest.ps1 b/Tools/RecastBake/water_selftest.ps1
+new file mode 100644
+index 00000000..7908fb06
+--- /dev/null
++++ b/Tools/RecastBake/water_selftest.ps1
+@@ -0,0 +1,32 @@
++param(
++  [Parameter(Mandatory)][string]$Tool,
++  [string]$Fixtures = (Join-Path $PSScriptRoot 'water_fixtures')
++)
++$ErrorActionPreference = 'Stop'
++function Run([string]$obj, [bool]$water) {
++  $a = @('--obj',$obj,'--cs','0.1','--ch','0.1','--radius','0.3','--height','1.8','--climb','0.5',
++         '--slope','45','--tile','256','--min-region','2','--zmin','100')
++  if ($water) { $a += @('--water','99.5') }
++  $text = & $Tool @a 2>$null | Out-String
++  if ($LASTEXITCODE) { throw "tool failed for $obj (exit $LASTEXITCODE)" }
++  return $text | ConvertFrom-Json
++}
++$x = Run (Join-Path $Fixtures 'two-shores.obj') $false
++if ($x.mesh.components -ne 2 -or $x.summary.items_reachable -ne 0) { throw 'no-water baseline changed' }
++
++$x = Run (Join-Path $Fixtures 'two-shores.obj') $true
++if ($x.mesh.components -ne 1 -or $x.summary.items_reachable -lt 1) { throw 'two shores are not connected by water' }
++if ($x.water.cells -le 0 -or $x.water.surface_tris -le 0) { throw 'no water surface generated' }
++if ($x.water.area -ne 4 -or $x.water.area_cost -ne 4.0) { throw 'water area/cost mismatch' }
++$openCells = $x.water.cells
++
++$x = Run (Join-Path $Fixtures 'roof.obj') $true
++if ($x.water.cells -ne 0 -or $x.mesh.components -ne 2) { throw 'water appeared under a roof' }
++
++$x = Run (Join-Path $Fixtures 'island.obj') $true
++if ($x.water.cells -le 0 -or $x.water.cells -ge $openCells) { throw 'water covers the island or no water around it' }
++
++$x = Run (Join-Path $Fixtures 'void.obj') $true
++if ($x.water.cells -ne 0 -or $x.mesh.components -ne 2) { throw 'void gap was filled by a global waterplane' }
++
++'water_selftest: all cases passed'

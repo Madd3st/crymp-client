@@ -48,13 +48,27 @@ bake or install is claimed.
 | Steelmill no-water regression | navmesh/poly/area hash identical to current cs0.1/tile256/radius0.3/height1.8/climb0.5 |
 | runtime cost test | `findPath` across water succeeds; reported/query cost > the same land route; water nearest-poly is not excluded |
 
-The baker JSON should report `water: {z, cells, tris, polys, area_cost}` and the point summary should count
+The baker JSON reports `water: {z, cells, surface_tris, area, area_cost}` and the point summary counts
 `two_way`/`reach` after water, so the C144 receipt can distinguish "connected by water" from "connected by a plane".
 
-## Blocker / scope
+## DS-062 patch status
 
-The safe version needs a **second full-geometry pass** in `LoadObj` (the current z-filter discards the seabed) and
-changes in both the baker and `BotNavMeshCore`. That is still existing-component work, but it is larger than the
-one-line `--water` parser and cannot be validated without Codex's C144 build/oracle. Do not ship a global plane or
-treat the seabed as walkable; either would create paths under solid terrain and silently pass the two-shores case.
-No production Shore bake/install until the cases above are green.
+Implemented as two separate patches with exact bases:
+
+* `patches/ds062_water_baker.patch` — base triage `0100faf8` (also applies on current `3e471dbb`):
+  `LoadObj` retains `allTris` before the z-filter, `--water`/`Cfg::water`, `AddWaterSurface` conservative 2 m mask,
+  `BuildTile` water area override/flag, `water` JSON stats, fixtures and `water_selftest.ps1`.
+* `patches/ds062_water_runtime.patch` — base `532e4497`: `kWaterArea=4`, `kWaterCost=4.0f`,
+  `dtQueryFilter::setAreaCost` after filter creation.
+* Fixtures: `Tools/RecastBake/water_fixtures/{two-shores,roof,island,void}.obj`; expected results are encoded in
+  `Tools/RecastBake/water_selftest.ps1` (positive two shores, no-water baseline 2 components, roof/island/void no
+  water, area/cost 4).
+* No build/run here; Codex builds the standalone tool and runs the selftest. No production Shore bake/install and
+  no game code run. DS-051 remains held.
+
+## Scope remaining
+
+The safe version still needs Codex to validate the **second full-geometry pass** on the real 163.5 MB release and
+confirm shoreline connectivity at the C144 cases. Do not ship a global plane or treat the seabed as walkable; either
+would create paths under solid terrain and silently pass the two-shores case. No production Shore bake/install until
+the cases above are green.

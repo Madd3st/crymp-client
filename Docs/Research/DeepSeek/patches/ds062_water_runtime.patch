@@ -1,0 +1,21 @@
+diff --git a/Code/CryGame/Bots/BotNavMeshCore.cpp b/Code/CryGame/Bots/BotNavMeshCore.cpp
+index 102bc844..88c4b897 100644
+--- a/Code/CryGame/Bots/BotNavMeshCore.cpp
++++ b/Code/CryGame/Bots/BotNavMeshCore.cpp
+@@ -20,6 +20,8 @@ inline void ToCrysis(const float* r, float* c) { c[0] = r[0]; c[1] = -r[2]; c[2]
+ struct MsetHeader { int magic; int version; int numTiles; dtNavMeshParams params; };
+ struct TileHeader { dtTileRef tileRef; int dataSize; };
+ const int kMsetMagic = 'M' << 24 | 'S' << 16 | 'E' << 8 | 'T';
++const unsigned char kWaterArea = 4; // DS-062: keep in sync with Tools/RecastBake/recast_bake.cpp
++const float kWaterCost = 4.0f;      // navigable, but a land route is cheaper
+ }
+ 
+ NavMeshCore::NavMeshCore() {}
+@@ -58,6 +60,7 @@ bool NavMeshCore::LoadMemory(const unsigned char* data, size_t size, std::string
+ 	if (!m_query || dtStatusFailed(m_query->init(m_mesh, 4096))) return fail("query init failed");
+ 	m_filter = new dtQueryFilter();
+ 	m_filter->setExcludeFlags(0);
++	m_filter->setAreaCost(kWaterArea, kWaterCost);
+ 	for (int ti = 0; ti < m_mesh->getMaxTiles(); ++ti)
+ 	{
+ 		const dtMeshTile* tile = static_cast<const dtNavMesh*>(m_mesh)->getTile(ti);
