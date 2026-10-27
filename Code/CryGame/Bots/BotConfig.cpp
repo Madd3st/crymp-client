@@ -13,6 +13,8 @@ const IntBinding kInts[]={
  {"wb_demo_hz",&BotConfig::demoHz,"Diagnostic demo sample rate10..60; default20"},
  {"wb_probe_local_test",&BotConfig::gateOpen,"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction."},
  {"wb_probe_runner",&BotConfig::probeRunner,"DS-047: engine adapter for BotProbeRunner.h, default OFF. When 1: wb_probe_load file, wb_probe_start, wb_probe_runner_status, wb_probe_stop, wb_probe_run id seconds. WarsBots log lines feed the scenario metrics; the result JSON is written next to the bot log and PROBE RESULT is logged."},
+ {"wb_bot_link_failfast",&BotConfig::linkFailFast,"DS-048: a jump link whose take-off is blocked (railing/step, speed < 0.3 m/s within 2 m or in Act) fails in 0.6-0.8 s instead of 3.5 s so the bot bans it and repaths; the goal timer does not age while a link runs. 0 OFF default. Exit: sniper_reach_dsg1 >= 2/3 without more link failures."},
+ {"wb_ps_capture",&BotConfig::psCapture,"DS-048 PS-1: in PowerStruggle a bot without a visible enemy walks to the nearest capturable point not owned by its team (value/power weighted), holds inside 6 m until the team owns it, then moves to the next. 0 OFF default. Needs the PS capture entities; exit: capture/uncapture events with no extra stalls."},
  {"wb_bot_cloak_experimental",&BotConfig::cloakExperimental,"Experimental bot cloak, defaults OFF"},
  {"wb_hotspot_all_nodes",&BotConfig::hotspotAllNodes,"Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak."},
  {"wb_reachable_goals",&BotConfig::reachableGoals,"Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF."},

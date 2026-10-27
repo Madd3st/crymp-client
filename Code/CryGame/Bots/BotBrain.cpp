@@ -18,6 +18,7 @@
 #include "CryGame/Bots/BotAuditFixes.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotPSCaptureRuntime.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Actor.h"
@@ -298,6 +299,7 @@ void BotBrain::ResetLife()
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
+	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear();
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	++m_life;
@@ -494,6 +496,43 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
     return false;
 }
 
+bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime)
+{
+	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+	if(!rules)return false;
+	const int team=rules->GetTeam(actor.GetEntityId());
+	if(!team)return false;
+	const Vec3 feet=actor.GetEntity()->GetWorldPos();
+	if(m_now>=m_nextPsCapture)
+	{
+		m_nextPsCapture=m_now+2.0f;
+		PSCaptureSnapshot(m_psPoints,*rules);
+	}
+	const PsCapturePlan plan=m_psCapture.Update(m_psPoints.empty()?nullptr:m_psPoints.data(),int(m_psPoints.size()),team,
+		feet.x,feet.y,feet.z,6.0f);
+	if(!plan.valid)return false;
+	if(m_psTarget!=plan.id)
+	{
+		m_psTarget=plan.id;
+		WB_LOG(1,"[WarsBots] #%d PS CAPTURE target=%d pos=(%.1f,%.1f,%.1f) team=%d hold=%d actor=%u.",
+			m_number,plan.id,plan.x,plan.y,plan.z,team,plan.hold?1:0,actor.GetEntityId());
+	}
+	Change(State::SEARCHING_ENEMY);
+	if(plan.hold)
+	{
+		WBI(move,false);
+		WBI(aim,Vec3(plan.x,plan.y,plan.z+1.5f));
+	}
+	else
+	{
+		const Vec3 goal(plan.x,plan.y,plan.z);
+		const Vec3 step=Steer(feet,goal);
+		WBI_MOVETO(step,step+Vec3(0,0,1.2f));
+		TravelGait((goal-feet).GetLength());
+	}
+	ExecuteIntent(actor,decisionTime);
+	return true;
+}
 bool BotBrain::UpdateTest(CPlayer& actor,float decisionTime)
 {
 	if (m_now<m_testUntil)
@@ -609,6 +648,8 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 			}
 			if (d < m_upgradeBest-1.0f) { m_upgradeBest=d; m_upgradeBestAt=m_now; }
 		}
+		// DS-048: while a jump link owns movement the bot cannot progress along the path; do not age the goal.
+		if (BotConfig::Get().linkFailFast==1 && m_link.Active()) m_upgradeBestAt = m_now;
 		const float progressTimeout = sniperOnly ? 20.0f : 8.0f;
 		const float totalTimeout = sniperOnly ? 90.0f : 60.0f;
 		if (m_upgradeTarget && (m_now - m_upgradeBestAt > progressTimeout || m_now - m_upgradeSince > totalTimeout))
@@ -670,6 +711,8 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		}
 		if (BotConfig::Get().tactics==1 && m_upgradeTarget && UpdateUpgrade(bot,actor,nullptr,decisionTime,false,true)) return;
 		if (commit) Change(State::SEARCHING_ENEMY);
+		// DS-048 #3: PS-1 capture goal; roam only runs with no visible enemy, so combat still wins.
+		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules()) && UpdatePSCapture(bot,actor,decisionTime)) return;
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
 		Vec3 heard;
 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
@@ -1145,6 +1188,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
 	m_blackboard.obstacleJump=BotJump::None;
 	m_intent.linkJump=false;
+	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
 	// wb_bot_jump_sanity: on a navmesh path the mesh already proved the way (jumps come from baked links); the low
 	// obstacle rays read stair steps as a wall and asked for Strength jumps at every staircase (149 of 364, owner

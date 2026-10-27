@@ -53,6 +53,8 @@ struct BotConfig {
  int finishLock=0;     // DS-044: keep a <=25 HP target until dead/lost > 1 s unless a new enemy within 8 m is hitting us, default OFF
  int sniperReach=0;    // DS-046: sniper-mind upgrade searches the roof (32 m vertical box) and only DSG1/Gauss first, default OFF
  int probeRunner=0;    // DS-047: engine adapter for BotProbeRunner.h (wb_probe_load/start/...), default OFF
+ int linkFailFast=0;   // DS-048: blocked jump link fails fast + goal does not age while a link runs
+ int psCapture=0;      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);

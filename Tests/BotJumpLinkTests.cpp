@@ -58,6 +58,16 @@ int main()
 		L.Update(At(0, -1.5f, 0, 10, true, 0.f));
 		LinkOutput o = L.Update(At(0.5f, -1.5f, 0, 10, true, 0.f)); assert(o.phase == LinkPhase::Act);
 	}
+	// 7. DS-048: blocked 1 m short of the take-off (railing/step) fails fast instead of waiting 3.5 s and retrying.
+	{
+		LinkParams fp; fp.blockedFailFast = true; BotJumpLink L(fp); L.Start(0, LinkMove::Strength, JVec{0, 0, 0}, JVec{10, 0, 0});
+		LinkInput in = At(0, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; L.Update(in);
+		in = At(0.5f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; L.Update(in);
+		in = At(1.8f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; LinkOutput o = L.Update(in);
+		assert(o.phase == LinkPhase::Act && o.jump == LinkJumpRequest::None);
+		in = At(2.5f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; o = L.Update(in);
+		assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoTakeoff);
+	}
 	std::puts("BotJumpLinkTests OK");
 	return 0;
 }

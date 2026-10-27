@@ -17,6 +17,7 @@
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotCorners.h"
 #include "CryGame/Bots/BotDecisionCommit.h"
+#include "CryGame/Bots/BotPSCapture.h"
 struct IConsoleCmdArgs;
 class CPlayer;
 struct IActor;
@@ -61,6 +62,7 @@ private:
     bool UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA);
     bool UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force=false);
     void UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime);
+	bool UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-048 #3
     void UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime);
     void UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange);
     void UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,bool visible);
@@ -163,6 +165,7 @@ private:
 	float m_withdrawUntil=0, m_nextWithdraw=0;
 	Vec3 m_withdrawCover=Vec3(0,0,0);
 	bool m_withdrawCoverValid=false;
+	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0;
 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
 	EntityId m_upgradeTarget = 0;
 	float m_upgradeSince = 0;

@@ -1,5 +1,6 @@
 // Offline test of the Detour runtime on a real baked mesh (Tools/RecastBake output, MSET v1).
 // Usage: BotNavMeshCoreTests <Steelmill.navmesh>   (skips with exit 0 when no file is given)
+#include <cstring>
 #include <algorithm>
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotCorners.h"
@@ -94,7 +95,8 @@ int main(int argc, char** argv)
 		txt.push_back(0);
 		const int kinds = L.LoadLinkKinds(txt.data());
 		// DS-037 #3: links.txt is filtered (flat/zero/duplicate Strength links removed) -> those links stay unknown on purpose
-		const int lines = int(std::count(txt.begin(), txt.end(), '\n'));
+		int removed = 0; for (const char* q = txt.data(); (q = std::strstr(q, " removed")) != nullptr; ++q) ++removed; // DS-048: data-disabled links
+		const int lines = int(std::count(txt.begin(), txt.end(), '\n')) - removed;
 		assert(L.Links() > 100 && kinds == lines && kinds <= L.Links() && L.Links() - kinds < 100);
 		{   // T-6: a reordered links.txt still gives every link its kind (matched by end points)
 			std::string t(txt.data()); std::vector<std::string> rows; size_t p0 = 0, p1;
