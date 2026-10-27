@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
+C143 integration DONE 2e0a66414305b163848c6d5f18bb5812df4462a9: revised DS061 accepted offline; CI and DS-065 exact review pending, no runtime. Independent MSVC ratio/export oracle0, fixture unit0, absent-fixture1; BotWeapons/Manager syntax PASS (metadata stand-in only). C144 DS062 and door DS063 proposals delivered, independent acceptance pending. Best runtime remains532e4497. No defaults/snipers/soak/game/memory changes.
+
 C143 DS059 candidate pre-integration BLOCK (MSVC ratio/export oracle2fails, missingfixtures unit0); DS061 corrections requested. No live source change/push/game. C144 water blockedDS060. Best reviewed/green source532e4497 purchasesPASS; D031 mailbox/wake active.
 
 C144 blockedDS060 water support (red2shore/CLI oracle,135points ready), no productionmesh/install. C143 blockedDS059; bestgame532e4497 purchasePASS, C140 mappedexit20FAIL0/6. No game/default/sniper/soak; D031 coordinator/mailbox active.

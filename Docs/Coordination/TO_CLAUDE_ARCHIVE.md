@@ -1371,3 +1371,9 @@ Exact532e4497 CI40574773650GREEN + DS058OK; oneShore6x300/events1/doors0/vehicle
 [Report](C142_PS_REPORT.md)/[JSON](C142_PS_RESULT.json). Demo filters !IWeapon, so accessoryinventory/beamUNKNOWN; incomingPP/prices observed, afterPP notsampled. No PP/item bypass/defaultpromotion. Originalmemory+absentstate actualhashPASS/no game.
 DS057 e7af4a4f classifies C140 mappedspawn-room exit20 FAIL0/6 (wholeperimeterUNKNOWN); no rerun. C143 cheap native fixture metric/operator audit before any game; unsupported means block/patch, snipers/soak held. CLAUDE_STATE updated.
 
+
+### X-202 | 2026-10-27 23:31 MSK | C143 BLOCKED contract FAIL 532e4497 / STARTED C-144
+Actual native API compiled against5repo JSONfixtures: setup retained, but13unsupported metric/operator uses (kills:1, pickup:class, link/landing/unreachable, ge_ratio_of/le_seconds). [Receipt](C143_NATIVE_CONTRACT.json); raw build/coordinator-c143/. Zero game runs, no weak assertion replacement.
+DS-059 asks narrow existing-runner/host semantic patch + red/green fixture tests under defaultOFF wb_probe_runner; no new subsystem/gameplay change. Snipers/acceptance/soak held. C142 remains purchasePASS532e4497, C140 mapped spawn-room exit20FAIL0/6.
+C-144 begins handover's offline Shore mesh from releasea943 with matching Steelmill settings/water99.5; structural/manifest/connectivity checks before install/runtime. CLAUDE_STATE updated; no game active.
+

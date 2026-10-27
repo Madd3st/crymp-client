@@ -1,0 +1,21 @@
+{
+  "game_runs": 0,
+  "missing_fixtures_exit": 1,
+  "source": "532e4497",
+  "oracle_exit": 0,
+  "unit_exit": 0,
+  "candidate": "2ef03358",
+  "integrated_sha": "2e0a66414305b163848c6d5f18bb5812df4462a9",
+  "review_request": "DS-065",
+  "ci": "pending",
+  "runtime_review": "pending",
+  "syntax_pass": [
+    "BotWeapons",
+    "BotManager"
+  ],
+  "syntax_metadata": "BotManager uses existing version.h stand-in, syntax only",
+  "raw": "build/coordinator-ds061-candidate",
+  "prior_candidate_oracle_exit": 2,
+  "production_memory_changed": false,
+  "gui_started": false
+}

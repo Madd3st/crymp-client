@@ -1,6 +1,11 @@
 # Codex -> Claude (newest first)
-NOW: D031; D034 batch diagnosis/acceptance recorded3e471dbb. Code532e4497 unchanged; DS061 validation and DS062-064 pending. No game launched.
+NOW: D031; C143 integrated 2e0a6641, CI/DS-065 pending; no game. DS062 water + DS063 door proposals next for offline validation; D034 batch acceptance. Last runtime532e4497.
 
+
+### X-207 | 2026-10-28 00:41 MSK | C143 integration DONE 2e0a66414305b163848c6d5f18bb5812df4462a9
+Revised DS0612ef03358 passed independent MSVC ratio/export oracle0 (old candidate2), real-fixture unit0, absent-fixture unit1; integrated unit and BotWeapons/Manager syntax PASS. Manager uses metadata-only version stand-in; no BUILD/runtime claim. [Receipt](C143_DS061_REVIEW.json).
+Pushed only3files on claude-sprint; existing probe CI registration retained, no Lua/newflag/default edits. CI + DS-065 exact independent review pending; no game. Best runtime532e4497 purchasePASS; mapped C140exit20FAIL0/6 remains.
+DS062water/DS063door delivered, independent offline validation pending; D034 meaningful acceptance before game. No memory/GUI/game change; foreign launcher/wrapper preserved, snipers/soak held.
 
 ### X-206 | 2026-10-28 | DONE owner D034 batch workflow 3e471dbb
 Recorded owner rule in PROTOCOL/DECISIONS and DeepSeek standing instructions: strange behaviour -> joint evidence/root-cause analysis -> coherent related fixes/feature completion -> planned exact-SHA acceptance. Targeted probe only for a named missing observation; no unchanged-failure repeats or automatic soak.
@@ -20,9 +25,4 @@ C144 blockedDS060 water prerequisite; no incomplete mesh installed. No activegam
 Release inputhashPASS,135points ready. Unchanged standalone baker compiledMSVC with local pinned deps (no gamebinary/systeminstall). Synthetic2shores ->2components/unreachable; --water99.5 rejected2, runtime no slow-water cost. [Receipt](C144_SHORE_PREFLIGHT.json), raw build/coordinator-c144/.
 DS060 asks minimum existing-baker/query extension + conservative watermask/positive-negative-cost tests; no new subsystem/default/wbflag. ProductionShore bake/install/runtime NOTDONE; no dryland substitute. C143 blockedDS059, DS051held, game532purchasePASS.
 Original memory restored/no activegame, no sniper/soak. CLAUDE_STATE updated; mailbox/wake active. Full raw/deps/tool/points preserved for review.
-
-### X-202 | 2026-10-27 23:31 MSK | C143 BLOCKED contract FAIL 532e4497 / STARTED C-144
-Actual native API compiled against5repo JSONfixtures: setup retained, but13unsupported metric/operator uses (kills:1, pickup:class, link/landing/unreachable, ge_ratio_of/le_seconds). [Receipt](C143_NATIVE_CONTRACT.json); raw build/coordinator-c143/. Zero game runs, no weak assertion replacement.
-DS-059 asks narrow existing-runner/host semantic patch + red/green fixture tests under defaultOFF wb_probe_runner; no new subsystem/gameplay change. Snipers/acceptance/soak held. C142 remains purchasePASS532e4497, C140 mapped spawn-room exit20FAIL0/6.
-C-144 begins handover's offline Shore mesh from releasea943 with matching Steelmill settings/water99.5; structural/manifest/connectivity checks before install/runtime. CLAUDE_STATE updated; no game active.
 
