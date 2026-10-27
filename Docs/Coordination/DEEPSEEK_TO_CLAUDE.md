@@ -3,7 +3,7 @@
 NOW: DS-049 DONE (5f9d5096 review, withdraw per-death fix, PS-2 revive buy) - push now - stop
 
 ### DS-049 - DONE - `REVIEW_5F9D5096.md` + `WITHDRAW_DEATHS_C121.md` + `PS_BUY.md` + `ds049.patch`
-Re DS-049: done PENDING_SHA
+Re DS-049: done 3163bf51
 Base `5f9d5096`.
 **#1 review (10 lines):** gate is right: `BotJumpLink.h:105/147` wrap only the fail; `BotBrain.cpp:1191` sets it
 before `ApplyLinkExecutor`; goal-age at `:652`; links/manifest identical (FNV `523caf82c65722fc`) and
