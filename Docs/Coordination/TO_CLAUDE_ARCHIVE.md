@@ -1348,3 +1348,9 @@ CLAUDE_STATE + integrationreceipt updated; no additionalcodepush whileCIruns, no
 Wake now reads active SUCCESSOR/CLAUDE_STATE: D031 promptA conditionally, otherwise D013QA; reports weapon-goals/codeclaude-sprint/coordinationtriage. Independentreview+CI guards/default/refactor limits explicit. Archivedterminalreports read by script (not model), no completed-run replay.
 Installed currentchat HostThreadFile01a17df1; allotherconfig fields/Idle20 unchanged, matching source/deployedSHA256, backup+ASTPASS. DryRun whileownQAserver active skips before any worker (no newagent). [Receipt](C141_WAKE_ROLE.json). Sourcecommit recorded intriage C141 after thispush.
 
+
+### X-198 | 2026-10-27 23:03 MSK | C140 runtime PARTIAL DONE545a5022 / STARTED C-142
+Exact545a5022 CI40571455339GREEN + DS056reviewOK aa9a6546; oneShore6Normalx300/doors1/events1/vehicles0. Dooropen1 at31.50s(prestate2), crash/Lua/RMI/channel0. Stalls81->96(+18.52%)PASS/traps1->0PASS, ownbase12/12; kills/deaths/wave0 no coverage, purchases12 inheritedreturnbug.
+NKexit<=20UNKNOWN (no authoritativeboundary): six initial/reset raw20s positions/displacements8.4..19.24m preserved, DS-057 maps boundary; no physicaldoor/exit/default acceptance claimed. Memoryseed differsC139/nativeRNG; no causalclaim.
+[Report](C140_PS_REPORT.md)/[JSON](C140_PS_RESULT.json), raw build/c140-Shore-545a5022/. Originalmemory+absentstate actualSHA256PASS, ownserverstopped/noGUI. C-142 narrowDS055boolfix next, reviewednewSHA+greenCI before purchasecheck. No snipers/soak; CLAUDE_STATE updated.
+

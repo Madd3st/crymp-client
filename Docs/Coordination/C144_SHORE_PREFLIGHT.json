@@ -116,5 +116,34 @@
     "v 1432.000000 1000.000000 309.108826",
     "v 1430.000000 1000.000000 309.238678"
   ],
-  "tool_sha256": "86675d4a7d83e7919ad94ba9918501bed7d32871b9647d30643deea807062afb"
+  "tool_sha256": "86675d4a7d83e7919ad94ba9918501bed7d32871b9647d30643deea807062afb",
+  "input": {
+    "baker_source": "3933cd752ef0c08249700d487d5735e7be6b1714",
+    "runtime_water_cost_current": "dtQueryFilter default costs only",
+    "reference_bake": "Steelmill cs0.1 tile256 radius0.3 height1.8 climb0.5",
+    "source_release": "warsbots-ps-data-a943e070",
+    "baker_sha256": "AE7C808788B092006DDFB16DBF8A4B99472D0405E541C73E0B7CD016561243E1",
+    "water_cli_current": "unsupported",
+    "sha256": "0cbe74f37e9170b49edc9e6ffae0e6a1194b09188e0f1464a60c323c0729674d",
+    "bytes": 163543941,
+    "water_required": 99.5,
+    "input": "C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c072-ps-export/a943e070/crop/Shore.crop.obj.gz"
+  },
+  "point_provenance": {
+    "verified_release_inputs": {
+      "Shore.geometry.json": "c86cf9b4618d96c15d1f02d8862d70c665d1d60c2f61183e4c48f4b1db5a8adb",
+      "Shore.spawns.json": "055b73775a25ace3e38c30fcced5dd34946716629929bfb8fed9bdb8d0c3b62e",
+      "Shore.items.json": "ad8b17473192ca4d157b6d183b57ee30d5745187d3a0db75a39a421d4a3f6de4"
+    },
+    "spawns": 124,
+    "items": 4,
+    "points": 130,
+    "door_probe_source": "DS057 e7af4a4f; aperture crossing inside/outside",
+    "capture_candidates": 7,
+    "installed": false,
+    "production_bake": false,
+    "explicit_capturables": 5,
+    "total_points": 135
+  },
+  "blocker": "No water surface/CLI in baker or slow-water cost in runtime; synthetic2shores disconnected, --water rejected2. No production Shore bake/install."
 }

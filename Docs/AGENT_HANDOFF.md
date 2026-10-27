@@ -1,5 +1,7 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+C144 blockedDS060 water support (red2shore/CLI oracle,135points ready), no productionmesh/install. C143 blockedDS059; bestgame532e4497 purchasePASS, C140 mappedexit20FAIL0/6. No game/default/sniper/soak; D031 coordinator/mailbox active.
+
 C143 blocked contract FAIL532e4497: five native fixtures/13unsupported uses, no game. DS059 patch/tests queued. C144 planned Shore mesh offline STARTED; input/recast/water99.5/manifest/connectivity gates before install. C142 purchasePASS, C140 mappedexitFAIL0/6, no default change/soak/sniper repeat.
 
 C142 PASS exact532e4497/CI40574773650+DS058OK: primary+LAM purchase12/12 actors bothsets, 24itemevents/30successincl6ammo, ownbase12/12, crash/Lua/RMI/channel0, stalls84/trap1. Accessory/beam visuals and afterPP UNKNOWN (demo filtersnonweapons). Memory/absentstate restored, no game. C140 mapped NKexit20 FAIL0/6 perDS057. Native runner contract preflight next; snipers/soak held.
