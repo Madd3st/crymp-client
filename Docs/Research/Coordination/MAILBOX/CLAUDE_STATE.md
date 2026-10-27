@@ -4,9 +4,9 @@
 (SUCCESSOR.md prompt A), DeepSeek = reviewer of every Codex code push (prompt C). Claude's hourly cloud task
 (trig_01ABKXcowTTiHUd7wwLt9Lxz, minute 19) must be OFF; if it still fires, it reads this file and exits.
 
-Last processed by Claude: X-191, DS-054. Last processed by Codex coordinator: X-192 (C139 verdict FAIL), DS-054 patch handoff.
+Last processed by Claude: X-191, DS-054. Last processed by Codex: X-204; DS061 revised patch2ef03358 received, not yet accepted.
 
-claude-sprint head **532e4497** (C142 buy-return bool; CI40574773650 pending; DS058 reviewOK318d0e3c), parent545a5022 (CI40571455339GREEN/DS056OK).
+claude-sprint head **532e4497d018cb7f6fea61b6ad92e4d4390849d7**: CI40574773650 GREEN, DS058 OK; C142 primary/LAM purchase PASS12/12. No subsequent game-code integration. C140 mapped NK spawn-room exit20 FAIL0/6; C143 awaits independent offline validation of DS061 revision; C144 water extension awaits DS062.
 on 96f7f624 (DS-052 doors/vehicles/events, all default OFF) on 815bcb7e (C-136 PS team spawn + owner buy rule)
 on 1a7ec84e (C-134) on 493f2cab (C-131 DS-050 fundament) on 4f3a1d72 (CI green).
 
@@ -18,20 +18,16 @@ Results since 20:00:
   two patches `ds054_doors.patch` + `ds053_probe_setup.patch` (probe `setup` array, `wb_probe_run <id> [seconds]`), both apply clean, units pass, Lua not run.
 
 Open:
-- Codex: C139 DONE FAIL ba4d5f4e/X192 (actual primary6/6, LAM0/return0). C140 runtime PARTIAL DONE545a5022: doorcall/stability/stalls/traps PASS, NKexit20 UNKNOWN; DS057 map classification. C142 purchase PASS532e4497. C143 native contract preflight STARTED; C140 mapped exit0/6 FAIL perDS057. C141 wake sync DONE e2f7b741. Native runner validation then Shore mesh/DS051 queued; sniper repeats/soak held after failed gates.
-- DeepSeek: DS-051 (delete BotNav fallback) waits for the Shore navmesh. DS-054 done, not integrated.
-- Owner: D-032 (`wb_bot_first_primary` default ON) open.
-
-Next for the interim coordinator (Codex), in order:
-1. C-139 verdict.
-2. Integrate DS-054 into claude-sprint (`ds054_doors.patch`, then `ds053_probe_setup.patch`; NOT ds053.patch door hunk), CI green, DeepSeek review, Shore 6x300 with `wb_ps_doors 1`: 0 RMI/Lua errors, ≥1 `PS DOOR open`, NK bots leave base ≤ 20 s.
-3. C-126 remaining steps with the native probe runner (setup array now parsed).
-4. Shore navmesh bake (Tools/RecastBake, release warsbots-ps-data-a943e070) → DS-051.
-5. If the owner says yes to D-032: flip only `wb_bot_first_primary` default 1.
+- Codex: independently validate DS061 revised probe patch; integrate only after meaningful offline checks, then green CI + DeepSeek review before runtime. Next: DS062 tool/water tests and Shore mesh; DS063 existing door exit fix.
+- DeepSeek: overnight DS062 water support -> DS063 door/path exit -> DS064 native capture eligibility audit; new exact-SHA reviews preempt queue. DS059/060/061 delivered proposals, acceptance remains Codex's job. DS051 held until mesh accepted.
+- Owner: D032 default promotion unanswered; no defaults changed. No new capture-goal/boat subsystem under D031.
+- Target: first playable infantry Shore slice; physical base exit/water movement, combat and native capture evidence still required. Full PS/TAC/vehicle victory not promised overnight.
 
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+2026-10-28: Owner requested more DeepSeek/night work. Assigned DS062-064 (water implementation, existing door exit, capture eligibility audit); independent code reviews preempt. DS0612ef03358 received, offline re-review next; no integration/game/default changes. Code532e4497 remains reviewed GREEN/purchasePASS. Queue assignment is not implementation acceptance.
 
 2026-10-28 00:00 MSK: DS059589baaac received, pre-integration review BLOCK: positive2:0 ratio changed vslegacy, link_failed JSON null despite1collected, missing realfixtures silently passunit0. Reproduced isolated MSVCoracle2failures + emptyCWD unit0; DS061 revision requested incl unavailablelandingZ. No livecheckout/codepush/game; codehead532e4497 still CI40574773650GREEN/DS058OK and purchasePASS. C143 awaitsDS061, C144 awaitsDS060 water support; DS051held. LastprocessedDS059/X203, no defaults/sniper/soak. Mailbox/wake active; no owner action required.
 
