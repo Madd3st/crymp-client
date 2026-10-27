@@ -1,4 +1,4 @@
-# Coordinator handover when Claude is out of limits (prepared 2026-10-27 15:30 MSK)
+# Coordinator handover when Claude is out of limits (prepared 2026-10-27 15:30 MSK; D-031 approved, DORMANT until the owner activates it)
 
 Owner asks: who coordinates WarsBots while Claude is unavailable, and with what prompt. Decision for the owner: **D-031**.
 

@@ -23,7 +23,7 @@ Read the other side with `git fetch origin <branch>` + `git show FETCH_HEAD:<fil
 * **Every task goes into the mailbox** as a C-/DS- item, even when the owner also pastes it into chat.
 * Wake loop on the owner PC (`register_wake_task.ps1 -CodexRepo .. -DeepSeekRepo ..`, every 10 min): wakes an idle
   agent for any item newer than its last wake. Never starts anything while the owner's game client is open.
-* Claude wakes on a cloud schedule (hourly): reads `TO_CLAUDE.md` + `DEEPSEEK_TO_CLAUDE.md`, writes verdicts,
+* Claude wakes on a cloud schedule (hourly, active since 27.10 15:19): reads `TO_CLAUDE.md` + `DEEPSEEK_TO_CLAUDE.md`, writes verdicts,
   integrates patches, pushes claude-sprint, writes the next C-/DS- items. Last processed IDs live in
   `Docs/Research/Coordination/MAILBOX/CLAUDE_STATE.md` on triage.
 * Agents finish with `wait_mail.ps1` in a loop, as in v3. The owner only decides (DECISIONS.md) and plays.
