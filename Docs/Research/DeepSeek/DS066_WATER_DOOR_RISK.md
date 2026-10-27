@@ -33,8 +33,9 @@ Codex-measured result explicitly marked as such.
    `SafeStep` (`BotMovement.cpp:55-76,118-129`), whose downward ray needs ground within 3.6 m; in the bay it hits
    nothing. In Instant Action the same state also applies stock AI drown damage, 30 HP/s (`Player.cpp:2958-2970`,
    `!isClient && !gEnv->bMultiplayer`), so a bot stands still and dies in ~3.3 s. **A water polygon path is therefore
-   a freeze+drown path today, not a route.** In a dedicated MP server the damage branch is skipped, but `canMove`
-   is still false, so the bot freezes instead of crossing.
+   a freeze path today, not a route.** PS runs in multiplayer (`gEnv->bMultiplayer` true), where that damage branch
+   is skipped and native oxygen is `IsPlayer`-gated, so the PS blocker is the freeze, not drowning; IA bots keep the
+   stock damage and are out of scope for this repair.
 7. **Graph reachability ignores area cost.** `BotNavMeshCore::BuildComponents` / `Reachable` (`:81-160,232-239`) filter
    on poly flags only; `FindPath` uses `m_filter` with area costs. So the bake's `components`/`items_reachable` and the
    runtime `Reachable()` are **topological**; cost 4 only affects the actual `findPath`. Any acceptance based on
@@ -96,9 +97,9 @@ Separate the four evidence classes; a pass in one is not a pass in another.
 | E. Runtime scenario | One planned run, exact SHA + green CI + independent review: door `open` by 20 s, `pre=2/post=1`, MOVE TRACE crosses the `Door48` aperture within 2 s, 0 Lua/RMI errors; water leg only if a swim policy exists (speed >0.5 m/s, exit on land, 0 water deaths); native `capture_start/step/captured` for a bot inside the area + team flip; stalls/traps/kills/pickups vs `532e4497` within the agreed band | one PASS is not a soak |
 | F. Promotion | D032 owner answer; defaults stay OFF; a water route is not advertised as playable until D/E pass | status text without SHA |
 
-Hard stops: no 15-bot run while `ShouldSwim -> canMove=false -> Stop` and the IA drown branch are unchanged (D/E would
-measure a known freeze/death, not the patch); no re-run of C140 until the door patch is inside the exact SHA; no
-water mesh install for a capture run before gate D.
+Hard stops: no 15-bot run while `ShouldSwim -> canMove=false -> Stop` is unchanged (D/E would measure a known freeze,
+not the patch); no re-run of C140 until the door patch is inside the exact SHA; no water mesh install for a capture
+run before gate D; no IA run with the Shore water mesh (stock IA AI water damage is out of scope).
 
 ## 5. Smallest next evidence (in order)
 
@@ -127,9 +128,9 @@ branch. Four small existing-file changes, each separately reviewable:
    (`:107-121`) and sprint, and do not request a land stance (the stock movement controller already selects swim from
    the actor stats; verify whether `STANCE_SWIM` is accepted before sending it). On shore (`ShouldSwim()` false) the
    old path is unchanged.
-4. `Player.cpp:2958-2970` — add `&& !IsWarsBotActor()` to the stock AI drown branch. `CPlayer::IsWarsBotActor()` is
-   already used for identity guards (`BotMatch.cpp:32`, `BotMoveTrace.cpp:36`); stock/campaign AI still drowns.
-   Without this line an IA bot takes 30 HP/s and dies in ~3.3 s even if it can move.
+4. `Player.cpp` — **unchanged** (Codex correction 28.10): the 30 HP/s branch is singleplayer-only
+   (`!gEnv->bMultiplayer`), and the native oxygen path is `IsPlayer`-gated; PS water repair must not touch either.
+   In IA the stock 30 HP/s remains for bots; the Shore water mesh is not installed for IA tests.
 
 Shore entry/exit caveats: enter only where `relativeBottomDepth` crosses 1.3 m; exit only where the navmesh projects a
 landing within `climb` (`NavMeshCore::Project`, side 1.5, up 1.0, down 3.0) and the body rays are clear. A quay higher
@@ -185,11 +186,13 @@ run remains a separate acceptance case.
 
 ### 8.3 Native swim (`ds067e_native_swim.patch`, base `2e0a6641`, applies after 067d)
 
-The blocker chain is proven: `ShouldSwim()` -> `canMove=false` (`BotBlackboard.cpp:20-22`) -> `Stop` every tick
-(`BotLocomotion.cpp:103`), and `SafeStep`'s ground ray cannot hit in deep water (`BotMovement.cpp:73-75`). The stock
-AI drown is 30 HP/s (`Player.cpp:2958-2970`), but the native oxygen path is disabled for bots by `if (!IsPlayer())
-return;` (`Player.cpp:3060`). Skipping the AI damage alone would therefore make bots immortal in water, which is
-forbidden; deleting all drowning is also forbidden.
+**Correction (Codex, 28.10):** the 30 HP/s AI branch at `Player.cpp:2961` is guarded by `!gEnv->bMultiplayer`, so it
+does **not** run in a PS multiplayer server; the earlier DS-066 wording conflated singleplayer AI with MP. In PS the
+water blocker is only the movement chain: `ShouldSwim()` -> `canMove=false` (`BotBlackboard.cpp:20-22`) -> `Stop` every
+tick (`BotLocomotion.cpp:103`), plus `SafeStep`'s ground ray (`BotMovement.cpp:73-75`). Native oxygen
+(`UpdateUWBreathing`) is `IsPlayer`-gated (`Player.cpp:3060`) and stays unchanged: a bot neither takes the IA AI
+damage in MP nor uses the human oxygen timer. **No Player.cpp edit is part of this repair.** In IA the stock AI damage
+still applies; the Shore water mesh is PS-only and must not be installed for an IA test.
 
 067e instead routes the bot through the native path:
 * `BotBlackboard`: add `swimming=ShouldSwim()`; remove only `!ShouldSwim` from `canMove` (health/frozen/ragdoll/
@@ -197,11 +200,11 @@ forbidden; deleting all drowning is also forbidden.
 * `BotMovement::SafeStep`: `swimming` skips **only** the downward ground ray at `:73-75`; the nine body/cliff rays at
   `:67-71` still return false, so a dry cliff or a quay wall is still refused. `Move` forwards the flag.
 * `BotLocomotion`: passes `state.swimming`, refuses `jump_swimming`; sprint already requires `grounded` (false in water).
-* `Player.cpp`: skip the instant AI drown only for `IsWarsBotActor()` in the `ShouldSwim` branch, and let
-  `UpdateUWBreathing` run for `IsWarsBotActor()` with a `m_pNanoSuit` guard. The bot now uses the human timer:
-  60 s head-under-water -> 30 s nanosuit energy drain -> 10 s health drain. No HP is granted, no damage is removed,
-  stock/campaign AI is unchanged. `UpdateSwimStats` is called for every actor (`Player.cpp:3241`), so the timers are
-  real for a server-side bot (C140 logged health/spectator from the same stats).
+* **No `Player.cpp` change.** PS MP has no AI instant drown (`!gEnv->bMultiplayer`), and the native oxygen path is
+  `IsPlayer`-gated; editing it to exempt or enable bots would either be unnecessary (MP) or an invulnerability/HP
+  policy change (IA). The repair is scoped to the movement policy only, as Codex requested. Consequence: in PS a bot
+  in water takes no drown damage from either path; that is existing stock behaviour, not a new grant, and the
+  acceptance must not claim drowning as a positive test. IA bots keep the stock 30 HP/s and are out of scope.
 * `BotBrain::RecoverTrap`: the trap watchdog sees `canMove` true in water; pass `canMove && !swimming` so it cannot
   escalate to level 4 (self-kill) while swimming.
 
@@ -209,11 +212,11 @@ Entry/exit: entry only when `ShouldSwim()` turns true (bottom depth >= 1.3 m); s
 Exit needs a navmesh landing within `climb` (`NavMeshCore::Project`, side 1.5, up 1.0, down 3.0) and clear body rays;
 a quay higher than `climb` remains a cliff. Residual risks: combat/suit behaviour while swimming is not gated (the
 bot may fire from water); a bot that falls into water in a non-PS map now swims instead of freezing (repair, but a
-behaviour change); the native breathing path plays sounds on a server actor (guarded by `gEnv->bServer` for damage).
+behaviour change).
 Flag: no new `wb_*`; active only when the existing default-OFF capture/navmesh path puts a bot in deep water.
 
 Engine-free evidence plan: a pure decision table `WaterStep(swimming, bodyBlocked, groundHit, depth)`:
 land+ground -> normal; land+no ground -> refuse (cliff/void); swimming+bodyBlocked -> refuse (dry-cliff negative);
 swimming+no body+depth>=1.3 -> allow; depth<1.3 -> wade/ground. Runtime (one planned scenario, after exact-SHA CI +
 review): land-cliff MOVE TRACE negative (speed ~0, no fall), >=30 m water leg positive (speed >0.5 m/s, HP unchanged,
-exit on land), and a submerged hold to observe the native 60 s drown (do not ship if it never damages).
+exit on land). Do not test or claim drowning: in PS it is stock-disabled for IsPlayer=false, and IA is out of scope.

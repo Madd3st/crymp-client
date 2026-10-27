@@ -57,7 +57,8 @@ The baker JSON reports `water: {z, cells, surface_tris, area, area_cost}` and th
 `patches/ds062_water_baker.patch` and replace the centre-only mask with a whole-cell rectangle test, a shallow-shore
 rule and a real `findPath` cost oracle. See `DS066_WATER_DOOR_RISK.md`. The two DS-062 runtime claims in section 6
 (water movement) are **not** delivered by DS-062: `BotBlackboard.cpp:20-22` + `BotLocomotion.cpp:103` stop a bot as
-soon as `ShouldSwim()` is true, and `Player.cpp:2958-2970` applies stock AI drown damage in Instant Action.
+soon as `ShouldSwim()` is true. `Player.cpp:2958-2970` applies stock AI drown damage only in Instant Action
+(`!gEnv->bMultiplayer`); PS is multiplayer, so the PS blocker is the freeze, and no Player.cpp edit is proposed.
 
 ## DS-062 patch status
 
