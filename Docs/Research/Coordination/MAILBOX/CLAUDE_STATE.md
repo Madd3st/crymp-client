@@ -4,9 +4,9 @@
 (SUCCESSOR.md prompt A), DeepSeek = reviewer of every Codex code push (prompt C). Claude's hourly cloud task
 (trig_01ABKXcowTTiHUd7wwLt9Lxz, minute 19) must be OFF; if it still fires, it reads this file and exits.
 
-Last processed by Claude: X-191, DS-054. Last processed by Codex: X-211; DS068 BLOCK addressed in tool eed85fb1, DS071 review OK. DS070 corrected swim/door package and DS069 routes pending.
+Last processed by Claude: X191. Last processed by Codex: X213; full C145 packet integrated **00e58632e0b35ac140d5cfe6fefc930e4ddeb741** (parent2e0a6641), CI40605489537 + DS073 exact review pending. Code worktree clean; earlier WIP is now committed, do not reapply patches.
 
-claude-sprint head **2e0a66414305b163848c6d5f18bb5812df4462a9**: CI40588717866 GREEN + DS065 review OK53903147; diagnostic contract fixed, no new runtime. Last runtime source532e4497 C142 purchasesPASS12/12. Tool eed85fb1 ten-case offlinePASS + DS071 reviewOK. Revised candidate653f5e1e baked37.297s/observedpeak1.967GB, map asset still notaccepted/installed (USno exit). First Shore candidate07b0bf4e rejected/uninstalled; NK20/20main, US0/23main with12offmesh.
+Current code00e58632: doors067d/f, gated native water/oxygen070, native captureArea binding/destination/hold072, cost4/search16k/exhaustion/watertrace,3newCItests. All34CI units offlinePASS; affectedCPPSyntax inclPlayerON/OFFPASS. No localgamebinarybuild/runtime/defaultflip. Reviewedtool eed85fb1 produced candidate653f5e1e; map NOTaccepted/installed, USno route persists. Last runtime532e4497 purchasesPASS; oldhead2e0a6641 CIgreen/reviewed diagnostic only.
 on 96f7f624 (DS-052 doors/vehicles/events, all default OFF) on 815bcb7e (C-136 PS team spawn + owner buy rule)
 on 1a7ec84e (C-134) on 493f2cab (C-131 DS-050 fundament) on 4f3a1d72 (CI green).
 
@@ -26,6 +26,8 @@ Open:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+C145 integration DONE00e58632e0b35ac140d5cfe6fefc930e4ddeb741,23files/34CIunitsPASS + affectedsyntaxON/OFF. DS072 area-id correction integrated with publicengineXML reader and existing native shape binding; meshrequired/failclosed unreachable capturepoints; no privateXMLgrammar. DS073 exact independent review + CI40605489537 pending; no runtime. US controlled negativevariants: maskcell2/1/.5none exits; zmin90 restores23onmesh butnone exits; autolinks8drop2jumpnone exits, unaccepted data. Need named nativephysics observation after codegates, no blind repeat/soak. Weeklyremaining23% at02:50 (guard20); finish current packet, recheck before newruntime. Code worktree nowclean.
 
 DS071 reviewed eed85fb1 OK. Revised offline Shore candidate653f5e1e:37.297s, observedpeakworkingSet1,967,505,408bytes;332falsewatercells removed, topology/spawn gaps unchanged. Map NOTaccepted/installed. Nativecore16384 reaches actual inside-Area floor candidates for all5capturepoints, including factory/prototype whose pivots are isolated; geometry-driven destination+hold repair justified, not forced links. Native oxygen remains required for eligible swimmer (IsPlayerfalse earlyout); DS070 next. Synthetic runtime watercost test REDbaseline/GREENpatched prepared for CI. No game/localgamebinary/default changes.
 
