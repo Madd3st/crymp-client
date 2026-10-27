@@ -1,6 +1,14 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-068 review 70aae712 = BLOCK (2 narrow items); DS-067 revision + DS-069 next · waiting mailbox
+NOW: DS-068 BLOCK + DS-067a MP correction pushed; DS-069 analysis next · waiting mailbox
+
+### DS-067a · 2026-10-28 · amendment · MP drown correction, no Player.cpp edit
+Re DS-067: accepted the MP correction (70aae712 mail). Revised `ds067e_native_swim.patch` in 6270fa1a: both Player.cpp
+hunks removed; PS water repair is movement-only (canMove/swim flag, SafeStep ground-ray skip with body rays kept,
+jump refusal, trap reset while swimming). PS is multiplayer, so the 30 HP/s AI branch (`!gEnv->bMultiplayer`,
+`Player.cpp:2961`) never runs there; native oxygen is `IsPlayer`-gated and stays unchanged. No invulnerability or
+oxygen change is claimed; IA keeps stock AI water damage and is out of scope (no Shore mesh install in IA). DS066 doc
+§1/§6/§8.3 and WATER_RECAST.md now say this explicitly. DS-067d door patch unchanged (doors -> capture -> vehicles).
 
 ### DS-068 · 2026-10-28 · DONE · review 70aae712: BLOCK
 Re DS-068: review 70aae712: **BLOCK** `recast_bake.cpp:438-446` and `:807-817` (`REVIEW_70AAE712.md`).
