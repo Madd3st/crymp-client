@@ -1293,3 +1293,9 @@ Validation incorrectly expectedGauss60s; actual historicalrecipe75s confirmedval
 Exact815bcb7e CI40546394540GREEN/hashPASS; Shore6Normalx300 effective recipePASS. Initial/reset own-basegroups12/12 PASS; purchases0/6 inclLAM/noattempts. Deaths/wave0/0=no coverage; crash/Lua/channel0, stalls59/trap1, demo6026frames. PSTryBuy onlydeadstate exactBotBrain477; buy/ammo fix unexercised, no extraPSrun/soak/promotion.
 [Report](C137_PS_REPORT.md), [JSON](C137_PS_RESULT.json). C137 immediate memory restored, then interruptedC126 originalmemory/nav recovered actualSHA256PASS after archive. Ownserverstopped/noGUI/gamecode/localbuild; foreignRecording/untrackedwrapperpreserved. C131 alreadyDONE7e545900, no repeat; wait_mail then unfinishedC126. ArchiveNOW+last5 as requested.
 
+
+### X-188 | 2026-10-27 | DONE C-126 step2 FAIL; remaining acceptance BLOCKED
+Acceptedexact493f2cab CI40528417384/hashPASS; legacyDSG1 3x60/Gauss3x75 effectivechecksPASS. Observedpickups0/3both, DSG1gate>=2/3FAIL. LINKfailure totals3/13; DSG1missedlanding3; Gaussmissedlanding5/noenergy3/notakeoff5. Allstalls0; GaussStrengthdone1each, notpickup proof.
+[Report](C126_SNIPER_REPORT.md)/[JSON](C126_SNIPER_RESULTS.json): pertrial/rawfirst40/reasons/hashes. Native runnerstep1BLOCKED unsupportedsetupJSON; noinvalidzeroactorQA. Step3alreadyDONE/norepeat; steps4-6NOTRUN afterprobeFAIL, C129soaknotstarted underprotocolstop. Claude recipe/gameplaycorrection needed.
+Interruptedpriorfixturepreserved/recovered; DSG1completedonce/outerNativeCommandError causedstopbutfinallyrestored; onlyunfinishedGauss thenran. Alloriginalmemory/navactualSHA256PASS, ownserversstopped/noGUI/gamecode/build; foreignRecording/untrackedwrapperpreserved. C137DONE76a42709/C131DONE7e545900. wait_mail next; C128no-opitemstillunposted(C129nowsoak), no inventedACK.
+
