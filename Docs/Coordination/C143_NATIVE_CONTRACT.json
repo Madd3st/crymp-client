@@ -1,0 +1,34 @@
+{
+  "oracle_exit": 1,
+  "source": "532e4497d018cb7f6fea61b6ad92e4d4390849d7",
+  "reason": "Native API Metrics::Value rejects names; Evaluate does not implement ge_ratio_of. Raw setup parse now retained; no assertion substitution.",
+  "game_runs": 0,
+  "fixtures": [
+    "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-coordinator-sprint\\Tools\\Probes\\duel_skill.json",
+    "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-coordinator-sprint\\Tools\\Probes\\fence_hop.json",
+    "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-coordinator-sprint\\Tools\\Probes\\roof_strength.json",
+    "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-coordinator-sprint\\Tools\\Probes\\sniper_reach_dsg1.json",
+    "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-coordinator-sprint\\Tools\\Probes\\sniper_reach_gauss.json"
+  ],
+  "result": [
+    "SCENARIO duel_skill setup=6 commands=12 assertions=1",
+    "UNSUPPORTED_METRIC duel_skill kills:1",
+    "UNSUPPORTED_OPERATOR duel_skill ge_ratio_of",
+    "SCENARIO fence_hop setup=2 commands=7 assertions=3",
+    "UNSUPPORTED_METRIC fence_hop link:jump:done",
+    "UNSUPPORTED_METRIC fence_hop landing_z",
+    "UNSUPPORTED_METRIC fence_hop link:failed",
+    "SCENARIO roof_strength setup=2 commands=10 assertions=2",
+    "UNSUPPORTED_METRIC roof_strength pickup:DSG1",
+    "UNSUPPORTED_OPERATOR roof_strength le_seconds",
+    "SCENARIO sniper_reach_dsg1 setup=2 commands=8 assertions=3",
+    "UNSUPPORTED_METRIC sniper_reach_dsg1 pickup:DSG1",
+    "UNSUPPORTED_OPERATOR sniper_reach_dsg1 le_seconds",
+    "UNSUPPORTED_METRIC sniper_reach_dsg1 unreachable",
+    "SCENARIO sniper_reach_gauss setup=2 commands=8 assertions=3",
+    "UNSUPPORTED_METRIC sniper_reach_gauss pickup:GaussRifle",
+    "UNSUPPORTED_OPERATOR sniper_reach_gauss le_seconds",
+    "UNSUPPORTED_METRIC sniper_reach_gauss unreachable",
+    "UNSUPPORTED_TOTAL 13"
+  ]
+}
