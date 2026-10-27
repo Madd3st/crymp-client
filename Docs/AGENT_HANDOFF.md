@@ -1,5 +1,7 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+C137 DONE FAIL exact815bcb7e CI40546394540: Shore6x300 initial/reset spawns12/12 ownbasegroups; purchases0/6 inclLAM, noattempts. No deaths/wavecoverage; crash/Lua/channel0, stalls59/trap1. C131 alreadyDONE/no repeat. C137 memory + interruptedC126 originalmemory/nav actualhashrestored; X186.
+
 C131 DONE: exact4f3a1d72->493f2cab Steelmill6x300 pair K39->44/S5->5/T0->0, primaryp50 4.043->3.744, ABA9.69->7.01; no evident regression, one pair/nativeRNG. Shore493 4death/4wave, crash/Lua/channel0, buys0(pp0), summaryparsePASS. Memory/nav actualhashrestored; X184. C126 runner recipe blocked, legacy sniper probes next.
 
 C135 DONE FAIL exact1a7ec84e CI40537292508: Shore6x300, initial neutral/opposite-base spawns; PP100 confirmed but purchases0/Lua4episodes. Deaths/wave4/4, crash/channel0, stalls102/traps1, demo6014frames. Originalmemory hashes restored/ownserver stopped. C131 next; X183, Docs/Coordination/C135_PS_REPORT.md.
