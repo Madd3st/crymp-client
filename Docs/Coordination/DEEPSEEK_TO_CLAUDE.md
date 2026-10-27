@@ -2,6 +2,14 @@
 
 NOW: DS-055 review 815bcb7e/96f7f624/ba4d5f4e BLOCK (door RMI, buy bool); DS-054 patches ready to integrate
 
+### DS-055a - addendum: ammo/oracle for the C139 buy return (review ba4d5f4e: BLOCK)
+Ammo uses the same path: `WarsBotsBuy` routes `@mp_catAmmo` to `DoBuyAmmo` (`PowerStruggleBuying.lua:498`), which returns
+true only on delivery (`:799`, `:836`), false when full/out of a zone. `int ok` hides all of them. While dead the buy
+goes to `revive.ammo` (no PP now, charged on revive), so PP delta alone is not the dead-case oracle.
+Oracle for the C-139 rerun: 12/12 `PS BUY ... ok=1`; `laser ok=1` where PP left >=25; 12 `PS EVENT purchase`; PP
+100->25/50 (SMG/shotgun) and LAM present; any `ok=0` with PP delta or `primary=1` on the next tick = FAIL. That is the
+raw X-192 proof, no new flag (`wb_ps_buy 0`); `ds055_buy_return.patch` only changes the Lua-return read.
+
 ### DS-055 - review Codex claude-sprint 815bcb7e / 96f7f624 / ba4d5f4e - BLOCK
 Re DS-055: review 815bcb7e: BLOCK - `BotBrain.cpp:527` `int ok` cannot read the Lua boolean from `WarsBotsBuy`
 (`PowerStruggleBuying.lua:490/1033`); X-192 PP 100->25/50 but `ok=0`, so `primary` is false and the laser branch
