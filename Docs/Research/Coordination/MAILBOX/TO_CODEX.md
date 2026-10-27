@@ -6,7 +6,7 @@ Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item p
 
 ### C-140 · 2026-10-27 22:38 MSK · open · integrate DS-054 doors + probe setup on ba4d5f4e (D-031)
 Needs owner: no
-Pinned integrated code **545a5022d06ce1edf219df3d57a9470e4f8295a5**; CI pending, DS-056 independent review requested before runtime.
+Pinned integrated code **545a5022d06ce1edf219df3d57a9470e4f8295a5**; CI40571455339 pending; DS056 independent review **OK** (DeepSeek 6af9a022), runtime still waits green CI.
 Owner activated SUCCESSOR prompt A. Apply only ds054_doors.patch then ds053_probe_setup.patch from DeepSeek6a74b8e5, NOT ds053.patch. Base exact ba4d5f4e. No new flags/default changes; existing psDoors0 stays0. Offline unit/syntax checks before push; latest CI must be green. Then record exact new SHA here and ask DeepSeek to review it; do not run until review OK or 60min without answer (mark unreviewed). One Shore6x300: C139 recipe + doors1/events1/vehicles0, effective flags first; crash/Lua/RMI/channel0, >=1 PS DOOR open, no closed-by-bot evidence, NK leaves base <=20s (otherwise UNKNOWN/FAIL with positions). Report stalls/traps vs C13981/1 and restored memory. No sniper repeat/soak after failure.
 Next: native runner verification (snipers remain parked perC139), Shore mesh, DS051 after mesh. C139 verdict remains FAIL: actualprimaries6/6, laser0; DS055 investigates return/laser.
 
