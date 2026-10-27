@@ -4,9 +4,9 @@
 (SUCCESSOR.md prompt A), DeepSeek = reviewer of every Codex code push (prompt C). Claude's hourly cloud task
 (trig_01ABKXcowTTiHUd7wwLt9Lxz, minute 19) must be OFF; if it still fires, it reads this file and exits.
 
-Last processed by Claude: X-191, DS-054. Last processed by Codex: X-211; DS068 BLOCK addressed in tool eed85fb1, DS071 review pending. DS070 corrected swim/door package and DS069 routes pending.
+Last processed by Claude: X-191, DS-054. Last processed by Codex: X-211; DS068 BLOCK addressed in tool eed85fb1, DS071 review OK. DS070 corrected swim/door package and DS069 routes pending.
 
-claude-sprint head **2e0a66414305b163848c6d5f18bb5812df4462a9**: CI40588717866 GREEN + DS065 review OK53903147; diagnostic contract fixed, no new runtime. Last runtime source532e4497 C142 purchasesPASS12/12. Tool eed85fb1 ten-case offlinePASS, pending independent review. First Shore candidate07b0bf4e rejected/uninstalled; NK20/20main, US0/23main with12offmesh.
+claude-sprint head **2e0a66414305b163848c6d5f18bb5812df4462a9**: CI40588717866 GREEN + DS065 review OK53903147; diagnostic contract fixed, no new runtime. Last runtime source532e4497 C142 purchasesPASS12/12. Tool eed85fb1 ten-case offlinePASS + DS071 reviewOK. Revised candidate653f5e1e baked37.297s/observedpeak1.967GB, map asset still notaccepted/installed (USno exit). First Shore candidate07b0bf4e rejected/uninstalled; NK20/20main, US0/23main with12offmesh.
 on 96f7f624 (DS-052 doors/vehicles/events, all default OFF) on 815bcb7e (C-136 PS team spawn + owner buy rule)
 on 1a7ec84e (C-134) on 493f2cab (C-131 DS-050 fundament) on 4f3a1d72 (CI green).
 
@@ -26,6 +26,8 @@ Open:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+DS071 reviewed eed85fb1 OK. Revised offline Shore candidate653f5e1e:37.297s, observedpeakworkingSet1,967,505,408bytes;332falsewatercells removed, topology/spawn gaps unchanged. Map NOTaccepted/installed. Nativecore16384 reaches actual inside-Area floor candidates for all5capturepoints, including factory/prototype whose pivots are isolated; geometry-driven destination+hold repair justified, not forced links. Native oxygen remains required for eligible swimmer (IsPlayerfalse earlyout); DS070 next. Synthetic runtime watercost test REDbaseline/GREENpatched prepared for CI. No game/localgamebinary/default changes.
 
 Actual native-core long-route oracle on first Shore candidate:4096 nodes reaches energy64 only;8192 reaches64+316 but misses654;16384 reaches all3 with enddist matching floor projections. Raw QA build/coordinator-c145/long-route-budget*.log. Propose bounded existing query capacity/status correction in same package; not another link/geometry fix. CaptureArea interior sampling1461points preserved; results at4096 search nodes must not label reachable energy components disconnected. DS067d candidate apply+MSVC syntaxPASS, capture-before-vehicle priority preserved. No game/code integration/install.
 
