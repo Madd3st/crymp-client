@@ -1,22 +1,35 @@
-# Existing-thread Windows Task Scheduler wake, separate from Codex heartbeat automation.
-[CmdletBinding()] param([Parameter(Mandatory)][string]$CodexRepo,[string]$ThreadId=$env:CODEX_THREAD_ID,[ValidateRange(1,60)][int]$EveryMin=10,[ValidateRange(1,120)][int]$IdleMin=20,[int]$MinimumItem=112)
+# C122 current-user scheduler. Preserves the separate C090 app heartbeat unchanged.
+[CmdletBinding()] param([Parameter(Mandatory)][string]$CodexRepo,[Parameter(Mandatory)][string]$DeepSeekRepo,[Parameter(Mandatory)][string]$DeepSeekSession,[Parameter(Mandatory)][string]$DeepSeekSessionDirectory,[Parameter(Mandatory)][string]$OpenCodeCmd,[Parameter(Mandatory)][string]$HostThreadFile,[int]$EveryMin=10,[int]$IdleMin=20,[string]$Python='C:/Users/Magic8/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe')
 $ErrorActionPreference='Stop'
-if($ThreadId -notmatch '^[0-9a-f-]{36}$'){throw 'Explicit existing thread ID required'}
+$CodexRepo=(Resolve-Path -LiteralPath $CodexRepo).Path;$DeepSeekRepo=(Resolve-Path -LiteralPath $DeepSeekRepo).Path
+if((git -C $DeepSeekRepo branch --show-current).Trim() -ne 'warsbots/research/deepseek'){throw 'Wrong DeepSeek worktree'}
+foreach($file in @($OpenCodeCmd,$Python,$HostThreadFile)){if(-not(Test-Path -LiteralPath $file)){throw "Missing file $file"}}
+if(-not(Test-Path -LiteralPath $DeepSeekSessionDirectory)){throw 'DeepSeek original session directory missing'}
+$codex=(Get-Command codex.cmd -ErrorAction Stop).Source
 $stable=Join-Path $env:LOCALAPPDATA 'WarsBots/Mailbox/bin';New-Item -ItemType Directory -Force $stable|Out-Null
-foreach($name in @('wake_agents.ps1','run_codex_wake.ps1')){Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $stable $name) -Force}
-$inbox=(git -C $CodexRepo show origin/warsbots/research/steelmill-triage:Docs/Research/Coordination/MAILBOX/TO_CODEX.md)-join "`n"
-$sections=@{}
-foreach($m in [regex]::Matches($inbox,'(?ms)^### C-(\d+)[^\r\n]*\r?\n.*?(?=^### C-|\z)')){
- $h=[Security.Cryptography.SHA256]::Create()
- try{$sections[$m.Groups[1].Value]=([BitConverter]::ToString($h.ComputeHash([Text.Encoding]::UTF8.GetBytes($m.Value)))).Replace('-','')}finally{$h.Dispose()}
+$cfg=@{CodexRepo=$CodexRepo;DeepSeekRepo=$DeepSeekRepo;DeepSeekSession=$DeepSeekSession;DeepSeekSessionDirectory=$DeepSeekSessionDirectory;OpenCodeCmd=$OpenCodeCmd;CodexCmd=$codex;Python=$Python;HostThreadFile=$HostThreadFile;EveryMin=$EveryMin;IdleMin=$IdleMin}
+$cfgPath=Join-Path $stable 'wake-config.json';[IO.File]::WriteAllText($cfgPath,($cfg|ConvertTo-Json),[Text.UTF8Encoding]::new($false))
+$name='WarsBots Mailbox Wake';$old=Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
+if($old -and $old.State -eq 'Running'){throw 'Existing scheduler tick active; retry after it finishes'}
+$oldXml=if($old){Export-ScheduledTask -TaskName $name}else{$null}
+try{
+ if($old){Disable-ScheduledTask -TaskName $name|Out-Null}
+ # Exact triage copies first, then reviewed compatibility/safety integration.
+ $fresh=Join-Path $CodexRepo 'build/c122-fresh'
+ foreach($f in Get-ChildItem $fresh -Filter '*.ps1'){Copy-Item $f.FullName $stable -Force}
+ foreach($f in @('wake_agents.ps1','run_mailbox_wake.ps1','register_wake_task.ps1','checkpoint_mail.ps1','session_state.py')){Copy-Item (Join-Path $PSScriptRoot $f) $stable -Force}
+ $shim='@echo off'+"`r`n"+'"'+$OpenCodeCmd+'" %*'+"`r`n";[IO.File]::WriteAllText((Join-Path $stable 'opencode.cmd'),$shim,[Text.Encoding]::ASCII)
+ $args='-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "'+(Join-Path $stable 'wake_agents.ps1')+'" -ConfigFile "'+$cfgPath+'"'
+ $action=New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $args -WorkingDirectory $CodexRepo
+ $trigger=New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes $EveryMin)
+ $settings=New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -ExecutionTimeLimit ([TimeSpan]::Zero) -StartWhenAvailable
+ $principal=New-ScheduledTaskPrincipal -UserId ([Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
+ Register-ScheduledTask -TaskName $name -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Force|Out-Null
+ Enable-ScheduledTask -TaskName $name|Out-Null
+ "Registered ${name}: every${EveryMin}min idle${IdleMin}min; C090 untouched"
+}catch{
+ $backup=Join-Path $CodexRepo 'build/c122-before/stable-bin'
+ foreach($f in Get-ChildItem $backup -File){Copy-Item $f.FullName $stable -Force}
+ if($oldXml){Register-ScheduledTask -TaskName $name -Xml $oldXml -Force|Out-Null;Enable-ScheduledTask -TaskName $name|Out-Null}
+ throw
 }
-$stateFile=Join-Path $env:LOCALAPPDATA 'WarsBots/Mailbox/wake-codex-state.json'
-if(-not(Test-Path $stateFile)){@{sections=$sections;registered=[DateTime]::UtcNow.ToString('o')}|ConvertTo-Json -Depth 5|Set-Content $stateFile -Encoding UTF8}
-$script=Join-Path $stable 'wake_agents.ps1'
-$args='-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "'+$script+'" -CodexRepo "'+$CodexRepo+'" -ThreadId '+$ThreadId+' -IdleMin '+$IdleMin+' -MinimumItem '+$MinimumItem
-$action=New-ScheduledTaskAction -Execute 'powershell.exe' -Argument $args -WorkingDirectory $CodexRepo
-$trigger=New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes($EveryMin) -RepetitionInterval (New-TimeSpan -Minutes $EveryMin)
-$settings=New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 5) -StartWhenAvailable
-$principal=New-ScheduledTaskPrincipal -UserId ([Security.Principal.WindowsIdentity]::GetCurrent().Name) -LogonType Interactive -RunLevel Limited
-Register-ScheduledTask -TaskName 'WarsBots Mailbox Wake' -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Force|Out-Null
-Write-Output "Registered WarsBots Mailbox Wake every${EveryMin}min idle${IdleMin}min thread=$ThreadId; Codex heartbeat unchanged"

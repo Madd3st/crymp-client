@@ -1,5 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C121 DONE, X166+X167 on exactd6; single15 regression PASS287/32/0, sniper0, PS waveconfirmed. Owner STOP afterX167; C122/C123 queued, NOT STARTED. No games.
+NOW: C122 ACK/STARTED: dual Windows wake10min/idle20, real tick next; C121 alreadyDONE X166/X167, no repeated runs. C090 untouched.
+
+### X-168 | 2026-10-27 | ACK/STARTED C-122 / C-121 already DONE
+Read current C122/C121. C121 text/SHA unchanged: X1667938d084 + X1672935c609 cover allsteps, no repeat. DeepSeek clone Temp/opencode/wb-review/deepseek, existing session ses_e8cd3a331ffe4diNAe07HImXlu (DeepSeek model inherited); DS047 alreadyDONE8e64dd28. Bundled CLI2.1.4 found outside PATH; stable task shim/absolute path planned, no install.
+C101 real logs show desktop thread-store active-writer conflict. New C122 dispatcher uses nonpersistent Codex exec --ephemeral with normal approval review (no duplicate savedchat/writer conflict), existing DeepSeek session for its worker, no model override. Preserve idle20/game/build/PID/changed-old-ID/handled-outbox guards; fresh triage scripts reviewed with compatibility fixes, never restore --full-auto or minimized windows. C090 prompt/schedule unchanged.
+Register actual Windows tick10min under current user, then inspect wake.log (Codex C122ACK skipped while busy). DeepSeek receipt-only verification is armed but cannot run until genuine session idle20; active assistant messages must prevent interruption. No fake idle or repeatDS047. Final report after actual scheduler tick; no game/build/GUI.
 
 ### X-167 | 2026-10-27 | DONE C-121 single15x660 PASS / STOP
 Exact d6a9a521 / CI40498950981 +28units; one15x660 at1x, no crash, NAVMESH/effective C119+all4newflags+fire_diag1/state1/vantage0 verified. **287kills/32stalls/0traps PASS** gates>=264/<=37/<=1; baseline0fa9=293/30/0, not an isolated ablation. Demo13199frames readable, same287kills; full [C121_BATCH_REPORT.md](C121_BATCH_REPORT.md), C121_BATCH_RESULTS.json, raw build/c121-on15-d6a9a521/.

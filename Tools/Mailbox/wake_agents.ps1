@@ -1,43 +1,64 @@
-# C101: current-user idle wake for the existing Codex thread; never bypasses approvals.
-[CmdletBinding()] param([Parameter(Mandatory)][string]$CodexRepo,[Parameter(Mandatory)][ValidatePattern('^[0-9a-f-]{36}$')][string]$ThreadId,[int]$IdleMin=20,[int]$MinimumItem=112,[switch]$DryRun)
-$ErrorActionPreference='Stop'
-$dir=Join-Path $env:LOCALAPPDATA 'WarsBots/Mailbox';New-Item -ItemType Directory -Force $dir|Out-Null
-$stateFile=Join-Path $dir 'wake-codex-state.json';$pidFile=Join-Path $dir 'wake-codex.pid';$log=Join-Path $dir 'wake.log'
-function Log([string]$Message){[IO.File]::AppendAllText($log,([DateTime]::UtcNow.ToString('o')+' '+$Message+"`n"),[Text.UTF8Encoding]::new($false));Write-Output $Message}
-function Hash-Text([string]$Text){$h=[Security.Cryptography.SHA256]::Create();try{return ([BitConverter]::ToString($h.ComputeHash([Text.Encoding]::UTF8.GetBytes($Text)))).Replace('-','')}finally{$h.Dispose()}}
-if(Get-Process CryMP-Server64,CryMP-Client64,MSBuild,cl -ErrorAction SilentlyContinue){Log 'codex: game/build active, skip';return}
-if(Test-Path $pidFile){$old=Get-Content $pidFile -Raw;if($old.Trim() -match '^\d+$' -and (Get-Process -Id ([int]$old.Trim()) -ErrorAction SilentlyContinue)){Log 'codex: previous wake still alive, skip';return}}
-$repo=(Resolve-Path -LiteralPath $CodexRepo).Path
-$stamp=[long](git -C $repo log -1 --format=%ct);if($LASTEXITCODE){throw 'Invalid repo'}
-$now=[DateTimeOffset]::UtcNow.ToUnixTimeSeconds();$cut=[DateTime]::UtcNow.AddMinutes(-$IdleMin)
-if($IdleMin -gt 0 -and $now-$stamp -lt $IdleMin*60){Log 'codex: recent commit, skip';return}
-foreach($line in (git -C $repo status --porcelain)){if($line.Length -gt 3){$file=Join-Path $repo $line.Substring(3).Trim('"');if((Test-Path -LiteralPath $file) -and (Get-Item -LiteralPath $file).LastWriteTimeUtc -gt $cut){Log 'codex: recent working-tree edit, skip';return}}}
-git -C $repo fetch -q origin '+refs/heads/warsbots/*:refs/remotes/origin/warsbots/*';if($LASTEXITCODE){throw 'Fetch failed'}
-$inbox=(git -C $repo show origin/warsbots/research/steelmill-triage:Docs/Research/Coordination/MAILBOX/TO_CODEX.md)-join "`n"
-$outbox=Get-Content (Join-Path $repo 'Docs/Coordination/TO_CLAUDE.md') -Raw
-$states=@{}
-foreach($header in [regex]::Matches($outbox,'(?m)^### X-[^\r\n]*')){foreach($m in [regex]::Matches($header.Value,'\b(DONE|BLOCKED|REJECTED|ACK|STARTED|PROGRESS)\s+C-?0*(\d+)\b')){$key=$m.Groups[2].Value;if(-not $states.ContainsKey($key)){$states[$key]=$m.Groups[1].Value}}}
-$previous=$null;if(Test-Path $stateFile){$previous=Get-Content $stateFile -Raw|ConvertFrom-Json}
-$sections=@{};$open=@()
-$completion=$null;$completionFile=Join-Path $dir 'codex-last-completion.json'
-if(Test-Path $completionFile){$completion=Get-Content $completionFile -Raw|ConvertFrom-Json;if($IdleMin -gt 0 -and [DateTime]::Parse($completion.finished).ToUniversalTime() -gt $cut){Log 'codex: recent wake completion, skip';return}}
-foreach($m in [regex]::Matches($inbox,'(?ms)^### C-(\d+)[^\r\n]*\r?\n.*?(?=^### C-|\z)')){
- $id=[int]$m.Groups[1].Value;$key=[string]$id;$hash=Hash-Text $m.Value;$sections[$key]=$hash
- $oldHash=if($previous -and $previous.sections.PSObject.Properties.Name -contains $key){$previous.sections.$key}else{$null}
- $changed=$null -ne $oldHash -and $oldHash -ne $hash
- $pending=-not $states.ContainsKey($key) -or $states[$key] -notin @('DONE','BLOCKED','REJECTED')
- if(($id -ge $MinimumItem -and $id -ne 113 -and $pending) -or $changed){$open+=$id}
+# C122: reviewed triage wake integration; no GUI, no duplicate work, no approval bypass.
+[CmdletBinding()] param([string]$ConfigFile=(Join-Path $PSScriptRoot 'wake-config.json'),[switch]$DryRun)
+$ErrorActionPreference='Stop';[Console]::OutputEncoding=[Text.UTF8Encoding]::new($false);$OutputEncoding=[Console]::OutputEncoding
+$cfg=Get-Content -LiteralPath $ConfigFile -Raw -Encoding UTF8|ConvertFrom-Json
+$dir=Join-Path $env:LOCALAPPDATA 'WarsBots/Mailbox';$log=Join-Path $dir 'wake.log';$env:PATH=$PSScriptRoot+';'+$env:PATH
+function Log($m){[IO.File]::AppendAllText($log,([DateTime]::UtcNow.ToString('o')+' '+$m+"`n"),[Text.UTF8Encoding]::new($false));Write-Output $m}
+function Hash($s){$h=[Security.Cryptography.SHA256]::Create();try{([BitConverter]::ToString($h.ComputeHash([Text.Encoding]::UTF8.GetBytes($s)))).Replace('-','')}finally{$h.Dispose()}}
+function Recent-Repo($repo){
+ $cut=[DateTime]::UtcNow.AddMinutes(-[int]$cfg.IdleMin);$age=[long](git -C $repo log -1 --format=%ct)
+ if([DateTimeOffset]::UtcNow.ToUnixTimeSeconds()-$age -lt $cfg.IdleMin*60){return 'recent commit'}
+ foreach($ln in (git -C $repo -c core.quotepath=false status --porcelain)){
+  if($ln.Length -gt 3){$file=Join-Path $repo $ln.Substring(3).Trim('"');if((Test-Path -LiteralPath $file) -and (Get-Item -LiteralPath $file).LastWriteTimeUtc -gt $cut){return 'recent working-tree edit'}}
+ }
+ return $null
 }
-if($completion -and $completion.exit -ne 0 -and $previous.item){$open+=[int]$previous.item}
-if(-not $open){Log 'codex: no pending/changed C-items, skip';return}
-$item=($open|Sort-Object -Descending|Select-Object -First 1)
-$cli=Get-Command codex.cmd -ErrorAction Stop
-$worker=Join-Path $PSScriptRoot 'run_codex_wake.ps1'
-if($DryRun){Log ("codex: DRY-RUN would resume thread=$ThreadId item=C-$item idleMin=$IdleMin repo=$repo");return}
-$prompt='Continue WarsBots in this existing thread. Read latest owner instructions first. Fetch +refs/heads/warsbots/*; read mailbox and NOW. Work only unfinished named tasks under D-013 (Claude writes game code, Codex tooling/QA), no GUI/public servers/deletions outside build, never duplicate active runs or successful checks. Print and validate recipes, preserve memory, Save the research ref at task start; after reporting use Tools/Mailbox/checkpoint_mail.ps1 for that item with the original processed ref, then push/fetch. Never checkpoint newly edited unprocessed instructions. If blocked report and take next. Respect owner game and stop/limit requests. Existing heartbeat prompt/interval must remain unchanged. Do not repeat successful checks or completed fallback probes without a new named SHA/item. If nothing actionable remains, exit quietly.'
-$promptFile=Join-Path $dir 'codex-wake-prompt.txt';[IO.File]::WriteAllText($promptFile,$prompt,[Text.UTF8Encoding]::new($false))
-$args='-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "'+$worker+'" -Repo "'+$repo+'" -ThreadId '+$ThreadId+' -CodexCmd "'+$cli.Source+'" -PromptFile "'+$promptFile+'"'
-$p=Start-Process powershell.exe -ArgumentList $args -WindowStyle Hidden -PassThru
-[IO.File]::WriteAllText($pidFile,[string]$p.Id)
-@{sections=$sections;item=$item;pid=$p.Id;started=[DateTime]::UtcNow.ToString('o')}|ConvertTo-Json -Depth 5|Set-Content $stateFile -Encoding UTF8
-Log "codex: resumed C-$item existing thread=$ThreadId worker=$($p.Id)"
+function Wake($agent,$repo,$prefix,$outbox){
+ if(-not $repo){return}
+ $stateFile=Join-Path $dir "wake-$agent-v2.json";$old=$null
+ if(Test-Path $stateFile){$old=Get-Content $stateFile -Raw -Encoding UTF8|ConvertFrom-Json}
+ if($old -and $old.worker){$p=Get-CimInstance Win32_Process -Filter "ProcessId=$($old.worker)";if($p -and $p.CommandLine -like '*run_mailbox_wake.ps1*'){Log "${agent}: previous worker active, skip";return}}
+ git -C $repo fetch -q origin '+refs/heads/warsbots/*:refs/remotes/origin/warsbots/*';if($LASTEXITCODE){throw 'Mailbox fetch failed'}
+ $inbox=(git -C $repo show "origin/warsbots/research/steelmill-triage:Docs/Research/Coordination/MAILBOX/TO_$($agent.ToUpperInvariant()).md")-join "`n"
+ $answers=Get-Content -LiteralPath (Join-Path $repo $outbox) -Raw -Encoding UTF8;$states=@{}
+ foreach($head in [regex]::Matches($answers,'(?m)^### [^\r\n]+')){
+  $idMatch=[regex]::Match($head.Value,"\b$prefix-?0*(\d+)\b");$status=[regex]::Match($head.Value,'\b(DONE|BLOCKED|REJECTED|ACK|STARTED|PROGRESS)\b')
+  if($idMatch.Success -and $status.Success -and -not $states.ContainsKey($idMatch.Groups[1].Value)){$states[$idMatch.Groups[1].Value]=$status.Value}
+ }
+ $known=@{};if($old -and $old.sections){foreach($p in $old.sections.PSObject.Properties){$known[$p.Name]=$p.Value}}
+ $pending=@();$all=@{}
+ foreach($section in [regex]::Matches($inbox,"(?ms)^### $prefix-(\d+)[^\r\n]*\r?\n.*?(?=^### $prefix-|\z)")){
+  $id=[int]$section.Groups[1].Value;$key=[string]$id;$body=$section.Value.Substring($section.Value.IndexOf("`n")+1).Trim();$hash=Hash $body;$all[$key]=$hash
+  $terminal=$states[$key] -in @('DONE','BLOCKED','REJECTED') -or $section.Value.Split("`n")[0] -match '(?i)\bdone\b'
+  if($terminal -and -not $known.ContainsKey($key)){$known[$key]=$hash}
+  $changed=$known.ContainsKey($key) -and $known[$key] -ne $hash
+  $skipMeta=$agent -eq 'codex' -and ($id -lt 112 -or $id -eq 113)
+  if(-not $skipMeta -and (-not $terminal -or $changed)){$pending+=$id}
+ }
+ if($agent -eq 'codex'){Log ("codex: C-121="+$states['121']+' C-122='+$states['122']+' (outbox checked; no literal open-header requirement)')}
+ $busy=Recent-Repo $repo
+ if($agent -eq 'codex' -and (Test-Path $cfg.HostThreadFile) -and (Get-Item $cfg.HostThreadFile).LastWriteTimeUtc -gt [DateTime]::UtcNow.AddMinutes(-[int]$cfg.IdleMin)){$busy='desktop thread recently active'}
+ if($agent -eq 'deepseek'){
+  $session=& $cfg.Python (Join-Path $PSScriptRoot 'session_state.py') --session $cfg.DeepSeekSession|ConvertFrom-Json
+  if($LASTEXITCODE){throw 'OpenCode session metadata lookup failed'}
+  if(-not $session.idle -or $session.age_seconds -lt $cfg.IdleMin*60){$busy="session recent/active age=$([int]$session.age_seconds)s pending=$($session.pending)"}
+ }
+ $verify=$agent -eq 'deepseek' -and (Test-Path (Join-Path $dir 'c122-deepseek-verification.request.json'))
+ if($busy){Log "${agent}: $busy; pending=$($pending -join ',') verify=$verify; skip";return}
+ if(-not $pending -and -not $verify){@{sections=$known;checked=[DateTime]::UtcNow.ToString('o')}|ConvertTo-Json -Depth 5|Set-Content $stateFile -Encoding UTF8;Log "${agent}: no unanswered/changed mail; skip (DS-047=$($states['47']))";return}
+ $item=$pending|Sort-Object -Descending|Select-Object -First 1
+ if($DryRun){Log "${agent}: DRY-RUN eligible item=$item verify=$verify";return}
+ $prompt=if($verify){'C122 scheduler delivery receipt only. Reply exactly C122_WAKE_ACK and stop. No tools, no file changes, no game or builds. DS-047 is already DONE; do not repeat it.'}elseif($agent -eq 'codex'){
+  'WarsBots mailbox worker. Latest owner instructions are recorded in Docs/STATUS.md and the NOW line. Fetch +refs/heads/warsbots/*:refs/remotes/origin/warsbots/*, read TO_CODEX.md and your outbox; do only unfinished named work in weapon-goals. Respect stop/limit requests and active owner game. D-013: Claude writes all gameplay code; you do tooling/QA only. No GUI without explicit owner permission, no duplicate or already successful runs, no force/main. Validate recipes before any QA and preserve/restore memory. Report and push each completed task. Exit quietly if nothing is actionable.'
+ }else{"WarsBots mailbox wake. Task repo is $repo on warsbots/research/deepseek. Fetch all warsbots refs, read TO_DEEPSEEK.md and DEEPSEEK_TO_CLAUDE.md. Do only unanswered DS work under D-014: read-only gameplay, patches/reports only, no builds, game, servers, merges or feature-branch edits. DS-047 is already DONE; never repeat completed work. Respect latest owner stop/game requests. Report/push, then wait_mail -Agent deepseek as authorized. No other project changes."}
+ $promptFile=Join-Path $dir "$agent-wake-prompt-v2.txt";[IO.File]::WriteAllText($promptFile,$prompt,[Text.UTF8Encoding]::new($false))
+ $args='-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "'+(Join-Path $PSScriptRoot 'run_mailbox_wake.ps1')+'" -ConfigFile "'+$ConfigFile+'" -Agent '+$agent+' -PromptFile "'+$promptFile+'"'
+ if($verify){$args+=' -Verify';Move-Item -LiteralPath (Join-Path $dir 'c122-deepseek-verification.request.json') -Destination (Join-Path $dir 'c122-deepseek-verification.started.json') -Force}
+ $p=Start-Process powershell.exe -ArgumentList $args -WorkingDirectory $repo -WindowStyle Hidden -PassThru
+ @{sections=$known;worker=$p.Id;item=$item;verify=$verify;started=[DateTime]::UtcNow.ToString('o')}|ConvertTo-Json -Depth 5|Set-Content $stateFile -Encoding UTF8
+ Log "${agent}: STARTED worker=$($p.Id) item=$item verify=$verify; normal permissions, existing DeepSeek session / ephemeral Codex"
+}
+if(Get-Process CryMP-Client64,CryMP-Server64,MSBuild,cl -ErrorAction SilentlyContinue){Log 'all: game/build active, skip before fetch or worker';return}
+if(-not(Test-Path $cfg.CodexCmd) -or -not(Test-Path $cfg.OpenCodeCmd)){throw 'Pinned CLI missing; no installation or silent replacement'}
+Wake 'codex' $cfg.CodexRepo 'C' 'Docs/Coordination/TO_CLAUDE.md'
+Wake 'deepseek' $cfg.DeepSeekRepo 'DS' 'Docs/Coordination/DEEPSEEK_TO_CLAUDE.md'
