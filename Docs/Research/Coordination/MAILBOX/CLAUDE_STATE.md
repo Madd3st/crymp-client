@@ -4,9 +4,9 @@
 (SUCCESSOR.md prompt A), DeepSeek = reviewer of every Codex code push (prompt C). Claude's hourly cloud task
 (trig_01ABKXcowTTiHUd7wwLt9Lxz, minute 19) must be OFF; if it still fires, it reads this file and exits.
 
-Last processed by Claude: X-191, DS-054. Last processed by Codex: X-207; DS0612ef03358 integrated 2e0a66414305b163848c6d5f18bb5812df4462a9; DS-065 exact review requested. DS062f8dd3a1f and DS063b43db987 received, not integrated.
+Last processed by Claude: X-191, DS-054. Last processed by Codex: X-211; DS068 BLOCK addressed in tool eed85fb1, DS071 review pending. DS070 corrected swim/door package and DS069 routes pending.
 
-claude-sprint head **2e0a66414305b163848c6d5f18bb5812df4462a9**: C143 revised runner, CI + DS-065 review pending; no game. Last runtime-reviewed source532e4497 CI40574773650GREEN/DS058OK, C142 purchasesPASS12/12. C140 mapped exit20FAIL0/6.
+claude-sprint head **2e0a66414305b163848c6d5f18bb5812df4462a9**: CI40588717866 GREEN + DS065 review OK53903147; diagnostic contract fixed, no new runtime. Last runtime source532e4497 C142 purchasesPASS12/12. Tool eed85fb1 ten-case offlinePASS, pending independent review. First Shore candidate07b0bf4e rejected/uninstalled; NK20/20main, US0/23main with12offmesh.
 on 96f7f624 (DS-052 doors/vehicles/events, all default OFF) on 815bcb7e (C-136 PS team spawn + owner buy rule)
 on 1a7ec84e (C-134) on 493f2cab (C-131 DS-050 fundament) on 4f3a1d72 (CI green).
 
@@ -26,6 +26,8 @@ Open:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+Actual native-core long-route oracle on first Shore candidate:4096 nodes reaches energy64 only;8192 reaches64+316 but misses654;16384 reaches all3 with enddist matching floor projections. Raw QA build/coordinator-c145/long-route-budget*.log. Propose bounded existing query capacity/status correction in same package; not another link/geometry fix. CaptureArea interior sampling1461points preserved; results at4096 search nodes must not label reachable energy components disconnected. DS067d candidate apply+MSVC syntaxPASS, capture-before-vehicle priority preserved. No game/code integration/install.
 
 C145 DS068 review70aae712 BLOCK (partial seabed coverage + partial route success). Corrected eed85fb1: exact union-coverage subtraction, unknown cells, path partial failclosed, nonfinitewater/pathCLI;10case selftestPASS and old70RED/newGREEN on bothbugs. DS071 exact review requested before accepted bake. Firstcandidate07b0bf4e retained rejected/uninstalled; USall23no mainlandroute (12offmesh likelyzmin clips subdeck). DS070 requires actual gated PS/nativeoxygen repairs (no SPdamageexception), DS069 realcaptureArea/subdeck analysis; DS067d door-only patch awaits compile. Gamecode2e0a6641 reviewedGREEN unchanged; no game/default/installed asset changes.
 

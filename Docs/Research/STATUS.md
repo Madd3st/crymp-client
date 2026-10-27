@@ -17,8 +17,8 @@ reviews every Codex code push. Prompts and current plan: `Docs/Research/Coordina
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (interim coordinator + QA) | C143 integrated 2e0a6641, offline PASS; CI/DS-065 pending, no runtime | Independently validate DS062 water + DS063 door proposals, plan D034 acceptance |
-| DeepSeek (analysis, patches, reviewer) | DS061 revision2ef03358 delivered, acceptance pending | Night DS062 water support -> DS063 door exit -> DS064 capture eligibility audit; exact-SHA reviews first |
+| Codex (interim coordinator + QA) | C145 Shore candidate baked, rejected pending water safety and routes; revised tool eed85fb1 ten-case PASS. Game2e0a6641 reviewed CI GREEN | DS071 tool review; coherent native swim/door/search package; US subdeck routes before game QA |
+| DeepSeek (analysis, patches, reviewer) | DS068 BLOCK fixed, DS071 new tool review; DS067d door candidate syntaxPASS | DS070 gated swim/native oxygen; DS069 US subdeck and actual capture Area routes |
 | Claude | out of limits; handback via CLAUDE_STATE.md | — |
 
 ## 27.10 afternoon → evening (key results)
