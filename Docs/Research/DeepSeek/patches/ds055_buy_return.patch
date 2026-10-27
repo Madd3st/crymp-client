@@ -1,0 +1,15 @@
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 4eb55468..10ab1bff 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -524,7 +524,9 @@ bool BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
+ 		if(!item)return false;
+ 		if(!ss->BeginCall(table,"WarsBotsBuy"))return false;
+ 		ss->PushFuncParam(table); ss->PushFuncParam(ScriptHandle(id)); ss->PushFuncParam(item);
+-		int ok=0; ss->EndCall(ok); return ok!=0;
++		// X-192: WarsBotsBuy returns a Lua boolean; EndCall(int) leaves 0 on success (PP 100->25/50 in the demo
++		// while ok=0), so the laser branch never ran. Read it as bool, like CanEnterVehicle does.
++		bool ok=false; ss->EndCall(ok); return ok;
+ 	};
+ 	const bool primary=buy(plan.primary);
+ 	const bool laser=primary&&plan.buyLaser?buy(plan.laser):false;
