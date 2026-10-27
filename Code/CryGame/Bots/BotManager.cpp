@@ -159,7 +159,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	// DS-047: BotProbeRunner.h host behind wb_probe_runner (default 0).
 	console->AddCommand("wb_probe_load", ProbeLoadCommand, 0, "wb_probe_load <scenario.json>: parse a probe v1 scenario (needs wb_probe_runner 1)");
 	console->AddCommand("wb_probe_start", ProbeStartCommand, 0, "wb_probe_start: run the loaded scenario setup and start the metrics window");
-	console->AddCommand("wb_probe_run", ProbeRunCommand, 0, "wb_probe_run <id> <seconds>: start observing without a scenario file (external setup)");
+	console->AddCommand("wb_probe_run", ProbeRunCommand, 0, "wb_probe_run <id> [seconds]: start observing without a scenario file (external setup); seconds defaults to the loaded scenario duration");
 	console->AddCommand("wb_probe_stop", ProbeStopCommand, 0, "wb_probe_stop: stop the running probe without a result file");
 	console->AddCommand("wb_probe_runner_status", ProbeRunnerStatusCommand, 0, "Probe runner state: flag, loaded scenario, remaining seconds, live metrics");
 	console->AddCommand("wb_probe_goal", ProbeGoalCommand, 0, "wb_probe_goal x y z [radius]: arrival marker for the loaded scenario");
@@ -1195,11 +1195,16 @@ void BotManager::ProbeRunCommand(IConsoleCmdArgs* args)
 {
 	BotManager* self = Self();
 	if (!ProbeRunnerEnabled()) { WB_LOG(0, "[WarsBots] PROBE RUNNER OFF: set wb_probe_runner 1 first."); return; }
-	if (!self || !args || args->GetArgCount() != 3)
-	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_run <id> <seconds>."); return; }
+	if (!self || !args || (args->GetArgCount() != 2 && args->GetArgCount() != 3))
+	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_run <id> [seconds]."); return; }
 	float seconds = 0;
-	if (!ParseCoordinate(args->GetArg(2), seconds) || seconds <= 0 || seconds > 3600)
-	{ WB_LOG(0, "[WarsBots] wb_probe_run: duration must be 0..3600 s."); return; }
+	if (args->GetArgCount() == 3)
+	{
+		if (!ParseCoordinate(args->GetArg(2), seconds) || seconds <= 0 || seconds > 3600)
+		{ WB_LOG(0, "[WarsBots] wb_probe_run: duration must be 0..3600 s."); return; }
+	}
+	else if (self->m_probe.loaded && self->m_probe.scenario.duration > 0) seconds = float(self->m_probe.scenario.duration);
+	else seconds = 60.0f;
 	if (self->m_probe.Running())
 	{ WB_LOG(0, "[WarsBots] PROBE RUN refused: already running id=%s.", self->m_probe.scenario.id.c_str()); return; }
 	if (!self->m_probe.loaded) { self->m_probe.scenario = Probe::Scenario(); self->m_probe.loaded = true; }

@@ -4,6 +4,7 @@
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotProfile.h"
 #include <vector>
+#include <unordered_map>
 #include "CryGame/Bots/BotTrapWatchdog.h"
 #include "CryGame/Bots/BotLookPolicy.h"
 #include "CryGame/Bots/BotGoalArbiter.h"
@@ -166,7 +167,7 @@ private:
 	float m_withdrawUntil=0, m_nextWithdraw=0, m_nextWithdrawPick=0;
 	Vec3 m_withdrawCover=Vec3(0,0,0);
 	bool m_withdrawCoverValid=false;
-	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false; int m_psBuys=0; float m_nextAliveBuy=0, m_lifeStartedAt=0; float m_nextDoorUse=0, m_nextVehicle=0, m_vehicleExitAt=0;
+	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false; int m_psBuys=0; float m_nextAliveBuy=0, m_lifeStartedAt=0; float m_nextDoorUse=0, m_nextVehicle=0, m_vehicleExitAt=0; std::unordered_map<EntityId,float> m_doorUsed;
 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
 	EntityId m_upgradeTarget = 0;
 	float m_upgradeSince = 0;

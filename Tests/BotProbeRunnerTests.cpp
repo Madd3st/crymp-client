@@ -108,6 +108,17 @@ int main()
     CHECK(!Evaluate(m, unknown, ur));
     CHECK(!ur.pass);
 
+    // DS-053: repo recipes carry raw setup commands (wb_add/wb_teleport).
+    Scenario recipe;
+    CHECK(ParseScenario("{\"id\":\"r\",\"setup\":[\"wb_add 1 elite marksman\",\"wb_teleport 1 1 2 3\"],\"duration_s\":5}", recipe, &err));
+    CHECK(recipe.setup.size() == 2 && recipe.setup[0] == "wb_add 1 elite marksman");
+    {
+        const std::vector<std::string> cmds = BuildSetupCommands(recipe);
+        bool hasAdd = false, hasTp = false;
+        for (size_t i = 0; i < cmds.size(); ++i) { hasAdd |= cmds[i] == "wb_add 1 elite marksman"; hasTp |= cmds[i] == "wb_teleport 1 1 2 3"; }
+        CHECK(hasAdd && hasTp);
+    }
+
     // Malformed JSON is rejected.
     Json j;
     CHECK(!ParseJson("{ \"id\": ", j, &err));

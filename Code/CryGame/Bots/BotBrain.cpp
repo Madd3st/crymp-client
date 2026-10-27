@@ -301,7 +301,7 @@ void BotBrain::ResetLife()
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
-	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_lifeStartedAt=m_now; m_nextAliveBuy=0;
+	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_lifeStartedAt=m_now; m_nextAliveBuy=0; m_doorUsed.clear();
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	++m_life;
@@ -580,10 +580,24 @@ bool BotBrain::UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTi
 		{
 			IEntity* e=query.pEntities[i]; if(!e || e->IsHidden())continue;
 			const char* cls=e->GetClass()?e->GetClass()->GetName():""; if(std::strcmp(cls,"Door"))continue;
-			const Vec3 d=e->GetWorldPos()-feet; if(d.GetLengthSquared2D()>25.0f || d.GetLength2D()<0.1f)continue;
-			const Vec3 fwd=actor.GetEntity()->GetWorldRotation().GetColumn1(); if(fwd.Dot(d.GetNormalizedSafe(fwd))<0.2f)continue;
-			if(IScriptTable* dt=e->GetScriptTable()) Script::CallMethod(dt,"OnUsed",actor.GetEntity()->GetScriptTable());
-			m_nextDoorUse=m_now+1.0f; WB_LOG(2,"[WarsBots] #%d PS DOOR use entity=%u actor=%u.",m_number,e->GetId(),id); break;
+			IScriptTable* dt=e->GetScriptTable(); if(!dt)continue;
+			int action=-1; dt->GetValue("action",action); if(action==1)continue; // DOOR_OPEN
+			auto used=m_doorUsed.find(e->GetId()); if(used!=m_doorUsed.end() && m_now<used->second)continue;
+			const Vec3 to=e->GetWorldPos()-feet; if(to.GetLengthSquared2D()>25.0f)continue;
+			bool ahead=false;
+			if (m_meshPathActive && m_pathIndex<m_path.size())
+			{
+				const Vec3 seg=m_path[m_pathIndex]-feet; const float len2=seg.GetLengthSquared2D();
+				if (len2>0.01f) { const float t=clamp_tpl(to.Dot(seg)/len2,0.f,1.f); const Vec3 on=feet+seg*t; ahead=t>0.1f && (e->GetWorldPos()-on).GetLength2D()<=3.0f; }
+			}
+			else { const Vec3 fwd=actor.GetEntity()->GetWorldRotation().GetColumn1(); ahead=fwd.Dot(to.GetNormalizedSafe(fwd))>=0.2f; }
+			if(!ahead)continue;
+			// DS-054: Door:OnUsed is the client use path (self.server:SvRequestOpen RMI at Door.lua:356); from the server
+			// it hits the client RMI dispatcher ("not a client"). Call the stock server handler Door:Open(user, DOOR_OPEN)
+			// directly: Door.lua:523-524 "this is only safe to be called from server", :565/:572 allClients broadcast.
+			Script::CallMethod(dt,"Open",actor.GetEntity()->GetScriptTable(),1);
+			m_doorUsed[e->GetId()]=m_now+2.0f; m_nextDoorUse=m_now+0.5f;
+			WB_LOG(2,"[WarsBots] #%d PS DOOR open entity=%u actor=%u state=%d.",m_number,e->GetId(),id,action); break;
 		}
 	}
 	return false;

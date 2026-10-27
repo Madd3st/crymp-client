@@ -175,6 +175,7 @@ struct Scenario
     std::vector<PeekSpec> peeks;
     std::vector<CloakSpec> cloaks;
     std::map<std::string, std::string> cvars;   // already formatted values
+    std::vector<std::string> setup;              // raw console commands from the repo JSON "setup" array
     std::vector<Assertion> assertions;
     bool hasGoal = false;
     double goal[3] = { 0, 0, 0 };
@@ -268,6 +269,9 @@ inline bool ParseScenario(const std::string& text, Scenario& out, std::string* e
             else if (v.type == Json::Number) out.cvars[it->first] = NumberText(v.number);
             else if (v.type == Json::String) out.cvars[it->first] = v.text;
         }
+    if (const Json* setup = root.Get("setup"))
+        for (size_t i = 0; i < setup->array.size(); ++i)
+            if (setup->array[i].type == Json::String) out.setup.push_back(setup->array[i].text);
     // DS-047: the repo probe files use "assert"; the test scenario uses "assertions". Accept both.
     const Json* as = root.Get("assertions");
     if (!as) as = root.Get("assert");
@@ -296,6 +300,10 @@ inline std::vector<std::string> BuildSetupCommands(const Scenario& s)
     std::vector<std::string> out;
     for (std::map<std::string, std::string>::const_iterator it = s.cvars.begin(); it != s.cvars.end(); ++it)
         out.push_back(it->first + " " + it->second);
+    // C-126 recipes carry wb_add/wb_teleport in a raw "setup" array; run it after the cvars.
+    for (size_t i = 0; i < s.setup.size(); ++i)
+        if (s.setup[i].compare(0, 12, "wb_probe_run") != 0)
+            out.push_back(s.setup[i]);
     for (size_t i = 0; i < s.bots.size(); ++i)
     {
         const BotSpec& b = s.bots[i];
