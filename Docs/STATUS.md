@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
+C126 step2 DONE FAIL exact493f2cab CI40528417384: DSG1/Gauss observedpickups0/3both (DSG1gate>=2/3); LINKfailures3/13, reasonsmissedlanding/noenergy/notakeoff. Native runnerstep1recipeBLOCKED; no15bot/ownerpreset/soak afterfailedprobe. Originalmemory/nav actualhashrestored; X188.
+
 C137 DONE FAIL exact815bcb7e CI40546394540: Shore6x300 initial/reset spawns12/12 ownbasegroups; purchases0/6 inclLAM, noattempts. No deaths/wavecoverage; crash/Lua/channel0, stalls59/trap1. C131 alreadyDONE/no repeat. C137 memory + interruptedC126 originalmemory/nav actualhashrestored; X186.
 
 C131 DONE: exact4f3a1d72->493f2cab Steelmill6x300 pair K39->44/S5->5/T0->0, primaryp50 4.043->3.744, ABA9.69->7.01; no evident regression, one pair/nativeRNG. Shore493 4death/4wave, crash/Lua/channel0, buys0(pp0), summaryparsePASS. Memory/nav actualhashrestored; X184. C126 runner recipe blocked, legacy sniper probes next.

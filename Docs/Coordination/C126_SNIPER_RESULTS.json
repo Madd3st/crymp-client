@@ -1,0 +1,712 @@
+{
+  "source": "493f2cab2e58f814db4065148da423b691a711c3",
+  "ci": 40528417384,
+  "step1": "BLOCKED: native ParseScenario ignores repository scenario setup array; wb_probe_run needs id/seconds. No invalid zero-actor run.",
+  "step2": "FAIL",
+  "step3": "DONE previously; no repeats",
+  "steps4_6": "NOT RUN: DSG1 gate requires >=2/3; probe FAIL stops soak/preset progression",
+  "probes": [
+    {
+      "id": "sniper_reach_dsg1",
+      "recipe": {
+        "wb_probe_local_test": 1,
+        "wb_move_trace": 1,
+        "wb_demo_record": 1,
+        "wb_bot_navmesh": 1,
+        "wb_bot_jump_links": 1,
+        "wb_bot_weapon_rank": 1,
+        "wb_bot_path_progress": 1,
+        "wb_bot_vantage": 1,
+        "wb_bot_arbiter": 0,
+        "wb_bot_state_commit": 1,
+        "wb_bot_sniper_reach": 1,
+        "wb_bot_link_failfast": 1
+      },
+      "server_sha256": "E836E0C1A2C5430565B13F0722F53835AD93E768ED63642B43B4658798A6D39F",
+      "results": [
+        {
+          "assertions": [
+            {
+              "expected": 45,
+              "op": "le_seconds",
+              "metric": "pickup:DSG1",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": false,
+              "actual": 1
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "trace": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c126-resume-sniper_reach_dsg1-493f2cab\\Probe-sniper_reach_dsg1-052ec49b-repeat-1.bots.log",
+          "repeat": 1,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 0,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 0
+          },
+          "pass": false
+        },
+        {
+          "assertions": [
+            {
+              "expected": 45,
+              "op": "le_seconds",
+              "metric": "pickup:DSG1",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": false,
+              "actual": 1
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "trace": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c126-resume-sniper_reach_dsg1-493f2cab\\Probe-sniper_reach_dsg1-29a6c28b-repeat-2.bots.log",
+          "repeat": 2,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 1,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 0
+          },
+          "pass": false
+        },
+        {
+          "assertions": [
+            {
+              "expected": 45,
+              "op": "le_seconds",
+              "metric": "pickup:DSG1",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": false,
+              "actual": 1
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "trace": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c126-resume-sniper_reach_dsg1-493f2cab\\Probe-sniper_reach_dsg1-f1ed9508-repeat-3.bots.log",
+          "repeat": 3,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 2,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 0
+          },
+          "pass": false
+        }
+      ],
+      "pass": false,
+      "reused_first_trace": "",
+      "schema": "warsbots-probe-result/1",
+      "medians": {
+        "stalls": 0,
+        "glances": 0,
+        "link:strength:done": 0,
+        "link:failed": 1,
+        "link:drop:done": 0,
+        "link:jump:done": 0,
+        "unreachable": 1
+      },
+      "source": "493f2cab2e58f814db4065148da423b691a711c3",
+      "error": null,
+      "seed": "native random_device, setup only is fixed",
+      "memory_after": [
+        {
+          "expected": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+          "sha256": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "expected": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+          "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "memory_restored": true,
+      "trial_evidence": [
+        {
+          "repeat": 1,
+          "pass_": false,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 0,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 0
+          },
+          "assertions": [
+            {
+              "expected": 45,
+              "op": "le_seconds",
+              "metric": "pickup:DSG1",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": false,
+              "actual": 1
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "link_failure_reasons": {},
+          "raw_trace": "build\\c126-resume-sniper_reach_dsg1-493f2cab\\Probe-sniper_reach_dsg1-052ec49b-repeat-1.bots.log",
+          "first40_evidence": [
+            "45.75 [WarsBots] #1 weapon 98 unreachable; skipping it."
+          ]
+        },
+        {
+          "repeat": 2,
+          "pass_": false,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 1,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 0
+          },
+          "assertions": [
+            {
+              "expected": 45,
+              "op": "le_seconds",
+              "metric": "pickup:DSG1",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": false,
+              "actual": 1
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "link_failure_reasons": {
+            "missed_landing": 1
+          },
+          "raw_trace": "build\\c126-resume-sniper_reach_dsg1-493f2cab\\Probe-sniper_reach_dsg1-29a6c28b-repeat-2.bots.log",
+          "first40_evidence": [
+            "40.67 [WarsBots] #1 weapon 98 unreachable; skipping it.",
+            "55.21 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1289.55,1350.49,136.00) -> fail noted actor=65501."
+          ]
+        },
+        {
+          "repeat": 3,
+          "pass_": false,
+          "metrics": {
+            "unreachable": 1,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 2,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 0
+          },
+          "assertions": [
+            {
+              "expected": 45,
+              "op": "le_seconds",
+              "metric": "pickup:DSG1",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": false,
+              "actual": 1
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "link_failure_reasons": {
+            "missed_landing": 2
+          },
+          "raw_trace": "build\\c126-resume-sniper_reach_dsg1-493f2cab\\Probe-sniper_reach_dsg1-f1ed9508-repeat-3.bots.log",
+          "first40_evidence": [
+            "25.92 [WarsBots] #1 weapon 98 unreachable; skipping it.",
+            "39.94 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1289.55,1350.05,136.00) -> fail noted actor=65501.",
+            "54.75 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1228.48,1372.06,136.00) -> fail noted actor=65501."
+          ]
+        }
+      ],
+      "effective_checks": [
+        {
+          "file": "preflight-effective.json",
+          "pass_": true
+        },
+        {
+          "file": "repeat-1-effective.json",
+          "pass_": true
+        },
+        {
+          "file": "repeat-2-effective.json",
+          "pass_": true
+        },
+        {
+          "file": "repeat-3-effective.json",
+          "pass_": true
+        }
+      ],
+      "hashes": {
+        "preflight-arguments.txt": "79ebec29a366d8d836d3c814b6c8d7927b3e750ddf21d4b9cb9d1cb84dc5877f",
+        "preflight-effective.json": "abcc3044c132b3b20820e97429c705a484942f3e7da38dde72f8ff34c3ef77cf",
+        "probe-result.json": "379cb1768a9897450c4012f910cc0ca01c7245d16224957278661c3cc5fccae0",
+        "Probe-sniper_reach_dsg1-052ec49b-repeat-1.bots.log": "cea5364694af479e1b3d4377bc9cec203dd9be1461aa092d92978e7efb53fc0b",
+        "Probe-sniper_reach_dsg1-052ec49b-repeat-1.log": "50fc35c5b4255727dfca87acd29534ef0f90a61bed1935dfa5ba1f231bdba7b1",
+        "Probe-sniper_reach_dsg1-14868d91-preflight.bots.log": "6e521a5618b6cf22cdf75d4a23970d2c9354bcb6753b27b496faba853737e7f7",
+        "Probe-sniper_reach_dsg1-14868d91-preflight.log": "66e0294d3fe745ec3f37973a756d8844ced61314730f9e008234a916dbe7ae84",
+        "Probe-sniper_reach_dsg1-29a6c28b-repeat-2.bots.log": "362811c52ba035397dfcab2b19ae11178b8861d571fa0c5be2dbc71058cf7bb5",
+        "Probe-sniper_reach_dsg1-29a6c28b-repeat-2.log": "5f388883bd0c49c1520b9a6310f2237e91f13bc9e2d84108cd3276713a37ec50",
+        "Probe-sniper_reach_dsg1-f1ed9508-repeat-3.bots.log": "b511198abdf363d6186117a1dfcfb581fa2f61dd659720440623ad2c816f7033",
+        "Probe-sniper_reach_dsg1-f1ed9508-repeat-3.log": "36eed38abccd3ee6e874b2cfb908a2ebb7d25912067b67c40d8a2734699b5d5c",
+        "recipe.json": "4fcb6b7a25dc2fdc1ac7fab70bce481d2061f27bec894907ba5d750cadca0fa2",
+        "repeat-1-arguments.txt": "bcb1a10d6859e0c05ff2d53c4f9e20bd948ee7fa9bcfbd47d5764e818a3168d4",
+        "repeat-1-effective.json": "abcc3044c132b3b20820e97429c705a484942f3e7da38dde72f8ff34c3ef77cf",
+        "repeat-2-arguments.txt": "4ac4acac5a81530a3052a2243287ad02ef343353aa5fa0d2ce3bec9efeefbce6",
+        "repeat-2-effective.json": "abcc3044c132b3b20820e97429c705a484942f3e7da38dde72f8ff34c3ef77cf",
+        "repeat-3-arguments.txt": "6d612be8262be9790ff854a0e05e83ecfb58e42c7a54a43149e87341acb4236f",
+        "repeat-3-effective.json": "abcc3044c132b3b20820e97429c705a484942f3e7da38dde72f8ff34c3ef77cf"
+      }
+    },
+    {
+      "id": "sniper_reach_gauss",
+      "recipe": {
+        "wb_probe_local_test": 1,
+        "wb_move_trace": 1,
+        "wb_demo_record": 1,
+        "wb_bot_navmesh": 1,
+        "wb_bot_jump_links": 1,
+        "wb_bot_weapon_rank": 1,
+        "wb_bot_path_progress": 1,
+        "wb_bot_vantage": 1,
+        "wb_bot_arbiter": 0,
+        "wb_bot_state_commit": 1,
+        "wb_bot_sniper_reach": 1,
+        "wb_bot_link_failfast": 1
+      },
+      "server_sha256": "E836E0C1A2C5430565B13F0722F53835AD93E768ED63642B43B4658798A6D39F",
+      "results": [
+        {
+          "assertions": [
+            {
+              "expected": 60,
+              "op": "le_seconds",
+              "metric": "pickup:GaussRifle",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": true,
+              "actual": 0
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "trace": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c126-resume-sniper_reach_gauss-493f2cab\\Probe-sniper_reach_gauss-d0a406b8-repeat-1.bots.log",
+          "repeat": 1,
+          "metrics": {
+            "unreachable": 0,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 3,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 139.07
+          },
+          "pass": false
+        },
+        {
+          "assertions": [
+            {
+              "expected": 60,
+              "op": "le_seconds",
+              "metric": "pickup:GaussRifle",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": true,
+              "actual": 0
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "trace": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c126-resume-sniper_reach_gauss-493f2cab\\Probe-sniper_reach_gauss-f96e2c64-repeat-2.bots.log",
+          "repeat": 2,
+          "metrics": {
+            "unreachable": 0,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 6,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 139.09
+          },
+          "pass": false
+        },
+        {
+          "assertions": [
+            {
+              "expected": 60,
+              "op": "le_seconds",
+              "metric": "pickup:GaussRifle",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": true,
+              "actual": 0
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "trace": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c126-resume-sniper_reach_gauss-493f2cab\\Probe-sniper_reach_gauss-8bbae0a5-repeat-3.bots.log",
+          "repeat": 3,
+          "metrics": {
+            "unreachable": 0,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 4,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 139.1
+          },
+          "pass": false
+        }
+      ],
+      "pass": false,
+      "reused_first_trace": "",
+      "schema": "warsbots-probe-result/1",
+      "medians": {
+        "stalls": 0,
+        "landing_z": 139.09,
+        "glances": 0,
+        "link:strength:done": 1,
+        "link:failed": 4,
+        "link:drop:done": 0,
+        "link:jump:done": 0,
+        "unreachable": 0
+      },
+      "source": "493f2cab2e58f814db4065148da423b691a711c3",
+      "error": null,
+      "seed": "native random_device, setup only is fixed",
+      "memory_after": [
+        {
+          "expected": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+          "sha256": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "expected": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+          "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        }
+      ],
+      "memory_restored": true,
+      "trial_evidence": [
+        {
+          "repeat": 1,
+          "pass_": false,
+          "metrics": {
+            "unreachable": 0,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 3,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 139.07
+          },
+          "assertions": [
+            {
+              "expected": 60,
+              "op": "le_seconds",
+              "metric": "pickup:GaussRifle",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": true,
+              "actual": 0
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "link_failure_reasons": {
+            "no_energy": 1,
+            "no_takeoff": 1,
+            "missed_landing": 1
+          },
+          "raw_trace": "build\\c126-resume-sniper_reach_gauss-493f2cab\\Probe-sniper_reach_gauss-d0a406b8-repeat-1.bots.log",
+          "first40_evidence": [
+            "18.62 [WarsBots] #1 LINK failed kind=strength reason=no_energy at=(1229.58,1372.71,139.13) actor=65501.",
+            "24.88 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.45,1376.82,139.13) -> fail noted actor=65501.",
+            "32.01 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1229.84,1364.72,136.00) -> fail noted actor=65501."
+          ]
+        },
+        {
+          "repeat": 2,
+          "pass_": false,
+          "metrics": {
+            "unreachable": 0,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 6,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 139.09
+          },
+          "assertions": [
+            {
+              "expected": 60,
+              "op": "le_seconds",
+              "metric": "pickup:GaussRifle",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": true,
+              "actual": 0
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "link_failure_reasons": {
+            "missed_landing": 2,
+            "no_energy": 1,
+            "no_takeoff": 3
+          },
+          "raw_trace": "build\\c126-resume-sniper_reach_gauss-493f2cab\\Probe-sniper_reach_gauss-f96e2c64-repeat-2.bots.log",
+          "first40_evidence": [
+            "13.00 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1228.48,1372.06,136.00) -> fail noted actor=65501.",
+            "21.08 [WarsBots] #1 LINK failed kind=strength reason=no_energy at=(1236.59,1372.76,136.00) actor=65501.",
+            "32.73 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.34,1375.04,139.13) -> fail noted actor=65501.",
+            "39.15 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.19,1374.74,139.13) -> fail noted actor=65501.",
+            "43.14 [WarsBots] #1 LINK failed kind=drop reason=no_takeoff at=(1230.68,1372.51,139.12) -> fail noted actor=65501.",
+            "45.92 [WarsBots] #1 LINK failed kind=drop reason=missed_landing at=(1230.04,1372.70,139.10) -> fail noted actor=65501."
+          ]
+        },
+        {
+          "repeat": 3,
+          "pass_": false,
+          "metrics": {
+            "unreachable": 0,
+            "stalls": 0,
+            "glances": 0,
+            "link:failed": 4,
+            "link:drop:done": 0,
+            "link:jump:done": 0,
+            "link:strength:done": 1,
+            "landing_z": 139.1
+          },
+          "assertions": [
+            {
+              "expected": 60,
+              "op": "le_seconds",
+              "metric": "pickup:GaussRifle",
+              "pass": false,
+              "actual": null
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "unreachable",
+              "pass": true,
+              "actual": 0
+            },
+            {
+              "expected": 0,
+              "op": "eq",
+              "metric": "stalls",
+              "pass": true,
+              "actual": 0
+            }
+          ],
+          "link_failure_reasons": {
+            "missed_landing": 2,
+            "no_energy": 1,
+            "no_takeoff": 1
+          },
+          "raw_trace": "build\\c126-resume-sniper_reach_gauss-493f2cab\\Probe-sniper_reach_gauss-8bbae0a5-repeat-3.bots.log",
+          "first40_evidence": [
+            "13.46 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1228.48,1372.06,136.00) -> fail noted actor=65501.",
+            "21.53 [WarsBots] #1 LINK failed kind=strength reason=no_energy at=(1236.63,1372.83,136.00) actor=65501.",
+            "33.13 [WarsBots] #1 LINK failed kind=strength reason=no_takeoff at=(1230.50,1376.98,139.13) -> fail noted actor=65501.",
+            "40.48 [WarsBots] #1 LINK failed kind=strength reason=missed_landing at=(1229.40,1364.55,136.00) -> fail noted actor=65501."
+          ]
+        }
+      ],
+      "effective_checks": [
+        {
+          "file": "preflight-effective.json",
+          "pass_": true
+        },
+        {
+          "file": "repeat-1-effective.json",
+          "pass_": true
+        },
+        {
+          "file": "repeat-2-effective.json",
+          "pass_": true
+        },
+        {
+          "file": "repeat-3-effective.json",
+          "pass_": true
+        }
+      ],
+      "hashes": {
+        "preflight-arguments.txt": "8d5092860e249f2176abd984918f034b7cad4e56767531bd63a3a9e9162e19be",
+        "preflight-effective.json": "abcc3044c132b3b20820e97429c705a484942f3e7da38dde72f8ff34c3ef77cf",
+        "probe-result.json": "4d1ca5f01a18abf6786f8ed0a47ad45c93817ad627de8902e5b2e6b25bad8295",
+        "Probe-sniper_reach_gauss-17097c28-preflight.bots.log": "6e7febfb369c9f904839dc56e7d18fc4aff3b9ae313f451316fe4fdafb5daaba",
+        "Probe-sniper_reach_gauss-17097c28-preflight.log": "0935dff5a550c53b39ea83cdd48fd59d7febd0e1c284999f7c4ef5415f501836",
+        "Probe-sniper_reach_gauss-8bbae0a5-repeat-3.bots.log": "3c442e7168e4ab6a440e4979d0fe11a2374be979fc2e8c78999c96336313c463",
+        "Probe-sniper_reach_gauss-8bbae0a5-repeat-3.log": "528df28e8d8fa13de198f99d0567955c702011d4ecdfd6fe2c8fbd0cc1ae9245",
+        "Probe-sniper_reach_gauss-d0a406b8-repeat-1.bots.log": "bda5873874a2f229e732b7c7696ab0e6755e1f069454e2604144c538cf7050b4",
+        "Probe-sniper_reach_gauss-d0a406b8-repeat-1.log": "072996b0995101d9686f48f3d39ef377ca184dc3cce218cd838e7f50d9879d59",
+        "Probe-sniper_reach_gauss-f96e2c64-repeat-2.bots.log": "79191f03d2ab627290a7dde7f344f2a646cc10d1a46a8efd5b597e263bb1c96d",
+        "Probe-sniper_reach_gauss-f96e2c64-repeat-2.log": "56e5c5c2b8ebc8603fbed278aa4ee23373aaabff132ff9c6860f9ad218b2a26b",
+        "recipe.json": "4fcb6b7a25dc2fdc1ac7fab70bce481d2061f27bec894907ba5d750cadca0fa2",
+        "repeat-1-arguments.txt": "791734a902b0affd8b0e3a5c4979b9ddbf5f1aaca2041baaa11e28ccc83e595d",
+        "repeat-1-effective.json": "abcc3044c132b3b20820e97429c705a484942f3e7da38dde72f8ff34c3ef77cf",
+        "repeat-2-arguments.txt": "399358b05d1518b1089f113eec3efbbe1a56c9a74b9e23172144543a26ce5d46",
+        "repeat-2-effective.json": "abcc3044c132b3b20820e97429c705a484942f3e7da38dde72f8ff34c3ef77cf",
+        "repeat-3-arguments.txt": "85f53251ad4f7983d78227e4b6af45ddff0a9cce4b3ed5e0ce1bdd0b2adb5311",
+        "repeat-3-effective.json": "abcc3044c132b3b20820e97429c705a484942f3e7da38dde72f8ff34c3ef77cf"
+      }
+    }
+  ],
+  "memory_restored_actual_hashes": {
+    "Multiplayer_IA_Steelmill.mem": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+    "Multiplayer_PS_Shore.mem": "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D"
+  },
+  "nav_restored_actual_hashes": {
+    "Armada.links.txt": "CE3326CAF751661CF43F820560A390CC2EE5EE008C2D56E9E67D11CEE7F34247",
+    "Armada.manifest.json": "5ED27F25F015095BD9AD11D9FE5888F61A7411F9DC17B17AD3722CC8C37FB861",
+    "Armada.navmesh": "87F0438CCA0B531F6F227F83D640916AFB93667802973E763333F73D78957590",
+    "Armada.spots.txt": "71AC48ED80C2068F6273868966362D1AEFBEBC0DB5D34599CF0E121DA53C1293",
+    "Outpost.links.txt": "0E6651A3DA7536B5A20D3F1E9F81BC8EE588D0366D84E196C1E1B6DAD0DC4D23",
+    "Outpost.manifest.json": "FA57ED4F696CE19334C2D447826E1B9D63DE9A7425EF35927A547F7C43EEF0E6",
+    "Outpost.navmesh": "944297AC9D51E5614B05401350DF107A436B7606FF8174905057BA973468D18A",
+    "Outpost.spots.txt": "F041DBAB3924403DF302BDAF6169C180257CAD8C49822BEF044F6A980225E681",
+    "Quarry.links.txt": "2DAA4F3AD189B0E90FFDB11312156C1B229CAB67D6F49A20E642608E00D053E1",
+    "Quarry.manifest.json": "39BEDF0452D93CA4982FEB3434BA4C3C4342DF3BA0C7AD42E6C1408725FDDA2A",
+    "Quarry.navmesh": "3A2F6D50FFADF13238D80429E2269193857CC93EB9D7735574A131C4C7DC98E7",
+    "Quarry.spots.txt": "2A4E9C01DF4F8653AB576C2695F1FFC3A2E72A9DBF7E5E355E1A3F0727A4ADDB",
+    "Steelmill.links.txt": "7C384D12FF693BCED574015A0E0067F8CB5C1A4A9A81881C1AFF9088EC6B67E4",
+    "Steelmill.manifest.json": "546ABE5829DDE03B8057BC7FD9406D8791EAC6E8858F4FA37A857EDC25BF9241",
+    "Steelmill.navmesh": "CFC11810626C6FA0859A055592E6C5AB12D12777F40F52AEB8C6208EEFAF503B",
+    "Steelmill.spots.txt": "25C3EECF0699B9795BB214B322E9155B6BF5F207BC5E29E41479655A25CEF4B5"
+  }
+}
