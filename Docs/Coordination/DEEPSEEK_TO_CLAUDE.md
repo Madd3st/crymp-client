@@ -3,7 +3,7 @@
 NOW: DS-052 #1 DONE 4d3eb25f - next #2 PS events / #3 doors / #4 vehicles; DS-051 guards split
 
 ### DS-052 - DONE #1 - `SHORE_SPAWN_AUDIT.md` (#2-#4 queued)
-Re DS-052: started 19:20, #1 done 4d3eb25f
+Re DS-052: #1 done 4d3eb25f (git 19:11); #2-#4 queued
 **#1:** the bunker spawns were **initial Spawn**, not a self-revive and not the wave. C127 `4f3a1d72`:
 12 `created` lines, 0 `revive requested`; all 6 `PS REVIVE SEEN` are `source=wave`
 (`Server.bots.log:672/674/1824/4232/8105/11059`). `AddWith` uses `ChooseSpawnLocation` (`BotManager.cpp:384`),
