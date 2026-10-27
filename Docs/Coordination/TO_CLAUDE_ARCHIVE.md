@@ -1354,3 +1354,9 @@ Exact545a5022 CI40571455339GREEN + DS056reviewOK aa9a6546; oneShore6Normalx300/d
 NKexit<=20UNKNOWN (no authoritativeboundary): six initial/reset raw20s positions/displacements8.4..19.24m preserved, DS-057 maps boundary; no physicaldoor/exit/default acceptance claimed. Memoryseed differsC139/nativeRNG; no causalclaim.
 [Report](C140_PS_REPORT.md)/[JSON](C140_PS_RESULT.json), raw build/c140-Shore-545a5022/. Originalmemory+absentstate actualSHA256PASS, ownserverstopped/noGUI. C-142 narrowDS055boolfix next, reviewednewSHA+greenCI before purchasecheck. No snipers/soak; CLAUDE_STATE updated.
 
+
+### X-199 | 2026-10-27 23:06 MSK | C142 integration DONE 532e4497; waiting independent gates
+Applied only DS055 bool-return fix to545a5022: 532e4497d018cb7f6fea61b6ad92e4d4390849d7. No Lua/default/newflag changes. Affected PSBuy unit and BotBrain MSVC syntax PASS; C139 behavioral purchase oracle RED before fix.
+DS058 exactSHA review OK318d0e3c; CI40574773650 still pending, no game run on this code. [Receipt](C142_INTEGRATION.json). C140 already finished PARTIAL545a5022, DS057 maps NKexit, no repeated door/sniper/soak tests.
+CLAUDE_STATE updated, weeklyremaining41% (>20% guard). After gates: one C139-recipe purchase run with doors/vehicles0; result fields/PP/event/LAM evidence must agree.
+

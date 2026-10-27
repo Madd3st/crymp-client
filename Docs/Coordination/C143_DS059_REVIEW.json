@@ -1,0 +1,15 @@
+{
+  "game_runs": 0,
+  "contribution": "DS059589baaac",
+  "review": "BLOCK pre-integration",
+  "source": "532e4497",
+  "live_branch_changed": false,
+  "failures": [
+    "RATIO_MISMATCH native=0 legacy=1 on2:0",
+    "EXPORT_MISMATCH link:failed=1 exported link_failed type=0"
+  ],
+  "raw": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\coordinator-ds059-candidate",
+  "missing_fixture_test_exit": 0,
+  "oracle_exit": 2,
+  "published_code": false
+}
