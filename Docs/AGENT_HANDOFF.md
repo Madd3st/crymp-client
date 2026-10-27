@@ -1,5 +1,8 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+C133/C127 READY exact4f3a1d72 CI40526830694, smoke6x120 PASS4deaths/4wave/0errors. Owner command Tools/Play-WarsBotsC127.ps1; Shore6Normal3/team, C119 combat+first_primary/withdraw_cover/tactics/fire_diag1, PS capture1/buy1, navmesh0/jump_links0, F8/demo20Hz/DX9/nooverlay. HOLD all QA until owner finishes; archive session afterwards. No GUI launched yet; memory restored actualSHA256PASS.
+
+
 C126 step3 runs DONE exact4f3a1d72 CI40526830694: deaths/wave4/4,3/3,3/3; crash/Lua/channel0 all arms; stalls72/96/113, traps1/1/0. C127 BLOCKED purchase0 (three pp0 skips), capturesUNKNOWN; no smoke/preset/client. Memory restored and actual hashes verified, ownservers stopped. Report Docs/Coordination/C126_PS_REPORT.md.
 
 
