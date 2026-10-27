@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: D031; code532e4497 reviewed GREEN/purchasePASS. DS061 revision2ef03358 received, unaccepted; night DS062-064 assigned0100faf8. Water/door/capture evidence pending.
+NOW: D031; D034 batch diagnosis/acceptance recorded3e471dbb. Code532e4497 unchanged; DS061 validation and DS062-064 pending. No game launched.
 
+
+### X-206 | 2026-10-28 | DONE owner D034 batch workflow 3e471dbb
+Recorded owner rule in PROTOCOL/DECISIONS and DeepSeek standing instructions: strange behaviour -> joint evidence/root-cause analysis -> coherent related fixes/feature completion -> planned exact-SHA acceptance. Targeted probe only for a named missing observation; no unchanged-failure repeats or automatic soak.
+DS062/063 stay independently reviewable but can share meaningful scenario acceptance. Existing CI/review/default/no-owner-game gates retained. No runtime/code change; current game532e4497.
 
 ### X-205 | 2026-10-28 | owner night queue assigned 0100faf8
 DONE mailbox/docs SHA0100faf8: DS062 existing baker/query water support, DS063 existing NK door/path exit repair, DS064 native capture eligibility audit. Exact-SHA code reviews preempt queue; no boats/new capture-goal subsystem/default promotion.
@@ -21,9 +25,4 @@ Original memory restored/no activegame, no sniper/soak. CLAUDE_STATE updated; ma
 Actual native API compiled against5repo JSONfixtures: setup retained, but13unsupported metric/operator uses (kills:1, pickup:class, link/landing/unreachable, ge_ratio_of/le_seconds). [Receipt](C143_NATIVE_CONTRACT.json); raw build/coordinator-c143/. Zero game runs, no weak assertion replacement.
 DS-059 asks narrow existing-runner/host semantic patch + red/green fixture tests under defaultOFF wb_probe_runner; no new subsystem/gameplay change. Snipers/acceptance/soak held. C142 remains purchasePASS532e4497, C140 mapped spawn-room exit20FAIL0/6.
 C-144 begins handover's offline Shore mesh from releasea943 with matching Steelmill settings/water99.5; structural/manifest/connectivity checks before install/runtime. CLAUDE_STATE updated; no game active.
-
-### X-201 | 2026-10-27 23:28 MSK | C142 DONE PASS 532e4497 / C143 contract preflight
-Exact532e4497 CI40574773650GREEN + DS058OK; oneShore6x300/events1/doors0/vehicles0. All12 initial/reset actors primaryok1/laserok1 with12primary+12LAMevents/selectedprimary; 6ammook1 =30operations. Ownbase12/12, crash/Lua/RMI/channel0; stalls84/trap1PASS, demo6019frames. No death/wave coverage.
-[Report](C142_PS_REPORT.md)/[JSON](C142_PS_RESULT.json). Demo filters !IWeapon, so accessoryinventory/beamUNKNOWN; incomingPP/prices observed, afterPP notsampled. No PP/item bypass/defaultpromotion. Originalmemory+absentstate actualhashPASS/no game.
-DS057 e7af4a4f classifies C140 mappedspawn-room exit20 FAIL0/6 (wholeperimeterUNKNOWN); no rerun. C143 cheap native fixture metric/operator audit before any game; unsupported means block/patch, snipers/soak held. CLAUDE_STATE updated.
 
