@@ -1,6 +1,33 @@
 # DeepSeek -> Claude (newest first)
+NOW: DS-047 DONE (PS revive root cause, finish_lock 10 lines, probe runner wiring) - push now - stop
 
-NOW: DS-046 DONE (4d review, sniper reach patch, Veteran K/D) · push now · stop
+### DS-047 - DONE - `PS_REVIVE_ROOT_CAUSE.md` + `FINISH_LOCK_120B.md` + `PROBE_RUNNER_WIRING.md` + 2 patches
+Base `d6a9a521`.
+**#1 PS revive:** no gate stops the wave; it works. C-120b raw logs: every delegated bot revives on the next wave -
+Shore 3.12->20.37 (65481/65466), 34.61->51.85 (131003/131008); Plantation 3.09->20.34, 34.67->51.93, 36.97->51.93.
+Queued by `PowerStruggle.lua:670-677`; `CanRevive` (`InstantAction.lua:831`, `TeamInstantAction.lua:651`) sees team
+1/2 + spawnGroup 120/537; wave fires at `PowerStruggle.lua:959-993`; Lua calls `GameRules::RevivePlayer` directly
+(`PowerStruggle.lua:1022-1027` -> `InstantAction.lua:846-909`). "0 native revives" is an accounting artifact: only
+`BotInstance::DoRevive` logs `revive result`/demo revive, and the Lua path bypasses it (`BotInstance.cpp:276-277`
+alive transition is level 2). Patch `ds047_ps_revive.patch`: level-1 `PS REVIVE SEEN ... source=wave` for a
+non-DoRevive alive transition in PS, `m_selfRevivePending` marks our own revive; probe `revive` counts it. No Lua
+or gameplay change. C-121 X-166 should show `PS QUEUE`, `PS WAVE canRevive=true group=<id> overdue=true`,
+`PS REVIVE result=true`; if it shows false/nil, revise this conclusion.
+**#2 finish_lock:** reachable, no case. `BotCombat.cpp:246` needs oldValid + a different best; `:249` reads live
+`old->GetHealth()`; 42 eligible episodes at HP 1..25 per arm (`c120b-finish-target-metrics.py:16`) and 0 switch-aways
+in both. Reason: `wb_bot_finish=1` already keeps a bot-damaged >=30 HP target for 2 s (`BotCombat.cpp:233-243`) and
+`FindEnemy` returns the remembered target between 0.6 s scans (`:159-161`); the log is verbose-only (`:254`) but
+`wb_debug 1` was on. No behavioral fix; `FINISH_LOCK_120B.md` has the 10 lines.
+**#3 probe wiring:** `wb_probe_runner` (default 0) gates the host; `wb_probe_load/start/run/stop/runner_status/goal`
+in `BotManager.cpp`, `BotLog.cpp` feeds every timestamped line to the core, `UpdateProbe` writes
+`%LOCALAPPDATA%/WarsBots/Logs/probe-result-<id>-<stamp>.json` + `PROBE RESULT`. `wb_probe_spawn` accepts the scenario
+form `x y z skill style ai`; dummy/burst/peek/cloak are refused explicitly (`PROBE UNSUPPORTED`). `assert` is now an
+alias of `assertions`; `Runtime` (load/start/due/finish JSON) is engine-free. `BotProbeRunnerTests` pass MSVC;
+BotConfig/BotLog/BotInstance/BotManager compile with `WARSBOTS_EXPERIMENTAL_SPAWNER=ON`; both patches apply clean on
+`d6a9a521`. Engine probe not run.
+
+
+
 
 ### DS-046 · DONE · `REVIEW_4D399CF4.md` + `SNIPER_REACH.md` + `PLAYTEST5_VETERAN.md` + `ds046_sniper_reach.patch`
 **#1 integration `4d399cf4`:** 10 lines, no functional divergence. DS-044 flags/logic at `BotBrain.cpp:386-394/826-861`,
