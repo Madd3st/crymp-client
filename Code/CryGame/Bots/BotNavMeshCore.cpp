@@ -20,6 +20,8 @@ inline void ToCrysis(const float* r, float* c) { c[0] = r[0]; c[1] = -r[2]; c[2]
 struct MsetHeader { int magic; int version; int numTiles; dtNavMeshParams params; };
 struct TileHeader { dtTileRef tileRef; int dataSize; };
 const int kMsetMagic = 'M' << 24 | 'S' << 16 | 'E' << 8 | 'T';
+const unsigned char kWaterArea = 4; // DS-062: keep in sync with Tools/RecastBake/recast_bake.cpp
+const float kWaterCost = 4.0f;      // navigable, but a land route is cheaper
 }
 
 NavMeshCore::NavMeshCore() {}
@@ -54,10 +56,12 @@ bool NavMeshCore::LoadMemory(const unsigned char* data, size_t size, std::string
 		if (dtStatusFailed(m_mesh->addTile(tile, t.dataSize, DT_TILE_FREE_DATA, 0, nullptr)))
 		{ dtFree(tile); return fail("addTile failed (Detour version/layout mismatch?)"); }
 	}
+	// C145: 4096/8192 nodes exhausted on connected Shore routes; 16384 reached all three energy objectives.
 	m_query = dtAllocNavMeshQuery();
-	if (!m_query || dtStatusFailed(m_query->init(m_mesh, 4096))) return fail("query init failed");
+	if (!m_query || dtStatusFailed(m_query->init(m_mesh, 16384))) return fail("query init failed");
 	m_filter = new dtQueryFilter();
 	m_filter->setExcludeFlags(0);
+	m_filter->setAreaCost(kWaterArea, kWaterCost);
 	for (int ti = 0; ti < m_mesh->getMaxTiles(); ++ti)
 	{
 		const dtMeshTile* tile = static_cast<const dtNavMesh*>(m_mesh)->getTile(ti);
@@ -323,7 +327,9 @@ bool NavMeshCore::FindPathLinks(const float* start, const float* goal, std::vect
 	if (ia == m_comp.end() || ib == m_comp.end() || !PartReaches(ia->second, ib->second)) return fail("other_component");
 	float rs[3], rg[3]; ToRecast(s, rs); ToRecast(g, rg);
 	dtPolyRef polys[256]; int npolys = 0;
-	if (dtStatusFailed(m_query->findPath(a, b, rs, rg, m_filter, polys, &npolys, 256)) || npolys == 0) return fail("findpath_failed");
+	const dtStatus pathStatus=m_query->findPath(a, b, rs, rg, m_filter, polys, &npolys, 256);
+	if (dtStatusFailed(pathStatus) || npolys == 0) return fail("findpath_failed");
+	if (dtStatusDetail(pathStatus, DT_OUT_OF_NODES)) return fail("search_exhausted");
 	float end[3]; dtVcopy(end, rg);
 	if (polys[npolys - 1] != b && npolys < 256) return fail("no_directed_route"); // one-way drops: same part, no way back
 	if (polys[npolys - 1] != b)

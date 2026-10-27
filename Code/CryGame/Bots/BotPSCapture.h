@@ -8,12 +8,15 @@ namespace WarsBots {
 
 struct PsCapturePoint
 {
-    int id = 0;              // entity id (flag/factory/alien energy point)
+    int id = 0;              // capturable entity id (flag/factory/alien energy point): ownership/events
+    int areaId = 0;          // DS-072: verified AreaShape ENTITY id from the level XML (never the local number)
+    int areaLocalId = 0;     // Properties.captureAreaId: local area number inside that shape
     int ownerTeam = 0;       // 0 = neutral
     int value = 1;           // nCaptureIndex 1..3 (100/200/300 PP per DS-028)
     int captureSeconds = 15; // informational
     bool capturable = true;
     bool power = false;      // AlienEnergyPoint: power is the first objective
+    bool hasDestination = false; // DS-072: x/y/z is an interior area destination, not the entity pivot
     float x = 0, y = 0, z = 0;
 };
 
@@ -33,28 +36,29 @@ public:
 
     // Nearest point not owned by `team`; value/power bonus -8 m/-6 m. Keeps the current target while it is still
     // capturable and not beaten by more than `switchMargin` metres (no oscillation between equal points).
+    // DS-072: `hold` is the native capture-area membership of the current target, not a 6 m pivot sphere.
     PsCapturePlan Update(const PsCapturePoint* points, int count, int team, float bx, float by, float bz,
-                         float holdRadius = 6.f, float switchMargin = 15.f)
+                         bool currentInside = false, float switchMargin = 15.f)
     {
         PsCapturePlan plan;
         if (!points || count <= 0 || team == 0) { m_target = 0; return plan; }
         int best = 0, current = 0;
-        float bestScore = 1e9f, bestDist = 0, currentScore = 1e9f, currentDist = 0;
+        float bestScore = 1e9f, currentScore = 1e9f;
         for (int i = 0; i < count; ++i)
         {
             const PsCapturePoint& p = points[i];
-            if (!p.capturable || p.ownerTeam == team) continue;
+            if (!p.capturable || !p.hasDestination || p.ownerTeam == team) continue;
             const float dx = p.x - bx, dy = p.y - by, dz = p.z - bz;
             const float d = std::sqrt(dx * dx + dy * dy + dz * dz);
             const float score = d - 8.0f * float(p.value > 0 ? p.value : 1) - (p.power ? 6.0f : 0.0f);
-            if (p.id == m_target) { current = p.id; currentScore = score; currentDist = d; }
-            if (score < bestScore) { best = p.id; bestScore = score; bestDist = d; }
+            if (p.id == m_target) { current = p.id; currentScore = score; }
+            if (score < bestScore) { best = p.id; bestScore = score; }
         }
         if (!best) { m_target = 0; return plan; }
         // Hysteresis: keep a valid current target unless the alternative is clearly better.
         if (current && best != current && currentScore <= bestScore + switchMargin)
         {
-            best = current; bestScore = currentScore; bestDist = currentDist;
+            best = current;
         }
         m_target = best;
         for (int i = 0; i < count; ++i)
@@ -63,7 +67,7 @@ public:
             plan.valid = true;
             plan.id = best;
             plan.x = points[i].x; plan.y = points[i].y; plan.z = points[i].z;
-            plan.hold = bestDist <= holdRadius;
+            plan.hold = (best == current) && currentInside;
             break;
         }
         return plan;

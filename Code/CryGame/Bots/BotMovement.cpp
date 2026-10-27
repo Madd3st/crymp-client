@@ -52,7 +52,7 @@ void BotMovement::Look(CActor& actor, const Vec3& target)
 	}
 }
 
-bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided, float slope) const
+bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bool meshGuided, float slope, bool waterMovement) const
 {
 	if (!gEnv->pPhysicalWorld || !actor.GetEntity()->GetPhysics())
 		return false;
@@ -69,13 +69,17 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bo
 		if (!(meshGuided && height < 1.0f) && gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), (direction + Vec3(0,0,slope)) * probe,
 			ent_all, flags, &hit, 1, actor.GetEntity()->GetPhysics(), heldPhysics))
 			return false;
+	// DS-070: in gated deep water the ground probe cannot hit (the seabed is far below); the stock movement
+	// controller owns buoyancy. Only this ray is skipped - the existing body/cliff rays above still refuse a wall,
+	// a quay or a held item, and a dry cliff keeps the old branch.
+	if (waterMovement) return true;
 	// Stop at real cliffs only: drops up to ~3 m are taken (Armor absorbs the landing, see BotBrain).
 	return gEnv->pPhysicalWorld->RayWorldIntersection(feet + direction * (probe-0.3f) + Vec3(0,0,0.6f),
 		Vec3(0,0,-3.6f), ent_terrain | ent_static | ent_rigid | ent_sleeping_rigid,
 		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
 }
 
-bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided, float arrive)
+bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided, float arrive, bool waterMovement)
 {
 	auto* controller = actor.GetMovementController();
 	if (!controller) return false;
@@ -115,7 +119,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 		m_sampleTime = 0;
 	}
 	m_avoidTime = max(0.0f, m_avoidTime - dt);
-	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided, slope));
+	bool safe = jumpTraverse || (m_avoidTime <= 0 && SafeStep(actor, direction, probe, meshGuided, slope, waterMovement));
 	m_turned = false;
 	if (!safe)
 	{
@@ -123,7 +127,7 @@ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookA
 		for (float angle : {m_side * 0.8f, -m_side * 0.8f, m_side * 1.57f, -m_side * 1.57f, m_side * 2.36f, -m_side * 2.36f, 3.14159f})
 		{
 			Vec3 candidate = Quat::CreateRotationZ(angle) * direction;
-			if (SafeStep(actor, candidate, probe, meshGuided)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
+			if (SafeStep(actor, candidate, probe, meshGuided, 0.f, waterMovement)) { direction = candidate; safe = true; m_turned = fabs_tpl(angle) > 1.6f; break; }
 		}
 	}
 	if (!safe) { Stop(actor); Aim(actor, lookAt); return false; }

@@ -63,11 +63,11 @@ void BotMoveTrace::Visit(CPlayer& actor,bool bot,bool due,float now)
  const Vec3 view=actor.GetViewRotation().GetColumn1();
  const float yaw=RAD2DEG(atan2f(view.x,view.y));
  const float pitch=RAD2DEG(atan2f(view.z,sqrtf(view.x*view.x+view.y*view.y)));
- WB_LOG(2,"[WarsBots] MOVE TRACE actor=%u kind=%s side=%s local=%d t=%.3f sampleDt=%.3f pos=(%.3f,%.3f,%.3f) vel=(%.3f,%.3f,%.3f) speed=%.3f vz=%.3f mode=%d energy=%.1f sprint=%d grounded=%d flying=%d jump=%d land=%d takeoffs=%u jumpEdges=%u landEdges=%u jumpTime=%.3f landTime=%.3f peakZ=%.3f health=%d frame=%u yaw=%.3f pitch=%.3f remote=%d stance=%d source=PostUpdate_entity_view",
+ WB_LOG(2,"[WarsBots] MOVE TRACE actor=%u kind=%s side=%s local=%d t=%.3f sampleDt=%.3f pos=(%.3f,%.3f,%.3f) vel=(%.3f,%.3f,%.3f) speed=%.3f vz=%.3f mode=%d energy=%.1f sprint=%d grounded=%d flying=%d jump=%d land=%d takeoffs=%u jumpEdges=%u landEdges=%u jumpTime=%.3f landTime=%.3f peakZ=%.3f health=%d frame=%u yaw=%.3f pitch=%.3f remote=%d stance=%d source=PostUpdate_entity_view swim=%d waterZ=%.2f relativeWater=%.2f bottomDepth=%.2f underwater=%.2f",
   id,bot?"bot":"human",gEnv->bServer?"server":"client",actor.IsClient()?1:0,now,record.logged<0?0:now-record.logged,
   pos.x,pos.y,pos.z,velocity.x,velocity.y,velocity.z,velocity.GetLength2D(),velocity.z,
   suit?suit->GetMode():-1,suit?suit->GetSuitEnergy():-1.f,actor.IsSprinting()?1:0,ground?1:0,flying,stats.jumped?1:0,stats.landed?1:0,
-  state.takeoffs,state.jumpEdges,state.landEdges,state.jumpTime,state.landTime,state.peakZ,actor.GetHealth(),m_frame,yaw,pitch,(!gEnv->bServer && bot && !actor.IsClient())?1:0,int(actor.GetStance()));
+  state.takeoffs,state.jumpEdges,state.landEdges,state.jumpTime,state.landTime,state.peakZ,actor.GetHealth(),m_frame,yaw,pitch,(!gEnv->bServer && bot && !actor.IsClient())?1:0,int(actor.GetStance()),actor.ShouldSwim()?1:0,stats.worldWaterLevel,stats.relativeWaterLevel,stats.relativeBottomDepth,stats.headUnderWaterTimer);
  record.logged=now;record.state.Consumed(pos.z);++m_lines;
 }
 }

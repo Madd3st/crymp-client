@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotBlackboard.h"
+#include "CryGame/Bots/BotWaterPolicy.h"
 #include "CryGame/Actors/Player/Player.h"
 
 namespace WarsBots
@@ -17,9 +18,13 @@ void BotBlackboard::Sample(CPlayer& actor, float now)
 	pe_status_dynamics dynamics;
 	if (actor.GetEntity()->GetPhysics() && actor.GetEntity()->GetPhysics()->GetStatus(&dynamics)) velocity = dynamics.v;
 	moving = velocity.GetLengthSquared2D() > 0.09f;
+	// DS-070: the water exceptions are a shared policy, not a raw ShouldSwim(). OFF/IA/human/unowned stay impassable.
+	waterAllowed = BotWaterAllowedFor(actor);
+	swimming = actor.ShouldSwim();
+	waterMovement = waterAllowed && swimming;
 	canMove = health > 0 && !actor.IsFrozen() && !stats.isRagDoll && !stats.isOnLadder.Value() &&
 		stats.inFreefall.Value() <= 0 && !stats.inZeroG && !stats.isGrabbed && !stats.animationControlled &&
-		!stats.spectatorMode && !stats.flyMode && !actor.GetLinkedEntity() && !actor.ShouldSwim();
+		!stats.spectatorMode && !stats.flyMode && !actor.GetLinkedEntity() && (waterAllowed || !swimming);
 	CNanoSuit* suit = actor.GetNanoSuit();
 	suitActive = suit && suit->IsActive();
 	energy = suit ? suit->GetSuitEnergy() : 0;

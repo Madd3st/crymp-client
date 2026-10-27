@@ -21,6 +21,7 @@
 #include "CryGame/Bots/BotPSCaptureRuntime.h"
 #include "CryGame/Bots/BotPSBuy.h"
 #include "CryCommon/CryScriptSystem/IScriptSystem.h"
+#include "CryCommon/CryEntitySystem/IEntityProxy.h"
 #include "CryCommon/CryAction/IVehicleSystem.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
@@ -540,15 +541,57 @@ bool BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
 }
 
 
+// DS-067d: doors are their own step so they can run before the capture goal without giving vehicles the same
+// priority. Capture still runs before vehicles (unchanged); a door request never preempts capture movement.
+bool BotBrain::UpdatePSDoors(BotInstance& bot,CPlayer& actor,float decisionTime)
+{
+	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+	if(!rules || BotMatch::Mode(*rules).Kind()!=BotGameModeKind::PowerStruggle)return false;
+	if (BotConfig::Get().psDoors!=1) return false;
+	if (m_now<m_nextDoorUse) return false;
+	const EntityId id=actor.GetEntityId();
+	const Vec3 feet=actor.GetEntity()->GetWorldPos();
+	m_nextDoorUse=m_now+0.25f; // bound the 10 Hz proximity scan even when no door opens (C145 note)
+	SEntityProximityQuery query; query.box=AABB(feet-Vec3(5,5,3),feet+Vec3(5,5,3)); gEnv->pEntitySystem->QueryProximity(query);
+	for (int i=0;i<query.nCount;++i)
+	{
+		IEntity* e=query.pEntities[i]; if(!e || e->IsHidden())continue;
+		const char* cls=e->GetClass()?e->GetClass()->GetName():""; if(std::strcmp(cls,"Door"))continue;
+		IScriptTable* dt=e->GetScriptTable(); if(!dt)continue;
+		int action=-1; dt->GetValue("action",action); if(action==1)continue; // DOOR_OPEN
+		auto used=m_doorUsed.find(e->GetId()); if(used!=m_doorUsed.end() && m_now<used->second)continue;
+		const Vec3 to=e->GetWorldPos()-feet; if(to.GetLengthSquared2D()>25.0f)continue;
+		bool ahead=false;
+		if (m_meshPathActive && m_pathIndex<m_path.size())
+		{
+			const Vec3 seg=m_path[m_pathIndex]-feet; const float len2=seg.GetLengthSquared2D();
+			if (len2>0.01f) { const float t=clamp_tpl(to.Dot(seg)/len2,0.f,1.f); const Vec3 on=feet+seg*t; ahead=t>0.1f && (e->GetWorldPos()-on).GetLength2D()<=3.0f; }
+		}
+		else { const Vec3 fwd=actor.GetEntity()->GetWorldRotation().GetColumn1(); ahead=fwd.Dot(to.GetNormalizedSafe(fwd))>=0.2f; }
+		if(!ahead) { WB_LOG(2,"[WarsBots] #%d PS DOOR skip entity=%u actor=%u reason=ahead dist=%.2f.",m_number,e->GetId(),id,to.GetLength()); continue; }
+		// DS-054: Door:OnUsed is the client use path (self.server:SvRequestOpen RMI at Door.lua:356); from the server
+		// it hits the client RMI dispatcher ("not a client"). Call the stock server handler Door:Open(user, DOOR_OPEN)
+		// directly: Door.lua:523-524 "this is only safe to be called from server", :565/:572 allClients broadcast.
+		Script::CallMethod(dt,"Open",actor.GetEntity()->GetScriptTable(),1);
+		int post=-1; dt->GetValue("action",post);
+		const Vec3 doorPos=e->GetWorldPos();
+		m_doorUsed[e->GetId()]=m_now+2.0f;
+		WB_LOG(1,"[WarsBots] #%d PS DOOR open entity=%u actor=%u pre=%d post=%d dist=%.2f actorPos=(%.2f,%.2f,%.2f) doorPos=(%.2f,%.2f,%.2f).",
+			m_number,e->GetId(),id,action,post,(doorPos-feet).GetLength(),feet.x,feet.y,feet.z,doorPos.x,doorPos.y,doorPos.z);
+		break;
+	}
+	return false; // never preempts capture in the same tick
+}
+
 bool BotBrain::UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTime)
 {
 	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
 	if(!rules || BotMatch::Mode(*rules).Kind()!=BotGameModeKind::PowerStruggle)return false;
+	if (BotConfig::Get().psVehicles!=1) return false;
 	const EntityId id=actor.GetEntityId();
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	if (IVehicle* v=actor.GetLinkedVehicle())
 	{
-		if (BotConfig::Get().psVehicles!=1) return false;
 		if (m_now>=m_vehicleExitAt)
 		{
 			if (IVehicleSeat* s=v->GetSeatForPassenger(id)) s->Exit(false,false);
@@ -558,7 +601,7 @@ bool BotBrain::UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTi
 		return true;
 	}
 
-	if (BotConfig::Get().psVehicles==1 && m_now>=m_nextVehicle)
+	if (m_now>=m_nextVehicle)
 	{
 		SEntityProximityQuery query; query.box=AABB(feet-Vec3(10,10,3),feet+Vec3(10,10,3)); gEnv->pEntitySystem->QueryProximity(query);
 		for (int i=0;i<query.nCount;++i)
@@ -575,33 +618,6 @@ bool BotBrain::UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTi
 		}
 		m_nextVehicle=m_now+2.0f;
 	}
-	if (BotConfig::Get().psDoors==1 && m_now>=m_nextDoorUse)
-	{
-		SEntityProximityQuery query; query.box=AABB(feet-Vec3(5,5,3),feet+Vec3(5,5,3)); gEnv->pEntitySystem->QueryProximity(query);
-		for (int i=0;i<query.nCount;++i)
-		{
-			IEntity* e=query.pEntities[i]; if(!e || e->IsHidden())continue;
-			const char* cls=e->GetClass()?e->GetClass()->GetName():""; if(std::strcmp(cls,"Door"))continue;
-			IScriptTable* dt=e->GetScriptTable(); if(!dt)continue;
-			int action=-1; dt->GetValue("action",action); if(action==1)continue; // DOOR_OPEN
-			auto used=m_doorUsed.find(e->GetId()); if(used!=m_doorUsed.end() && m_now<used->second)continue;
-			const Vec3 to=e->GetWorldPos()-feet; if(to.GetLengthSquared2D()>25.0f)continue;
-			bool ahead=false;
-			if (m_meshPathActive && m_pathIndex<m_path.size())
-			{
-				const Vec3 seg=m_path[m_pathIndex]-feet; const float len2=seg.GetLengthSquared2D();
-				if (len2>0.01f) { const float t=clamp_tpl(to.Dot(seg)/len2,0.f,1.f); const Vec3 on=feet+seg*t; ahead=t>0.1f && (e->GetWorldPos()-on).GetLength2D()<=3.0f; }
-			}
-			else { const Vec3 fwd=actor.GetEntity()->GetWorldRotation().GetColumn1(); ahead=fwd.Dot(to.GetNormalizedSafe(fwd))>=0.2f; }
-			if(!ahead)continue;
-			// DS-054: Door:OnUsed is the client use path (self.server:SvRequestOpen RMI at Door.lua:356); from the server
-			// it hits the client RMI dispatcher ("not a client"). Call the stock server handler Door:Open(user, DOOR_OPEN)
-			// directly: Door.lua:523-524 "this is only safe to be called from server", :565/:572 allClients broadcast.
-			Script::CallMethod(dt,"Open",actor.GetEntity()->GetScriptTable(),1);
-			m_doorUsed[e->GetId()]=m_now+2.0f; m_nextDoorUse=m_now+0.5f;
-			WB_LOG(2,"[WarsBots] #%d PS DOOR open entity=%u actor=%u state=%d.",m_number,e->GetId(),id,action); break;
-		}
-	}
 	return false;
 }
 
@@ -615,10 +631,24 @@ bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTim
 	if(m_now>=m_nextPsCapture)
 	{
 		m_nextPsCapture=m_now+2.0f;
-		PSCaptureSnapshot(m_psPoints,*rules);
+		const float from[3]={feet.x,feet.y,feet.z};
+		PSCaptureSnapshot(m_psPoints,*rules,from);
+	}
+	// DS-072: hold on native area membership of the current target, not a 6 m sphere around the entity pivot.
+	bool inside=false;
+	if (m_psTarget)
+	{
+		for (const PsCapturePoint& p : m_psPoints)
+			if (p.id==m_psTarget && p.areaId)
+			{
+				if (IEntity* area=gEnv->pEntitySystem->GetEntity(EntityId(p.areaId)))
+					if (IEntityAreaProxy* proxy=static_cast<IEntityAreaProxy*>(area->GetProxy(ENTITY_PROXY_AREA)))
+						inside=proxy->IsPointWithin(feet);
+				break;
+			}
 	}
 	const PsCapturePlan plan=m_psCapture.Update(m_psPoints.empty()?nullptr:m_psPoints.data(),int(m_psPoints.size()),team,
-		feet.x,feet.y,feet.z,6.0f);
+		feet.x,feet.y,feet.z,inside);
 	if(!plan.valid)return false;
 	if(m_psTarget!=plan.id)
 	{
@@ -826,8 +856,13 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		if (BotConfig::Get().psBuy==1 && !m_psBought && m_now>=m_nextAliveBuy && g_pGame && g_pGame->GetGameRules() &&
 			BotMatch::Mode(*g_pGame->GetGameRules()).Policy().reviveBuy && m_now-m_lifeStartedAt<20.f)
 		{ m_nextAliveBuy=m_now+2.f; if (PSTryBuy(bot,actor)) m_psBought=true; }
+		// DS-067d: doors before capture (a closed spawn door starved the scan), capture before vehicles (unchanged).
+		if (BotConfig::Get().psDoors==1 && UpdatePSDoors(bot,actor,decisionTime)) return;
+		// DS-067f: a bot already in a vehicle must leave through the vehicle path before a capture goal runs from the
+		// driver seat; the opportunistic enter search still runs after capture, so only the exit branch preempts.
+		if (BotConfig::Get().psVehicles==1 && actor.GetLinkedVehicle() && UpdatePSInteract(bot,actor,decisionTime)) return;
 		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::Mode(*g_pGame->GetGameRules()).Policy().captureGoals && UpdatePSCapture(bot,actor,decisionTime)) return;
-		if ((BotConfig::Get().psDoors==1 || BotConfig::Get().psVehicles==1) && UpdatePSInteract(bot,actor,decisionTime)) return;
+		if (BotConfig::Get().psVehicles==1 && UpdatePSInteract(bot,actor,decisionTime)) return;
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
 		Vec3 heard;
 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
@@ -1232,7 +1267,8 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
         !g_pGame->GetBotManager().Owns(actor.GetEntityId()) || !g_pGame->GetBotManager().CanRunLocalIA())
     { m_trap.Reset(); m_trapStepUntil=0; return false; }
     const Vec3 p=actor.GetEntity()->GetWorldPos();
-    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove,false);
+    // DS-070: a gated swimmer making no progress is not a land trap; the same policy disables the watchdog here.
+    const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove && !m_blackboard.waterMovement,false);
     if (level)
     {
         WB_LOG(1,"[WarsBots] TRAP RECOVERY level=%d actor=%u age=%.2f pos=(%.2f,%.2f,%.2f) blocked=%d speed=%.2f grounded=%d sink=%d.",

@@ -1,5 +1,18 @@
 # WarsBots for CryMP: status, 2026-10-24
 
+## C145 Shore package integrated, 28.10 — CI/review pending, no runtime verdict
+
+Coherent package: door/vehicle priority, gated native PS water movement and oxygen, water route cost, bounded larger
+path-search pool with explicit exhaustion, native capture-area bindings/destination/hold, and water MOVE TRACE fields.
+Default flags and normal-player behaviour remain unchanged. All34registered CI unit suites pass offline; affected
+engine syntax checks and Player experimental ON/OFF pass. No local game binary build. Actual game tests require the
+new exact SHA, green CI and independent DeepSeek review.
+
+Reviewed baker eed85fb1 produced Shore candidate653f5e1e (37.297s, observedpeak1.967GB), not installed/accepted for play:
+NK20/20spawns main, US0/23main. Finer water sampling and raw autojump links did not solve US exit. Capture floors for
+all5points are reachable from NK with the corrected search budget; real native capture and swimming are unproven.
+Coordination and current QA evidence: steelmill-triage MAILBOX/CLAUDE_STATE.md; weapon-goals C145 receipts/outbox.
+
 ## C027 complete; owner recording archived
 
 R3 6e576693 BotConfig, R1 caddc3ea Update split, R4 b902dfb4 closed experiment

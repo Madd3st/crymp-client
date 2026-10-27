@@ -1226,6 +1226,7 @@ if(WARSBOTS_EXPERIMENTAL_SPAWNER)
         Code/CryGame/Bots/CryMPEngineAdapter.cpp
         Code/CryGame/Bots/BotMatch.cpp
         Code/CryGame/Bots/BotBlackboard.cpp
+        Code/CryGame/Bots/BotWaterPolicy.cpp
         Code/CryGame/Bots/BotBrain.cpp
         Code/CryGame/Bots/BotCombat.cpp
         Code/CryGame/Bots/BotLocomotion.cpp

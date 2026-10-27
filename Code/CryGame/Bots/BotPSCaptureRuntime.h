@@ -7,5 +7,5 @@
 class CGameRules;
 
 namespace WarsBots {
-void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules);
+void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const float* from);
 }

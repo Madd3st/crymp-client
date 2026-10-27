@@ -37,6 +37,8 @@ void BotLocomotion::Refused(CPlayer& actor, const char* reason, float now)
 void BotLocomotion::Observe(CPlayer& actor, BotBlackboard& state, float now)
 {
 	if (state.health<=0) { if (m_pending || m_airborne) Stop(actor); return; }
+	// Water is a native movement state, not a grounded landing. Clear the land-jump carry without publishing a fake landing.
+	if (state.waterMovement) { m_pending=m_airborne=m_strength=false; return; }
 	if (m_pending && !state.grounded && state.velocity.z>0.2f)
 	{
 		m_pending=false; m_airborne=true;
@@ -106,7 +108,8 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 	bool jump=false;
 	if (intent.jump!=BotJump::None)
 	{
-		if (!state.grounded || m_pending || m_airborne) Refused(actor,"jump_not_grounded_or_pending",now);
+		if (state.waterMovement) Refused(actor,"jump_swimming",now);
+		else if (!state.grounded || m_pending || m_airborne) Refused(actor,"jump_not_grounded_or_pending",now);
 		else if (intent.stance==STANCE_PRONE || actor.GetStance()==STANCE_PRONE) Refused(actor,"jump_prone",now);
 		else if (now<state.nextJump) Refused(actor,"jump_cooldown",now);
 		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<(pace?70.f:90.f))) Refused(actor,"jump_strength_mode_or_energy",now);
@@ -120,21 +123,25 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 		}
 	}
 	// Let a validated jump carry forward through the low obstruction; never a position change.
-    const bool eligible=intent.move && intent.gait==BotGait::Sprint &&
+    const bool eligible=intent.move && !state.waterMovement && intent.gait==BotGait::Sprint &&
         (pace?intent.combat!=BotCombatIntent::Fire:intent.combat==BotCombatIntent::None) &&
         state.grounded && state.suitActive && !jump && !m_pending && !m_airborne && !actor.WarsBotWeaponFiring();
     const bool sprint=eligible && (pace?PaceSprintEnergy(m_sprinting,state.energy):state.energy>45.f);
     m_sprinting=sprint;
+    const EStance stance=state.waterMovement?STANCE_SWIM:intent.stance;
     bool accepted=false;
     if(intent.move){
-        const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(intent.stance):2.5f);
+        const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(stance):2.5f);
         const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
-        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo,intent.meshPath,intent.arrive);
+        // DS-070: ProcessSwimming applies the request in view space (PlayerMovement.cpp:835-836) and the WarsBot view
+        // follows the aim while strafing (Player.cpp:5085-5090), so strafing in water would swim toward the aim.
+        const bool strafe=intent.strafe && !state.waterMovement;
+        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,stance,sprint?2.7f:1.5f,(jump||m_pending||m_airborne)&&!state.waterMovement,strafe,pseudo,intent.meshPath,intent.arrive,state.waterMovement);
     }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
 	state.blocked=intent.move && !accepted;
-	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,intent.stance);
+	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,stance);
 	CMovementRequest request;
-	request.SetStance(jump?STANCE_STAND:intent.stance);
+	request.SetStance(jump?STANCE_STAND:stance);
 	if (jump) request.SetJump();
 	actor.GetMovementController()->RequestMovement(request);
 	return accepted;

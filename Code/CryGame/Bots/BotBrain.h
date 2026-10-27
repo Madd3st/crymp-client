@@ -65,7 +65,8 @@ private:
     bool UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force=false);
     void UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime);
 	bool UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-048 #3
-	bool UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-052
+	bool UpdatePSDoors(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-067d: doors before capture
+	bool UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-052: vehicles only
 	bool PSTryBuy(BotInstance& bot,CPlayer& actor); // DS-049 #3; C-139: true when the primary was bought
     void UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime);
     void UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange);

@@ -39,16 +39,16 @@ jobs:
           New-Item -ItemType Directory -Force units | Out-Null
           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy',
+          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
-                     'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+                     'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan')
           $failed = @()
           foreach ($t in $tests) {
             $src = "Tests/${t}Tests.cpp"
             if (-not (Test-Path $src)) { "SKIP $t (no source)"; continue }
             $more = @()
             if ($t -eq 'BotPerception') { $more = @('/Dnear=') }
-            if ($t -eq 'BotNavMeshCore') {
+            if ($t -in @('BotNavMeshCore','BotNavMeshWater')) {
               $more = @('/I','ThirdParty/recastnavigation/Detour/Include','Code/CryGame/Bots/BotNavMeshCore.cpp') +
                       @(Get-ChildItem ThirdParty/recastnavigation/Detour/Source/*.cpp | ForEach-Object { $_.FullName })
             }

@@ -11,7 +11,7 @@ static int failures = 0;
 static PsCapturePoint P(int id, int owner, int value, float x, float y, bool power = false)
 {
     PsCapturePoint p;
-    p.id = id; p.ownerTeam = owner; p.value = value; p.x = x; p.y = y; p.z = 0; p.power = power;
+    p.hasDestination=true; p.id = id; p.ownerTeam = owner; p.value = value; p.x = x; p.y = y; p.z = 0; p.power = power;
     return p;
 }
 
@@ -27,11 +27,12 @@ int main()
         CHECK(c.Target() == 3);
     }
 
-    // 2. Hold when inside the capture radius.
+    // 2. Near a destination is insufficient; native area membership of the selected target owns holding.
     {
         PsCapturePoint pts[1] = { P(7, 0, 1, 3, 0) };
         BotPSCapture c;
-        const PsCapturePlan plan = c.Update(pts, 1, 2, 0, 0, 0, 6.f);
+        CHECK(!c.Update(pts,1,2,0,0,0,false).hold);
+        const PsCapturePlan plan = c.Update(pts,1,2,0,0,0,true);
         CHECK(plan.valid && plan.id == 7 && plan.hold);
     }
 
@@ -76,6 +77,8 @@ int main()
         CHECK(!c.Update(nullptr, 0, 1, 0, 0, 0).valid);
     }
 
+    // An unvalidated/unreachable destination is never a goal.
+    {PsCapturePoint p=P(80,0,1,0,0);p.hasDestination=false;BotPSCapture c;CHECK(!c.Update(&p,1,1,0,0,0).valid);}
     if (failures) { std::printf("ps_capture: %d FAILURES\n", failures); return 1; }
     std::printf("ps_capture: all tests passed\n");
     return 0;

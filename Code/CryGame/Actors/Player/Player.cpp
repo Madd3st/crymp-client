@@ -16,6 +16,7 @@ History:
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 #include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotConfig.h"
+#include "CryGame/Bots/BotWaterPolicy.h"
 #endif
 #include "CryGame/Game.h"
 #include "CryGame/GameCVars.h"
@@ -3057,8 +3058,16 @@ void CPlayer::UpdateSwimStats(float frameTime)
 //------------------------------------------------------------------------
 void CPlayer::UpdateUWBreathing(float frameTime, Vec3 worldBreathPos)
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	// DS-070: only the gated owned-PS bot runs the native oxygen/drowning path (timer -> suit energy -> health);
+	// stock AI, IA and unowned actors keep the original early-out. The singleplayer 30 HP/s branch is not touched.
+	const bool warsBotWater = !IsPlayer() && WarsBots::BotWaterAllowedFor(*this);
+	if (!IsPlayer() && !warsBotWater)
+		return;
+#else
 	if (!IsPlayer())
 		return;
+#endif
 
 	bool debugSwimming = (g_pGameCVars->cl_debugSwimming != 0);
 
