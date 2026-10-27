@@ -1,5 +1,5 @@
 diff --git a/Code/CryGame/Bots/BotProbeRunner.h b/Code/CryGame/Bots/BotProbeRunner.h
-index 551f536a..4f4aebb8 100644
+index 551f536a..e425f1f7 100644
 --- a/Code/CryGame/Bots/BotProbeRunner.h
 +++ b/Code/CryGame/Bots/BotProbeRunner.h
 @@ -161,7 +161,7 @@ struct ItemSpec { std::string cls; double x = 0, y = 0, z = 0; };
@@ -28,7 +28,7 @@ index 551f536a..4f4aebb8 100644
 +    std::map<std::string, double> firstPickupByClass;    // seconds since Begin()
 +    std::map<std::string, int> linksDone;                // LINK done kind=...
 +    int linkFailed = 0, unreachable = 0;
-+    double landingZ = 0;                                 // last LINK done z; 0 when no link
++    double landingZ = std::numeric_limits<double>::quiet_NaN(); // unknown until a LINK done
      std::vector<double> hitDistances, targetDistances;
  
      void Begin(double t) { start = t; firstShot = -1; }
@@ -73,17 +73,34 @@ index 551f536a..4f4aebb8 100644
 +            if (std::sscanf(done, "LINK done kind=%31s at=(%f,%f,%f)", kind, &x, &y, &z) == 4)
 +            {
 +                ++linksDone[kind];
-+                landingZ = z;   // last completed link; 0 when none
++                landingZ = z;   // last completed link; NaN until one completes
 +            }
 +        }
 +        if (std::strstr(p, "LINK failed")) ++linkFailed;
          if (std::strstr(p, "VANTAGE")) ++vantageHolds;
          if (std::strstr(p, "GLANCE spot=")) ++glances;
          if (std::strstr(p, "HEARD gunshot")) ++heard;
-@@ -398,8 +434,40 @@ struct Metrics
+@@ -398,8 +434,57 @@ struct Metrics
      double TargetDistanceP50() const { return Percentile(targetDistances, 0.5); }
      double TargetDistanceP90() const { return Percentile(targetDistances, 0.9); }
  
++    // Support is a name/contract question; availability is a measured-value question. Keep them separate:
++    // landing_z is supported before a LINK but its value is unknown (NaN), not a fake 0.
++    bool SupportsMetric(const std::string& metric) const
++    {
++        static const char* const names[] = {
++            "shots", "hits", "kills", "deaths", "pickup", "revive", "time_to_first_shot", "goal_time",
++            "stalls", "stuck_events", "trap_level_max", "link_attempts", "link:failed", "link_failed",
++            "landing_z", "unreachable", "vantage_holds", "glances", "heard", "detected_at_m", "exposed_s",
++            "accuracy", "headshots", "hit_distance_p50", "hit_distance_p90", "target_distance_p50", "target_distance_p90"
++        };
++        for (size_t i = 0; i < sizeof names / sizeof names[0]; ++i) if (metric == names[i]) return true;
++        if (metric.compare(0, 6, "kills:") == 0 && metric.size() > 6) return true;
++        if (metric.compare(0, 7, "pickup:") == 0 && metric.size() > 7) return true;
++        return metric.size() > 10 && metric.compare(0, 5, "link:") == 0 &&
++            metric.compare(metric.size() - 5, 5, ":done") == 0;
++    }
++
 +    // le_seconds: first event time for metrics where "how long until" is the question (pickup:<class>).
 +    // A missing event is NaN, never a silent 0.
 +    double FirstEventTime(const std::string& metric) const
@@ -109,19 +126,19 @@ index 551f536a..4f4aebb8 100644
 +            std::map<std::string, int>::const_iterator it = pickupsByClass.find(metric.substr(7));
 +            return it == pickupsByClass.end() ? 0 : it->second;
 +        }
-+        if (metric == "link:failed") return linkFailed;
++        if (metric == "link:failed" || metric == "link_failed") return linkFailed;
 +        if (metric.size() > 10 && metric.compare(0, 5, "link:") == 0 &&
 +            metric.compare(metric.size() - 5, 5, ":done") == 0)
 +        {
 +            std::map<std::string, int>::const_iterator it = linksDone.find(metric.substr(5, metric.size() - 10));
 +            return it == linksDone.end() ? 0 : it->second;
 +        }
-+        if (metric == "landing_z") return landingZ;
++        if (metric == "landing_z") return landingZ; // NaN until the first LINK done
 +        if (metric == "unreachable") return unreachable;
          if (metric == "shots") return shots;
          if (metric == "hits") return hits;
          if (metric == "kills") return kills;
-@@ -427,6 +495,20 @@ struct Metrics
+@@ -427,6 +512,20 @@ struct Metrics
      }
  
  private:
@@ -142,16 +159,19 @@ index 551f536a..4f4aebb8 100644
      static double FindDouble(const std::string& line, const char* key)
      {
          const size_t n = std::strlen(key);
-@@ -448,12 +530,34 @@ private:
+@@ -446,14 +545,40 @@ private:
+     }
+ };
  
- struct AssertionResult { std::string metric, op; double expected = 0, actual = 0; bool pass = false; };
- 
+-struct AssertionResult { std::string metric, op; double expected = 0, actual = 0; bool pass = false; };
++struct AssertionResult { std::string metric, op; double expected = 0, actual = 0; double lhs = 0, rhs = 0; bool ratio = false; bool pass = false; };
++
 +inline bool IsSupportedOperator(const std::string& op)
 +{
 +    return op == "eq" || op == "ne" || op == "lt" || op == "le" || op == "gt" || op == "ge" ||
 +        op == "ge_ratio_of" || op == "le_seconds";
 +}
-+
+ 
  inline bool Evaluate(const Metrics& m, const Assertion& a, AssertionResult& r)
  {
      r.metric = a.metric; r.op = a.op; r.expected = a.value;
@@ -169,16 +189,20 @@ index 551f536a..4f4aebb8 100644
 -    const double e = 1e-6;
 +    if (a.op == "ge_ratio_of")
 +    {
-+        const double denominator = m.Value(a.other);
-+        if (std::isnan(denominator) || denominator <= 0) { r.actual = std::numeric_limits<double>::quiet_NaN(); r.pass = false; return false; }
-+        r.actual /= denominator;
-+        r.pass = r.actual >= a.value - e;
++        // Legacy Run-WarsBotsProbe.ps1:125 semantics: lhs > 0 && lhs >= factor*rhs. A positive lhs with rhs=0
++        // passes (2:0); 0:0 fails; a missing/NaN side fails. actual is finite: ratio when rhs>0, lhs otherwise.
++        const double left = m.Value(a.metric);
++        const double right = m.Value(a.other);
++        r.ratio = true; r.lhs = left; r.rhs = right;
++        if (std::isnan(left) || std::isnan(right) || left <= 0) { r.actual = std::numeric_limits<double>::quiet_NaN(); r.pass = false; return false; }
++        r.actual = right > 0 ? left / right : left;
++        r.pass = left >= a.value * right - e;
 +        return r.pass;
 +    }
      if (a.op == "lt") r.pass = r.actual < a.value - e;
      else if (a.op == "le") r.pass = r.actual <= a.value + e;
      else if (a.op == "gt") r.pass = r.actual > a.value + e;
-@@ -557,7 +661,8 @@ struct Runtime
+@@ -557,7 +682,8 @@ struct Runtime
          out += ",\n  \"metrics\": {";
          static const char* const names[] = {
              "shots", "hits", "kills", "deaths", "pickup", "revive", "time_to_first_shot", "goal_time",
@@ -188,6 +212,14 @@ index 551f536a..4f4aebb8 100644
              "detected_at_m", "exposed_s", "accuracy", "headshots", "hit_distance_p50", "hit_distance_p90",
              "target_distance_p50", "target_distance_p90"
          };
+@@ -576,6 +702,7 @@ struct Runtime
+             out += ", \"op\": "; out += JsonQuote(r.op);
+             out += ", \"expected\": "; JsonNumber(out, r.expected);
+             out += ", \"actual\": "; JsonNumber(out, r.actual);
++            if (r.ratio) { out += ", \"lhs\": "; JsonNumber(out, r.lhs); out += ", \"rhs\": "; JsonNumber(out, r.rhs); }
+             out += ", \"pass\": "; out += r.pass ? "true" : "false";
+             out += "}";
+         }
 diff --git a/Code/CryGame/Bots/BotWeapons.cpp b/Code/CryGame/Bots/BotWeapons.cpp
 index c7bfb08b..e0e634d8 100644
 --- a/Code/CryGame/Bots/BotWeapons.cpp
@@ -204,10 +236,10 @@ index c7bfb08b..e0e634d8 100644
      if(acquired)g_pGame->GetBotManager().Demo().Pickup(actor.GetEntityId(),id);
  	// Switch to what we just picked up (SelectAvailable prefers primaries anyway).
 diff --git a/Tests/BotProbeRunnerTests.cpp b/Tests/BotProbeRunnerTests.cpp
-index 97a9b972..c5975b11 100644
+index 97a9b972..54e756d3 100644
 --- a/Tests/BotProbeRunnerTests.cpp
 +++ b/Tests/BotProbeRunnerTests.cpp
-@@ -102,6 +102,67 @@ int main()
+@@ -102,6 +102,106 @@ int main()
      CHECK(results[1].pass);  // first shot 0.6 > 0.5
      CHECK(std::fabs(results[0].actual - 1.0) < 1e-6);
  
@@ -237,6 +269,44 @@ index 97a9b972..c5975b11 100644
 +    Assertion ratioFail = ratio; ratioFail.value = 4.0;
 +    CHECK(!Evaluate(c143, ratioFail, rr) && !rr.pass);
 +
++    // Legacy ratio semantics (Run-WarsBotsProbe.ps1:125): positive:0 passes, 0:0 fails, 2:1 fails.
++    Metrics zeroDen;
++    zeroDen.Begin(0.0);
++    zeroDen.ObserveLine("0.50 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
++    zeroDen.ObserveLine("0.60 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
++    Assertion zeroRatio = ratio; zeroRatio.value = 3.0;
++    CHECK(Evaluate(zeroDen, zeroRatio, rr) && rr.pass && rr.lhs == 2 && rr.rhs == 0 && std::fabs(rr.actual - 2.0) < 1e-6);
++    Metrics none;
++    none.Begin(0.0);
++    CHECK(!Evaluate(none, zeroRatio, rr) && !rr.pass); // 0:0
++    Metrics twoOne;
++    twoOne.Begin(0.0);
++    twoOne.ObserveLine("0.50 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
++    twoOne.ObserveLine("0.60 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
++    twoOne.ObserveLine("0.70 [WarsBots] #2 combat kill shooter=2 target=3 via stock GameRules::KillPlayer.");
++    CHECK(!Evaluate(twoOne, zeroRatio, rr) && !rr.pass); // 2:1 < 3
++    Assertion missingOther = ratio; missingOther.other = "does_not_exist";
++    CHECK(!Evaluate(c143, missingOther, rr) && !rr.pass);
++    Assertion invalidOther = ratio; invalidOther.other = "not_a_metric";
++    CHECK(!Evaluate(c143, invalidOther, rr) && !rr.pass);
++
++    // landing_z is supported by name but has no measured value before a LINK.
++    Metrics noLink;
++    CHECK(noLink.SupportsMetric("landing_z"));
++    CHECK(std::isnan(noLink.Value("landing_z")));
++    Assertion land; land.metric = "landing_z"; land.op = "ge"; land.value = 136.9;
++    CHECK(!Evaluate(noLink, land, rr) && !rr.pass);
++    CHECK(Evaluate(c143, land, rr) && rr.pass);
++
++    // link_failed is the JSON export name; it must measure, not go null after a real LINK failed.
++    Runtime linkRt;
++    CHECK(linkRt.Load("{\"id\":\"link\",\"duration_s\":1,\"assert\":[{\"metric\":\"link_failed\",\"op\":\"ge\",\"value\":1}]}", &err));
++    CHECK(linkRt.Start(0.0));
++    linkRt.Observe("0.50 [WarsBots] #1 LINK failed kind=jump reason=missed_landing at=(0,0,0) actor=1.");
++    const std::string linkJson = linkRt.Finish(1.0);
++    CHECK(linkJson.find("\"link_failed\": 1") != std::string::npos);
++    CHECK(linkJson.find("\"pass\": true") != std::string::npos);
++
 +    Assertion firstDsg; firstDsg.metric = "pickup:DSG1"; firstDsg.op = "le_seconds"; firstDsg.value = 2.5;
 +    CHECK(Evaluate(c143, firstDsg, rr) && rr.pass);
 +    Assertion firstDsgFail = firstDsg; firstDsgFail.value = 1.5;
@@ -257,6 +327,7 @@ index 97a9b972..c5975b11 100644
 +    for (size_t i = 0; i < sizeof kProbeFiles / sizeof kProbeFiles[0]; ++i)
 +    {
 +        FILE* pf = std::fopen(kProbeFiles[i], "rb");
++        CHECK(pf != nullptr);   // missing fixture must fail this binary, even from an empty CWD
 +        if (!pf) continue;
 +        std::string text;
 +        char buf[4096];
@@ -267,7 +338,7 @@ index 97a9b972..c5975b11 100644
 +        CHECK(ParseScenario(text, fs, &err));
 +        for (size_t j = 0; j < fs.assertions.size(); ++j)
 +        {
-+            CHECK(!std::isnan(Metrics().Value(fs.assertions[j].metric)));
++            CHECK(Metrics().SupportsMetric(fs.assertions[j].metric));
 +            CHECK(IsSupportedOperator(fs.assertions[j].op));
 +        }
 +    }
