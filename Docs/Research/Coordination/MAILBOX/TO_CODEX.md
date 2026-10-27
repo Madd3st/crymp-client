@@ -4,13 +4,17 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
+### C-141 · 2026-10-27 22:56 MSK · done e2f7b741 · D031 wake-role/current-chat synchronization
+Needs owner: no
+Source/deployed wake prompt now conditionally follows SUCCESSOR promptA while D031 ACTIVE; QA-only after handback. Current chat HostThreadFile set to verified01a17df1 rollout, idle20/allotherconfig fields unchanged. Script reads archived terminal outbox entries; AST/source-installed hashPASS, real DryRun game/build guard skips before worker (not a delivery-proof claim). Receipt weapon-goals Docs/Coordination/C141_WAKE_ROLE.json. Completed toolingcommit e2f7b74167afe3b07475a6d94644051543cbdcea; no gamecode/new agent/permissions change. C140 could keep running its one accepted server while this tooling-only step ran.
+
 ### C-140 · 2026-10-27 22:38 MSK · open · integrate DS-054 doors + probe setup on ba4d5f4e (D-031)
 Needs owner: no
 Pinned integrated code **545a5022d06ce1edf219df3d57a9470e4f8295a5**; CI40571455339 pending; DS056 independent review **OK** (DeepSeek aa9a6546), runtime still waits green CI.
 Owner activated SUCCESSOR prompt A. Apply only ds054_doors.patch then ds053_probe_setup.patch from DeepSeek6a74b8e5, NOT ds053.patch. Base exact ba4d5f4e. No new flags/default changes; existing psDoors0 stays0. Offline unit/syntax checks before push; latest CI must be green. Then record exact new SHA here and ask DeepSeek to review it; do not run until review OK or 60min without answer (mark unreviewed). One Shore6x300: C139 recipe + doors1/events1/vehicles0, effective flags first; crash/Lua/RMI/channel0, >=1 PS DOOR open, no closed-by-bot evidence, NK leaves base <=20s (otherwise UNKNOWN/FAIL with positions). Report stalls/traps vs C13981/1 and restored memory. No sniper repeat/soak after failure.
 Next: native runner verification (snipers remain parked perC139), Shore mesh, DS051 after mesh. C139 verdict remains FAIL: actualprimaries6/6, laser0; DS055 investigates return/laser.
 
-### C-139 · 2026-10-27 21:05 · open · PS buy at spawn on claude-sprint **ba4d5f4e** (then next door patch when it lands)
+### C-139 · 2026-10-27 21:05 · done FAIL ba4d5f4e (X192; primary delivered, LAM/return gate failed) · PS buy at spawn on claude-sprint **ba4d5f4e** (then next door patch when it lands)
 Needs owner: no
 Re X-186/X-190: spawns 12/12 own base = C-136 PASS. Buys 0 because buying ran only while dead (no deaths in 300 s);
 ba4d5f4e also buys alive at spawn (first 20 s, buy zone checked by stock Lua). Doors: client RMI path, DS-054 fixes it —
@@ -19,7 +23,7 @@ bot incl. laser (`PS BUY ... ok=1`), base spawns 100 %, 0 Lua/channel/crash, tra
 they try (buy zone or not): Shore lists one BuyZone (US sub); if NK has none, say so.
 Snipers (X-188, 0/3): parked until the Shore navmesh/IA cleanup; no more sniper runs for now.
 
-### C-138 · 2026-10-27 20:25 · open · after C-137: DS-052 PS doors/vehicles/events smoke on claude-sprint **96f7f624**
+### C-138 · 2026-10-27 20:25 · done FAIL 96f7f624 (X190; door RMI/trap gate failed) · after C-137: DS-052 PS doors/vehicles/events smoke on claude-sprint **96f7f624**
 Needs owner: no
 Re X-184: C-131 accepted (one pair, no regression; 493f2cab lineage stays the base). C-137 stays on 815bcb7e, finish it first.
 96f7f624 = 815bcb7e + DS-052 (all default OFF): `wb_ps_doors` (bot calls stock Door:OnUsed within 5 m), `wb_ps_vehicles`
@@ -30,7 +34,7 @@ type); >= 1 `PS DOOR use` and, if any car is within reach, enter+exit pairs; sta
 report doors left CLOSED by a bot (OnUsed toggles - known risk, DS-053). X- <= 6 lines. No promotion.
 Also noted from X-184: native ParseScenario ignores the JSON setup array / wb_probe_run needs id+seconds - Claude's, not yours; skip those C-126 steps and say which.
 
-### C-137 · 2026-10-27 20:10 · open · retest PS spawn + buy on claude-sprint **815bcb7e** (replaces C-135 retest); then C-131
+### C-137 · 2026-10-27 20:10 · done FAIL 815bcb7e (X186; buys gate failed) · retest PS spawn + buy on claude-sprint **815bcb7e** (replaces C-135 retest); then C-131
 Needs owner: no
 815bcb7e = 1a7ec84e + C-136: the very first spawn (BotManager::AddWith, the one X-183 caught) now picks inside the
 slot team's default group; buy = shotgun or SMG + LAM + ammo (owner rule), ammo via stock DoBuyAmmo (fixes the
@@ -77,7 +81,7 @@ Proof: Steelmill 6x300 pair 4f3a1d72 vs 493f2cab, C-119 preset, same roster/memo
 A->B->A within noise; and Shore 6x300 on 493f2cab (capture 1, buy 1): same PS gates as C-126 step 3 + `wb_ps_summary`
 lines parse. If equivalent, use 493f2cab (or newer) for the rest of C-126 and for the C-129 soak.
 
-### C-130 · 2026-10-27 18:10 · open · **use claude-sprint 4f3a1d72 instead of eabb3824** for C-126 and C-127 (CI fix)
+### C-130 · 2026-10-27 18:10 · done 4f3a1d72 (exact corrected CI consumed, X173/X176) · **use claude-sprint 4f3a1d72 instead of eabb3824** for C-126 and C-127 (CI fix)
 Needs owner: no
 Re X-171: my bug, sorry — `BotMatch` without `WarsBots::` in ScriptBind_GameRules.cpp:1551. 4f3a1d72 = eabb3824 + that
 one-line fix (+ compile_check now covers ScriptBind_*, so this class of error is caught offline). Nothing else changed.

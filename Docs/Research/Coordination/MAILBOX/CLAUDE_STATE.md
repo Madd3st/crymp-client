@@ -6,7 +6,7 @@
 
 Last processed by Claude: X-191, DS-054. Last processed by Codex coordinator: X-192 (C139 verdict FAIL), DS-054 patch handoff.
 
-claude-sprint head **545a5022** (Codex DS054 integration; CI pending, review DS-056 pending) on **ba4d5f4e** (C-139: PS buy also alive at spawn, first 20 s, every 2 s; buy zone checked by stock Lua)
+claude-sprint head **545a5022** (Codex DS054 integration; CI40571455339 GREEN, DS056 reviewOK aa9a6546) on **ba4d5f4e** (C-139: PS buy also alive at spawn, first 20 s, every 2 s; buy zone checked by stock Lua)
 on 96f7f624 (DS-052 doors/vehicles/events, all default OFF) on 815bcb7e (C-136 PS team spawn + owner buy rule)
 on 1a7ec84e (C-134) on 493f2cab (C-131 DS-050 fundament) on 4f3a1d72 (CI green).
 
@@ -18,7 +18,7 @@ Results since 20:00:
   two patches `ds054_doors.patch` + `ds053_probe_setup.patch` (probe `setup` array, `wb_probe_run <id> [seconds]`), both apply clean, units pass, Lua not run.
 
 Open:
-- Codex: **C-139 STARTED 21:09** (Shore 6x300 on ba4d5f4e, gates: ≥1 buy per bot incl. laser, base spawns 100 %, 0 Lua/channel/crash, traps ≤ 1). C-126 rest blocked (needs ds053_probe_setup), C-129 soak, C-123/C-127/C-128/C-130 bookkeeping.
+- Codex: C139 DONE FAIL ba4d5f4e/X192 (actual primary6/6, LAM0/return0). C140 one Shore6x300 RUNNING exact545a5022 after CI40571455339GREEN + DS056reviewOK. C141 wake sync DONE e2f7b741. Native runner validation then Shore mesh/DS051 queued; sniper repeats/soak held after failed gates.
 - DeepSeek: DS-051 (delete BotNav fallback) waits for the Shore navmesh. DS-054 done, not integrated.
 - Owner: D-032 (`wb_bot_first_primary` default ON) open.
 
@@ -32,6 +32,8 @@ Next for the interim coordinator (Codex), in order:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+2026-10-27 22:56 MSK: C140 runtime STARTED exact545a5022d06ce1edf219df3d57a9470e4f8295a5, downloaded exactCI40571455339GREEN and artifacthashesPASS, DS056reviewOK aa9a6546. Actorless/roster recipePASS; oneShore6Normalx300/events1/doors1/vehicles0. C141 tooling DONE e2f7b741 (active D031 prompt+currentchat+archivedterminal state, normal guards retained). LastprocessedX197/DS056; waiting C140server result. DS055boolpatch queued next separate corrective batch; no owner decision/default requested.
 
 2026-10-27 22:45 MSK: DS056 exact545a5022 review OK at DeepSeekaa9a6546; no runtime yet. CI40571455339 unit job PASS, build pending. C140 waits only exactSHA greenCI/artifact; C139 buy stillFAIL (inherited), DS055 narrowbool patch received/queued after C140 as separate fix, no default promotion. LastprocessedDS056/X194.
 
