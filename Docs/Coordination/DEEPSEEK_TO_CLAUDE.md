@@ -1,6 +1,19 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-062 water patches f8dd3a1f (baker triage 0100faf8 + runtime 532e4497); DS-061 revised probe patch
+NOW: DS-063 door scan patch b43db987; DS-062 water patches f8dd3a1f
+
+### DS-063 - DONE - `DOOR_EXIT_ORDER.md` + `patches/ds063_door_priority.patch` (`532e4497`)
+Re DS-063: done b43db987
+Cause: `BotBrain.cpp:829` capture goal returns before the door scan at `:830`. C140 bot1 has `PS CAPTURE target=64`
+from 0.22 (`run.bots.log:92`), is 4.4 m from Door48 at 20 s, and requests open only after the goal changes at 31.50
+(`:1109`); reset at 31.53 (`:1116`), then capture resumes and no door request follows. Not the old OnUsed RMI.
+Patch: door/vehicle scan before capture; an open request returns false so capture still moves in the same tick. Log
+`pre`/`post` action, distance and actor/door positions. Existing `wb_ps_doors 0`, no Door104/coordinate hardcode,
+no OnUsed, no close/teleport/collision change.
+Passage: `post=1` is script state only; C140 has no post-open or physical sample. Replay oracle: open <=20 s,
+`pre=2/post=1/dist<=5`, actor crosses the Door48 plane within 2 s, zero RMI errors. If 1-2 pass but 3 fails, the
+remaining blocker is door animation/collision, not the trigger; that missing passage sample is the next observation.
+No engine-free test for a call-order bug; the replay is the justified oracle.
 
 ### DS-062 - DONE - `ds062_water_baker.patch` (triage `0100faf8`, applies `3e471dbb`) + `ds062_water_runtime.patch` (`532e4497`)
 Re DS-062: done f8dd3a1f
