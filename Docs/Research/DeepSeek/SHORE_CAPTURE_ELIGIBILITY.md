@@ -17,9 +17,11 @@ below is a capture-success claim.
 
 All five have `bCapturable=1`, `captureAreaId=1`, `teamName=""`, and a matching `AreaShape` that lists the entity in
 its `Area/Entities`; 64/316/654 are inside their h38 energy shapes. 344's origin lies just outside `Shape4`'s max x
-(2144.95 vs 2145.20) and on the `Shape5` boundary; 579's origin is 0.17 m outside `Shape_VF_neutral`'s min y
-(1326.01 vs 1325.84). The bot hold radius is 6 m (`BotPSCapture.h:36`), so the hold ring overlaps the area, but the
-exact origin event is not proven. **Do not assume captureRequirement=2**: all five are 1; `PS_PLAN.md:17`'s
+(2144.95 vs 2145.20) and on the `Shape5` boundary. **Correction (DS-069):** 579's origin is 13.3 m outside
+`Shape_VF_neutral` in 2D (the y-only 0.17 m check missed the x offset; the shape is a narrow diagonal strip
+x 2209.3..2233.0). A 6 m hold at the origin can never be inside that area; the 64/316/654 origins are inside their
+shapes. See `DS069_CAPTURE_ORIGIN.md`. The bot hold radius is 6 m (`BotPSCapture.h:36`), so it is only safe for the
+three inside-origin points; 344 is 0.4-0.7 m outside and 579 is out of reach. **Do not assume captureRequirement=2**: all five are 1; `PS_PLAN.md:17`'s
 "2 players" is stale for Shore (the stock `MakeCapturable` default 2 is overridden in every mission property here).
 
 ## Does an IsPlayer=false/channel0 bot count?
