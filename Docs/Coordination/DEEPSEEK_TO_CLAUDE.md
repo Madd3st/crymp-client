@@ -3,7 +3,7 @@
 NOW: DS-051 PARTIAL (flags hardcoded, stateCommit 2 deleted, BotNav callers removed; native guards still open) - push - stop
 
 ### DS-051 - PARTIAL - `FLAGS_HARDCODE.md` + `BOTNAV_FALLBACK.md` + `NATIVE_CLIENT_SENDS_2.md` + `ds051.patch`
-Re DS-051: done PENDING_SHA
+Re DS-051: done 99605013
 Base `493f2cab`.
 **#1 flags:** removed `wb_spawn_exclude195`, `wb_revive_guard`, `wb_bot_pace`, `wb_bot_jump_sanity`, `wb_bot_corners`
 and their OFF branches (hardcoded ON), and deleted the `stateCommit>=2` / `DecisionCommit` / `MoveCommit` path (mode 1
