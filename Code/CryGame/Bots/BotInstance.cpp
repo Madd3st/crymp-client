@@ -317,8 +317,29 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 		return false;
 	}
 	const EntityId id = m_entityId;
-	const bool ps = BotMatch::Mode(*rules).Policy().teamSpawn;
-	const EntityId chosen = forcedSpawn ? forcedSpawn :
+	const BotGameModePolicy& policy = BotMatch::Mode(*rules).Policy();
+	const bool ps = policy.teamSpawn;
+	// C-134 (owner playtest 27.10: bots spawned on neutral bunkers): GetSpawnLocationTeam is the TIA picker; for the
+	// first player on the map it takes spawns near the AVERAGE of all spawns = the Shore bunkers. With spawn groups the
+	// bot spawns inside its own group (team base, later its captured bunkers), exactly like stock InstantAction:RevivePlayer.
+	EntityId groupSpawn = 0;
+	if (!forcedSpawn && policy.spawnGroups)
+	{
+		EntityId group = rules->GetPlayerSpawnGroup(actor);
+		if (!group || rules->GetTeam(group) != rules->GetTeam(id)) group = rules->GetTeamDefaultSpawnGroup(rules->GetTeam(id));
+		if (group)
+		{
+			float zOff = 0.f;
+			groupSpawn = rules->GetSpawnLocation(id, true, false, group, 0.f, Vec3(0,0,0), &zOff, 0);
+			WB_LOG(1, "[WarsBots] #%d PS spawn group=%u team=%d spawn=%u.", m_number, group, rules->GetTeam(id), groupSpawn);
+		}
+		if (!groupSpawn)
+		{
+			WB_LOG(1, "[WarsBots] #%d PS spawn: no free point in the team group; wave revive will take it.", m_number);
+			return false; // never fall back to the TIA picker in PS (it picks neutral bunkers)
+		}
+	}
+	const EntityId chosen = forcedSpawn ? forcedSpawn : groupSpawn ? groupSpawn :
 		(ps ? rules->GetSpawnLocationTeam(id, m_spawnPosition)
 		    : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation,guardRetry?&m_guardFailedSpawns:nullptr));
 	if (!chosen)

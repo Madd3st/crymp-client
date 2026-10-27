@@ -23,6 +23,11 @@ function WarsBotsPS:Register(playerId, teamId)
         if type(rules[fn]) == "function" then rules[fn](rules, playerId);
         else Log("WarsBots PS Register: rules:%s missing", fn); end
     end
+    -- C-134: a player gets ppList.START in PowerStruggle.Server:OnClientEnteredGame(reset); a bot never goes through it,
+    -- so ResetPP above left it at 0 and every first-life purchase failed ('PS BUY skip pp=0', C-126).
+    if type(rules.SetPlayerPP) == "function" and rules.ppList and rules.ppList.START then
+        rules:SetPlayerPP(playerId, rules.ppList.START);
+    end
     if type(rules.SetupPlayer) == "function" then rules:SetupPlayer(player);
     else Log("WarsBots PS Register: rules:SetupPlayer missing"); end
 
