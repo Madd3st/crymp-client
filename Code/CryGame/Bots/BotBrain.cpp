@@ -113,7 +113,6 @@ void BotBrain::Change(State state,bool initialize,DecisionOwner owner)
 		}
 		m_move.Reset(); m_moveOwner=who;
 	}
-	m_progress.Reset();
 	m_state = state;
 	m_stateTime = m_now;
 	WB_LOG(2, "[WarsBots] #%d AI state=%s.", m_number, NameOf(state));
@@ -288,7 +287,7 @@ void BotBrain::Configure(const BotProfile& profile, int number)
 
 void BotBrain::ResetLife()
 {
-	m_progress.Reset(); m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
+	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_locomotion.Reset();
 	m_suit.Reset(); m_blackboard=BotBlackboard(); m_intent=BotIntent();
 	m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
@@ -301,7 +300,7 @@ void BotBrain::ResetLife()
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
-	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false;
+	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	++m_life;
@@ -473,8 +472,9 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
 		m_deadTime += dt;
 		// DS-043: in PowerStruggle the PS revive wave owns the respawn; the 5 s self-revive double-revived a bot that
 		// the wave then revived again. Keep a 30 s fallback so a broken queue cannot leave a bot dead for the match.
-		const bool ps = g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules());
-		if (ps && BotConfig::Get().psBuy==1 && !m_psBought && m_deadTime>=2.0f) { m_psBought=true; PSTryBuy(bot,actor); }
+		BotGameModePolicy mode; if (g_pGame && g_pGame->GetGameRules()) mode = BotMatch::Mode(*g_pGame->GetGameRules()).Policy();
+		const bool ps = mode.waveRevive;
+		if (ps && mode.reviveBuy && BotConfig::Get().psBuy==1 && !m_psBought && m_deadTime>=2.0f) { m_psBought=true; PSTryBuy(bot,actor); }
 		if (ps && !m_psReviveLogged && m_deadTime >= 5.0f)
 		{
 			m_psReviveLogged = true;
@@ -526,7 +526,7 @@ void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
 		int ok=0; ss->EndCall(ok); return ok!=0;
 	};
 	const bool primary=buy(plan.primary);
-	const bool ammo=plan.buyAmmo?buy(plan.ammo):false;
+	const bool ammo=plan.buyAmmo?buy(plan.ammo):false; if (primary) ++m_psBuys; if (ammo) ++m_psBuys;
 	WB_LOG(1,"[WarsBots] #%d PS BUY pp=%d primary=%s price=%d ok=%d ammo=%s ok=%d actor=%u.",
 		m_number,pp,plan.primary,plan.primaryPrice,primary?1:0,plan.buyAmmo?plan.ammo:"-",ammo?1:0,id);
 	(void)bot;
@@ -749,7 +749,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		if (BotConfig::Get().tactics==1 && m_upgradeTarget && UpdateUpgrade(bot,actor,nullptr,decisionTime,false,true)) return;
 		if (commit) Change(State::SEARCHING_ENEMY);
 		// DS-048 #3: PS-1 capture goal; roam only runs with no visible enemy, so combat still wins.
-		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::IsPowerStruggle(*g_pGame->GetGameRules()) && UpdatePSCapture(bot,actor,decisionTime)) return;
+		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::Mode(*g_pGame->GetGameRules()).Policy().captureGoals && UpdatePSCapture(bot,actor,decisionTime)) return;
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
 		Vec3 heard;
 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
@@ -1143,28 +1143,9 @@ void BotBrain::UpdateCombatPost(BotInstance& bot,CPlayer& actor,float decisionTi
 	IWeapon* activeWeapon=BotWeapons::Current(actor);
 	const bool protect=m_now-m_combat.LastBurstRequest()<4.0f ||
 		m_now-m_combat.SelectedAt()<0.75f || (activeWeapon && activeWeapon->IsReloading());
-	if (m_intent.move && NoProgress(actor,"combat",m_combat.Target(),protect))
-	{
-		g_pGame->GetBotManager().Nav().ReportStuck(actor.GetEntity()->GetWorldPos(),actor.GetEntityId());
-		m_combat.AvoidCurrent(m_now,8.0f); m_escapeUntil=m_now+1.5f;
-		m_detour=true; m_patrolUntil=0; m_nextRepath=0;
-	}
 
 }
 
-bool BotBrain::NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect)
-{
-	const int& experiment=BotConfig::Get().progressExperiment;
-	if (experiment!=1) { m_progress.Reset(); return false; }
-	if (!m_blackboard.canMove) { m_progress.Reset(); return false; }
-	const Vec3 p=actor.GetEntity()->GetWorldPos();
-	const float timeout=6.0f-2.0f*m_profile.targetJudgement;
-	if (!m_progress.Stalled(p.x,p.y,p.z,m_now,timeout) || protect) return false;
-	WB_LOG(2,"[WarsBots] PROGRESS ESCAPE actor=%u kind=%s goal=%u pos=(%.2f,%.2f,%.2f) age=%.2f.",
-		actor.GetEntityId(),kind,goal,p.x,p.y,p.z,m_progress.Age(m_now));
-	m_progress.Reset();
-	return true;
-}
 
 bool BotBrain::RecoverTrap(CPlayer& actor)
 {

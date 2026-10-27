@@ -5,6 +5,8 @@
 #include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Bots/BotDataPath.h"
 #include "CryGame/Bots/BotProbeRunner.h"
+#include "CryGame/Bots/BotPSCaptureRuntime.h"
+#include "CryCommon/CryScriptSystem/IScriptSystem.h"
 #include "CryGame/Bots/BotGeometryExport.h"
 #include "version.h"
 #include "CryGame/Bots/BotCombat.h"
@@ -94,7 +96,7 @@ bool ProbeSetupSupported(const std::string& command)
 const char* kCommands[] = { "wb_demo_start", "wb_demo_stop", "wb_demo_mark", "wb_qa_time_scale", "wb_nav_audit",
 	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_probe_item", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_kick_bots", "wb_fill", "wb_skill_all", "wb_mark", "wb_rules_info", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
-	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
+	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive", "wb_ps_summary",
 	"wb_probe_load", "wb_probe_start", "wb_probe_run", "wb_probe_stop", "wb_probe_runner_status", "wb_probe_goal",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
@@ -152,6 +154,7 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_probe_remove", ProbeRemoveCommand, 0, "Remove the selected bot");
 	console->AddCommand("wb_probe_status", ProbeStatusCommand, 0, "Status of the selected bot");
 	console->AddCommand("wb_probe_revive", ProbeReviveCommand, 0, "Revive the selected dead bot");
+	console->AddCommand("wb_ps_summary", PSSummaryCommand, 0, "PowerStruggle only: log team/PP/rank/buys per bot and owned capture points");
 	// DS-047: BotProbeRunner.h host behind wb_probe_runner (default 0).
 	console->AddCommand("wb_probe_load", ProbeLoadCommand, 0, "wb_probe_load <scenario.json>: parse a probe v1 scenario (needs wb_probe_runner 1)");
 	console->AddCommand("wb_probe_start", ProbeStartCommand, 0, "wb_probe_start: run the loaded scenario setup and start the metrics window");
@@ -564,8 +567,8 @@ void BotManager::StatusReport()
 		if (bot->UpdateCount()) total += bot->TotalUpdateMs() / float(bot->UpdateCount());
 		worst = max(worst, bot->MaxUpdateMs());
 	}
-	WB_LOG(0, "[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u progressExperiment=%d (since last report).",
-		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount(), BotConfig::Get().progressExperiment);
+	WB_LOG(0, "[WarsBots] PROFILE bots=%d avgSum=%.3fms/frame worstFrame=%.3fms rays=%u targetScans=%u (since last report).",
+		Count(), total, worst, BotCombat::TakeRayCount(), BotCombat::TakeScanCount());
 	for (BotInstance* bot : Ordered()) bot->ResetProfile();
 }
 
@@ -816,6 +819,40 @@ void BotManager::RulesInfoCommand(IConsoleCmdArgs*)
 	WB_LOG(0, "[WarsBots] RULES INFO class=%s teams=%d names=%s spawnGroups=%d.",
 		rules->GetEntity() ? rules->GetEntity()->GetClass()->GetName() : "?", teams, names.c_str(), rules->GetSpawnGroupCount());
 }
+
+int PsLuaInt(CGameRules* rules, EntityId id, const char* func)
+{
+	if (!rules || !gEnv || !gEnv->pScriptSystem) return -1;
+	IEntity* entity = rules->GetEntity();
+	IScriptTable* table = entity ? entity->GetScriptTable() : nullptr;
+	if (!table) return -1;
+	IScriptSystem* ss = gEnv->pScriptSystem;
+	int value = -1;
+	if (ss->BeginCall(table, func)) { ss->PushFuncParam(table); ss->PushFuncParam(ScriptHandle(id)); ss->EndCall(value); }
+	return value;
+}
+
+void BotManager::PSSummaryCommand(IConsoleCmdArgs*)
+{
+	BotManager* self = Self();
+	CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
+	if (!self || !rules) return;
+	if (!BotMatch::IsPowerStruggle(*rules)) { WB_LOG(0, "[WarsBots] PS SUMMARY skipped: not PowerStruggle."); return; }
+	std::vector<PsCapturePoint> points;
+	PSCaptureSnapshot(points, *rules);
+	int held[3] = {0, 0, 0};
+	for (const PsCapturePoint& point : points) if (point.ownerTeam >= 0 && point.ownerTeam < 3) ++held[point.ownerTeam];
+	WB_LOG(0, "[WarsBots] PS SUMMARY points=%d team1_held=%d team2_held=%d.", int(points.size()), held[1], held[2]);
+	for (BotInstance* bot : self->Ordered())
+	{
+		CActor* actor = bot->GetActor();
+		if (!actor) continue;
+		const EntityId id = actor->GetEntityId();
+		WB_LOG(0, "[WarsBots] PS SUMMARY bot=%d id=%u team=%d pp=%d rank=%d buys=%d.",
+			bot->Number(), id, rules->GetTeam(id), PsLuaInt(rules, id, "GetPlayerPP"), PsLuaInt(rules, id, "GetPlayerRank"), bot->Brain().PSBuys());
+	}
+}
+
 
 void BotManager::ListCommand(IConsoleCmdArgs*) { if (BotManager* self = Self()) self->List(); }
 

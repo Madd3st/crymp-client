@@ -27,7 +27,6 @@ const IntBinding kInts[]={
  {"wb_move_trace",&BotConfig::moveTrace,"Diagnostic-only opt-in trace:1=4Hz humans/server bots;2=also per-frame client remote bots. IA/default0,200000line cap; entity/view in PostUpdate, not raw packets."},
  {"wb_physics_diagnostics",&BotConfig::physicsDiagnostics,"Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF."},
  {"wb_trap_recovery",&BotConfig::trapRecovery,"Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak."},
- {"wb_progress_experiment",&BotConfig::progressExperiment,"Experimental stationary-combat recovery: 0 OFF (default), 1 ON; local IA bots only."},
  {"wb_qa_socom_only",&BotConfig::qaSocomOnly,"Local IA test only: suppress weapon upgrades/fallback, retain native SOCOM/ammo; default OFF."},
  {"wb_bot_look",&BotConfig::botLook,"C-033 look policy: without a visible target look ~3 m ahead along the path; points of interest only with a clear eye ray. 0 OFF default. Exit: promote only after owner playtest; retire gate/legacy path when validated."},
  {"wb_bot_turn_cap",&BotConfig::botTurnCap,"C-044 per-frame view turn-rate cap by skill (beginner 400 .. elite 900 deg/s) instead of 10 Hz look snaps. 0 OFF default. Exit: promote only after owner playtest; retire gate/legacy path when validated."},

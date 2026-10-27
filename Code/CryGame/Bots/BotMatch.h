@@ -1,4 +1,5 @@
 #pragma once
+#include "CryGame/Bots/BotGameMode.h"
 #include "CryCommon/CryEntitySystem/IEntity.h"
 #include <vector>
 class CGameRules;
@@ -9,6 +10,7 @@ class BotMatch {
 public:
     static bool IsBotMode(const CGameRules& rules);       // InstantAction or PowerStruggle
     static bool IsPowerStruggle(const CGameRules& rules);
+    static const IBotGameMode& Mode(const CGameRules& rules);
     static bool IsBot(const CGameRules& rules, EntityId id);
     static void Collect(const CGameRules& rules, std::vector<EntityId>& bots);
     static bool Register(CGameRules& rules, IActor& actor);

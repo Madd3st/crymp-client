@@ -4,7 +4,6 @@
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotProfile.h"
 #include <vector>
-#include "CryGame/Bots/BotProgress.h"
 #include "CryGame/Bots/BotTrapWatchdog.h"
 #include "CryGame/Bots/BotLookPolicy.h"
 #include "CryGame/Bots/BotGoalArbiter.h"
@@ -43,6 +42,7 @@ public:
     bool RequestsMovement() const { return m_running && m_intent.move; }
 	void SetVerbose(bool enabled) { m_verbose = enabled; }
 	const char* StateName() const;
+	int PSBuys() const { return m_psBuys; }
 	EntityId Target() const { return m_combat.Target(); }
     // Read-only diagnostic snapshot, consumed after this instance's decision tick.
     unsigned DecisionSerial()const{return m_decisionSerial;}
@@ -96,8 +96,6 @@ private:
 	EntityId m_aimModelTarget = 0;
 	float m_prevTargetYaw = 0, m_prevTargetPitch = 0;
 	Vec3 AimModelPoint(CPlayer& actor, const Vec3& observed, float distance, float dt);
-	bool NoProgress(CPlayer& actor,const char* kind,EntityId goal,bool protect=false);
-	BotProgress m_progress;
     bool RecoverTrap(CPlayer& actor);
     BotTrapWatchdog m_trap;
     Vec3 m_trapDirection=Vec3(0,1,0);
@@ -167,7 +165,7 @@ private:
 	float m_withdrawUntil=0, m_nextWithdraw=0, m_nextWithdrawPick=0;
 	Vec3 m_withdrawCover=Vec3(0,0,0);
 	bool m_withdrawCoverValid=false;
-	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false;
+	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false; int m_psBuys=0;
 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
 	EntityId m_upgradeTarget = 0;
 	float m_upgradeSince = 0;

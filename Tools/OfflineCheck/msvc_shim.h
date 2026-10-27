@@ -38,3 +38,9 @@ static inline FILE* _wfopen(const char*, const wchar_t*) { return nullptr; }
 #define _snprintf snprintf
 #define _vsnprintf vsnprintf
 static inline int localtime_s(struct tm* out, const time_t* t) { return localtime_r(t, out) ? 0 : 1; }
+// C-130: stock ScriptBind_Actor.cpp uses _strlwr (MSVC CRT)
+#ifndef WB_SHIM_STRLWR
+#define WB_SHIM_STRLWR
+#include <cctype>
+inline char* _strlwr(char* s) { for (char* p = s; p && *p; ++p) *p = (char)std::tolower((unsigned char)*p); return s; }
+#endif

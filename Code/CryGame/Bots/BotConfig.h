@@ -11,7 +11,6 @@ struct BotConfig {
  int skill=1;
  int demoRecord=0;
  int demoHz=20;
- int progressExperiment=0;
  int trapRecovery=0;
  int physicsDiagnostics=0;
  int moveTrace=0;

@@ -17,6 +17,9 @@
 #include "CryGame/Items/Item.h"
 #include "CryGame/HUD/HUD.h"
 #include "CryGame/Game.h"
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+#include "CryGame/Bots/BotMatch.h"
+#endif
 #include "Player/Player.h"
 #include "Alien/Alien.h"
 #include "CryGame/GameCVars.h"
@@ -1581,6 +1584,10 @@ int CScriptBind_Actor::SelectItemByNameRemote(IFunctionHandler* pH, const char* 
 
 	//Only send to this client
 	if (gEnv->bServer)
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+		// DS-050: a bot has no client; stock BuyItem selects ammo via this Lua path and would RMI channel 0.
+		if (!WarsBots::BotMatch::IsBot(*g_pGame->GetGameRules(), pActor->GetEntityId()))
+#endif
 		pActor->GetGameObject()->InvokeRMI(CActor::ClSelectItemByName(), CActor::SelectItemParams(name), eRMI_ToClientChannel, pActor->GetGameObject()->GetChannelId());
 
 	return pH->EndFunction();

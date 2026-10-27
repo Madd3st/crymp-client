@@ -68,7 +68,7 @@ bool BotInstance::Spawn(const Vec3& position)
 	m_owner.Adopt(*this);
 	// PS-0 #2: team before registration/spawn; CanEnterVehicle and GetSpawnLocationTeam read it.
 	if (CGameRules* rules = g_pGame->GetGameRules())
-		if (BotMatch::IsPowerStruggle(*rules))
+		if (BotMatch::Mode(*rules).Policy().teamBeforeSpawn)
 		{
 			const int team = TeamForSlot(m_number);
 			rules->SetTeam(team, m_entityId);
@@ -284,7 +284,7 @@ void BotInstance::Update(float dt)
 				const bool self = m_selfRevivePending;
 				m_selfRevivePending = false;
 				CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
-				if (!self && rules && BotMatch::IsPowerStruggle(*rules))
+				if (!self && rules && BotMatch::Mode(*rules).Policy().waveRevive)
 					WB_LOG(1, "[WarsBots] PS REVIVE SEEN EntityId=%u health=%d source=wave.", m_entityId, health);
 				WB_LOG(2, "[WarsBots] #%d alive transition EntityId=%u health=%d.", m_number, m_entityId, health);
 			}
@@ -317,7 +317,7 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 		return false;
 	}
 	const EntityId id = m_entityId;
-	const bool ps = BotMatch::IsPowerStruggle(*rules);
+	const bool ps = BotMatch::Mode(*rules).Policy().teamSpawn;
 	const EntityId chosen = forcedSpawn ? forcedSpawn :
 		(ps ? rules->GetSpawnLocationTeam(id, m_spawnPosition)
 		    : m_owner.ChooseSpawnLocation(id, m_lastSpawnLocation,guardRetry?&m_guardFailedSpawns:nullptr));

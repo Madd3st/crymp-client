@@ -134,6 +134,7 @@ private:
     static void WatchCheckCommand(IConsoleCmdArgs* args);
 	void ResetNav() { m_nav.Reset(); }
 	// Legacy single-bot test commands, now addressed to the selected bot.
+	static void PSSummaryCommand(IConsoleCmdArgs* args); // DS-050 #3
 	static void ProbeSpawnCommand(IConsoleCmdArgs* args);
 	static void ProbeRemoveCommand(IConsoleCmdArgs* args);
 	static void ProbeStatusCommand(IConsoleCmdArgs* args);

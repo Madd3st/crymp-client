@@ -15,10 +15,14 @@ bool BotMatch::IsBotMode(const CGameRules& rules)
     const char* name=rules.GetEntity() && rules.GetEntity()->GetClass() ? rules.GetEntity()->GetClass()->GetName() : "";
     return IsBotRulesClass(name);
 }
-bool BotMatch::IsPowerStruggle(const CGameRules& rules)
+const IBotGameMode& BotMatch::Mode(const CGameRules& rules)
 {
     const char* name=rules.GetEntity() && rules.GetEntity()->GetClass() ? rules.GetEntity()->GetClass()->GetName() : "";
-    return IsPowerStruggleClass(name);
+    return BotGameModeFor(name);
+}
+bool BotMatch::IsPowerStruggle(const CGameRules& rules)
+{
+    return Mode(rules).Kind()==BotGameModeKind::PowerStruggle;
 }
 bool BotMatch::IsBot(const CGameRules& rules, EntityId id)
 {
@@ -43,7 +47,8 @@ bool BotMatch::Register(CGameRules& rules, IActor& actor)
     if (!rulesTable || !actorTable) return false;
     bool groups=false;
     rulesTable->GetValue("USE_SPAWN_GROUPS",groups);
-    const bool ps=IsPowerStruggle(rules);
+    const BotGameModePolicy mode=Mode(rules).Policy();
+    const bool ps=mode.attachParticipant;
     if (groups && !ps) { WB_LOG(0, "[WarsBots] IA registration refused: spawn-group channel callbacks unsupported."); return false; }
     SmartScriptTable hooks;
     if (ps)
