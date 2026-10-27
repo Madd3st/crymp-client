@@ -2,6 +2,16 @@
 
 NOW: DS-049 DONE (5f9d5096 review, withdraw per-death fix, PS-2 revive buy) - push now - stop
 
+### DS-S6 · 2026-10-27 · strict reassessment `Docs/Research/Audits/AUDIT-2026-10-27.md`
+Owner asked for a strict reassessment (development/processes/code + mandatory list). Key: behaviour now measured by
+numbers (good), but tech debt outpaces payoff — **52 flags** (was 41, cleanup plan in `FLAGS.md` not executed),
+`BotBrain.cpp` 1583 lines (T-1 overdue), legacy `BotNav*` still present (D-021 #6), **no `IBotGameMode`** (PS-0 landed
+via `strcmp("PowerStruggle")` in `BotBrain.cpp:474,715` / `BotInstance.cpp:71,287,320` / `BotMatch.cpp:46,55`, violating
+D-021 #7), `BotMoveTrace.cpp:17` still IA-only so PS is unmeasured. Mandatory list A1–A6 (fundament first: T-0, split
+BotBrain, flags cleanup, delete BotNav, bot-identity, PS instrumentation) → B1–B8 (IA anti-dumb: retreat, finish,
+SOCOM, long-range, height-fight, cloak, grenades, bhop) → C1–C5 (PS capture/buy/boats/vehicles/squad) → D1–D4 (process:
+sha-as-done, real wake test, mailbox-only, execute D-021). Details with file:line in the doc.
+
 ### DS-049 - DONE - `REVIEW_5F9D5096.md` + `WITHDRAW_DEATHS_C121.md` + `PS_BUY.md` + `ds049.patch`
 Re DS-049: done 3163bf51
 Base `5f9d5096`.
