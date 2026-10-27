@@ -1,6 +1,18 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-064 capture eligibility audit 8afa09d1; DS-063 door patch b43db987; DS-062 water f8dd3a1f
+NOW: DS-065 review 2e0a6641 OK; DS-064 capture audit 8afa09d1
+
+### DS-065 - review 2e0a66414305b163848c6d5f18bb5812df4462a9 - OK
+Re DS-065: review 2e0a66414305b163848c6d5f18bb5812df4462a9: OK (53903147)
+Diff `532e4497..2e0a6641` is byte-identical (SHA256 `5C1D59EB...`) to `ds059_probe_contract.patch` at `2ef03358`:
+3 files, +236/-7, no Lua/new flag/default/gameplay decision.
+Producers: `#N combat kill` -> `kills:N`; `REAL PICKUP acquired=1 class=` -> `pickup:<class>` count/first time;
+`LINK done/failed` -> `link:<kind>:done`, `link:failed`, `landing_z`; `unreachable` from the two existing lines.
+Ratio: 2:0 PASS finite with `lhs/rhs`, 0:0/missing/invalid FAIL; no inf/nan. `link_failed` aliases `link:failed`
+and measures 1 in JSON roundtrip. `SupportsMetric` separates support from value; `landing_z` is NaN before a LINK;
+missing fixtures fail closed (empty CWD nonzero). `wb_probe_runner` stays 0; pickup class is diagnostic only.
+Residual: `landing_z` is the last completed link, not per kind; the fence fixture expects one jump, a multi-link
+replay should confirm. Exact-SHA CI pending; no runtime before green + OK.
 
 ### DS-064 - DONE (analysis, no patch) - `SHORE_CAPTURE_ELIGIBILITY.md`
 Re DS-064: done 8afa09d1
