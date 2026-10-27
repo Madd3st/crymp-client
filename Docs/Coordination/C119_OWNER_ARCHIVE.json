@@ -1,0 +1,27 @@
+{
+  "label": "C119-6e2713f9-20261027-105159",
+  "source": "6e2713f9762cb3771e8652397c9cda5d9008c9c7",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\owner-playtests\\C119-6e2713f9-20261027-105159",
+  "mirror": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Logs\\C119-6e2713f9-20261027-105159",
+  "frames": 28714,
+  "server_seconds": 1435.86,
+  "note": "Duration is whole server recording, includes renderer-crash/reconnect interval before owner joined. No exact owner-only duration asserted.",
+  "kills": 287,
+  "stalls": 30,
+  "traps_ge60s": 0,
+  "client_reload_seen": 72,
+  "spectator_fp_on": 62,
+  "spectator_fp_off": 62,
+  "client_mark_ack_count": 0,
+  "client_owner_mark_lines": 0,
+  "server_owner_marks": 0,
+  "mark_note": "No press recorded; this does not establish broken bind.",
+  "first_renderer_crash": true,
+  "retry_crash": false,
+  "memory_restore": {
+    "name": "Multiplayer_IA_Steelmill.mem",
+    "restored": true,
+    "sha256": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F"
+  },
+  "status": "archived; own server stopped with elevated exact PID/start/path check; no active game"
+}
