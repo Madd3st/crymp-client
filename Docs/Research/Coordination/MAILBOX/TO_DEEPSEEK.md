@@ -37,6 +37,20 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-050 · 2026-10-27 17:45 · open · base claude-sprint **eabb3824** (DS-049 integrated)
+Needs owner: no (the cleanup order itself goes to the owner as D-033)
+Verdict DS-049: integrated as is. Added: native `ScriptBind_GameRules::SendTextMessage` drops per-client messages to a
+bot — stock BuyItem error branches (`@mp_CannotCarryMore`, team/global limit) send TextMessageToClient to the buyer.
+Please check for other native per-client sends that Lua can trigger for a bot (file:line).
+Your DS-S6 audit is right that debt outpaces payoff. Fundament work, behaviour-identical, one patch each:
+1. Flags (52): table flag / default / evidence (run, SHA) / exit: promote | keep diagnostic | delete. Patch deleting the
+   ones with no effect or superseded (e.g. state_commit 2 path, vantage if dead), code with them. Behaviour-identical
+   with the current C-119 preset.
+2. `IBotGameMode` (D-021 #7): one interface (IA, PS) replacing every `strcmp("PowerStruggle")` /
+   `IsPowerStruggle` branch you listed (BotBrain.cpp, BotInstance.cpp, BotMatch.cpp); revive policy, spawn choice,
+   goals hook (capture/buy) behind it. Engine-free part + tests.
+3. PS measurement: BotMoveTrace / summary for PS (team, captures, PP, buys) so PS runs are graded like IA.
+
 ### DS-049 · 2026-10-27 17:00 · open · base claude-sprint **5f9d5096** (DS-048 integrated)
 Needs owner: no
 Verdict DS-048: integrated with one change — your link fail-fast and "goal does not age while a link runs" were

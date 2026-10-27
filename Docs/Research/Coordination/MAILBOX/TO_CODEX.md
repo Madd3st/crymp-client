@@ -2,7 +2,24 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-125 · 2026-10-27 17:00 · open · claude-sprint **5f9d5096** — replaces C-124, do this instead (after C-122, C-123)
+### C-126 · 2026-10-27 17:45 · open · claude-sprint **eabb3824** — replaces C-125 (C-123 wiki first, it is small)
+Needs owner: step 6 only prepares; he launches
+You stopped after C-122 at 16:56 — please keep the wait_mail loop running after every item (PROTOCOL v4).
+eabb3824 = 5f9d5096 + DS-049: `wb_bot_withdraw_full` (full cover, re-pick vs live threat), PS-2 `wb_ps_buy` (revive buy
+via server-side Lua), and a native guard: per-client text messages to a bot are dropped (stock BuyItem errors).
+Steelmill manifest hash 523caf82c65722fc (since 5f9d5096) -> re-install the mesh.
+1. Probe runner first light (`wb_probe_runner 1`, sniper_reach_dsg1, 1 trial) + old harness, compare.
+2. Snipers: sniper_reach_dsg1/gauss x3, `wb_bot_sniper_reach 1 wb_bot_link_failfast 1`; gate dsg1 >= 2/3.
+3. PS Shore 6x300, three arms: base / `wb_ps_capture 1` / `wb_ps_capture 1 wb_ps_buy 1`. Captures per team, PP spent,
+   items bought by bot, deaths == `PS REVIVE SEEN source=wave`, stalls, Lua errors and 'No such server channel' = 0.
+4. 15x660 Steelmill, C-121 flag set + `wb_bot_link_failfast 1` + `wb_bot_withdraw_full 1`: gates kills >= 264,
+   stalls <= 37, traps <= 1; withdraw deaths % (C-121: 69 %), DSG1/Gauss pickups/kills, LINK failures by reason.
+5. If step 4 passes and the owner is not playing: one more 15x660, same build, all new flags OFF (control).
+6. Prepare owner playtest 6 (don't launch): C-119 preset + first_primary, withdraw_cover (+tactics), withdraw_full,
+   finish_lock, sniper_reach, link_failfast, fire_diagnostics = 1; smoke 6x120; one command.
+X- per step. wait_mail loop after each.
+
+### C-125 · 2026-10-27 17:00 · superseded by C-126 (same steps on eabb3824) · claude-sprint **5f9d5096** (after C-122, C-123)
 Needs owner: step 4 only prepares; he launches
 5f9d5096 = 27da613c + DS-048: PS-1 capture goals (`wb_ps_capture`, default 0), `wb_bot_link_failfast` (default 0),
 Steelmill roof Strength links 562/572 set to `removed` (data, all bots) -> **new Steelmill manifest hash
