@@ -1,0 +1,192 @@
+diff --git a/Code/CryGame/Actors/Player/Player.cpp b/Code/CryGame/Actors/Player/Player.cpp
+index b15ffac0..68abfe30 100644
+--- a/Code/CryGame/Actors/Player/Player.cpp
++++ b/Code/CryGame/Actors/Player/Player.cpp
+@@ -13,6 +13,7 @@ History:
+ #include "CryCommon/CrySystem/ISystem.h"
+ #include "CryGame/Bots/BotNetCompat.h"
+ #include "CryGame/Bots/BotLog.h"
++#include "CryGame/Bots/BotClientSend.h"
+ #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+ #include "CryGame/Bots/BotPace.h"
+ #include "CryGame/Bots/BotConfig.h"
+@@ -274,7 +275,9 @@ void CPlayer::PostInit(IGameObject* pGameObject)
+ 
+ void CPlayer::InitClient(int channelId)
+ {
+-	GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(GetSpectatorMode(), 0), eRMI_ToClientChannel | eRMI_NoLocalCalls, channelId);
++	// DS-051: a bot has no client connection; channel 0 belongs to the listen host.
++	if (WarsBots::PerClientSendAllowed(IsWarsBotActor()))
++		GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(GetSpectatorMode(), 0), eRMI_ToClientChannel | eRMI_NoLocalCalls, channelId);
+ 
+ 	CActor::InitClient(channelId);
+ }
+@@ -6602,6 +6605,8 @@ void CPlayer::SetSpectatorMode(uint8 mode, EntityId targetId)
+ 	const EntityId oldSpectatorTarget = m_stats.spectatorTarget;
+ 	uint8 oldSpectatorMode = m_stats.spectatorMode;
+ 	bool server = gEnv->bServer;
++	// DS-051: keep the local mode change, but never RMI a bot's spectator state to channel 0 (the listen host).
++	const bool perClient = WarsBots::PerClientSendAllowed(IsWarsBotActor());
+ 	if (server)
+ 		m_stats.spectatorHealth = -1;	// set this in all cases to trigger a send if necessary
+ 
+@@ -6625,7 +6630,8 @@ void CPlayer::SetSpectatorMode(uint8 mode, EntityId targetId)
+ 		if (server)
+ 		{
+ 			GetGameObject()->SetAspectProfile(eEA_Physics, eAP_Spectator);
+-			GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToAllClients | eRMI_NoLocalCalls);
++			if (perClient)
++				GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToAllClients | eRMI_NoLocalCalls);
+ 		}
+ 
+ 		Draw(false);
+@@ -6647,7 +6653,8 @@ void CPlayer::SetSpectatorMode(uint8 mode, EntityId targetId)
+ 		if (server)
+ 		{
+ 			GetGameObject()->SetAspectProfile(eEA_Physics, eAP_Alive);
+-			GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToAllClients | eRMI_NoLocalCalls);
++			if (perClient)
++				GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToAllClients | eRMI_NoLocalCalls);
+ 		}
+ 
+ 		Draw(true);
+@@ -6671,7 +6678,8 @@ void CPlayer::SetSpectatorMode(uint8 mode, EntityId targetId)
+ 		if (server)
+ 		{
+ 			//SetHealth(GetMaxHealth());
+-			GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToClientChannel | eRMI_NoLocalCalls, GetChannelId());
++			if (perClient)
++				GetGameObject()->InvokeRMI(CActor::ClSetSpectatorMode(), CActor::SetSpectatorModeParams(mode, targetId), eRMI_ToClientChannel | eRMI_NoLocalCalls, GetChannelId());
+ 		}
+ 
+ 		if (mode == CActor::eASM_Follow)
+diff --git a/Code/CryGame/Bots/BotClientSend.h b/Code/CryGame/Bots/BotClientSend.h
+new file mode 100644
+index 00000000..7e90bd41
+--- /dev/null
++++ b/Code/CryGame/Bots/BotClientSend.h
+@@ -0,0 +1,12 @@
++// DS-051: per-client RMIs are only for actors with a real client connection.
++// A bot has no client, but its entity has channelId 0 like the listen host, so the
++// decision must use bot identity, never the channel id. Engine-free; tested in
++// Tests/BotAuditFixesTests.cpp.
++#pragma once
++
++namespace WarsBots {
++inline bool PerClientSendAllowed(bool isBot)
++{
++    return !isBot;
++}
++} // namespace WarsBots
+diff --git a/Code/CryGame/GameRules.cpp b/Code/CryGame/GameRules.cpp
+index 49f45eba..56d08354 100644
+--- a/Code/CryGame/GameRules.cpp
++++ b/Code/CryGame/GameRules.cpp
+@@ -14,6 +14,7 @@
+ #include "ScriptBind_GameRules.h"
+ #include "GameRules.h"
+ #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++#include "Bots/BotClientSend.h"
+ #include "Bots/BotMatch.h"
+ #endif
+ #include "Game.h"
+@@ -1246,7 +1247,11 @@ void CGameRules::KillPlayer(CActor* pActor, bool dropItem, bool ragdoll, EntityI
+ void CGameRules::MovePlayer(CActor* pActor, const Vec3& pos, const Ang3& angles)
+ {
+ 	CActor::MoveParams params(pos, Quat(angles));
+-	pActor->GetGameObject()->InvokeRMI(CActor::ClMoveTo(), params, eRMI_ToClientChannel | eRMI_NoLocalCalls, pActor->GetChannelId());
++	// DS-051: a bot has no client; move the server entity without an RMI to channel 0.
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++	if (WarsBots::PerClientSendAllowed(WarsBots::BotMatch::IsBot(*this, pActor->GetEntityId())))
++#endif
++		pActor->GetGameObject()->InvokeRMI(CActor::ClMoveTo(), params, eRMI_ToClientChannel | eRMI_NoLocalCalls, pActor->GetChannelId());
+ 	pActor->GetEntity()->SetWorldTM(Matrix34::Create(Vec3(1, 1, 1), params.rot, params.pos));
+ }
+ 
+@@ -3327,6 +3332,10 @@ void CGameRules::SendChatMessage(EChatMessageType type, EntityId sourceId, Entit
+ //------------------------------------------------------------------------
+ void CGameRules::ForbiddenAreaWarning(bool active, int timer, EntityId targetId)
+ {
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++	if (!WarsBots::PerClientSendAllowed(WarsBots::BotMatch::IsBot(*this, targetId)))
++		return; // DS-051: a bot has no client channel (channel 0 is the listen host)
++#endif
+ 	GetGameObject()->InvokeRMI(ClForbiddenAreaWarning(), ForbiddenAreaWarningParams(active, timer), eRMI_ToClientChannel, GetChannelId(targetId));
+ }
+ 
+@@ -4357,7 +4366,13 @@ void CGameRules::SendRadioMessage(const EntityId sourceId, const int msg)
+ 				if (tit != m_playerteams.end())
+ 				{
+ 					for (TPlayers::const_iterator it = tit->second.begin(); it != tit->second.end(); ++it)
++					{
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++						if (!WarsBots::PerClientSendAllowed(WarsBots::BotMatch::IsBot(*this, *it)))
++							continue; // DS-051: team list includes bots; they have no client
++#endif
+ 						GetGameObject()->InvokeRMIWithDependentObject(ClRadioMessage(), params, eRMI_ToClientChannel, *it, GetChannelId(*it));
++					}
+ 				}
+ 			}
+ 		}
+diff --git a/Code/CryGame/Items/Item.cpp b/Code/CryGame/Items/Item.cpp
+index 6e6e602c..ab903d5d 100644
+--- a/Code/CryGame/Items/Item.cpp
++++ b/Code/CryGame/Items/Item.cpp
+@@ -33,6 +33,10 @@
+ #include "Weapons/Binocular.h"
+ #include "Weapons/OffHand.h"
+ #include "CryGame/Actors/Player/WeaponAttachmentManager.h"
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++#include "CryGame/Bots/BotClientSend.h"
++#include "CryGame/Bots/BotMatch.h"
++#endif
+ 
+ 
+ #pragma warning(disable: 4355)	// ŽthisŽ used in base member initializer list
+@@ -1599,14 +1603,22 @@ void CItem::PickUp(EntityId pickerId, bool sound, bool select, bool keepHistory)
+ 	//1) First check inventory restrictions (only in the server)
+ 	if (IsServer())
+ 	{
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++		// DS-051: a bot has no client; its channel 0 is the listen host.
++		const bool perClient = WarsBots::PerClientSendAllowed(WarsBots::BotMatch::IsBot(*g_pGame->GetGameRules(), pActor->GetEntityId()));
++#else
++		const bool perClient = true;
++#endif
+ 		if (!pActor->CheckInventoryRestrictions(GetEntity()->GetClass()->GetName()))
+ 		{
+-			g_pGame->GetGameRules()->SendTextMessage(eTextMessageError, "@mp_CannotCarryMore", eRMI_ToClientChannel, pActor->GetChannelId());
++			if (perClient)
++				g_pGame->GetGameRules()->SendTextMessage(eTextMessageError, "@mp_CannotCarryMore", eRMI_ToClientChannel, pActor->GetChannelId());
+ 			return;
+ 		}
+ 		else if (!CheckAmmoRestrictions(pickerId))
+ 		{
+-			g_pGame->GetGameRules()->SendTextMessage(eTextMessageCenter, "@ammo_maxed_out", eRMI_ToClientChannel, pActor->GetChannelId(), (string("@") + GetEntity()->GetClass()->GetName()).c_str());
++			if (perClient)
++				g_pGame->GetGameRules()->SendTextMessage(eTextMessageCenter, "@ammo_maxed_out", eRMI_ToClientChannel, pActor->GetChannelId(), (string("@") + GetEntity()->GetClass()->GetName()).c_str());
+ 			return;
+ 		}
+ 	}
+diff --git a/Tests/BotAuditFixesTests.cpp b/Tests/BotAuditFixesTests.cpp
+index efa27bf0..911d3603 100644
+--- a/Tests/BotAuditFixesTests.cpp
++++ b/Tests/BotAuditFixesTests.cpp
+@@ -1,5 +1,6 @@
+ // DS-044 audit-fix tests: first primary, finish lock and the withdraw cover rule (engine-free).
+ #include "CryGame/Bots/BotAuditFixes.h"
++#include "CryGame/Bots/BotClientSend.h"
+ #include "CryGame/Bots/BotTactics.h"
+ #include <cassert>
+ #include <cstdio>
+@@ -43,6 +44,10 @@ int main()
+         CHECK(none < 0); // no cover within 8 m -> abort the withdraw and fight
+     }
+ 
++    // DS-051: per-client sends go to actors with a client; bots never receive them (channel 0 is the listen host).
++    CHECK(!PerClientSendAllowed(true));
++    CHECK(PerClientSendAllowed(false));
++
+     if (failures) { std::printf("audit_fixes: %d FAILURES\n", failures); return 1; }
+     std::printf("audit_fixes: all tests passed\n");
+     return 0;

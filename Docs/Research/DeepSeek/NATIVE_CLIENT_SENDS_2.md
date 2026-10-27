@@ -20,4 +20,6 @@ Already safe: `SendHitIndicator` (`ScriptBind_GameRules.cpp:2301`) and `SendDama
 The shared predicate is `WarsBots::PerClientSendAllowed(bool isBot)` (`BotClientSend.h:8`); the engine guards pass
 `BotMatch::IsBot(...)` (or `CPlayer::IsWarsBotActor()` where the actor is already a `CPlayer`). Channel 0 is never
 used as the test because the listen host uses it too. `BotAuditFixesTests.cpp:48-49` covers the predicate; all 30
-engine-free suites pass and the experimental MSVC client+server build is green on the patch.
+engine-free suites pass and the experimental MSVC client+server build is green on the patch. The five guards are
+also split into `patches/ds051_guards.patch` (Player/GameRules/Item + header + test, 5 files) so they can be
+integrated while the flags/BotNav part of `ds051.patch` stays held for the Shore navmesh bake.
