@@ -51,6 +51,14 @@ bake or install is claimed.
 The baker JSON reports `water: {z, cells, surface_tris, area, area_cost}` and the point summary counts
 `two_way`/`reach` after water, so the C144 receipt can distinguish "connected by water" from "connected by a plane".
 
+## DS-067 revision (C145 mask-oracle RED)
+
+`patches/ds067a_water_mask.patch` + `patches/ds067b_water_oracle.patch` apply after
+`patches/ds062_water_baker.patch` and replace the centre-only mask with a whole-cell rectangle test, a shallow-shore
+rule and a real `findPath` cost oracle. See `DS066_WATER_DOOR_RISK.md`. The two DS-062 runtime claims in section 6
+(water movement) are **not** delivered by DS-062: `BotBlackboard.cpp:20-22` + `BotLocomotion.cpp:103` stop a bot as
+soon as `ShouldSwim()` is true, and `Player.cpp:2958-2970` applies stock AI drown damage in Instant Action.
+
 ## DS-062 patch status
 
 Implemented as two separate patches with exact bases:

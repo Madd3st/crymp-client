@@ -34,6 +34,14 @@ physical passage were recorded. DS-057's boundary is `Door48` at `(1842.8513,125
 
 Do not claim physical passage from `post=1`. The log now has enough to replay it; the old C140 log did not.
 
+## Risk not covered by the replay (DS-066)
+
+`UpdatePSInteract` returns true for vehicle enter/exit (`BotBrain.cpp:558,574`), so the swap makes vehicles preempt
+capture whenever `wb_ps_vehicles 1`. The door oracle must run with `vehicles 0`; a vehicles-on run is a separate
+case. The scan also runs a proximity query every tick near a door (`m_nextDoorUse` advances only after a successful
+open, `:601`); bound it with a post-scan cooldown and log the rejected (`ahead`/cooldown) case at `WB_LOG(2)` so a
+missing 20 s open is distinguishable from "scan never ran".
+
 ## Oracle / missing observation
 
 Replay (C140 recipe, `wb_ps_doors 1`, `wb_move_trace 1`):

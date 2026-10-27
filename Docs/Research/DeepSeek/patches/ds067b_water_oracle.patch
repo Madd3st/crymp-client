@@ -1,0 +1,244 @@
+diff --git a/Tools/RecastBake/recast_bake.cpp b/Tools/RecastBake/recast_bake.cpp
+index 4118520..21a407a 100644
+--- a/Tools/RecastBake/recast_bake.cpp
++++ b/Tools/RecastBake/recast_bake.cpp
+@@ -590,17 +590,23 @@ int main(int argc, char** argv)
+ {
+ 	std::string obj, ptsPath, linksPath, outObj, outBin, linksOut, waterDump; bool genJumps = false;
+ 	float zmin = -1e9f, zmax = 1e9f;
++	float pathFrom[3] = { 0, 0, 0 }, pathTo[3] = { 0, 0, 0 };
++	bool havePathFrom = false, havePathTo = false;
+ 	Cfg c;
+ 	for (int i = 1; i < argc; ++i)
+ 	{
+ 		std::string a = argv[i];
+ 		auto nx = [&]() { return std::string(i + 1 < argc ? argv[++i] : ""); };
++		auto nx3 = [&](float* out) { for (int k = 0; k < 3 && i + 1 < argc; ++k) out[k] = std::stof(argv[++i]); };
+ 		if (a == "--obj") obj = nx(); else if (a == "--points") ptsPath = nx(); else if (a == "--links") linksPath = nx();
+ 		else if (a == "--out-obj") outObj = nx(); else if (a == "--out-bin") outBin = nx();
+ 		else if (a == "--zmin") zmin = std::stof(nx()); else if (a == "--zmax") zmax = std::stof(nx());
+ 		else if (a == "--water") { c.water = true; c.waterZ = std::stof(nx()); }
+ 		else if (a == "--water-cell") c.waterCell = std::stof(nx());
+ 		else if (a == "--water-dump") waterDump = nx();
++		else if (a == "--water-cost") c.waterCost = std::stof(nx());
++		else if (a == "--path-from") { nx3(pathFrom); havePathFrom = true; }
++		else if (a == "--path-to") { nx3(pathTo); havePathTo = true; }
+ 		else if (a == "--cs") c.cs = std::stof(nx()); else if (a == "--ch") c.ch = std::stof(nx());
+ 		else if (a == "--radius") c.radius = std::stof(nx()); else if (a == "--height") c.height = std::stof(nx());
+ 		else if (a == "--climb") c.climb = std::stof(nx()); else if (a == "--slope") c.slope = std::stof(nx());
+@@ -786,6 +792,33 @@ int main(int argc, char** argv)
+ 	float totalArea = 0, mainArea = 0, twoWayArea = 0;
+ 	for (int n = 0; n < N; ++n) { totalArea += area[n]; if (comp[n] == mainComp) mainArea += area[n]; if (fwd[n] && bwd[n]) twoWayArea += area[n]; }
+ 
++	// DS-067 (C145): a real area-cost oracle. The printed area_cost is a constant, not proof that the query prefers
++	// land. This probe runs Detour's findPath with the same filter cost as BotNavMeshCore (kWaterCost) and reports the
++	// chosen polygons, so a test can assert land is chosen at cost 4 and water at cost 1 on the same bake.
++	bool pathFound = false; int pathPolys = 0, pathWaterPolys = 0; float pathLength = 0.f;
++	if (havePathFrom && havePathTo)
++	{
++		dtQueryFilter pf; pf.setIncludeFlags(0xffff); pf.setAreaCost(kWaterArea, c.waterCost);
++		float s[3], e[3]; ToRecast(pathFrom[0], pathFrom[1], pathFrom[2], s); ToRecast(pathTo[0], pathTo[1], pathTo[2], e);
++		const float ext[3] = { 2.f, 3.f, 2.f }; dtPolyRef a = 0, b = 0; float ns[3], ne[3];
++		q->findNearestPoly(s, ext, &pf, &a, ns); q->findNearestPoly(e, ext, &pf, &b, ne);
++		dtPolyRef polys[256];
++		if (a && b && dtStatusSucceed(q->findPath(a, b, ns, ne, &pf, polys, &pathPolys, 256)) && pathPolys > 0)
++		{
++			pathFound = true;
++			for (int k = 0; k < pathPolys; ++k)
++			{
++				const dtMeshTile* t; const dtPoly* p;
++				if (dtStatusSucceed(cnav->getTileAndPolyByRef(polys[k], &t, &p)) && p->getType() == DT_POLYTYPE_GROUND && p->getArea() == kWaterArea)
++					++pathWaterPolys;
++			}
++			float corners[64 * 3]; unsigned char flags[64]; dtPolyRef cps[64]; int nc = 0;
++			if (dtStatusSucceed(q->findStraightPath(ns, ne, polys, pathPolys, corners, flags, cps, &nc, 64)))
++				for (int k = 1; k < nc; ++k) pathLength += dtVdist(&corners[(k - 1) * 3], &corners[k * 3]);
++		}
++	}
++
++
+ 	// outputs
+ 	if (!outObj.empty())
+ 	{
+@@ -847,6 +880,9 @@ int main(int argc, char** argv)
+ 		c.cs, c.ch, c.radius, c.wallRadius, c.height, c.climb, c.slope, c.tile, c.minRegion, c.monotone ? "monotone" : "watershed");
+ 	printf(" \"mesh\": {\"tiles\": %d, \"tiles_grid\": [%d, %d], \"polys\": %d, \"max_tile_polys\": %d, \"components\": %d, \"area_m2\": %.0f, \"main_area_m2\": %.0f, \"two_way_area_m2\": %.0f, \"offmesh_links\": %zu, \"generated\": {\"drop\": %d, \"jump\": %d, \"strength\": %d}},\n",
+ 		builtTiles, tilesX, tilesY, totalPolys, maxTilePolys, ncomp, totalArea, mainArea, twoWayArea, links.size(), genStats[0], genStats[1], genStats[2]);
++	if (havePathFrom && havePathTo)
++		printf(" \"path\": {\"found\": %s, \"polys\": %d, \"water_polys\": %d, \"length_m\": %.2f, \"water_cost\": %.2f},\n",
++			pathFound ? "true" : "false", pathPolys, pathWaterPolys, pathLength, c.waterCost);
+ 	printf(" \"points\": [\n");
+ 	for (size_t i = 0; i < pts.size(); ++i)
+ 	{
+diff --git a/Tools/RecastBake/water_fixtures/detour.obj b/Tools/RecastBake/water_fixtures/detour.obj
+new file mode 100644
+index 0000000..dae6b2c
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/detour.obj
+@@ -0,0 +1,22 @@
++# DS-067 area-cost oracle: two shores 20 m apart over water, plus a 42 m land detour along the y<0 deck.
++# With --water-cost 4 the query must choose land (water_polys 0); with --water-cost 1 it must choose water.
++v 10 0 90
++v 30 0 90
++v 30 10 90
++v 10 10 90
++f 1 2 3 4
++v 0 0 100
++v 10 0 100
++v 10 10 100
++v 0 10 100
++f 5 6 7 8
++v 30 0 100
++v 40 0 100
++v 40 10 100
++v 30 10 100
++f 9 10 11 12
++v 0 -2 100
++v 40 -2 100
++v 40 0 100
++v 0 0 100
++f 13 14 15 16
+diff --git a/Tools/RecastBake/water_fixtures/shore-gentle.obj b/Tools/RecastBake/water_fixtures/shore-gentle.obj
+new file mode 100644
+index 0000000..18ee458
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/shore-gentle.obj
+@@ -0,0 +1,19 @@
++# DS-067 shoreline connectivity: beach from the land plateau (100.5) down through the 99.5 waterline to the seabed.
++# The crossing 2 m cell rises only 0.4 m (11 deg), i.e. within one 0.5 m climb step, so water must be emitted up to
++# the waterline and the land/water polygons must meet. A steeper beach is intentionally NOT connected by this patch
++# (cell <= climb/tan(slope): use --water-cell 1 for shores up to ~26 deg).
++v 0 0 90
++v 40 0 90
++v 40 10 90
++v 0 10 90
++f 1 2 3 4
++v -10 0 100.5
++v 0 0 100.5
++v 0 10 100.5
++v -10 10 100.5
++f 5 6 7 8
++v 0 0 100.5
++v 10 0 98.5
++v 10 10 98.5
++v 0 10 100.5
++f 9 10 11 12
+diff --git a/Tools/RecastBake/water_fixtures/shore-gentle.points b/Tools/RecastBake/water_fixtures/shore-gentle.points
+new file mode 100644
+index 0000000..93a600a
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/shore-gentle.points
+@@ -0,0 +1,2 @@
++spawn 1 -5 5 100.5
++item 2 30 5 99.5
+diff --git a/Tools/RecastBake/water_fixtures/tiny-island.obj b/Tools/RecastBake/water_fixtures/tiny-island.obj
+new file mode 100644
+index 0000000..22274e2
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/tiny-island.obj
+@@ -0,0 +1,13 @@
++# DS-067 RED oracle (C145 mask-oracle.cpp): a 0.4 m solid island at x20.1..20.5 y4.1..4.5 z100 sits inside one
++# 2 m water cell; centre sampling missed it and its water quad overlapped solid ground. Whole-cell overlap must block
++# that cell, so no water rectangle may intersect the island footprint.
++v 0 0 90
++v 40 0 90
++v 40 10 90
++v 0 10 90
++f 1 2 3 4
++v 20.1 4.1 100
++v 20.5 4.1 100
++v 20.5 4.5 100
++v 20.1 4.5 100
++f 5 6 7 8
+diff --git a/Tools/RecastBake/water_fixtures/two-shores.points b/Tools/RecastBake/water_fixtures/two-shores.points
+new file mode 100644
+index 0000000..37bc4f6
+--- /dev/null
++++ b/Tools/RecastBake/water_fixtures/two-shores.points
+@@ -0,0 +1,2 @@
++spawn 1 2 5 100
++item 2 38 5 100
+diff --git a/Tools/RecastBake/water_selftest.ps1 b/Tools/RecastBake/water_selftest.ps1
+index 7908fb0..aeb698a 100644
+--- a/Tools/RecastBake/water_selftest.ps1
++++ b/Tools/RecastBake/water_selftest.ps1
+@@ -3,30 +3,67 @@ param(
+   [string]$Fixtures = (Join-Path $PSScriptRoot 'water_fixtures')
+ )
+ $ErrorActionPreference = 'Stop'
+-function Run([string]$obj, [bool]$water) {
+-  $a = @('--obj',$obj,'--cs','0.1','--ch','0.1','--radius','0.3','--height','1.8','--climb','0.5',
+-         '--slope','45','--tile','256','--min-region','2','--zmin','100')
+-  if ($water) { $a += @('--water','99.5') }
++function Run([string]$obj, [bool]$water, [string[]]$extra = @()) {
++  $a = @('--obj', $obj, '--cs', '0.1', '--ch', '0.1', '--radius', '0.3', '--height', '1.8', '--climb', '0.5',
++         '--slope', '45', '--tile', '256', '--min-region', '2', '--zmin', '100')
++  if ($water) { $a += @('--water', '99.5') }
++  $a += $extra
+   $text = & $Tool @a 2>$null | Out-String
+   if ($LASTEXITCODE) { throw "tool failed for $obj (exit $LASTEXITCODE)" }
+   return $text | ConvertFrom-Json
+ }
+-$x = Run (Join-Path $Fixtures 'two-shores.obj') $false
++# DS-067: assert the emitted water footprints, not a count that can hide an overlap with solid ground.
++function Dump([string]$obj, [string]$dump) {
++  if (Test-Path $dump) { Remove-Item -LiteralPath $dump }
++  Run $obj $true @('--water-dump', $dump) | Out-Null
++  if (-not (Test-Path $dump)) { throw "no water dump for $obj" }
++  return @(Get-Content -LiteralPath $dump | ForEach-Object { , @($_ -split '\s+' | ForEach-Object { [double]$_ }) })
++}
++function RectHit($q, [double]$x0, [double]$y0, [double]$x1, [double]$y1) {
++  return ($q[0] -lt $x1) -and ($q[2] -gt $x0) -and ($q[1] -lt $y1) -and ($q[3] -gt $y0)
++}
++$P = { param($n) Join-Path $Fixtures $n }
++
++# 1. no-water baseline unchanged: two shores stay disconnected.
++$x = Run (& $P 'two-shores.obj') $false @('--points', (& $P 'two-shores.points'))
+ if ($x.mesh.components -ne 2 -or $x.summary.items_reachable -ne 0) { throw 'no-water baseline changed' }
+ 
+-$x = Run (Join-Path $Fixtures 'two-shores.obj') $true
++# 2. water connects two shores; real point fixtures, not an empty points list.
++$x = Run (& $P 'two-shores.obj') $true @('--points', (& $P 'two-shores.points'))
+ if ($x.mesh.components -ne 1 -or $x.summary.items_reachable -lt 1) { throw 'two shores are not connected by water' }
+-if ($x.water.cells -le 0 -or $x.water.surface_tris -le 0) { throw 'no water surface generated' }
+-if ($x.water.area -ne 4 -or $x.water.area_cost -ne 4.0) { throw 'water area/cost mismatch' }
++if ($x.water.cells -le 0 -or $x.water.surface_tris -ne 2 * $x.water.cells) { throw 'water cell/triangle count mismatch' }
+ $openCells = $x.water.cells
+ 
+-$x = Run (Join-Path $Fixtures 'roof.obj') $true
+-if ($x.water.cells -ne 0 -or $x.mesh.components -ne 2) { throw 'water appeared under a roof' }
++# 3. roof at 105 over the gap: no water under it. The roof itself is a third, walkable component (C145 measured 3).
++$x = Run (& $P 'roof.obj') $true
++if ($x.water.cells -ne 0) { throw 'water appeared under a roof' }
++if ($x.mesh.components -ne 3) { throw "roof topology changed (components=$($x.mesh.components), expected 3)" }
+ 
+-$x = Run (Join-Path $Fixtures 'island.obj') $true
++# 4. island: water around it, never on its footprint.
++$x = Run (& $P 'island.obj') $true
+ if ($x.water.cells -le 0 -or $x.water.cells -ge $openCells) { throw 'water covers the island or no water around it' }
++$q = Dump (& $P 'island.obj') (Join-Path $env:TEMP 'ds067-island.dump')
++foreach ($r in $q) { if (RectHit $r 18.1 3.1 21.9 6.9) { throw 'water quad overlaps the island footprint' } }
+ 
+-$x = Run (Join-Path $Fixtures 'void.obj') $true
++# 5. void gap: unknown is not water.
++$x = Run (& $P 'void.obj') $true
+ if ($x.water.cells -ne 0 -or $x.mesh.components -ne 2) { throw 'void gap was filled by a global waterplane' }
+ 
++# 6. C145 mask-oracle RED case: a tiny solid island inside one cell must block that cell's quad.
++$x = Run (& $P 'tiny-island.obj') $true
++if ($x.water.cells -le 0) { throw 'tiny-island fixture produced no water at all' }
++$q = Dump (& $P 'tiny-island.obj') (Join-Path $env:TEMP 'ds067-tiny.dump')
++foreach ($r in $q) { if (RectHit $r 20.1 4.1 20.5 4.5) { throw 'water quad overlaps the tiny island (C145 RED)' } }
++
++# 7. gentle shoreline: water reaches the waterline and the beach is reachable.
++$x = Run (& $P 'shore-gentle.obj') $true @('--points', (& $P 'shore-gentle.points'))
++if ($x.water.cells -le 0) { throw 'no water at the gentle shore' }
++if ($x.mesh.components -ne 1 -or $x.summary.items_reachable -lt 1) { throw 'gentle shore water is not connected to land' }
++
++# 8. true area-cost oracle on one bake: land detour at cost 4, water shortcut at cost 1.
++$x = Run (& $P 'detour.obj') $true @('--water-cost', '4', '--path-from', '5', '5', '100', '--path-to', '35', '5', '100')
++if ($x.path.found -ne $true -or $x.path.water_polys -ne 0) { throw 'cost 4 did not prefer the land detour' }
++$x = Run (& $P 'detour.obj') $true @('--water-cost', '1', '--path-from', '5', '5', '100', '--path-to', '35', '5', '100')
++if ($x.path.found -ne $true -or $x.path.water_polys -le 0) { throw 'cost 1 did not choose the water shortcut' }
++
+ 'water_selftest: all cases passed'
