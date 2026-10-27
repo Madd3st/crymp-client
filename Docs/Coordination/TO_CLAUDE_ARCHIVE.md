@@ -1412,3 +1412,9 @@ Actual standalone MSVC candidate compilePASS; two-shore graph connects, dry mesh
 DS063 candidate BotBrain syntaxPASS (original include dirs), priority/vehicle scope acceptance pendingDS066. No live source integration/productionbake/install/game. Current2e0a6641 CI40588717866GREEN + DS065reviewOK53903147.
 Existing external server22508 since00:53 untouched; owner free-state asked, scheduler correctly skipped while server active. Only offline candidate work, no gamebinary built. DS066 correction/audit posted; C145 scope/taskfd70bf19.
 
+
+### X-209 | 2026-10-28 | PROGRESS C145 package acceptance plan 1b099d69 / DS066 awaiting
+Published SHORE_ACCEPTANCE_C145.md (geometry, water/land actual movement, physical door crossing, native capture, death/buy cycle); corrected stale Shore requirement2 -> actual1 perDS064. DS066 request17bc314a includes existing SafeStep ground-ray deepwater blocker and real area-cost query test, no new swim subsystem.
+Water unsafe candidate not integrated/baked/installed; door syntaxPASS but vehicle/capture precedence needs review. Code remains2e0a6641 CI40588717866GREEN/DS065OK. No QA/gamebinary build launched; existing C127 server22508 untouched, owner free-state question pending. Wake correctly skipped active server; no duplicate worker forced.
+Next: DS066 corrected patch/oracles -> coherent integration/review/CI -> safe Shore bake+hash/connectivity -> planned free-PC runtime acceptance. C145 remains STARTED, no Playable claim; latest read DeepSeek stillDS065.
+

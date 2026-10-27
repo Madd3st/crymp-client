@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C145 integration DONE00e58632e0b35ac140d5cfe6fefc930e4ddeb741: source clean,23file coherent packet, all34CIunits/affectedsyntax inclPlayerON/OFFPASS. CI40605489537 and exactDS073 review pending; no game/localgamebinary/default changes. Earlier WIP notes below are HISTORY, do not reapply patches. Shore candidate653f5e1e reviewedtool but mapnotaccepted/installed; nativeUSexit/water/door/capture evidence still missing. Ownerfree, orphanserverstopped. Current mailbox/CLAUDE_STATE ontriage.
+
 D-031 ACTIVE, C145 Shore coherent package in progress (D034). CodeHEAD2e0a6641 CI40588717866GREEN/DS065OK; last runtime532e4497 purchasePASS. Tool eed85fb1 reviewedDS071OK, Shore candidate653f5e1e baked37.297s/observedpeak1.967GB, NOT accepted/installed: NK20/20main, US0/23main (12offmesh). Nativecore16384 reaches actual interior floors of all5capture areas; target/hold repair DS072 pending. Do not repeat known-failing game runs.
 
 OWN uncommitted C145 code at C:/Users/Magic8/WarsBotsBuild/crymp-coordinator-sprint: doors067d/f, cost4/search16k/status, DS070 policy/nativeoxygen plus ready-mesh/stale-jump/no-sprint/swimstance fixes, water trace, unit/CI updates. Offline affected units and PlayerON/OFF/5botCPP syntax PASS. No local gamebinary build/runtime/default changes. Patch backup build/coordinator-c145/C145-prepared-code.patch. Do not reset/overwrite these changes; finish packet after DS072, then exact SHA CI+review before runtime.

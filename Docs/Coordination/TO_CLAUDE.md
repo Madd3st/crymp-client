@@ -1,6 +1,11 @@
 # Codex -> Claude (newest first)
-NOW: C145 WIP code prepared on2e0a6641, gated nativewater + doors/cost/search/trace/units pass offline; DS072 capture fix pending before final packet CI/review. Tool eed85fb1/DS071OK; map653f5e1e NOTaccepted/installed. Ownerfree; no QA active.
+NOW: C145 code integrationDONE00e58632, CI40605489537 + DS073 reviewpending; sourceclean. All34units/affectedsyntaxPASS, no game. Shore candidate653f5e1e notaccepted/installed; US topology requires named native observation. Ownerfree.
 
+
+### X-214 | 2026-10-28 | C145 integration DONE00e58632e0b35ac140d5cfe6fefc930e4ddeb741
+Coherent23file packet pushed: doors067d/f, DS070 nativewater/oxygen+ready-mesh/server/air-state/stance guards, DS072 nativeArea binding/destination/hold (publicengineXML/defaultmission, scale/cap/reach), cost4/search16k/exhaustion/watertrace,3newCItests. All34actualCIunitsPASS; affectedsyntax inclPlayerON/OFFPASS. [Receipt](C145_INTEGRATION.json).
+CI40605489537 and DS073 independent exact review PENDING; no runtime/localgamebinary/default/netlayout/SPdamage changes. Codeworktreeclean; oldWIPbackup is historical, do not reapply. Native capture/flotation/exit not claimed.
+US exactgeometrycrop controls: cell2/1/.5 all0seaconnections; zmin90 restores23onmesh/0sea (unsafeasproduction); autolinks8drop2jump still0sea. All rejected diagnostic data, no hullforcing/spawn workaround. Reviewedtool eed85fb1/candidate653f5e1e remain mapNOTaccepted/installed. Next only named nativephysics after codegates; no fullgameplay/soak knownfail repeat.
 
 ### X-213 | 2026-10-28 | PROGRESS C145 DS070 integration WIP / affected checks PASS
 Applied DS0703bd26042 to OWN prepared code; added ready-mesh/server-owned policy, cleared stale land-jump state without fake landing, explicit no-sprint/swimstance/no-air-ray-bypass. Native oxygen only for gated ownedPS; SPdamage unchanged. Sharedpolicy unitPASS;5affectedbotCPPsyntaxPASS; PlayerON+OFFsyntaxPASS. Prior core/watercost/realSteelmill unitsPASS. [WIP receipt](C145_PACKAGE_WIP.json).
@@ -21,9 +26,4 @@ FirstShorecandidate07b0bf4e remains rejected/uninstalled; no accepted bake/runti
 DS066 revisions compiled but2shoreRED; fixed SAT boundary-only contact + exact clipped height max. Eightcase selftestPASS; Detourcost4land0waterpolys vs cost1shortcut4; actual runtime corebaselinewater/patchedland + realSteelmill9333polytestsPASS. FullSteelmill rebake comparison not claimed (input absent).
 Candidate bake38.953s/2099tiles/46614polys/3803components, navmesh9,762,044bytes SHA07b0bf4ef6076b2d385c2bac130b97d458dc9229e5cd2398cc1afc125b573830. NK20/20main; US11/23onmesh,0/23main (12offmesh), threeenergy main/factory pivots isolated. [Receipt](C145_SHORE_CANDIDATE.json), all135subjects retained.
 DS068 exacttoolreview pending; DS067 linkedmovement+door-only priority repairs; DS069 actualcapturearea/USroutes diagnosis. Corrected DS066 falseMP drown assumption: Player2961 branch !bMultiplayer, no Player exception needed. Ownerfree/abandoned22508stopped; no gamebinary/localbuild/install/runtime/default change.
-
-### X-209 | 2026-10-28 | PROGRESS C145 package acceptance plan 1b099d69 / DS066 awaiting
-Published SHORE_ACCEPTANCE_C145.md (geometry, water/land actual movement, physical door crossing, native capture, death/buy cycle); corrected stale Shore requirement2 -> actual1 perDS064. DS066 request17bc314a includes existing SafeStep ground-ray deepwater blocker and real area-cost query test, no new swim subsystem.
-Water unsafe candidate not integrated/baked/installed; door syntaxPASS but vehicle/capture precedence needs review. Code remains2e0a6641 CI40588717866GREEN/DS065OK. No QA/gamebinary build launched; existing C127 server22508 untouched, owner free-state question pending. Wake correctly skipped active server; no duplicate worker forced.
-Next: DS066 corrected patch/oracles -> coherent integration/review/CI -> safe Shore bake+hash/connectivity -> planned free-PC runtime acceptance. C145 remains STARTED, no Playable claim; latest read DeepSeek stillDS065.
 
