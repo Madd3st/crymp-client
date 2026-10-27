@@ -66,4 +66,12 @@ if ($x.path.found -ne $true -or $x.path.water_polys -ne 0) { throw 'cost 4 did n
 $x = Run (& $P 'detour.obj') $true @('--water-cost', '1', '--path-from', '5', '5', '100', '--path-to', '35', '5', '100')
 if ($x.path.found -ne $true -or $x.path.water_polys -le 0) { throw 'cost 1 did not choose the water shortcut' }
 
+# 9. Even four corners plus centre are insufficient: a tiny hole inside a known-seabed cell must stay unknown.
+$q = Dump (& $P 'partial-void.obj') (Join-Path $env:TEMP 'c145-partial-void.dump')
+foreach ($r in $q) { if (RectHit $r 4.1 4.1 4.5 4.5) { throw 'water fills an unknown hole in partial seabed coverage' } }
+
+# 10. More than 256 path polygons: a partial route must never be sold as a complete route.
+$x = Run (& $P 'long-corridor.obj') $false @('--tile', '16', '--path-from', '2', '2', '100', '--path-to', '498', '2', '100')
+if ($x.path.found -ne $false -or $x.path.partial -ne $true -or $x.path.water_polys -ne 0 -or $x.path.length_m -ne 0) { throw 'partial route reported as a found path' }
+
 'water_selftest: all cases passed'

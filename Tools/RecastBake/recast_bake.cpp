@@ -330,7 +330,7 @@ struct TriGrid {
 	}
 };
 
-struct WaterStats { int cells = 0, tris = 0, blockedCells = 0; };
+struct WaterStats { int cells = 0, tris = 0, blockedCells = 0, unknownCells = 0; };
 
 // DS-067 (C145 mask-oracle RED): a 2 m cell must be tested as a whole rectangle, not by its centre. The Codex
 // oracle island x20.1..20.5 / y4.1..4.5 sits inside one cell and was missed by centre sampling, so its water quad
@@ -404,6 +404,50 @@ static bool TriSlopeOk(const float* a, const float* b, const float* c, float slo
 // is accepted only on a walkable slope whose surface rises at most one climb step inside the cell: that keeps water
 // at the waterline (so the shore connects) without creating a walkable water tunnel under a hillside (Recast drops a
 // span with less than one agent height of ceiling).
+// Prove coverage of a whole cell by the union of accepted ground triangles. Subtract each triangle from
+// the initially uncovered rectangle; unlike summed areas, overlapping/duplicate triangles cannot hide a void.
+struct WaterP2 { double x,z; };
+using WaterPoly = std::vector<WaterP2>;
+static double WaterPolyArea(const WaterPoly& p)
+{
+ double a=0; if(p.size()<3)return 0;
+ for(size_t i=0,j=p.size()-1;i<p.size();j=i++)a+=p[j].x*p[i].z-p[i].x*p[j].z;
+ return std::fabs(a)*0.5;
+}
+static WaterPoly WaterClipHalf(const WaterPoly& p,const WaterP2& a,const WaterP2& b,double orient,bool inside)
+{
+ WaterPoly out; if(p.empty())return out;
+ auto dist=[&](const WaterP2& v){return (inside?orient:-orient)*((b.x-a.x)*(v.z-a.z)-(b.z-a.z)*(v.x-a.x));};
+ WaterP2 prev=p.back();double dp=dist(prev);
+ for(const WaterP2& cur:p){double dc=dist(cur);
+  if((dp>=0)!=(dc>=0)){double t=dp/(dp-dc);out.push_back({prev.x+t*(cur.x-prev.x),prev.z+t*(cur.z-prev.z)});}
+  if(dc>=0)out.push_back(cur);prev=cur;dp=dc;
+ }
+ return out;
+}
+static bool WaterRectCovered(const std::vector<float>& verts,const std::vector<int>& tris,
+ const std::vector<int>& accepted,float x0,float x1,float z0,float z1)
+{
+ const double w=double(x1)-x0,h=double(z1)-z0,eps=1e-6;
+ std::vector<WaterPoly> uncovered={{{0,0},{w,0},{w,h},{0,h}}};
+ for(int ti:accepted){
+  WaterP2 t[3];for(int k=0;k<3;++k){const float* v=&verts[tris[ti*3+k]*3];t[k]={double(v[0])-x0,double(v[2])-z0};}
+  double cross=(t[1].x-t[0].x)*(t[2].z-t[0].z)-(t[1].z-t[0].z)*(t[2].x-t[0].x);
+  if(std::fabs(cross)<1e-12)continue;
+  const double orient=cross>0?1:-1;std::vector<WaterPoly> next;
+  for(const WaterPoly& piece:uncovered){WaterPoly rest=piece;
+   for(int e=0;e<3&&!rest.empty();++e){
+    WaterPoly outside=WaterClipHalf(rest,t[e],t[(e+1)%3],orient,false);
+    if(WaterPolyArea(outside)>eps)next.push_back(std::move(outside));
+    rest=WaterClipHalf(rest,t[e],t[(e+1)%3],orient,true);
+   }
+  }
+  uncovered.swap(next);if(uncovered.empty())return true;
+  if(uncovered.size()>128)return false; // excessive fragmentation stays unknown, never force a water bridge
+ }
+ return false;
+}
+
 static void AddWaterSurface(const std::vector<float>& verts, const std::vector<int>& allTris, const Cfg& c,
 	std::vector<float>& waterVerts, std::vector<int>& waterTris, WaterStats& stats, std::vector<float>* quads)
 {
@@ -425,6 +469,7 @@ static void AddWaterSurface(const std::vector<float>& verts, const std::vector<i
 			const float z0 = bmin[2] + gz * grid.cell, z1 = z0 + grid.cell;
 			if (x1 > bmax[0] + eps || z1 > bmax[2] + eps) continue;
 			bool below = false, blocked = false;
+			std::vector<int> acceptedGround;
 			const std::vector<int>& cell = grid.cells[size_t(gz) * grid.nx + gx];
 			for (int ti : cell)
 			{
@@ -435,15 +480,15 @@ static void AddWaterSurface(const std::vector<float>& verts, const std::vector<i
 				const float lo = std::min(a[1], std::min(b[1], d[1]));
 				const float hi = std::max(a[1], std::max(b[1], d[1]));
 				if (lo > c.waterZ + eps) { blocked = true; break; }        // island/roof/deck/plateau above water
-				if (hi < c.waterZ - eps) { below = true; continue; }       // submerged seabed or terrain
+				if (hi < c.waterZ - eps) { below = true; acceptedGround.push_back(ti); continue; } // submerged seabed or terrain
 				// Triangle crosses the waterline: a cliff or quay would put water inside a wall; a slope rising more
 				// than one climb step inside the cell would leave a walkable water tunnel under the hill.
 				if (!TriSlopeOk(a, b, d, c.slope)) { blocked = true; break; }
 				if (MaxTriYInRect(a, b, d, x0, x1, z0, z1) > c.waterZ + c.climb + eps) { blocked = true; break; }
-				below = true;                                              // shallow shoreline: water reaches the edge
+				below = true; acceptedGround.push_back(ti);                 // shallow shoreline: water reaches the edge
 			}
 			if (blocked) { ++stats.blockedCells; continue; }
-			if (!below) continue;
+			if (!below || !WaterRectCovered(verts, allTris, acceptedGround, x0, x1, z0, z1)) { ++stats.unknownCells; continue; }
 			const int base = int(waterVerts.size() / 3);
 			const float q[4][3] = {
 				{ x0, c.waterZ, z0 }, { x1, c.waterZ, z0 }, { x1, c.waterZ, z1 }, { x0, c.waterZ, z1 }
@@ -618,7 +663,11 @@ int main(int argc, char** argv)
 		else if (a == "--vh") c.vh = std::stof(nx()); else if (a == "--motions") c.motions = std::stoi(nx());
 		else { fprintf(stderr, "unknown arg %s\n", a.c_str()); return 2; }
 	}
-	if (obj.empty()) { fprintf(stderr, "usage: recast_bake --obj file.obj[.gz] ...\n"); return 2; }
+	if (!std::isfinite(c.waterCost) || c.waterCost<=0 || !std::isfinite(c.waterZ) ||
+        !std::isfinite(c.waterCell) || c.waterCell<=0) { fprintf(stderr,"invalid water parameter\n"); return 2; }
+    for(int k=0;k<3;++k) if((havePathFrom&&!std::isfinite(pathFrom[k]))||(havePathTo&&!std::isfinite(pathTo[k])))
+        { fprintf(stderr,"non-finite path coordinate\n"); return 2; }
+    if (obj.empty()) { fprintf(stderr, "usage: recast_bake --obj file.obj[.gz] ...\n"); return 2; }
 	std::vector<float> verts; std::vector<int> tris; int dropped = 0;
 	std::vector<int> allTris;
 	if (!LoadObj(obj, zmin, zmax, verts, tris, dropped, c.water ? &allTris : nullptr)) { fprintf(stderr, "cannot read %s\n", obj.c_str()); return 1; }
@@ -796,7 +845,7 @@ int main(int argc, char** argv)
 	// DS-067 (C145): a real area-cost oracle. The printed area_cost is a constant, not proof that the query prefers
 	// land. This probe runs Detour's findPath with the same filter cost as BotNavMeshCore (kWaterCost) and reports the
 	// chosen polygons, so a test can assert land is chosen at cost 4 and water at cost 1 on the same bake.
-	bool pathFound = false; int pathPolys = 0, pathWaterPolys = 0; float pathLength = 0.f;
+	bool pathFound = false, pathPartial = false; int pathPolys = 0, pathWaterPolys = 0; float pathLength = 0.f;
 	if (havePathFrom && havePathTo)
 	{
 		dtQueryFilter pf; pf.setIncludeFlags(0xffff); pf.setAreaCost(kWaterArea, c.waterCost);
@@ -804,7 +853,9 @@ int main(int argc, char** argv)
 		const float ext[3] = { 2.f, 3.f, 2.f }; dtPolyRef a = 0, b = 0; float ns[3], ne[3];
 		q->findNearestPoly(s, ext, &pf, &a, ns); q->findNearestPoly(e, ext, &pf, &b, ne);
 		dtPolyRef polys[256];
-		if (a && b && dtStatusSucceed(q->findPath(a, b, ns, ne, &pf, polys, &pathPolys, 256)) && pathPolys > 0)
+		const dtStatus pathStatus = a && b ? q->findPath(a, b, ns, ne, &pf, polys, &pathPolys, 256) : DT_FAILURE;
+        pathPartial = dtStatusSucceed(pathStatus) && (dtStatusDetail(pathStatus, DT_PARTIAL_RESULT | DT_BUFFER_TOO_SMALL | DT_OUT_OF_NODES) || pathPolys==0 || polys[pathPolys-1]!=b);
+        if (dtStatusSucceed(pathStatus) && !pathPartial && pathPolys>0)
 		{
 			pathFound = true;
 			for (int k = 0; k < pathPolys; ++k)
@@ -814,8 +865,9 @@ int main(int argc, char** argv)
 					++pathWaterPolys;
 			}
 			float corners[64 * 3]; unsigned char flags[64]; dtPolyRef cps[64]; int nc = 0;
-			if (dtStatusSucceed(q->findStraightPath(ns, ne, polys, pathPolys, corners, flags, cps, &nc, 64)))
-				for (int k = 1; k < nc; ++k) pathLength += dtVdist(&corners[(k - 1) * 3], &corners[k * 3]);
+			const dtStatus straightStatus=q->findStraightPath(ns, ne, polys, pathPolys, corners, flags, cps, &nc, 64);
+            if(dtStatusFailed(straightStatus) || dtStatusDetail(straightStatus,DT_BUFFER_TOO_SMALL)) { pathFound=false; pathPartial=true; pathWaterPolys=0; pathLength=0; }
+            else for (int k = 1; k < nc; ++k) pathLength += dtVdist(&corners[(k - 1) * 3], &corners[k * 3]);
 		}
 	}
 
@@ -875,15 +927,15 @@ int main(int argc, char** argv)
 	printf("{\n \"input\": {\"obj\": \"%s\", \"triangles\": %d, \"dropped_by_z\": %d, \"bounds_crysis\": [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f]},\n",
 		objJson.c_str(), inputTris, dropped, bmin[0], -bmax[2], bmin[1], bmax[0], -bmin[2], bmax[1]);
 	if (c.water)
-		printf(" \"water\": {\"z\": %.2f, \"cell\": %.2f, \"cells\": %d, \"blocked_cells\": %d, \"surface_tris\": %d, \"area\": %u, \"area_cost\": %.2f},\n",
-			c.waterZ, c.waterCell, waterStats.cells, waterStats.blockedCells, waterStats.tris, unsigned(kWaterArea), c.waterCost);
+		printf(" \"water\": {\"z\": %.2f, \"cell\": %.2f, \"cells\": %d, \"blocked_cells\": %d, \"unknown_cells\": %d, \"surface_tris\": %d, \"area\": %u, \"area_cost\": %.2f},\n",
+			c.waterZ, c.waterCell, waterStats.cells, waterStats.blockedCells, waterStats.unknownCells, waterStats.tris, unsigned(kWaterArea), c.waterCost);
 	printf(" \"params\": {\"cs\": %.2f, \"ch\": %.2f, \"radius\": %.2f, \"wall_radius\": %.2f, \"height\": %.2f, \"climb\": %.2f, \"slope\": %.1f, \"tile\": %d, \"min_region\": %d, \"partition\": \"%s\", \"recast\": \"v1.6.0\"},\n",
 		c.cs, c.ch, c.radius, c.wallRadius, c.height, c.climb, c.slope, c.tile, c.minRegion, c.monotone ? "monotone" : "watershed");
 	printf(" \"mesh\": {\"tiles\": %d, \"tiles_grid\": [%d, %d], \"polys\": %d, \"max_tile_polys\": %d, \"components\": %d, \"area_m2\": %.0f, \"main_area_m2\": %.0f, \"two_way_area_m2\": %.0f, \"offmesh_links\": %zu, \"generated\": {\"drop\": %d, \"jump\": %d, \"strength\": %d}},\n",
 		builtTiles, tilesX, tilesY, totalPolys, maxTilePolys, ncomp, totalArea, mainArea, twoWayArea, links.size(), genStats[0], genStats[1], genStats[2]);
 	if (havePathFrom && havePathTo)
-		printf(" \"path\": {\"found\": %s, \"polys\": %d, \"water_polys\": %d, \"length_m\": %.2f, \"water_cost\": %.2f},\n",
-			pathFound ? "true" : "false", pathPolys, pathWaterPolys, pathLength, c.waterCost);
+		printf(" \"path\": {\"found\": %s, \"partial\": %s, \"polys\": %d, \"water_polys\": %d, \"length_m\": %.2f, \"water_cost\": %.2f},\n",
+			pathFound ? "true" : "false", pathPartial ? "true" : "false", pathPolys, pathWaterPolys, pathLength, c.waterCost);
 	printf(" \"points\": [\n");
 	for (size_t i = 0; i < pts.size(); ++i)
 	{
