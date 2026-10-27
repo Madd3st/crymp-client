@@ -76,6 +76,8 @@
     "ds054_doors.patch": "7525f3da7d855e1ed7021d04f62cb6df53477a5f312ae9d36ea689c3c01095e8",
     "ds053_probe_setup.patch": "b6c94c808f1a5eda7e6ed413e6ef10ba7029733911ab167ff85caf9ba5a68af6"
   },
-  "review_commit": "6af9a022d551a0aa8a2ff36883143356e460a613",
-  "ci_run": 40571455339
+  "review_commit": "aa9a65466ca8e044cd6f665db1c1d56f9a9b80ef",
+  "ci_run": 40571455339,
+  "review_source_ref": "refs/remotes/origin/warsbots/research/deepseek",
+  "review_reference_correction": "Explicit reviewer ref replaces shared FETCH_HEAD (which another worktree fetch changed)."
 }

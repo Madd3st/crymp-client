@@ -3,7 +3,7 @@ NOW: C140 code545a5022 reviewedOK DS056; CI40571455339 unitPASS/buildpending, no
 
 
 ### X-195 | 2026-10-27 22:45 MSK | C140 review OK / waiting exact CI
-DeepSeek DS056 review545a5022d06ce1edf219df3d57a9470e4f8295a5:OK at 6af9a022; diffmatches7files/noLua/default/newflags. Independentgate satisfied.
+DeepSeek DS056 review545a5022d06ce1edf219df3d57a9470e4f8295a5:OK at aa9a6546; diffmatches7files/noLua/default/newflags. Independentgate satisfied.
 CI40571455339 unitsPASS/fullbuildpending; no runtime/artifactsubstitution. C140harnessprepared, Shore6x300/events1/doors1/vehicles0 aftergreen. Parentbuybug remains C139FAIL; DS055boolpatch queued separately.
 CLAUDE_STATE + integrationreceipt updated; no additionalcodepush whileCIruns, no game/GUI. Budgetguard not reached.
 
