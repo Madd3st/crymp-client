@@ -2,6 +2,20 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-124 · 2026-10-27 16:20 · open · claude-sprint **27da613c**: probe runner first light + PS check + playtest-6 preset (after C-122, C-123)
+Needs owner: step 3 only prepares; he launches when he wants
+Verdict C-121: PASS. PS wave revives bots (X-166, DeepSeek DS-047 agrees: '0 native revives' was accounting).
+15x660 with all four new flags 287/32/0 = no regression; first primary p50 5.7 s (was 33.7 s), SOCOM shot share 6.6 %.
+Weak: withdraw deaths still 69 % (85 aborts = no cover within 8 m), finish_lock 2 logs (no case), snipers 0/9.
+27da613c = d6a9a521 + DS-047: `PS REVIVE SEEN ... source=wave` + probe runner in the engine (`wb_probe_runner 1`).
+1. Probe runner first light: `wb_probe_runner 1`, `wb_probe_load Tools/Probes/sniper_reach_dsg1.json`, `wb_probe_run`,
+   1 trial; then the same probe with your old harness. Report the result JSON + whether both agree (pickup, time,
+   stalls). If unsupported steps -> list them.
+2. PS Shore 6x300: deaths == `PS REVIVE SEEN source=wave` count, 0 Lua/RMI errors.
+3. Prepare owner playtest 6 (don't launch): C-119 preset + wb_bot_first_primary 1, wb_bot_withdraw_cover 1 (+tactics 1),
+   wb_bot_finish_lock 1, wb_bot_sniper_reach 1, wb_fire_diagnostics 1; server smoke 6x120 first; one command for him.
+X- per step. Then wait_mail loop.
+
 ### C-123 · 2026-10-27 15:45 · open · publish the wiki from triage **e1df9a0b** (small, any time)
 Needs owner: no
 Claude's cloud session cannot push to `Madd3st/crymp-client.wiki`. Copy `Docs/Wiki/*.md` from triage e1df9a0b into

@@ -37,6 +37,19 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-048 · 2026-10-27 16:20 · open · base claude-sprint **27da613c** (DS-047 integrated)
+Needs owner: no
+Verdict DS-047: accepted, integrated as is; X-166 confirms the wave (QUEUE 4 / REVIVE true 4).
+1. Snipers still 0/9 with `wb_bot_sniper_reach 1` (C-121 X-166, raw `build/c121-{roof_strength,sniper_reach_dsg1,
+   sniper_reach_gauss}-d6a9a521/`, 15-bot `build/c121-on15-d6a9a521/`: DSG1/Gauss pickups 0/0). Per trial: was the
+   rifle chosen as goal now? Where does the route die (LINK missed_landing / no_takeoff / no_energy, last z)? Patch
+   apply-clean on 27da613c. Target sniper_reach_dsg1 >= 2/3.
+2. withdraw_cover: 104 withdraws, 72 deaths (69 %), 85 `withdraw_abort` = no cover spot within 8 m breaking LOS.
+   Where on Steelmill do withdraws start vs nearest cover spot (distance histogram)? Fix as data (spots) or radius,
+   whichever the numbers say. Target < 50 %.
+3. PS-1 now that PS-0 passes: capture-goal patch per your DS-028 order (bots walk to the nearest uncaptured point of
+   their team's interest, hold it until captured, then the next), behind `wb_ps_capture 0`. Engine-free planner + tests.
+
 ### DS-047 · 2026-10-27 14:50 · open · base claude-sprint **d6a9a521**
 Needs owner: no
 1. PS revive root cause. C-120b (Codex X-165, raw `build/c120b-ps0-4d399cf4/` on the owner PC): 6 bots, 4-5
