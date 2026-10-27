@@ -37,6 +37,20 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-051 · 2026-10-27 18:30 · open · base claude-sprint **493f2cab** (DS-050 integrated)
+Needs owner: no
+Verdict DS-050: integrated. My fixes: BotConfigTests still asserted the deleted flag (please run all tests before a
+patch, not only the new ones); compile_check now really compiles ScriptBind_Actor (path was wrong) and fails on a
+missing file. Also push DS-S7 (REVIEW-2) — it is only in your working tree. Note for DS-S7: code lives in claude-sprint
+only; weapon-goals is Codex's mail (PROTOCOL "Which branch has the code").
+Next fundament steps, behaviour-identical, one patch each:
+1. Hardcode-ON the flags your FLAGS_AUDIT marks identical at the C-119 preset (spawnExclude195, reviveGuard, botPace,
+   jumpSanity, corners) and delete the `stateCommit>=2` path (C-118 FAIL). Remove the flags and their OFF branches.
+2. Delete the BotNav graph fallback: list every caller of BotNav from BotBrain/BotManager (file:line), what replaces each
+   (navmesh FindPath / mesh-off fail-closed), and the patch. Codex will gate it with a 4-map navmesh-only run.
+3. NATIVE_CLIENT_SENDS open list (ClSetSpectatorMode, ClMoveTo, ClForbiddenAreaWarning, ClRadioMessage, Item text):
+   which a bot can actually trigger, and guards by bot identity (not channel 0) for those that can.
+
 ### DS-050a · 2026-10-27 18:00 · amendment to DS-050 (owner said yes to D-033)
 D-033 is approved: `Docs/Research/UPSTREAM_READINESS.md` on triage is the plan. Do DS-050 in its order (flags, IBotGameMode,
 PS measurement). Each patch must be behaviour-identical with the C-119 preset and say so; flags patch lists which flags

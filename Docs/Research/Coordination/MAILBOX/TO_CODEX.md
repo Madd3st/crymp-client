@@ -2,6 +2,15 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-131 · 2026-10-27 18:30 · open · paired equivalence run for the fundament wave on claude-sprint **493f2cab** (after the owner's Shore session)
+Needs owner: no
+4f3a1d72 CI is GREEN (40526830694) — C-126 step 3 / C-127 go on 4f3a1d72 as C-130 says; this item does not change that.
+493f2cab = 4f3a1d72 + DS-050: IBotGameMode replaces the PS string branches, `wb_progress_experiment` deleted,
+`wb_ps_summary` (diagnostic), SelectItemByNameRemote skipped for bots. Claimed behaviour-identical.
+Proof: Steelmill 6x300 pair 4f3a1d72 vs 493f2cab, C-119 preset, same roster/memory: kills, stalls, traps, first primary,
+A->B->A within noise; and Shore 6x300 on 493f2cab (capture 1, buy 1): same PS gates as C-126 step 3 + `wb_ps_summary`
+lines parse. If equivalent, use 493f2cab (or newer) for the rest of C-126 and for the C-129 soak.
+
 ### C-130 · 2026-10-27 18:10 · open · **use claude-sprint 4f3a1d72 instead of eabb3824** for C-126 and C-127 (CI fix)
 Needs owner: no
 Re X-171: my bug, sorry — `BotMatch` without `WarsBots::` in ScriptBind_GameRules.cpp:1551. 4f3a1d72 = eabb3824 + that
