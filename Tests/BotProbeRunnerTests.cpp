@@ -128,6 +128,38 @@ int main()
         CHECK(!real.dummies.empty());
     }
 
+    // DS-047: the repo probe files use "assert"; accept it as an alias of "assertions".
+    Scenario alias;
+    CHECK(ParseScenario("{\"id\":\"alias\",\"assert\":[{\"metric\":\"kills\",\"op\":\"eq\",\"value\":0}]}", alias, &err));
+    CHECK(alias.assertions.size() == 1 && alias.assertions[0].metric == "kills");
+
+    // DS-047: a PowerStruggle wave revive bypasses BotInstance::DoRevive; PS REVIVE SEEN must count.
+    Metrics ps;
+    ps.Begin(0.0);
+    ps.ObserveLine("8.00 [WarsBots] PS REVIVE SEEN EntityId=1 health=100 source=wave.");
+    CHECK(ps.revives == 1);
+
+    // DS-047: engine-free runtime host: load -> start -> observe -> due -> result JSON.
+    Runtime rt;
+    CHECK(rt.Load("{\"id\":\"runtime\",\"duration_s\":2,\"assert\":[{\"metric\":\"revive\",\"op\":\"ge\",\"value\":1}]}", &err));
+    CHECK(rt.Start(10.0));
+    CHECK(rt.Running());
+    CHECK(rt.Remaining(10.5) > 1.4 && rt.Remaining(10.5) < 1.6);
+    rt.Observe("11.00 [WarsBots] PS REVIVE SEEN EntityId=1 health=100 source=wave.");
+    CHECK(!rt.Due(11.9));
+    CHECK(rt.Due(12.1));
+    const std::string result = rt.Finish(12.1);
+    CHECK(rt.finished && !rt.Running());
+    CHECK(result.find("\"pass\": true") != std::string::npos);
+    CHECK(result.find("\"revive\": 1") != std::string::npos);
+    CHECK(result.find("\"metric\": \"revive\"") != std::string::npos);
+    CHECK(result.find("\"id\": \"runtime\"") != std::string::npos);
+
+    Runtime bad;
+    CHECK(bad.Load("{\"id\":\"bad\",\"duration_s\":1,\"assert\":[{\"metric\":\"kills\",\"op\":\"ge\",\"value\":1}]}", &err));
+    CHECK(bad.Start(0.0));
+    CHECK(bad.Finish(1.0).find("\"pass\": false") != std::string::npos);
+
     if (failures) { std::printf("probe_runner: %d FAILURES\n", failures); return 1; }
     std::printf("probe_runner: all tests passed\n");
     return 0;

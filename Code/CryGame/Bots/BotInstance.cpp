@@ -271,10 +271,23 @@ void BotInstance::Update(float dt)
 		{
 			const int health = actor->GetHealth();
 			if (m_lastHealth > 0 && health <= 0)
+			{
+				m_selfRevivePending = false;
 				WB_LOG(1, "[WarsBots] #%d death observed EntityId=%u health=%d lastHitShooter=%u KillPlayerObserved=%d.",
 					m_number, m_entityId, health, m_lastHitShooter, m_killPlayerObserved ? 1 : 0);
+			}
 			else if (m_lastHealth <= 0 && health > 0)
+			{
+				// DS-047: the PowerStruggle Lua revive wave calls GameRules::RevivePlayer itself, so it never reaches
+				// BotInstance::DoRevive and the old probe counted 0 native revives. Log it at level 1 (always in the
+				// trace) so the revive is visible and countable without verbose telemetry.
+				const bool self = m_selfRevivePending;
+				m_selfRevivePending = false;
+				CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
+				if (!self && rules && BotMatch::IsPowerStruggle(*rules))
+					WB_LOG(1, "[WarsBots] PS REVIVE SEEN EntityId=%u health=%d source=wave.", m_entityId, health);
 				WB_LOG(2, "[WarsBots] #%d alive transition EntityId=%u health=%d.", m_number, m_entityId, health);
+			}
 			m_lastHealth = health;
 		}
 	m_lastUpdateMs = (gEnv->pTimer->GetAsyncTime() - started).GetMilliSeconds();
@@ -327,11 +340,13 @@ bool BotInstance::DoRevive(EntityId forcedSpawn,float forcedZOffset,bool guardRe
 	const Ang3 angles(spawn->GetWorldRotation());
 	WB_LOG(2, "[WarsBots] #%d revive requested EntityId=%u spawnId=%u previousSpawn=%u position=(%.3f,%.3f,%.3f).",
 		m_number, id, chosen, m_lastSpawnLocation, position.x, position.y, position.z);
+	m_selfRevivePending = true; // DS-047: an alive transition after this is ours, not the PS wave
 	rules->RevivePlayer(actor, position, angles, rules->GetTeam(id), !guardRetry);
 
 	IActor* revived = m_owner.Framework()->GetIActorSystem()->GetActor(id);
 	const bool alive = Owns(id) && revived && revived->GetHealth() > 0 &&
 		revived->GetGameObject()->GetAspectProfile(eEA_Physics) == eAP_Alive;
+	if (!alive) m_selfRevivePending = false; // no transition will follow; do not mislabel a later wave revive
 	WB_LOG(1, "[WarsBots] #%d revive result EntityId=%u sameEntity=%d alive=%d health=%d.",
 		m_number, id, Owns(id) ? 1 : 0, alive ? 1 : 0, revived ? revived->GetHealth() : -1);
 	if (alive)

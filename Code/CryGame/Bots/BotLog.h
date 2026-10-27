@@ -7,5 +7,8 @@ namespace WarsBots
 {
 enum { kLogEssential = 0, kLogEvent = 1, kLogTrace = 2 };
 void Log(int level, const char* format, ...);
+// DS-047: probe runner metric hook. BotLog calls this with the timestamped line; it is a no-op unless a
+// probe scenario is running. Never log from inside it (it runs under Log).
+void ProbeObserveLine(const char* line);
 }
 #define WB_LOG(level, ...) ::WarsBots::Log(level, __VA_ARGS__)

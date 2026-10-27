@@ -3,6 +3,8 @@
 #include "CryGame/Bots/BotLog.h"
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotConfig.h"
+#include "CryGame/Bots/BotDataPath.h"
+#include "CryGame/Bots/BotProbeRunner.h"
 #include "CryGame/Bots/BotGeometryExport.h"
 #include "version.h"
 #include "CryGame/Bots/BotCombat.h"
@@ -21,11 +23,14 @@
 #include <ctime>
 #include <chrono>
 #include <algorithm>
+#include <cctype>
 #include <cerrno>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <fstream>
+#include <iterator>
 
 namespace WarsBots
 {
@@ -62,10 +67,35 @@ bool ParsePosition(IConsoleCmdArgs* args, int first, Vec3& position)
 	return args->GetArgCount() >= first + 3 && ParseCoordinate(args->GetArg(first), position.x) &&
 		ParseCoordinate(args->GetArg(first + 1), position.y) && ParseCoordinate(args->GetArg(first + 2), position.z);
 }
+bool ProbeRunnerEnabled() { return BotConfig::Get().probeRunner == 1; }
+
+bool ReadProbeFile(const char* path, std::string& text)
+{
+	if (!path || !*path) return false;
+	std::ifstream in(path, std::ios::binary);
+	if (!in) return false;
+	text.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+	return in.good() || in.eof();
+}
+
+// DS-047: the runner core emits setup verbs; only the ones the engine host implements are executed.
+bool ProbeSetupSupported(const std::string& command)
+{
+	static const char* const unsupported[] = { "wb_probe_dummy", "wb_probe_burst", "wb_probe_peek", "wb_probe_cloak" };
+	for (const char* name : unsupported)
+	{
+		const size_t n = std::strlen(name);
+		if (command.compare(0, n, name) == 0 && (command.size() == n || command[n] == ' '))
+			return false;
+	}
+	return true;
+}
+
 const char* kCommands[] = { "wb_demo_start", "wb_demo_stop", "wb_demo_mark", "wb_qa_time_scale", "wb_nav_audit",
 	"wb_spawn_box", "wb_revive_at", "wb_teleport", "wb_probe_item", "wb_watch", "wb_watch_info", "wb_watch_check", "wb_geom_export", "wb_nav_export", "wb_nav_explain",
 	"wb_add", "wb_remove", "wb_remove_all", "wb_kick_bots", "wb_fill", "wb_skill_all", "wb_mark", "wb_rules_info", "wb_list", "wb_status", "wb_debug", "wb_select", "wb_nav",
 	"wb_probe_spawn", "wb_probe_remove", "wb_probe_status", "wb_probe_revive",
+	"wb_probe_load", "wb_probe_start", "wb_probe_run", "wb_probe_stop", "wb_probe_runner_status", "wb_probe_goal",
 	"wb_bot_start", "wb_bot_stop", "wb_bot_status", "wb_bot_verbose",
 	"wb_bot_jump", "wb_bot_gait", "wb_bot_strafe", "wb_bot_suit", "wb_bot_abilities",
 };
@@ -122,6 +152,13 @@ void BotManager::Initialize(IGameFramework* framework)
 	console->AddCommand("wb_probe_remove", ProbeRemoveCommand, 0, "Remove the selected bot");
 	console->AddCommand("wb_probe_status", ProbeStatusCommand, 0, "Status of the selected bot");
 	console->AddCommand("wb_probe_revive", ProbeReviveCommand, 0, "Revive the selected dead bot");
+	// DS-047: BotProbeRunner.h host behind wb_probe_runner (default 0).
+	console->AddCommand("wb_probe_load", ProbeLoadCommand, 0, "wb_probe_load <scenario.json>: parse a probe v1 scenario (needs wb_probe_runner 1)");
+	console->AddCommand("wb_probe_start", ProbeStartCommand, 0, "wb_probe_start: run the loaded scenario setup and start the metrics window");
+	console->AddCommand("wb_probe_run", ProbeRunCommand, 0, "wb_probe_run <id> <seconds>: start observing without a scenario file (external setup)");
+	console->AddCommand("wb_probe_stop", ProbeStopCommand, 0, "wb_probe_stop: stop the running probe without a result file");
+	console->AddCommand("wb_probe_runner_status", ProbeRunnerStatusCommand, 0, "Probe runner state: flag, loaded scenario, remaining seconds, live metrics");
+	console->AddCommand("wb_probe_goal", ProbeGoalCommand, 0, "wb_probe_goal x y z [radius]: arrival marker for the loaded scenario");
 	console->AddCommand("wb_bot_start", BotStartCommand, 0, "wb_bot_start [x y z]: start AI on the selected bot (adds one if none)");
 	console->AddCommand("wb_bot_stop", BotStopCommand, 0, "Stop AI of the selected bot");
 	console->AddCommand("wb_bot_status", BotStatusCommand, 0, "AI status of the selected bot");
@@ -392,6 +429,7 @@ void BotManager::Sweep()
 void BotManager::EndLevel()
 {
     m_demo.EndLevel();
+	m_probe.Stop(); // DS-047: a scenario cannot outlive its level
     if(m_qaTimeScale!=1.f){gEnv->pTimer->SetTimeScale(1.f);m_qaTimeScale=1.f;}
 	m_levelReady = false;
 	for (BotInstance* bot : Ordered()) bot->Remove();
@@ -427,6 +465,7 @@ void BotManager::OnPostUpdate(float dt)
         }
     }
     m_moveTrace.Update(m_framework,*this);
+	UpdateProbe(); // DS-047: runs even when the bot roster is empty (dummy/goal scenarios)
 	// Restore outside the action-event callback, once the reset level is usable again.
 	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
     if(m_nav.AuditOnly()){if(CanRunLocalIA()){m_nav.Begin();m_nav.Step(2.f);}m_demo.Update(m_config.demoRecord==1,m_config.demoHz);return;}
@@ -1004,10 +1043,23 @@ void BotManager::ProbeSpawnCommand(IConsoleCmdArgs* args)
 {
 	BotManager* self = Self();
 	Vec3 position(0,0,0);
-	if (!self || !args || args->GetArgCount() != 4 || !ParsePosition(args, 1, position))
-	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_spawn x y z (finite world coordinates)."); return; }
+	if (!self || !args || args->GetArgCount() < 4 || args->GetArgCount() > 7 || !ParsePosition(args, 1, position))
+	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_spawn x y z [beginner|normal|veteran|elite] [style] [0|1]."); return; }
+	BotSkill skill = BotSkill(clamp_tpl(self->m_config.skill, 0, int(BotSkill::Count) - 1));
+	BotStyle style;
+	bool hasStyle = false, ai = false;
+	if (args->GetArgCount() >= 5 && !BotProfile::ParseSkill(args->GetArg(4), skill))
+	{ WB_LOG(0, "[WarsBots] wb_probe_spawn: unknown skill '%s'.", args->GetArg(4)); return; }
+	if (args->GetArgCount() >= 6)
+	{
+		if (!BotProfile::ParseStyle(args->GetArg(5), style))
+		{ WB_LOG(0, "[WarsBots] wb_probe_spawn: unknown style '%s'.", args->GetArg(5)); return; }
+		hasStyle = true;
+	}
+	if (args->GetArgCount() >= 7) ai = std::strcmp(args->GetArg(6), "0") != 0;
+	// DS-047: scenario setup sends skill/style/ai; the legacy three-argument form is unchanged.
     const BotStyle qaStyle=BotStyle::Universal;
-	if (BotInstance* bot = self->Add(&position, BotSkill(clamp_tpl(self->m_config.skill, 0, 3)), BotConfig::Get().qaSocomOnly==1?&qaStyle:nullptr, false))
+	if (BotInstance* bot = self->Add(&position, skill, hasStyle?&style:(BotConfig::Get().qaSocomOnly==1?&qaStyle:nullptr), ai))
 		self->m_selected = bot->Number();
 }
 
@@ -1028,6 +1080,175 @@ void BotManager::ProbeReviveCommand(IConsoleCmdArgs*)
 {
 	BotManager* self = Self();
 	if (self) if (BotInstance* bot = self->Selected()) bot->Revive();
+}
+
+// --------------------------------------------------------------------------------------------- DS-047 probe host
+// BotProbeRunner.h owns parsing/metrics/assertions; this adapter owns file IO, console setup and the result file.
+namespace
+{
+std::string ProbeSafeName(const std::string& id)
+{
+	std::string out = id.empty() ? "run" : id;
+	for (char& c : out) if (!std::isalnum((unsigned char)c) && c != '-' && c != '_') c = '_';
+	return out;
+}
+}
+
+void BotManager::ProbeLoadCommand(IConsoleCmdArgs* args)
+{
+	BotManager* self = Self();
+	if (!ProbeRunnerEnabled()) { WB_LOG(0, "[WarsBots] PROBE RUNNER OFF: set wb_probe_runner 1 first."); return; }
+	if (!self || !args || args->GetArgCount() != 2)
+	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_load <scenario.json>."); return; }
+	if (self->m_probe.Running())
+	{ WB_LOG(0, "[WarsBots] PROBE LOAD refused: a scenario is running (wb_probe_stop)."); return; }
+	std::string text, error;
+	if (!ReadProbeFile(args->GetArg(1), text))
+	{ WB_LOG(0, "[WarsBots] PROBE LOAD failed: cannot read %s.", args->GetArg(1)); return; }
+	if (!self->m_probe.Load(text, &error))
+	{ WB_LOG(0, "[WarsBots] PROBE LOAD failed: %s.", error.c_str()); return; }
+	const Probe::Scenario& s = self->m_probe.scenario;
+	WB_LOG(0, "[WarsBots] PROBE LOAD id=%s map=%s duration=%.1f bots=%d items=%d assertions=%d goal=%d.",
+		s.id.c_str(), s.map.c_str(), s.duration, int(s.bots.size()), int(s.items.size()), int(s.assertions.size()), s.hasGoal ? 1 : 0);
+}
+
+void BotManager::ProbeStartCommand(IConsoleCmdArgs*)
+{
+	BotManager* self = Self();
+	if (!ProbeRunnerEnabled()) { WB_LOG(0, "[WarsBots] PROBE RUNNER OFF: set wb_probe_runner 1 first."); return; }
+	if (!self) return;
+	if (!self->m_probe.loaded)
+	{ WB_LOG(0, "[WarsBots] PROBE START refused: wb_probe_load <scenario.json> first."); return; }
+	if (self->m_probe.Running())
+	{ WB_LOG(0, "[WarsBots] PROBE START refused: already running id=%s.", self->m_probe.scenario.id.c_str()); return; }
+	int ran = 0, unsupported = 0;
+	for (const std::string& command : Probe::BuildSetupCommands(self->m_probe.scenario))
+	{
+		if (command.compare(0, 12, "wb_probe_run") == 0) continue;
+		if (!ProbeSetupSupported(command))
+		{ WB_LOG(0, "[WarsBots] PROBE UNSUPPORTED %s", command.c_str()); ++unsupported; continue; }
+		if (gEnv->pConsole) { gEnv->pConsole->ExecuteString(command.c_str()); ++ran; }
+	}
+	self->m_probeGoalDone = false;
+	self->m_probeNextGoalCheck = 0;
+	self->m_probe.Start(gEnv->pTimer->GetFrameStartTime().GetSeconds());
+	WB_LOG(0, "[WarsBots] PROBE START id=%s duration=%.1f setup=%d unsupported=%d goal=%d cvars=%d.",
+		self->m_probe.scenario.id.c_str(), self->m_probe.end - self->m_probe.start,
+		ran, unsupported, self->m_probe.scenario.hasGoal ? 1 : 0, int(self->m_probe.scenario.cvars.size()));
+}
+
+void BotManager::ProbeRunCommand(IConsoleCmdArgs* args)
+{
+	BotManager* self = Self();
+	if (!ProbeRunnerEnabled()) { WB_LOG(0, "[WarsBots] PROBE RUNNER OFF: set wb_probe_runner 1 first."); return; }
+	if (!self || !args || args->GetArgCount() != 3)
+	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_run <id> <seconds>."); return; }
+	float seconds = 0;
+	if (!ParseCoordinate(args->GetArg(2), seconds) || seconds <= 0 || seconds > 3600)
+	{ WB_LOG(0, "[WarsBots] wb_probe_run: duration must be 0..3600 s."); return; }
+	if (self->m_probe.Running())
+	{ WB_LOG(0, "[WarsBots] PROBE RUN refused: already running id=%s.", self->m_probe.scenario.id.c_str()); return; }
+	if (!self->m_probe.loaded) { self->m_probe.scenario = Probe::Scenario(); self->m_probe.loaded = true; }
+	self->m_probe.scenario.id = args->GetArg(1);
+	self->m_probe.scenario.duration = seconds;
+	const double now = gEnv->pTimer->GetFrameStartTime().GetSeconds();
+	self->m_probeGoalDone = false;
+	self->m_probeNextGoalCheck = 0;
+	self->m_probe.Start(now, seconds);
+	WB_LOG(0, "[WarsBots] PROBE START id=%s duration=%.1f setup=external assertions=%d.",
+		self->m_probe.scenario.id.c_str(), seconds, int(self->m_probe.scenario.assertions.size()));
+}
+
+void BotManager::ProbeStopCommand(IConsoleCmdArgs*)
+{
+	BotManager* self = Self();
+	if (!self) return;
+	const std::string id = self->m_probe.scenario.id;
+	self->m_probe.Stop();
+	WB_LOG(0, "[WarsBots] PROBE STOP id=%s active=0.", id.c_str());
+}
+
+void BotManager::ProbeRunnerStatusCommand(IConsoleCmdArgs*)
+{
+	BotManager* self = Self();
+	if (!self) return;
+	const double now = gEnv->pTimer->GetFrameStartTime().GetSeconds();
+	WB_LOG(0, "[WarsBots] PROBE RUNNER flag=%d loaded=%d active=%d id=%s remaining=%.1f shots=%d hits=%d kills=%d deaths=%d pickups=%d revives=%d.",
+		BotConfig::Get().probeRunner, self->m_probe.loaded ? 1 : 0, self->m_probe.Running() ? 1 : 0,
+		self->m_probe.scenario.id.c_str(), self->m_probe.Remaining(now),
+		self->m_probe.metrics.shots, self->m_probe.metrics.hits, self->m_probe.metrics.kills,
+		self->m_probe.metrics.deaths, self->m_probe.metrics.pickups, self->m_probe.metrics.revives);
+}
+
+void BotManager::ProbeGoalCommand(IConsoleCmdArgs* args)
+{
+	BotManager* self = Self();
+	Vec3 position(0,0,0);
+	if (!ProbeRunnerEnabled()) { WB_LOG(0, "[WarsBots] PROBE RUNNER OFF: set wb_probe_runner 1 first."); return; }
+	if (!self || !args || args->GetArgCount() < 4 || !ParsePosition(args, 1, position))
+	{ WB_LOG(0, "[WarsBots] Usage: wb_probe_goal x y z [radius]."); return; }
+	float radius = 1.5f;
+	if (args->GetArgCount() >= 5 && (!ParseCoordinate(args->GetArg(4), radius) || radius <= 0))
+	{ WB_LOG(0, "[WarsBots] wb_probe_goal: radius must be positive."); return; }
+	if (!self->m_probe.loaded) { self->m_probe.scenario = Probe::Scenario(); self->m_probe.loaded = true; }
+	self->m_probe.scenario.hasGoal = true;
+	self->m_probe.scenario.goal[0] = position.x; self->m_probe.scenario.goal[1] = position.y; self->m_probe.scenario.goal[2] = position.z;
+	self->m_probe.scenario.goalRadius = radius;
+	self->m_probeGoalDone = false;
+	WB_LOG(0, "[WarsBots] PROBE GOAL set x=%.2f y=%.2f z=%.2f radius=%.2f.", position.x, position.y, position.z, radius);
+}
+
+void BotManager::ObserveProbeLine(const char* line)
+{
+	if (!line || m_probeObserving || !m_probe.Running()) return;
+	m_probeObserving = true;
+	m_probe.Observe(line);
+	m_probeObserving = false;
+}
+
+void BotManager::UpdateProbe()
+{
+	if (!m_probe.Running()) return;
+	const double now = gEnv->pTimer->GetFrameStartTime().GetSeconds();
+	if (m_probe.scenario.hasGoal && !m_probeGoalDone && now >= m_probeNextGoalCheck)
+	{
+		m_probeNextGoalCheck = float(now) + 0.1f;
+		const Vec3 goal(float(m_probe.scenario.goal[0]), float(m_probe.scenario.goal[1]), float(m_probe.scenario.goal[2]));
+		for (BotInstance* bot : Ordered())
+		{
+			CActor* actor = bot->GetActor();
+			if (!actor || !actor->GetEntity()) continue;
+			const double distance = (actor->GetEntity()->GetWorldPos() - goal).GetLength();
+			if (distance <= m_probe.scenario.goalRadius)
+			{
+				m_probeGoalDone = true;
+				WB_LOG(0, "[WarsBots] PROBE GOAL reached actor=%u elapsed=%.2f distance=%.2f.",
+					actor->GetEntityId(), now - m_probe.start, distance);
+				break;
+			}
+		}
+	}
+	if (!m_probe.Due(now)) return;
+	const std::string json = m_probe.Finish(now);
+	int passed = 0;
+	for (const Probe::AssertionResult& result : m_probe.results) if (result.pass) ++passed;
+	time_t wall = time(nullptr); char stamp[32] = {0};
+	strftime(stamp, sizeof stamp, "%Y%m%d-%H%M%S", localtime(&wall));
+	const std::string name = "probe-result-" + ProbeSafeName(m_probe.scenario.id) + "-" + stamp + ".json";
+	const std::filesystem::path file = DataDirectory(L"Logs") / name;
+	{
+		std::ofstream out(file, std::ios::binary);
+		out << json;
+		if (!out) WB_LOG(1, "[WarsBots] PROBE RESULT file write failed: %s.", file.string().c_str());
+	}
+	WB_LOG(0, "[WarsBots] PROBE RESULT id=%s pass=%d assertions=%d/%d file=%s.",
+		m_probe.scenario.id.c_str(), passed == int(m_probe.results.size()) ? 1 : 0, passed,
+		int(m_probe.results.size()), file.string().c_str());
+}
+
+void ProbeObserveLine(const char* line)
+{
+	if (g_pGame) g_pGame->GetBotManager().ObserveProbeLine(line);
 }
 
 void BotManager::BotStartCommand(IConsoleCmdArgs* args)

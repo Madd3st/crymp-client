@@ -12,6 +12,7 @@ const IntBinding kInts[]={
  {"wb_demo_record",&BotConfig::demoRecord,"Opt-in server wbdemo/2 recorder; exit: diagnostic-only, default OFF"},
  {"wb_demo_hz",&BotConfig::demoHz,"Diagnostic demo sample rate10..60; default20"},
  {"wb_probe_local_test",&BotConfig::gateOpen,"Opt in to WarsBots; requires sv_bind=127.0.0.1, sv_lanonly=1 and InstantAction."},
+ {"wb_probe_runner",&BotConfig::probeRunner,"DS-047: engine adapter for BotProbeRunner.h, default OFF. When 1: wb_probe_load file, wb_probe_start, wb_probe_runner_status, wb_probe_stop, wb_probe_run id seconds. WarsBots log lines feed the scenario metrics; the result JSON is written next to the bot log and PROBE RESULT is logged."},
  {"wb_bot_cloak_experimental",&BotConfig::cloakExperimental,"Experimental bot cloak, defaults OFF"},
  {"wb_hotspot_all_nodes",&BotConfig::hotspotAllNodes,"Experimental complete hotspot scan: 0 legacy stride2 default, 1 all nodes; QA until 10min soak."},
  {"wb_reachable_goals",&BotConfig::reachableGoals,"Opt-in graph reachability filter for weapon/hotspot goals; unknown projection kept, default OFF."},

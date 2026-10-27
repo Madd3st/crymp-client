@@ -268,7 +268,10 @@ inline bool ParseScenario(const std::string& text, Scenario& out, std::string* e
             else if (v.type == Json::Number) out.cvars[it->first] = NumberText(v.number);
             else if (v.type == Json::String) out.cvars[it->first] = v.text;
         }
-    if (const Json* as = root.Get("assertions"))
+    // DS-047: the repo probe files use "assert"; the test scenario uses "assertions". Accept both.
+    const Json* as = root.Get("assertions");
+    if (!as) as = root.Get("assert");
+    if (as)
         for (size_t i = 0; i < as->array.size(); ++i)
         {
             const Json& a = as->array[i];
@@ -355,6 +358,9 @@ struct Metrics
         if (std::strstr(p, "death observed")) ++deaths;
         if (std::strstr(p, "REAL PICKUP")) ++pickups;
         if (std::strstr(p, "revive result") && std::strstr(p, "alive=1")) ++revives;
+        // DS-047: in PowerStruggle the Lua wave calls GameRules::RevivePlayer directly, so BotInstance::DoRevive
+        // never logs "revive result". The external revive is visible as PS REVIVE SEEN; count it as a revive.
+        if (std::strstr(p, "PS REVIVE SEEN")) ++revives;
         if (std::strstr(p, "blocked=1")) ++stalls;
         if (std::strstr(p, "stuck=1")) ++stuckEvents;
         if (std::strstr(p, "TRAP RECOVERY"))
@@ -460,6 +466,115 @@ inline std::vector<AssertionResult> EvaluateAll(const Metrics& m, const std::vec
     }
     return out;
 }
+
+// ------------------------------------------------------------------------------------------------ runtime
+// DS-047: engine-free half of the probe runner host. The console adapter (BotManager) parses the scenario
+// file, executes BuildSetupCommands, feeds every line that WarsBots::Log writes through Observe() and calls
+// Finish() when Due(). Header-only and unit-tested in Tests/BotProbeRunnerTests.cpp.
+inline std::string JsonQuote(const std::string& s)
+{
+    std::string out = "\"";
+    for (size_t i = 0; i < s.size(); ++i)
+    {
+        const unsigned char c = (unsigned char)s[i];
+        if (c == '"' || c == '\\') { out += '\\'; out += char(c); }
+        else if (c == '\n') out += "\\n";
+        else if (c == '\r') out += "\\r";
+        else if (c == '\t') out += "\\t";
+        else if (c < 0x20) { char b[8]; std::snprintf(b, sizeof b, "\\u%04x", unsigned(c)); out += b; }
+        else out += char(c);
+    }
+    out += '"';
+    return out;
+}
+
+inline void JsonNumber(std::string& out, double v)
+{
+    if (std::isnan(v)) { out += "null"; return; }
+    char b[64];
+    std::snprintf(b, sizeof b, "%.6g", v);
+    out += b;
+}
+
+struct Runtime
+{
+    Scenario scenario;
+    Metrics metrics;
+    bool loaded = false, active = false, finished = false;
+    double start = 0, end = 0;
+    std::vector<AssertionResult> results;
+
+    bool Load(const std::string& text, std::string* error = nullptr)
+    {
+        loaded = ParseScenario(text, scenario, error);
+        return loaded;
+    }
+
+    bool Start(double now, double durationOverride = 0)
+    {
+        if (!loaded) return false;
+        metrics = Metrics();
+        metrics.Begin(now);
+        start = now;
+        end = now + (durationOverride > 0 ? durationOverride : scenario.duration);
+        active = true; finished = false; results.clear();
+        return true;
+    }
+
+    void Stop() { active = false; }
+    void Observe(const std::string& line) { if (active) metrics.ObserveLine(line); }
+    bool Running() const { return active; }
+    bool Due(double now) const { return active && now >= end; }
+    double Remaining(double now) const { return active && end > now ? end - now : 0; }
+
+    // Evaluates the assertions and returns the result JSON. Call once when Due().
+    std::string Finish(double now)
+    {
+        results = EvaluateAll(metrics, scenario.assertions);
+        active = false; finished = true;
+        return Json(now);
+    }
+
+    std::string Json(double now) const
+    {
+        bool pass = true;
+        for (size_t i = 0; i < results.size(); ++i) pass = pass && results[i].pass;
+        std::string out = "{\n  \"schema\": 1,\n  \"id\": ";
+        out += JsonQuote(scenario.id);
+        out += ",\n  \"map\": "; out += JsonQuote(scenario.map);
+        out += ",\n  \"started_at\": "; JsonNumber(out, start);
+        out += ",\n  \"duration_s\": "; JsonNumber(out, end - start);
+        out += ",\n  \"elapsed_s\": "; JsonNumber(out, now - start);
+        out += ",\n  \"pass\": "; out += pass ? "true" : "false";
+        out += ",\n  \"metrics\": {";
+        static const char* const names[] = {
+            "shots", "hits", "kills", "deaths", "pickup", "revive", "time_to_first_shot", "goal_time",
+            "stalls", "stuck_events", "trap_level_max", "link_attempts", "vantage_holds", "glances", "heard",
+            "detected_at_m", "exposed_s", "accuracy", "headshots", "hit_distance_p50", "hit_distance_p90",
+            "target_distance_p50", "target_distance_p90"
+        };
+        for (size_t i = 0; i < sizeof names / sizeof names[0]; ++i)
+        {
+            if (i) out += ", ";
+            out += '"'; out += names[i]; out += "\": ";
+            JsonNumber(out, metrics.Value(names[i]));
+        }
+        out += "},\n  \"assertions\": [";
+        for (size_t i = 0; i < results.size(); ++i)
+        {
+            const AssertionResult& r = results[i];
+            out += i ? ",\n    {" : "\n    {";
+            out += "\"metric\": "; out += JsonQuote(r.metric);
+            out += ", \"op\": "; out += JsonQuote(r.op);
+            out += ", \"expected\": "; JsonNumber(out, r.expected);
+            out += ", \"actual\": "; JsonNumber(out, r.actual);
+            out += ", \"pass\": "; out += r.pass ? "true" : "false";
+            out += "}";
+        }
+        out += "\n  ]\n}\n";
+        return out;
+    }
+};
 
 } // namespace Probe
 } // namespace WarsBots

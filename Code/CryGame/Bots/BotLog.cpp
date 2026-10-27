@@ -53,5 +53,15 @@ void Log(int level, const char* format, ...)
         fprintf(g_trace, "%.2f %s\n", now, buffer);
         if(level<=kLogEvent || ++g_unflushed>=64 || now-g_lastFlush>=1.f){fflush(g_trace);g_unflushed=0;g_lastFlush=now;}
 	}
+	// DS-047: feed the probe runner with the same timestamped line the report tools parse. It only parses text
+	// and never calls WB_LOG, so there is no recursion.
+	if (BotConfig::Get().probeRunner == 1)
+	{
+		const float now=gEnv->pTimer ? gEnv->pTimer->GetCurrTime() : 0.f;
+		char line[1100];
+		_snprintf(line, sizeof(line) - 1, "%.2f %s", now, buffer);
+		line[sizeof(line) - 1] = '\0';
+		ProbeObserveLine(line);
+	}
 }
 }

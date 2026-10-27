@@ -85,6 +85,7 @@ private:
 	EntityId m_lastHitShooter = 0;
 	EntityId m_lastSpawnLocation = 0;
 	bool m_killPlayerObserved = false;
+	bool m_selfRevivePending = false; // DS-047: distinguishes DoRevive from a PowerStruggle wave revive
 	bool m_removing = false;
 	bool m_removeRequested = false;
 	float m_lastUpdateMs = 0, m_maxUpdateMs = 0, m_totalUpdateMs = 0;

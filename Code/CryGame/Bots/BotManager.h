@@ -11,6 +11,7 @@ struct IGameFramework;
 #include "CryGame/Bots/BotMoveTrace.h"
 #include "CryGame/Bots/BotDemoRecorder.h"
 #include "CryGame/Bots/BotConfig.h"
+#include "CryGame/Bots/BotProbeRunner.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -86,6 +87,9 @@ public:
 	void OnLevelEnd(const char*) override;
 	void OnActionEvent(const SActionEvent& event) override;
 
+	// DS-047: BotLog feeds every formatted line here; ignored unless a probe scenario is running.
+	void ObserveProbeLine(const char* line);
+
 private:
 	BotInstance* Add(const Vec3* position, BotSkill skill, const BotStyle* style, bool startAI);
 	BotInstance* AddWith(const Vec3* position, const BotProfile& profile, int number, bool startAI);
@@ -100,6 +104,7 @@ private:
 	std::vector<BotInstance*> Ordered() const;
 	void List() const;
 	void StatusReport();
+	void UpdateProbe();                  // DS-047
 
 	static BotManager* Self();
 	static void AddCommand(IConsoleCmdArgs* args);
@@ -133,6 +138,13 @@ private:
 	static void ProbeRemoveCommand(IConsoleCmdArgs* args);
 	static void ProbeStatusCommand(IConsoleCmdArgs* args);
 	static void ProbeReviveCommand(IConsoleCmdArgs* args);
+	// DS-047: BotProbeRunner.h host.
+	static void ProbeLoadCommand(IConsoleCmdArgs* args);
+	static void ProbeStartCommand(IConsoleCmdArgs* args);
+	static void ProbeRunCommand(IConsoleCmdArgs* args);
+	static void ProbeStopCommand(IConsoleCmdArgs* args);
+	static void ProbeRunnerStatusCommand(IConsoleCmdArgs* args);
+	static void ProbeGoalCommand(IConsoleCmdArgs* args);
 	static void BotStartCommand(IConsoleCmdArgs* args);
 	static void BotStopCommand(IConsoleCmdArgs* args);
 	static void BotStatusCommand(IConsoleCmdArgs* args);
@@ -163,6 +175,10 @@ private:
     BotMoveTrace m_moveTrace;
     BotDemoRecorder m_demo;
     BotConfig& m_config=BotConfig::Get();
+	Probe::Runtime m_probe;              // DS-047
+	bool m_probeGoalDone=false;
+	bool m_probeObserving=false;
+	float m_probeNextGoalCheck=0;
 };
 #endif
 }
