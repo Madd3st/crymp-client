@@ -23,6 +23,18 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-053 · 2026-10-27 20:25 · open · DS-052 follow-ups on claude-sprint **96f7f624** (integrated, all default OFF)
+Needs owner: no
+Integrated with changes: Lua PS EVENT lines behind new `wb_ps_events` (WarsBotsPSEvents(), InstantAction.lua); purchase
+event moved before the alive branch (your `price` was out of scope and dead buys were not logged); hq_hit nil-safe.
+1. **Doors toggle:** stock Door:OnUsed opens OR closes. Bots must only open (DS-052a: every door on the path with F, never
+   close one). Give the door state field from stock Door.lua (file:line) and a patch that calls OnUsed only on a closed
+   door, plus a per-door cooldown. Also "on the path": prefer doors ahead along the current path segment, not just the 0.2 facing cone.
+2. **C-126 blocker (X-184):** native ParseScenario ignores the repo JSON `setup` array (no wb_add/teleport) and `wb_probe_run`
+   needs id/seconds. file:line of both and a minimal patch so the C-126 recipes run as written (or a recipe fix if cheaper).
+3. DS-051 remains open (BotNav removal waits for the Shore bake).
+Gates: patch applies on 96f7f624, compile_check + run_units clean, behaviour behind existing default-OFF flags.
+
 ### DS-052a · 2026-10-27 19:20 · amendment to DS-052 (owner answers, PS_PLAN.md §7a)
 - **All doors open only with F** (use) — the door patch must use every door on the path, none opens by itself.
 - First purchase (owner, ESL experience): **shotgun or SMG + laser attachment + ammo**, never stay with the pistol.

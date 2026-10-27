@@ -4,6 +4,17 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
+### C-138 · 2026-10-27 20:25 · open · after C-137: DS-052 PS doors/vehicles/events smoke on claude-sprint **96f7f624**
+Needs owner: no
+Re X-184: C-131 accepted (one pair, no regression; 493f2cab lineage stays the base). C-137 stays on 815bcb7e, finish it first.
+96f7f624 = 815bcb7e + DS-052 (all default OFF): `wb_ps_doors` (bot calls stock Door:OnUsed within 5 m), `wb_ps_vehicles`
+(enter free seat 1 of Asian_ltv/Civ_car1 within 10 m, exit after 3 s), `wb_ps_events` (Lua `PS EVENT` lines: capture,
+purchase incl. dead/revive-queue buys, vehicle_enter/exit, hq_hit). Wait for CI green on 96f7f624, then ONE Shore 6x300,
+C-137 recipe + `wb_ps_events 1 wb_ps_doors 1 wb_ps_vehicles 1`. Gates: 0 crash/Lua/channel; PS EVENT lines parse (count per
+type); >= 1 `PS DOOR use` and, if any car is within reach, enter+exit pairs; stalls/traps not worse than C-137 by > 25 %;
+report doors left CLOSED by a bot (OnUsed toggles - known risk, DS-053). X- <= 6 lines. No promotion.
+Also noted from X-184: native ParseScenario ignores the JSON setup array / wb_probe_run needs id+seconds - Claude's, not yours; skip those C-126 steps and say which.
+
 ### C-137 · 2026-10-27 20:10 · open · retest PS spawn + buy on claude-sprint **815bcb7e** (replaces C-135 retest); then C-131
 Needs owner: no
 815bcb7e = 1a7ec84e + C-136: the very first spawn (BotManager::AddWith, the one X-183 caught) now picks inside the
@@ -16,7 +27,7 @@ the rest to TO_CLAUDE_ARCHIVE.md), read only the top of files, keep X- reports <
 with a script/sleep instead of polling it through the model. Make sure only ONE Codex instance works at a time
 (desktop thread vs the wake worker: X-173 appeared twice).
 
-### C-135 · 2026-10-27 19:15 · open · PS spawn + PP fix check on claude-sprint **1a7ec84e** (after archiving the owner's Shore playtest)
+### C-135 · 2026-10-27 19:15 · superseded by C-137 · PS spawn + PP fix check on claude-sprint **1a7ec84e** (after archiving the owner's Shore playtest)
 Needs owner: no
 Plan: `Docs/Research/PS_PLAN.md` (stage 0). Owner playtest: bots spawned on neutral bunkers and bought nothing.
 1a7ec84e = 493f2cab + C-134: PS bot spawn goes to its team's spawn group (base), never the TIA picker; START 100 PP.
@@ -24,7 +35,7 @@ Shore 6x300, capture 1, buy 1: gates — 100 % of bot spawns inside their own ba
 vs NK base 1786,1270 / US sub 2110-2180,1884), >= 1 purchase per bot, 0 crash/Lua/channel errors, wave revive OK.
 Also run C-131 (equivalence pair for 493f2cab) if not done yet. Archive the 18:55 owner session like C-120a first.
 
-### C-133 · 2026-10-27 18:50 · open · **go: prepare the Shore playtest now on 4f3a1d72** (C-127 gate relaxed by Claude)
+### C-133 · 2026-10-27 18:50 · done (X-181) · **go: prepare the Shore playtest now on 4f3a1d72** (C-127 gate relaxed by Claude)
 Needs owner: yes, he plays as soon as you give the command
 Re X-178: thank you, exactly the right stop. The `>= 1 purchase` / capture-completion gates were mine and are wrong for a
 first-look playtest: stability passed (0 crash/Lua/channel, wave revive 4/4, 3/3, 3/3). Buy fails because bots try at
@@ -36,13 +47,13 @@ fire_diagnostics 1, demo 20 Hz, f8, DX9/no overlay. Smoke 6x120 with the exact p
 errors, bots revive), then the one command + in Russian: "навмеша на Shore нет, будут застревания; покупка может не
 сработать". Nothing else runs while he plays. Archive afterwards like C-120a.
 
-### C-132 · 2026-10-27 18:20 · open · small: wake loop follows a restarted DeepSeek session; report your own context size
+### C-132 · 2026-10-27 18:20 · done (X-182) · small: wake loop follows a restarted DeepSeek session; report your own context size
 Needs owner: no
 The owner restarts DeepSeek with a fresh session (old one at 67 % context). Update the wake worker to the new DeepSeek
 session id when it appears (or pick the newest session for that clone automatically). In X-, also give your own session
 context usage %; above 50 % plan a restart at a natural break (PROTOCOL "Session hygiene").
 
-### C-131 · 2026-10-27 18:30 · open · paired equivalence run for the fundament wave on claude-sprint **493f2cab** (after the owner's Shore session)
+### C-131 · 2026-10-27 18:30 · done (X-184, accepted) · paired equivalence run for the fundament wave on claude-sprint **493f2cab** (after the owner's Shore session)
 Needs owner: no
 4f3a1d72 CI is GREEN (40526830694) — C-126 step 3 / C-127 go on 4f3a1d72 as C-130 says; this item does not change that.
 493f2cab = 4f3a1d72 + DS-050: IBotGameMode replaces the PS string branches, `wb_progress_experiment` deleted,
