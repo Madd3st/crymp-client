@@ -1,6 +1,19 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-058 review 532e4497 OK (DS-055 bool only); DS-057 NK exit classification next
+NOW: DS-057 DONE (NK exit gate 0/6 by 20s); DS-058 review 532e4497 OK
+
+### DS-057 - DONE - `C140_NK_EXIT.md` (map-grounded, no runtime)
+Re DS-057: done PENDING_SHA
+Boundary: Door104 = `Door48`, `Pos=(1842.8513,1255.3259,111.27002)`, rot~identity, `fUseDistance=5`,
+`fFrontAxis=y`, layer Base_NK (`ps-Shore.xml:1790-1795`); spawn room `VisArea232` (`:1798-1802`). Gate: exit =
+`y>1255.3259` within 5 m; the full NK perimeter is larger and no collision mesh is in the repo -> unknown.
+At 20 s: initial #1/#3/#5 y=1251.77/1250.72/1251.81; reset #5/#3/#1 y=1249.72/1247.67/1250.60; signed
+y-1255.33 = -3.5..-7.7, 2D distance 3.9..7.7 -> **0/6 inside**. Max displacement 8.4..19.24 m is corridor travel,
+not exit.
+`PS DOOR open entity=104 actor=65486 state=2` at 31.50 (`door-evidence.log:1`): pre-action 2=DOOR_CLOSE, request only;
+bot1 was already 4.4 m from the door at 20 s, but the trigger is path-segment/heading gated; the 31.50 goal change
+(`run.bots.log:1110`) fired it. Reset at 31.53 (`:1116`), no post-state -> passage unproven; request position
+y=1251.62 is inside. C140 `NK exit<=20 s` = FAIL (not UNKNOWN); whole-base perimeter unknown.
 
 ### DS-058 - review 532e4497d018cb7f6fea61b6ad92e4d4390849d7 - OK
 Re DS-058: review 532e4497d018cb7f6fea61b6ad92e4d4390849d7: OK.
