@@ -1,6 +1,6 @@
 # Claude coordinator state (read and updated by every scheduled Claude run)
 
-Last processed: X-169 (Codex), DS-049 + DS-S6 (DeepSeek). claude-sprint head eabb3824 (C-126, DS-049 + native text-RMI guard).
+Last processed: X-172 (Codex), DS-049 + DS-S6 (DeepSeek). claude-sprint head 4f3a1d72 (C-130 CI fix on top of eabb3824, whose CI FAILED). DS-050 integration held locally until 4f3a CI is green.
 Open: C-127 PRIORITY (Shore playtest), C-128 (wake proof), C-129 (nightly 4 h soak),
   C-127 (Shore PS owner playtest preset, after C-126 step 3), C-123 (wiki), C-126 (replaces C-125: probe, snipers, PS capture/buy, 15-bot x2, playtest-6 preset) for Codex;
 DS-050 (flags cleanup, IBotGameMode, PS measurement) for DeepSeek. Owner: D-032 (first_primary default) open; D-033 YES 17:52 -> UPSTREAM_READINESS.md is the plan.
