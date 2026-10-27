@@ -1,11 +1,11 @@
-# WarsBots project status — 2026-10-26 05:30 MSK
+# WarsBots project status — 2026-10-27 15:40 MSK
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
 
 ## Goal
 
-Bots that play Crysis Wars Instant Action like humans **on every IA map** (Steelmill, Quarry, Armada, Outpost; Power
+Bots that play **Crysis (2007) multiplayer via CryMP** Instant Action like humans **on every IA map** (Steelmill, Quarry, Armada, Outpost; Power
 Struggle later): human pace, vertical movement (jumps, Strength jumps), sensible weapon choice (SCAR first), stable
 decisions and aim. Map-specific fixes only as data, never code.
 
@@ -13,11 +13,25 @@ decisions and aim. Map-specific fixes only as data, never code.
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (build, QA, merge — D-013) | idle since 02:32 (heartbeat did not pick up C-097…C-100); C-089 cleanup DONE (9.1 GB), wiki published (45e9559) | C-093 soak 7179ec36 → C-098 9ac55001 → C-091 preset; C-100 probe runner |
-| DeepSeek (read-only review — D-014) | DS-019 PS specs DONE (03:40); idle since | DS-020 PS details, DS-021 flag inventory |
-| Claude (game code + verdicts + docs) | tonight: difficulty/finish/spectator aim, threat scan, CI on GitHub (green), probe hook + 3 probes, Shore navmesh v1 + 3D v4, D-021 tools (next_id, recipe) | verdicts when runs land; Shore cut-off base; T-1 |
+| Codex (QA, runs, playtest archives) | C-120 done (X-164 playtest-5 archive, X-165 PS retry + 3-flag A/B); waiting for its wake | C-122 wake loop for real → C-121 (PS revive diag, sniper probes, 15-bot with new flags) |
+| DeepSeek (analysis + patches, D-014) | DS-046 done (sniper reach, Veteran K/D = noise) | DS-047: PS revive root cause, finish_lock reachability, probe runner wiring |
+| Claude (game code, integration, verdicts, docs) | claude-sprint **d6a9a521** (DS-044/045/046 integrated, PS revive diag); sync v4; successor handover | verdicts C-121/DS-047; D-031 (who coordinates when Claude is out) |
 
-Roadmap: wiki `Status-and-Roadmap` (single source; `Docs/ROADMAP.md` points there).
+Interim coordinator if Claude is out of limits: `Docs/Research/Coordination/SUCCESSOR.md` (recommended Codex + DeepSeek
+as reviewer, D-031). Roadmap: wiki `Status-and-Roadmap`.
+
+## 26.10 day → 27.10 (key results)
+
+| Area | Result | Evidence |
+| --- | --- | --- |
+| Night batches 26→27 (15×660) | 2fee59c2 302 kills/27 stalls; fd12a5eb (+pro_fire, high_ground, threat_scan) 287/29 PASS; 0fa9c1cb (+no sprint near a visible enemy) 293/30 PASS, Elite no-fire 17.1 → 9.5 /min, first shot B/N/V/E 1.02/.61/.38/.23 s; bot AI 0.12 ms/frame | server (X-156) |
+| Owner playtest 5 (6e2713f9) | skills finally distinct: K/D B 10/34, N 30/26, V 18/26, E 41/23 (V < N = per-bot noise, 2 bots/skill, DS-046); owner 13/3 | client + server (X-164) |
+| state_commit 2 | FAIL: A→B→A 2.69 → 15.25 /bot-min, 160 STATE CONFLICT → stays 1 | server (X-162) |
+| DS-044 flags (4d399cf4, 6×300 A/B) | first_primary + withdraw_cover + finish_lock: kills 35 → 38, SOCOM shot share 14.7 → 2.5 %, withdraw deaths 68 → 50 %, finish_lock never triggered (no case) | server (X-165) |
+| Power Struggle PS-0 | crash at bot 2 (C-117) fixed; DS-045 guards every per-client RMI by bot identity → 0 RMI/Lua errors, 6/6 bots, no crash; **bots never revive** → diag in d6a9a521, DS-047 | server (X-161, X-165) |
+| Snipers | never fetched DSG1/Gauss: pickup search box ±12 m, DSG1 at +20.3 m → never chosen; fix `wb_bot_sniper_reach` (DS-046), links above Strength rise 3.72 m banned | src + graph |
+| DeepSeek audit (DS-042) | Bible 2 PASS / 18 PARTIAL / 15 FAIL; 7 exploit probes; probe runner header (not wired) | graph |
+| Process | sync v4 (D-030): all tasks in the mailbox, wake loop fixed; runs any time except while the owner plays (D-029) | — |
 
 ## Today 25.10 evening → 26.10 night (key results)
 
@@ -59,6 +73,13 @@ fast simulation).
 
 ## Mistakes we made
 
+8. **Tasks sent only via chat (27.10)**: Claude gave the owner prompts to paste instead of mailbox items, so the wake
+   loop had nothing to wake on and the owner had to nudge all three. → every task is a C-/DS- item (PROTOCOL v4).
+9. **Wake loop never fired at night**: `wake_agents.ps1` required the word "open" in headers that never had it. →
+   any newer item counts; a fail-closed check of a scheduler needs one real (not dry-run) wake.
+10. **Promised work not done**: Claude said "integrating DS-044 now" and did not, Codex waited 1.5 h on a SHA. →
+    state what was done, not what will be.
+
 1. **A day of patching symptoms of a broken navigation approach** (graph repair C-006/C-011, weapon filter B, sink
    escape C, trap watchdog levels). Each patch helped a little, so nobody stopped to ask "does this work on another
    map?". The signals (25 % sinks, 0 edges between the two halves, 90 % no_route) were visible in the morning; the
@@ -90,6 +111,8 @@ fast simulation).
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
+| Claude runs out of limits | coordination and code integration stop | `SUCCESSOR.md`: Codex interim coordinator, DeepSeek reviewer; D-031 |
+| PS bots never revive | Power Struggle unusable | diag logs d6a9a521, DS-047 root cause, 30 s fallback must work |
 | Navmesh may not reproduce stairs/catwalks/roofs better than the graph | navigation stays dumb | offline comparison on 4 maps before any switch; owner jumps as off-mesh links; shadow mode first |
 | Geometry files are 0.3–1.2 GB OBJ | cannot be staged to Triage (400 MB/file limit) | C-028 cropped/binary export |
 | Codex weekly limit (61 % at 17:16, resets 30 Oct; 2 manual resets left) | work stops mid-task | narrow tasks, research/review moved to OpenCode and Claude, no idle wake-ups |
@@ -113,24 +136,23 @@ Acceptance: unit tests pass, one paired run with `summary` and demo metrics unch
 **Wave 2 — after the navmesh switch:** delete BotNav graph build/knee audit/reachability/goal projection/most watchdog
 levels (list: OpenCode DETOUR_INTEGRATION.md §5), R2 `BotConsole.cpp`, R5 legacy single-bot commands, R8 one revive path.
 
-## Queue (in order) — re-planned after the external audit (D-008, 20:08)
+## Queue (27.10, in order)
 
-1. C-028 cropped geometry → **offline navmesh verdict on 4 maps** (Claude `navmesh` + OpenCode real Recast bake OC-022):
-   spawn → weapon reachability, catwalks survive erosion, 0 links longer than ballistics, owner-route coverage.
-   The old graph is **not** the oracle. 2. C-029 time-scale experiment. 3. `wbdemo/2` freeze (OC-021) → C-025 demo
-   recording. 4. C-027 refactor wave 1 = R1 + R3 + R4. 5. C-031 probe harness (30–90 s scenarios on 4 maps).
-6. C-032 goal arbiter. 7. C-033 look along travel. 8. C-022 weapon rank. 9. Detour behind a flag + jump-link executor
-   state → switch on Steelmill, then a second map. 10. Perception: view cone, cloak, last-known position.
-11. Aim model (saccade + filtered noise). 12. One suit policy. 13. C-026 in-game demo playback. Later: refactor wave 2,
-    Power Struggle, ML (not this quarter; revisit if C-029 gives fast simulation).
+1. C-122 wake loop (Codex + DeepSeek) — nobody waits for the owner. 2. C-121: PS revive diag, sniper probes,
+15-bot with first_primary / withdraw_cover / finish_lock / sniper_reach. 3. DS-047 → integrate (PS revive fix,
+finish_lock reachability, probe runner wiring). 4. PS-0 until bots revive → Shore navmesh rebake → PS-1 capture goals.
+5. Owner playtest 6 with the new flags ON → D-032 promote defaults (first_primary, withdraw_cover, sniper_reach,
+pro_fire, high_ground). 6. Exploit probes via the runner (height camp, bait the withdraw, spawn camp, ledge, peek,
+cloak, choke). 7. Long-range fights (> 40 m), grenades (D-023), boats (BotBoatDriver.h). 8. Flags cleanup.
+Older queue (D-008) is done or folded in.
 
 ## Rules
 
-Codex owns game code integration, builds, servers. Claude writes only new self-contained modules with unit tests in
-`warsbots/research/claude-modules` (D-010: arbiter, link executor, perception, aim model, demo serializer) and never
-edits existing Codex files; OpenCode never edits game code. Default OFF until paired runs show no
-regression; behaviour defaults need the owner (D-002). > 2 h diagnosis → workaround + parked ticket. One task, one
-push, stop. No builds while the owner plays. Questions to the owner go into chat.
+Claude owns game code (`warsbots/feature/claude-sprint`) and integrates DeepSeek patches; Codex runs CI artifacts,
+batches, probes, presets and archives (no local builds); DeepSeek writes analysis and `git apply`-able patches in its
+own branch. Every behaviour change behind a default-OFF `wb_*` flag; defaults need the owner (D-002). Offline green
+before push. Every task is a mailbox item (v4). Runs any time except while the owner plays (D-029). > 2 h diagnosis →
+workaround + parked ticket. One task, one push, stop. Questions to the owner: D- rows + chat.
 
 ## Where things are
 
@@ -146,6 +168,13 @@ push, stop. No builds while the owner plays. Questions to the owner go into chat
 
 | Date | File | What |
 | --- | --- | --- |
+| 10-27 15:30 | `Coordination/SUCCESSOR.md` | handover prompts if Claude is out of limits (D-031) |
+| 10-27 15:10 | PROTOCOL v4, C-122 | sync: mailbox-only tasks, wake loop fixed (deepseek, any new item) |
+| 10-27 14:50 | C-121 / DS-047 | d6a9a521: DS-046 sniper reach + PS revive diag |
+| 10-27 14:15 | X-165 | 4d399cf4: PS 0 RMI errors but no revives; 3-flag A/B |
+| 10-27 12:57 | C-120 | 4d399cf4: DS-044 + DS-045 integrated |
+| 10-27 11:38 | X-164 | playtest 5 archive, skills distinct |
+| 10-27 10:44 | X-162 | state_commit 2 FAIL |
 | 10-25 15:45 | C-066 | sniper spots: tactical_spots.cpp (cover/low/sniper/exposed per map), BotVantage + wb_bot_vantage; 3D view of Steelmill (Gauss tower 13 m, 4 Strength jumps; DSG1 22 m, stairs) |
 | 10-25 15:25 | C-065 | owner playtest 717853ff: "kills without ammo" = spectator HUD (server ammo fine) → ammo synced; laser+zoom (wb_bot_weapon_handling), names with skill/style, raw client aim while firing, Hurricane lower |
 | 10-25 14:35 | C-063 | 8214f16a: links 27 % → 49 % done, but nav fallbacks ×6 (weak parts) → SCC + directed reachability, run-up before link jumps (717853ff) |

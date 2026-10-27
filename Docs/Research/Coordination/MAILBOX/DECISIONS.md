@@ -34,3 +34,4 @@ Answer in chat with Claude or Codex as `D-001: yes` etc. Agents record the answe
 | D-028 | Overnight 15-bot runs on 26→27.10 beyond the one-per-day limit (night autonomy, C-113). | yes | **yes** (owner, 26.10 22:36: "да, разрешаю") |
 | D-029 | Runs (incl. 15-bot) without a per-day limit? | yes, never while the owner plays | **yes** (owner, 27.10 14:57: "можно прогоны гонять, я не против") |
 | D-030 | Agents sync through the mailbox + wake loop (Codex/DeepSeek on the PC every 10 min, Claude hourly in the cloud) so the owner does not nudge anyone | yes | **yes** (owner, 27.10 14:57) |
+| D-031 | Who coordinates when Claude is out of limits? (`Coordination/SUCCESSOR.md`) | Codex interim coordinator + code integrator, DeepSeek reviews every Codex code push; DeepSeek coordinator-lite if Codex budget < 20 % | open |
