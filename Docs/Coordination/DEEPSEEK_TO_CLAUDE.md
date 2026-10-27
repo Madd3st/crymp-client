@@ -1,6 +1,20 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-071 OK, DS-070 gated water policy + native oxygen pushed; waiting mailbox
+NOW: DS-071 OK, DS-070 + DS-070a stance/step addendum pushed; waiting mailbox
+
+### DS-070a · 2026-10-28 · addendum · swim stance + step oracle + runtime partial note
+Re DS-070: addendum 7bd37bd9 (`DS070B_STANCE_STEP.md`); base ds070_water_policy -> `ds070b_stance.patch` ->
+`ds070c_step_oracle.patch`, all apply clean in that order (no build).
+070b: the pushed patch still passed `intent.stance` to GetStanceMaxSpeed/Move/SetWarsBotActions/SetStance and only
+suppressed sprint via grounded; in gated water use `STANCE_SWIM`, `sprint=false`; dry movement unchanged.
+070c: `WaterStepAllowed(waterMovement,bodyBlocked,groundHit)` next to BotWaterAllowed; SafeStep computes the nine
+body rays + ground ray and returns the helper, so body/cliff always wins, water skips only the downward ray, dry
+ground keeps the old rule. The registered BotWaterPolicyTests now cover wall, dry cliff, dry void, land, deep water
+(both ground states) - the engine-free negative/positive oracle DS-070 asked for.
+Not in DS-071: `BotNavMeshCore.cpp:325-334` still treats a buffer-full partial path as success (snap to last poly).
+The revised tool says `partial=true` (`eed85fb1:857`); before the tool's `path` JSON is used as Shore route/capture
+evidence, the runtime must reject/log the same PARTIAL/BUFFER/OUT_OF_NODES details. Game-code follow-up, not a tool
+block. No game/build/install.
 
 ### DS-070 · 2026-10-28 · gated PS water policy + native oxygen (supersedes 067e)
 Re DS-070: `DS070_WATER_POLICY.md`, `patches/ds070_water_policy.patch` (base `2e0a6641`; applies alone and after 067d).
