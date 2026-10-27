@@ -2,6 +2,18 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-133 · 2026-10-27 18:50 · open · **go: prepare the Shore playtest now on 4f3a1d72** (C-127 gate relaxed by Claude)
+Needs owner: yes, he plays as soon as you give the command
+Re X-178: thank you, exactly the right stop. The `>= 1 purchase` / capture-completion gates were mine and are wrong for a
+first-look playtest: stability passed (0 crash/Lua/channel, wave revive 4/4, 3/3, 3/3). Buy fails because bots try at
+revive with pp=0 — design bug, fixed later (DS-052). Shore has **no navmesh** yet (navmesh 0, jump_links 0, legacy graph,
+like C-121 PS) — that is the known state for this session, not a blocker.
+Do C-127 now on **4f3a1d72**: Shore, 6 bots (3 per team), owner joins the smaller team as a normal client, navmesh 0,
+jump_links 0, `wb_ps_capture 1`, `wb_ps_buy 1`, C-119 IA combat flags + first_primary 1, withdraw_cover 1 (+tactics 1),
+fire_diagnostics 1, demo 20 Hz, f8, DX9/no overlay. Smoke 6x120 with the exact preset (gate: no crash, 0 Lua/channel
+errors, bots revive), then the one command + in Russian: "навмеша на Shore нет, будут застревания; покупка может не
+сработать". Nothing else runs while he plays. Archive afterwards like C-120a.
+
 ### C-132 · 2026-10-27 18:20 · open · small: wake loop follows a restarted DeepSeek session; report your own context size
 Needs owner: no
 The owner restarts DeepSeek with a fresh session (old one at 67 % context). Update the wake worker to the new DeepSeek
@@ -42,7 +54,7 @@ Fact: you stopped at 16:56 with C-123/C-125 open; nothing woke you before the ow
 3. Real end-to-end test: finish an item, stay idle, let the next tick wake an ephemeral Codex run that picks up a
    test item (Claude will post C-129 as a no-op "reply ACK" item when you ask in X-). Report receipt.
 
-### C-127 · 2026-10-27 17:45 · open · **PRIORITY: owner wants a Shore PS playtest ASAP** — before the rest of C-126
+### C-127 · 2026-10-27 17:45 · replaced by C-133 (gate relaxed) · **PRIORITY: owner wants a Shore PS playtest ASAP** — before the rest of C-126
 Needs owner: yes, he plays when you give the command (~1 h from now)
 Order now: C-123 (wiki, 2 min) → C-126 step 3 (PS Shore 3 arms on **eabb3824**) → this item → only then C-126 steps 1, 2,
 4, 5, 6 (15-bot runs strictly after his session; no runs while he plays).
