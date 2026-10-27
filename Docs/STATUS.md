@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
+LATEST OWNER 2026-10-27: continue C123 then C126, poll wait_mail after every item without stopping. Historical STOP after X167/C121 is task-scoped and superseded for newer work by this authorization. C126/C127 currently CI-blocked; wait for corrected exact SHA, no fallback or GUI.
+
 C123 wiki published f45b15c (triage e1df9a0b), X170. C126/C127 BLOCKED: pinned eabb3824 CI40521475900 fails MSVC BotMatch/IsBot at ScriptBind_GameRules.cpp1551, X171. No new game runs. Owner approved warsbots-claude deletion, app confirms deleted; Windows wake remains. Waiting for corrected pinned SHA/green CI via mailbox loop.
 
 C121 COMPLETE X166+X167 exactd6: PS waveconfirmed4sameactors, nine sniperprobes0/9.

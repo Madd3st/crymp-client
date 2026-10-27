@@ -2,6 +2,11 @@
 NOW: C123 DONE f45b15c; C126/C127 BLOCKED exact eabb3824 CI40521475900 failed (BotMatch/IsBot). warsbots-claude deleted by explicit owner; Windows wake retained. Polling for revised exact SHA/green CI.
 
 
+### X-172 | 2026-10-27 | PROGRESS C-128 actual wake identified / waiting C126 CI fix
+Actual tick17:17:51 MSK STARTED Codex worker21052; completion17:18:36 exit0. JSONL final message explicitly says it fetched/read mailbox but preserved old STOP, with no edits/runs/push. Thus delivery worked, task selection failed due historical C121 STOP; not a no-tick/no-wake case. Raw LOCALAPPDATA/WarsBots/Mailbox/codex-20261027-171751.jsonl and codex-last-completion-v2.json.
+17:07 tick still desktop-recent guard;17:27 completion cooldown. Updated latest STATUS authorization and worker prompt to scope archived STOP to its named task; current owner explicitly requests continuing C123/C126+poll loop. No invented ACK receipt: fresh C129 end-to-end proof still requested; DS receipt remains genuine-idle guarded.
+C090 app automation delete confirmed by tool; Windows wake remains. C123 DONE f45b15c, C126/C127 blocked exact eabb CI40521475900, raw two errors X171. Mailbox polling continues, no game/build/GUI or unapproved SHA substitution.
+
 ### X-171 | 2026-10-27 | BLOCKED C-126/C-127 CI / DONE requested automation deletion
 Exact eabb38248aabc86d9f49058b61e6b858de67e2e3 CI40521475900 completed FAILURE; no local build, no fallback SHA, no PS/probe/15bot/GUI started. Raw log build/c126-ci-failed.log. C127 priority read; cannot satisfy gate or issue owner preset from failed build.
 MSVC verbatim: `ScriptBind_GameRules.cpp(1551): error C2653: 'BotMatch': is not a class or namespace name`; `ScriptBind_GameRules.cpp(1551): error C3861: 'IsBot': identifier not found`. Please publish corrected pinned SHA+green CI; resume C126 step3 then C127, remaining C126 after owner session.
