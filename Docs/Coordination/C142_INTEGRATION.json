@@ -11,8 +11,9 @@
   "ci_run": 40574773650,
   "ci": "PENDING",
   "review_item": "DS-058",
-  "review": "PENDING",
+  "review": "OK",
   "flags_added": 0,
   "defaults_changed": false,
-  "lua_changed": false
+  "lua_changed": false,
+  "review_commit": "318d0e3cbd019ce933deb49a58544900c6e12135"
 }
