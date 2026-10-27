@@ -1,0 +1,227 @@
+{
+  "source": "70aae712",
+  "tool_sha256": "841f283e9e7f1c7def7e00f7d33dbf684b0ed1c0037e5eb70892aeaa0032dfbb",
+  "source_geometry_sha256": "0cbe74f37e9170b49edc9e6ffae0e6a1194b09188e0f1464a60c323c0729674d",
+  "command": [
+    "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\coordinator-c145\\recast_bake-final.exe",
+    "--obj",
+    "C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c072-ps-export/a943e070/crop/Shore.crop.obj.gz",
+    "--points",
+    "C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c144/Shore.preflight.pts",
+    "--zmin",
+    "99.5",
+    "--water",
+    "99.5",
+    "--cs",
+    "0.1",
+    "--ch",
+    "0.1",
+    "--radius",
+    "0.3",
+    "--height",
+    "1.8",
+    "--climb",
+    "0.5",
+    "--slope",
+    "45",
+    "--tile",
+    "256",
+    "--min-region",
+    "2",
+    "--out-bin",
+    "C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c145/Shore.candidate.navmesh"
+  ],
+  "status": "candidate bake complete, unaccepted",
+  "installed": false,
+  "game_runs": 0,
+  "links": "no automatic links yet; evaluate observed disconnected routes before link work",
+  "exit": 0,
+  "elapsed_seconds": 38.953,
+  "mesh": {
+    "tiles": 2099,
+    "tiles_grid": [
+      46,
+      46
+    ],
+    "polys": 46614,
+    "max_tile_polys": 301,
+    "components": 3803,
+    "area_m2": 2383134,
+    "main_area_m2": 2113751,
+    "two_way_area_m2": 2113751,
+    "offmesh_links": 0,
+    "generated": {
+      "drop": 0,
+      "jump": 0,
+      "strength": 0
+    }
+  },
+  "water": {
+    "z": 99.5,
+    "cell": 2.0,
+    "cells": 189501,
+    "blocked_cells": 148679,
+    "surface_tris": 379002,
+    "area": 4,
+    "area_cost": 4.0
+  },
+  "summary": {
+    "spawns": 124,
+    "spawns_on_mesh": 112,
+    "spawns_in_main": 100,
+    "spawns_two_way": 100,
+    "items": 4,
+    "items_on_mesh": 2,
+    "items_two_way": 2,
+    "items_reachable": 2
+  },
+  "navmesh_sha256": "07b0bf4ef6076b2d385c2bac130b97d458dc9229e5cd2398cc1afc125b573830",
+  "navmesh_bytes": 9762044,
+  "spawn_groups": [
+    {
+      "group": 537,
+      "team": "black",
+      "map_spawn_links": 23,
+      "exported_spawns": 23,
+      "on_mesh": 11,
+      "main": 0,
+      "offmesh": [
+        562,
+        517,
+        524,
+        534,
+        543,
+        545,
+        536,
+        506,
+        539,
+        527,
+        530,
+        525
+      ],
+      "isolated": [
+        {
+          "id": 544,
+          "comp": 3795,
+          "pos": [
+            2121.88,
+            1883.0,
+            99.88
+          ]
+        },
+        {
+          "id": 522,
+          "comp": 3795,
+          "pos": [
+            2122.12,
+            1884.38,
+            100.0
+          ]
+        },
+        {
+          "id": 510,
+          "comp": 3795,
+          "pos": [
+            2111.88,
+            1882.5,
+            103.25
+          ]
+        },
+        {
+          "id": 519,
+          "comp": 3795,
+          "pos": [
+            2105.5,
+            1885.88,
+            103.25
+          ]
+        },
+        {
+          "id": 532,
+          "comp": 3795,
+          "pos": [
+            2110.5,
+            1882.5,
+            103.25
+          ]
+        },
+        {
+          "id": 507,
+          "comp": 3795,
+          "pos": [
+            2106.0,
+            1882.5,
+            103.25
+          ]
+        },
+        {
+          "id": 535,
+          "comp": 3795,
+          "pos": [
+            2109.88,
+            1885.88,
+            103.25
+          ]
+        },
+        {
+          "id": 526,
+          "comp": 3795,
+          "pos": [
+            2106.88,
+            1885.88,
+            103.25
+          ]
+        },
+        {
+          "id": 552,
+          "comp": 3795,
+          "pos": [
+            2108.38,
+            1885.88,
+            103.25
+          ]
+        },
+        {
+          "id": 513,
+          "comp": 3795,
+          "pos": [
+            2107.62,
+            1882.5,
+            103.25
+          ]
+        },
+        {
+          "id": 563,
+          "comp": 3795,
+          "pos": [
+            2109.0,
+            1882.5,
+            103.25
+          ]
+        }
+      ]
+    },
+    {
+      "group": 120,
+      "team": "tan",
+      "map_spawn_links": 20,
+      "exported_spawns": 20,
+      "on_mesh": 20,
+      "main": 20,
+      "offmesh": [],
+      "isolated": []
+    },
+    {
+      "neutral_or_other_offmesh": []
+    }
+  ],
+  "runtime_cost_oracle": {
+    "baseline": "water route minY5 corners1",
+    "patched": "land route minY0 corners3",
+    "tests": "actual NavMeshCore, both compiled; initial harness boundary threshold corrected from <0 to <0.5, not runtime failure"
+  },
+  "Steelmill_runtime_tests": "PASS patched NavMeshCore actual mesh9333polys/924parts",
+  "owner_free_state": "owner confirmed not playing; verified abandoned C127server22508 stopped",
+  "review": "DS068 pending exact70aae712",
+  "game_runtime": "NOT RUN; water traversal not accepted"
+}

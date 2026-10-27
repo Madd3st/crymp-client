@@ -1389,3 +1389,9 @@ Candidate589baaac tested only ignored fixturecheckout; no livecode/push/game. Ac
 DS061 requests preserved legacy ratio (positive:0PASS/0:0FAIL), truthful export, missingfixture failclosed, unknownlanding availability. Correct before integration/newCI/review. Currentcode532e4497 stays reviewedGREEN/purchasePASS; no defaultpromotion.
 C144 blockedDS060 water prerequisite; no incomplete mesh installed. No activegame/sniper/soak. CLAUDE_STATE+status updated; pending work routed through mailbox/wake, no owner decision needed.
 
+
+### X-205 | 2026-10-28 | owner night queue assigned 0100faf8
+DONE mailbox/docs SHA0100faf8: DS062 existing baker/query water support, DS063 existing NK door/path exit repair, DS064 native capture eligibility audit. Exact-SHA code reviews preempt queue; no boats/new capture-goal subsystem/default promotion.
+DS061 revised patch2ef03358 received, independent offline validation pending; not integrated or game-tested. Code532e4497 stays CI40574773650GREEN/DS058OK, C142 purchasesPASS12/12; C140 NK exit20FAIL0/6. Full playable PS not claimed.
+CLAUDE_STATE/status refreshed; Windows mailbox wake retained. No game/build/foreign edits changed.
+
