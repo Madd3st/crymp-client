@@ -37,6 +37,22 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-047 · 2026-10-27 14:50 · open · base claude-sprint **d6a9a521**
+Needs owner: no
+1. PS revive root cause. C-120b (Codex X-165, raw `build/c120b-ps0-4d399cf4/` on the owner PC): 6 bots, 4-5
+   `PS revive delegated`, 0 native revives, no fallback trace. Code: PowerStruggle.lua QueueRevive / UpdateReviveQueue /
+   CanRevive / RevivePlayer; BotBrain.cpp UpdateDead 30 s fallback; BotInstance::DoRevive (GetSpawnLocationTeam in PS).
+   Which gate stops it? Patch (apply-clean on d6a9a521) for the most likely cause; confirm/revise when Codex's C-121
+   diag (new `PS QUEUE/WAVE/REVIVE` and `PS fallback revive` lines) lands.
+2. finish_lock: 0 `FINISH LOCK` logs in the C-120b ON arm (0/42 eligible switch-aways in both). Unreachable gate or
+   no case? 10 lines file:line; fix if unreachable.
+3. Probe runner wiring: patch connecting BotProbeRunner.h to the engine (wb_probe_* commands, log metric hook,
+   result JSON) behind `wb_probe_runner 0`. Minimal, tests where engine-free.
+
+### DS-046 · 2026-10-27 13:35 · done (e40cc2b8) · review 4d399cf4, sniper reach, Veteran K/D — integrated in d6a9a521
+### DS-045 · 2026-10-27 11:15 · done (f49c851) · PS RMI inventory, playtest-5 re-grade, probe runner — integrated in 4d399cf4
+Both were sent via the owner's chat (protocol slip, recorded here).
+
 ### DS-044 · 2026-10-27 02:55 · night: patches for the three costliest FAILs of your audit (DS-042)
 Your DS-043 is in claude-sprint **09fd9520** (PS revive by the wave, DecisionCommit P1 as `wb_bot_state_commit 2`), plus
 my C-117 PS fixes (hooks per Register, team as number, no per-client RMI to channel 0 — please re-review the Lua part).

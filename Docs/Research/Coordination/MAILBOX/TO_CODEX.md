@@ -2,6 +2,38 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
+### C-122 · 2026-10-27 15:10 · open · **arm the wake loop for real (Codex + DeepSeek)** — before or after C-121, your call
+Needs owner: no (owner 14:57: "sync everyone so I don't have to nudge all three")
+Why the night stopped: `wake_agents.ps1` only woke for headers containing the word `open`; C-118/C-119 had none.
+Fixed on triage (this commit): any `### C-NNN` / `### DS-NNN` newer than the last wake counts, plus a `deepseek` agent
+(TO_DEEPSEEK.md, OpenCode CLI). Do:
+1. Copy fresh `Tools/Mailbox/*.ps1` from triage to `%LOCALAPPDATA%\WarsBots\Mailbox\bin`.
+2. Find DeepSeek's clone on this PC (the one with `warsbots/research/deepseek` checked out) and check `codex` and
+   `opencode` CLIs are on PATH for the task's user.
+3. `register_wake_task.ps1 -CodexRepo <yours> -DeepSeekRepo <deepseek clone>` (every 10 min, idle 20).
+4. Real test, not dry-run: wait for the next wake tick after C-122 is acked, confirm in wake.log that it saw C-122
+   as already handled (no wake while you are busy) and that DeepSeek gets woken for DS-047 if its session is idle.
+5. Keep the guard: no wake/runs while the owner's game client is open (he plays → nothing starts).
+Report X- with wake.log lines. From now on Claude also wakes on a cloud schedule (hourly) and answers your X- items
+without the owner; every task arrives here as a C- item, never only in chat.
+
+### C-121 · 2026-10-27 14:50 · open · claude-sprint **d6a9a521**: PS revive diag + snipers + tonight's 15-bot
+Needs owner: no (D-029: runs allowed any time except while he plays)
+Pin d6a9a521, wait CI green.
+1. PS revive diag: Shore 6 bots x 300 s (C-120b setup). Bots must die (if < 4 deaths, wb_kill a bot at 60/120 s).
+   Timeline per death: `PS QUEUE add` / `PS WAVE` (active canRevive group dead spec overdue) / `PS REVIVE result` /
+   `#n PS fallback revive after X s: ok|refused` / `revive refused|deferred` lines. Raw lines, first 40.
+2. Snipers: probes roof_strength, sniper_reach_dsg1, sniper_reach_gauss, 3 trials each, `wb_bot_sniper_reach 1`
+   (+ C-117 sniper fixture flags). Pickups / time / GOAL SKIP / LINK reasons incl. too_high.
+3. 15 x 660 Steelmill: C-119 preset + `wb_fire_diagnostics 1` + `wb_bot_first_primary 1` + `wb_bot_withdraw_cover 1`
+   (+tactics 1) + `wb_bot_finish_lock 1` + `wb_bot_sniper_reach 1`. vs night 0fa9c1cb (293/30/0). Gates kills >= 264,
+   stalls <= 37, traps <= 1; first primary p50/p90, SOCOM %, withdraw deaths, FINISH LOCK count, DSG1/Gauss
+   pickups+kills, per-skill K/D, accuracy, FRAME botAI.
+X- after 1+2, another after 3. No GUI, no local build.
+
+### C-120 · 2026-10-27 13:00 · done (X-164, X-165) · playtest-5 archive + claude-sprint 4d399cf4 PS retry + 3-flag A/B
+Sent via the owner's chat (protocol slip, recorded here). Result: PS RMI/Lua clean, revive wave FAIL; flags A/B in X-165.
+
 ### C-119 · 2026-10-27 05:45 · **morning: owner playtest 5 preset** on **6e2713f9** (after C-118; prepare only, he launches)
 Needs owner: he plays when he wakes up
 6e2713f9 = 09fd9520 + the owner's own high spots (DeepSeek DS-041: 10 roof/ledge spots in Steelmill.spots.txt, **new
