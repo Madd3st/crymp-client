@@ -1,0 +1,943 @@
+{
+  "source": "4d399cf4e50c349731f8a0f17ddff3e5b863b674",
+  "ci": 40488976371,
+  "ci_green": true,
+  "unit_suites": 27,
+  "rows": [
+    {
+      "fire_accuracy_per_skill": {
+        "beginner": {
+          "shots": 144,
+          "hits": 23,
+          "accuracy_pct": 15.97
+        },
+        "normal": {
+          "shots": 484,
+          "hits": 142,
+          "accuracy_pct": 29.34
+        },
+        "veteran": {
+          "shots": 227,
+          "hits": 49,
+          "accuracy_pct": 21.59
+        },
+        "elite": {
+          "shots": 409,
+          "hits": 118,
+          "accuracy_pct": 28.85
+        }
+      },
+      "fire_accuracy_pct": 26.27,
+      "flags": 0,
+      "source": "4d399cf4e50c349731f8a0f17ddff3e5b863b674",
+      "completed": true,
+      "kills": 35,
+      "stalls": 11,
+      "traps": 0,
+      "accuracy_hit_per_shot_pct": 26.34,
+      "hits": 333,
+      "shots": 1264,
+      "first_primary_p50": 4.676,
+      "first_primary_p90": 13.463,
+      "primary_observed": 37,
+      "primary_lives": 46,
+      "socom_armed_time_pct": 23.28,
+      "socom_shot_pct": 14.72,
+      "withdraw_starts": 19,
+      "withdraw_deaths_le2_5": 13,
+      "withdraw_deaths_le2_5_pct": 68.42,
+      "withdraw_abort": 0,
+      "low_hp_TARGET_episodes": 40,
+      "low_hp_TARGET_switch_aways": 0,
+      "low_hp_TARGET_switch_away_pct": 0.0,
+      "finish_lock_logs": 0,
+      "per_skill": {
+        "beginner": {
+          "kills": 2,
+          "deaths": 13,
+          "shots": 144,
+          "hits": 23,
+          "socom_shots": 22,
+          "known_shot_weapon": 144,
+          "armed_seconds": 537.5330000000056,
+          "socom_seconds": 116.53699999999995,
+          "alive_seconds": 537.5330000000056,
+          "high_ground": 0,
+          "glance": 0,
+          "accuracy_hit_events_per_shot_pct": 15.97,
+          "hit_distance_p50": 12.754,
+          "hit_distance_p90": 19.036,
+          "hit_distance_samples": 23,
+          "first_shot_visible_proxy_p50": 1.011,
+          "first_shot_visible_proxy_samples": 20,
+          "time_first_primary_p50": 3.389,
+          "time_first_primary_p90": 8.962,
+          "primary_observed_lives": 11,
+          "eligible_lives": 16,
+          "socom_shot_pct": 15.28,
+          "socom_armed_time_pct": 21.68,
+          "stalls": 7,
+          "traps": 0,
+          "withdraw_starts": 0,
+          "withdraw_deaths_le2_5": 0,
+          "withdraw_deaths_le2_5_pct": null,
+          "snaps_gt0_5": null,
+          "own_hp_weapon_switch_away_pct": 0.0,
+          "own_hp_weapon_switch_away_episodes": 0,
+          "own_hp_primary_episodes": 8,
+          "low_hp_TARGET_switch_away_pct": 0.0
+        },
+        "normal": {
+          "kills": 13,
+          "deaths": 16,
+          "shots": 484,
+          "hits": 143,
+          "socom_shots": 70,
+          "known_shot_weapon": 484,
+          "armed_seconds": 519.0720000000085,
+          "socom_seconds": 158.031,
+          "alive_seconds": 519.0720000000085,
+          "high_ground": 0,
+          "glance": 37,
+          "accuracy_hit_events_per_shot_pct": 29.55,
+          "hit_distance_p50": 11.5,
+          "hit_distance_p90": 21.777,
+          "hit_distance_samples": 143,
+          "first_shot_visible_proxy_p50": 0.599,
+          "first_shot_visible_proxy_samples": 49,
+          "time_first_primary_p50": 4.561,
+          "time_first_primary_p90": 12.405,
+          "primary_observed_lives": 17,
+          "eligible_lives": 20,
+          "socom_shot_pct": 14.46,
+          "socom_armed_time_pct": 30.44,
+          "stalls": 0,
+          "traps": 0,
+          "withdraw_starts": 12,
+          "withdraw_deaths_le2_5": 10,
+          "withdraw_deaths_le2_5_pct": 83.33,
+          "snaps_gt0_5": null,
+          "own_hp_weapon_switch_away_pct": 0.0,
+          "own_hp_weapon_switch_away_episodes": 0,
+          "own_hp_primary_episodes": 12,
+          "low_hp_TARGET_switch_away_pct": 0.0
+        },
+        "veteran": {
+          "kills": 4,
+          "deaths": 2,
+          "shots": 227,
+          "hits": 49,
+          "socom_shots": 12,
+          "known_shot_weapon": 227,
+          "armed_seconds": 289.38300000000004,
+          "socom_seconds": 29.89500000000001,
+          "alive_seconds": 289.38300000000004,
+          "high_ground": 2,
+          "glance": 21,
+          "accuracy_hit_events_per_shot_pct": 21.59,
+          "hit_distance_p50": 13.587,
+          "hit_distance_p90": 24.997,
+          "hit_distance_samples": 49,
+          "first_shot_visible_proxy_p50": 0.39,
+          "first_shot_visible_proxy_samples": 27,
+          "time_first_primary_p50": 10.713,
+          "time_first_primary_p90": 13.463,
+          "primary_observed_lives": 4,
+          "eligible_lives": 4,
+          "socom_shot_pct": 5.29,
+          "socom_armed_time_pct": 10.33,
+          "stalls": 2,
+          "traps": 0,
+          "withdraw_starts": 1,
+          "withdraw_deaths_le2_5": 1,
+          "withdraw_deaths_le2_5_pct": 100.0,
+          "snaps_gt0_5": null,
+          "own_hp_weapon_switch_away_pct": 0.0,
+          "own_hp_weapon_switch_away_episodes": 0,
+          "own_hp_primary_episodes": 1,
+          "low_hp_TARGET_switch_away_pct": 0.0
+        },
+        "elite": {
+          "kills": 16,
+          "deaths": 4,
+          "shots": 409,
+          "hits": 118,
+          "socom_shots": 82,
+          "known_shot_weapon": 409,
+          "armed_seconds": 279.44200000000006,
+          "socom_seconds": 73.97700000000002,
+          "alive_seconds": 279.44200000000006,
+          "high_ground": 3,
+          "glance": 42,
+          "accuracy_hit_events_per_shot_pct": 28.85,
+          "hit_distance_p50": 14.001,
+          "hit_distance_p90": 25.517,
+          "hit_distance_samples": 118,
+          "first_shot_visible_proxy_p50": 0.159,
+          "first_shot_visible_proxy_samples": 52,
+          "time_first_primary_p50": 8.664,
+          "time_first_primary_p90": 27.557,
+          "primary_observed_lives": 5,
+          "eligible_lives": 6,
+          "socom_shot_pct": 20.05,
+          "socom_armed_time_pct": 26.47,
+          "stalls": 2,
+          "traps": 0,
+          "withdraw_starts": 6,
+          "withdraw_deaths_le2_5": 2,
+          "withdraw_deaths_le2_5_pct": 33.33,
+          "snaps_gt0_5": null,
+          "own_hp_weapon_switch_away_pct": 25.0,
+          "own_hp_weapon_switch_away_episodes": 1,
+          "own_hp_primary_episodes": 4,
+          "low_hp_TARGET_switch_away_pct": 0.0
+        }
+      },
+      "target_per_skill": {
+        "beginner": {
+          "low_hp_target_episodes": 4,
+          "switch_aways": 0,
+          "switch_away_pct": 0.0,
+          "drop_target0": 0,
+          "finish_lock_logs": 0,
+          "withdraw_abort": 0
+        },
+        "normal": {
+          "low_hp_target_episodes": 13,
+          "switch_aways": 0,
+          "switch_away_pct": 0.0,
+          "drop_target0": 0,
+          "finish_lock_logs": 0,
+          "withdraw_abort": 0
+        },
+        "veteran": {
+          "low_hp_target_episodes": 7,
+          "switch_aways": 0,
+          "switch_away_pct": 0.0,
+          "drop_target0": 0,
+          "finish_lock_logs": 0,
+          "withdraw_abort": 0
+        },
+        "elite": {
+          "low_hp_target_episodes": 16,
+          "switch_aways": 0,
+          "switch_away_pct": 0.0,
+          "drop_target0": 0,
+          "finish_lock_logs": 0,
+          "withdraw_abort": 0
+        }
+      },
+      "fire_shot_diagnostic_lines": 1264,
+      "fire_hit_beforeLua_lines": 332,
+      "data_manifest_errors": 0,
+      "source_sha": "4d399cf4e50c349731f8a0f17ddff3e5b863b674",
+      "memory_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+      "roster": [
+        {
+          "number": 1,
+          "style": "auto",
+          "skill": "beginner"
+        },
+        {
+          "number": 2,
+          "style": "auto",
+          "skill": "normal"
+        },
+        {
+          "number": 3,
+          "style": "auto",
+          "skill": "veteran"
+        },
+        {
+          "number": 4,
+          "style": "auto",
+          "skill": "elite"
+        },
+        {
+          "number": 5,
+          "style": "auto",
+          "skill": "beginner"
+        },
+        {
+          "number": 6,
+          "style": "auto",
+          "skill": "normal"
+        }
+      ],
+      "effective": {
+        "wb_bot_first_primary": 0,
+        "wb_bot_withdraw_cover": 0,
+        "wb_bot_finish_lock": 0,
+        "wb_fire_diagnostics": 1,
+        "wb_bot_state_commit": 1,
+        "wb_bot_tactics": 1
+      },
+      "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c120b-flags0-4d399cf4"
+    },
+    {
+      "fire_accuracy_per_skill": {
+        "beginner": {
+          "shots": 196,
+          "hits": 32,
+          "accuracy_pct": 16.33
+        },
+        "normal": {
+          "shots": 521,
+          "hits": 153,
+          "accuracy_pct": 29.37
+        },
+        "veteran": {
+          "shots": 313,
+          "hits": 86,
+          "accuracy_pct": 27.48
+        },
+        "elite": {
+          "shots": 434,
+          "hits": 105,
+          "accuracy_pct": 24.19
+        }
+      },
+      "fire_accuracy_pct": 25.68,
+      "flags": 1,
+      "source": "4d399cf4e50c349731f8a0f17ddff3e5b863b674",
+      "completed": true,
+      "kills": 38,
+      "stalls": 10,
+      "traps": 0,
+      "accuracy_hit_per_shot_pct": 26.47,
+      "hits": 387,
+      "shots": 1462,
+      "first_primary_p50": 3.893,
+      "first_primary_p90": 9.391,
+      "primary_observed": 47,
+      "primary_lives": 49,
+      "socom_armed_time_pct": 20.47,
+      "socom_shot_pct": 2.53,
+      "withdraw_starts": 12,
+      "withdraw_deaths_le2_5": 6,
+      "withdraw_deaths_le2_5_pct": 50.0,
+      "withdraw_abort": 12,
+      "low_hp_TARGET_episodes": 42,
+      "low_hp_TARGET_switch_aways": 0,
+      "low_hp_TARGET_switch_away_pct": 0.0,
+      "finish_lock_logs": 0,
+      "per_skill": {
+        "beginner": {
+          "kills": 3,
+          "deaths": 14,
+          "shots": 196,
+          "hits": 35,
+          "socom_shots": 0,
+          "known_shot_weapon": 196,
+          "armed_seconds": 529.3130000000006,
+          "socom_seconds": 102.594,
+          "alive_seconds": 529.3130000000006,
+          "high_ground": 0,
+          "glance": 0,
+          "accuracy_hit_events_per_shot_pct": 17.86,
+          "hit_distance_p50": 12.54,
+          "hit_distance_p90": 29.217,
+          "hit_distance_samples": 35,
+          "first_shot_visible_proxy_p50": 1.001,
+          "first_shot_visible_proxy_samples": 22,
+          "time_first_primary_p50": 3.76,
+          "time_first_primary_p90": 7.635,
+          "primary_observed_lives": 16,
+          "eligible_lives": 17,
+          "socom_shot_pct": 0.0,
+          "socom_armed_time_pct": 19.38,
+          "stalls": 6,
+          "traps": 0,
+          "withdraw_starts": 0,
+          "withdraw_deaths_le2_5": 0,
+          "withdraw_deaths_le2_5_pct": null,
+          "snaps_gt0_5": null,
+          "own_hp_weapon_switch_away_pct": 0.0,
+          "own_hp_weapon_switch_away_episodes": 0,
+          "own_hp_primary_episodes": 11,
+          "low_hp_TARGET_switch_away_pct": 0.0
+        },
+        "normal": {
+          "kills": 15,
+          "deaths": 13,
+          "shots": 521,
+          "hits": 160,
+          "socom_shots": 14,
+          "known_shot_weapon": 521,
+          "armed_seconds": 533.7240000000022,
+          "socom_seconds": 127.565,
+          "alive_seconds": 533.7240000000022,
+          "high_ground": 0,
+          "glance": 43,
+          "accuracy_hit_events_per_shot_pct": 30.71,
+          "hit_distance_p50": 12.019,
+          "hit_distance_p90": 20.317,
+          "hit_distance_samples": 160,
+          "first_shot_visible_proxy_p50": 0.625,
+          "first_shot_visible_proxy_samples": 56,
+          "time_first_primary_p50": 3.851,
+          "time_first_primary_p90": 14.784,
+          "primary_observed_lives": 16,
+          "eligible_lives": 17,
+          "socom_shot_pct": 2.69,
+          "socom_armed_time_pct": 23.9,
+          "stalls": 1,
+          "traps": 0,
+          "withdraw_starts": 3,
+          "withdraw_deaths_le2_5": 2,
+          "withdraw_deaths_le2_5_pct": 66.67,
+          "snaps_gt0_5": null,
+          "own_hp_weapon_switch_away_pct": 0.0,
+          "own_hp_weapon_switch_away_episodes": 0,
+          "own_hp_primary_episodes": 9,
+          "low_hp_TARGET_switch_away_pct": 0.0
+        },
+        "veteran": {
+          "kills": 5,
+          "deaths": 5,
+          "shots": 311,
+          "hits": 86,
+          "socom_shots": 1,
+          "known_shot_weapon": 311,
+          "armed_seconds": 274.505,
+          "socom_seconds": 50.97800000000001,
+          "alive_seconds": 274.505,
+          "high_ground": 1,
+          "glance": 30,
+          "accuracy_hit_events_per_shot_pct": 27.65,
+          "hit_distance_p50": 16.371,
+          "hit_distance_p90": 22.834,
+          "hit_distance_samples": 86,
+          "first_shot_visible_proxy_p50": 0.39,
+          "first_shot_visible_proxy_samples": 32,
+          "time_first_primary_p50": 4.426,
+          "time_first_primary_p90": 5.939,
+          "primary_observed_lives": 7,
+          "eligible_lives": 7,
+          "socom_shot_pct": 0.32,
+          "socom_armed_time_pct": 18.57,
+          "stalls": 1,
+          "traps": 0,
+          "withdraw_starts": 2,
+          "withdraw_deaths_le2_5": 1,
+          "withdraw_deaths_le2_5_pct": 50.0,
+          "snaps_gt0_5": null,
+          "own_hp_weapon_switch_away_pct": 0.0,
+          "own_hp_weapon_switch_away_episodes": 0,
+          "own_hp_primary_episodes": 4,
+          "low_hp_TARGET_switch_away_pct": 0.0
+        },
+        "elite": {
+          "kills": 15,
+          "deaths": 6,
+          "shots": 434,
+          "hits": 106,
+          "socom_shots": 22,
+          "known_shot_weapon": 434,
+          "armed_seconds": 269.24000000000007,
+          "socom_seconds": 47.72099999999997,
+          "alive_seconds": 269.24000000000007,
+          "high_ground": 5,
+          "glance": 37,
+          "accuracy_hit_events_per_shot_pct": 24.42,
+          "hit_distance_p50": 12.65,
+          "hit_distance_p90": 26.56,
+          "hit_distance_samples": 106,
+          "first_shot_visible_proxy_p50": 0.162,
+          "first_shot_visible_proxy_samples": 41,
+          "time_first_primary_p50": 6.564,
+          "time_first_primary_p90": 9.387,
+          "primary_observed_lives": 8,
+          "eligible_lives": 8,
+          "socom_shot_pct": 5.07,
+          "socom_armed_time_pct": 17.72,
+          "stalls": 2,
+          "traps": 0,
+          "withdraw_starts": 7,
+          "withdraw_deaths_le2_5": 3,
+          "withdraw_deaths_le2_5_pct": 42.86,
+          "snaps_gt0_5": null,
+          "own_hp_weapon_switch_away_pct": 0.0,
+          "own_hp_weapon_switch_away_episodes": 0,
+          "own_hp_primary_episodes": 6,
+          "low_hp_TARGET_switch_away_pct": 0.0
+        }
+      },
+      "target_per_skill": {
+        "beginner": {
+          "low_hp_target_episodes": 6,
+          "switch_aways": 0,
+          "switch_away_pct": 0.0,
+          "drop_target0": 0,
+          "finish_lock_logs": 0,
+          "withdraw_abort": 0
+        },
+        "normal": {
+          "low_hp_target_episodes": 17,
+          "switch_aways": 0,
+          "switch_away_pct": 0.0,
+          "drop_target0": 0,
+          "finish_lock_logs": 0,
+          "withdraw_abort": 5
+        },
+        "veteran": {
+          "low_hp_target_episodes": 9,
+          "switch_aways": 0,
+          "switch_away_pct": 0.0,
+          "drop_target0": 0,
+          "finish_lock_logs": 0,
+          "withdraw_abort": 4
+        },
+        "elite": {
+          "low_hp_target_episodes": 10,
+          "switch_aways": 0,
+          "switch_away_pct": 0.0,
+          "drop_target0": 0,
+          "finish_lock_logs": 0,
+          "withdraw_abort": 3
+        }
+      },
+      "fire_shot_diagnostic_lines": 1464,
+      "fire_hit_beforeLua_lines": 376,
+      "data_manifest_errors": 0,
+      "source_sha": "4d399cf4e50c349731f8a0f17ddff3e5b863b674",
+      "memory_sha256": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+      "roster": [
+        {
+          "number": 1,
+          "style": "auto",
+          "skill": "beginner"
+        },
+        {
+          "number": 2,
+          "style": "auto",
+          "skill": "normal"
+        },
+        {
+          "number": 3,
+          "style": "auto",
+          "skill": "veteran"
+        },
+        {
+          "number": 4,
+          "style": "auto",
+          "skill": "elite"
+        },
+        {
+          "number": 5,
+          "style": "auto",
+          "skill": "beginner"
+        },
+        {
+          "number": 6,
+          "style": "auto",
+          "skill": "normal"
+        }
+      ],
+      "effective": {
+        "wb_bot_first_primary": 1,
+        "wb_bot_withdraw_cover": 1,
+        "wb_bot_finish_lock": 1,
+        "wb_fire_diagnostics": 1,
+        "wb_bot_state_commit": 1,
+        "wb_bot_tactics": 1
+      },
+      "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c120b-flags1-4d399cf4"
+    }
+  ],
+  "changed_flags": {
+    "wb_bot_first_primary": [
+      0,
+      1
+    ],
+    "wb_bot_withdraw_cover": [
+      0,
+      1
+    ],
+    "wb_bot_finish_lock": [
+      0,
+      1
+    ]
+  },
+  "ps": {
+    "rows": [
+      {
+        "map": "Shore",
+        "source": "4d399cf4e50c349731f8a0f17ddff3e5b863b674",
+        "completed240": true,
+        "frames": 4867,
+        "demo_sha256": "49ddfb9e4d35e979b07b8cbc5c0d69a6735f2986ecef296072c1e7d7fe1b6471",
+        "initial_registered": 6,
+        "crash": false,
+        "rmi_channel0": 0,
+        "lua_startup_errors": [],
+        "error_counts": {},
+        "first_spawns": [
+          {
+            "slot": 1,
+            "actor": 65486,
+            "team": 1,
+            "spawnGroup": 120,
+            "position": [
+              1965.939,
+              1536.152,
+              100.928
+            ],
+            "distance_xy_own_base": 323.18
+          },
+          {
+            "slot": 2,
+            "actor": 65481,
+            "team": 2,
+            "spawnGroup": 537,
+            "position": [
+              1844.291,
+              1235.465,
+              111.545
+            ],
+            "distance_xy_own_base": 700.87
+          },
+          {
+            "slot": 3,
+            "actor": 65476,
+            "team": 1,
+            "spawnGroup": 120,
+            "position": [
+              1841.316,
+              1245.005,
+              111.545
+            ],
+            "distance_xy_own_base": 6.58
+          },
+          {
+            "slot": 4,
+            "actor": 65471,
+            "team": 2,
+            "spawnGroup": 537,
+            "position": [
+              2111.25,
+              1885.875,
+              103.45
+            ],
+            "distance_xy_own_base": 2.51
+          },
+          {
+            "slot": 5,
+            "actor": 65466,
+            "team": 1,
+            "spawnGroup": 120,
+            "position": [
+              2122.125,
+              1884.375,
+              100.2
+            ],
+            "distance_xy_own_base": 704.79
+          },
+          {
+            "slot": 6,
+            "actor": 65461,
+            "team": 2,
+            "spawnGroup": 537,
+            "position": [
+              1963.064,
+              1313.429,
+              118.495
+            ],
+            "distance_xy_own_base": 589.3
+          },
+          {
+            "slot": 6,
+            "actor": 131019,
+            "team": 2,
+            "spawnGroup": 537,
+            "position": [
+              1967.31,
+              1533.998,
+              100.928
+            ],
+            "distance_xy_own_base": 377.98
+          },
+          {
+            "slot": 5,
+            "actor": 131013,
+            "team": 1,
+            "spawnGroup": 120,
+            "position": [
+              1844.291,
+              1235.465,
+              111.545
+            ],
+            "distance_xy_own_base": 5.48
+          },
+          {
+            "slot": 4,
+            "actor": 131008,
+            "team": 2,
+            "spawnGroup": 537,
+            "position": [
+              1841.316,
+              1245.005,
+              111.545
+            ],
+            "distance_xy_own_base": 693.19
+          },
+          {
+            "slot": 3,
+            "actor": 131003,
+            "team": 1,
+            "spawnGroup": 120,
+            "position": [
+              2111.25,
+              1885.875,
+              103.45
+            ],
+            "distance_xy_own_base": 701.89
+          },
+          {
+            "slot": 2,
+            "actor": 130998,
+            "team": 2,
+            "spawnGroup": 537,
+            "position": [
+              2122.125,
+              1884.375,
+              100.2
+            ],
+            "distance_xy_own_base": 12.83
+          },
+          {
+            "slot": 1,
+            "actor": 130993,
+            "team": 1,
+            "spawnGroup": 120,
+            "position": [
+              1963.064,
+              1313.429,
+              118.495
+            ],
+            "distance_xy_own_base": 144.2
+          }
+        ],
+        "delegated_lines": 4,
+        "respawning_lines": 0,
+        "revive_requested_lines": 0,
+        "native_revive_events": 0,
+        "same_actor_death_revive_pairs": [],
+        "kills": 4,
+        "self_kills": 4,
+        "pp_changes": null,
+        "pp_note": "No PP observer/values in rules_info/demo schema; do not call absence zero.",
+        "wave_works_confirmed": false
+      },
+      {
+        "map": "Plantation",
+        "source": "4d399cf4e50c349731f8a0f17ddff3e5b863b674",
+        "completed240": true,
+        "frames": 4851,
+        "demo_sha256": "5c25726b76a079e26dc791302bd7db5780ef3684fd5258e123b603ad9ebb1e8a",
+        "initial_registered": 6,
+        "crash": false,
+        "rmi_channel0": 0,
+        "lua_startup_errors": [],
+        "error_counts": {},
+        "first_spawns": [
+          {
+            "slot": 1,
+            "actor": 65518,
+            "team": 1,
+            "spawnGroup": 273,
+            "position": [
+              849.375,
+              1319.75,
+              257.7
+            ]
+          },
+          {
+            "slot": 2,
+            "actor": 65513,
+            "team": 2,
+            "spawnGroup": 163,
+            "position": [
+              849.0,
+              1306.25,
+              257.7
+            ]
+          },
+          {
+            "slot": 3,
+            "actor": 65508,
+            "team": 1,
+            "spawnGroup": 273,
+            "position": [
+              1055.939,
+              1173.054,
+              246.12
+            ]
+          },
+          {
+            "slot": 4,
+            "actor": 65503,
+            "team": 2,
+            "spawnGroup": 163,
+            "position": [
+              1043.23,
+              1399.53,
+              248.22
+            ]
+          },
+          {
+            "slot": 5,
+            "actor": 65498,
+            "team": 1,
+            "spawnGroup": 273,
+            "position": [
+              1236.982,
+              1326.849,
+              238.545
+            ]
+          },
+          {
+            "slot": 6,
+            "actor": 65493,
+            "team": 2,
+            "spawnGroup": 163,
+            "position": [
+              1233.641,
+              1337.79,
+              241.764
+            ]
+          },
+          {
+            "slot": 6,
+            "actor": 131060,
+            "team": 2,
+            "spawnGroup": 163,
+            "position": [
+              1043.976,
+              1400.309,
+              248.19
+            ]
+          },
+          {
+            "slot": 5,
+            "actor": 131049,
+            "team": 1,
+            "spawnGroup": 273,
+            "position": [
+              1236.982,
+              1326.849,
+              238.545
+            ]
+          },
+          {
+            "slot": 4,
+            "actor": 131044,
+            "team": 2,
+            "spawnGroup": 163,
+            "position": [
+              1233.641,
+              1337.79,
+              241.764
+            ]
+          },
+          {
+            "slot": 3,
+            "actor": 131039,
+            "team": 1,
+            "spawnGroup": 273,
+            "position": [
+              851.25,
+              1313.5,
+              254.7
+            ]
+          },
+          {
+            "slot": 2,
+            "actor": 131034,
+            "team": 2,
+            "spawnGroup": 163,
+            "position": [
+              847.5,
+              1324.625,
+              254.7
+            ]
+          },
+          {
+            "slot": 1,
+            "actor": 131029,
+            "team": 1,
+            "spawnGroup": 273,
+            "position": [
+              839.375,
+              1308.5,
+              254.7
+            ]
+          }
+        ],
+        "delegated_lines": 5,
+        "respawning_lines": 0,
+        "revive_requested_lines": 0,
+        "native_revive_events": 0,
+        "same_actor_death_revive_pairs": [],
+        "kills": 5,
+        "self_kills": 4,
+        "pp_changes": null,
+        "pp_note": "No PP observer/values in rules_info/demo schema; do not call absence zero.",
+        "wave_works_confirmed": false
+      }
+    ],
+    "gate": "FAIL revive wave not demonstrated",
+    "stability_gate_pass": true,
+    "revive_note": "Delegated log is intent only; native demo revive0 plus no RESPawning/fallback logs cannot establish working PS wave. Match-start actor recreation is not counted as wave revive."
+  },
+  "probe": {
+    "source": "4d399cf4e50c349731f8a0f17ddff3e5b863b674",
+    "status": "NOT WIRED",
+    "engine_grep": "4d399cf4:Code/CryGame/Bots/BotProbeRunner.h:321:    out.push_back(\"wb_probe_run \" + s.id + \" \" + NumberText(s.duration));\n",
+    "grep_exit": 0,
+    "unit_log": "build/c120b-unit-logs/BotProbeRunner-run.log",
+    "unit_pass": true,
+    "reason": "Header engine-free utility tested, but no engine include/console command registered. Existing external PowerShell probes do not exercise BotProbeRunner; no substitute claimed."
+  },
+  "memory_restored": [
+    {
+      "sha256": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+      "name": "Multiplayer_IA_Steelmill.mem"
+    },
+    {
+      "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+      "name": "Multiplayer_IA_Steelmill.nav.json"
+    },
+    {
+      "sha256": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9",
+      "name": "Multiplayer_PS_Plantation.mem"
+    },
+    {
+      "sha256": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39",
+      "name": "Multiplayer_PS_Shore.mem"
+    }
+  ],
+  "definitions": {
+    "scope": "Full controlled6x300 IA recording per arm, no human. Same roster/1BECmemory/nav andsource; native entropy independent.",
+    "accuracy": "Native demo hit events credited to shooter / native shot events. Not unique bullet-hit probability; pellets/melee/events can differ; no FIRE SHOT diagnostic lines in this session.",
+    "hit_distance": "Hit impact position minus shooter feet from preceding FRAME age<=0.15s. Proxy, not exact muzzle distance.",
+    "first_shot": "Bot BRAIN visible-target episode -> first native shot<=3s, same target still cached visible<=0.3s at shot. Observed proxy, not pure human reaction. Owner UNKNOWN: no human target-visible signal.",
+    "primary": "First-primary life begins at exact create log if within0.35s of first alive frame; later revive life uses first alive FRAME. Ownership via pickup/inventory/selection. Censored lives excluded, counts retained.",
+    "SOCOM": "Both shot fraction with known selected firearm FRAME and armed-selected alive dwell fraction supplied; main table uses armed-time percent.",
+    "low_HP": "Alive continuous <=25HP episodes starting with selected primary; fraction with primary->different nonempty selected item while still <=25HP. Frame transitions observational, includes utility swaps; does not prove voluntary tactical switch.",
+    "withdraw": "Each native TACTIC action=withdraw is a new2.5s withdraw start (BotBrain.cpp:817-822, cooldown5s), death within next2.5s. Intent, not proof of movement execution or causation. No owner tactical intent.",
+    "stalls": "Official Triage moving-state trajectory stalls>=4s; longtrap>=60s; attributed by actor. Human has no bot-state telemetry, UNKNOWN.",
+    "corrections": "No explicit correction delta telemetry, snaps>0.5m UNKNOWN. Ordinary movement/respawn jumps are not network corrections.",
+    "FRAME": "Mean of native10s-window avg and p95, maximum window max. Not a pooled frame-time p95. Only windows fully inside owner-presence interval; botAI aggregate for all bots.",
+    "unknown": "null means unobservable/not applicable, never zero."
+  },
+  "target_definition": "Native kill/revive events take precedence over stale FRAME alive bits (same timestamp kill then target-change is NOT a switch-away). Continuous BRAIN current-target episodes with observed FRAME target alive and HP1..25, last BRAIN-visible age<1s (same grace as KeepLowHpTarget). Nonzero target change while old remains eligible counts switch-away; target0 drops separate. Denominator eligible lowHP target episodes; includes legal close-retaliator exceptions. 10Hz decisions/20Hz frames observational, not every engine scan. This is TARGET HP/target switching, not own HP/weapon changes.",
+  "caveats": [
+    "One pair only with independent native random_device per process, not fixed/matched RNG. No promotion/causal strength claim.",
+    "First-primary life begins at exact create log if within0.35s of first alive frame; later revive life uses first alive FRAME. Ownership via pickup/inventory/selection. Censored lives excluded, counts retained.",
+    "<=25HP metric is TARGET health and target switching. Prior X164 own-HP weapon-switch metric was different; not a finish-lock baseline.",
+    "One apparent ON switch at228.055s was excluded: target kill atsame native timestamp precedes next target, stale20Hz FRAME stillshowed20HP. Native kill/revive events take priority.",
+    "No FINISH LOCK log in either arm; zero switch-away in both is no evidence of lock benefit.",
+    "PP changes UNKNOWN: no PP observer/values, not reported as zero. PS wave fails to demonstrate revive in either map."
+  ]
+}

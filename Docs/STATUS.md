@@ -1,5 +1,9 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
+C120b DONE exact4d399cf4/CIgreen27units: PS6x240both crash/RMI/Lua0 butrevive0 -> waveFAIL,PPUNKNOWN.
+IA6x300threeflagsOFF/ON35kills11stalls0traps ->38/10/0; detailed metrics C120B_REPORT.md/RESULTS.json, X165.
+BotProbeRunner NOT WIRED. Memoryallhashrestored, foreignlauncherpreserved, noGUI/localbuild/15run/promotion. OnepushthenSTOP.
+
 C120a DONE/offline-only: build/c119-playtest5-6e2713f9 complete archive + metrics/FRAME/PlaytestReport/Triage/demo.
 X164 compact owner-vs-skill table; same549.528..1075.751s window, raw/proxy/UNKNOWN fields documented.
 One push then STOP; C120b not started, waits new exactSHA/greenCI. No GUI/build/new servers.
