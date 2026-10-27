@@ -1,6 +1,20 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-066 done 04a6c833 (water/door audit + DS-067 patches); DS-065 OK, DS-064 done · waiting mailbox
+NOW: DS-066 done 04a6c833 + 066a 247947f5; DS-065 OK, DS-064 done · waiting mailbox
+
+### DS-066a · 2026-10-28 · amendment · swim adaptation + query consistency (no code shipped)
+Re DS-066: amendment in 247947f5 (`DS066_WATER_DOOR_RISK.md` §6-7); DS-067 patches unchanged.
+Narrow reuse, not a new swim controller: (1) `BotBlackboard.cpp:20-22` add `swimming=ShouldSwim()` and drop only
+`!ShouldSwim` from `canMove` (all other guards stay); (2) `SafeStep` (`BotMovement.cpp:55-76`) takes `swimming` and
+skips only the downward ground ray `:73-75`, keeping all nine body/cliff rays `:67-71` - no global collision bypass;
+(3) `BotLocomotion::Execute:100-141` passes it, refuses jump/sprint, no forced land stance; (4) `Player.cpp:2958-2970`
+adds `&& !IsWarsBotActor()` (existing identity guard, `BotMatch.cpp:32`) so stock AI still drowns.
+Oracle: pure `WaterStep(swimming, ground, wall, depth)` table (land+no ground -> refuse; swimming+wall -> refuse;
+swimming+no wall+depth>=1.3 -> allow; shallow -> wade), plus land-cliff MOVE TRACE negative and >=30 m water positive
+(speed>0.5, HP unchanged, exit within climb). Caveat: trap watchdog level 4 (self-kill) becomes reachable in water.
+Query consistency: `recast_bake.cpp:608` points filter stays cost 1 and is NOT route evidence; only DS-067b
+`--path-from/to` uses cost 4, matching `BotNavMeshCore.cpp:60`; runtime should log path water_polys at WB_LOG(2) so a
+run matches the tool JSON 1:1. No new wb_* flag; owner/Codex decide whether it rides the default-OFF mesh package.
 
 ### DS-066 · 2026-10-28 · DONE · water+door pre-batch audit and DS-067 patches
 Re DS-066: done 04a6c833 · `Docs/Research/DeepSeek/DS066_WATER_DOOR_RISK.md`
