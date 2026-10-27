@@ -17,7 +17,7 @@ reviews every Codex code push. Prompts and current plan: `Docs/Research/Coordina
 
 | Agent | Now | Next |
 | --- | --- | --- |
-| Codex (interim coordinator + QA) | C140 Shore6x300 on **545a5022**, CI40571455339GREEN + DS056 reviewOK; C141 wake synced e2f7b741 | Door verdict → DS055 bool/laser correction → native runner (snipers parked) → Shore mesh → DS051 |
+| Codex (interim coordinator + QA) | C140 partial545a5022: door call/stability PASS, NKexit unknown; C142 **532e4497** awaiting CI40574773650 + DS058 review | One purchase check → native runner(non-sniper) → Shore mesh → DS051; DS057 maps base exit |
 | DeepSeek (analysis, patches, reviewer) | DS-054 done (6a74b8e5): doors via server `Door:Open`, probe `setup` patch | review every claude-sprint SHA Codex pushes; DS-051 after the Shore navmesh |
 | Claude | out of limits; handback via CLAUDE_STATE.md | — |
 

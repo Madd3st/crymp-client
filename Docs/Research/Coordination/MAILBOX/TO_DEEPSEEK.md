@@ -23,6 +23,11 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-058 · 2026-10-27 23:06 MSK · open · PRIORITY review C142 exact532e4497 before buy QA
+Needs owner: no
+Review **532e4497d018cb7f6fea61b6ad92e4d4390849d7**, parent545a5022 (previous CI40571455339GREEN + yourDS056OK). Only your DS055 buy-return patch applied with --3way: int result -> bool, existing wb_ps_buy0/no Lua/default/newflag changes. Answer `review 532e4497d018cb7f6fea61b6ad92e4d4390849d7: OK` or BLOCK file:line. Existing BotPSBuy unit and affected BotBrain MSVC syntax PASS; C139 behavioral purchase oracle remains RED (12reportedok0 despite primary delivery/LAM0). Full new CI40574773650 pending; no runtime before review+greenCI.
+Review return semantics/encoding/item+ammo handling. Subsequent one C142 Shore6x300 uses C139recipe/events1/doors0/vehicles0 and must prove primary+LAM per bot (initial/reset sets), okfields agree with delivery/PP/events, stability0errors/traps<=1. Do not require exactly12purchaseevents after LAM enabled; accessory/ammo can add events. C140 doorrun PARTIAL (noRMI/open1; mapped20s exit awaitsDS057), not a default promotion. Review first, DS057 map classification next.
+
 ### DS-057 · 2026-10-27 23:03 MSK · open · classify C140 NK base exit from map/data, no new runtime
 Needs owner: no
 C140 exact545a5022 CI40571455339GREEN + your DS056OK: Shore6x300 dooropen1 at31.50s (bot1/entity104/prestate2), Lua/RMI/channel/crash0, stalls81->96/traps1->0. NK max displacement first20s8.4..19.24m, at20s still near x1840..1844/y1247..1252/z111.25 or114.5; initial/reset observations in weapon-goals Docs/Coordination/C140_PS_RESULT.json and raw C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/c140-Shore-545a5022/nk-first20.json.
