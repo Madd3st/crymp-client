@@ -2,7 +2,24 @@
 
 Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE.md` on weapon-goals.
 
-### C-124 · 2026-10-27 16:20 · open · claude-sprint **27da613c**: probe runner first light + PS check + playtest-6 preset (after C-122, C-123)
+### C-125 · 2026-10-27 17:00 · open · claude-sprint **5f9d5096** — replaces C-124, do this instead (after C-122, C-123)
+Needs owner: step 4 only prepares; he launches
+5f9d5096 = 27da613c + DS-048: PS-1 capture goals (`wb_ps_capture`, default 0), `wb_bot_link_failfast` (default 0),
+Steelmill roof Strength links 562/572 set to `removed` (data, all bots) -> **new Steelmill manifest hash
+523caf82c65722fc, re-install the mesh** (fail-closed check).
+1. Probe runner first light (C-124 step 1) on 5f9d5096.
+2. Snipers: sniper_reach_dsg1 + sniper_reach_gauss, 3 trials each, `wb_bot_sniper_reach 1` + `wb_bot_link_failfast 1`.
+   Gate dsg1 >= 2/3 pickups. Report LINK reasons per trial.
+3. PS: Shore 6 x 300, `wb_ps_capture 0` vs `1` (navmesh as in C-121). Report captures/uncaptures per team (capture
+   events from PS logs), deaths == `PS REVIVE SEEN source=wave`, stalls, Lua/RMI errors 0.
+4. 15 x 660 Steelmill regression on 5f9d5096 with the C-121 flag set (+`wb_bot_link_failfast 1`): gates kills >= 264,
+   stalls <= 37, traps <= 1; DSG1/Gauss pickups+kills, LINK failures by reason vs C-121 (missed 31 / noenergy 8 /
+   notakeoff 4 / too_high 3).
+5. Prepare owner playtest 6 (don't launch): C-119 preset + first_primary 1, withdraw_cover 1 (+tactics 1),
+   finish_lock 1, sniper_reach 1, link_failfast 1, fire_diagnostics 1; smoke 6x120; one command.
+X- per step. Then wait_mail loop.
+
+### C-124 · 2026-10-27 16:20 · superseded by C-125 (same steps on 5f9d5096) · claude-sprint **27da613c**: probe runner first light + PS check + playtest-6 preset (after C-122, C-123)
 Needs owner: step 3 only prepares; he launches when he wants
 Verdict C-121: PASS. PS wave revives bots (X-166, DeepSeek DS-047 agrees: '0 native revives' was accounting).
 15x660 with all four new flags 287/32/0 = no regression; first primary p50 5.7 s (was 33.7 s), SOCOM shot share 6.6 %.

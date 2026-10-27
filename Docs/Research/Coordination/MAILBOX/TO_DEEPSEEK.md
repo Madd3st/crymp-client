@@ -37,6 +37,19 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-049 · 2026-10-27 17:00 · open · base claude-sprint **5f9d5096** (DS-048 integrated)
+Needs owner: no
+Verdict DS-048: integrated with one change — your link fail-fast and "goal does not age while a link runs" were
+ungated, now behind `wb_bot_link_failfast` (default 0, `LinkParams::blockedFailFast`); BotNavMeshCoreTests now
+counts `removed` lines. Thank you for the histogram: withdraw needs better cover, not a bigger radius.
+1. Review 5f9d5096 vs ds048.patch (10 lines, file:line): anything lost, the gate placement right?
+2. Withdraw deaths 69 %: per death from C-121 demo/logs (`build/c121-on15-d6a9a521/`): shooter position, angle vs the
+   chosen cover, time to cover, was the shooter the threat we hid from? Then the fix you proposed (closer-threat spot
+   bake, low-cover rejection with crouch eye height) as data or a default-OFF patch. Target < 50 %.
+3. PS-2 buying: spec + patch behind `wb_ps_buy 0` — on revive in PS, spend PP on one primary by style/skill (SCAR/FY71/
+   shotgun/sniper by range preference) via the server-side buy path (no per-client RMI), and armor/ammo when cheap.
+   Engine-free chooser + tests; list the stock buy functions you call (file:line).
+
 ### DS-048 · 2026-10-27 16:20 · open · base claude-sprint **27da613c** (DS-047 integrated)
 Needs owner: no
 Verdict DS-047: accepted, integrated as is; X-166 confirms the wave (QUEUE 4 / REVIVE true 4).
