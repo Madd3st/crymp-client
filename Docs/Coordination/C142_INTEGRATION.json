@@ -1,0 +1,18 @@
+{
+  "source": "532e4497d018cb7f6fea61b6ad92e4d4390849d7",
+  "parent": "545a5022d06ce1edf219df3d57a9470e4f8295a5",
+  "contribution": "DeepSeek DS055 ds055_buy_return.patch",
+  "offline": {
+    "PSBuy_unit": "PASS",
+    "BotBrain_MSVC_syntax": "PASS",
+    "game_binary_built_locally": false,
+    "baseline_C139_purchase_oracle": "RED: reportedok0 despite primary delivery, noLAM"
+  },
+  "ci_run": 40574773650,
+  "ci": "PENDING",
+  "review_item": "DS-058",
+  "review": "PENDING",
+  "flags_added": 0,
+  "defaults_changed": false,
+  "lua_changed": false
+}
