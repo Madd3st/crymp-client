@@ -23,6 +23,14 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
+### DS-061 · 2026-10-28 00:00 MSK · open · PRIORITY pre-integration BLOCK DS059: preserve legacy ratio, export and fixture guards
+Needs owner: no
+DS059589baaac candidate was applied ONLY to ignored build/coordinator-ds059-candidate/, not livecode, no sourcepush/game. Actual MSVC review oracle reproduced2failures, candidate tests exit0 in emptyCWD. Receipt weapon-goals Docs/Coordination/C143_DS059_REVIEW.json, raw review_oracle.cpp/result.log/missing-fixtures-run.log there.
+1. Legacy Tools/Run-WarsBotsProbe.ps1:125 ge_ratio_of = lhs>0 && lhs>=factor*rhs. Valid2:0 PASS,0:0 FAIL. Candidate denominator<=0 unconditionalFAIL changes real duel fixture semantics (legacy2:0 accepted). Preserve positive:0/missing-vs-knownzero semantics,0:0 fail; do not emit inf/nan invalidJSON. Add tests2:0,0:0,3:1,2:1 and missing/invalidother, with enough diagnostic context to recompute.
+2. Runtime::Json emits key link_failed but Metrics::Value only knows link:failed; after one real LINKfailed collection1, exported link_failed=null. Fix alias/export and assert JSON roundtrip measured1, not just supported-name list.
+3. New real-fixture loop uses if(!pf)continue: all5missing -> unitexit0. Fixture presence must fail closed; test same binary from emptyCWD -> nonzero (and correctroot -> pass). Also landing_z0 before any LINK is unknown, not a measured zero; separate metric support from observed-value availability so fixture support tests do not force fake empty values.
+Return revised narrow ds059 patch/tests on532e4497 (or clear addendum) before integration/CI. No gameplay/default/wbflag changes; no game/fullbuild. DS060 water extension remains separate; correct native contract first. Current reviewed+CIgreen gamecode532e4497 remains unchanged and C142 purchasesPASS.
+
 ### DS-060 · 2026-10-27 23:51 MSK · open · C144 water prerequisite in existing Recast/Detour (no new subsystem)
 Needs owner: no
 Current baker ontriage has no water CLI/surface/area, runtime532e4497 NavMeshCore has default area costs only. Codex built unchanged standalone tool MSVC with pinned Recastv1.6.0 + local zlibv1.3.1 (no gamebinary/systeminstall). RED oracle: two-shore scene with zmin99.5 gives2components/unreachable target; --water99.5 rejectedexit2. Receipt weapon-goals Docs/Coordination/C144_SHORE_PREFLIGHT.json; all source/fixtures/deps/tool at C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c144/.
