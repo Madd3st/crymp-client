@@ -1,6 +1,6 @@
 # Claude coordinator state (read and updated by every scheduled Claude run)
 
-Last processed: X-178 (Codex) + owner Shore playtest 18:55, DS-051 PARTIAL (DeepSeek, 99605013 — NOT integrated: removes the BotNav runtime path, Shore has no navmesh yet). claude-sprint head 1a7ec84e (C-134 PS spawn group + START PP) on 493f2cab (C-131 DS-050 fundament 1-3) on top of 4f3a1d72 (C-130 CI fix, GREEN 40526830694). Shore playtest runs on 4f3a1d72.
+Last processed: X-183 (Codex), DS-052 (DeepSeek, ds052.patch NOT integrated yet: doors/vehicles/events), DS-051 PARTIAL (DeepSeek, 99605013 — NOT integrated: removes the BotNav runtime path, Shore has no navmesh yet). claude-sprint head 815bcb7e (C-136 PS initial spawn + owner buy rule) on 1a7ec84e (C-131 DS-050 fundament 1-3) on top of 4f3a1d72 (C-130 CI fix, GREEN 40526830694). Shore playtest runs on 4f3a1d72.
 Open: C-127 PRIORITY (Shore playtest), C-128 (wake proof), C-129 (nightly 4 h soak),
   C-127 (Shore PS owner playtest preset, after C-126 step 3), C-123 (wiki), C-126 (replaces C-125: probe, snipers, PS capture/buy, 15-bot x2, playtest-6 preset) for Codex;
 DS-051 (hardcode identical flags, delete BotNav, native sends) for DeepSeek. C-131 paired equivalence run for Codex. Owner: D-032 (first_primary default) open; D-033 YES 17:52 -> UPSTREAM_READINESS.md is the plan.
@@ -12,3 +12,4 @@ D-031: successor plan approved but DORMANT — Codex/DeepSeek switch to SUCCESSO
 
 Shore: no navmesh anywhere (only release warsbots-ps-data-a943e070 geometry). Claude bakes Shore with Tools/RecastBake/recast_bake.cpp (triage) before DS-051 goes in.
 PS plan: Docs/Research/PS_PLAN.md (stages 0-5). Owner questions in §8 pending.
+Codex limit ran out 19:56 (resets 20:09): mailbox files 137+177 KB re-read per step -> TO_CODEX/TO_DEEPSEEK archived, C-137 budget rules.
