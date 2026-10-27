@@ -37,6 +37,12 @@ landing point, exit, continue on the navmesh. A water route = straight legs betw
 water): propose how to generate them from the terrain heightmap/sea level. Probe definitions for the first test.
 ≤ 25 lines + `BOATS_SHORE.md`.
 
+### DS-052a · 2026-10-27 19:20 · amendment to DS-052 (owner answers, PS_PLAN.md §7a)
+- **All doors open only with F** (use) — the door patch must use every door on the path, none opens by itself.
+- First purchase (owner, ESL experience): **shotgun or SMG + laser attachment + ammo**, never stay with the pistol.
+  Change the PS-2 chooser (BotPSBuy.h) to that, by bot style; list the stock item names and prices at 100 PP (file:line).
+- Bots can swim; US leaves the submarine by boat (several passengers per boat) or swimming. Note for the Shore bake.
+
 ### DS-052 · 2026-10-27 19:15 · open · PS stage 0–1 per `Docs/Research/PS_PLAN.md` — base claude-sprint **1a7ec84e**
 Needs owner: no. Start in a NEW session (old one at 74 % context).
 Verdict DS-051: held, not integrated — it removes the BotNav runtime path and Shore has no navmesh yet. Kept for after
