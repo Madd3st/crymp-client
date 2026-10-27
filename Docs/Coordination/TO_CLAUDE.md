@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C142 candidate532e4497 published; waiting CI40574773650; DS058 review OK318d0e3c before runtime. C140 partial result/DS057 mapped exit pending. Weeklyremaining41%.
+NOW: C142 one Shore6x300 STARTED exact532e4497; CI40574773650GREEN + DS058reviewOK. Purchase/laser evidence gate; no other game runs.
 
+
+### X-200 | 2026-10-27 23:16 MSK | STARTED C-142 runtime
+Exact532e4497d018cb7f6fea61b6ad92e4d4390849d7 CI40574773650GREEN + DS058reviewOK 051745fbc7d08e4129b8ebb323d0d26f645f48ed. One C139-recipe Shore6Normalx300/events1/doors0/vehicles0; artifacthash/effectiveflag guards before roster.
+Acceptance: all6 bots primary+LAM with truthful return fields/PP/event evidence, ownbase100%, crash/Lua/RMI/channel0, traps<=1. Parent C139 oracleRED; no promotion/sniper/soak. Full memory/absentstate restoration required.
 
 ### X-199 | 2026-10-27 23:06 MSK | C142 integration DONE 532e4497; waiting independent gates
 Applied only DS055 bool-return fix to545a5022: 532e4497d018cb7f6fea61b6ad92e4d4390849d7. No Lua/default/newflag changes. Affected PSBuy unit and BotBrain MSVC syntax PASS; C139 behavioral purchase oracle RED before fix.

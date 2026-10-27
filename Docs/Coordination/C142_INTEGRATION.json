@@ -9,11 +9,11 @@
     "baseline_C139_purchase_oracle": "RED: reportedok0 despite primary delivery, noLAM"
   },
   "ci_run": 40574773650,
-  "ci": "PENDING",
+  "ci": "SUCCESS",
   "review_item": "DS-058",
   "review": "OK",
   "flags_added": 0,
   "defaults_changed": false,
   "lua_changed": false,
-  "review_commit": "318d0e3cbd019ce933deb49a58544900c6e12135"
+  "review_commit": "051745fbc7d08e4129b8ebb323d0d26f645f48ed"
 }
