@@ -1,0 +1,103 @@
+{
+  "source": "09fd9520",
+  "rows": [
+    {
+      "state": 1,
+      "kills": 32,
+      "stalls": 16,
+      "traps": 0,
+      "completed": true,
+      "aba": 2.69,
+      "reversals": 17.82,
+      "conflicts": 0,
+      "memory": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+      "roster": [
+        {
+          "number": 1,
+          "style": "auto",
+          "skill": "beginner"
+        },
+        {
+          "number": 2,
+          "style": "auto",
+          "skill": "normal"
+        },
+        {
+          "number": 3,
+          "style": "auto",
+          "skill": "veteran"
+        },
+        {
+          "number": 4,
+          "style": "auto",
+          "skill": "elite"
+        },
+        {
+          "number": 5,
+          "style": "auto",
+          "skill": "beginner"
+        },
+        {
+          "number": 6,
+          "style": "auto",
+          "skill": "normal"
+        }
+      ],
+      "source": "09fd95206bbb363284a8feb3ac4eaec6ccb6a971"
+    },
+    {
+      "state": 2,
+      "kills": 32,
+      "stalls": 17,
+      "traps": 0,
+      "completed": true,
+      "aba": 15.25,
+      "reversals": 19.45,
+      "conflicts": 160,
+      "memory": "1BEC4717D33013DAA67CF767A8CC691F89CAC6CEAF8DB21A5F62ABF2DD95B26B",
+      "roster": [
+        {
+          "number": 1,
+          "style": "auto",
+          "skill": "beginner"
+        },
+        {
+          "number": 2,
+          "style": "auto",
+          "skill": "normal"
+        },
+        {
+          "number": 3,
+          "style": "auto",
+          "skill": "veteran"
+        },
+        {
+          "number": 4,
+          "style": "auto",
+          "skill": "elite"
+        },
+        {
+          "number": 5,
+          "style": "auto",
+          "skill": "beginner"
+        },
+        {
+          "number": 6,
+          "style": "auto",
+          "skill": "normal"
+        }
+      ],
+      "source": "09fd95206bbb363284a8feb3ac4eaec6ccb6a971"
+    }
+  ],
+  "gates": {
+    "aba": false,
+    "reversals": true,
+    "kills": true,
+    "same_memory": true,
+    "same_roster": true,
+    "runtime": true
+  },
+  "pass_all": false,
+  "selected_state_commit": 1
+}
