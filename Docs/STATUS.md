@@ -1,10 +1,12 @@
 # WarsBots for CryMP: QA status, 2026-10-27
 
-C130 exact4f3a1d72 CI40526830694 GREEN. C126 step3 baseline6x300 complete: 4deaths/4 PS REVIVE SEEN source=wave, crash/Lua/channel0. Capture-only in progress; C127 gate/preset pending. Foreign Recording.ps1 preserved; no localbuild/gamecode/GUI.
+C126 step3 runs DONE exact4f3a1d72 CI40526830694: deaths/wave4/4,3/3,3/3; crash/Lua/channel0 all arms; stalls72/96/113, traps1/1/0. C127 BLOCKED purchase0 (three pp0 skips), capturesUNKNOWN; no smoke/preset/client. Memory restored and actual hashes verified, ownservers stopped. Report Docs/Coordination/C126_PS_REPORT.md.
 
-LATEST OWNER 2026-10-27: continue C123 then C126, poll wait_mail after every item without stopping. Historical STOP after X167/C121 is task-scoped and superseded for newer work by this authorization. C126/C127 currently CI-blocked; wait for corrected exact SHA, no fallback or GUI.
+Historical baseline checkpoint: X176, superseded by completed step3 above.
 
-C123 wiki published f45b15c (triage e1df9a0b), X170. C126/C127 BLOCKED: pinned eabb3824 CI40521475900 fails MSVC BotMatch/IsBot at ScriptBind_GameRules.cpp1551, X171. No new game runs. Owner approved warsbots-claude deletion, app confirms deleted; Windows wake remains. Waiting for corrected pinned SHA/green CI via mailbox loop.
+LATEST OWNER 2026-10-27: continue C123 then C126, poll wait_mail after every item without stopping. Historical STOP after X167/C121 is task-scoped and superseded for newer work by this authorization. C130 exact4f3a1d72 green CI resolves the old compile blocker; current C127 runtime gate blocked, see top.
+
+Historical checkpoint X170/X171: C123 wiki published f45b15c (triage e1df9a0b); eabb3824 CI failed, superseded by C130/4f3a1d72 above. Owner approved warsbots-claude deletion, app confirms deleted; Windows wake remains. Waiting for corrected pinned SHA/green CI via mailbox loop.
 
 C121 COMPLETE X166+X167 exactd6: PS waveconfirmed4sameactors, nine sniperprobes0/9.
 Single15x660 PASS287kills/32stalls/0traps (gates264/37/1); sniperpickups/kills0,FINISHLOCK2,too_high3.

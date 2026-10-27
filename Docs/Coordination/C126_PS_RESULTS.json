@@ -1,0 +1,945 @@
+{
+  "schema": "warsbots-c126-step3/1",
+  "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+  "ci_run": 40526830694,
+  "ci_url": "https://github.com/Madd3st/crymp-client/actions/runs/40526830694",
+  "ci_conclusion": "success",
+  "artifact": "warsbots-4f3a1d72e1269a644c3e602701ca170b5b59d044",
+  "artifact_hashes": "F991D7DF54F47FDACCA5B1FA7900D7B96D8636E734E0A77B5E6C6D68635D144E  CryMP-Client64.exe\n6AD1FD97A0FB89B567A2F3421140C8AE25D9FC61678B2C3613B361E72B976120  CryMP-Server64.exe\n",
+  "arms": [
+    {
+      "schema": "warsbots-c126-ps/1",
+      "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+      "ci_run": 40526830694,
+      "arm": "base",
+      "harness": {
+        "registered": 6,
+        "game_state": null,
+        "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+        "pp_change": null,
+        "completed300": true,
+        "map": "Shore",
+        "error": null,
+        "note": "rules_info native command has no game state/PP field; use actual log evidence only"
+      },
+      "navmesh_enabled": false,
+      "navmesh_note": "Exact C121 PS recipe uses navmesh=0; no Shore navmesh installed. Not a navmesh pass.",
+      "effective_config": [
+        {
+          "name": "wb_probe_local_test",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_maxbots",
+          "expected": 6,
+          "actual": 6,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_navmesh",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_jump_links",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_look",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_turn_cap",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_weapon_rank",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_perception",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_aim_model",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_suit_policy",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_difficulty",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_finish",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_state_commit",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_pro_fire",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_high_ground",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_vantage",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_threat_scan",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_name_profile",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_net_ext",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_move_trace",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_physics_diagnostics",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_trap_recovery",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_demo_record",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_demo_hz",
+          "expected": 20,
+          "actual": 20,
+          "pass": true
+        },
+        {
+          "name": "wb_reachable_goals",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "name": "wb_hotspot_all_nodes",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "name": "wb_bot_pace",
+          "expected": 1,
+          "actual": 1,
+          "pass": true
+        },
+        {
+          "name": "wb_ps_capture",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        },
+        {
+          "name": "wb_ps_buy",
+          "expected": 0,
+          "actual": 0,
+          "pass": true
+        }
+      ],
+      "registration_events": 12,
+      "death_observed": 4,
+      "wave_seen": 4,
+      "buy_attempts": [],
+      "bought_items": 0,
+      "primary_pp_spent_proven": 0,
+      "total_pp_spent": null,
+      "total_pp_note": "No PP-after or ammo-price telemetry; do not infer full spend.",
+      "buy_skip_lines": 0,
+      "capture_event_lines": [],
+      "captures_by_team": null,
+      "capture_note": "PS CAPTURE target is intent only; no completed-capture/team accounting in pinned build unless raw engine event explicitly proves it.",
+      "lua_error_lines": [],
+      "channel_errors": 0,
+      "crash": false,
+      "demo": {
+        "frames": 6077,
+        "duration_s": 303.859,
+        "events": {
+          "suit": 336,
+          "land": 27,
+          "kill": 4,
+          "hit": 4
+        }
+      },
+      "summary_exit": 0,
+      "memory_restored": [
+        {
+          "sha256": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        },
+        {
+          "sha256": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9",
+          "name": "Multiplayer_PS_Plantation.mem"
+        },
+        {
+          "sha256": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39",
+          "name": "Multiplayer_PS_Shore.mem"
+        }
+      ],
+      "hashes": {
+        "buy-evidence.log": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+        "C126-base-Shore-preflight.bots.log": "e2fe54e49aad2bb06e7e33fcf0e5c7cb32bbe65a518db003b50cc61d953b3604",
+        "C126-base-Shore-preflight.log": "c40fc4530c94267f45d1f1886285ef863c7ca18932731959a0c0957d94ac7492",
+        "C126-base-Shore-run.bots.log": "8611b80c297b69705bbc40644f41f2cb2615acab91c680d0fd039da43ed5d6ea",
+        "C126-base-Shore-run.log": "a9bd89585ad42c32c757486f1109fc029e9672a404edfac832b6e0b3364bee2c",
+        "capture-evidence.log": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+        "errors.log": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+        "Multiplayer_PS_Shore-20261027-182217-1.wbdemo": "47551d494b798d80905f88986fb3e88dd7261f67f7b83439f2f8d65c06013325",
+        "summary-analysis.log": "9e27daab8c81b5e42c7770c6bc27ca07f90c9b05731ccf237e1aea0d5c17ffe8"
+      },
+      "triage_summary": {
+        "schema": "warsbots-run-summary/1",
+        "label": "C126-base-Shore-run.bots",
+        "log": "C126-base-Shore-run.bots.log",
+        "log_sha256": "8611b80c297b69705bbc40644f41f2cb2615acab91c680d0fd039da43ed5d6ea",
+        "build": "v26-201-g4f3a1d72",
+        "bots": 6,
+        "seconds": 304.1,
+        "live_bot_minutes": 29.0,
+        "spawn195": {
+          "revives": 0,
+          "frozen": 0
+        },
+        "revives": {
+          "total": 0,
+          "frozen": 0,
+          "frozen_spawns": {}
+        },
+        "watchdog": {
+          "episodes": 8,
+          "at_spawn195": 0,
+          "reached_level": {
+            "1": 8,
+            "2": 1
+          },
+          "self_kills": 0
+        },
+        "pinned_live_percent": 0.0,
+        "traps_ge60s": 1,
+        "stalls": 72,
+        "nav_fallback": {
+          "total": 861,
+          "per_bot_minute": 29.71,
+          "reasons": {
+            "no_route": 542,
+            "budget": 111,
+            "goal_unprojected": 58,
+            "start_unprojected": 150
+          },
+          "no_route_percent": 63.0
+        },
+        "unreachable_weapon_skips": 0,
+        "goal_skips": {},
+        "pickups": {
+          "total": 0,
+          "lives": 0,
+          "lives_with_pickup": 0,
+          "lives_with_pickup_percent": null
+        },
+        "movement": {
+          "moving_samples": 866,
+          "over_4ms_percent": 32.6,
+          "native_sprint_percent": 76.2,
+          "median_speed_by_state_max": 2.85
+        },
+        "graph": null
+      }
+    },
+    {
+      "schema": "warsbots-c126-ps/1",
+      "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+      "ci_run": 40526830694,
+      "arm": "capture",
+      "harness": {
+        "completed300": true,
+        "error": null,
+        "note": "rules_info native command has no game state/PP field; use actual log evidence only",
+        "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+        "game_state": null,
+        "map": "Shore",
+        "pp_change": null,
+        "registered": 6
+      },
+      "navmesh_enabled": false,
+      "navmesh_note": "Exact C121 PS recipe uses navmesh=0; no Shore navmesh installed. Not a navmesh pass.",
+      "effective_config": [
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_probe_local_test"
+        },
+        {
+          "actual": 6,
+          "expected": 6,
+          "pass": true,
+          "name": "wb_maxbots"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "pass": true,
+          "name": "wb_bot_navmesh"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "pass": true,
+          "name": "wb_bot_jump_links"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_look"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_turn_cap"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_weapon_rank"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_perception"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_aim_model"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_suit_policy"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_difficulty"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_finish"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_state_commit"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_pro_fire"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "pass": true,
+          "name": "wb_bot_high_ground"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "pass": true,
+          "name": "wb_bot_vantage"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "pass": true,
+          "name": "wb_bot_threat_scan"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_name_profile"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_net_ext"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_move_trace"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_physics_diagnostics"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_trap_recovery"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_demo_record"
+        },
+        {
+          "actual": 20,
+          "expected": 20,
+          "pass": true,
+          "name": "wb_demo_hz"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "pass": true,
+          "name": "wb_reachable_goals"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "pass": true,
+          "name": "wb_hotspot_all_nodes"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_bot_pace"
+        },
+        {
+          "actual": 1,
+          "expected": 1,
+          "pass": true,
+          "name": "wb_ps_capture"
+        },
+        {
+          "actual": 0,
+          "expected": 0,
+          "pass": true,
+          "name": "wb_ps_buy"
+        }
+      ],
+      "registration_events": 12,
+      "death_observed": 3,
+      "wave_seen": 3,
+      "buy_attempts": [],
+      "bought_items": 0,
+      "primary_pp_spent_proven": 0,
+      "total_pp_spent": null,
+      "total_pp_note": "No PP-after or ammo-price telemetry; do not infer full spend.",
+      "buy_skip_lines": 0,
+      "capture_event_lines": [],
+      "captures_by_team": null,
+      "capture_note": "PS CAPTURE target is intent only; no completed-capture/team accounting in pinned build unless raw engine event explicitly proves it.",
+      "lua_error_lines": [],
+      "channel_errors": 0,
+      "crash": false,
+      "demo": {
+        "frames": 6082,
+        "duration_s": 304.10699999999997,
+        "events": {
+          "suit": 348,
+          "land": 34,
+          "kill": 3,
+          "hit": 3
+        }
+      },
+      "summary_exit": 0,
+      "memory_restored": [
+        {
+          "name": "Multiplayer_IA_Steelmill.mem",
+          "sha256": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F"
+        },
+        {
+          "name": "Multiplayer_IA_Steelmill.nav.json",
+          "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE"
+        },
+        {
+          "name": "Multiplayer_PS_Plantation.mem",
+          "sha256": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9"
+        },
+        {
+          "name": "Multiplayer_PS_Shore.mem",
+          "sha256": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39"
+        }
+      ],
+      "hashes": {
+        "buy-evidence.log": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+        "C126-capture-Shore-preflight.bots.log": "7b7d6f4edd5e7273810e94ef661997a1b8663778a00cc168fc06146c47a49ba3",
+        "C126-capture-Shore-preflight.log": "4a7191ede373083dcd56e5ec1e3666883ab941af1744b1a2ac26dcf3b2e58087",
+        "C126-capture-Shore-run.bots.log": "b4e77487ca7f0f24db5b0afd7283ed21066cd05cf2fe251033478708f621065e",
+        "C126-capture-Shore-run.log": "fdb948ace937cc0fb01d3ac0658ab907bb37c7d375c054fec64b97e3a9834678",
+        "capture-evidence.log": "a49e0162e0b03900d38922b1db2a226317af42ea6b7a1d43fb56ad1f7596fb22",
+        "errors.log": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+        "Multiplayer_PS_Shore-20261027-182735-1.wbdemo": "dd3900a21b51eaebf71091ae4b47257495da4545fd2083c0562df0537053b0d0",
+        "summary-analysis.log": "6e4a88ddf85a278adff96da268fd1514c9c13481556d911e6bf3d8fc8e11e756"
+      },
+      "triage_summary": {
+        "schema": "warsbots-run-summary/1",
+        "label": "C126-capture-Shore-run.bots",
+        "log": "C126-capture-Shore-run.bots.log",
+        "log_sha256": "b4e77487ca7f0f24db5b0afd7283ed21066cd05cf2fe251033478708f621065e",
+        "build": "v26-201-g4f3a1d72",
+        "bots": 6,
+        "seconds": 304.6,
+        "live_bot_minutes": 29.3,
+        "spawn195": {
+          "revives": 0,
+          "frozen": 0
+        },
+        "revives": {
+          "total": 0,
+          "frozen": 0,
+          "frozen_spawns": {}
+        },
+        "watchdog": {
+          "episodes": 3,
+          "at_spawn195": 0,
+          "reached_level": {
+            "1": 3,
+            "2": 3
+          },
+          "self_kills": 0
+        },
+        "pinned_live_percent": 0.0,
+        "traps_ge60s": 1,
+        "stalls": 96,
+        "nav_fallback": {
+          "total": 697,
+          "per_bot_minute": 23.78,
+          "reasons": {
+            "no_route": 277,
+            "start_unprojected": 286,
+            "budget": 1,
+            "goal_unprojected": 133
+          },
+          "no_route_percent": 39.7
+        },
+        "unreachable_weapon_skips": 0,
+        "goal_skips": {},
+        "pickups": {
+          "total": 0,
+          "lives": 0,
+          "lives_with_pickup": 0,
+          "lives_with_pickup_percent": null
+        },
+        "movement": {
+          "moving_samples": 873,
+          "over_4ms_percent": 32.1,
+          "native_sprint_percent": 80.2,
+          "median_speed_by_state_max": 4.46
+        },
+        "graph": null
+      }
+    },
+    {
+      "schema": "warsbots-c126-ps/1",
+      "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+      "ci_run": 40526830694,
+      "arm": "capture-buy",
+      "harness": {
+        "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+        "error": null,
+        "map": "Shore",
+        "registered": 6,
+        "game_state": null,
+        "pp_change": null,
+        "completed300": true,
+        "note": "rules_info native command has no game state/PP field; use actual log evidence only"
+      },
+      "navmesh_enabled": false,
+      "navmesh_note": "Exact C121 PS recipe uses navmesh=0; no Shore navmesh installed. Not a navmesh pass.",
+      "effective_config": [
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_probe_local_test",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 6,
+          "name": "wb_maxbots",
+          "expected": 6
+        },
+        {
+          "pass": true,
+          "actual": 0,
+          "name": "wb_bot_navmesh",
+          "expected": 0
+        },
+        {
+          "pass": true,
+          "actual": 0,
+          "name": "wb_bot_jump_links",
+          "expected": 0
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_look",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_turn_cap",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_weapon_rank",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_perception",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_aim_model",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_suit_policy",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_difficulty",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_finish",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_state_commit",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_pro_fire",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 0,
+          "name": "wb_bot_high_ground",
+          "expected": 0
+        },
+        {
+          "pass": true,
+          "actual": 0,
+          "name": "wb_bot_vantage",
+          "expected": 0
+        },
+        {
+          "pass": true,
+          "actual": 0,
+          "name": "wb_bot_threat_scan",
+          "expected": 0
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_name_profile",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_net_ext",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_move_trace",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_physics_diagnostics",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_trap_recovery",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_demo_record",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 20,
+          "name": "wb_demo_hz",
+          "expected": 20
+        },
+        {
+          "pass": true,
+          "actual": 0,
+          "name": "wb_reachable_goals",
+          "expected": 0
+        },
+        {
+          "pass": true,
+          "actual": 0,
+          "name": "wb_hotspot_all_nodes",
+          "expected": 0
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_bot_pace",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_ps_capture",
+          "expected": 1
+        },
+        {
+          "pass": true,
+          "actual": 1,
+          "name": "wb_ps_buy",
+          "expected": 1
+        }
+      ],
+      "registration_events": 12,
+      "death_observed": 3,
+      "wave_seen": 3,
+      "buy_attempts": [],
+      "bought_items": 0,
+      "primary_pp_spent_proven": 0,
+      "total_pp_spent": null,
+      "total_pp_note": "No PP-after or ammo-price telemetry; do not infer full spend.",
+      "buy_skip_lines": 3,
+      "capture_event_lines": [],
+      "captures_by_team": null,
+      "capture_note": "PS CAPTURE target is intent only; no completed-capture/team accounting in pinned build unless raw engine event explicitly proves it.",
+      "lua_error_lines": [],
+      "channel_errors": 0,
+      "crash": false,
+      "demo": {
+        "frames": 6073,
+        "duration_s": 303.704,
+        "events": {
+          "suit": 396,
+          "land": 24,
+          "kill": 3,
+          "hit": 3,
+          "jump": 2
+        }
+      },
+      "summary_exit": 0,
+      "memory_restored": [
+        {
+          "sha256": "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+          "name": "Multiplayer_IA_Steelmill.nav.json"
+        },
+        {
+          "sha256": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9",
+          "name": "Multiplayer_PS_Plantation.mem"
+        },
+        {
+          "sha256": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39",
+          "name": "Multiplayer_PS_Shore.mem"
+        }
+      ],
+      "hashes": {
+        "buy-evidence.log": "8c1730dde33d7ff206d6914963f45c62dee474f833f08dbf181931cc6de06636",
+        "C126-capture-buy-Shore-preflight.bots.log": "c022c178d3ffba3b352129200e425946856f2ba622665fd3dd8907ceecdee80f",
+        "C126-capture-buy-Shore-preflight.log": "cb7727420a04ab968cac607280cc9dd1b59ade90d8162fdc137e77b5cee913d3",
+        "C126-capture-buy-Shore-run.bots.log": "fc5602e1f353f72e25b825c2a39466399f9f3c3b87ef9f257f513cb409b129e8",
+        "C126-capture-buy-Shore-run.log": "bdcf070939c63a5a47cd16a5f20bbf636b507eefde44960d5b68856145967cf0",
+        "capture-evidence.log": "9411902e3b578aad2561e91472b2aad6d3ee74aa1214ba842e0b0e302f012e14",
+        "errors.log": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+        "Multiplayer_PS_Shore-20261027-183255-1.wbdemo": "562868c545d0cebf82b868386b9c535e2b60c6a0f1c2186d3db55a60d170d6bf",
+        "summary-analysis.log": "3d8727ece653d54159e3bf046b2aa55bd3fcf90fbbf57cd0bc8ab2d07865f3a6"
+      },
+      "triage_summary": {
+        "schema": "warsbots-run-summary/1",
+        "label": "C126-capture-buy-Shore-run.bots",
+        "log": "C126-capture-buy-Shore-run.bots.log",
+        "log_sha256": "fc5602e1f353f72e25b825c2a39466399f9f3c3b87ef9f257f513cb409b129e8",
+        "build": "v26-201-g4f3a1d72",
+        "bots": 6,
+        "seconds": 303.9,
+        "live_bot_minutes": 29.3,
+        "spawn195": {
+          "revives": 0,
+          "frozen": 0
+        },
+        "revives": {
+          "total": 0,
+          "frozen": 0,
+          "frozen_spawns": {}
+        },
+        "watchdog": {
+          "episodes": 7,
+          "at_spawn195": 0,
+          "reached_level": {
+            "1": 7,
+            "2": 7
+          },
+          "self_kills": 0
+        },
+        "pinned_live_percent": 0.0,
+        "traps_ge60s": 0,
+        "stalls": 113,
+        "nav_fallback": {
+          "total": 562,
+          "per_bot_minute": 19.21,
+          "reasons": {
+            "no_route": 428,
+            "goal_unprojected": 134
+          },
+          "no_route_percent": 76.2
+        },
+        "unreachable_weapon_skips": 0,
+        "goal_skips": {},
+        "pickups": {
+          "total": 0,
+          "lives": 0,
+          "lives_with_pickup": 0,
+          "lives_with_pickup_percent": null
+        },
+        "movement": {
+          "moving_samples": 865,
+          "over_4ms_percent": 36.2,
+          "native_sprint_percent": 90.8,
+          "median_speed_by_state_max": 3.24
+        },
+        "graph": null
+      }
+    }
+  ],
+  "same_initial_memory": true,
+  "native_rng": "independent; not fixed-seed",
+  "roster": "6 Normal; profiles Universal/Assault/Marksman/Flanker/Defender/Hunter, alternating teams 3+3; normal round reset preserves count",
+  "c127_gate": {
+    "pass": false,
+    "crash_free": true,
+    "lua_errors_zero": true,
+    "channel_errors_zero": true,
+    "deaths_equal_wave_seen": true,
+    "successful_bot_purchases": 0,
+    "captures_by_team": null,
+    "reason": "Required >=1 successful purchase FAIL (three skip pp=0, zero success); completed capture gate unproven. No C127 smoke/preset/client launched."
+  },
+  "memory_restored_actual_sha256_verified": true,
+  "scope": "C126 step3 only; other C126 steps and C131 not run",
+  "raw_root": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build",
+  "foreign_launcher_sha256": "c08cf236bb4fec9b30a73775d11cba0ba26766e1dc5fd30d8851b16ebcecd710"
+}

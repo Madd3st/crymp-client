@@ -1,5 +1,8 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+C126 step3 runs DONE exact4f3a1d72 CI40526830694: deaths/wave4/4,3/3,3/3; crash/Lua/channel0 all arms; stalls72/96/113, traps1/1/0. C127 BLOCKED purchase0 (three pp0 skips), capturesUNKNOWN; no smoke/preset/client. Memory restored and actual hashes verified, ownservers stopped. Report Docs/Coordination/C126_PS_REPORT.md.
+
+
 C121 COMPLETE X166+X167 exactd6: PS waveconfirmed4sameactors, nine sniperprobes0/9.
 Single15x660 PASS287kills/32stalls/0traps (gates264/37/1); sniperpickups/kills0,FINISHLOCK2,too_high3.
 Detailed report Docs/Coordination/C121_BATCH_REPORT.md; allmemoryhashesrestored/no games.
