@@ -1,0 +1,12 @@
+﻿diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -843,5 +843,8 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 		{ m_nextAliveBuy=m_now+2.f; if (PSTryBuy(bot,actor)) m_psBought=true; }
+ 		// DS-067d: doors before capture (a closed spawn door starved the scan), capture before vehicles (unchanged).
+ 		if (BotConfig::Get().psDoors==1 && UpdatePSDoors(bot,actor,decisionTime)) return;
++		// DS-067f: a bot already in a vehicle must leave through the vehicle path before a capture goal runs from the
++		// driver seat; the opportunistic enter search still runs after capture, so only the exit branch preempts.
++		if (BotConfig::Get().psVehicles==1 && actor.GetLinkedVehicle() && UpdatePSInteract(bot,actor,decisionTime)) return;
+ 		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::Mode(*g_pGame->GetGameRules()).Policy().captureGoals && UpdatePSCapture(bot,actor,decisionTime)) return;
+ 		if (BotConfig::Get().psVehicles==1 && UpdatePSInteract(bot,actor,decisionTime)) return;

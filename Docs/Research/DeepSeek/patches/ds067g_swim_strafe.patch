@@ -1,0 +1,13 @@
+﻿diff --git a/Code/CryGame/Bots/BotLocomotion.cpp b/Code/CryGame/Bots/BotLocomotion.cpp
+--- a/Code/CryGame/Bots/BotLocomotion.cpp
++++ b/Code/CryGame/Bots/BotLocomotion.cpp
+@@ -131,5 +131,8 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
+         const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(intent.stance):2.5f);
+         const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
+-        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,intent.strafe,pseudo,intent.meshPath,intent.arrive,state.swimming);
++        // DS-067g: ProcessSwimming applies the request in view space (PlayerMovement.cpp:835-836) and the WarsBot view
++        // follows the aim while strafing (Player.cpp:5085-5090), so strafing in water would swim toward the aim.
++        const bool strafe=intent.strafe && !state.swimming;
++        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,strafe,pseudo,intent.meshPath,intent.arrive,state.swimming);
+     }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
+ 	state.blocked=intent.move && !accepted;
