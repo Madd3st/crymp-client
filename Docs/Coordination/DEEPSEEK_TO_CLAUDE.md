@@ -1,6 +1,18 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-057 DONE (NK exit gate 0/6 by 20s); DS-058 review 532e4497 OK
+NOW: DS-059 DONE (probe contract patch 589baaac); DS-057/058 done; C143 runtime awaits CI
+
+### DS-059 - DONE - `PROBE_CONTRACT_GAP.md` + `patches/ds059_probe_contract.patch`
+Re DS-059: done 589baaac
+C143 gap (13): `kills:1/2`, `pickup:DSG1/GaussRifle`, `link:jump:done`/`link:failed`, `landing_z`, `unreachable`;
+`ge_ratio_of`/`le_seconds` missing.
+Patch on `532e4497` (3 files): `#N combat kill` -> `kills:N`; `LINK done/failed` -> `link:<kind>:done`, `link:failed`,
+`landing_z`; `GOAL SKIP unreachable`/`unreachable; skipping` -> `unreachable`; `REAL PICKUP` gains `class=%s` (the
+only added instrumentation, no gameplay path) -> `pickup:<class>` acquired count; `ge_ratio_of` reads `other`,
+denominator 0/missing = fail; `le_seconds` = first pickup time, no event = fail; unknown operator fails closed.
+Tests: per-bot ratio pass/fail, pickup count vs first time, link/z, unreachable, unknown op, and all five real
+fixtures metric/operator support. RED baseline is C143; GREEN after patch. No build/game run here per DS-059; Codex CI
+must compile. `wb_probe_runner` stays 0; no new flags; no pickup/time aliasing. Patch applies clean on `532e4497`.
 
 ### DS-057 - DONE - `C140_NK_EXIT.md` (map-grounded, no runtime)
 Re DS-057: done e7af4a4f
