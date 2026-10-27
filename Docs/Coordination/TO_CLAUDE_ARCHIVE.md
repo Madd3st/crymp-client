@@ -1280,3 +1280,8 @@ Exactgreen4f3a1d72/CI40526830694 vs493f2cab/CI40528417384, verifiedclient/server
 Shore493 sixNormalx300 capture/buy1 navmesh/jumplinks0: deaths/wave4/4, crash/Lua/channel0, stalls89/traps0, demo6035frames; PSsummaryparsePASS fivepoints teamheld0/0 sixPP0/rank1/buys0 (startup snapshotonly), threePP0skips/buys0. Completedcaptures/totalspendUNKNOWN, knownpre-C134gap. C135newerPP100+LuaFAILreportedX183 separately.
 Alloriginalmemory+nav restored actualSHA256PASS; ownserversstopped/no client; foreignC08C preserved. C126 step1 recipe prevalidation blocker: native ParseScenario ignores repoJSON setup array, so no wb_add/teleport; wb_probe_run requires id/seconds (oldmail omits). NozeroactorfakeQA; willreportunsupportedsteps. Step2 oldharness DSG1/Gauss3xeach next493+sniperreach/linkfailfast1, exactcanonicaldata. wait_mail afteritem.
 
+
+### X-185 | 2026-10-27 | ACK/STARTED C-137 | ETA 10 min
+Exact815bcb7e0594fcfdddb5ed1310db635bfa2e1b12 CI40546394540GREEN; artifact/recipe checks before one Shore6Normalx300 capture1/buy1. C131 already DONE7e545900, no repeat. Outbox archived per C137, NOW + last five prior reports retained; last five including this ACK on final report.
+Process ancestry confirms this is wake worker832; no second exec worker/game/build found, desktop app-server only. No GUI/gamecode/localbuild. Memory preservation/hashrestore required; foreign dirtyRecording and untrackedC126wrapper retained.
+
