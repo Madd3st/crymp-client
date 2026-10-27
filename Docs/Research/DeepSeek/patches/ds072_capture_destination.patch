@@ -1,0 +1,595 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index 9fc030b2..5ce388fe 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+@@ -94,3 +94,4 @@ jobs:
+             build/ci/CryMP-*64.exe
+             build/ci/sha256.txt
+           retention-days: 7
++
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 17561dc2..d4931448 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -21,6 +21,7 @@
+ #include "CryGame/Bots/BotPSCaptureRuntime.h"
+ #include "CryGame/Bots/BotPSBuy.h"
+ #include "CryCommon/CryScriptSystem/IScriptSystem.h"
++#include "CryCommon/CryEntitySystem/IEntityProxy.h"
+ #include "CryCommon/CryAction/IVehicleSystem.h"
+ #include "CryGame/Game.h"
+ #include "CryGame/GameRules.h"
+@@ -632,8 +633,21 @@ bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTim
+ 		m_nextPsCapture=m_now+2.0f;
+ 		PSCaptureSnapshot(m_psPoints,*rules);
+ 	}
++	// DS-072: hold on native area membership of the current target, not a 6 m sphere around the entity pivot.
++	bool inside=false;
++	if (m_psTarget)
++	{
++		for (const PsCapturePoint& p : m_psPoints)
++			if (p.id==m_psTarget && p.areaId)
++			{
++				if (IEntity* area=gEnv->pEntitySystem->GetEntity(EntityId(p.areaId)))
++					if (IEntityAreaProxy* proxy=static_cast<IEntityAreaProxy*>(area->GetProxy(ENTITY_PROXY_AREA)))
++						inside=proxy->IsPointWithin(feet);
++				break;
++			}
++	}
+ 	const PsCapturePlan plan=m_psCapture.Update(m_psPoints.empty()?nullptr:m_psPoints.data(),int(m_psPoints.size()),team,
+-		feet.x,feet.y,feet.z,6.0f);
++		feet.x,feet.y,feet.z,inside);
+ 	if(!plan.valid)return false;
+ 	if(m_psTarget!=plan.id)
+ 	{
+diff --git a/Code/CryGame/Bots/BotCaptureArea.h b/Code/CryGame/Bots/BotCaptureArea.h
+new file mode 100644
+index 00000000..6f8503e5
+--- /dev/null
++++ b/Code/CryGame/Bots/BotCaptureArea.h
+@@ -0,0 +1,71 @@
++// DS-072: capture destination geometry (engine-free). The capturable entity pivot can sit outside its linked
++// captureAreaId shape (Shore 579 is 13.3 m away), so the planner must aim at an interior point and hold on native
++// membership. The adapter supplies a world-XY polygon plus the world Z range; the test uses the real Shore 569 shape.
++#pragma once
++#include <algorithm>
++#include <cmath>
++
++namespace WarsBots
++{
++struct CaptureAreaPoly
++{
++	const float* xy = nullptr; // x0,y0,x1,y1,... in world XY
++	int count = 0;
++	float bottom = 0.f, top = 0.f;
++};
++
++inline bool CaptureAreaInside(const CaptureAreaPoly& a, float x, float y, float z)
++{
++	if (!a.xy || a.count < 3 || z < a.bottom - 0.01f || z > a.top + 0.01f) return false;
++	bool inside = false;
++	for (int i = 0, j = a.count - 1; i < a.count; j = i++)
++	{
++		const float xi = a.xy[i * 2], yi = a.xy[i * 2 + 1];
++		const float xj = a.xy[j * 2], yj = a.xy[j * 2 + 1];
++		if (((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
++	}
++	return inside;
++}
++
++inline float CaptureAreaEdgeDistance(const CaptureAreaPoly& a, float x, float y)
++{
++	if (!a.xy || a.count < 3) return 0.f;
++	float best = 1e30f;
++	for (int i = 0, j = a.count - 1; i < a.count; j = i++)
++	{
++		const float ax = a.xy[j * 2], ay = a.xy[j * 2 + 1];
++		const float bx = a.xy[i * 2], by = a.xy[i * 2 + 1];
++		const float dx = bx - ax, dy = by - ay;
++		const float len2 = dx * dx + dy * dy;
++		float t = 0.f;
++		if (len2 > 1e-12f) t = std::max(0.f, std::min(1.f, ((x - ax) * dx + (y - ay) * dy) / len2));
++		const float px = ax + dx * t - x, py = ay + dy * t - y;
++		best = std::min(best, std::sqrt(px * px + py * py));
++	}
++	return best;
++}
++
++// Runtime acceptance: inside the native shape and with a small margin, never the entity pivot.
++inline bool CaptureDestinationValid(const CaptureAreaPoly& a, float x, float y, float z, float minEdge)
++{
++	return CaptureAreaInside(a, x, y, z) && CaptureAreaEdgeDistance(a, x, y) >= minEdge;
++}
++
++// DS-072 binding rule: captureAreaId is a LOCAL area number (1), so a shape qualifies only when both the local
++// number matches and the level XML binds this capturable entity to it. Several shapes may bind one factory.
++struct CaptureShapeBinding
++{
++	int entityId = 0;      // verified AreaShape map EntityId
++	int localId = 0;       // <Area Id>
++	const int* targets = nullptr; // <Entities><Entity Id=.../></Entities>
++	int targetCount = 0;
++};
++
++inline bool CaptureShapeBinds(const CaptureShapeBinding& s, int capturableId, int localAreaId)
++{
++	if (!s.entityId || s.localId != localAreaId) return false;
++	for (int i = 0; i < s.targetCount; ++i)
++		if (s.targets[i] == capturableId) return true;
++	return false;
++}
++}
+diff --git a/Code/CryGame/Bots/BotPSCapture.cpp b/Code/CryGame/Bots/BotPSCapture.cpp
+index 5eecddc7..e3c68bd8 100644
+--- a/Code/CryGame/Bots/BotPSCapture.cpp
++++ b/Code/CryGame/Bots/BotPSCapture.cpp
+@@ -1,13 +1,25 @@
+ // DS-048 #3: PS-1 capture goal data. Caches the capturable entities once per level (class, index, capture time,
+-// position) and refreshes only their owner team, which changes during the match.
++// destination) and refreshes only their owner team, which changes during the match.
++//
++// DS-072: Properties.captureAreaId is a LOCAL area number (1), not an entity id. The linked shape is found from the
++// level's mission_mission0.xml: an AreaShape entity whose <Area Id> equals captureAreaId AND whose <Entities> list
++// contains this capturable entity id. Several shapes may bind one factory (Shore 344 -> 323+330). The destination is
++// the most interior sample of the live native area that is on the navmesh; the entity pivot is never a destination.
+ #include "PortIncludes.h"
+ #include "CryGame/Bots/BotPSCaptureRuntime.h"
++#include "CryGame/Bots/BotCaptureArea.h"
++#include "CryGame/Bots/BotNavMesh.h"
++#include "CryGame/Bots/BotNavMeshCore.h"
+ #include "CryGame/Bots/BotLog.h"
+ #include "CryGame/Game.h"
+ #include "CryGame/GameRules.h"
+ #include "CryCommon/CryAction/ILevelSystem.h"
++#include "CryCommon/CryEntitySystem/IEntityProxy.h"
+ #include "CryCommon/CryEntitySystem/IEntitySystem.h"
+ #include "CryCommon/CryScriptSystem/IScriptSystem.h"
++#include "CryCommon/CrySystem/ICryPak.h"
++#include <algorithm>
++#include <cstdlib>
+ #include <cstring>
+ #include <string>
+ #include <vector>
+@@ -15,6 +27,210 @@
+ namespace WarsBots {
+ namespace {
+ 
++struct AreaShapeInfo
++{
++	int entityId = 0;   // verified map EntityId of the AreaShape entity (NOT the local area number)
++	int localId = 0;    // <Area Id>: the local area number that captureAreaId refers to
++	Vec3 pos = Vec3(0, 0, 0);
++	Quat rot = Quat(1, 0, 0, 0);
++	float height = 0.f;
++	std::vector<Vec3> points;   // local XY points from the XML (diagnostic/cross-check only)
++	std::vector<int> targets;   // capturable entity ids bound by <Entities><Entity Id=.../></Entities>
++};
++
++bool Attr(const std::string& tag, const char* key, std::string& out)
++{
++	const std::string pat = std::string(" ") + key + "=\"";
++	const size_t p = tag.find(pat);
++	if (p == std::string::npos) return false;
++	const size_t b = p + pat.size();
++	const size_t e = tag.find('"', b);
++	if (e == std::string::npos) return false;
++	out.assign(tag, b, e - b);
++	return true;
++}
++
++void ParseAreaShapes(const std::string& xml, std::vector<AreaShapeInfo>& out)
++{
++	size_t pos = 0;
++	while ((pos = xml.find("<Area ", pos)) != std::string::npos)
++	{
++		const size_t tagEnd = xml.find('>', pos);
++		if (tagEnd == std::string::npos) break;
++		const std::string areaTag = xml.substr(pos, tagEnd - pos + 1);
++		const size_t entityStart = xml.rfind("<Entity ", pos);
++		if (entityStart != std::string::npos)
++		{
++			const size_t entityTagEnd = xml.find('>', entityStart);
++			if (entityTagEnd != std::string::npos && entityTagEnd < pos)
++			{
++				const std::string entityTag = xml.substr(entityStart, entityTagEnd - entityStart + 1);
++				std::string cls, value;
++				if (Attr(entityTag, "EntityClass", cls) && cls == "AreaShape" &&
++					Attr(entityTag, "EntityId", value))
++				{
++					AreaShapeInfo s;
++					s.entityId = atoi(value.c_str());
++					if (Attr(areaTag, "Id", value)) s.localId = atoi(value.c_str());
++					if (Attr(areaTag, "Height", value)) s.height = float(atof(value.c_str()));
++					if (Attr(entityTag, "Pos", value)) sscanf(value.c_str(), "%f,%f,%f", &s.pos.x, &s.pos.y, &s.pos.z);
++					if (Attr(entityTag, "Rotate", value)) sscanf(value.c_str(), "%f,%f,%f,%f", &s.rot.v.x, &s.rot.v.y, &s.rot.v.z, &s.rot.w);
++					const size_t areaEnd = xml.find("</Area>", tagEnd);
++					const size_t p0 = xml.find("<Points>", tagEnd);
++					const size_t p1 = p0 == std::string::npos ? p0 : xml.find("</Points>", p0);
++					if (p0 != std::string::npos && p1 != std::string::npos && (areaEnd == std::string::npos || p1 < areaEnd))
++					{
++						size_t q = p0;
++						while ((q = xml.find("<Point ", q)) != std::string::npos && q < p1)
++						{
++							const size_t qe = xml.find('>', q);
++							if (qe == std::string::npos || qe > p1) break;
++							const std::string pt = xml.substr(q, qe - q + 1);
++							if (Attr(pt, "Pos", value))
++							{
++								Vec3 p(0, 0, 0);
++								if (sscanf(value.c_str(), "%f,%f,%f", &p.x, &p.y, &p.z) == 3) s.points.push_back(p);
++							}
++							q = qe + 1;
++						}
++					}
++					const size_t e0 = xml.find("<Entities>", tagEnd);
++					const size_t e1 = e0 == std::string::npos ? e0 : xml.find("</Entities>", e0);
++					if (e0 != std::string::npos && e1 != std::string::npos && (areaEnd == std::string::npos || e1 < areaEnd))
++					{
++						size_t q = e0;
++						while ((q = xml.find("<Entity ", q)) != std::string::npos && q < e1)
++						{
++							const size_t qe = xml.find('>', q);
++							if (qe == std::string::npos || qe > e1) break;
++							const std::string et = xml.substr(q, qe - q + 1);
++							if (Attr(et, "Id", value)) s.targets.push_back(atoi(value.c_str()));
++							q = qe + 1;
++						}
++					}
++					if (s.entityId && !s.points.empty()) out.push_back(std::move(s));
++				}
++			}
++		}
++		pos = tagEnd + 1;
++	}
++}
++
++std::string LevelMissionXml()
++{
++	if (!g_pGame || !g_pGame->GetIGameFramework() || !gEnv->pCryPak) return {};
++	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
++	const ILevelInfo* info = level ? level->GetLevelInfo() : nullptr;
++	const char* path = info ? info->GetPath() : nullptr;
++	if (!path || !*path) return {};
++	std::string file = path;
++	if (file.back() != '/') file += '/';
++	file += "mission_mission0.xml";
++	FILE* f = gEnv->pCryPak->FOpen(file.c_str(), "rb");
++	if (!f) { WB_LOG(0, "[WarsBots] PS CAPTURE cannot open %s.", file.c_str()); return {}; }
++	const size_t size = gEnv->pCryPak->FGetSize(f);
++	std::string xml;
++	if (size)
++	{
++		xml.resize(size);
++		const size_t got = gEnv->pCryPak->FReadRawAll(&xml[0], size, f);
++		xml.resize(got);
++	}
++	gEnv->pCryPak->FClose(f);
++	return xml;
++}
++
++const std::vector<AreaShapeInfo>& LevelAreaShapes()
++{
++	static std::string levelName;
++	static std::vector<AreaShapeInfo> shapes;
++	if (!g_pGame || !g_pGame->GetIGameFramework()) return shapes;
++	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
++	const ILevelInfo* info = level ? level->GetLevelInfo() : nullptr;
++	const char* name = info && info->GetName() ? info->GetName() : "";
++	if (levelName == name && !shapes.empty()) return shapes;
++	levelName = name;
++	shapes.clear();
++	ParseAreaShapes(LevelMissionXml(), shapes);
++	WB_LOG(0, "[WarsBots] PS CAPTURE %d AreaShape bindings for %s.", int(shapes.size()), levelName.c_str());
++	return shapes;
++}
++
++// DS-072: pick a destination inside one of the shapes bound to this capturable entity. The capturable pivot can sit
++// outside the area (Shore 579 is 13.3 m away), so every sample is checked against the live native area and the world
++// polygon; the most interior sample wins and a navmesh landing is preferred. No map-specific coordinates.
++bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEntityId, const char** why)
++{
++	*why = "no_binding";
++	const std::vector<AreaShapeInfo>& shapes = LevelAreaShapes();
++	NavMeshCore* mesh = CurrentNavMesh();
++	float bestEdge = -1.f;
++	Vec3 best;
++	int bestEntity = 0;
++	bool matched = false;
++	for (const AreaShapeInfo& s : shapes)
++	{
++		const CaptureShapeBinding binding = { s.entityId, s.localId, s.targets.data(), int(s.targets.size()) };
++		if (!CaptureShapeBinds(binding, capturableId, localAreaId)) continue;
++		matched = true;
++		IEntity* e = gEnv->pEntitySystem->GetEntity(EntityId(s.entityId));
++		if (!e) continue;
++		const char* cls = e->GetClass() ? e->GetClass()->GetName() : nullptr;
++		if (!cls || std::strcmp(cls, "AreaShape")) continue;             // stale XML entity id
++		if ((e->GetWorldPos() - s.pos).GetLengthSquared() > 1.0f) continue; // map id resolved to a different entity
++		IEntityAreaProxy* proxy = static_cast<IEntityAreaProxy*>(e->GetProxy(ENTITY_PROXY_AREA));
++		if (!proxy || proxy->GetAreaType() != ENTITY_AREA_TYPE_SHAPE) continue;
++		if (proxy->GetID() != localAreaId) continue; // cross-check the local number of the live shape
++		const int n = proxy->GetPointsCount();
++		const Vec3* pts = proxy->GetPoints();
++		if (!pts || n < 3) continue;
++
++		const Vec3 origin = e->GetWorldPos();
++		const Quat rot = e->GetWorldRotation();
++		std::vector<float> poly;
++		poly.reserve(size_t(n) * 2);
++		float minx = 1e30f, maxx = -1e30f, miny = 1e30f, maxy = -1e30f, bottom = 1e30f, top = -1e30f;
++		for (int i = 0; i < n; ++i)
++		{
++			const Vec3 w = origin + rot * pts[i];
++			poly.push_back(w.x); poly.push_back(w.y);
++			minx = std::min(minx, w.x); maxx = std::max(maxx, w.x);
++			miny = std::min(miny, w.y); maxy = std::max(maxy, w.y);
++			bottom = std::min(bottom, w.z); top = std::max(top, w.z);
++		}
++		const float height = proxy->GetHeight();
++		if (height > 0.f) top = bottom + height;
++
++		CaptureAreaPoly shape;
++		shape.xy = poly.data(); shape.count = n; shape.bottom = bottom; shape.top = top;
++
++		const float step = 1.0f;
++		for (float x = minx; x <= maxx + 1e-3f; x += step)
++		for (float y = miny; y <= maxy + 1e-3f; y += step)
++		for (float z = bottom; z <= top + 1e-3f; z += step)
++		{
++			if (!CaptureAreaInside(shape, x, y, z)) continue;
++			if (!proxy->IsPointWithin(Vec3(x, y, z))) continue;
++			Vec3 p(x, y, z);
++			if (mesh)
++			{
++				const float in[3] = { x, y, z }; float snap[3];
++				if (!mesh->Project(in, snap)) continue; // fail closed: off-mesh interior is not a goal
++				p = Vec3(snap[0], snap[1], snap[2]);
++				if (!proxy->IsPointWithin(p)) continue; // the landing must still be inside the area
++			}
++			const float edge = CaptureAreaEdgeDistance(shape, p.x, p.y);
++			if (edge > bestEdge) { bestEdge = edge; best = p; bestEntity = s.entityId; }
++		}
++	}
++	if (!matched) return false;
++	if (bestEdge < 0.f) { *why = "no_interior_sample"; return false; }
++	if (bestEdge < 0.25f) { *why = "thin_area"; return false; }
++	out = best;
++	areaEntityId = bestEntity;
++	return true;
++}
++
+ const std::vector<PsCapturePoint>& BasePoints()
+ {
+ 	static std::string levelName;
+@@ -47,13 +263,28 @@ const std::vector<PsCapturePoint>& BasePoints()
+ 		if (!capturable) continue;
+ 		props->GetValue("nCaptureIndex", index);
+ 		props->GetValue("captureTime", captureTime);
+-		const Vec3 pos = entity->GetWorldPos();
++
++		int localAreaId = 0; // local area number from the map, never an EntityId
++		props->GetValue("captureAreaId", localAreaId);
++		Vec3 destination;
++		int areaEntityId = 0;
++		const char* why = "no_area_id";
++		if (!localAreaId || !AreaDestination(int(entity->GetId()), localAreaId, destination, areaEntityId, &why))
++		{
++			WB_LOG(0, "[WarsBots] PS CAPTURE skip id=%u area=%d reason=%s.", unsigned(entity->GetId()), localAreaId, why);
++			continue; // fail closed: never aim at the entity pivot
++		}
+ 		PsCapturePoint point;
+ 		point.id = int(entity->GetId());
++		point.areaId = areaEntityId;
++		point.areaLocalId = localAreaId;
++		point.hasDestination = true;
+ 		point.value = index > 0 ? index : 1;
+ 		point.captureSeconds = int(captureTime);
+ 		point.power = isEnergy;
+-		point.x = pos.x; point.y = pos.y; point.z = pos.z;
++		point.x = destination.x; point.y = destination.y; point.z = destination.z;
++		WB_LOG(0, "[WarsBots] PS CAPTURE dest id=%u area=%d shape=%d pos=(%.2f,%.2f,%.2f).",
++			unsigned(entity->GetId()), localAreaId, areaEntityId, destination.x, destination.y, destination.z);
+ 		points.push_back(point);
+ 	}
+ 	WB_LOG(0, "[WarsBots] PS CAPTURE %d capturable points for %s.", int(points.size()), current.c_str());
+diff --git a/Code/CryGame/Bots/BotPSCapture.h b/Code/CryGame/Bots/BotPSCapture.h
+index 9a201a2d..9d85a50d 100644
+--- a/Code/CryGame/Bots/BotPSCapture.h
++++ b/Code/CryGame/Bots/BotPSCapture.h
+@@ -8,12 +8,15 @@ namespace WarsBots {
+ 
+ struct PsCapturePoint
+ {
+-    int id = 0;              // entity id (flag/factory/alien energy point)
++    int id = 0;              // capturable entity id (flag/factory/alien energy point): ownership/events
++    int areaId = 0;          // DS-072: verified AreaShape ENTITY id from the level XML (never the local number)
++    int areaLocalId = 0;     // Properties.captureAreaId: local area number inside that shape
+     int ownerTeam = 0;       // 0 = neutral
+     int value = 1;           // nCaptureIndex 1..3 (100/200/300 PP per DS-028)
+     int captureSeconds = 15; // informational
+     bool capturable = true;
+     bool power = false;      // AlienEnergyPoint: power is the first objective
++    bool hasDestination = false; // DS-072: x/y/z is an interior area destination, not the entity pivot
+     float x = 0, y = 0, z = 0;
+ };
+ 
+@@ -33,28 +36,29 @@ public:
+ 
+     // Nearest point not owned by `team`; value/power bonus -8 m/-6 m. Keeps the current target while it is still
+     // capturable and not beaten by more than `switchMargin` metres (no oscillation between equal points).
++    // DS-072: `hold` is the native capture-area membership of the current target, not a 6 m pivot sphere.
+     PsCapturePlan Update(const PsCapturePoint* points, int count, int team, float bx, float by, float bz,
+-                         float holdRadius = 6.f, float switchMargin = 15.f)
++                         bool currentInside = false, float switchMargin = 15.f)
+     {
+         PsCapturePlan plan;
+         if (!points || count <= 0 || team == 0) { m_target = 0; return plan; }
+         int best = 0, current = 0;
+-        float bestScore = 1e9f, bestDist = 0, currentScore = 1e9f, currentDist = 0;
++        float bestScore = 1e9f, currentScore = 1e9f;
+         for (int i = 0; i < count; ++i)
+         {
+             const PsCapturePoint& p = points[i];
+-            if (!p.capturable || p.ownerTeam == team) continue;
++            if (!p.capturable || !p.hasDestination || p.ownerTeam == team) continue;
+             const float dx = p.x - bx, dy = p.y - by, dz = p.z - bz;
+             const float d = std::sqrt(dx * dx + dy * dy + dz * dz);
+             const float score = d - 8.0f * float(p.value > 0 ? p.value : 1) - (p.power ? 6.0f : 0.0f);
+-            if (p.id == m_target) { current = p.id; currentScore = score; currentDist = d; }
+-            if (score < bestScore) { best = p.id; bestScore = score; bestDist = d; }
++            if (p.id == m_target) { current = p.id; currentScore = score; }
++            if (score < bestScore) { best = p.id; bestScore = score; }
+         }
+         if (!best) { m_target = 0; return plan; }
+         // Hysteresis: keep a valid current target unless the alternative is clearly better.
+         if (current && best != current && currentScore <= bestScore + switchMargin)
+         {
+-            best = current; bestScore = currentScore; bestDist = currentDist;
++            best = current;
+         }
+         m_target = best;
+         for (int i = 0; i < count; ++i)
+@@ -63,7 +67,7 @@ public:
+             plan.valid = true;
+             plan.id = best;
+             plan.x = points[i].x; plan.y = points[i].y; plan.z = points[i].z;
+-            plan.hold = bestDist <= holdRadius;
++            plan.hold = (best == current) && currentInside;
+             break;
+         }
+         return plan;
+diff --git a/Tests/BotCaptureAreaTests.cpp b/Tests/BotCaptureAreaTests.cpp
+new file mode 100644
+index 00000000..ea452db4
+--- /dev/null
++++ b/Tests/BotCaptureAreaTests.cpp
+@@ -0,0 +1,120 @@
++// DS-072: captureAreaId is a LOCAL area number (1) shared by every capturable, so a shape qualifies only when the
++// level XML also binds that capturable entity to it. Real Shore geometry: six AreaShapes, all <Area Id="1">, each
++// binding one target (344 binds two). The regression fails if the local id alone is used, if a pivot is a
++// destination, or if a shape is bound to the wrong target.
++#include "CryGame/Bots/BotCaptureArea.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++// World XY polygons from Shore.area-shapes.json (extracted mission_mission0.xml).
++static const float kShape629[] = { 1777.875000, 1708.250000, 1774.125000, 1704.500001, 1774.124996, 1677.000003, 1777.874995, 1673.250003, 1819.124991, 1673.249998, 1822.874992, 1676.999997, 1822.874995, 1704.499994, 1819.124996, 1708.249994 };
++static const float kShape569[] = { 2224.737800, 1350.584000, 2209.340199, 1335.510932, 2218.850392, 1326.010412, 2225.002976, 1332.110836, 2219.257730, 1337.856075, 2232.957916, 1351.733053, 2226.593951, 1358.097011, 2222.086148, 1353.589202, 2224.775435, 1349.883799 };
++static const float kShape330[] = { 2142.321500, 1489.263500, 2142.321498, 1484.013500, 2144.946498, 1484.013500, 2144.946496, 1476.513500, 2130.071497, 1476.513505, 2125.446499, 1481.013506, 2125.321500, 1484.388506, 2130.196501, 1489.263504 };
++static const float kShape39[] = { 1943.000000, 1366.250000, 1946.750000, 1362.500000, 1974.250000, 1362.499996, 1978.000000, 1366.249996, 1978.000005, 1407.499996, 1974.250005, 1411.249996, 1946.750005, 1411.250000, 1943.000005, 1407.500000 };
++static const float kShape291[] = { 2080.068100, 1315.789300, 2074.816410, 1316.527377, 2052.853930, 1299.977463, 2052.115852, 1294.725773, 2076.940724, 1261.782052, 2082.192414, 1261.043975, 2104.154894, 1277.593889, 2104.892971, 1282.845580 };
++static const float kShape323[] = { 2144.946500, 1483.888500, 2145.571500, 1483.888500, 2145.571500, 1485.638500, 2144.821501, 1485.638500, 2144.821504, 1497.763499, 2155.696503, 1497.763495, 2155.696497, 1476.638497, 2144.946498, 1476.513501 };
++
++static const int kT64[] = { 64 };
++static const int kT316[] = { 316 };
++static const int kT654[] = { 654 };
++static const int kT344[] = { 344 };
++static const int kT579[] = { 579 };
++
++struct Shape
++{
++	int entityId;
++	const float* xy;
++	int count;
++	float bottom, top;
++	const int* targets;
++	int targetCount;
++};
++
++static const Shape kShapes[] = {
++	{ 629, kShape629, 8, 92.25f, 130.25f, kT654, 1 },
++	{ 569, kShape569, 9, 123.32f, 129.32f, kT579, 1 },
++	{ 330, kShape330, 8, 110.75f, 114.75f, kT344, 1 },
++	{ 39, kShape39, 8, 94.50f, 132.50f, kT64, 1 },
++	{ 291, kShape291, 8, 115.68465f, 153.68465f, kT316, 1 },
++	{ 323, kShape323, 8, 110.75f, 117.75f, kT344, 1 },
++};
++static const int kShapeCount = int(sizeof(kShapes) / sizeof(kShapes[0]));
++
++static CaptureShapeBinding Binding(const Shape& s)
++{
++	CaptureShapeBinding b;
++	b.entityId = s.entityId; b.localId = 1; b.targets = s.targets; b.targetCount = s.targetCount;
++	return b;
++}
++
++static CaptureAreaPoly Poly(const Shape& s)
++{
++	CaptureAreaPoly a;
++	a.xy = s.xy; a.count = s.count; a.bottom = s.bottom; a.top = s.top;
++	return a;
++}
++
++static int MatchingShapes(int capturableId)
++{
++	int n = 0;
++	for (int i = 0; i < kShapeCount; ++i)
++		if (CaptureShapeBinds(Binding(kShapes[i]), capturableId, 1)) ++n;
++	return n;
++}
++
++static int MatchEntity(int capturableId)
++{
++	for (int i = 0; i < kShapeCount; ++i)
++		if (CaptureShapeBinds(Binding(kShapes[i]), capturableId, 1)) return kShapes[i].entityId;
++	return 0;
++}
++
++int main()
++{
++	// All six shapes carry the same local area number: a local-id-only match would return the first shape (629) for
++	// every target; only the explicit target list distinguishes them.
++	for (int i = 0; i < kShapeCount; ++i) assert(Binding(kShapes[i]).localId == 1);
++	assert(MatchEntity(579) == 569); // not 629, which is the first shape with localId 1
++
++	// Explicit target binding, with 344 bound to two shapes.
++	assert(MatchEntity(64) == 39 && MatchingShapes(64) == 1);
++	assert(MatchEntity(316) == 291 && MatchingShapes(316) == 1);
++	assert(MatchEntity(654) == 629 && MatchingShapes(654) == 1);
++	assert(MatchEntity(579) == 569 && MatchingShapes(579) == 1);
++	assert(MatchingShapes(344) == 2);
++	{
++		bool has330 = false, has323 = false;
++		for (int i = 0; i < kShapeCount; ++i) if (CaptureShapeBinds(Binding(kShapes[i]), 344, 1))
++		{
++			has330 = has330 || kShapes[i].entityId == 330;
++			has323 = has323 || kShapes[i].entityId == 323;
++		}
++		assert(has330 && has323);
++	}
++
++	// Wrong local number and unknown target fail closed.
++	assert(!CaptureShapeBinds(Binding(kShapes[0]), 64, 2));
++	assert(!CaptureShapeBinds(Binding(kShapes[0]), 579, 1));
++
++	// 579: its pivot is 13.3 m outside shape 569 and must never be a destination; a real inside floor is valid.
++	const CaptureAreaPoly s569 = Poly(kShapes[1]);
++	assert(!CaptureAreaInside(s569, 2236.76f, 1325.84f, 124.32f));
++	assert(!CaptureDestinationValid(s569, 2236.76f, 1325.84f, 124.32f, 0.25f));
++	assert(CaptureDestinationValid(s569, 2212.5686f, 1335.2388f, 124.5113f, 0.25f));
++
++	// Real inside-area floor representatives are inside their own bound shape (never the pivot).
++	assert(CaptureAreaInside(Poly(kShapes[0]), 1774.875f, 1678.0f, 101.345299f)); // 654 -> 629
++	assert(CaptureAreaInside(Poly(kShapes[2]), 2126.071533f, 1481.26355f, 111.111298f)); // 344 -> 330
++	assert(CaptureAreaInside(Poly(kShapes[3]), 1943.75f, 1367.25f, 105.356186f)); // 64 -> 39
++	assert(CaptureAreaInside(Poly(kShapes[4]), 2054.865967f, 1297.793945f, 125.149033f)); // 316 -> 291
++
++	// Height is part of membership, and a degenerate polygon fails closed.
++	assert(!CaptureAreaInside(s569, 2212.5686f, 1335.2388f, 130.32f));
++	CaptureAreaPoly empty;
++	assert(!CaptureDestinationValid(empty, 2212.5686f, 1335.2388f, 124.5113f, 0.f));
++
++	std::puts("BotCaptureAreaTests OK");
++	return 0;
++}
