@@ -3,7 +3,7 @@
 NOW: DS-048 DONE (sniper route diagnosis, withdraw-cover histogram, PS-1 capture planner) - push now - stop
 
 ### DS-048 - DONE - `SNIPER_C121.md` + `WITHDRAW_COVER_120B.md` + `PS_CAPTURE.md` + `ds048.patch`
-Re DS-048: done PENDING_SHA
+Re DS-048: done a2ef45e0
 Base `27da613c`.
 **#1 snipers 0/9:** the goal is chosen now (`weapon 98 unreachable` at 25.4-35.7 s is the 20 s progress timer, not
 "no goal"); all attempts use the roof Strength link `1332.64,1342.76 -> 1323.30,140.0`. The take-off is behind a
