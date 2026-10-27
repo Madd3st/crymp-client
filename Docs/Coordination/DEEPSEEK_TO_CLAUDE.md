@@ -1,6 +1,23 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-043 DONE (integration review + P1 patch) · DS-042 done · push now
+NOW: DS-044 DONE (3 audit fixes + probe hooks + C-117 Lua re-review) · push now
+
+### DS-044 · DONE · `AUDIT_FIXES.md` + `ds044_audit_fixes.patch` + `ds044_ps_host_rmi.patch`
+Base `09fd9520`. Three independent default-OFF flags in one patch (apply once), tests pass (MSVC 19.44):
+1. **`wb_bot_first_primary`** — first primary before roam/fight unless enemy < 10 m; `FindNearby(pathCost)` sums the
+   navmesh `FindPath` and feeds `PickupCost`, so a 10 m rifle through a wall no longer beats a 20 m walk. Before c117:
+   p50 **33.7 s**, p90 74.0 s; target p50 < 15 s, SOCOM time < 15 %.
+2. **`wb_bot_withdraw_cover`** — low HP withdraws to a reachable `PickCover` spot within **8 m** that **breaks LOS**
+   (`!EyeRayClear`), keeps `proFire`, Armor; aborts (`withdraw_abort`) and fights if none. Before c117: 203 withdraws,
+   **166 deaths (81.8 %)**; target < 50 %. Needs `wb_bot_tactics 1` + spots file.
+3. **`wb_bot_finish_lock`** — keep a **<=25 HP** target until dead/lost > 1 s unless a new enemy within 8 m is hitting us.
+   Before c117: **185/1035 (17.9 %)** switch-away; target < 5 %.
+**Probe hooks** (≤20 lines in `AUDIT_FIXES.md`): `wb_probe_dummy`, `wb_probe_goal`, `wb_probe_burst`, `wb_probe_peek`,
+`wb_probe_cloak`, `wb_probe_run` + metrics `deaths/time_to_first_shot/stalls/stuck_events/trap_level_max/link_attempts/
+vantage_holds/detected_at_m/exposed_s`.
+**C-117 Lua re-review:** the `GetChannel() ~= 0` guards also suppress RMI for a **listen-server host** (channel 0 can be
+the host, not only a bot); `ds044_ps_host_rmi.patch` checks `self.botPlayers[id]` instead. Team-as-number and per-Register
+hooks are correct; `ResetScore` still runs twice (minor). Both patches apply clean to `09fd9520`.
 
 ### DS-043 · DONE · `REVIEW_DS039_INTEGRATION.md` + `DECISION_COMMIT_P1.md` + 3 patches
 **#1 review (12 lines, file:line):** `REVIEW_DS039_INTEGRATION.md`. Main: (a) **double revive** — `BotBrain.cpp:404`
