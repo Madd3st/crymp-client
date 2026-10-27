@@ -1,27 +1,27 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-051 PARTIAL (flags hardcoded, stateCommit 2 deleted, BotNav callers removed; native guards still open) - push - stop
+NOW: DS-051 DONE 81a4e38b - next: wait_mail / standing backlog S1
 
-### DS-051 - PARTIAL - `FLAGS_HARDCODE.md` + `BOTNAV_FALLBACK.md` + `NATIVE_CLIENT_SENDS_2.md` + `ds051.patch`
-Re DS-051: done 99605013
+### DS-051 - DONE - `FLAGS_HARDCODE.md` + `BOTNAV_FALLBACK.md` + `NATIVE_CLIENT_SENDS_2.md` + `ds051.patch`
+Re DS-051: done 81a4e38b
 Base `493f2cab`.
 **#1 flags:** removed `wb_spawn_exclude195`, `wb_revive_guard`, `wb_bot_pace`, `wb_bot_jump_sanity`, `wb_bot_corners`
-and their OFF branches (hardcoded ON), and deleted the `stateCommit>=2` / `DecisionCommit` / `MoveCommit` path (mode 1
-only); C-119-identical. `BotConfigTests` fixed (it still asserted the deleted flags - thanks). All 30 engine-free
-suites pass; BotBrain/BotInstance/BotConfig/BotManager/BotDemoRecorder/Player/BotSuit/BotLocomotion compile.
-**#2 BotNav:** all brain/weapon callers removed: `Steer` uses mesh only (`BotBrain.cpp:151-188`), `PickHotspot` false
-(`:761`), `ReportStuck` calls (`:790/1097`) gone, `BotWeapons.cpp:99-102/154-155/171` graph filter gone. Remaining:
-`BotManager::m_nav` build and `wb_nav*` audit/export/commands; no runtime path consults BotNav. Table in
-`BOTNAV_FALLBACK.md`; Codex's 4-map run can delete the build next.
-**#3 native sends:** table in `NATIVE_CLIENT_SENDS_2.md`: bots can trigger `ClSetSpectatorMode` (`Player.cpp:277/6674`
-via dead spectator), `ClMoveTo` (`GameRules.cpp:1249`), `ClForbiddenAreaWarning` (`:3330`), `ClRadioMessage` (`:4360`)
-and native item text (`Item.cpp:1604/1609`). Guards are **not** in this patch (engine attempt reverted); the DS-050
-`SelectItemByNameRemote` guard is in the base. Proposed identity guards are listed per row.
-Patch `ds051.patch` applies clean on `493f2cab`.
+and their OFF branches (hardcoded ON); deleted the `stateCommit>=2` / `DecisionCommit` / `MoveCommit` path (mode 1
+only) plus the dead `ToCommit`/`IsUrgentCommit`/`OwnerOf` helpers; C-119-identical. All 30 engine-free suites pass and
+the MSVC `WARSBOTS_EXPERIMENTAL_SPAWNER=ON` client+server build is green (645/645).
+**#2 BotNav:** all brain/weapon callers removed; `Steer` is mesh-only (`BotBrain.cpp:113-155`), `PickHotspot` false
+(`:720`), `ReportStuck` gone, `BotWeapons` graph filter gone. Remaining `BotManager::m_nav` build + `wb_nav*`
+audit/export only; table in `BOTNAV_FALLBACK.md`; Codex's 4-map run can delete the build next.
+**#3 native sends:** all five bot-triggerable sends guarded by identity: `SetSpectatorMode`
+(`Player.cpp:6609/6633/6656/6681`; `InitClient :279`), `MovePlayer` (`GameRules.cpp:1252`), `ForbiddenAreaWarning`
+(`:3336`), `SendRadioMessage` (`:4371`), `CItem::PickUp` text (`Item.cpp:1608`). Predicate `PerClientSendAllowed`
+(`BotClientSend.h:8`), tests `BotAuditFixesTests.cpp:48-49`; channel 0 is never the test. Table + reasons for the two
+unguarded sends in `NATIVE_CLIENT_SENDS_2.md`.
+Patch `ds051.patch` applies clean on `493f2cab`; no new flags.
 
 
 
-### DS-S7 · 2026-10-27 · strict review 2 `Docs/Research/Audits/REVIEW-2-2026-10-27.md` (read-only)
+### DS-S7 ï¿½ 2026-10-27 ï¿½ strict review 2 `Docs/Research/Audits/REVIEW-2-2026-10-27.md` (read-only)
 Re-grade of DS-042 (35 Bible rows) on C-121 `d6a9a521` + playtest5 `6e2713f9`: **4 PASS / 16 PARTIAL / 15 FAIL** (was 2/18/15).
 Moved: A1 first primary 33.5 -> **5.739 s** (`C121_BATCH_RESULTS.json:24`, SOCOM 6.63 %); A4/D6 switch-away 22.4 ->
 **0-3.12 %** (`:76/114/152/188`). D1 withdraw 80 -> 69.2 % (still >50 %); DSG1/Gauss 0; PS paths unrun.
