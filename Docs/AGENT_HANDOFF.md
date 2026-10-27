@@ -1,5 +1,9 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+C120a DONE/offline-only: build/c119-playtest5-6e2713f9 complete archive + metrics/FRAME/PlaytestReport/Triage/demo.
+X164 compact owner-vs-skill table; same549.528..1075.751s window, raw/proxy/UNKNOWN fields documented.
+One push then STOP; C120b not started, waits new exactSHA/greenCI. No GUI/build/new servers.
+
 OwnerC119 DONE/archived28714frames, server/clientlogs/demo/traces/reports/hashmirror; report Docs/Coordination/C119_OWNER_ARCHIVE.json.
 Server287kills/30stalls/0longtraps; clientReload72/FPinstrumentation confirmed,F8marks0(no press proof). Rendererfirstcrash preserved,retryworked.
 Ownserver stopped with elevation,clientclosed,exact42A59sessionmemoryrestored; noGUIactive.
