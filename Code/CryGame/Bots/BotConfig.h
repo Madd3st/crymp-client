@@ -56,6 +56,9 @@ struct BotConfig {
  int psCapture=0;      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
  int withdrawFull=0;   // DS-049: withdraw only to full cover, re-pick every 0.5 s on the live threat, default OFF
  int psBuy=0;         // DS-049: PS-2 revive buy (one primary by style/range, cheap ammo) via server-side Lua, default OFF
+ int psDoors=0;       // DS-052: PS bots use unlocked doors within 5 m, default OFF
+ int psVehicles=0;    // DS-052: PS bots enter a free car driver seat within 10 m and exit after 3 s, default OFF
+ int psEvents=0;      // DS-052: Lua PS EVENT log lines (capture/purchase/vehicle/hq_hit), default OFF
  int corners=1;        // navmesh corners v2.1: aim outside the turn, pass when reached/crossed, slow into sharp turns (BotCorners.h), default ON (D-016)
  static BotConfig& Get(){static BotConfig config;return config;}
  void Register(IConsole& console);

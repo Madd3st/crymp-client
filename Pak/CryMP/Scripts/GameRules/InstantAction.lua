@@ -27,6 +27,12 @@ function WarsBotsIsBot(rules, playerId)
 	return rules ~= nil and rules.botPlayers ~= nil and rules.botPlayers[playerId] == true;
 end
 
+-- WarsBots DS-052: PS EVENT diagnostic lines only when wb_ps_events is non-zero (default 0).
+function WarsBotsPSEvents()
+	local v = System.GetCVar("wb_ps_events");
+	return v ~= nil and tonumber(v) ~= nil and tonumber(v) ~= 0;
+end
+
 
 InstantAction.MIN_PLAYER_LIMIT_WARN_TIMER	= 15; -- player limit warning timer
 InstantAction.START_TIMER									= 30; -- starting countdown timer

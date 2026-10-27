@@ -64,6 +64,7 @@ private:
     bool UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force=false);
     void UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime);
 	bool UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-048 #3
+	bool UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-052
 	void PSTryBuy(BotInstance& bot,CPlayer& actor); // DS-049 #3
     void UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime);
     void UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange);
@@ -165,7 +166,7 @@ private:
 	float m_withdrawUntil=0, m_nextWithdraw=0, m_nextWithdrawPick=0;
 	Vec3 m_withdrawCover=Vec3(0,0,0);
 	bool m_withdrawCoverValid=false;
-	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false; int m_psBuys=0;
+	BotPSCapture m_psCapture; std::vector<PsCapturePoint> m_psPoints; float m_nextPsCapture=0; int m_psTarget=0; bool m_psBought=false; int m_psBuys=0; float m_nextDoorUse=0, m_nextVehicle=0, m_vehicleExitAt=0;
 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
 	EntityId m_upgradeTarget = 0;
 	float m_upgradeSince = 0;

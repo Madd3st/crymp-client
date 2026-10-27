@@ -636,6 +636,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 function PowerStruggle.Server:OnStartCapture(building, teamId)
+	if (WarsBotsPSEvents()) then System.LogAlways(string.format("[WarsBots] PS EVENT capture_start entity=%s class=%s team=%s", tostring(building.id), tostring(building.class), tostring(teamId))); end
 end
 
 
@@ -646,6 +647,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 function PowerStruggle.Server:OnStepCapture(building, teamId, remainingTime)
+	if (WarsBotsPSEvents()) then System.LogAlways(string.format("[WarsBots] PS EVENT capture_step entity=%s class=%s team=%s remaining=%.1f", tostring(building.id), tostring(building.class), tostring(teamId), tonumber(remainingTime) or -1)); end
 end
 
 
@@ -671,6 +673,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 function PowerStruggle.Server:OnCapture(building, teamId)
+	if (WarsBotsPSEvents()) then System.LogAlways(string.format("[WarsBots] PS EVENT captured entity=%s class=%s team=%s", tostring(building.id), tostring(building.class), tostring(teamId))); end
 	if (self.objectives) then
 		for i,v in pairs(self.objectives) do
 			if (v.OnCapture) then
@@ -698,6 +701,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 function PowerStruggle.Server:OnUncapture(building, teamId, oldTeamId)
+	if (WarsBotsPSEvents()) then System.LogAlways(string.format("[WarsBots] PS EVENT uncaptured entity=%s class=%s team=%s oldTeam=%s", tostring(building.id), tostring(building.class), tostring(teamId), tostring(oldTeamId))); end
 	if (self.objectives) then
 		for i,v in pairs(self.objectives) do
 			if (v.OnUncapture) then
@@ -791,6 +795,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 function PowerStruggle.Server:OnHQHit(hq, hit)
+	if (WarsBotsPSEvents()) then System.LogAlways(string.format("[WarsBots] PS EVENT hq_hit entity=%s team=%s damage=%s shooter=%s", tostring(hq and hq.id), tostring(hq and self.game:GetTeam(hq.id)), tostring(hit and hit.damage), tostring(hit and hit.shooterId))); end
 	if (hq and hit.damage>0 and self:GetState()=="InGame") then
 		local teamId=self.game:GetTeam(hq.id) or 0;
 

@@ -1002,6 +1002,7 @@ function PowerStruggle:BuyItem(playerId, itemName)
 		end
 	
 		local price,energy=self:GetPrice(def.id);
+		if (WarsBotsPSEvents()) then System.LogAlways(string.format("[WarsBots] PS EVENT purchase player=%s item=%s price=%s alive=%s", tostring(playerId), tostring(itemName), tostring(price), tostring(alive))); end -- WarsBots DS-052 (dead = revive-queue buy)
 		if (alive) then
 			self:AwardPPCount(playerId, -price);
 			if (energy and energy>0) then

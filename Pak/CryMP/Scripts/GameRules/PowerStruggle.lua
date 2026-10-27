@@ -582,6 +582,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 function PowerStruggle:OnEnterVehicleSeat(vehicle, seat, entityId)
+	if (WarsBotsPSEvents()) then System.LogAlways(string.format("[WarsBots] PS EVENT vehicle_enter vehicle=%s seat=%s player=%s", tostring(vehicle.id), tostring(seat and seat.id), tostring(entityId))); end
 	if (self.isServer) then
 		self.game:SetTeam(self.game:GetTeam(entityId), vehicle.id);
 
@@ -615,6 +616,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 function PowerStruggle:OnLeaveVehicleSeat(vehicle, seat, entityId, exiting)
+	if (WarsBotsPSEvents()) then System.LogAlways(string.format("[WarsBots] PS EVENT vehicle_exit vehicle=%s seat=%s player=%s exiting=%s", tostring(vehicle.id), tostring(seat and seat.id), tostring(entityId), tostring(exiting))); end
 	if (self.isServer) then
 		if (exiting) then
 			local empty=true;

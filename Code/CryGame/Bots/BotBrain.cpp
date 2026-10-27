@@ -21,6 +21,7 @@
 #include "CryGame/Bots/BotPSCaptureRuntime.h"
 #include "CryGame/Bots/BotPSBuy.h"
 #include "CryCommon/CryScriptSystem/IScriptSystem.h"
+#include "CryCommon/CryAction/IVehicleSystem.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Actor.h"
@@ -536,6 +537,57 @@ void BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
 }
 
 
+bool BotBrain::UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTime)
+{
+	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+	if(!rules || BotMatch::Mode(*rules).Kind()!=BotGameModeKind::PowerStruggle)return false;
+	const EntityId id=actor.GetEntityId();
+	const Vec3 feet=actor.GetEntity()->GetWorldPos();
+	if (IVehicle* v=actor.GetLinkedVehicle())
+	{
+		if (BotConfig::Get().psVehicles!=1) return false;
+		if (m_now>=m_vehicleExitAt)
+		{
+			if (IVehicleSeat* s=v->GetSeatForPassenger(id)) s->Exit(false,false);
+			WB_LOG(1,"[WarsBots] #%d PS VEHICLE exit vehicle=%u actor=%u.",m_number,v->GetEntityId(),id);
+			m_nextVehicle=m_now+5.0f;
+		}
+		return true;
+	}
+
+	if (BotConfig::Get().psVehicles==1 && m_now>=m_nextVehicle)
+	{
+		SEntityProximityQuery query; query.box=AABB(feet-Vec3(10,10,3),feet+Vec3(10,10,3)); gEnv->pEntitySystem->QueryProximity(query);
+		for (int i=0;i<query.nCount;++i)
+		{
+			IEntity* e=query.pEntities[i]; if(!e || e->IsHidden())continue;
+			const char* cls=e->GetClass()?e->GetClass()->GetName():"";
+			if (std::strcmp(cls,"Asian_ltv") && std::strcmp(cls,"Civ_car1")) continue;
+			IVehicle* v=g_pGame->GetIGameFramework()->GetIVehicleSystem()->GetVehicle(e->GetId());
+			if(!v)continue; IVehicleSeat* seat=v->GetSeatById(1); if(!seat || seat->GetPassenger())continue;
+			bool can=false; IScriptTable* rt=rules->GetEntity()->GetScriptTable(); IScriptTable* vt=e->GetScriptTable();
+			if(rt && vt && gEnv->pScriptSystem->BeginCall(rt,"CanEnterVehicle")) { gEnv->pScriptSystem->PushFuncParam(rt); gEnv->pScriptSystem->PushFuncParam(vt); gEnv->pScriptSystem->PushFuncParam(ScriptHandle(id)); gEnv->pScriptSystem->EndCall(can); }
+			if(!can)continue;
+			if(seat->Enter(id,false)){ m_vehicleExitAt=m_now+3.0f; WB_LOG(1,"[WarsBots] #%d PS VEHICLE enter vehicle=%u class=%s actor=%u.",m_number,e->GetId(),cls,id); return true; }
+		}
+		m_nextVehicle=m_now+2.0f;
+	}
+	if (BotConfig::Get().psDoors==1 && m_now>=m_nextDoorUse)
+	{
+		SEntityProximityQuery query; query.box=AABB(feet-Vec3(5,5,3),feet+Vec3(5,5,3)); gEnv->pEntitySystem->QueryProximity(query);
+		for (int i=0;i<query.nCount;++i)
+		{
+			IEntity* e=query.pEntities[i]; if(!e || e->IsHidden())continue;
+			const char* cls=e->GetClass()?e->GetClass()->GetName():""; if(std::strcmp(cls,"Door"))continue;
+			const Vec3 d=e->GetWorldPos()-feet; if(d.GetLengthSquared2D()>25.0f || d.GetLength2D()<0.1f)continue;
+			const Vec3 fwd=actor.GetEntity()->GetWorldRotation().GetColumn1(); if(fwd.Dot(d.GetNormalizedSafe(fwd))<0.2f)continue;
+			if(IScriptTable* dt=e->GetScriptTable()) Script::CallMethod(dt,"OnUsed",actor.GetEntity()->GetScriptTable());
+			m_nextDoorUse=m_now+1.0f; WB_LOG(2,"[WarsBots] #%d PS DOOR use entity=%u actor=%u.",m_number,e->GetId(),id); break;
+		}
+	}
+	return false;
+}
+
 bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTime)
 {
 	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
@@ -753,6 +805,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		if (commit) Change(State::SEARCHING_ENEMY);
 		// DS-048 #3: PS-1 capture goal; roam only runs with no visible enemy, so combat still wins.
 		if (BotConfig::Get().psCapture==1 && g_pGame && g_pGame->GetGameRules() && BotMatch::Mode(*g_pGame->GetGameRules()).Policy().captureGoals && UpdatePSCapture(bot,actor,decisionTime)) return;
+		if ((BotConfig::Get().psDoors==1 || BotConfig::Get().psVehicles==1) && UpdatePSInteract(bot,actor,decisionTime)) return;
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
 		Vec3 heard;
 		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
