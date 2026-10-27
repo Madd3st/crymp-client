@@ -17,7 +17,7 @@ struct BotWeapons
 	static bool HasPrimary(CActor& actor);
 	static bool IsPrimary(IItem* item);
 	static EntityId FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly = false,
-		const EntityId* skip = nullptr, int skipCount = 0, float typicalRange = 20.f);
+		const EntityId* skip = nullptr, int skipCount = 0, float typicalRange = 20.f, bool pathCost = false);
 	static bool AvailableForPickup(CActor& actor, EntityId item);
 	static bool PickUp(CActor& actor, EntityId item, float holdRange = 20.0f); // holdRange: C-104 snipers judge at 60 m
 	static bool GiveTestSCAR(CActor& actor);

@@ -653,7 +653,7 @@ end
 function PowerStruggle.Server:OnEnterCaptureArea(building, entity)
 	if (entity.actor and entity.actor:IsPlayer()) then
 		if (self:GetState()=="InGame") then
-			self.onClient:ClEnterCaptureArea(entity.actor:GetChannel(), building.id, true);
+			if (not WarsBotsIsBot(self, entity.id)) then self.onClient:ClEnterCaptureArea(entity.actor:GetChannel(), building.id, true); end
 		end
 	end
 end
@@ -663,7 +663,7 @@ end
 function PowerStruggle.Server:OnLeaveCaptureArea(building, entity)
 	if (entity.actor and entity.actor:IsPlayer()) then
 		if (self:GetState()=="InGame") then
-			self.onClient:ClEnterCaptureArea(entity.actor:GetChannel(), building.id, false);
+			if (not WarsBotsIsBot(self, entity.id)) then self.onClient:ClEnterCaptureArea(entity.actor:GetChannel(), building.id, false); end
 		end
 	end
 end
@@ -748,7 +748,7 @@ function PowerStruggle.Server:OnPerimeterBreached(base, player)
 					for i,p in pairs(players) do
 						local channel=p.actor:GetChannel();
 						if (channel>0) then
-							self.onClient:ClPerimeterBreached(channel, base.id);
+							if (not WarsBotsIsBot(self, p.id)) then self.onClient:ClPerimeterBreached(channel, base.id); end
 						end
 					end
 				end
@@ -771,9 +771,9 @@ function PowerStruggle.Server:OnTurretHit(turret, hit)
 					for i,p in pairs(players) do
 						local channel=p.actor:GetChannel();
 						if (channel>0) then
-							self.onClient:ClTurretHit(channel, turret.id);
+							if (not WarsBotsIsBot(self, p.id)) then self.onClient:ClTurretHit(channel, turret.id); end
 							if(turret.item:IsDestroyed()) then
-								self.onClient:ClTurretDestroyed(channel, turret.id);
+								if (not WarsBotsIsBot(self, p.id)) then self.onClient:ClTurretDestroyed(channel, turret.id); end
 							end
 						end
 					end
@@ -802,7 +802,7 @@ function PowerStruggle.Server:OnHQHit(hq, hit)
 					for i,p in pairs(players) do
 						local channel=p.actor:GetChannel();
 						if (channel>0) then
-							self.onClient:ClHQHit(channel, hq.id);
+							if (not WarsBotsIsBot(self, p.id)) then self.onClient:ClHQHit(channel, hq.id); end
 						end
 					end
 				end
@@ -823,7 +823,7 @@ function PowerStruggle:SendMDAlert(teamId, name, playerId)
 			local players=self.game:GetTeamPlayers(id, true);
 			if (players) then
 				for k,player in pairs(players) do
-					self.onClient:ClMDAlert(player.actor:GetChannel(), name);
+					if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClMDAlert(player.actor:GetChannel(), name); end
 				end
 			end
 		end
@@ -832,7 +832,7 @@ function PowerStruggle:SendMDAlert(teamId, name, playerId)
 	--also alert the player who just bought the MD weapon
 	local thisPlayer = System.GetEntity(playerId);
 	if(thisPlayer) then
-		self.onClient:ClMDAlert_ToPlayer(thisPlayer.actor:GetChannel());
+		if (not WarsBotsIsBot(self, thisPlayer.id)) then self.onClient:ClMDAlert_ToPlayer(thisPlayer.actor:GetChannel()); end
 	end
 end
 

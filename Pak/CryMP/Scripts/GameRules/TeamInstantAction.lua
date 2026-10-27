@@ -522,7 +522,7 @@ function TeamInstantAction:CheckScoreLimit(teamId, score)
 				if (enemyTeamPlayers) then
 					for i, enemy in pairs(enemyTeamPlayers) do
 						local channelId = enemy.actor:GetChannel();
-						if (channelId > 0) then
+						if (not WarsBotsIsBot(self, enemy.id)) then
 							self.onClient:ClPlayAlert(channelId, "almost_lost", true);
 						end
 					end

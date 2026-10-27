@@ -342,7 +342,7 @@ function PowerStruggle.Server:OnClientEnteredGame(channelId, player, reset)
 		if (self.inBuyZone[player.id]) then
 			for zoneId,yes in pairs(self.inBuyZone[player.id]) do
 				if (yes) then
-					if (player.actor:GetChannel() and player.actor:GetChannel() ~= 0) then self.onClient:ClEnterBuyZone(player.actor:GetChannel(), zoneId, true); end -- WarsBots: no RMI to a channel-0 bot
+					if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClEnterBuyZone(player.actor:GetChannel(), zoneId, true); end -- WarsBots DS-045: no RMI to a bot
 				end
 			end
 		end
@@ -520,7 +520,7 @@ function PowerStruggle.Server:OnVehicleDestroyed(vehicleId)
 		if (zones[vehicleId]) then
 			local player=System.GetEntity(playerId);
 			if (player and player.actor) then
-				if (player.actor:GetChannel() and player.actor:GetChannel() ~= 0) then self.onClient:ClEnterBuyZone(player.actor:GetChannel(), vehicleId, false); end -- WarsBots: no RMI to a channel-0 bot
+				if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClEnterBuyZone(player.actor:GetChannel(), vehicleId, false); end -- WarsBots DS-045: no RMI to a bot
 			end
 			
 			zones[vehicleId]=nil;
@@ -531,7 +531,7 @@ function PowerStruggle.Server:OnVehicleDestroyed(vehicleId)
 		if (zones[vehicleId]) then
 			local player=System.GetEntity(playerId);
 			if (player and player.actor) then
-				if (player.actor:GetChannel() and player.actor:GetChannel() ~= 0) then self.onClient:ClEnterServiceZone(player.actor:GetChannel(), vehicleId, false); end -- WarsBots: no RMI to a channel-0 bot
+				if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClEnterServiceZone(player.actor:GetChannel(), vehicleId, false); end -- WarsBots DS-045: no RMI to a bot
 			end
 			
 			zones[vehicleId]=nil;
@@ -872,7 +872,7 @@ function PowerStruggle:ResetRevive(playerId, remove)
 	local player = System.GetEntity(playerId);
 	-- WarsBots C-117: a channel-0 bot has no client; ClReviveCycle to channel 0 raised "RMI No such server channel 0"
 	if(player and player.actor) then
-		if (player.actor:GetChannel() and player.actor:GetChannel() ~= 0) then self.onClient:ClReviveCycle(player.actor:GetChannel(), false); end -- WarsBots: no RMI to a channel-0 bot
+		if (not WarsBotsIsBot(self, playerId)) then self.onClient:ClReviveCycle(player.actor:GetChannel(), false); end -- WarsBots DS-045: no RMI to a bot
 	end
 end
 
@@ -922,7 +922,7 @@ function PowerStruggle:UpdateReviveQueue()
 				local player=System.GetEntity(playerId);
 				if (player and player.spawnGroupId and player.spawnGroupId~=NULL_ENTITY) then
 					if ((not revive.announced) and (not revive.overdue)) then
-						if (player.actor:GetChannel() and player.actor:GetChannel() ~= 0) then self.onClient:ClReviveCycle(player.actor:GetChannel(), true); end -- WarsBots: no RMI to a channel-0 bot
+						if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClReviveCycle(player.actor:GetChannel(), true); end -- WarsBots DS-045: no RMI to a bot
 						revive.announced=true;
 					end
 				elseif (revive.announced) then -- spawngroup got invalidated while spawn cycle was up,
@@ -971,8 +971,8 @@ function PowerStruggle:UpdateReviveQueue()
 						if (not revive.overdue) then
 							if (not revive.announced) then
 								local channelId=player.actor:GetChannel();
-								if (channelId and channelId ~= 0) then self.onClient:ClReviveCycle(channelId, true); end -- WarsBots: no RMI to a channel-0 bot
-								if (channelId and channelId ~= 0) then self.onClient:ClSpawnGroupInvalid(channelId, NULL_ENTITY); end -- WarsBots: no RMI to a channel-0 bot
+								if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClReviveCycle(channelId, true); end -- WarsBots DS-045: no RMI to a bot
+								if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClSpawnGroupInvalid(channelId, NULL_ENTITY); end -- WarsBots DS-045: no RMI to a bot
 								revive.announced=true;
 							end
 							revive.overdue=true;

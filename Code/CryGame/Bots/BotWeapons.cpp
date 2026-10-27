@@ -1,4 +1,6 @@
 #include "PortIncludes.h"
+#include <vector>
+#include <cmath>
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Game.h"
 #include "CryGame/Bots/BotLog.h"
@@ -81,7 +83,7 @@ bool BotWeapons::SelectAvailable(CActor& actor)
 }
 
 EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previousClass, unsigned life, bool primaryOnly,
-	const EntityId* skip, int skipCount, float typicalRange)
+	const EntityId* skip, int skipCount, float typicalRange, bool pathCost)
 {
 	EntityId result = 0;
 	float best = 1e10f;
@@ -115,23 +117,41 @@ EntityId BotWeapons::FindNearby(CActor& actor, float radius, IEntityClass* previ
 		IItem* item = Items()->GetItem(entity->GetId());
 		if (Suitable(item) && (!primaryOnly || IsPrimary(item)) && !item->GetOwnerId() && static_cast<CItem*>(item)->CanPickUp(actor.GetEntityId()))
 		{
+			float walk = sqrtf(distance);
             if (mesh) // P0: no walk path on the navmesh (roof/catwalk without stairs) -> do not even try
             {
                 const Vec3 w=entity->GetWorldPos(); const float q[3]={w.x,w.y,w.z};
                 if (!mesh->Reachable(meshFrom,q)) { ++meshRejected; continue; }
+                // DS-044: first-primary pickups are judged by the walk, not the straight line: a rifle 10 m through a
+                // wall on Steelmill is 40-60 m of stairs and cost the bot its first 30 s.
+                if (pathCost)
+                {
+                    std::vector<float> xyz;
+                    if (!mesh->FindPath(meshFrom,q,xyz) || xyz.size()<3) { ++meshRejected; continue; }
+                    walk = 0.0f;
+                    float px=meshFrom[0], py=meshFrom[1], pz=meshFrom[2];
+                    for (size_t k=0;k+2<xyz.size();k+=3)
+                    {
+                        const float dx=xyz[k]-px, dy=xyz[k+1]-py, dz=xyz[k+2]-pz;
+                        walk += sqrtf(dx*dx+dy*dy+dz*dz);
+                        px=xyz[k]; py=xyz[k+1]; pz=xyz[k+2];
+                    }
+                    const float dx=w.x-px, dy=w.y-py, dz=w.z-pz;
+                    if (dx*dx+dy*dy+dz*dz>0.01f) walk += sqrtf(dx*dx+dy*dy+dz*dz);
+                }
             }
             BotGoalProjection trace;
             if(nav.KnownUnreachable(from,entity->GetWorldPos(),trace)) {++rejected;if(first<0){first=trace.to;firstItem=entity->GetId();firstTrace=trace;firstGoal=entity->GetWorldPos();}continue;}
 			// Prefer a different class, but keep travel cost significant. Stable within a life.
 			unsigned hash = entity->GetId()*1664525u + life*1013904223u;
 			hash ^= hash >> 16;
-			float score = sqrtf(distance) + (entity->GetClass()==previousClass ? 6.0f : 0.0f) + (hash%1000)*0.005f;
+			float score = walk + (entity->GetClass()==previousClass ? 6.0f : 0.0f) + (hash%1000)*0.005f;
 			if (ranked)
 			{
 				// C-022: value of this pickup over what we hold, traded against the walk (BotWeaponRank.h).
 				const float value = PickupValue(entity->GetClass()->GetName(), held, heldCount, typicalRange);
 				if (value <= 0.01f) continue; // not worth a detour (e.g. another SMG while holding a SCAR)
-				score = PickupCost(sqrtf(distance), value) + (hash%1000)*0.005f;
+				score = PickupCost(walk, value) + (hash%1000)*0.005f;
 			}
 			if (score < best) { best = score; result = entity->GetId(); }
 		}

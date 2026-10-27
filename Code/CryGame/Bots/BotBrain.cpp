@@ -15,6 +15,7 @@
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Bots/BotWeaponRank.h"
 #include "CryGame/Bots/BotUpgradeGate.h"
+#include "CryGame/Bots/BotAuditFixes.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Game.h"
@@ -296,7 +297,7 @@ void BotBrain::ResetLife()
 	m_vantage.Reset(CurrentVantage(),m_number);
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
-	m_withdrawUntil=m_nextWithdraw=0;
+	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	++m_life;
@@ -385,6 +386,14 @@ void BotBrain::Update(BotInstance& bot, float dt)
     const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
     if(UpdateWeaponSeek(actor,decisionTime,socomQA))return;
 	IActor* enemy = m_combat.FindEnemy(actor, m_now, m_verbose);
+	// DS-044 #1 (wb_bot_first_primary): a spawn pistol is not a plan. Go to a rifle before roam/fight unless an enemy
+	// is within 10 m; the candidate is scored by navmesh walk length, not straight distance (UpdateUpgrade pathCost).
+	{
+		const float enemyD = enemy ? (enemy->GetEntity()->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength() : 1e9f;
+		if (m_now>=m_escapeUntil && m_now>=m_withdrawUntil &&
+			ShouldSeekFirstPrimary(BotConfig::Get().firstPrimary==1,BotWeapons::HasPrimary(actor),enemyD,socomQA) &&
+			UpdateUpgrade(bot,actor,enemy,decisionTime,socomQA,true)) return;
+	}
 	if (m_lastFightTarget)
 	{
 		// the fight target died (or left): its dropped weapon / ammo is worth a look for a few seconds (tactics), and a
@@ -512,7 +521,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 		if (m_now >= m_nextSearch && !m_weaponTarget)
 		{
 			Change(State::SEEKING_WEAPON);
-			m_weaponTarget = BotWeapons::FindNearby(actor, 30.0f, m_previousWeaponClass, m_life);
+			m_weaponTarget = BotWeapons::FindNearby(actor, 30.0f, m_previousWeaponClass, m_life, false, nullptr, 0, 20.f, BotConfig::Get().firstPrimary==1);
 			m_nextSearch = m_now + 2.0f;
 		}
 		if (m_weaponTarget && !BotWeapons::AvailableForPickup(actor, m_weaponTarget))
@@ -550,7 +559,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 float BotBrain::PickupRange() const
 { return WarsBots::IdleHoldRange(BotConfig::Get().vantage==1 && m_traits.camper>=0.7f); }
 
-EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
+EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost)
 {
 	(void)anyHeld; // with wb_bot_weapon_rank FindNearby keeps only real upgrades over what is held
 	EntityId skip[8]; int skipCount = 0;
@@ -558,7 +567,7 @@ EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld)
 	// owner 25.10 (wb_bot_vantage): Marksmen judge pickups at sniper range, so DSG1/Gauss become real upgrades
 	const float typical=PickupRange();
 	// c066: no bot ever reached DSG1 (22 m up) / Gauss (tower) within 45 m -> snipers look across the map
-	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical);
+	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical, pathCost);
 }
 
 bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
@@ -572,7 +581,7 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 	{
 		if (m_now >= m_nextUpgradeSearch && !m_upgradeTarget)
 		{
-			m_upgradeTarget = UpgradeCandidate(actor, false);
+			m_upgradeTarget = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 && !hasPrimary);
 			m_upgradeSince = m_now;
 			m_nextUpgradeSearch = m_now + 3.0f;
 		}
@@ -817,14 +826,40 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 	if (disadvantage && m_now>=m_nextWithdraw)
 	{
 		m_withdrawUntil=m_now+2.5f; m_nextWithdraw=m_now+5.0f;
-		WB_LOG(2,"[WarsBots] TACTIC actor=%u skill=%s style=%s action=withdraw health=%d energy=%.1f distance=%.1f visible=%d.",
+		m_withdrawCoverValid=false;
+		if (BotConfig::Get().withdrawCover==1)
+		{
+			// DS-044 #2: back off to a reachable cover spot that breaks LOS to the threat, not 4 m into the open.
+			int n=0; const CoverCandidate* spots=CurrentCover(n);
+			const Vec3 feet=actor.GetEntity()->GetWorldPos();
+			const Vec3 chest=destination+Vec3(0,0,1.3f);
+			NavMeshCore* mesh=CurrentNavMesh();
+			const float from[3]={feet.x,feet.y,feet.z};
+			const int i=spots ? PickCover(spots,n,TVec{feet.x,feet.y,feet.z},TVec{destination.x,destination.y,destination.z},desiredRange,
+				[&](const TVec& p){
+					const float q[3]={p.x,p.y,p.z};
+					return (!mesh || mesh->Reachable(from,q)) && !EyeRayClear(actor,Vec3(p.x,p.y,p.z+1.6f),chest);
+				}, 8.0f) : -1;
+			if (i>=0) { m_withdrawCover=Vec3(spots[i].p.x,spots[i].p.y,spots[i].p.z); m_withdrawCoverValid=true; }
+			else { m_withdrawUntil=0; }
+		}
+		const bool aborted=BotConfig::Get().withdrawCover==1 && !m_withdrawCoverValid;
+		WB_LOG(2,"[WarsBots] TACTIC actor=%u skill=%s style=%s action=%s health=%d energy=%.1f distance=%.1f visible=%d cover=%d.",
 			actor.GetEntityId(),BotProfile::SkillName(m_profile.skill),BotProfile::StyleName(m_profile.style),
-			m_blackboard.health,m_blackboard.energy,distance,visible?1:0);
+			aborted?"withdraw_abort":"withdraw",m_blackboard.health,m_blackboard.energy,distance,visible?1:0,m_withdrawCoverValid?1:0);
 	}
 	if (m_now<m_withdrawUntil)
 	{
-		const Vec3 away=(actor.GetEntity()->GetWorldPos()-destination).GetNormalizedSafe(FORWARD_DIRECTION);
-		WBI_MOVETO(actor.GetEntity()->GetWorldPos()+away*4.0f,aim);
+		if (BotConfig::Get().withdrawCover==1 && m_withdrawCoverValid)
+		{
+			const Vec3 feet=actor.GetEntity()->GetWorldPos();
+			WBI_MOVETO(Steer(feet,m_withdrawCover),aim);
+		}
+		else
+		{
+			const Vec3 away=(actor.GetEntity()->GetWorldPos()-destination).GetNormalizedSafe(FORWARD_DIRECTION);
+			WBI_MOVETO(actor.GetEntity()->GetWorldPos()+away*4.0f,aim);
+		}
 		m_intent.strafe=visible; m_intent.combat=BotCombatIntent::Aim;
 		// wb_bot_pro_fire: a player backs off shooting, not just aiming
 		if (BotConfig::Get().proFire==1 && visible && distance<=m_profile.fireRange && m_now>=std::max(m_stateTime,m_combat.SelectedAt())+m_profile.reaction)
@@ -1460,7 +1495,7 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
 	const bool hasPrimary=BotWeapons::HasPrimary(actor);
 	const bool ranked=BotConfig::Get().weaponRank==1;
 	if ((!hasPrimary || ranked) && m_now>=m_nextUpgradeSearch && !m_upgradeTarget)
-	{ m_upgradeTarget=UpgradeCandidate(actor,hasPrimary); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
+	{ m_upgradeTarget=UpgradeCandidate(actor,hasPrimary,BotConfig::Get().firstPrimary==1 && !hasPrimary); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
 	if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor,m_upgradeTarget)) m_upgradeTarget=0;
 	IEntity* item=m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
 	ArbiterInput in;

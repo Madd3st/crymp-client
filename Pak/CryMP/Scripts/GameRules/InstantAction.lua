@@ -18,6 +18,15 @@ Script.LoadScript("scripts/gamerules/singleplayer.lua", 1, 1);
 InstantAction = new(SinglePlayer);
 InstantAction.States = { "Reset", "PreGame", "InGame", "PostGame", };
 
+-- WarsBots DS-045: guard a per-client RMI by PS participant identity, never by channel id: a bot has no client
+-- channel (all bots use 0), and a listen-server host may also use channel 0.
+function WarsBotsIsBot(rules, playerId)
+	if (playerId == nil) then return false end
+	local p = System.GetEntity(playerId);
+	if (p and p.warsBot == true) then return true end
+	return rules ~= nil and rules.botPlayers ~= nil and rules.botPlayers[playerId] == true;
+end
+
 
 InstantAction.MIN_PLAYER_LIMIT_WARN_TIMER	= 15; -- player limit warning timer
 InstantAction.START_TIMER									= 30; -- starting countdown timer
@@ -541,7 +550,7 @@ function InstantAction.Server:OnClientEnteredGame(channelId, player, reset)
 	self:SetupPlayer(player);
 	
 	if ((not g_localActorId) or (player.id~=g_localActorId)) then
-		self.onClient:ClSetupPlayer(player.actor:GetChannel(), player.id);
+		if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClSetupPlayer(player.actor:GetChannel(), player.id); end
 	end	
 end
 
@@ -1315,7 +1324,7 @@ function InstantAction.Server:RequestSpawnGroup(playerId, groupId, force)
 			local channelId=player.actor:GetChannel();
 		
 			if (channelId and channelId>0) then
-				self.onClient:ClSetSpawnGroup(channelId, groupId);
+				if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClSetSpawnGroup(channelId, groupId); end
 			end
 		end
 		
@@ -1341,7 +1350,7 @@ function InstantAction:UpdateSpawnGroupSelection(playerId)
 				local channelId=player.actor:GetChannel();
 
 				if (channelId and channelId>0) then
-					self.onClient:ClSetPlayerSpawnGroup(channelId, playerId, groupId);
+					if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClSetPlayerSpawnGroup(channelId, playerId, groupId); end
 				end
 			end
 		end
@@ -1362,7 +1371,7 @@ function InstantAction:UpdateSpawnGroupSelectionForPlayer(playerId, teamId)
 					if (teamId==self.game:GetTeam(player.id)) then
 						groupId=self:GetPlayerSpawnGroup(System.GetEntity(player.id)) or NULL_ENTITY;
 					end
-					self.onClient:ClSetPlayerSpawnGroup(channelId, player.id, groupId);
+					if (not WarsBotsIsBot(self, playerId)) then self.onClient:ClSetPlayerSpawnGroup(channelId, player.id, groupId); end
 				end
 			end
 		end
@@ -1389,7 +1398,7 @@ function InstantAction.Server:OnSpawnGroupInvalid(playerId, spawnGroupId)
 
 	local player=System.GetEntity(playerId);
 	if (player) then
-		self.onClient:ClSpawnGroupInvalid(player.actor:GetChannel(), spawnGroupId);
+		if (not WarsBotsIsBot(self, player.id)) then self.onClient:ClSpawnGroupInvalid(player.actor:GetChannel(), spawnGroupId); end
 	end
 end
 

@@ -1,0 +1,137 @@
+// DS-045 probe runner tests: scenario JSON -> setup commands -> log metrics -> assertions (engine-free).
+#include "CryGame/Bots/BotProbeRunner.h"
+#include <cassert>
+#include <cstdio>
+#include <string>
+
+using namespace WarsBots::Probe;
+
+static int failures = 0;
+#define CHECK(cond) do { if (!(cond)) { std::printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #cond); ++failures; } } while (0)
+
+static const char* kScenario = R"json({
+  "schema": 1,
+  "id": "exploit_demo",
+  "map": "multiplayer/ia/steelmill",
+  "seed": 4242,
+  "duration_s": 20,
+  "bots": [ { "skill": "veteran", "style": "assault", "spawn": [1, 2, 3], "ai": true } ],
+  "dummies": [ { "pos": [4, 5, 6], "hp": 100, "team": 0, "shoot_every_s": 0.8, "weapon": "SCAR" } ],
+  "items": [ { "class": "SCAR", "pos": [7, 8, 9] } ],
+  "bursts": [ { "actor": 1, "shots": 3, "interval": 0.2 } ],
+  "peeks": [ { "actor": 1, "pos": [1, 2, 3], "expose_s": 0.4, "hide_s": 1.0 } ],
+  "cloaks": [ { "actor": 1, "on": false } ],
+  "cvars": { "wb_bot_navmesh": 1, "wb_bot_goal": true, "wb_bot_name": "probe" },
+  "goal": [10, 11, 12],
+  "assertions": [
+    { "metric": "kills", "op": "eq", "value": 0 },
+    { "metric": "time_to_first_shot", "op": "gt", "value": 0.5 }
+  ]
+})json";
+
+int main()
+{
+    Scenario s;
+    std::string err;
+    CHECK(ParseScenario(kScenario, s, &err));
+    CHECK(s.id == "exploit_demo");
+    CHECK(s.map == "multiplayer/ia/steelmill");
+    CHECK(s.seed == 4242);
+    CHECK(s.duration == 20);
+    CHECK(s.bots.size() == 1 && s.bots[0].skill == "veteran" && s.bots[0].style == "assault");
+    CHECK(s.bots[0].x == 1 && s.bots[0].y == 2 && s.bots[0].z == 3 && s.bots[0].ai);
+    CHECK(s.dummies.size() == 1 && s.dummies[0].hp == 100 && s.dummies[0].weapon == "SCAR");
+    CHECK(s.items.size() == 1 && s.items[0].cls == "SCAR");
+    CHECK(s.bursts.size() == 1 && s.bursts[0].shots == 3);
+    CHECK(s.peeks.size() == 1 && s.peeks[0].expose == 0.4);
+    CHECK(s.cloaks.size() == 1 && !s.cloaks[0].on);
+    CHECK(s.cvars.size() == 3 && s.cvars["wb_bot_navmesh"] == "1" && s.cvars["wb_bot_goal"] == "1");
+    CHECK(s.hasGoal && s.goal[0] == 10 && s.goal[1] == 11 && s.goal[2] == 12);
+    CHECK(s.assertions.size() == 2 && s.assertions[0].metric == "kills" && s.assertions[0].value == 0);
+
+    const std::vector<std::string> cmds = BuildSetupCommands(s);
+    bool hasSpawn = false, hasDummy = false, hasItem = false, hasGoal = false, hasRun = false, hasNav = false, hasName = false;
+    bool hasBurst = false, hasPeek = false, hasCloak = false;
+    for (size_t i = 0; i < cmds.size(); ++i)
+    {
+        hasSpawn |= cmds[i] == "wb_probe_spawn 1 2 3 veteran assault 1";
+        hasDummy |= cmds[i] == "wb_probe_dummy 4 5 6 100 0 0.8 SCAR";
+        hasItem  |= cmds[i] == "wb_probe_item SCAR 7 8 9";
+        hasGoal  |= cmds[i] == "wb_probe_goal 10 11 12 1.5";
+        hasRun   |= cmds[i] == "wb_probe_run exploit_demo 20";
+        hasNav   |= cmds[i] == "wb_bot_navmesh 1";
+        hasName  |= cmds[i] == "wb_bot_name probe";
+        hasBurst |= cmds[i] == "wb_probe_burst 1 3 0.2";
+        hasPeek  |= cmds[i] == "wb_probe_peek 1 1 2 3 0.4 1";
+        hasCloak |= cmds[i] == "wb_probe_cloak 1 0";
+    }
+    CHECK(hasSpawn && hasDummy && hasItem && hasGoal && hasRun && hasNav && hasName && hasBurst && hasPeek && hasCloak);
+    CHECK(cmds.back() == "wb_probe_run exploit_demo 20");
+
+    Metrics m;
+    m.Begin(0.0);
+    m.ObserveLine("0.00 [WarsBots] PROBE GOAL reached x=10 y=11 z=12 elapsed=0.0");
+    m.ObserveLine("0.60 [WarsBots] FIRE SHOT shooter=1 target=2 projectile=3 weapon=4 class=SCAR mode=Single rpm=450.00 clip=29 remote=0 distance=12.5.");
+    m.ObserveLine("0.70 [WarsBots] FIRE HIT phase=before-Lua target=2 shooter=1 projectile=3 weapon=4 class=SCAR actor=1 human=0 health=100 suit=3 energy=100.00 invulnerable=0 distance=12.5 material=6 head=1 part=1 damage=50.000.");
+    m.ObserveLine("0.70 [WarsBots] FIRE HIT phase=after-Lua target=2 shooter=1 projectile=3 weapon=4 class=SCAR actor=1 human=0 health=50 suit=3 energy=50.00 invulnerable=0 distance=12.5 material=6 head=1 part=1 damage=50.000.");
+    m.ObserveLine("1.00 [WarsBots] #1 combat kill shooter=1 target=2 via stock GameRules::KillPlayer.");
+    m.ObserveLine("2.00 [WarsBots] #2 death observed EntityId=1 health=-4 lastHitShooter=2 KillPlayerObserved=1.");
+    m.ObserveLine("3.00 [WarsBots] TRAP RECOVERY level=2 actor=1 age=8.00 pos=(0,0,0) blocked=1 speed=0.00 grounded=1 sink=0.");
+    m.ObserveLine("3.10 [WarsBots] #1 LINK start kind=jump a=(0,0,0) b=(1,1,1) energy=100 actor=1.");
+    m.ObserveLine("4.00 [WarsBots] TACTIC SAMPLE actor=1 skill=veteran style=assault weapon=SCAR suit=3 distance=18.50 action=ATTACKING target=2 visible=1.");
+    m.ObserveLine("5.00 [WarsBots] MOTION INTENT: gait=1 strafe=0 requestedBase=2.50 actual=0.00 lateral=0.00 facingDot=0.00 blocked=1.");
+    m.ObserveLine("6.00 [WarsBots] BODY LIVING actor=1 epoch=1 spawn=1 phase=now flying=0 stuck=1 squashed=0.");
+
+    CHECK(m.shots == 1);
+    CHECK(m.hits == 1); // the after-Lua duplicate is ignored
+    CHECK(m.kills == 1);
+    CHECK(m.deaths == 1);
+    CHECK(m.trapMax == 2);
+    CHECK(m.linkAttempts == 1);
+    CHECK(m.stalls == 2); // the trap line also carries blocked=1
+    CHECK(m.stuckEvents == 1);
+    CHECK(std::fabs(m.firstShot - 0.60) < 1e-6);
+    CHECK(std::fabs(m.goalTime - 0.0) < 1e-6);
+    CHECK(std::fabs(m.Accuracy() - 100.0) < 1e-6);
+    CHECK(std::fabs(m.HitDistanceP50() - 12.5) < 1e-6);
+    CHECK(std::fabs(m.TargetDistanceP50() - 18.5) < 1e-6);
+
+    const std::vector<AssertionResult> results = EvaluateAll(m, s.assertions);
+    CHECK(results.size() == 2);
+    CHECK(!results[0].pass); // kills == 1, assertion says 0
+    CHECK(results[1].pass);  // first shot 0.6 > 0.5
+    CHECK(std::fabs(results[0].actual - 1.0) < 1e-6);
+
+    // Unknown metric must fail, not pass by default.
+    Assertion unknown; unknown.metric = "does_not_exist"; unknown.op = "eq"; unknown.value = 0;
+    AssertionResult ur;
+    CHECK(!Evaluate(m, unknown, ur));
+    CHECK(!ur.pass);
+
+    // Malformed JSON is rejected.
+    Json j;
+    CHECK(!ParseJson("{ \"id\": ", j, &err));
+    CHECK(!err.empty());
+
+    // A real probe file from the repo (if the test runs from the repo root).
+    static const char* file = "Tools/Probes/exploit_height_camp.json";
+    if (FILE* f = std::fopen(file, "rb"))
+    {
+        std::string text;
+        char buf[4096];
+        size_t n;
+        while ((n = std::fread(buf, 1, sizeof buf, f)) > 0) text.append(buf, n);
+        std::fclose(f);
+        Scenario real;
+        CHECK(ParseScenario(text, real, &err));
+        CHECK(real.id == "exploit_height_camp");
+        CHECK(!real.dummies.empty());
+    }
+
+    if (failures) { std::printf("probe_runner: %d FAILURES\n", failures); return 1; }
+    std::printf("probe_runner: all tests passed\n");
+    return 0;
+}
+
+
+

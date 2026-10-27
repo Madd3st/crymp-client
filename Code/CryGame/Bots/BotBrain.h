@@ -75,7 +75,7 @@ private:
 	float TurnRate() const;
 	bool EyeRayClear(CPlayer& actor, const Vec3& from, const Vec3& to) const;
 	bool UpdateArbitrated(BotInstance& bot, CPlayer& actor, IActor* enemy, float decisionTime, bool socomQA);
-	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld);
+	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld, bool pathCost = false);
 	BotLookPolicy m_look;
 	Vec3 m_lookDir = Vec3(0,1,0);
 	bool m_lookValid = false;
@@ -161,6 +161,8 @@ private:
 	unsigned m_rng = 1;
 	bool m_speedTravel = false;
 	float m_withdrawUntil=0, m_nextWithdraw=0;
+	Vec3 m_withdrawCover=Vec3(0,0,0);
+	bool m_withdrawCoverValid=false;
 	float m_nextTravelJump = 0, m_nextDodge = 0, m_lastHitSeen = 0, m_nextUpgradeSearch = 0;
 	EntityId m_upgradeTarget = 0;
 	float m_upgradeSince = 0;
