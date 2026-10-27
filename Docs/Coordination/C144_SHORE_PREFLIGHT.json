@@ -1,0 +1,120 @@
+{
+  "tool": "triage recast_bake current",
+  "input_release_hash_verified": true,
+  "source_only_deps": {
+    "purpose": "standalone offline baker; local build deps only, no system installation, no game binary",
+    "zlib_tag": "v1.3.1",
+    "zlib_commit": "51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf",
+    "recast_commit": "6dc1667f580357e8a2154c28b7867bea7e8ad3a7",
+    "recast_tag": "v1.6.0"
+  },
+  "water_arg_exit": 2,
+  "water_arg_error": "unknown arg --water\r\n",
+  "synthetic_baseline": {
+    "input": {
+      "obj": "C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/coordinator-c144/two-shores.obj",
+      "triangles": 4,
+      "dropped_by_z": 2,
+      "bounds_crysis": [
+        0.0,
+        0.0,
+        100.0,
+        40.0,
+        10.0,
+        100.0
+      ]
+    },
+    "params": {
+      "cs": 0.1,
+      "ch": 0.1,
+      "radius": 0.3,
+      "wall_radius": 0.0,
+      "height": 1.8,
+      "climb": 0.5,
+      "slope": 45.0,
+      "tile": 256,
+      "min_region": 2,
+      "partition": "watershed",
+      "recast": "v1.6.0"
+    },
+    "mesh": {
+      "tiles": 2,
+      "tiles_grid": [
+        2,
+        1
+      ],
+      "polys": 2,
+      "max_tile_polys": 1,
+      "components": 2,
+      "area_m2": 342,
+      "main_area_m2": 171,
+      "two_way_area_m2": 171,
+      "offmesh_links": 0,
+      "generated": {
+        "drop": 0,
+        "jump": 0,
+        "strength": 0
+      }
+    },
+    "points": [
+      {
+        "kind": "spawn",
+        "id": 1,
+        "pos": [
+          2.0,
+          5.0,
+          100.0
+        ],
+        "on_mesh": true,
+        "snap_m": 0.1,
+        "main": true,
+        "two_way": true,
+        "reach": true,
+        "comp": 1,
+        "comp_area": 171
+      },
+      {
+        "kind": "item",
+        "id": 2,
+        "pos": [
+          38.0,
+          5.0,
+          100.0
+        ],
+        "on_mesh": true,
+        "snap_m": 0.1,
+        "main": false,
+        "two_way": false,
+        "reach": false,
+        "comp": 0,
+        "comp_area": 171
+      }
+    ],
+    "summary": {
+      "spawns": 1,
+      "spawns_on_mesh": 1,
+      "spawns_in_main": 1,
+      "spawns_two_way": 1,
+      "items": 1,
+      "items_on_mesh": 1,
+      "items_two_way": 0,
+      "items_reachable": 0
+    }
+  },
+  "game_runs": 0,
+  "installed_mesh": false,
+  "mesh_output_gate": "RED: current CLI lacks water surface and area-cost support; no production Shore bake claimed",
+  "raw_obj_head": [
+    "# WarsBots static collision export; Z-up; metres",
+    "# map=Multiplayer/PS/Shore sha=a943e070740de3f652d4cbdece14845e34293d4c",
+    "# bounds=1431.000 1000.000 -4096.000 2591.000 2160.000 4096.000",
+    "v 1430.000000 998.000000 311.238464",
+    "v 1432.000000 998.000000 311.186523",
+    "v 1432.000000 1000.000000 309.108826",
+    "f 1 2 3",
+    "v 1430.000000 998.000000 311.238464",
+    "v 1432.000000 1000.000000 309.108826",
+    "v 1430.000000 1000.000000 309.238678"
+  ],
+  "tool_sha256": "86675d4a7d83e7919ad94ba9918501bed7d32871b9647d30643deea807062afb"
+}
