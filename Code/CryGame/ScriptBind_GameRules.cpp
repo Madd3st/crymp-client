@@ -1548,7 +1548,7 @@ int CScriptBind_GameRules::SendTextMessage(IFunctionHandler* pH, int type, const
 
 			// WarsBots C-126: a bot has no client; a per-client text message (e.g. stock PS BuyItem "cannot carry
 			// more") would be an RMI to channel 0. Drop it here once for every Lua path.
-			if ((to & eRMI_ToClientChannel) && BotMatch::IsBot(*pGameRules, (EntityId)playerId.n))
+			if ((to & eRMI_ToClientChannel) && WarsBots::BotMatch::IsBot(*pGameRules, (EntityId)playerId.n))
 				return pH->EndFunction();
 
 			channelId = pGameRules->GetChannelId((EntityId)playerId.n);
