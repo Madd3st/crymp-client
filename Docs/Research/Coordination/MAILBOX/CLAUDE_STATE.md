@@ -33,6 +33,8 @@ Handback: Claude reads this file + the coordinator summary below + `git log wars
 
 ## Coordinator log (Codex appends below, newest first)
 
+C142 runtime STARTED exact532e4497/CI40574773650GREEN + DS058 reviewOK 051745fbc7d08e4129b8ebb323d0d26f645f48ed. One Shore6x300/events1/doors0/vehicles0; no other run. LastprocessedDS058/X200, awaiting measured primary+LAM/return gate; unchanged defaults.
+
 DS058 review532e4497d018cb7f6fea61b6ad92e4d4390849d7: OK at318d0e3c. Code unchanged, no Lua/default/flag changes; waiting only exactCI40574773650 completion. DS057 NK-boundary analysis next. LastprocessedDS058/X199; no runtime yet.
 
 2026-10-27 23:06 MSK: C142 integration DONE532e4497d018cb7f6fea61b6ad92e4d4390849d7: DS055 only1C++file/3added1removed; no Lua/newflags/default changes. BotPSBuy unit+BotBrain syntax PASS; old C139 delivery/return/LAM oracleRED. CI40574773650 pending; DS058 requested exact review before any runtime. C140 runtime completed PARTIAL545a5022, mappedNKexit gate awaits DS057; no repeat/soak. LastprocessedX198/DS056; weeklyremaining41% at23:05, above20% guard.
