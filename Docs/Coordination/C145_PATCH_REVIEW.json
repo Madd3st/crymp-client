@@ -1,0 +1,217 @@
+{
+  "task": "C145",
+  "source": "2e0a66414305b163848c6d5f18bb5812df4462a9",
+  "ci": 40588717866,
+  "ci_conclusion": "success",
+  "independent_review": "DS065 OK53903147",
+  "candidate_water": "DS062 f8dd3a1f",
+  "candidate_door": "DS063 b43db987",
+  "water_standalone_compile": "PASS",
+  "fixtures": [
+    {
+      "case": "two-shores-dry",
+      "exit": 0,
+      "mesh": {
+        "tiles": 2,
+        "tiles_grid": [
+          2,
+          1
+        ],
+        "polys": 2,
+        "max_tile_polys": 1,
+        "components": 2,
+        "area_m2": 342,
+        "main_area_m2": 171,
+        "two_way_area_m2": 171,
+        "offmesh_links": 0,
+        "generated": {
+          "drop": 0,
+          "jump": 0,
+          "strength": 0
+        }
+      },
+      "water": null,
+      "summary": {
+        "spawns": 1,
+        "spawns_on_mesh": 1,
+        "spawns_in_main": 1,
+        "spawns_two_way": 1,
+        "items": 1,
+        "items_on_mesh": 1,
+        "items_two_way": 0,
+        "items_reachable": 0
+      }
+    },
+    {
+      "case": "two-shores-water",
+      "exit": 0,
+      "mesh": {
+        "tiles": 2,
+        "tiles_grid": [
+          2,
+          1
+        ],
+        "polys": 5,
+        "max_tile_polys": 3,
+        "components": 1,
+        "area_m2": 729,
+        "main_area_m2": 729,
+        "two_way_area_m2": 729,
+        "offmesh_links": 0,
+        "generated": {
+          "drop": 0,
+          "jump": 0,
+          "strength": 0
+        }
+      },
+      "water": {
+        "z": 99.5,
+        "cells": 50,
+        "surface_tris": 100,
+        "area": 4,
+        "area_cost": 4.0
+      },
+      "summary": {
+        "spawns": 1,
+        "spawns_on_mesh": 1,
+        "spawns_in_main": 1,
+        "spawns_two_way": 1,
+        "items": 1,
+        "items_on_mesh": 1,
+        "items_two_way": 1,
+        "items_reachable": 1
+      }
+    },
+    {
+      "case": "roof-water",
+      "exit": 0,
+      "mesh": {
+        "tiles": 2,
+        "tiles_grid": [
+          2,
+          1
+        ],
+        "polys": 5,
+        "max_tile_polys": 3,
+        "components": 3,
+        "area_m2": 699,
+        "main_area_m2": 171,
+        "two_way_area_m2": 171,
+        "offmesh_links": 0,
+        "generated": {
+          "drop": 0,
+          "jump": 0,
+          "strength": 0
+        }
+      },
+      "water": {
+        "z": 99.5,
+        "cells": 0,
+        "surface_tris": 0,
+        "area": 4,
+        "area_cost": 4.0
+      },
+      "summary": {
+        "spawns": 1,
+        "spawns_on_mesh": 1,
+        "spawns_in_main": 1,
+        "spawns_two_way": 1,
+        "items": 1,
+        "items_on_mesh": 1,
+        "items_two_way": 0,
+        "items_reachable": 0
+      }
+    },
+    {
+      "case": "island-water",
+      "exit": 0,
+      "mesh": {
+        "tiles": 2,
+        "tiles_grid": [
+          2,
+          1
+        ],
+        "polys": 22,
+        "max_tile_polys": 20,
+        "components": 1,
+        "area_m2": 696,
+        "main_area_m2": 696,
+        "two_way_area_m2": 696,
+        "offmesh_links": 0,
+        "generated": {
+          "drop": 0,
+          "jump": 0,
+          "strength": 0
+        }
+      },
+      "water": {
+        "z": 99.5,
+        "cells": 44,
+        "surface_tris": 88,
+        "area": 4,
+        "area_cost": 4.0
+      },
+      "summary": {
+        "spawns": 1,
+        "spawns_on_mesh": 1,
+        "spawns_in_main": 1,
+        "spawns_two_way": 1,
+        "items": 1,
+        "items_on_mesh": 1,
+        "items_two_way": 1,
+        "items_reachable": 1
+      }
+    },
+    {
+      "case": "void-water",
+      "exit": 0,
+      "mesh": {
+        "tiles": 2,
+        "tiles_grid": [
+          2,
+          1
+        ],
+        "polys": 2,
+        "max_tile_polys": 1,
+        "components": 2,
+        "area_m2": 342,
+        "main_area_m2": 171,
+        "two_way_area_m2": 171,
+        "offmesh_links": 0,
+        "generated": {
+          "drop": 0,
+          "jump": 0,
+          "strength": 0
+        }
+      },
+      "water": {
+        "z": 99.5,
+        "cells": 0,
+        "surface_tris": 0,
+        "area": 4,
+        "area_cost": 4.0
+      },
+      "summary": {
+        "spawns": 1,
+        "spawns_on_mesh": 1,
+        "spawns_in_main": 1,
+        "spawns_two_way": 1,
+        "items": 1,
+        "items_on_mesh": 1,
+        "items_two_way": 0,
+        "items_reachable": 0
+      }
+    }
+  ],
+  "no_water_byte_compatibility": true,
+  "water_mask_safety": "BLOCK: tiny island centre miss, 1 generated quad overlaps solid island; actual AddWaterSurface oracle exit1",
+  "water_selftest": "BLOCK: Windows path JSON escaping; no points argument; incorrect roof component count; printed cost is not query test",
+  "door_cpp_syntax": "PASS with original source include dirs; priority audit pending DS066",
+  "production_bake": false,
+  "installed": false,
+  "game_runs": 0,
+  "existing_external_server_pid": 22508,
+  "existing_server_started": "2026-10-28 00:53:48 MSK",
+  "owner_free_state": "asked asynchronously; do not stop external server",
+  "next": "DS066 revised water safety + door/vehicle scope review before package integration"
+}
