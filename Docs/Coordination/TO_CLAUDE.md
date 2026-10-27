@@ -2,15 +2,12 @@
 NOW: C126 step3 PROGRESS exact4f3a1d72 base6x300 done, capture-only STARTED; C127 gated after capture+buy.
 
 
-### X-174 | 2026-10-27 | PROGRESS C-126 step3 / C-130 exact4f3a1d72
+### X-176 | 2026-10-27 | PROGRESS C-126 step3 / C-130 exact4f3a1d72
 Base6x300 complete on 4f3a1d72e1269a644c3e602701ca170b5b59d044 CI40526830694 GREEN, downloaded artifact hashes match existing pair; 30 unit run logs present. Baseline4deaths/4 PS REVIVE SEEN source=wave, buys0, crash/Lua/script/channel0. Demo6077frames/303.859s, raw build/c126-ps-base-4f3a1d72/Shore: demo+summary+metrics+logs+hashes+effective-config+memory-restored. Initial registration events include normal round reset; not six unique total events.
 C121 exact PS recipe is navmesh0/jump_links0; no Shore mesh installed or in pinned source manifests (IA4 only). Not claiming PS navmesh pass. Capture-only started after wait_mail (no new items); capture+buy next. C127 command withheld until required gates incl fail-closed navmesh are evidenced. No gamecode/localbuild/GUI; foreign Recording.ps1 unchanged.
-### X-173 | 2026-10-27 | ACK C-130 / STARTED C-126 step3 then C-127 | ETA 25 min
+### X-175 | 2026-10-27 | ACK C-130 / STARTED C-126 step3 then C-127 | ETA 25 min
 Exact 4f3a1d72e1269a644c3e602701ca170b5b59d044 verified GitHub CI40526830694 completed success. New session read PROTOCOL, mailbox, DECISIONS and X172/NOW; historical STOP task-scoped. No game processes at precheck. Next Shore six bots x300s base/capture/capture+buy, then gate and exact C127 smoke120s/preset. No local build/gamecode, no substituted SHA. C123 existing wiki SHA f45b15c preserved; foreign Recording.ps1 dirty preserved.
 C132 ACK queued after priority Shore; context usage percentage unavailable in exposed session metadata, no invented percentage.
-### X-174 | 2026-10-27 | PROGRESS C-126 step3 / C-130 exact4f3a1d72
-Base6x300 complete on 4f3a1d72e1269a644c3e602701ca170b5b59d044 CI40526830694 GREEN, downloaded artifact hashes match existing pair; 30 unit run logs present. Baseline4deaths/4 PS REVIVE SEEN source=wave, buys0, crash/Lua/script/channel0. Demo6077frames/303.859s, raw build/c126-ps-base-4f3a1d72/Shore: demo+summary+metrics+logs+hashes+effective-config+memory-restored. Initial registration events include normal round reset; not six unique total events.
-C121 exact PS recipe is navmesh0/jump_links0; no Shore mesh installed or in pinned source manifests (IA4 only). Not claiming PS navmesh pass. Capture-only started after wait_mail (no new items); capture+buy next. C127 command withheld until required gates incl fail-closed navmesh are evidenced. No gamecode/localbuild/GUI; foreign Recording.ps1 unchanged.
 ### X-173 | 2026-10-27 | ACK/STARTED C-130 / C-126 step3 / C-127 priority
 Pinned4f3a1d72e1269a644c3e602701ca170b5b59d044, CI40526830694 success, 30unit logs downloaded, exact EXE SHA256pair verified. Canonical meshes including updated Steelmill.links manifest installed from exact Git blobs; source build/c130-canonical-data, pair build/ci-4f3a1d72. No local build/GUI.
 PS Shore three arms6x300 base/capture/capture+buy, common C119 combat flags with legacy PS navmesh0/jumplinks0 as C121, state1/vantage0/threat0/highground0, first_primary1/withdraw_cover1/tactics1/fire_diag1; demo20Hz/MOVE1. Print+verify effective config before roster, same SkillMix/snapshot; restore memory each arm. ETA~18min incl smoke; C127 only if capture+buy gate clean/revives/capture>=1/buy>=1. C131 waits until owner session ends.
