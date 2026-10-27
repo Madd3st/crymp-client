@@ -3,7 +3,7 @@
 NOW: DS-053 DONE (doors open-only + path segment; C-126 setup/wb_probe_run) - push - stop
 
 ### DS-053 - DONE - `DS053_DOORS.md` + `DS053_PROBE_SETUP.md` + `patches/ds053.patch`
-Re DS-053: done PENDING_SHA
+Re DS-053: done 79f518fb
 Base `96f7f624`.
 **#1 doors:** state is `Door.action`: `DOOR_OPEN=1`/`DOOR_CLOSE=2` (`Door.lua:84-86`), reset to close in
 `Door:ResetAction` (`:191-192`, from `OnReset` `:216`), assigned in `Door:Open` (`:525-535`). Patch `wb_ps_doors 0`
