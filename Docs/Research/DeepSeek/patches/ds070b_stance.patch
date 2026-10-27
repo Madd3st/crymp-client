@@ -1,0 +1,34 @@
+diff --git a/Code/CryGame/Bots/BotLocomotion.cpp b/Code/CryGame/Bots/BotLocomotion.cpp
+index 6a413d59..32f38fcc 100644
+--- a/Code/CryGame/Bots/BotLocomotion.cpp
++++ b/Code/CryGame/Bots/BotLocomotion.cpp
+@@ -124,21 +124,24 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
+     const bool eligible=intent.move && intent.gait==BotGait::Sprint &&
+         (pace?intent.combat!=BotCombatIntent::Fire:intent.combat==BotCombatIntent::None) &&
+         state.grounded && state.suitActive && !jump && !m_pending && !m_airborne && !actor.WarsBotWeaponFiring();
+-    const bool sprint=eligible && (pace?PaceSprintEnergy(m_sprinting,state.energy):state.energy>45.f);
++    // DS-070b: in gated water the native stance is STANCE_SWIM and the land sprint flag is off; the request and the
++    // action state must not keep the land stance/sprint the caller asked for.
++    const EStance stance=state.waterMovement?STANCE_SWIM:intent.stance;
++    const bool sprint=!state.waterMovement && eligible && (pace?PaceSprintEnergy(m_sprinting,state.energy):state.energy>45.f);
+     m_sprinting=sprint;
+     bool accepted=false;
+     if(intent.move){
+-        const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(intent.stance):2.5f);
++        const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(stance):2.5f);
+         const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
+         // DS-070: ProcessSwimming applies the request in view space (PlayerMovement.cpp:835-836) and the WarsBot view
+         // follows the aim while strafing (Player.cpp:5085-5090), so strafing in water would swim toward the aim.
+         const bool strafe=intent.strafe && !state.waterMovement;
+-        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,intent.stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,strafe,pseudo,intent.meshPath,intent.arrive,state.waterMovement);
++        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,stance,sprint?2.7f:1.5f,jump||m_pending||m_airborne,strafe,pseudo,intent.meshPath,intent.arrive,state.waterMovement);
+     }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
+ 	state.blocked=intent.move && !accepted;
+-	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,intent.stance);
++	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,stance);
+ 	CMovementRequest request;
+-	request.SetStance(jump?STANCE_STAND:intent.stance);
++	request.SetStance(jump?STANCE_STAND:stance);
+ 	if (jump) request.SetJump();
+ 	actor.GetMovementController()->RequestMovement(request);
+ 	return accepted;

@@ -1,0 +1,77 @@
+diff --git a/Code/CryGame/Bots/BotMovement.cpp b/Code/CryGame/Bots/BotMovement.cpp
+index 6bf503c4..d4731ee0 100644
+--- a/Code/CryGame/Bots/BotMovement.cpp
++++ b/Code/CryGame/Bots/BotMovement.cpp
+@@ -64,19 +64,23 @@ bool BotMovement::SafeStep(CActor& actor, const Vec3& direction, float probe, bo
+ 	// Three parallel body-width rays prevent a shoulder clipping a corner.
+ 	// P0 (C-055 stalls, X-049): on a Detour corner path the knee ray at 0.4 m hits stair risers 1-1.5 m ahead and
+ 	// declared the stairs a wall (level-4 traps on Steelmill stairs at z 142-144). The mesh already proved the slope/step.
++	bool bodyBlocked = false;
+ 	for (float side : {-0.3f,0.0f,0.3f})
+ 	for (float height : {0.4f,1.1f,1.6f})
+-		if (!(meshGuided && height < 1.0f) && gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), (direction + Vec3(0,0,slope)) * probe,
++		if (!bodyBlocked && !(meshGuided && height < 1.0f) && gEnv->pPhysicalWorld->RayWorldIntersection(feet + Vec3(-direction.y*side,direction.x*side,height), (direction + Vec3(0,0,slope)) * probe,
+ 			ent_all, flags, &hit, 1, actor.GetEntity()->GetPhysics(), heldPhysics))
+-			return false;
+-	// DS-070: in gated deep water the ground probe cannot hit (the seabed is far below); the stock movement
+-	// controller owns buoyancy. Only this ray is skipped - the nine body/cliff rays above still refuse a wall,
+-	// a quay or a held item, and a dry cliff keeps the old branch.
+-	if (waterMovement) return true;
+-	// Stop at real cliffs only: drops up to ~3 m are taken (Armor absorbs the landing, see BotBrain).
+-	return gEnv->pPhysicalWorld->RayWorldIntersection(feet + direction * (probe-0.3f) + Vec3(0,0,0.6f),
+-		Vec3(0,0,-3.6f), ent_terrain | ent_static | ent_rigid | ent_sleeping_rigid,
+-		flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
++			{ bodyBlocked = true; break; }
++	// DS-070c: one decision table. Body/cliff rays above always win; gated deep water only relaxes the downward
++	// ground probe (the stock controller owns buoyancy); dry ground keeps the old "ground within reach" rule.
++	bool groundHit = false;
++	if (!bodyBlocked)
++	{
++		// Stop at real cliffs only: drops up to ~3 m are taken (Armor absorbs the landing, see BotBrain).
++		groundHit = gEnv->pPhysicalWorld->RayWorldIntersection(feet + direction * (probe-0.3f) + Vec3(0,0,0.6f),
++			Vec3(0,0,-3.6f), ent_terrain | ent_static | ent_rigid | ent_sleeping_rigid,
++			flags, &hit, 1, actor.GetEntity()->GetPhysics()) != 0;
++	}
++	return WaterStepAllowed(waterMovement, bodyBlocked, groundHit);
+ }
+ 
+ bool BotMovement::Move(CActor& actor, const Vec3& destination, const Vec3& lookAt, float dt, float speed, EStance stance, float probe, bool jumpTraverse, bool strafe, float pseudo, bool meshGuided, float arrive, bool waterMovement)
+diff --git a/Code/CryGame/Bots/BotWaterPolicy.h b/Code/CryGame/Bots/BotWaterPolicy.h
+index c7d9e90f..28300645 100644
+--- a/Code/CryGame/Bots/BotWaterPolicy.h
++++ b/Code/CryGame/Bots/BotWaterPolicy.h
+@@ -26,6 +26,14 @@ inline bool BotWaterAllowed(const BotWaterFacts& f)
+ 		f.captureEnabled && f.navMeshEnabled && f.hasNanoSuit;
+ }
+ 
++// SafeStep decision: body/cliff rays always win; gated water does not need the downward ground ray; dry ground
++// keeps exactly the old "ground must be within reach" rule. Used by BotMovement::SafeStep, tested here.
++inline bool WaterStepAllowed(bool waterMovement, bool bodyBlocked, bool groundHit)
++{
++	if (bodyBlocked) return false;
++	return waterMovement ? true : groundHit;
++}
++
+ // Engine-side facts for one actor. Defined in BotWaterPolicy.cpp; the pure truth table above links without it.
+ BotWaterFacts BotWaterFactsFor(const CPlayer& actor);
+ bool BotWaterAllowedFor(const CPlayer& actor);
+diff --git a/Tests/BotWaterPolicyTests.cpp b/Tests/BotWaterPolicyTests.cpp
+index f8643950..bfccd4d1 100644
+--- a/Tests/BotWaterPolicyTests.cpp
++++ b/Tests/BotWaterPolicyTests.cpp
+@@ -41,6 +41,15 @@ int main()
+ 	// The default struct (all false) can never enable water.
+ 	{ BotWaterFacts f; assert(!BotWaterAllowed(f)); }
+ 
++	// DS-070c SafeStep decision: dry void/cliff and water walls always block; dry ground keeps the ground rule;
++	// only gated deep water may skip the downward ray.
++	assert(!WaterStepAllowed(false, false, false)); // dry void / no ground
++	assert(!WaterStepAllowed(false, true, true));   // dry cliff/body hit with ground below
++	assert(WaterStepAllowed(false, false, true));   // dry land with ground
++	assert(!WaterStepAllowed(true, true, false));   // water wall/quay/held item
++	assert(WaterStepAllowed(true, false, false));   // gated deep water, ground out of reach
++	assert(WaterStepAllowed(true, false, true));    // gated deep water over shallow ground
++
+ 	std::puts("BotWaterPolicyTests OK");
+ 	return 0;
+ }
