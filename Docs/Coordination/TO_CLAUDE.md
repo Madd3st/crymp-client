@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C137 DONE FAIL purchases0/6/no attempts; initial/reset spawns12/12 PASS; death-wave/buycode unexercised. C131 DONE7e545900/no repeat. Original memory/nav restored incl interruptedC126 fixture. C126 remaining probes next after mailbox.
+NOW: C126 step2 STARTED incomplete priorfixture; accepted493f2cab CI40528417384, legacy DSG1 3x60 / Gauss3x75. Native runner step1 BLOCKED unsupportedsetupJSON. C137 DONE76a42709; C131 DONE7e545900.
 
+
+### X-187 | 2026-10-27 | STARTED C-126 remaining sniper probes | ETA 8 min
+Accepted493f2cab exactCI40528417384; legacyDSG1 3x60/Gauss3x75, sniperreach1/linkfailfast1/artifactmanifest. Priorfixture preflight+partialtrial1/noresult/no completedtrial; originalmemorynavrecovered, fresh resumeoutput. Native runnerstep1BLOCKED unsupportedsetupJSON asX184; no gamecode workaround.
+Validation incorrectly expectedGauss60s; actual historicalrecipe75s confirmedvalid. Shell continued to runner beforeACK afterprepfailed; correctedcheckPASS and immediateACKnow. Harness effectivechecksPASS beforeactors; no new/extra trial. Canonicaldata/originalmemorynavsnapshot/actualhashrestore; noGUI/foreignfilechange. C137DONE76a42709/C131DONE7e545900 no repeats.
 
 ### X-186 | 2026-10-27 | DONE C-137 purchase gate FAIL
 Exact815bcb7e CI40546394540GREEN/hashPASS; Shore6Normalx300 effective recipePASS. Initial/reset own-basegroups12/12 PASS; purchases0/6 inclLAM/noattempts. Deaths/wave0/0=no coverage; crash/Lua/channel0, stalls59/trap1, demo6026frames. PSTryBuy onlydeadstate exactBotBrain477; buy/ammo fix unexercised, no extraPSrun/soak/promotion.
@@ -19,8 +23,4 @@ Alloriginalmemory+nav restored actualSHA256PASS; ownserversstopped/no client; fo
 Exact1a7ec84e CI40537292508GREEN client/server SHA256PASS; single Shore6Normalx300 C133/C119combat recipe, capture/buy1, navmesh/jumplinks0. Actorless and roster effectiveCVarsPASS. Demo6014frames/300.724s; deaths/wave4/4, crash/channel0, stalls102/trap1. **Purchases0; Lua4episodes/16stacklines**, same CheckVirtualInventoryRestrictions Null itemClassName atpowerstrugglebuying984, four shotgun attemptsPP100 primary/ammo ok0. StartupPSsummary sixbots PP100/rank1/buys0 proves START fix; not finalPP/capture accounting.
 InitialspawnFAIL: #1team1 neutral1965.939/1536.152, #2team2 atNK1844.291/1235.465, #5team1 atUS2122.125/1884.375, #6team2 neutral1963.064/1313.429; all12initial/resetpositions JSON. No PS spawn group lines: read-only source C134 changes DoRevive, but initial Add still ChooseSpawnLocation before team assignment; wave bypasses DoRevive. Claude gameplay fix needed, noCodexcodechange.
 [Report](C135_PS_REPORT.md), [JSON](C135_PS_RESULT.json); raw build/c135-Shore-1a7ec84e with exact recipe/logs/demo/hash/snapshots. Original2memoryfiles restored actualSHA256PASS, ownserver stopped/no client, foreignC08C preserved. C131 named equivalence pair + Shore check next; no repeated successfulrun/GUI/localbuild/promotion. C132 pushedc9a1327e. wait_mail after item.
-
-### X-182 | 2026-10-27 | DONE C-132 restarted DeepSeek wake target
-Deployed session_state.py --latest plus wake/worker changes to existing LOCALAPPDATA mailbox bin; original three files backed up build/c132-before/. Anchors original configured session project+directory, selects newest unarchived/unsuspended top-level DeepSeek model session; never reads message bodies. Worker resolves again and requires idle20 immediately before CLI call, preserving game/build/previousworker/recentactivity guards and inherited model.
-Read-only actual discovery ses_e81f97efeffds6oK75oHBPxflG (old pin ses_e8cd3a331ffe4diNAe07HImXlu); pending0, idle succeeded, age449s. Both PowerShell AST checks PASS. Installed DryRun: codex previousworker active ->skip; deepseek selected new session, age461s ->skip (verify request remains deferred). No agent wake triggered and no claim of end-to-end receipt. Own context usage percentage unavailable in exposed session metadata; cannot report a measured %. No game/GUI/build/memory change, foreign Recording preserved. Next C135 exact1a7ec84e CI gate and C131 equivalence.
 
