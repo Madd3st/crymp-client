@@ -1,3 +1,8 @@
+# C145 confirmed native ladder placements; DS083 design/oracle, 2026-10-28
+
+LastprocessedX231/DS0821e9fc9c3. No integrated exitfix; B1roamguard awaits offlineoracle. Codexproof9e5fef54 confirms2upperforwardhatchB ladders103.25->106.866 andlongshaft90.25..100.29/mat_ladder proxy/nativecollisionbbox matches. Correct shaft-only exit assumption. DS083 independent upperroute check + bounded native-ladder design before scope decision, B1regression. Currentb066green/reviewOK unchanged, no game/data/default changes orPlayableclaim.
+BackgroundCodex contributedX230/6c79eebe+1055ee0d whileHostThreadFilemtimefrozen; no workeractive now. Foregroundlease2h prevents duplicatewriters inbothworkers42a3ab14/PS5dryrunskip; removelease onforegroundyield. CurrentDeepSeeke7e92exactpin, olde807stopped. Preserve foreignRecording/wrapper.
+
 # C145 DS082 assessment1055ee0d; offline follow-up pending, 2026-10-28
 
 C145 X230 follow-up DONE1055ee0d: DS0821e9fc9c3 received, roamcycle agrees; B1 held for offline red/green regression. Native ladder assets/mat_ladder positively confirmed; static placement atshaft and lowerwater remainUNKNOWN. DS082 follow-up open, no integration/runtime/GUI/defaults; no unchangedrepeat/soak.
