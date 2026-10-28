@@ -1,0 +1,84 @@
+{
+  "task": "C146",
+  "source": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "ci": 40649771503,
+  "review": "dd68f2ce",
+  "videos": [
+    {
+      "path": "C:\\Users\\Magic8\\Videos\\NVIDIA\\Desktop\\Desktop 2026.10.25 - 23.49.18.06.mp4",
+      "bytes": 171200976,
+      "sha256": "05c8b8a2dd381870385e8c239c37c253a58820b9b46f22e62bf1568538cf0332",
+      "duration": 261.13
+    },
+    {
+      "path": "C:\\Users\\Magic8\\Videos\\NVIDIA\\Desktop\\Desktop 2026.10.28 - 15.16.40.01.mp4",
+      "bytes": 47681812,
+      "sha256": "a9dc7ee62caf2b910d5d19f746fff43ae45f76e77f9147f8dbbb869e30a4a1da",
+      "duration": 73.13
+    }
+  ],
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\owner-playtests\\C146-native-Shore-b06681ea-20261028-151609",
+  "analysis_directory": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c146-video-analysis",
+  "verification": {
+    "memory_before_archive_hashes_verified": true,
+    "launcher_restore_receipt": [
+      {
+        "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+        "name": "Multiplayer_IA_Steelmill.mem"
+      },
+      {
+        "sha256": "F345126FE3E502E081F6D6420761DBB98491FDD0EDB9337F7494FB32EFD06CC7",
+        "name": "Multiplayer_PS_Shore.mem"
+      }
+    ],
+    "current_memory_matches_receipt": false,
+    "current_memory": {
+      "Multiplayer_IA_Steelmill.mem": "e1b92da29b6c8fb74dc6412447161c126684cacba287035b8447ae8078233095",
+      "Multiplayer_IA_Steelmill.nav.json": "97f6f29357b12d0a675af083c45717406977c8d8a0a773f173e1dd57d7b3efde",
+      "Multiplayer_PS_Plantation.mem": "7c804b285a675426cd05daf2e67cf8f03f1f383b89d281b7defa963930b3f1f9",
+      "Multiplayer_PS_Shore.mem": "b3bff8dfb0930c0a78d84c2a85709705dfb08e14d6e202c98568cb298083ff39"
+    },
+    "current_memory_not_modified_by_analysis": true,
+    "demo_sha256_verified": true,
+    "version": 2,
+    "header": {
+      "build": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+      "flags": {
+        "wb_bot_aim_model": 0,
+        "wb_bot_arbiter": 0,
+        "wb_bot_look": 0,
+        "wb_bot_navmesh": 0,
+        "wb_bot_pace": 1,
+        "wb_bot_perception": 0,
+        "wb_bot_turn_cap": 0,
+        "wb_bot_weapon_rank": 0,
+        "wb_demo_hz": 20,
+        "wb_demo_record": 1,
+        "wb_move_trace": 1,
+        "wb_qa_socom_only": 0,
+        "wb_reachable_goals": 0,
+        "wb_revive_guard": 1,
+        "wb_spawn_exclude195": 1,
+        "wb_trap_recovery": 0
+      },
+      "hz": 20,
+      "map": "Multiplayer/PS/Shore",
+      "navmesh": "none",
+      "server": "C146-20261028-151609-Server",
+      "started": "2026-10-28T15:16:11"
+    },
+    "frames": 6214,
+    "actors": {
+      "65486": {
+        "id": 65486,
+        "kind": "human",
+        "name": "Nomad",
+        "profile": "human"
+      }
+    },
+    "first_time": 0.064,
+    "last_time": 310.77
+  },
+  "new_game_runs": 0,
+  "game_code_changes": false
+}
