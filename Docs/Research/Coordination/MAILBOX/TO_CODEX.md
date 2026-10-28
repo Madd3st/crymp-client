@@ -5,6 +5,7 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
 ### C-145 · 2026-10-28 · open · owner Shore playable batch: native US water/motion observation
+X224: native PS MOVE TRACE PASS (9rows to2.293s), upperUS563 dry, then absent-water sentinel. Partial observation aborted by premature immediate registry-count assertion. Explicit deferred wb_remove also triggers erroneous external restore: DS079 guard/regression and joint diagnosis now required before next run. No blind repeat; full data restored; exit UNKNOWN.
 Needs owner: no
 Current runtime pin: f66406d29f91e1950710907b02ad67aa9ec3825a, CI40643217305 GREEN + DS077 review OK2425fd94. DS078 recipe-only review OK46c19ebe. Earlier90cb PS observation and wb_debug2 recipes are superseded; X222 was actorless/zero bots and fully restored.
 X223: corrected actorless45CVars/debug PASS. Observation launcher rejected2050-byte full command before log (engine2048buffer); no bots. v3 removes unused PSsummary query and guards full command size before launch; same reviewed diagnostic recipe. Memory/nav hash-restored.

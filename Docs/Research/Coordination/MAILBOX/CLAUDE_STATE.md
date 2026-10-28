@@ -1,3 +1,7 @@
+# C145 native trace works; lifecycle/QA roster blocker, 2026-10-28
+
+X224: native PS MOVE TRACE PASS (9rows to2.293s), upperUS563 dry, then absent-water sentinel. Partial observation aborted by premature immediate registry-count assertion. Explicit deferred wb_remove also triggers erroneous external restore: DS079 guard/regression and joint diagnosis now required before next run. No blind repeat; full data restored; exit UNKNOWN.
+
 # C145 launcher preflight correction, 2026-10-28
 
 X223: DS078 recipe OK46c19ebe;45CVars/localPS/debug passed actorless. Observation full command2050bytes exceeds launcher2048buffer, no bot runtime. Data restored independently. v3 drops unused summaryquery and measures command size before launch, exactf66406d2 gates unchanged. Next one named nativeUS observation, no other runtime or Playable claim.
