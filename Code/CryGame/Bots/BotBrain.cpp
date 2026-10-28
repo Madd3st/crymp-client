@@ -1810,7 +1810,7 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
 	in.heldWeaponValue=BotWeapons::HeldValue(actor,PickupRange());
 	// Inventory may improve outside this pursuit (PS buy, script grant, another pickup). A worthless goal is gone,
 	// not merely a low score that commitment can keep alive. Temporary combat suppression below is not cancellation.
-	if (m_upgradeTarget && !m_arbiter.WeaponGoalWorthwhile(in))
+	if (m_upgradeTarget && m_arbiter.Current()==ArbiterGoal::Weapon && !m_arbiter.WeaponGoalWorthwhile(in))
 	{ SetUpgradeTarget(0); in.weaponGoalAvailable=false; in.weaponGoalValue=0.0f; }
 	// DS-040: never shop for a gun while a visible enemy is inside the hold range; that was the 19.6 s sidearm gap.
 	if (BotConfig::Get().proFire==1 && in.enemyVisible && in.enemyDistance<=m_profile.holdRange) { in.weaponGoalAvailable=false; in.weaponGoalValue=0.0f; }

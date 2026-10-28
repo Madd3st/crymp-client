@@ -27,12 +27,29 @@ def main():
                     return source[start:i+1]
         raise ValueError('unclosed method: '+signature)
 
+    # Execute the real cancellation predicate as well: loot forced by tactics is not an arbiter-owned upgrade.
+    marker = source.find('SetUpgradeTarget(0); in.weaponGoalAvailable=false;')
+    cancellation = 'false'  # Older reference revisions have no such cancellation site.
+    if marker >= 0:
+        start = source.rfind('if (', 0, marker) + 3
+        depth = 0
+        for i in range(start, marker):
+            if source[i] == '(':
+                depth += 1
+            elif source[i] == ')':
+                depth -= 1
+                if not depth:
+                    cancellation = source[start+1:i]
+                    break
+
     cpp = r'''
     #include "CryGame/Bots/BotWeaponGoal.h"
+    #include "CryGame/Bots/BotGoalArbiter.h"
     #include <cstdio>
     #include <cstdint>
     #define WB_LOG(...) ((void)0)
     using EntityId=uint32_t;
+    using WarsBots::ArbiterGoal;
     struct CPlayer {};
     struct BotConfig {int sniperReach=0,firstPrimary=1;static BotConfig& Get(){static BotConfig c;return c;}};
     struct BotWeapons {static bool HoldsSniper(CPlayer&){return false;}};
@@ -46,7 +63,8 @@ def main():
      void SetUpgradeTarget(EntityId);
      bool TryAcquireUpgradeGoal(CPlayer&);
     };
-    ''' + method('void BotBrain::SetUpgradeTarget(') + '\n' + method('bool BotBrain::TryAcquireUpgradeGoal(') + r'''
+    ''' + method('void BotBrain::SetUpgradeTarget(') + '\n' + method('bool BotBrain::TryAcquireUpgradeGoal(') + '\n' + \
+        'bool CancellationFromBrain(EntityId m_upgradeTarget, const WarsBots::GoalArbiter& m_arbiter, const WarsBots::ArbiterInput& in) { return '+cancellation+'; }\n' + r'''
     int main(){
      CPlayer actor;BotBrain b;
      if(!b.TryAcquireUpgradeGoal(actor)||b.scans!=1||b.m_upgradeTarget!=77)return 1;
@@ -64,6 +82,11 @@ def main():
      if(b.TryAcquireUpgradeGoal(actor)||b.scans!=3)return 5;
      b.m_now=12;
      if(!b.TryAcquireUpgradeGoal(actor)||b.scans!=4||b.m_upgradeTarget!=100)return 6;
+     WarsBots::GoalArbiter loot,upgrade;WarsBots::ArbiterInput in;
+     in.weaponGoalAvailable=true;in.weaponGoalDistance=20;in.weaponGoalValue=1;in.heldWeaponValue=1;in.hasPrimary=true;
+     if(CancellationFromBrain(77,loot,in)){std::puts("FAIL: same-class tactics loot cancelled in Roam");return 8;}
+     in.hasPrimary=false;upgrade.Update(in);in.hasPrimary=true;
+     if(!CancellationFromBrain(77,upgrade,in)){std::puts("FAIL: obsolete arbiter upgrade not cancelled");return 9;}
      std::puts("PASS real Brain callers: candidate refresh, pursuit hold, empty-search throttle");return 0;
     }
     '''
