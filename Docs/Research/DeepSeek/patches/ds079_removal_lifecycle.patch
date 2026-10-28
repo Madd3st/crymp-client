@@ -1,0 +1,109 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index 48edc6d2..20a590ff 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -40,7 +40,7 @@ jobs:
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
+-                     'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility',
++                     'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+           foreach ($t in $tests) {
+diff --git a/Code/CryGame/Bots/BotManager.cpp b/Code/CryGame/Bots/BotManager.cpp
+index 01373967..98b32217 100644
+--- a/Code/CryGame/Bots/BotManager.cpp
++++ b/Code/CryGame/Bots/BotManager.cpp
+@@ -12,6 +12,7 @@
+ #include "CryGame/Bots/BotCombat.h"
+ #include "CryGame/Bots/BotDifficulty.h"
+ #include "CryGame/Bots/BotMatch.h"
++#include "CryGame/Bots/BotRemovalPolicy.h"
+ #include "CryGame/Bots/BotTeamPlan.h"
+ #include "CryGame/Bots/BotSpectator.h"
+ #include "CryGame/Bots/CryMPEngineAdapter.h"
+@@ -464,9 +465,13 @@ void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)
+ 	// Do not erase here: this can arrive from inside RemoveEntity called by our own Remove().
+ 	BotInstance* bot = Find(entity->GetId());
+ 	if (!bot) return;
+-	// Removed by someone else while the level lives: native IA RestartGame -> GameFramework::Reset
+-	// deletes runtime-spawned actors without eAE_resetBegin. Re-create the same bot next frame.
+-	if (!bot->Removing() && m_levelReady)
++	// DS-079: only a true external deletion restores. An explicit removal may be deferred, so `Removing()` (transient,
++	// true only inside RemoveEntity) is not enough: RemovalPending() carries the durable intent, Expired() covers a
++	// duplicate DONE after OnEntityDone. A foreign entity never resolves to a registered bot (known=false).
++	// True external case: native IA RestartGame -> GameFramework::Reset deletes runtime actors without
++	// eAE_resetBegin, so the same bot is re-created next frame.
++	const BotDoneAction action = BotDoneDecision(true, m_levelReady, bot->Removing(), bot->RemovalPending(), bot->Expired());
++	if (action == BotDoneAction::RestoreExternal)
+ 	{
+ 		m_roster.push_back({ bot->Number(), bot->Profile(), bot->AIEnabled() });
+ 		m_restorePending = true;
+diff --git a/Code/CryGame/Bots/BotRemovalPolicy.h b/Code/CryGame/Bots/BotRemovalPolicy.h
+new file mode 100644
+index 00000000..65641e55
+--- /dev/null
++++ b/Code/CryGame/Bots/BotRemovalPolicy.h
+@@ -0,0 +1,27 @@
++// DS-079: classify an ENTITY_EVENT_DONE for a registered bot. Engine-free so explicit immediate/deferred removal,
++// a true external reset, level end and duplicate DONE are all testable without the engine.
++//
++// The Manager used to check only `Removing()` (true only while its own RemoveEntity call is on the stack). A deferred
++// explicit removal therefore looked external when DONE arrived later: it queued a roster restore and logged
++// "removed externally", later re-creating a bot the operator had removed. RemovalPending() carries the durable
++// intent, Expired() covers a duplicate DONE after OnEntityDone, and levelReady=false covers level teardown.
++#pragma once
++
++namespace WarsBots
++{
++enum class BotDoneAction
++{
++	Ignore = 0,
++	RestoreExternal,
++};
++
++// known: the entity id resolved to one of our registered bots; levelReady: the level is live;
++// removing: our RemoveEntity call is on the stack; removalPending: durable explicit-removal intent;
++// expired: OnEntityDone already processed this instance (duplicate DONE).
++inline BotDoneAction BotDoneDecision(bool known, bool levelReady, bool removing, bool removalPending, bool expired)
++{
++	if (!known || !levelReady) return BotDoneAction::Ignore;
++	if (removing || removalPending || expired) return BotDoneAction::Ignore;
++	return BotDoneAction::RestoreExternal;
++}
++}
+diff --git a/Tests/BotRemovalPolicyTests.cpp b/Tests/BotRemovalPolicyTests.cpp
+new file mode 100644
+index 00000000..b1b3a3c0
+--- /dev/null
++++ b/Tests/BotRemovalPolicyTests.cpp
+@@ -0,0 +1,28 @@
++// DS-079 regression: explicit immediate/deferred removal must never be treated as an external reset, while a true
++// external deletion still restores, and level end / duplicate DONE / foreign entities stay ignored.
++#include "CryGame/Bots/BotRemovalPolicy.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++int main()
++{
++	// Explicit immediate removal: DONE arrives inside our RemoveEntity call.
++	assert(BotDoneDecision(true, true, true, true, false) == BotDoneAction::Ignore);
++	// Explicit deferred removal (observed C145 bug): Removing() is already false, RemovalPending() is the durable truth.
++	assert(BotDoneDecision(true, true, false, true, false) == BotDoneAction::Ignore);
++	// True external deletion (native RestartGame/Reset): no explicit intent, level live -> restore the same bot.
++	assert(BotDoneDecision(true, true, false, false, false) == BotDoneAction::RestoreExternal);
++	// Level teardown: never queue a restore.
++	assert(BotDoneDecision(true, false, false, false, false) == BotDoneAction::Ignore);
++	// Duplicate DONE after OnEntityDone cleared the identity.
++	assert(BotDoneDecision(true, true, false, false, true) == BotDoneAction::Ignore);
++	// Deferred removal followed by a duplicate DONE stays ignored.
++	assert(BotDoneDecision(true, true, false, true, true) == BotDoneAction::Ignore);
++	// Foreign/unknown entity id never resolves to a registered bot.
++	assert(BotDoneDecision(false, true, false, false, false) == BotDoneAction::Ignore);
++
++	std::puts("BotRemovalPolicyTests OK");
++	return 0;
++}
