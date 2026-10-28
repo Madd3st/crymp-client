@@ -5,6 +5,7 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
 ### C-145 · 2026-10-28 · open · owner Shore playable batch: independently validate water/door, bake map
+LATEST X221: f66406d2 CI40643217305GREEN + DS077OK2425fd94. One <=180s native US observation STARTED; candidate653f5e1e temporary diagnostic only, no playable acceptance. Actorless effective recipe and full memory/nav/absent restoration; no teleport or unchanged failure repeat. Older pending gates below are history.
 LATEST: DS076 integrated **f66406d29f91e1950710907b02ad67aa9ec3825a** (supersedes all earlier90cb runtime pins below). Exact CI40643217305 + DS077 independent review pending; NO runtime before both. Parent90cb CI green but PS trace ineligible. Candidate653f5e1e still unaccepted/uninstalled; C145 incomplete. Earlier gate/recipe pins below are history; retain observation criteria and restoration guards.
 Current update D035: Codex coordination/integration resumed by owner. Runtime preflight BLOCK: exact90cb4148 MOVE TRACE is IA-only; DS076 repairs PS eligibility. No PS game before new exact SHA/green CI/review. Earlier code-gate MET does not satisfy this observation contract.
 Needs owner: no

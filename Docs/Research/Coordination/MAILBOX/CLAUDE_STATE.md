@@ -1,3 +1,7 @@
+# C145 bounded native US observation STARTED, 2026-10-28
+
+D035 coordinator/QA active. Lastprocessed DS077/X221. Exactf66406d29f91e1950710907b02ad67aa9ec3825a CI40643217305GREEN + DS077OK2425fd94; 35 unit logs downloaded. One <=180s nativeUS2 observation after actorless recipe preflight, NK1 removed in startup batch. Candidate653f5e1e temporary diagnostic only, US0/23mainland known. No teleport/revive workaround. Snapshot/archive/restore memory/nav and absent files; stop on client/error. Next measured water/ShouldSwim/motion verdict, joint DeepSeek diagnosis; no repeat/soak/defaults. Earlier pending gates below are history.
+
 # Current C145 phase — DS076 integrated f66406d2, 2026-10-28
 
 D035 Codex coordinator/integrator + QA remains active. Lastprocessed DS076/X220. Exact game HEAD **f66406d29f91e1950710907b02ad67aa9ec3825a**, parent90cb4148; source worktree build/ds076-code clean after commit. Narrow diagnostic eligibility patch only; three profile units and actual C++20 engine syntax PASS. CI40643217305 + DS077 exact independent review pending. No game/local game build/install/memory change. Candidate653f5e1e unaccepted/uninstalled, US exit unresolved. Next: verify CI+review, validate bounded observation recipe and temporary map acceptance/hash/restoration before any run. No90cb PS probe, soak, defaults or Playable claim.
