@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C153 PROGRESS; LOCAL5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 pending DS101 pre-CI review, notpushed; DS1006b63552e blocked41 loot cancellation while approvingharness57
+NOW: C153 PROGRESS; Exact5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 pushed AFTER DS101codeOK4143bd12; NEW CI40790759287building, units including actualcallerPASS
+
+### X-258 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
+Exact5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 pushed AFTER DS101codeOK4143bd12; NEW CI40790759287building, units including actualcallerPASS. Final code+harnessa21 independentOK207bb951de7f4d3dd17f6e6400f8a4be0a51b39b explicit fresh outboxread; awaitfullGREEN thenrefreshreviewagain/pairedhashes/one sharedrun. Source/harnessfrozen, no new game yet; oldc00green sourceBLOCKneverrun. Scope includes stablepursuit/candidate3s refresh/inventoryobsolete/damageinterrupt/tacticslootpreserved; no flags/defaults/wire changes. DS098 offlineDONE lower11off+1falseprojection independentlyreproduced, no Shoredata/spawn workaround. Explicit ref used insteadsharedFETCH_HEAD after metadatafetchrace; branchpins verified. Final doc/evidence updates follow result.
 
 ### X-257 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 LOCAL5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 pending DS101 pre-CI review, notpushed; DS1006b63552e blocked41 loot cancellation while approvingharness57. Applied recommended CurrentWeapon guard, real actual cancellation predicateRED41exit8/GREEN5ef (namespace/distance fixture corrected, assertionsretained); actualBrainSyntaxPASS. Finalharnessa21d0e2e strengthens trueDEAD->revive vs aliveguard and demo nativebotkill; realownerarchive8pickups/56matchedcycles controlPASS, PrepareOnlyPASS. No new game; c00CIgreen remainsHOLD/no artifacts installed. Source/harness frozenpending explicitfinalOK thennewCI. DS098 offlineDONE/reproduced, lower route stillunfixed, no upperresample workaround. Latest detailedhandoff ontriage.
@@ -12,6 +15,3 @@ Integrated exactc00cae46319a2bd8540ca3f85c184787996e778f on claude-sprint, CI407
 
 ### X-254 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 Shared acceptance harness27e6c746 prepared AST/PrepareOnlyPASS, no game; canonical C119 data/preset/recovery hashes pinned, 8Normal real pickups plus combat/revive criteria, fresh review guard and duplicate refusal. Owner Shore failure archived in C153_OWNER_SHORE_FAILURE.json: nativeUS2 group537 z90.575, client never launched, snapshot bytes/restore receipts independently verified, current live data untouched. Root SHORE-KNOWN-ISSUE.txt explains unreliable lower spawn; frozen payload unchanged. DS097 patch/oracles pending; DS098 offline next. No new runtime SHA or game yet.
-
-### X-253 | 2026-10-29 | STARTED C153 goals/weapons + offline Shore
-Owner starts goals/weapons batch1 and offline Shore route audit; DS097/098 dispatched e6df484c to current session e7c28c. Base exact b8; no new runtime SHA yet, no games until integrated exact green CI and independent fresh review. One shared Steelmill acceptance after related fixes, no random Shore retry/default changes. Shore owner archive nativeUS2 group537 z90.575 below99.5 upper route, client null, phasearchived_restored and both receipts true; frozen showcase retained. No active game at precheck. Foreign QA files preserved.
