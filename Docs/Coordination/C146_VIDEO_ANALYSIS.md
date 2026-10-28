@@ -1,5 +1,7 @@
 # C146: owner videos and native Shore route, 2026-10-28
 
+**DS085 corrections independently checked:** near the pool rim client35.395–35.898 reports local waterZ89.37 while swim0; after submersion waterZ changes to99.5/swim1. The complete native log (outside the supplied73sclip) ALSO contains an upper Strength jump: t156.644 from2107.373,1883.286,103.125/mode1 -> apex106.682 -> t158.147 landing2102.234,1882.349,106.017 (rise2.892). This supports the real upper route, west counterpart of candidate east link; it does not prove bot traversal. DeepSeek2762ba5b/461326e9; rawtrace independently inspected byCodex. Earlier pool-plane wording below is superseded.
+
 Evidence analysis only; no new game, code change or Playable acceptance. Native recording uses exact claude-sprint b06681eaa4365afe5bf7309994012dce13a7ac83, green CI40649771503 and independent DS081 review dd68f2ce. Zero bots, navmesh0, jump_links0. Owner supplied two local MP4s; original paths, sizes and SHA256 are in [receipt](C146_VIDEO_ANALYSIS.json). Videos remain local, outside Git.
 
 ## What the videos show

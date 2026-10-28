@@ -1,0 +1,15 @@
+{
+  "task": "C147",
+  "state": "prepared_not_run_review_pending",
+  "source": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "ci": 40649771503,
+  "review": "dd68f2ce",
+  "data_sha256": "e2235993ce72eb4549788ad7bd1a171ab415c8e8b4c6da69fdb49ed941ef30de",
+  "harness": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c147-upper-to-shore.ps1",
+  "harness_sha256": "36afcecc4a8824f99b3007bb49e1411e6dc92fd5aa51877f6e79417d3372b271",
+  "review_task": "DS086",
+  "maximum_total_seconds": 300,
+  "link_completion_deadline": 120,
+  "water_entry_deadline": 180,
+  "new_game_runs": 0
+}
