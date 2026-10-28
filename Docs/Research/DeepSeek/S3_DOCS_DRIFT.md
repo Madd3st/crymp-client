@@ -26,4 +26,14 @@ pages; this is the list. Each line: page:line -> what is stale -> correction.
    navmesh exists as a diagnostic candidate only (no default install, no data promotion).
 
 Not stale (checked): `Navigation.md` link/`wb_bot_jump_links` gating, `Console-Commands.md:41` install path,
-`Status-and-Roadmap.md:50` sniper 0/3.
+`Status-and-Roadmap.md:50` sniper 0/3, `Running-and-Playing.md:36` (`wb_bot_client_smooth` and `wb_move_trace 2`
+still exist with the same meaning).
+
+9. `Home.md:27` -> "Power Struggle: ... на очереди покупка, двери, навмеш Shore и техника" repeats the same stale PS
+   queue as `Status-and-Roadmap.md:39` -> same correction.
+10. `Bot-Architecture.md:38` -> lists `BotNav`/`BotReachability` as the navigation graph; the primary runtime is now
+   `BotNavMesh`/`BotNavMeshCore` (Detour, `wb_bot_navmesh 1`) with `BotJumpLink` as the off-mesh executor and `BotNav`
+   only as the sparse fallback -> update the row and name the two modules.
+11. `Bot-Architecture.md:30-49` -> the module table omits `BotWaterPolicy` (DS-070 water gate), `BotPSCapture`,
+   `BotPSBuy`, `BotGameMode`/`BotMatch` (PS), `BotRoamFallback` (DS-082/092 roam guard) -> add them, PS ones marked
+   default-OFF.

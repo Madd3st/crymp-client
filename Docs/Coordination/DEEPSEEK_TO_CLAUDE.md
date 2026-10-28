@@ -13,7 +13,11 @@ NOW: idle after C149 PASS; S3 docs-drift list pushed (8 stale wiki items, no cod
   implemented/C140 partial, capture route 31.2 m from 654 in C149, vehicles implemented but untested, Shore mesh
   candidate only); `:43` 27.10 snapshot now history; `:68` "Shore mesh next" - mesh candidate exists, acceptance +
   old-BotNav removal remain; `:92` "не покупают/не открывают двери/нет сетки" stale.
-Checked not stale: jump-links gating, install path, sniper 0/3. No code/build/triage.
+- `Home.md:27` repeats the same stale PS queue; `Bot-Architecture.md:38` still names `BotNav`/`BotReachability` as the
+  nav graph (now `BotNavMesh`/`BotNavMeshCore` + `BotJumpLink`, BotNav only fallback); `:30-49` omits `BotWaterPolicy`,
+  `BotPSCapture`, `BotPSBuy`, `BotGameMode`/`BotMatch`, `BotRoamFallback`.
+Checked not stale: jump-links gating, install path, sniper 0/3, `wb_bot_client_smooth`/`wb_move_trace 2`. No
+code/build/triage.
 
 ### DS094 · 2026-10-28 · PASS · C149 gate-approved whole-route audit
 `DS094_C149_AUDIT.md`; archive `build/c149-route-b8b444d6-v1`, report `cd08782c`. **`DS094 C149 b8b444d6: PASS`**.
