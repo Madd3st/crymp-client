@@ -1,0 +1,367 @@
+diff --git a/Code/CryGame/Bots/BotBlackboard.cpp b/Code/CryGame/Bots/BotBlackboard.cpp
+index 0983130..1462b1f 100644
+--- a/Code/CryGame/Bots/BotBlackboard.cpp
++++ b/Code/CryGame/Bots/BotBlackboard.cpp
+@@ -22,6 +22,9 @@ void BotBlackboard::Sample(CPlayer& actor, float now)
+ 	waterAllowed = BotWaterAllowedFor(actor);
+ 	swimming = actor.ShouldSwim();
+ 	waterMovement = waterAllowed && swimming;
++	// DS-089: the water query box is sized from the native plane; the sentinel keeps the dry query.
++	waterZ = stats.worldWaterLevel;
++	waterValid = waterZ > -9999.f;
+ 	canMove = health > 0 && !actor.IsFrozen() && !stats.isRagDoll && !stats.isOnLadder.Value() &&
+ 		stats.inFreefall.Value() <= 0 && !stats.inZeroG && !stats.isGrabbed && !stats.animationControlled &&
+ 		!stats.spectatorMode && !stats.flyMode && !actor.GetLinkedEntity() && (waterAllowed || !swimming);
+diff --git a/Code/CryGame/Bots/BotBlackboard.h b/Code/CryGame/Bots/BotBlackboard.h
+index 299cf85..c47a50c 100644
+--- a/Code/CryGame/Bots/BotBlackboard.h
++++ b/Code/CryGame/Bots/BotBlackboard.h
+@@ -17,6 +17,9 @@ struct BotBlackboard
+ 	// DS-070: one gated water policy. `swimming` records the native ShouldSwim() state; `waterMovement` is the only
+ 	// exception used by movement, trap recovery and native oxygen, and it is false unless BotWaterAllowed().
+ 	bool waterAllowed = false, swimming = false, waterMovement = false;
++	// DS-089: native water plane, used to size the bounded swim query start (worldWaterLevel; -1e6 sentinel invalid).
++	float waterZ = 0.f;
++	bool waterValid = false;
+ 	BotJump obstacleJump = BotJump::None;
+ 	void Sample(CPlayer& actor, float now);
+ };
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 4583117..2bfbb78 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -54,6 +54,19 @@ const char* NameOf(BotBrain::State state)
+ 	}
+ 	return "UNKNOWN";
+ }
++
++// DS-089: bounded water start for the path/reach/ray queries of a native swimmer. Sized from the measured
++// feet->native-plane offset (C147: 1.18..2.31 m), so a fixed 2.0 m box no longer loses the deep-float rows; the box
++// is still bounded (WaterQueryBounds clamps to 2.8 m) and the core accepts it only on a baked water polygon. Dry
++// callers (`waterMovement` false, sentinel plane, feet at/above the plane) get no bounds and keep the old box.
++bool WaterStartBounds(const BotBlackboard& bb, float feetZ, NavQueryBounds& out)
++{
++	if (!bb.waterMovement || !bb.waterValid) return false;
++	const float lift = bb.waterZ - feetZ;
++	if (!(lift > 0.05f)) return false;
++	out = WaterQueryBounds(lift);
++	return true;
++}
+ }
+ 
+ DecisionState BotBrain::ToCommit(State s)
+@@ -190,7 +203,12 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
+ 		{
+ 			std::vector<float> xyz; const char* why = "navmesh";
+ 			const float a[3] = {feet.x, feet.y, feet.z}, b[3] = {goal.x, goal.y, goal.z};
+-			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why);
++			// DS-089: a native swimmer floats 1.2-2.3 m below the water surface; use the plane-sized bounded water start
++			// box only while the native water movement is active. The core accepts only the baked water polygon and
++			// fails closed on a missing/non-water ref (no dry/seabed/stacked fallback).
++			NavQueryBounds water;
++			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water); // DS-089: sized from the native plane
++			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why, waterStart ? &water : nullptr);
+ 			if (!found) m_pathLinks.clear();
+ 			m_meshPathActive = found;
+ 			m_path.clear();
+@@ -256,7 +274,11 @@ Vec3 BotBrain::SteerCorners(NavMeshCore& mesh, const Vec3& feet)
+ 		if (byPlane)
+ 		{
+ 			const float a3[3] = {feet.x, feet.y, feet.z}, b3[3] = {n.x, n.y, n.z};
+-			if (!mesh.RayClear(a3, b3)) break; // crossed the line but the next leg is not in straight reach yet
++			// DS-089: a swimmer's raw feet are below the water poly, so the ray start is snapped with the same bounded
++			// water box; without it RayClear failed on every water corner (0/1085) and blocked corner advancement.
++			NavQueryBounds water;
++			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
++			if (!mesh.RayClear(a3, b3, waterStart ? &water : nullptr)) break; // crossed the line but the next leg is not in straight reach yet
+ 		}
+ 		++m_pathIndex;
+ 	}
+@@ -632,7 +654,10 @@ bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTim
+ 	{
+ 		m_nextPsCapture=m_now+2.0f;
+ 		const float from[3]={feet.x,feet.y,feet.z};
+-		PSCaptureSnapshot(m_psPoints,*rules,from);
++		// DS-087/089: keep the PS capture goal alive from the same bounded, plane-sized water start.
++		NavQueryBounds water;
++		const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
++		PSCaptureSnapshot(m_psPoints,*rules,from, waterStart?&water:nullptr);
+ 	}
+ 	// DS-072: hold on native area membership of the current target, not a 6 m sphere around the entity pivot.
+ 	bool inside=false;
+@@ -872,7 +897,13 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 			NavMeshCore* mesh = CurrentNavMesh();
+ 			const float from[3] = {feet.x, feet.y, feet.z}, to[3] = {heard.x, heard.y, heard.z};
+ 			float snap[3];
+-			if (!mesh || !mesh->Project(from, snap) || mesh->Reachable(from, to))
++			NavQueryBounds water;
++			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
++			const NavQueryBounds* startBounds = waterStart ? &water : nullptr;
++			const bool projected = !mesh || (startBounds
++				? mesh->Project(from, snap, startBounds->side, startBounds->up, startBounds->down, true)
++				: mesh->Project(from, snap));
++			if (!mesh || !projected || mesh->Reachable(from, to, 2.6f, startBounds))
+ 			{
+ 				m_patrolGoal = heard; m_patrolUntil = m_now + 8.0f; m_detour = false;
+ 				WB_LOG(2, "[WarsBots] #%d HEARD gunshot at (%.1f,%.1f,%.1f), investigating.", m_number, heard.x, heard.y, heard.z);
+@@ -893,8 +924,15 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 			NavMeshCore* mesh = CurrentNavMesh();
+ 			const float from[3] = {feet.x, feet.y, feet.z};
+ 			float snap[3];
+-			if (mesh && !mesh->Project(from, snap)) mesh = nullptr; // off the mesh: keep the old goal choice
+-			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q); };
++			// DS-087: project the swimming start with the bounded water box; dry floors keep the default box.
++			NavQueryBounds water;
++			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
++			const NavQueryBounds* startBounds = waterStart ? &water : nullptr;
++			const bool projected = !mesh || (startBounds
++				? mesh->Project(from, snap, startBounds->side, startBounds->up, startBounds->down, true)
++				: mesh->Project(from, snap));
++			if (mesh && !projected) mesh = nullptr; // off the mesh: keep the old goal choice
++			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q, 2.6f, startBounds); };
+ 			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot, &feet, actor.GetEntityId()) &&
+ 				(hotspot - feet).GetLengthSquared2D() > 64.0f && reachable(hotspot))
+ 			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; picked = true; }
+diff --git a/Code/CryGame/Bots/BotNavMeshCore.cpp b/Code/CryGame/Bots/BotNavMeshCore.cpp
+index 36019c9..b9258eb 100644
+--- a/Code/CryGame/Bots/BotNavMeshCore.cpp
++++ b/Code/CryGame/Bots/BotNavMeshCore.cpp
+@@ -182,15 +182,40 @@ unsigned long long NavMeshCore::Nearest(const float* p, float* snapped, float si
+ 	return ref;
+ }
+ 
+-bool NavMeshCore::Project(const float* p, float* out, float side, float up, float down) const
++bool NavMeshCore::Project(const float* p, float* out, float side, float up, float down, bool waterOnly) const
+ {
+-	return Nearest(p, out, side, up, down) != 0;
++	const unsigned long long ref = Nearest(p, out, side, up, down);
++	if (!ref) return false;
++	return !waterOnly || IsWaterPoly(ref);
++}
++
++// DS-087: the water query box is accepted only on the baked water surface, never on a dry/stacked floor.
++bool NavMeshCore::IsWaterPoly(unsigned long long ref) const
++{
++	const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
++	if (!m_mesh || dtStatusFailed(m_mesh->getTileAndPolyByRef((dtPolyRef)ref, &tile, &poly)) || !poly) return false;
++	return poly->getArea() == kWaterArea;
++}
++
++// DS-088/089: one start resolution for path, reachability and ray queries. No bounds = the old dry box. A native-water
++// start must project to the baked water area; no ref (surface hole) or a non-water ref (dry/seabed/stacked floor)
++// fails closed and never falls back to the dry box - the native hand-over is the dry caller once ShouldSwim ends.
++unsigned long long NavMeshCore::StartRef(const float* start, float* snapped, const NavQueryBounds* bounds, bool* notWater) const
++{
++	if (notWater) *notWater = false;
++	if (!bounds) return Nearest(start, snapped, 1.5f, 1.0f, 3.0f);
++	const unsigned long long ref = Nearest(start, snapped, bounds->side, bounds->up, bounds->down);
++	if (!ref) return 0;
++	if (!IsWaterPoly(ref)) { if (notWater) *notWater = true; return 0; }
++	return ref;
+ }
+ 
+-bool NavMeshCore::RayClear(const float* a, const float* b) const
++bool NavMeshCore::RayClear(const float* a, const float* b, const NavQueryBounds* startBounds) const
+ {
+ 	float snapped[3];
+-	const dtPolyRef ref = (dtPolyRef)Nearest(a, snapped, 0.5f, 1.0f, 2.0f);
++	// DS-089: a swimmer's raw feet are below the water poly; the water start box is snapped before the ray, exactly
++	// like the path start, so a corner-plane crossing is not lost to start_off_mesh. Dry callers keep 0.5/1.0/2.0.
++	const dtPolyRef ref = startBounds ? (dtPolyRef)StartRef(a, snapped, startBounds) : (dtPolyRef)Nearest(a, snapped, 0.5f, 1.0f, 2.0f);
+ 	if (!ref) return false;
+ 	float s[3], e[3]; ToRecast(snapped, s); ToRecast(b, e);
+ 	float t = 0, normal[3]; dtPolyRef path[64]; int n = 0;
+@@ -233,9 +258,9 @@ bool NavMeshCore::WallClearance(const float* p, float maxRadius, float& dist, fl
+ 	return true;
+ }
+ 
+-bool NavMeshCore::Reachable(const float* start, const float* goal, float goalDown) const
++bool NavMeshCore::Reachable(const float* start, const float* goal, float goalDown, const NavQueryBounds* startBounds) const
+ {
+-	const unsigned long long a = Nearest(start, nullptr, 1.5f, 1.0f, 3.0f);
++	const unsigned long long a = StartRef(start, nullptr, startBounds);
+ 	const unsigned long long b = Nearest(goal, nullptr, 1.5f, 1.0f, goalDown);
+ 	if (!a || !b) return false;
+ 	auto ia = m_comp.find(a), ib = m_comp.find(b);
+@@ -313,14 +338,17 @@ void NavMeshCore::BanLink(unsigned long long ref)
+ }
+ 
+ bool NavMeshCore::FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,
+-	const char** reason) const
++	const char** reason, const NavQueryBounds* startBounds) const
+ {
+ 	xyz.clear(); links.clear();
+ 	auto fail = [&](const char* why) { if (reason) *reason = why; return false; };
+ 	if (!m_query) return fail("navmesh_not_loaded");
+ 	float s[3], g[3];
+-	const dtPolyRef a = Nearest(start, s, 1.5f, 1.0f, 3.0f);
+-	if (!a) return fail("start_off_mesh");
++	bool notWater = false;
++	const dtPolyRef a = StartRef(start, s, startBounds, &notWater);
++	// DS-088: a water start is water-only; a non-water ref is not a shore transition (the dry caller handles the
++	// land when the native water movement ends). Fail closed instead of falling back to a submerged/stacked floor.
++	if (!a) return fail(notWater ? "start_not_water" : "start_off_mesh");
+ 	const dtPolyRef b = Nearest(goal, g, 1.5f, 1.0f, 2.6f);
+ 	if (!b) return fail("goal_off_mesh");
+ 	auto ia = m_comp.find(a), ib = m_comp.find(b);
+diff --git a/Code/CryGame/Bots/BotNavMeshCore.h b/Code/CryGame/Bots/BotNavMeshCore.h
+index 54c4322..1379a2c 100644
+--- a/Code/CryGame/Bots/BotNavMeshCore.h
++++ b/Code/CryGame/Bots/BotNavMeshCore.h
+@@ -26,6 +26,28 @@ inline const char* NavLinkName(int kind)
+ // corner `corner + 1` the landing point b.
+ struct NavPathLink { int corner = 0; int kind = 0; float a[3] = {0, 0, 0}, b[3] = {0, 0, 0}; unsigned long long ref = 0; };
+ 
++// DS-087: query box bounds for one end of a path/reachability query. The default keeps the dry-floor search
++// (`up 1 m`); a native swimmer's feet sit 1.5-1.8 m below the baked water surface, so the water-aware caller
++// passes a bounded box that reaches the surface without selecting the submerged floor.
++struct NavQueryBounds { float side = 1.5f, up = 1.0f, down = 3.0f; };
++
++// DS-088: the bounded water start box. Used only for a native water movement start; the core accepts it only when
++// the projected polygon is the baked water area, otherwise it fails closed (no dry/seabed/through-deck fallback).
++// DS-089 (C147 actual 1136 rows): the float offset is not a constant 1.5-1.8 m - it ranged 1.18..2.31 m, and a
++// fixed up 2.0 lost 10 rows whose feet were 2.05-2.31 m below the native plane (they failed start_off_mesh from the
++// *feet* while the same XY at waterZ projected). Size the box to the native plane, bounded by the swimmer body:
++// lift + 0.30 m margin, never above 2.8 m, so a wrong/deep plane cannot widen the search arbitrarily.
++inline NavQueryBounds WaterQueryBounds(float lift = 0.f)
++{
++	NavQueryBounds b{1.5f, 2.0f, 0.2f};
++	if (lift > 0.f)
++	{
++		const float needed = lift + 0.30f;
++		b.up = needed < 1.2f ? 1.2f : (needed > 2.8f ? 2.8f : needed);
++	}
++	return b;
++}
++
+ class NavMeshCore {
+ public:
+ 	NavMeshCore();
+@@ -42,7 +64,7 @@ public:
+ 
+ 	// Nearest walkable point under/around p (Crysis frame): searches +-side m horizontally, `up` m above and
+ 	// `down` m below p. Returns false when nothing is in range.
+-	bool Project(const float* p, float* out, float side = 1.5f, float up = 1.0f, float down = 3.0f) const;
++	bool Project(const float* p, float* out, float side = 1.5f, float up = 1.0f, float down = 3.0f, bool waterOnly = false) const;
+ 	// Distance from p (projected onto the mesh) to the nearest mesh edge within maxRadius, and the horizontal unit
+ 	// direction from that edge into the mesh (Crysis frame). The mesh is eroded by the bake radius (0.3 m) while the
+ 	// player capsule is 0.4 m, so paths that hug an edge rub walls; callers push corners inward by the difference.
+@@ -50,14 +72,14 @@ public:
+ 	// Straight walk a -> b stays on the mesh (Detour raycast along the surface from a's poly). Used before skipping a
+ 	// path corner: a corner reached "within 1.5 m" is only passed when the next one is in straight reach, otherwise
+ 	// the bot cuts the turn into the wall the corner was going around.
+-	bool RayClear(const float* a, const float* b) const;
++	bool RayClear(const float* a, const float* b, const NavQueryBounds* startBounds = nullptr) const;
+ 	bool WallClearance(const float* p, float maxRadius, float& dist, float* dirXY) const;
+ 	// Corner path start -> goal, excluding start (like BotNav::FindPath). False with a reason when either end is off
+ 	// the mesh or the goal is in another connected part (Detour would return a partial path).
+ 	bool FindPath(const float* start, const float* goal, std::vector<float>& xyz, const char** reason = nullptr) const;
+ 	// O(1) after projection: both ends on the mesh and the goal's part reachable from the start's part (directed). `goalDown` lets items lying on
+ 	// crates (up to ~2.2 m above the floor) count as reachable.
+-	bool Reachable(const float* start, const float* goal, float goalDown = 2.6f) const;
++	bool Reachable(const float* start, const float* goal, float goalDown = 2.6f, const NavQueryBounds* startBounds = nullptr) const;
+ 
+ 	// C-036 links. `<map>.links.txt` (x0 y0 z0 x1 y1 z1 bidir kind; Detour user id = 1-based line) gives each
+ 	// off-mesh poly its kind flag; lines without a known kind (lift/ladder movers) are never used. Without the file the
+@@ -72,12 +94,17 @@ public:
+ 	void BanLink(unsigned long long ref);
+ 	// Counts in-game failures of a link; true from the second failure on (then the caller bans it).
+ 	bool NoteLinkFailure(unsigned long long ref) { return ++m_linkFails[ref] >= 2; }
+-	// FindPath + the links on the returned corners.
++	// FindPath + the links on the returned corners. `startBounds` is the optional water-aware start box; the core
++	// accepts it only when the projected start polygon is the baked water area (kWaterArea). A water start with no
++	// water ref (hole) or a non-water ref fails closed: it never falls back to the dry/seabed/stacked floor. The dry
++	// start (no bounds) and the goal keep the existing dry behavior.
+ 	bool FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,
+-		const char** reason = nullptr) const;
++		const char** reason = nullptr, const NavQueryBounds* startBounds = nullptr) const;
+ 
+ private:
+ 	unsigned long long Nearest(const float* p, float* snapped, float side, float up, float down) const;
++	bool IsWaterPoly(unsigned long long ref) const;
++	unsigned long long StartRef(const float* start, float* snapped, const NavQueryBounds* bounds, bool* notWater = nullptr) const;
+ 	void BuildComponents();
+ 	bool PartReaches(int from, int to) const;
+ 
+diff --git a/Code/CryGame/Bots/BotPSCapture.cpp b/Code/CryGame/Bots/BotPSCapture.cpp
+index c9bcb76..c3720a1 100644
+--- a/Code/CryGame/Bots/BotPSCapture.cpp
++++ b/Code/CryGame/Bots/BotPSCapture.cpp
+@@ -209,13 +209,13 @@ const std::vector<PsCapturePoint>& BasePoints()
+ 
+ } // namespace
+ 
+-void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const float* from)
++void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const float* from, const NavQueryBounds* startBounds)
+ {
+ 	out = BasePoints();
+ 	NavMeshCore* mesh=CurrentNavMesh();
+ 	for(PsCapturePoint& point:out){point.ownerTeam=rules.GetTeam(EntityId(point.id));
+ 	 const float goal[3]={point.x,point.y,point.z};
+-	 if(from&&(!mesh||!mesh->Reachable(from,goal)))point.hasDestination=false;
++	 if(from&&(!mesh||!mesh->Reachable(from,goal,2.6f,startBounds)))point.hasDestination=false;
+ 	}
+ }
+ 
+diff --git a/Code/CryGame/Bots/BotPSCaptureRuntime.h b/Code/CryGame/Bots/BotPSCaptureRuntime.h
+index edccba4..d3f6ea7 100644
+--- a/Code/CryGame/Bots/BotPSCaptureRuntime.h
++++ b/Code/CryGame/Bots/BotPSCaptureRuntime.h
+@@ -2,10 +2,11 @@
+ // value, position) to the engine-free BotPSCapture planner.
+ #pragma once
+ #include "CryGame/Bots/BotPSCapture.h"
++#include "CryGame/Bots/BotNavMeshCore.h"
+ #include <vector>
+ 
+ class CGameRules;
+ 
+ namespace WarsBots {
+-void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const float* from);
++void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const float* from, const NavQueryBounds* startBounds = nullptr);
+ }
+diff --git a/Tests/BotNavMeshWaterTests.cpp b/Tests/BotNavMeshWaterTests.cpp
+index d54c90c..b66e706 100644
+--- a/Tests/BotNavMeshWaterTests.cpp
++++ b/Tests/BotNavMeshWaterTests.cpp
+@@ -43,5 +43,40 @@ int main()
+  float deviation=0;for(size_t i=0;i<path.size();i+=3)deviation=std::max(deviation,std::fabs(path[i+1]+15));
+  std::printf("water detour: corners=%zu deviation=%.2f\n",path.size()/3,deviation);
+  if(deviation<4.5f){std::puts("water shortcut selected despite expensive area");return 1;}
++ // DS-089: real-core water-start controls. The fixture's poly plane is measured, not assumed: the BuildParams
++ // bmin/bmax shift the effective height, and the previous constant-100 assumption let the dry box reach z=98.5
++ // (MSVC run exited 5 at "raw dry projection unexpectedly found").
++ {
++  const float onMesh[3]={5,-15,100};           // land tile x0, known on-mesh before the plane is known
++  float plane[3];
++  if(!nav.Project(onMesh,plane)){std::puts("DS089 fixture plane not found");return 5;}
++  const float planeZ=plane[2];
++  if(planeZ<95.0f||planeZ>105.0f){std::puts("DS089 fixture plane out of range");return 5;}
++  const float land[3]={5,-15,planeZ};          // dry land at the measured plane
++  const float swim[3]={15,-15,planeZ-1.5f};    // water row x1, native float 1.5 m below the plane
++  const float deep[3]={15,-15,planeZ-2.3f};    // C147 measured floats up to 2.31 m below the plane
++  float snap[3];
++  // (a) raw native swimmer start: the dry box must not project (RED, b06681ea behaviour).
++  if(nav.Project(swim,snap)){std::puts("DS089 raw dry projection unexpectedly found");return 6;}
++  if(nav.Reachable(swim,land)){std::puts("DS089 raw dry reach unexpectedly found");return 7;}
++  // (b) plane-sized water box: projects and reaches; a fixed 2.0 m box loses the 2.3 m float (the C147 extra ten).
++  const WarsBots::NavQueryBounds water=WarsBots::WaterQueryBounds(1.5f);
++  if(!nav.Project(swim,snap,water.side,water.up,water.down,true)){std::puts("DS089 water projection failed");return 8;}
++  if(std::fabs(snap[2]-planeZ)>0.6f){std::puts("DS089 water projection wrong height");return 9;}
++  if(!nav.Reachable(swim,land,2.6f,&water)){std::puts("DS089 water reach failed");return 10;}
++  const WarsBots::NavQueryBounds fixed2=WarsBots::WaterQueryBounds();
++  if(nav.Reachable(deep,land,2.6f,&fixed2)){std::puts("DS089 fixed 2.0 box reached a 2.3 m float");return 11;}
++  const WarsBots::NavQueryBounds deepBox=WarsBots::WaterQueryBounds(2.3f);
++  if(!nav.Reachable(deep,land,2.6f,&deepBox)){std::puts("DS089 plane-sized box missed the deep float");return 12;}
++  // (c) water query is water-only: a land start fails, the dry caller still works.
++  if(nav.Reachable(land,land,2.6f,&water)){std::puts("DS089 water query accepted land");return 13;}
++  if(!nav.Reachable(land,land)){std::puts("DS089 dry land failed");return 14;}
++  // (d) no water ref (outside the mesh): fail closed, never substitute the land/dry.
++  const float hole[3]={-5,-15,planeZ-1.5f};
++  if(nav.Reachable(hole,land,2.6f,&water)){std::puts("DS089 water query accepted hole");return 15;}
++  // (e) corner ray: raw feet fail (C147 0/1085), the plane-sized box makes the ray usable.
++  if(nav.RayClear(swim,land)){std::puts("DS089 raw-feet ray unexpectedly clear");return 16;}
++  if(!nav.RayClear(swim,land,&water)){std::puts("DS089 water ray not clear");return 17;}
++ }
+  std::puts("BotNavMeshWaterTests OK");return 0;
+ }
