@@ -1,6 +1,6 @@
 {
   "task": "C147",
-  "state": "prepared_not_run_review_pending",
+  "state": "reviewed_ready_for_one_run",
   "source": "b06681eaa4365afe5bf7309994012dce13a7ac83",
   "ci": 40649771503,
   "review": "dd68f2ce",
@@ -11,5 +11,6 @@
   "maximum_total_seconds": 300,
   "link_completion_deadline": 120,
   "water_entry_deadline": 180,
-  "new_game_runs": 0
+  "new_game_runs": 0,
+  "harness_review": "45d78996acd48ef4820e2066f5d5de620b88bc07"
 }

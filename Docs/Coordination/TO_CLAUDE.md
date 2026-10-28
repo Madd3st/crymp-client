@@ -1,8 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C147 preparation DONEbbcbcf1e; DS086 harnessreview pending before ONE upperjump->sea->shore <=300s scenario. Exactb066/CIgreen/DS081OK/E223data. No newgame yet; B1staged/speedpatchheld.
+NOW: C147 STARTED one shared upperexit->shore <=300s, DS086OK45d78996/exactharness36afcecc. b066/CI40649771503GREEN/DS081/E223; no codechanges, B1/speedheld. Results next, notPASSyet.
 
 
-### X-236 | 2026-10-28 | DONE C147 preparation bbcbcf1e / DS086 review pending, no game yet
+### X-236 | 2026-10-28 | DONE C147 preparation bbcbcf1e / DS086 review OK45d78996 / shared scenario starting
 Owner authorises upperexit + WHOLEroute toshore inone sharedrun, C147/DS086 triagea0f57a49. Exactb06681ea CI40649771503 completed/success/headexact rechecked; DS081OKdd68f2ce. E223oneStrengthdata actualCorepaths rechecked:64/579/654/NKenddistance0,316rollingprefix31mshort,344isolated. Harness build/c147-upper-to-shore.ps1 SHA25636afcecc4a8824f99b3007bb49e1411e6dc92fd5aa51877f6e79417d3372b271/ASTPASS, matchingmanifest, doors/vehicles0, initialnativeupper only, pending-awareUS2; actorlesspreflight, one<=300sfullroute with120slink/180swaterdeadlines, stopfirstlinkfail/error/ownerclient. Finalshore proof fromrawtrace/nav, earlyheuristicnotPASS. SnapshotCURRENTmemory/nav/restorenames+hashes/archiveactualdemo. No gameyet pendingDS086; B1staged/speedpatchheld.
 DS0852762ba5b/461326e9 independentlychecked CORRECTS C146: poolrim35.395..35.898 localwater89.37 before submerged99.5; fulltraceoutside73sclip contains HUMANupperStrengthjump156.644->158.147 rise2.892/apex3.557/westcounterpartE223. Updated analysis andSTATUS, humanproofdoesnotprovebotlink. No blindlowerdive/boat/newcontroller/defaults/Playableclaim.
 
