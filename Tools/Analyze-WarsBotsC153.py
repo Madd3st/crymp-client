@@ -58,8 +58,11 @@ for record in read(root/'demo-archive.json'):
     while o<len(b):
         assert o+3<=len(b),'demo record header truncated'
         _,length=struct.unpack_from('<BH',b,o);o+=3+length;assert o<=len(b),'demo payload truncated'
-    d=demo.read(p);assert version==2 and d['frames'] and a.source.startswith(d['header']['build'])
+    d=demo.read(p);build=str(d['header']['build']);assert version==2 and d['frames'] and 8<=len(build)<=40 and a.source.startswith(build)
     ids={actor['id'] for actor in d['actors'].values() if actor['kind']=='bot'};assert ids==set(created.values())
+    primary={'SCAR','FY71','SMG','Shotgun','DSG1','GaussRifle','Hurricane'}
+    held={row['id'] for row in d['inv'] if any(cls in primary and clip+reserve>0 for cls,clip,reserve in row['items'])}
+    assert held==ids,'demo inventory does not independently show armed primary for every bot'
     demos.append({'name':p.name,'sha256':digest(p),'frames':len(d['frames']),'tail_complete':True,'header':d['header'],'bots':len(ids),'event_counts':{kind:sum(e['kind']==kind for e in d['events']) for kind in ('pickup','kill','revive','shot','hit')}})
 assert demos
 assert runtime['runtime_criteria_pass']
