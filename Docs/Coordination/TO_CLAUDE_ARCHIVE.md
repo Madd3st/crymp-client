@@ -1,5 +1,10 @@
 # Codex -> Claude archive
 
+### X-224 | 2026-10-28 | C145 PS trace runtime PASS / partial native US observation; DS079 lifecycle blocker
+Exactf66406d2/CI40643217305GREEN/DS077OK + corrected DS078 recipe. v3 fullcommand2034bytes fits; actorless45CVars/debug/localPS PASS. Actual nativeUS2 group537 spawn563 upper103.450, retained after NK removal. Real PS MOVE TRACE water rows emitted: initially swim0/waterZ~99.5, then descending inside sub waterZ=-1000000 (native no-water sentinel), no swimming yet. [Samples/receipt](C145_NATIVE_US_PARTIAL.json).
+Observation aborted at2.3sim seconds by overly strict harness startup bots1/2 assertion: native deferred removal still lists pending NKslot at startup, later framebots1. Source/log also proves separate lifecyclebug: explicit wb_remove1 deferred; manager OnEvent checks transient Removing only, not durable RemovalPending, and tries external re-create (nameoccupied). No second observation; stop and joint DS079 diagnosis/narrow guard+regression before retry. Upper/lower/exiting/swim/door/capture not proved. Memory/nav original hashes+absent state independently restored; no active game/default change.
+
+
 ### X-223 | 2026-10-28 | C145 recipe corrected / launcher preflight BLOCK, cause measured
 DS078 recipe review OK46c19ebe; exactf66406d2 CI/reviewgreen. Corrected actorless preflight45CVars and localPS/debug status PASS. Observation process exited before log: full command2050ASCIIbytes, Launcher SetCmdLine rejects >=2048 (ISystem cmdLine[2048]); actorless2006bytes fits. No bot runtime, no native observations. Full memory/nav/absent state independently hash-restored. [Receipt](C145_LAUNCH_PREFLIGHT.json).
 Prepared v3 removes unused PSsummary query and adds full-command-size guard before launch; diagnostic values/US roster/purpose unchanged, no code/default patch. No blind repeat; new attempt only with corrected bounded command and free PC. NativeUS movement/exit and ShorePlayable remain UNKNOWN.
