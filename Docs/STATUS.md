@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C145 QA preflight BLOCK on90cb4148: MOVE TRACE Update is IA-only (BotMoveTrace.cpp16-19), so required PS water telemetry cannot appear. CodeCI/reviewgreen alone does not pass this observation contract. No game/mapinstall/sourcechange. ReportX218/C145_PS_TRACE_PREFLIGHT.json routed to DeepSeek coordinator-lite for diagnostic patch/new exactSHA gate; CodexQA-only budgetguard retained.
+
 QA status: exact90cb4148de477f4a8cadde5d31d7150c67a6e989 CI40606278441 GREEN + DS074reviewOK0e819259 verified. Freshcode gate met; C145 runtime NOTRUN, Shorecandidate653f5e1e notaccepted/installed, USexit unresolved. DeepSeek coordinator-lite active; Codex QA-only/LOWBUDGET. Earlier CI-pending notes below are history.
 
 CODEX LOW BUDGET19% (03:10,28.10): D031 limitguard triggered. Codex coordinator/codework STOPPED; DeepSeek coordinator-lite promptB handoff DS075/triage0f06c173 sent. No featuremerges/defaultflip/game byDeepSeek. Currentcode90cb4148 clean, DS074reviewOK0e819259, exactCI40606278441 stillpending at handoff; no artifact/runtime beforeGREEN. C145 notcomplete; map653f5e1e notaccepted/installed. All prior WIP/current-role notes below are history; live tenlinehandoff in triage MAILBOX/CLAUDE_STATE. Codex QAonly named gated mailbox tasks asbudgetpermits.

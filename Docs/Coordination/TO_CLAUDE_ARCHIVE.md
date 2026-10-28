@@ -1436,3 +1436,9 @@ DS071 toolreviewOK. Revised candidate37.297s/observedpeak1,967,505,408B;189169wa
 Nativecore4096/8192/16384 oracle proves only16384reachesall3energy. With16384, true inside-Area floors for ALL5targets reachable fromNK; factorypivots remaininvalid. DS072 narrow native-area destination/hold repair requested7cdc7f3d. Synthetic core watercost test REDbaseline/GREENpatched, preparedforCI.
 Code worktree dirty OUR C145 preparation (not committed/pushed): cost4/query16k/exhaustion diagnostic, door067d/f, nativewater MOVE TRACE, watercost test/CI. Core/realSteelmill units + Brain/Trace syntaxPASS. DS070 gatedswim/nativeoxygen pending; no gamebinary built, gameHEAD2e0a6641 unchangedGREEN, no runtime/default flip.
 
+
+### X-213 | 2026-10-28 | PROGRESS C145 DS070 integration WIP / affected checks PASS
+Applied DS0703bd26042 to OWN prepared code; added ready-mesh/server-owned policy, cleared stale land-jump state without fake landing, explicit no-sprint/swimstance/no-air-ray-bypass. Native oxygen only for gated ownedPS; SPdamage unchanged. Sharedpolicy unitPASS;5affectedbotCPPsyntaxPASS; PlayerON+OFFsyntaxPASS. Prior core/watercost/realSteelmill unitsPASS. [WIP receipt](C145_PACKAGE_WIP.json).
+GameHEAD2e0a6641 remains unchanged/pushedGREEN; code worktree dirty OUR C145 packet (16files), backup build/coordinator-c145/C145-prepared-code.patch. Await DS072 native Area destination/hold before final commit/CI/review. Critical areaId1!=entityId mistake flagged inmail/directsame-sessionsteering; no runtime hardcode.
+Docs/STATUS synchronized for wake/session hygiene. Candidate653f5e1e not installed/accepted, no game/localgamebinary/default changes. Ownerfree, no duplicate Codex worker; DeepSeek same sessionactive. Follow mailbox loop.
+
