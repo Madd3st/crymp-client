@@ -3,7 +3,7 @@
     "units":  "PASS",
     "memory_modified":  false,
     "patch_unchanged":  true,
-    "ci_status":  "in_progress",
+    "ci_status":  "completed/success",
     "msvc_units":  [
                        "BotMoveTraceEligibility",
                        "BotMoveTrace",
@@ -16,8 +16,9 @@
     "raw":  "build/ds076-check/",
     "candidate":  "653f5e1e unaccepted",
     "source":  "f66406d29f91e1950710907b02ad67aa9ec3825a",
-    "review":  "DS077 pending",
+    "review":  "DS077 OK2425fd94",
     "game_runs":  0,
     "engine_syntax":  "BotMoveTrace.cpp MSVC x64 C++20 /Zs PASS",
-    "local_game_build":  false
+    "local_game_build":  false,
+    "ci_units":  35
 }
