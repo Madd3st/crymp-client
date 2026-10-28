@@ -1418,3 +1418,9 @@ Published SHORE_ACCEPTANCE_C145.md (geometry, water/land actual movement, physic
 Water unsafe candidate not integrated/baked/installed; door syntaxPASS but vehicle/capture precedence needs review. Code remains2e0a6641 CI40588717866GREEN/DS065OK. No QA/gamebinary build launched; existing C127 server22508 untouched, owner free-state question pending. Wake correctly skipped active server; no duplicate worker forced.
 Next: DS066 corrected patch/oracles -> coherent integration/review/CI -> safe Shore bake+hash/connectivity -> planned free-PC runtime acceptance. C145 remains STARTED, no Playable claim; latest read DeepSeek stillDS065.
 
+
+### X-210 | 2026-10-28 | C145 tool DONE70aae712 / candidate Shore bake complete, NOT accepted
+DS066 revisions compiled but2shoreRED; fixed SAT boundary-only contact + exact clipped height max. Eightcase selftestPASS; Detourcost4land0waterpolys vs cost1shortcut4; actual runtime corebaselinewater/patchedland + realSteelmill9333polytestsPASS. FullSteelmill rebake comparison not claimed (input absent).
+Candidate bake38.953s/2099tiles/46614polys/3803components, navmesh9,762,044bytes SHA07b0bf4ef6076b2d385c2bac130b97d458dc9229e5cd2398cc1afc125b573830. NK20/20main; US11/23onmesh,0/23main (12offmesh), threeenergy main/factory pivots isolated. [Receipt](C145_SHORE_CANDIDATE.json), all135subjects retained.
+DS068 exacttoolreview pending; DS067 linkedmovement+door-only priority repairs; DS069 actualcapturearea/USroutes diagnosis. Corrected DS066 falseMP drown assumption: Player2961 branch !bMultiplayer, no Player exception needed. Ownerfree/abandoned22508stopped; no gamebinary/localbuild/install/runtime/default change.
+

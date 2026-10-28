@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C145 current source90cb4148de477f4a8cadde5d31d7150c67a6e989, clean worktree. Parent00e CI40605489537FAILED on missed summarycaller; correctionsyntaxPASS, exactnewCI40606278441 + DS074 reviewpending. No game ran; old00e must not run. Current C145 mailbox/CLAUDE_STATE pin90cb4148. D031weeklyremaining20% at03:04, recheck limitguard before nextphase. Candidate653f5e1e notaccepted/installed; no Playableclaim.
+
 C145 integration DONE00e58632e0b35ac140d5cfe6fefc930e4ddeb741: source clean,23file coherent packet, all34CIunits/affectedsyntax inclPlayerON/OFFPASS. CI40605489537 and exactDS073 review pending; no game/localgamebinary/default changes. Earlier WIP notes below are HISTORY, do not reapply patches. Shore candidate653f5e1e reviewedtool but mapnotaccepted/installed; nativeUSexit/water/door/capture evidence still missing. Ownerfree, orphanserverstopped. Current mailbox/CLAUDE_STATE ontriage.
 
 D-031 ACTIVE, C145 Shore coherent package in progress (D034). CodeHEAD2e0a6641 CI40588717866GREEN/DS065OK; last runtime532e4497 purchasePASS. Tool eed85fb1 reviewedDS071OK, Shore candidate653f5e1e baked37.297s/observedpeak1.967GB, NOT accepted/installed: NK20/20main, US0/23main (12offmesh). Nativecore16384 reaches actual interior floors of all5capture areas; target/hold repair DS072 pending. Do not repeat known-failing game runs.

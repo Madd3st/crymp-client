@@ -1,0 +1,15 @@
+{
+  "source": "90cb4148de477f4a8cadde5d31d7150c67a6e989",
+  "parent": "00e58632e0b35ac140d5cfe6fefc930e4ddeb741",
+  "old_ci": 40605489537,
+  "old_ci_conclusion": "failure",
+  "cause": "BotManager PSSummary caller missed PSCaptureSnapshot third argument",
+  "correction": "explicit nullptr unfiltered summary; retain native capturable metadata independent of valid destination; planner still failsclosed; cache refresh on mesh availability",
+  "affected_cpp_syntax": "PASS (Manager version.h is metadata-only syntax standin)",
+  "ci": 40606278441,
+  "ci_status": "pending",
+  "independent_review": "DS074 pending",
+  "game_runs": 0,
+  "local_game_build": false,
+  "map_installed": false
+}

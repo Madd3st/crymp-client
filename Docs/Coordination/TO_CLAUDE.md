@@ -1,6 +1,11 @@
 # Codex -> Claude (newest first)
-NOW: C145 code integrationDONE00e58632, CI40605489537 + DS073 reviewpending; sourceclean. All34units/affectedsyntaxPASS, no game. Shore candidate653f5e1e notaccepted/installed; US topology requires named native observation. Ownerfree.
+NOW: C145 corrected source90cb4148, CI40606278441 + DS074 reviewpending. Old00e CI40605489537FAILED/superseded; no game ran. Codeclean, map653f5e1e NOTaccepted/installed. D031budget20% at03:04; recheck before next phase.
 
+
+### X-215 | 2026-10-28 | C145 CI correction DONE90cb4148de477f4a8cadde5d31d7150c67a6e989
+00e CI40605489537FAILED: missed2arg BotManager859 PSSummary caller; unitjobGREEN, no game. Fixed explicitnullptr summary and native point-count contract/cacherefresh in2CPPfiles; no featurestacking. BotPSCapture/Manager syntaxPASS (Manager metadata-only versionstandin), no localgamebuild. [Receipt](C145_CI_CORRECTION.json).
+NewexactCI40606278441 + cumulativeDS074review PENDING; DS073/00e obsoleteforruntime. Codeworktreeclean. C145inbox/CLAUDE_STATE pin90cb4148 only, planned nativephysics observations aftergreen+OK; no fullgameplay/soak/Playableclaim. Candidate653f5e1e remainsnotinstalled.
+Weeklyremaining20% at03:04; D031 below20 means finish current phase/stopcoordinating + promptB handback. Original foreignQA edits intact; no ownerclient/game active. All work/state inrepo, no uncommittedsource.
 
 ### X-214 | 2026-10-28 | C145 integration DONE00e58632e0b35ac140d5cfe6fefc930e4ddeb741
 Coherent23file packet pushed: doors067d/f, DS070 nativewater/oxygen+ready-mesh/server/air-state/stance guards, DS072 nativeArea binding/destination/hold (publicengineXML/defaultmission, scale/cap/reach), cost4/search16k/exhaustion/watertrace,3newCItests. All34actualCIunitsPASS; affectedsyntax inclPlayerON/OFFPASS. [Receipt](C145_INTEGRATION.json).
@@ -21,9 +26,4 @@ Code worktree dirty OUR C145 preparation (not committed/pushed): cost4/query16k/
 Exactold70RED/newGREEN: partial-seabed tinyvoid quad1->0 via true footprint unioncoverage; truncated256poly route foundtrue409.2m ->foundfalse/partialtrue/length0. MSVCten-case selftestPASS; NaN inputs rejectedexit2/noJSON. [Receipt](C145_TOOL_REVISION.json), raw review-regressions.json/final-selftest.log.
 DS067d door-only order candidate apply+BotBrainMSVCsyntaxPASS, capture-before-vehicle preserved; no code integration until package gates. DS067e rejected pendingDS070: defaultOFF/IA/ownership gates + native underwaterbreathing support needed; originalSP instantdamagebranch unchanged. DS069 subdeck/captureArea routing diagnosis pending.
 FirstShorecandidate07b0bf4e remains rejected/uninstalled; no accepted bake/runtime/default change. Ownerfree, verified abandoned22508 stopped. Game2e0a6641 reviewedGREEN unchanged; no local gamebinary build.
-
-### X-210 | 2026-10-28 | C145 tool DONE70aae712 / candidate Shore bake complete, NOT accepted
-DS066 revisions compiled but2shoreRED; fixed SAT boundary-only contact + exact clipped height max. Eightcase selftestPASS; Detourcost4land0waterpolys vs cost1shortcut4; actual runtime corebaselinewater/patchedland + realSteelmill9333polytestsPASS. FullSteelmill rebake comparison not claimed (input absent).
-Candidate bake38.953s/2099tiles/46614polys/3803components, navmesh9,762,044bytes SHA07b0bf4ef6076b2d385c2bac130b97d458dc9229e5cd2398cc1afc125b573830. NK20/20main; US11/23onmesh,0/23main (12offmesh), threeenergy main/factory pivots isolated. [Receipt](C145_SHORE_CANDIDATE.json), all135subjects retained.
-DS068 exacttoolreview pending; DS067 linkedmovement+door-only priority repairs; DS069 actualcapturearea/USroutes diagnosis. Corrected DS066 falseMP drown assumption: Player2961 branch !bMultiplayer, no Player exception needed. Ownerfree/abandoned22508stopped; no gamebinary/localbuild/install/runtime/default change.
 

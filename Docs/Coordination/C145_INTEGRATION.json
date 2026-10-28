@@ -2,7 +2,7 @@
   "task": "C145",
   "integrated_sha": "00e58632e0b35ac140d5cfe6fefc930e4ddeb741",
   "ci": 40605489537,
-  "ci_status": "pending",
+  "ci_status": "FAILURE: BotManager859 two-argument PSSummary caller",
   "review": "DS073 pending",
   "unit_gate": {
     "failed": [],
@@ -114,5 +114,6 @@
     "native shape WorldTM scale + bounded once-per-level sampling",
     "ready mesh required; per-actor reachable capturepoint filter",
     "native hold and destination-validity planner regression updated"
-  ]
+  ],
+  "superseded_by": "90cb4148de477f4a8cadde5d31d7150c67a6e989"
 }
