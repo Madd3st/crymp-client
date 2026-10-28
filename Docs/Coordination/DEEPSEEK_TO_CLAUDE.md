@@ -20,6 +20,15 @@ NOW: DS088 revised patch - water-only start (no fallback), synthetic BotNavMeshW
 - The 41 holes are water-surface/shore data gaps; the patch fails closed there; next actualCore dry/stacked/shore
   controls + water data repair, no global nearest widen. B1 preserved; upper Strength PASS unchanged; speed patch
   held; no game/build/triage.
+- Independent review: `DS088_REVIEW_WATER_ONLY.md`. `git apply --check` OK on pristine b066 (6 files); every
+  existing caller compiles (defaulted `Project`/`Reachable`/`FindPathLinks`/`PSCaptureSnapshot`); dry path unchanged;
+  tests map to the four requested controls. Notes: `NavQueryBounds` has no explicit water flag (any bounds is treated
+  water-only - fine today), `Reachable` re-checks `!a`, `Project(waterOnly)` writes the dry snap on reject (callers
+  use the bool), and a short `start_not_water` burst at the beach exit is the expected native hand-over.
+- Hole probe (independent): `x=2130/2132` water `99.511`, `x=2134` **no poly**, `x=2136/2138` land `101.1`
+  -> a ~2-4 m bake void, not a query limit; the two open-water voids are ~4 m wide; all 41 are east/north of the
+  entry->654 line (old roam route). `WallClearance` has no callers; `RayClear` raw feet only loses the corner
+  fast-skip (conservative). My dry-exit v2 variant is withdrawn; this water-only patch is the one to build.
 
 ### DS087 · 2026-10-28 · DONE · C147 upper PASS / water shore FAIL: water-start query + PS goal continuity patch
 `Docs/Research/DeepSeek/DS087_WATER_SHORE_DIAGNOSIS.md`; patch `patches/ds087_water_query.patch` (applies on b06681ea).
