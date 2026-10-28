@@ -1,12 +1,20 @@
-**WarsBots**
+**WarsBots · начало**
 - [Главная](Home)
-- [Как устроен бот](Bot-Architecture)
-- [Карта репозитория](Repository-Map)
+- [Первое знакомство](Getting-Started)
 - [Запуск и игра](Running-and-Playing)
-- [Команды wb](Console-Commands)
-- [Навигация](Navigation)
-- [Демки](Demos)
-- [Команда и процесс](Team-and-Process)
 - [Статус и планы](Status-and-Roadmap)
+- [Разбор проблем](Troubleshooting)
+
+**Инженеру**
+- [Карта репозитория](Repository-Map)
+- [Маршрут инженера](Engineering-Guide)
+- [Архитектура бота](Bot-Architecture)
+- [Навигация](Navigation)
+- [Команды и настройки](Console-Commands)
+- [Проверки и доказательства](Testing-and-Evidence)
+- [Демки, логи и видео](Demos)
+
+**Контекст**
+- [Команда и процесс](Team-and-Process)
 - [Исследования и идеи](Research-and-Ideas)
 - [Словарь](Glossary)

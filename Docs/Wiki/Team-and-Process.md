@@ -1,43 +1,28 @@
 # Команда и процесс
 
-Над проектом работают владелец и три ИИ-агента (роли на 27.10, 21:20):
+## Роли на 28.10.2026
 
-| Кто | Роль |
+| Участник | Ответственность |
 | --- | --- |
-| **Владелец** (Madd3st) | цели, плейтесты (весят больше прогонов), решения D-xxx |
-| **Claude** | весь игровой код (`warsbots/feature/claude-sprint`), вливает патчи DeepSeek, вердикты, задачи агентам, документация |
-| **Codex** | скачивает сборки CI (локально не собирает), гоняет прогоны, сценарии и плейтест-пресеты, архивирует плейтесты |
-| **DeepSeek** (через OpenCode) | разбирает сырые логи на компьютере владельца, пишет патчи и модули с тестами в своей ветке `warsbots/research/deepseek`; существующий код сам не правит |
+| Владелец | Цели, плейтесты, видео и решения о поведении/defaults |
+| Codex | Временная координация, интеграция, QA на ПК владельца, готовые профили и документация (D031/D035) |
+| DeepSeek через OpenCode | Разбор сырых данных, патчи в своей ветке, независимое ревью перед игровыми пачками |
+| Claude | Временно вне лимитов; возврат по сохранённому handoff, а не по памяти чата |
 
-**Если у Claude кончились лимиты:** временным координатором становится Codex, DeepSeek проверяет каждый его коммит
-(решение D-031, промпты — `Docs/Research/Coordination/SUCCESSOR.md`). **Сейчас так и есть: включено 27.10 в 21:05**,
-текущее состояние и план — `MAILBOX/CLAUDE_STATE.md`.
+Новые параллельные агенты не запускаются без явного запроса. У общей интеграции один владелец. Отдельный автор патча не объявляет его интегрированным до SHA в целевой ветке.
 
-## Почта
+## Память в Git
 
-`Docs/Research/Coordination/MAILBOX/` (ветка steelmill-triage): `TO_CODEX.md` (C-xxx), `TO_DEEPSEEK.md` (DS-xxx),
-`DECISIONS.md` (D-xxx), `PROTOCOL.md` (правила). Ответы: `Docs/Coordination/TO_CLAUDE.md` (Codex, X-xxx, ветка
-weapon-goals), `Docs/Coordination/DEEPSEEK_TO_CLAUDE.md` (DeepSeek, ветка `warsbots/research/deepseek`). В начале
-каждого ответного файла — строка `NOW:` «чем занят сейчас»; у задачи статусы ACK → STARTED → PROGRESS → DONE/BLOCKED.
-Табло всех задач — `python3 Tools/Mailbox/board.py`. Ожидание почты — `Tools/Mailbox/wait_mail.ps1`.
+В triage: [PROTOCOL](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/PROTOCOL.md), [TO_CODEX](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/TO_CODEX.md), [TO_DEEPSEEK](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/TO_DEEPSEEK.md), [DECISIONS](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/DECISIONS.md), [CLAUDE_STATE](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/CLAUDE_STATE.md). C- — задача Codex, DS- — задача DeepSeek, D- — решение владельца. Ответ Codex — X- в `Docs/Coordination/TO_CLAUDE.md` на weapon-goals; ответ DeepSeek — в собственном outbox на deepseek.
 
-**Синхронизация (v4, D-030):** любая задача — письмо в почте, а не только сообщение в чате. Будильник
-`wake_agents.ps1` на компьютере владельца раз в 10 минут будит Codex или DeepSeek, если для них есть новое письмо
-и они простаивают; пока владелец играет, ничего не запускается.
+Статусы ACK → STARTED → PROGRESS → DONE/BLOCKED. «Готово» сопровождается SHA; `NOW:` отражает текущую работу. Старый STOP ограничен своей задачей. Планы и ещё не принятые патчи не записываются как выполненное поведение.
 
-## Как принимается изменение (пачками)
+## Согласованная работа
 
-1. Claude пишет код пачкой, всё за переключателями (по умолчанию выключено), с юнит-тестами.
-2. CI на GitHub собирает каждый пуш; Codex берёт зелёную сборку по точному SHA: смоук 6 ботов, прогоны 15 ботов × 660 с (в любое время, кроме когда владелец играет — D-029), демки.
-3. Claude (и DeepSeek по сырым логам) считает метрики, пишет вердикт и следующую задачу.
-4. Плейтест владельца с записью → правки → следующая пачка. Включение по умолчанию решает владелец.
+Странное поведение сначала анализируется совместно, исправления собираются в связную пачку. Проверки идут от дешёвых к дорогим; CI и свежее независимое ревью предшествуют игровому запуску. Локально game build не выполняется. Запуски не идут, пока владелец играет; чужие серверы/клиенты не останавливаются.
 
-Правила: без сборок, пока владелец играет; чужие серверы не трогать; цифры — со ссылкой на файл/лог/демку.
+Ожидание почты — `Tools/Mailbox/wait_mail.ps1`; страховка на Windows — задача **WarsBots Mailbox Wake**, установленная версия в `%LOCALAPPDATA%\WarsBots\Mailbox\bin`. Она использует текущую сессию агента, не случайный последний чат. Долгие сессии перезапускаются с сохранением handoff по правилам протокола; идентификаторы сессий — эксплуатационные данные, не постоянная часть вики.
 
-## Пирамида проверок (D-015)
+## Документация
 
-1. Юнит-тесты и проверка компиляции без MSVC — `Tools/OfflineCheck/run_units.sh`, `compile_check.sh` (секунды).
-2. Офлайн-симулятор хождения капсулы по геометрии карты — `Tools/OfflineCheck/walk_sim` (секунды на карту).
-3. Сценарные тесты в игре (лестница, вышка Gauss, дуэль) — Codex.
-4. Батч 15 ботов — только приёмка, одна фича за раз, контрольный прогон на том же билде.
-5. Плейтест владельца; разбор — `Tools/PlaytestReport` (страница с картой проблем и временем в видео).
+Вики — вход для человека; mailbox — оперативные поручения; отчёты — проверяемые результаты. Исходник вики находится в `Docs/Wiki/` на triage, опубликованная копия — GitHub Wiki. При изменении поведения обновляется текущий статус и связанные страницы; исторические отчёты сохраняются с их ограничениями. Схема репозиториев — [здесь](Repository-Map).
