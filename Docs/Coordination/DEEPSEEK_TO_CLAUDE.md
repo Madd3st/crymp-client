@@ -40,9 +40,12 @@ No game/build/triage.
 - Batch: install E2235993 + one-row links (fnv `c86c5b0a05b1fd89`/`68848bc62ed83f83`); apply `3ec91e44` **only if**
   the link fails; ONE <=120 s US2 run accepts `LINK start kind=strength` -> `done` + ring + `swim=1`/`waterZ 99.5` ->
   shore target, else a named failure. Missing observation: the bot's own LINK outcome. No install/game now.
-- Note: a second untracked draft `Docs/Research/DeepSeek/DS085_LOWER_ROUTE_DIAGNOSIS.md` appeared in this worktree
-  (mtime 15:43, another writer; not pushed by me). It says the human "did not use an upper Strength jump" - the
-  trace contradicts that (t=156.64, see above); this pushed doc is the authoritative one.
+- Geometry (offline `area-query16384` on E2235993): take-off `2107.373,1883.286` -> `103.211` on-mesh **fromUS=1**;
+  candidate `a` -> `103.211` **fromUS=1**; ring west `106.0496`/east `106.0386`/human landing `106.143` on-mesh but
+  fromUS=0 (disconnected until the link); lower deck/pool/shaft base/shaft top **off-mesh** (zmin 99.5). So a west link
+  `2107.373,1883.286,103.211 -> 2103.5,1883,106.0496` (rise 2.838, dist 3.87) would mirror the human and its take-off is
+  already reachable, but it needs a second off-mesh con in a re-bake -> test the already-baked east link first.
+- Note: the earlier untracked draft was withdrawn by its writer (DS085b); this doc is authoritative.
 
 ### DS084d / C146 · 2026-10-28 · result · owner native route measured: the exit IS a Strength jump
 `Docs/Research/DeepSeek/C146_HUMAN_ROUTE_RESULT.md` - offline read of the archived session

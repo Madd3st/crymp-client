@@ -55,6 +55,32 @@ route; what remains unobserved is the **bot's** execution. Full numbers: `C146_H
 
 ## 3. Geometry/topology facts
 
+Offline query of the candidate mesh (`area-query16384.exe Shore.US-strength-candidate.navmesh`, points from the
+trace; `on`=projected onto a polygon, `fromUS`=route exists from the bot US spawn `2111.88,1882.5,103.25`):
+
+| point | on | projected | fromUS |
+| --- | --- | --- | --- |
+| human take-off `2107.373,1883.286,103.125` | 1 | `103.211` | **1** |
+| candidate `a` `2110.56,1885.58,103.18` | 1 | `103.211` | **1** |
+| ramp top `2114.82,1883.35,103.12` | 1 | `103.133` | **1** |
+| human landing `2102.234,1882.349,106.017` | 1 | `106.143` | 0 |
+| west ring `2103.5,1883,106.05` | 1 | `106.0496` | 0 |
+| candidate `b` `2113.98,1885.51,106.07` | 1 | `106.0386` | 0 |
+| ramp bottom `2117.7,1883.35,99.75` | 1 | `101.192` (no 99.7 surface there) | 1 |
+| sea exit `2092.57,1871.14,100.11` | 1 | `99.511` (water) | 0 |
+| dry lower deck `2124.5,1880.63,90.13` | **0** | - | - |
+| pool surface `2120.47,1884.38,89.5` | **0** | - | - |
+| shaft base `2116.125,1880.625,90.31` | **0** | - | - |
+| shaft top `2116.2,1879.7,99.54` | **0** | - | - |
+
+So: the deck (103.2) and the ring (106.04-106.14) are both baked; the ring is a separate component until a link
+bridges it, and the human's take-off point is **already on-mesh and reachable from the bot spawn** - a west link
+`2107.373,1883.286,103.211 -> 2103.5,1883,106.0496` (rise 2.838, horizontal 3.87) would mirror the measured human
+jump exactly, but adding it means a second off-mesh connection in a re-bake. The already-baked east link (rise
+2.890) needs no new geometry and is the cheaper test. Every lower-interior point (deck, pool, shaft base, shaft
+top) is **off-mesh**, confirming the lower route is a data problem, not a movement flag.
+
+
 * Baked and usable: deck `103.1`, ring `106.03-106.05` (`DS084`), sea water area at `99.5` (cost 4).
 * Not baked: the dry lower deck `90.125`, the pool surface `89.37`, the pool floor `83.66`, and the under-hull
   opening at `(2092.6,1871.1,100.1)` - all below the mesh's `zmin 99.5`, which is why the 12 lower US spawns are
