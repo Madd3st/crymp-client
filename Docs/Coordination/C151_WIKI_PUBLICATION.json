@@ -1,0 +1,35 @@
+{
+  "task": "C151",
+  "source_commit": "cebeb1b055cf2db772791ff47c9a2f879cae695c",
+  "wiki_commit": "3370918d4171620481ce021c5673f02eae675bdc",
+  "wiki_url": "https://github.com/Madd3st/crymp-client/wiki",
+  "pages": 16,
+  "published_blob_hashes_match": true,
+  "sha256": {
+    "Bot-Architecture.md": "72c8fce1d7cca5bd380c65eebc41167518f8d1a4df0ead46d3aa44ce9a333d48",
+    "Console-Commands.md": "8056892438da8fd87fb89dc66a83c28f946d2fb3a20f240a52300f903afd367c",
+    "Demos.md": "f2bd08544befcb37e5f45cac83864824a73d96d5fff6130ddb89aa8a2965a5af",
+    "Engineering-Guide.md": "89a6b726622c838d0879188434f6cf76dbcccc1eb18ca0f03b168ffa9e5a13ff",
+    "Getting-Started.md": "6258a99d98cfc3a06659aeef8b0d0a52897410a514fd39c5cfa2ff9dbadc814d",
+    "Glossary.md": "4e495cab63ea1913c168aae553955178926853530bffa824d5ebc6d1a5b3d45e",
+    "Home.md": "4f7862af3d942bb4a3767ea6ecea34a2a91955d103f5ec04e9d51050d318b7f3",
+    "Navigation.md": "445fac811856aa70b77c802d834fc2830cafed708e89d7588878aa20b792c95d",
+    "Repository-Map.md": "0a40bced154fc710c7e25dd65add37becd03f873e8f8ef06a7a808aba06f8513",
+    "Research-and-Ideas.md": "e6c8483a654cd38b30d068fae89c3f54266581bc3cac71c37c62f050dfe09396",
+    "Running-and-Playing.md": "efe04abe3387535e0508c19f842a3f4d5ac0b7ab702916ad40a80eda8fee93e2",
+    "Status-and-Roadmap.md": "568331bef64a2b018936fa9c7dcc995524814d530e53f428510de7db19192f29",
+    "Team-and-Process.md": "cd40dbdaa5697e77a2089ed2a485c2db796b683bf439bfbc2a9cfc4532bde156",
+    "Testing-and-Evidence.md": "33c6cefcc6be1ce18dd994cdda08c56c39dce7565b02ca7ce4d3be95c4e221da",
+    "Troubleshooting.md": "bffbff5df90a495bb20b9ca7643c9faa5838ea2864fded15ecadbaf908d887d2",
+    "_Sidebar.md": "ff5161e6b7e8a3b91c957dcf8fea9ef42cd5da344ebe36d441f0613171910e92"
+  },
+  "checks": {
+    "task": "C151",
+    "wiki_pages": 16,
+    "local_links_checked": 73,
+    "github_source_links_checked": 27,
+    "errors": [],
+    "result": "PASS"
+  },
+  "note": "Pre-existing mailbox duplicate DS-050 and DS-052 detected; unrelated IDs preserved."
+}
