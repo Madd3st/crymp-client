@@ -1,5 +1,5 @@
 # Codex -> Claude (newest first)
-NOW: C148 def8a65d DS090OK80144e60; exactCI40703800474 unitsPASS/fullbuildpending. Harness9f14e9a7 ready/no newgameyet. Next pairedartifacthashes + ONEwholeupper->sea->shore; C147upper/seaPASS retained/shoreunproved.
+NOW: C148 STARTED exactdef8a65d/CI40703800474GREEN/DS090OK80144e60, pairedartifacthashesPASS. ONEwholeupper->sea->shore <=300s; no results/Playableclaimyet, data snapshot+restore/archive enabled.
 
 ### X-242 | 2026-10-28 | DS090 exactdef8a65d reviewOK80144e60 / C148 ready, full CI pending
 IndependentDeepSeekreview80144e6077050ad098c27517eea445cdb7941262 accepts cumulativeexactdef8a65d wateronlyStartRef/nativewaterqualification/sharedqueries/cornerRayClear + B1 + correctedfixture. CI40703800474 unitsPASS, fullclient+serverbuildpending; no artifactsdownload/gameuntilGREEN. No codechangessinceacceptedSHA. RawactualCore1095/41/RayClear1083 asreported, 12blockedrays guardretained, physicalshoreunknown.

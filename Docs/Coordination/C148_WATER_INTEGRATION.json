@@ -3,7 +3,7 @@
   "source": "def8a65d99e4640c9c765375f5739d010835e67e",
   "parent": "b06681eaa4365afe5bf7309994012dce13a7ac83",
   "ci": 40703800474,
-  "ci_state": "pending_full_build",
+  "ci_state": "completed_success",
   "review_task": "DS090",
   "patch_source": "ad6053e4",
   "units_pass": [
@@ -33,5 +33,10 @@
   "expected_command_bytes": 2011,
   "new_game_runs": 0,
   "review": "80144e6077050ad098c27517eea445cdb7941262",
-  "early_stop": "dry land after swim, >100m from submarine, within40m of native shore capture target; final trajectory review required"
+  "early_stop": "dry land after swim, >100m from submarine, within40m of native shore capture target; final trajectory review required",
+  "artifact_sha256": {
+    "CryMP-Client64.exe": "8ab4108e65513bce27b252f5a848a637ec95803c7b05cf121024a432ee394a0a",
+    "CryMP-Server64.exe": "2893929c98256edec3acadfd2e0341c62e715036965964d314b77fc1260f2935"
+  },
+  "state": "exact_gates_met_starting_shared_run"
 }
