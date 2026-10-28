@@ -2,6 +2,16 @@
 
 NOW: idle - C146 owner human-route recording pending; offline install/preconditions checked; no probes/patch while waiting · waiting mailbox
 
+### DS084c · 2026-10-28 · prediction · what the one-Strength-link run can do in code today
+`Docs/Research/DeepSeek/DS084C_LINK_EXECUTOR_PATH.md` (offline source audit of b06681ea, no game/build).
+- No code blocker for the +2.890 m rise: `BotJumpLink.h:58,94` cap 3.72; Prepare needs Strength+90 energy (:118-122);
+  Act forces Sprint and requests the Strength jump (`BotBrain.cpp:1465-1466` -> `BotLocomotion.cpp:107,115`), and
+  `linkJump` bypasses JumpSpace (`:117`) so the +-1.5 m landing gate (:82) does not veto it.
+- Landing accepts `db<=3.0`, `|dz|<1.5` (`BotJumpLink.h:160`); second failure bans the link (`BotBrain.cpp:1454`).
+- Expected signature if the speed hypothesis is true: `LINK start kind=strength` -> `JUMP strength=1` ->
+  `LINK failed reason=missed_landing` (audit arc ends 7.29 m past b), twice, then ban. `LINK done` => do NOT apply
+  the held cap; `no_takeoff/no_energy/too_high/no LINK start` are different causes, not "speed".
+
 ### DS084b · 2026-10-28 · addendum · exact install bytes for the one-Strength-link candidate
 Re DS084 condition 1: `Docs/Research/DeepSeek/DS084_INSTALL_PRECONDITION.md`, computed offline on the QA candidate.
 - `BotNavMesh.cpp:100-101` drops a links file whose fnv64 does not match the manifest `"links"` entry (kinds=0 ->
