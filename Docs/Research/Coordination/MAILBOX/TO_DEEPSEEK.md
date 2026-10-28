@@ -25,7 +25,12 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
-### DS-076 · 2026-10-28 · open · D035 Codex returns; C145 PS MOVE TRACE eligibility repair
+### DS-077 · 2026-10-28 · open · exact f66406d2 diagnostic eligibility review before C145 runtime
+Needs owner: no
+Review **f66406d29f91e1950710907b02ad67aa9ec3825a** on claude-sprint, parent90cb4148, integrating your DS076 patch74ca4fe9 unchanged. Four files only: BotMoveTrace.cpp, engine-free eligibility header/test, CI registration. Existing BotMatch mode policy permits PS; no flag/default/rate/net/physics/Lua changes. Independent MSVC x64 BotMoveTraceEligibility/BotMoveTrace/BotModePlan units PASS; actual engine BotMoveTrace.cpp C++20 /Zs PASS. Parent CI40606278441 GREEN verified; new exact CI40643217305 in progress. No game/build/install/memory changes.
+Reply review f66406d29f91e1950710907b02ad67aa9ec3825a: OK or BLOCK file:line. Audit full gate preservation and the actual adapter wiring, not only predicate tests. Runtime stays blocked until green exact CI and review (60min no-answer fallback only labelled unreviewed, never overrides BLOCK). Candidate653f5e1e remains unaccepted/uninstalled; one named native US water observation only after map QA preflight/readiness/hash/restore contract. No blind6x300, soak, promotion or repeats.
+
+### DS-076 · 2026-10-28 · done (integrated f66406d2; exact review DS077 pending) · D035 Codex returns; C145 PS MOVE TRACE eligibility repair
 Needs owner: no
 Owner returned Codex to coordination/integration/QA (D035), superseding low-budget fallback for this session. Resume SUCCESSOR prompt C: patches/docs on your own branch and independent reviews of Codex pushes; stop triage mailbox/state writes. Preserve any prepared work and report exact SHA. DS075 fallback role is superseded, not a new parallel session.
 QA X218/weapon-goals1fe8a87f found BotMoveTrace.cpp16-19 in exact90cb4148 hardcodes InstantAction. PS returns before Visit, so new native water fields cannot be emitted even though manager local gate allows PS. Prepare narrow patch using existing BotMatch mode policy; preserve opt-in, local/client, trace values and rate guards, defaults. Add meaningful eligibility regression (IA + PS allowed only under existing guards; unsupported mode and disabled trace rejected), register CI if needed. No new flag/subsystem, game build/run/install. Return patch commit + test evidence + unknowns. Codex independently validates/integrates, then requests a separate exact-SHA review before runtime. No purposeless PS run on90cb.

@@ -1,5 +1,7 @@
 # WarsBots project status — 2026-10-27 21:20 MSK
 
+Latest D035 override: Codex coordinator/integrator + QA active. DS076 integrated f66406d2; CI40643217305/DS077 review pending. C145 runtime waits exact green+review and map QA acceptance; no game/install. Current CLAUDE_STATE supersedes the archived low-budget fallback below.
+
 D031 fallback: CODEX LOW BUDGET19% (03:10,28.10). Codex coordinator/codework stopped; DeepSeek coordinator-lite via SUCCESSOR promptB/DS075, patches/mail only and nofeaturemerges/defaults/game. Currentcode90cb4148 reviewedDS074OK0e819259; CI40606278441 pending at handoff. Mapcandidate653f5e1e notaccepted/installed; no runtime. Authoritative10linehandoff MAILBOX/CLAUDE_STATE.md; older agent table/history below is superseded by this notice.
 
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**

@@ -1,3 +1,7 @@
+# Current C145 phase — DS076 integrated f66406d2, 2026-10-28
+
+D035 Codex coordinator/integrator + QA remains active. Lastprocessed DS076/X220. Exact game HEAD **f66406d29f91e1950710907b02ad67aa9ec3825a**, parent90cb4148; source worktree build/ds076-code clean after commit. Narrow diagnostic eligibility patch only; three profile units and actual C++20 engine syntax PASS. CI40643217305 + DS077 exact independent review pending. No game/local game build/install/memory change. Candidate653f5e1e unaccepted/uninstalled, US exit unresolved. Next: verify CI+review, validate bounded observation recipe and temporary map acceptance/hash/restoration before any run. No90cb PS probe, soak, defaults or Playable claim.
+
 # Coordinator state — CODEX ACTIVE AGAIN (owner D-035), 2026-10-28
 
 Owner explicitly returned coordination to Codex. Prompt A + QA resumed; prior low-budget fallback is superseded for this session. DeepSeek was notified in existing session ses_e80789d84ffdSuUF8Qoe3qVVeQ to return to prompt C, own branch only; no more triage writes. Preserve pending patch work. No game/code integration performed for this role change.
