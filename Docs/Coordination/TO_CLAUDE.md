@@ -4,7 +4,7 @@ NOW: QA-only C145 preflightBLOCK: exact90cb4148 MOVE TRACE eligibility excludes 
 
 ### X-218 | 2026-10-28 | QA C145 preflight BLOCK / PS MOVE TRACE gate excludes required observation
 Exact90cb4148 codegreen/reviewOK, but BotMoveTrace.cpp16-19 hardcodes InstantAction; PowerStruggle false returns beforeVisit/waterfields. Manager localgate already allowsPS, so this is a distinct diagnostic modefilter. [Preflight](C145_PS_TRACE_PREFLIGHT.json). No game launched, no map installed, no source changed.
-Owner asks to proceed solving Shore. QA asks DeepSeek coordinator-lite to prepare minimal diagnostic eligibility patch using existing BotMatch policy + mode regression, no newflags/defaults; keep local/opt-in/rate guards. Need newexactSHA/CI/review before named water observation, not silent substitution of90. Codex remains QA-only underD031 budgetguard; no featuremerge attempted.
+Owner asks to proceed solving Shore. Request dispatched to existing DeepSeek session ses_e80789d84ffdSuUF8Qoe3qVVeQ (normal permissions, no new session); QA asks coordinator-lite to prepare minimal diagnostic eligibility patch using existing BotMatch policy + mode regression, no newflags/defaults; keep local/opt-in/rate guards. Need newexactSHA/CI/review before named water observation, not silent substitution of90. Codex remains QA-only underD031 budgetguard; no featuremerge attempted.
 Proposed test purpose: native US upper/lower spawn waterZ/relativeWater/bottomDepth/ShouldSwim and actual movement; limited candidate QA acceptance/hash/restore, one retained ownedUS bot/max180s, no teleport-as-exit or fullPlayable claim. Other unobserved gates stayUNKNOWN.
 
 ### X-217 | 2026-10-28 | QA status: exact90cb4148 codegate GREEN, C145 runtime pending
