@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C148 physicalroutePASSdef8 independentlyauditedDS09110720454, BUTreviewgateFAIL: DS090OK17:18:18supersededBLOCK09e24517:19:29 BEFOREQAlaunch17:24:25; CodexmissedupdatewhileCIwait. Earlierbuildacceptance/gatesmetnotes corrected. LatentB1localwatergoal projectionblocked; DS092/C149 fixes sampledANDcommittedgoal thennewexactCIgreen+freshlatestreviewbeforeonefinalsharedroute. No moredef8games/default/data promotion. C148telemetry/demosvalid/archive/datarestored; actualshorePASSnotlost, currentbuildnotaccepted.
+
 C148 COMPLETEupper->sea->DRYSHOREPASS ondef8a65d/CI40703800474GREEN/DS090OK80144e60: ONE85s nativeUS2run, LINKdone3.10, two sea legs/intermediate dry passage, finalshore28.725mfromtarget654/grounded1/swim0/HP100. ActualcoreendpointNONWATER/reach654 confirmed; onehandoverNAVfallback/zero start_unprojected, capture/fullmapnotclaimed. Demo1642frames/logsarchived, freshmemory/navexactnames+hashesrestored/noactivegame. DS091independentresultaudit next, no furthergame/default/datapromotion. Details Docs/Coordination/C148_UPPER_SHORE_RESULT.md/json; earlierpending/FAILnotes below are history.
 
 C148 integrateddef8a65d waternav(nativequalifiedboundedwateronlystart+PSgoal+cornerRayClear) + reviewedB1roamguard. SixMSVCunits/threeactualadaptersyntaxPASS; CI40703800474 fullbuild andDS090independentreviewpending, no newruntime. Correcteddegenerateverticalsyntheticfixture/allassertionskept; actual1136rows Project/Reach/Paths1095/41holes, RayClear1083. One sharedwholeupper->sea->shore afterexactgates; no default/newflag/speedpatch/Playableclaim. Sourceclean, dataunchanged.
@@ -548,7 +550,7 @@ No fake channels, changed network layout, PS changes or research merge.
 Frozen `8f0abd5f`: 4 completed 120s headless regressions (6/15 bots x2), no crash/script
 errors or exact duplicate shot callbacks. 3158 native shots; 141 unclassified callbacks
 excluded from cadence. SOCOM min0.24s, contiguous native clip changes1. Median bot
-Update sum0.0765Р Р†Р вЂљРІР‚Сљ0.0825ms/frame (6), 0.2325Р Р†Р вЂљРІР‚Сљ0.236ms/frame (15); not total server CPU.
+Update sum0.0765Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™0.0825ms/frame (6), 0.2325Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™0.236ms/frame (15); not total server CPU.
 Exporter lifecycle/gap defect fixed in `2a2ac39d`; 11 Python tests pass.
 Spectator C++ tests PASS; 60s headless native Lua/C++ queries PASS: 31 assertions over
 0/1/3/6/5 participants, including deferred removal. Failed QA pilot preserved separately.
@@ -741,7 +743,7 @@ map spawn; server/client logs continue alive movement. No full pathfinder exists
 Latest user priority: include the bot in the IA player table and match participation,
 using EntityId and scoped game-mode handling, never a fake network channel.
 
-## SAVE CHECKPOINT: IA participants WIP Р Р†Р вЂљРІР‚Сњ BUILD FAIL, NOT DEPLOYED
+## SAVE CHECKPOINT: IA participants WIP Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ BUILD FAIL, NOT DEPLOYED
 
 Stopped on the user's explicit request to save remaining quota (2026-10-23).
 Do not continue gameplay/rebuilds merely because the earlier long task is incomplete.
@@ -769,7 +771,7 @@ user's session. Verify Tab row, count, kills/deaths/headshots without double hum
 normal-vs-head damage parity, death/respawn, round transitions, late join and cleanup.
 Spawn groups are explicitly unsupported/refused by participant registration; PS untouched.
 
-## 2026-10-23 (cloud session): P0 fix + multi-bot registry Р Р†Р вЂљРІР‚Сњ NOT COMPILED
+## 2026-10-23 (cloud session): P0 fix + multi-bot registry Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ NOT COMPILED
 
 Authored in a Linux sandbox without MSVC; nothing below is BUILD PASS or tested in game.
 
@@ -779,45 +781,45 @@ Authored in a Linux sandbox without MSVC; nothing below is BUILD PASS or tested 
   Participant flag is now set only after a successful reset.
 - `a8a56583` branch `warsbots/feature/multibot`: BotSpawner removed. BotManager = EntityId
   registry + commands; BotInstance = one independent bot; BotTargeting = channel-independent
-  hostility (bots target bots); BotProfile = 6 styles Р вЂњРІР‚вЂќ 4 skills; safe spawn selection for spawn
+  hostility (bots target bots); BotProfile = 6 styles Р В РІР‚СљР Р†Р вЂљРІР‚Сњ 4 skills; safe spawn selection for spawn
   and revive; per-bot profiling. See [design](MULTIBOT_DESIGN.md), [review](ARCHITECTURE_REVIEW.md).
-- Headshot Р Р†РІвЂљВ¬РІР‚в„ў1067: hypothesis = stock SP AI damage table chosen before the IA wrapper; unverified.
+- Headshot Р В Р вЂ Р Р†РІР‚С™Р’В¬Р Р†Р вЂљРІвЂћСћ1067: hypothesis = stock SP AI damage table chosen before the IA wrapper; unverified.
 
-Verification level: implemented Р Р†РІР‚В РІР‚в„ў **not compiled** Р Р†РІР‚В РІР‚в„ў not tested. Do not merge into warsbots/main
-before Build-WarsBots ON and OFF pass and AI_TESTS sections M1Р Р†Р вЂљРІР‚СљM6 are run.
+Verification level: implemented Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ **not compiled** Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ not tested. Do not merge into warsbots/main
+before Build-WarsBots ON and OFF pass and AI_TESTS sections M1Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™M6 are run.
 
 ### Same day, on the user's PC (driven by Claude via ClaudeQA/*.bat, separate worktree `..\crymp-multibot`)
 
 - **BUILD PASS** MSVC 19.44 x64 Release: ON (`build/multibot-on`) and OFF (`build/multibot-off`) at `ce36de5b`;
-  ON again at `8e26fb32`. The C2660 blocker is gone. ON server SHA256 at ce36de5b `FE542682Р Р†Р вЂљР’В¦BBBA33`.
-- **Server log, QA port 64120, no client, Steelmill:** `wb_add 2` Р Р†РІР‚В РІР‚в„ў WarsBot_01 (65501, universal) and
+  ON again at `8e26fb32`. The C2660 blocker is gone. ON server SHA256 at ce36de5b `FE542682Р В Р вЂ Р В РІР‚С™Р вЂ™Р’В¦BBBA33`.
+- **Server log, QA port 64120, no client, Steelmill:** `wb_add 2` Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ WarsBot_01 (65501, universal) and
   WarsBot_02 (65500, assault) on different spawn points ~100 m apart; both `IA participant registered`
-  (matchCount 1Р Р†РІР‚В РІР‚в„ў2), armed (test SCAR fallback), patrolling. PROFILE Р Р†РІР‚В°РІвЂљВ¬0.02 ms/frame for 2 bots.
-- Found: bots count as IA participants, so PreGame start timer fired Р Р†РІР‚В РІР‚в„ў `RestartGame` Р Р†РІР‚В РІР‚в„ў `ResetEntities`
-  Р Р†РІР‚В РІР‚в„ў our reset handler removed bots permanently (clean ENTITY_EVENT_DONE, no crash). Fixed in `8e26fb32`
-  (roster restore). Bots never met with 10 m local patrol Р Р†РІР‚В РІР‚в„ў spawn-point roaming in `8e26fb32`.
+  (matchCount 1Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ2), armed (test SCAR fallback), patrolling. PROFILE Р В Р вЂ Р Р†Р вЂљР’В°Р Р†РІР‚С™Р’В¬0.02 ms/frame for 2 bots.
+- Found: bots count as IA participants, so PreGame start timer fired Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ `RestartGame` Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ `ResetEntities`
+  Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ our reset handler removed bots permanently (clean ENTITY_EVENT_DONE, no crash). Fixed in `8e26fb32`
+  (roster restore). Bots never met with 10 m local patrol Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ spawn-point roaming in `8e26fb32`.
 - A bot-only IA match therefore DOES start without humans (native timer, no fake connection).
 
 ### M3 bot-vs-bot: PASS (server log, `49f2bae2`, QA 64120, no human, 240 s)
 
 `build/claude-qa/WarsBots-Claude-m3-173247.log` via `Tools/wb_log_report.py`:
 2 bots; native IA RestartGame deleted both, both restored 2/2 with new EntityIds; real map weapon
-pickups after reset; 8 mutual acquisitions `kind=bot`; 9 botР Р†РІР‚В РІР‚в„ўbot hits through native weapons and
-ShotValidator; WarsBot_02 killed WarsBot_01 (4Р вЂњРІР‚вЂќ31 dmg) via stock KillPlayer; IA score shooter
-kills=1, victim deaths+1; 2/2 revives of the same EntityId; Р Р†РІР‚В°РІвЂљВ¬0.03 ms/frame for 2 bots; no crash.
-Defect: 3 self-damage (fall) hits after obstacle Strength jumps off ledges, 1 death (suicide Р Р†РІвЂљВ¬РІР‚в„ў1 kill,
-native IA rule). Fixed in `7572a4f5` (Armor while falling, far-landing probe) Р Р†Р вЂљРІР‚Сњ retest pending.
+pickups after reset; 8 mutual acquisitions `kind=bot`; 9 botР В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћbot hits through native weapons and
+ShotValidator; WarsBot_02 killed WarsBot_01 (4Р В РІР‚СљР Р†Р вЂљРІР‚Сњ31 dmg) via stock KillPlayer; IA score shooter
+kills=1, victim deaths+1; 2/2 revives of the same EntityId; Р В Р вЂ Р Р†Р вЂљР’В°Р Р†РІР‚С™Р’В¬0.03 ms/frame for 2 bots; no crash.
+Defect: 3 self-damage (fall) hits after obstacle Strength jumps off ledges, 1 death (suicide Р В Р вЂ Р Р†РІР‚С™Р’В¬Р Р†Р вЂљРІвЂћСћ1 kill,
+native IA rule). Fixed in `7572a4f5` (Armor while falling, far-landing probe) Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ retest pending.
 Not yet observed: headshot scoring, Tab rendering on a client, bot vs human after this refactor.
 
 ### M3b and M4: SERVER-LOG PASS (`7572a4f5`, QA 64120, no human)
 
-- M3b `m3b-174130`, 2 bots, 240 s: restored 2/2 after IA restart, 8 botР Р†РІР‚В РІР‚в„ўbot hits, 1 kill, IA scores
+- M3b `m3b-174130`, 2 bots, 240 s: restored 2/2 after IA restart, 8 botР В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћbot hits, 1 kill, IA scores
   1/0 and 0/1, **0 self-damage** (fall fix effective in this sample), no crash.
 - M4 `m4-174530`, 6 bots (universal, assault, marksman, flanker, defender, hunter), first ~240 s of 300:
-  6 distinct initial spawns (min separation 30.3 m); IA restart Р Р†РІР‚В РІР‚в„ў 6/6 restored; 24 acquisitions all
-  `kind=bot`; 61 botР Р†РІР‚В РІР‚в„ўbot hits, 1351 damage; 4 kills by bots #2 (2), #3, #6; 4 deaths; 4/4 revives same
+  6 distinct initial spawns (min separation 30.3 m); IA restart Р В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћ 6/6 restored; 24 acquisitions all
+  `kind=bot`; 61 botР В Р вЂ Р Р†Р вЂљР’В Р Р†Р вЂљРІвЂћСћbot hits, 1351 damage; 4 kills by bots #2 (2), #3, #6; 4 deaths; 4/4 revives same
   EntityId; 1 self-hit (1 hp); PROFILE max 0.077 ms/frame for all 6 bots, worst frame 1.37 ms,
-  Р Р†РІР‚В°Р’В¤2868 rays per 10 s report; no crash.
+  Р В Р вЂ Р Р†Р вЂљР’В°Р вЂ™Р’В¤2868 rays per 10 s report; no crash.
 Meaning: the server simulates 6 independent bots that find, shoot, kill and respawn each other through
 native systems. Not proven: client view, animations, tactics quality, bot vs human on this branch.
 
@@ -825,18 +827,18 @@ native systems. Not proven: client view, animations, tactics quality, bot vs hum
 
 - `6a30130a` movement/engagement fixes: BUILD PASS on the owner's PC. **Owner playtest**: bots now
   see and kill well; they sometimes do not know where to go and get stuck; when a player stands behind
-  an obstacle they look at him but do nothing. Owner wants 10Р Р†Р вЂљРІР‚Сљ15 bots.
+  an obstacle they look at him but do nothing. Owner wants 10Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎС™15 bots.
 - `ef376469` navigation graph + A*, head-aim over cover, barrel-blocked step-out, 15-bot QA:
   **not built, not run**. Measure against M4 baseline: blocked 60% of movement samples, ATTACKING 2%.
 
-### Owner playtest 18:30 (15 bots) Р Р†Р вЂљРІР‚Сњ build was the stale `8f56ede9`
+### Owner playtest 18:30 (15 bots) Р В Р вЂ Р В РІР‚С™Р Р†Р вЂљРЎСљ build was the stale `8f56ede9`
 
 Bots kill well; some stand AFK, move slowly, never sprint, rarely jump, pick up weapons lazily;
 console spam on server and client. Causes found in the log: empty-handed respawns (IA EquipPlayer
 was not called for bots), roaming always at Run, refused moves toward other floors (old build).
 Fixed in the next commit (not built yet): equip like a human, weapon upgrades, Speed travel,
 travel/dodge Strength jumps, per-map memory, `wb_log` levels (telemetry to file only).
-Load: 15 bots Р Р†РІР‚В°РІвЂљВ¬1.74 ms/frame average, worst frame 17.8 ms (old entity-iterator weapon search).
+Load: 15 bots Р В Р вЂ Р Р†Р вЂљР’В°Р Р†РІР‚С™Р’В¬1.74 ms/frame average, worst frame 17.8 ms (old entity-iterator weapon search).
 
 ### 19:25 MSK checkpoint (`df3ceb8e`)
 - 15 bots on `c4c9cec2`: 76 kills / 5 min, avg 0.31 ms/frame, worst 0.86 ms, 0 fall deaths, map memory persisted.

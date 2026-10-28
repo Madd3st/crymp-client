@@ -325,5 +325,14 @@
       "server": "c148",
       "started": "2026-10-28T17:24:29"
     }
-  }
+  },
+  "review_gate_valid_at_launch": false,
+  "superseding_review_block": "09e245e1",
+  "review_gate_chronology": {
+    "initial_ok": "2026-10-28T17:18:18+03:00",
+    "block": "2026-10-28T17:19:29+03:00",
+    "launch_arguments": "2026-10-28T17:24:25+03:00"
+  },
+  "gate_verdict": "FAIL: QA used stale DS090 OK while newer DS090b BLOCK existed; physical route evidence remains PASS, build not accepted",
+  "independent_result_audit": "10720454"
 }
