@@ -63,9 +63,10 @@ for record in read(root/'demo-archive.json'):
     primary={'SCAR','FY71','SMG','Shotgun','DSG1','GaussRifle','Hurricane'}
     held={row['id'] for row in d['inv'] if any(cls in primary and clip+reserve>0 for cls,clip,reserve in row['items'])}
     assert set(created.values())<=held,'demo inventory does not independently show armed primary for every current bot'
+    assert any(e['kind']=='kill' and e['actor'] in ids and e['other'] in ids and e['actor']!=e['other'] for e in d['events']),'no real bot-vs-bot kill in demo'
     demos.append({'name':p.name,'sha256':digest(p),'frames':len(d['frames']),'tail_complete':True,'header':d['header'],'bots':len(ids),'event_counts':{kind:sum(e['kind']==kind for e in d['events']) for kind in ('pickup','kill','revive','shot','hit')}})
 assert demos
-assert runtime['runtime_criteria_pass'] and runtime['quality_pass']
+assert runtime['runtime_criteria_pass'] and runtime['quality_pass'] and runtime['evidence']['native_death_revive_cycles']>0
 summary={'schema':'warsbots-run-summary/1','task':'C153','source':a.source,'verdict':'PASS','client_visual':'NOT TESTED','archive':str(root),'created':created,'first_real_primary':list(first.values()),'real_primary_pickups':len(pickups),'weapon_goal_events':len(goals),'mid_goal_replacements':replacements,'repeated_pursuit_anchors':repeated_pursuit,'timeout_events':len(re.findall('unreachable; skipping it',log)),'unavailable_cancels':len(re.findall('reason=unavailable',log)),'runtime':runtime,'restore':restore,'demos':demos,'trace_sha256':digest(trace),'limits':'Headless shared batch only. Timeout/stolen/urgent controls have offline evidence; absent runtime events are not claimed exercised. No cross-build performance or full-Shore/client claim.'}
 (root/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 (root/'weapon-goals.json').write_text(json.dumps(goals,indent=2)+'\n',encoding='utf-8')

@@ -109,9 +109,15 @@ try{
   $currentSide=$side.Substring($lastCreate)
   $attacks=[regex]::Matches($currentSide,'AI state=ATTACKING').Count
   $revives=[regex]::Matches($currentSide,'revive result EntityId=\d+ sameEntity=1 alive=1').Count
+  $deadSlots=@{};$deathReviveCycles=0
+  foreach($lifeEvent in [regex]::Matches($currentSide,'#(\d+) (AI state=DEAD|revive result EntityId=\d+ sameEntity=1 alive=1)')){
+   $slot=$lifeEvent.Groups[1].Value
+   if($lifeEvent.Groups[2].Value -eq 'AI state=DEAD'){$deadSlots[$slot]=$true}
+   elseif($deadSlots.ContainsKey($slot)){$deathReviveCycles++;$deadSlots.Remove($slot)}
+  }
   $elapsed=([DateTime]::UtcNow-$start).TotalSeconds
-  $runtimeEvidence=@{observation_seconds=$elapsed;current_roster_ids=$currentIds;current_real_primary_pickup_ids=$currentPickups;historic_pickup_actor_ids=$pickupActors;attacking_states=$attacks;revive_log_events=$revives;test_grants=[regex]::Matches($side,'TEST GRANT SCAR').Count;client_visual='NOT TESTED'}
-  $passed=$currentIds.Count -eq 8 -and $currentPickups.Count -eq 8 -and $attacks -gt 0 -and $revives -gt 0 -and $runtimeEvidence.test_grants -eq 0 -and $elapsed -ge 90 -and ([DateTime]::UtcNow-$rosterAt).TotalSeconds -ge 10
+  $runtimeEvidence=@{observation_seconds=$elapsed;current_roster_ids=$currentIds;current_real_primary_pickup_ids=$currentPickups;historic_pickup_actor_ids=$pickupActors;attacking_states=$attacks;revive_log_events=$revives;native_death_revive_cycles=$deathReviveCycles;test_grants=[regex]::Matches($side,'TEST GRANT SCAR').Count;client_visual='NOT TESTED'}
+  $passed=$currentIds.Count -eq 8 -and $currentPickups.Count -eq 8 -and $attacks -gt 0 -and $deathReviveCycles -gt 0 -and $runtimeEvidence.test_grants -eq 0 -and $elapsed -ge 90 -and ([DateTime]::UtcNow-$rosterAt).TotalSeconds -ge 10
  }while(-not $passed -and $elapsed -lt 300)
  if(-not $passed){throw 'Shared goals/weapons acceptance incomplete by300s; no automatic repeat'}
  Assert-ReviewFresh
