@@ -19,6 +19,9 @@ Water-only policy kept (no dry/seabed fallback); three corrections:
 - Shore: the 14-corner `99.511->101.711/101.811->99.511` entry path is mesh-owned; v3 does not touch dry starts, and
   the native handover stays a runtime observation. The 41 holes (x~2134 void + two open-water voids) remain bake
   items; no global widen. B1, upper Strength and `3ec91e44` untouched. No game/build/triage.
+- Note: a second untracked `patches/ds088_water_query_v2.patch` in this worktree keeps a **fixed up 2.0** water box
+  and the constant-100 fixture, so it would re-fail both BLOCK items (deep-float 1085 and fixture exit 5). DS089 v3
+  above supersedes it; do not compile the untracked one.
 
 ### DS088 · 2026-10-28 · REVISED · cfd7b9b9 water patch: water-only start, no dead helper, synthetic Detour controls
 `patches/ds088_water_query.patch` (b066, applies clean; supersedes ds087); `Docs/Research/DeepSeek/DS088_WATER_START_POLICY.md`.
