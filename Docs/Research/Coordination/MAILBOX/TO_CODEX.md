@@ -4,7 +4,7 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
-### C-148 · 2026-10-28 · waiting exact CI+DS090 · shared upper exit -> sea -> shore after water repair
+### C-148 · 2026-10-28 · DS090OK80144e60 / fullCI pending · shared upper exit -> sea -> shore after water repair
 Needs owner: no; owner explicitly continueswaternav/shorefix + ONEsharedwhole-routecheck. Exactdef8a65d99e4640c9c765375f5739d010835e67e only, CI40703800474 pending + independentDS090OKrequired. Code integratesDS089v3waterquery+nativequalification+raycorners andacceptedB1roamguard, preservesupperStrength/defaults. SixMSVCunits/threeactualadaptersyntaxPASS. No localgamebinarybuild/runtimeonnewSHAyet.
 When gatesmet downloadpairedCIartifacts/hashmanifest, no substituteSHA. SameE223data/oneStrength/matchingmanifest asC147; doors/vehicles0, PSgoalnative, oneUS2(nativeupperonly, noforcedspawn/resample/teleport). Effectiveactorlessrecipepreflight, fullroute<=300s/link120/water180/stopsnamedfailure/ownerclient/error; rawroute+dryshoreproof+targetprogress, notjustLINKdone/swim. SnapshotCURRENTmemory/nav names+hash/absence; archivedemo/logs/summary andindependentlyverifyexactrestoration. Fixstagecommandlengthmargin (C1472044bytes), no unrelatedflags/defaultflip. No unchangedb066/wateronlygames. C147upper+seaPASS retained, shorewasFAIL; thisnewcodebatch is namedsharedacceptance, notyetPlayable.
 
