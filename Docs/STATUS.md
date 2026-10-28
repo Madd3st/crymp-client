@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+DS087 waterquerypatchcfd7b9b9 received but integrationHOLD: shorefallback/no-waterref behavior and realcorewater/dry/stacked/shore guards need DS088revision(a2c9f6ad). Currentgamecodeb066 unchanged/B1staged, no newCI/game. C147upper+seaPASS/shoreFAIL300s; actualcoreoraclea6bce068 confirmsfeet0/1136 vsnativewaterquery1095/1136. Datarestored, nextrevisedpatchcompile/integration/CI+independentreview before sharedwhole-routeacceptance.
+
 C147 one shared301.68s run: UPPEREXITPASS(linkdone5.55), SEAENTRYPASS14.027, DRYSHOREFAIL(stillswim at300s). Exactb066/CI40649771503GREEN/DS081OK, DS086harnessOK45d78996, temporaryE223oneStrengthdata; no codechange/speedpatch.142NAVfallbacks(127start_unprojected), native swimmerfeet~98 vswatermesh99.5; jointDS087 diagnosis/repair next, not confirmedrootcause. Memory/nav freshsnapshot EXACTnames+hashes restored, demo5984frames/logsarchived/no activegame. No unchangedrepeat/Playableclaim.
 
 C147 upper exit -> shore shared scenario STARTED preparation (owner authorised). Exactb06681ea/CI40649771503GREEN rechecked, DS081OK; E223oneStrengthdata only, DS086 harnessreview pending. No game yet; max300s whole route, stopnamedlinkfailure/error/ownerclient. Currentmemory/nav will be snapshot/restored, not staleC146receipt. DS085 corrections verified: poolrim89.37; laterfulltrace proves HUMANupperStrengthjump rise2.892/apex3.557, botoutcome unobserved. B1staged/strengthspeedpatchheld; ShorePlayable notaccepted.
