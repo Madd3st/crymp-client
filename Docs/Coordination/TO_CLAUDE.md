@@ -2,7 +2,7 @@
 NOW: C146 ownernative route READY onexactb066/CIgreen/DS081OK; AST/PrepareOnlyPASS, noGUI/game launched. Awaitowner recording; automaticQA gamesheld. DS084 datareviewOKb06b420d, speedpatch3ec91e44 stillheld; B1staged preserved.
 
 
-### X-234 | 2026-10-28 | C146 native player route prepared / exactb06681eaa4365afe5bf7309994012dce13a7ac83
+### X-234 | 2026-10-28 | DONE C146 launcher preparation c6f93a8b / owner recording awaits
 Owner offered actualplayer submarine route/video, then asked resume after limits. Currentaccount allowed (5hused0%, weeklyused16%), no reset action. Prepared Tools/Record-WarsBotsShoreRoute.ps1 exactCI pair40649771503 completed/success/headb066 + DS081OKdd68f2ce; manifesthashesmatch, AST/PS5PrepareOnlyPASS, no actual game/GUI. Zero bots, nativeUSmanualteam/spawn, no navinstall/localgamebuild/forcedroute. [Instructions](C146_NATIVE_PLAYER_ROUTE.md), [receipt](C146_PLAYER_ROUTE_PREPARE.json).
 Owner launch records server/client trace +20Hzdemo, F8marks; no gametimer/+quit. After clientcloses normally, stoponlyownedserver andarchiveactualDEMOpaths/hash+logs, memorysnapshot/archive/restoreincludingabsence; defercleanupifothergameactive. Awaitownerroute; automatedgameprobesheld meanwhile, no Playableclaim.
 DS084datareview b06b420dOK received for b066/E223(oneStrength) withinitialupper/link/PSgoalconditions; prospective speedpatch3ec91e44 remainsheld untilnativeevidence. Stockapex4.7 auditdoesNOTshowfullsprintcollision, earlier3.62modelconditional; do notintegrate speculativefix. B1stillstaged/baseb066/backup05209e29 preserved. Corrected unusedv5polys46614 to actualCorecount, not46615. ForeignRecording C08CF236/wrapper untouched.
@@ -24,5 +24,3 @@ Next DS083 independent placement/material verification, corrected upperroute ana
 ### X-230 | 2026-10-28 | C145 offline corridor diagnosis contribution DONE6c79eebe / no runtime
 Existing actual16384core + candidate653f5e1e:348 layer samples; z99.875 projects97/116,60 have upperUS paths inclx2146; z103 projects106/116 and z106.25 projects116/116 but0USpaths, all0NKpaths. Observedturnx2121.430 is not eastern componentboundary; physical traversal/selectedgoal causality remainsunknown. No rebake/install/code/game/memory changes.
 Nativegroup537 links23upper/middle/lower spawns; inspectedmissionbox hasnoDoor/ladderentity (static geometry notexcluded). Canonicaltriangle sections preserve stackedlayer evidence, notcertifiedclearance. [Evidence and reproducible inputs](C145_OFFLINE_CORRIDOR.md). DS082 inspect goalturn+actualexit/layeridentity before repair; no unchangedrepeat/defaults/Playableclaim. ForeignRecording/wrapper preserved. DS0821e9fc9c3 received: roamcycle agrees; B1 integration held for offline red/green oracle. Native resourcelist+Objects.pak show submarine ladder assets and mat_ladder proxy; Player7139+ supports static ladder collision without entity. Exact shaft placement/water state unresolved; follow-up routed, no automatic human/GUI fixture.
-
-

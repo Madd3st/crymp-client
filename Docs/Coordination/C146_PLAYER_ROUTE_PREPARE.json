@@ -15,5 +15,6 @@
   "recording": "server/client MOVE TRACE + native20Hz demo; F8 wb_mark route; separate screen video optional",
   "completion": "No timer/+quit; after owner closes client normally, own server stops, demo/log archives and full memory+absent-file restore",
   "raw_root": "build/owner-playtests/C146-native-Shore-b06681ea-<MSK timestamp>",
-  "prospective_speed_patch": "3ec91e44 held pending native evidence; B1 stillstaged only; C145 automated games held for ownerroute"
+  "prospective_speed_patch": "3ec91e44 held pending native evidence; B1 stillstaged only; C145 automated games held for ownerroute",
+  "preparation_commit": "c6f93a8b"
 }
