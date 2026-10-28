@@ -1,5 +1,10 @@
 # DS-083 - C145 upper native-ladder route verification and bounded reuse design
 
+> SUPERSEDED FACTS (DS-083 correction, `DS083_UPPER_STRENGTH_CORRECTION.md`): the ring **is** baked on the full
+> candidate (east 106.0386 / west 106.0496, on mesh, `fromUS=0`). The "ring is not baked" row in section 2 is
+> wrong - those probes were inside the cockpit. The ladder subsystem is deferred until the existing Strength +
+> drop route is ruled out. The native-mechanics and design sections below stay as the superseded design.
+
 Corrects DS-082 (`1e9fc9c3`): the 9.4 m shaft is **not** the only exit. Codex X-231 / weapon-goals `9e5fef54`
 (`Docs/Coordination/C145_NATIVE_LADDER_ASSETS.json`, raw `Shore.sub-ladder-placements-validated.json`) places
 **two `sub_ladder_forwardhatch_b` ladders on the upper cockpit edges** plus the long shaft. This note verifies the

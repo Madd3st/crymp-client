@@ -1,0 +1,121 @@
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 4583117..49cd518 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -1431,6 +1431,14 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
+ 		m_link.Start(m_now,move,JVec{l->a[0],l->a[1],l->a[2]},JVec{l->b[0],l->b[1],l->b[2]});
+ 		WB_LOG(2,"[WarsBots] #%d LINK start kind=%s a=(%.2f,%.2f,%.2f) b=(%.2f,%.2f,%.2f) energy=%.0f actor=%u.",m_number,NavLinkName(l->kind),
+ 			l->a[0],l->a[1],l->a[2],l->b[0],l->b[1],l->b[2],m_blackboard.energy,actor.GetEntityId());
++		// DS-083: a Strength link whose geometry needs more than sprint speed cannot land; ban it at the start
++		// instead of sprinting into the take-off wall (C145 reverse upper link needed 2.748, sprint 6.75 blocked).
++		if (!m_link.SpeedFeasible())
++		{
++			WB_LOG(1,"[WarsBots] #%d LINK infeasible kind=%s needed=%.2f at=(%.2f,%.2f,%.2f) actor=%u.",m_number,NavLinkName(l->kind),
++				StrengthNeededSpeed(JVec{l->a[0],l->a[1],l->a[2]},JVec{l->b[0],l->b[1],l->b[2]}),l->a[0],l->a[1],l->a[2],actor.GetEntityId());
++			mesh->BanLink(l->ref); m_link.Reset(); return;
++		}
+ 	}
+ 	LinkInput in;
+ 	in.now=m_now; in.feet=JVec{feet.x,feet.y,feet.z}; in.grounded=m_blackboard.grounded;
+@@ -1462,7 +1470,7 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
+ 	WBI(move,true);
+ 	m_intent.destination=Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z);
+ 	WBI(gait,o.slow?BotGait::Walk:BotGait::Run);
+-	if (m_link.Phase()==LinkPhase::Act && m_link.Move()!=LinkMove::Drop) WBI(gait,BotGait::Sprint); // c066: Strength links still land short
++	if (m_link.Phase()==LinkPhase::Act && m_link.Move()!=LinkMove::Drop) WBI(gait, m_link.TakeoffGait()==LinkGait::Sprint?BotGait::Sprint:BotGait::Run); // DS-083: geometry gait, not a blanket sprint
+ 	WBI(jump,o.jump==LinkJumpRequest::Strength?BotJump::Strength:(o.jump==LinkJumpRequest::Normal?BotJump::Normal:BotJump::None));
+ 	m_intent.linkJump=m_intent.jump!=BotJump::None;
+ 	if (o.wantStrength) WBI(suitMode,NANOMODE_STRENGTH);
+diff --git a/Code/CryGame/Bots/BotJumpLink.h b/Code/CryGame/Bots/BotJumpLink.h
+index 25c8baf..1f64562 100644
+--- a/Code/CryGame/Bots/BotJumpLink.h
++++ b/Code/CryGame/Bots/BotJumpLink.h
+@@ -21,6 +21,7 @@ enum class LinkPhase { Idle = 0, Approach, Prepare, RunUp, Act, Air, Done, Faile
+ enum class LinkMove { Drop = 0, Jump, Strength };
+ enum class LinkJumpRequest { None = 0, Normal, Strength };
+ enum class LinkFail { None = 0, Timeout, NoTakeoff, MissedLanding, NoEnergy, TooHigh };
++enum class LinkGait { Run = 0, Sprint };
+ 
+ struct LinkInput {
+ 	float now = 0.f;
+@@ -56,8 +57,27 @@ struct LinkParams {
+ 	float strengthEnergy = 90.f;       // DS-033: links started at 10-57 energy landed short
+ 	float dropAirMin = 0.15f;          // m below a that counts as "left the edge" for a drop
+ 	float maxStrengthRise = 3.72f;     // DS-046: native Strength jump rise ~3.62 m; a +4.30 m link cannot land
++	// DS-083: horizontal take-off speeds used to choose the gait from the link geometry (baker vh = 4.5, player sprint).
++	float runSpeed = 4.5f;
++	float sprintSpeed = 6.75f;
+ };
+ 
++// DS-083: native Strength arc geometry (apex 3.62 m -> v0 = sqrt(2*g*apex), descending branch at the target rise).
++// Horizontal speed that reaches the link's own end at that height. Short/high links need run; long flat links need
++// sprint. Geometry only: no map data and no per-link field.
++inline float StrengthNeededSpeed(const JVec& a, const JVec& b)
++{
++	const float g = 9.81f;
++	const float v0 = std::sqrt(2.f * g * 3.62f);
++	const float dz = b.z - a.z;
++	const float disc = v0 * v0 - 2.f * g * dz;
++	if (disc <= 0.f) return 1e9f;
++	const float t = (v0 + std::sqrt(disc)) / g;
++	const float dx = b.x - a.x, dy = b.y - a.y;
++	const float dist = std::sqrt(dx * dx + dy * dy);
++	return t > 1e-3f ? dist / t : 1e9f;
++}
++
+ class BotJumpLink {
+ public:
+ 	explicit BotJumpLink(const LinkParams& p = LinkParams()) : m_p(p) {}
+@@ -66,6 +86,15 @@ public:
+ 	LinkPhase Phase() const { return m_phase; }
+ 	LinkMove Move() const { return m_move; }
+ 	void Reset() { m_phase = LinkPhase::Idle; }
++	// DS-083: choose the take-off gait from the link geometry instead of forcing sprint in Act.
++	LinkGait TakeoffGait() const
++	{
++		return (m_move == LinkMove::Strength && StrengthNeededSpeed(m_a, m_b) > m_p.runSpeed) ? LinkGait::Sprint : LinkGait::Run;
++	}
++	bool SpeedFeasible() const
++	{
++		return m_move != LinkMove::Strength || StrengthNeededSpeed(m_a, m_b) <= m_p.sprintSpeed;
++	}
+ 
+ 	void Start(float now, LinkMove move, const JVec& a, const JVec& b)
+ 	{
+diff --git a/Tests/BotJumpLinkTests.cpp b/Tests/BotJumpLinkTests.cpp
+index 4500d18..fca5120 100644
+--- a/Tests/BotJumpLinkTests.cpp
++++ b/Tests/BotJumpLinkTests.cpp
+@@ -1,5 +1,6 @@
+ #include "CryGame/Bots/BotJumpLink.h"
+ #include <cassert>
++#include <cmath>
+ #include <cstdio>
+ using namespace WarsBots;
+ 
+@@ -68,6 +69,25 @@ int main()
+ 		in = At(2.5f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; o = L.Update(in);
+ 		assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoTakeoff);
+ 	}
++	// 8. DS-083: the take-off gait follows the native Strength arc, never a blanket sprint. The C145 reverse upper
++	// link (rise 2.89, distance 3.42) needs 2.748 m/s -> Run; the old executor forced Sprint (audit: blocked at 6.75).
++	{
++		const JVec c{2110.56f, 1885.58f, 103.18f}, d{2113.98f, 1885.51f, 106.07f};
++		assert(std::fabs(StrengthNeededSpeed(c, d) - 2.748f) < 0.05f);
++		BotJumpLink L; L.Start(0, LinkMove::Strength, c, d);
++		assert(L.TakeoffGait() == LinkGait::Run);
++		assert(L.SpeedFeasible());
++		const JVec e{0, 0, 10}, f{10, 0, 10};
++		BotJumpLink M; M.Start(0, LinkMove::Strength, e, f);
++		assert(StrengthNeededSpeed(e, f) > 5.0f);
++		assert(M.TakeoffGait() == LinkGait::Sprint);
++		BotJumpLink N; N.Start(0, LinkMove::Strength, JVec{0, 0, 10}, JVec{1, 0, 13});
++		assert(N.TakeoffGait() == LinkGait::Run);
++		BotJumpLink O; O.Start(0, LinkMove::Strength, JVec{0, 0, 0}, JVec{20, 0, 0});
++		assert(!O.SpeedFeasible());
++		BotJumpLink P; P.Start(0, LinkMove::Drop, c, d);
++		assert(P.TakeoffGait() == LinkGait::Run && P.SpeedFeasible());
++	}
+ 	std::puts("BotJumpLinkTests OK");
+ 	return 0;
+ }
