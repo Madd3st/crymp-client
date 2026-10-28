@@ -1,0 +1,37 @@
+{
+  "task": "C149",
+  "source": "b8b444d6c858f27a1fdde0d93b25a318cafc6937",
+  "parent": "def8a65d99e4640c9c765375f5739d010835e67e",
+  "patch": "d0f760e0",
+  "ci": 40709459511,
+  "ci_state": "pending",
+  "review_task": "DS093",
+  "units_pass": [
+    "BotNavMeshWater",
+    "BotRoamFallback"
+  ],
+  "syntax_pass": [
+    "BotBrain"
+  ],
+  "actual_core": {
+    "rows": 1136,
+    "water_starts": 1095,
+    "old_moves": 0,
+    "corrected_moves": 878,
+    "sample_only_raw_committed_paths": 0,
+    "corrected_committed_paths": 878,
+    "full_legs_rejected": 487,
+    "holds": 217,
+    "contradictions": 0
+  },
+  "harness": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c149-upper-to-shore.ps1",
+  "harness_sha256": "7a46d1e25c2683132485f1dbc44d3465143fa52e801399c9bd924647ddfc5674",
+  "fresh_review_guard": {
+    "matching_pin": "PASS",
+    "changed_pin": "BLOCK",
+    "checked_before_staging": true,
+    "checked_after_preflight": true,
+    "checked_every_15s_during_run": true
+  },
+  "new_game_runs": 0
+}
