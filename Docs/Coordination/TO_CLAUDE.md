@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: QA-only C145 preflightBLOCK: exact90cb4148 MOVE TRACE eligibility excludes PS (BotMoveTrace.cpp16-19), so named water evidence cannot be emitted. No game/install/codechange; reported to DeepSeek coordinator-lite for narrow diagnostic patch/new CI gate.
+NOW: D035 owner restored Codex coordinator/integrator + QA; triage6043ba4d. DeepSeek returns to prompt C; DS076 PS trace eligibility patch first, no run on90cb.
 
+
+### X-219 | 2026-10-28 | D035 coordination return DONE6043ba4d
+Owner explicitly returned coordination; current low-budget QA-only fallback superseded for this session. SUCCESSOR/DECISIONS/CLAUDE_STATE/C145/DS076 updated and pushed6043ba4d. Existing DeepSeek session notified to return to promptC (own branch patches + independent reviews, no triage writes); DS075 role closed as superseded. No new agent/session, game, install, code change or default flip.
+Next DS076 narrow PS trace gate repair, independent offline acceptance, new exact game SHA/greenCI/review, then purposeful nativeUS observation. Prior90cb CIgreen does not repair IA-only telemetry. Shore candidate remains unaccepted/uninstalled; no Playable claim.
 
 ### X-218 | 2026-10-28 | QA C145 preflight BLOCK / PS MOVE TRACE gate excludes required observation
 Exact90cb4148 codegreen/reviewOK, but BotMoveTrace.cpp16-19 hardcodes InstantAction; PowerStruggle false returns beforeVisit/waterfields. Manager localgate already allowsPS, so this is a distinct diagnostic modefilter. [Preflight](C145_PS_TRACE_PREFLIGHT.json). No game launched, no map installed, no source changed.
@@ -20,9 +24,4 @@ All34CIunitsoffline/affectedsyntaxON+OFFPASS; reviewedtool eed85fb1/candidate653
 00e CI40605489537FAILED: missed2arg BotManager859 PSSummary caller; unitjobGREEN, no game. Fixed explicitnullptr summary and native point-count contract/cacherefresh in2CPPfiles; no featurestacking. BotPSCapture/Manager syntaxPASS (Manager metadata-only versionstandin), no localgamebuild. [Receipt](C145_CI_CORRECTION.json).
 NewexactCI40606278441 + cumulativeDS074review PENDING; DS073/00e obsoleteforruntime. Codeworktreeclean. C145inbox/CLAUDE_STATE pin90cb4148 only, planned nativephysics observations aftergreen+OK; no fullgameplay/soak/Playableclaim. Candidate653f5e1e remainsnotinstalled.
 Weeklyremaining20% at03:04; D031 below20 means finish current phase/stopcoordinating + promptB handback. Original foreignQA edits intact; no ownerclient/game active. All work/state inrepo, no uncommittedsource.
-
-### X-214 | 2026-10-28 | C145 integration DONE00e58632e0b35ac140d5cfe6fefc930e4ddeb741
-Coherent23file packet pushed: doors067d/f, DS070 nativewater/oxygen+ready-mesh/server/air-state/stance guards, DS072 nativeArea binding/destination/hold (publicengineXML/defaultmission, scale/cap/reach), cost4/search16k/exhaustion/watertrace,3newCItests. All34actualCIunitsPASS; affectedsyntax inclPlayerON/OFFPASS. [Receipt](C145_INTEGRATION.json).
-CI40605489537 and DS073 independent exact review PENDING; no runtime/localgamebinary/default/netlayout/SPdamage changes. Codeworktreeclean; oldWIPbackup is historical, do not reapply. Native capture/flotation/exit not claimed.
-US exactgeometrycrop controls: cell2/1/.5 all0seaconnections; zmin90 restores23onmesh/0sea (unsafeasproduction); autolinks8drop2jump still0sea. All rejected diagnostic data, no hullforcing/spawn workaround. Reviewedtool eed85fb1/candidate653f5e1e remain mapNOTaccepted/installed. Next only named nativephysics after codegates; no fullgameplay/soak knownfail repeat.
 
