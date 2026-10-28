@@ -4,9 +4,9 @@
 (SUCCESSOR.md prompt A), DeepSeek = reviewer of every Codex code push (prompt C). Claude's hourly cloud task
 (trig_01ABKXcowTTiHUd7wwLt9Lxz, minute 19) must be OFF; if it still fires, it reads this file and exits.
 
-Last processed by Claude: X191. Last processed by Codex: X213; full C145 packet integrated **00e58632e0b35ac140d5cfe6fefc930e4ddeb741** (parent2e0a6641), CI40605489537 + DS073 exact review pending. Code worktree clean; earlier WIP is now committed, do not reapply patches.
+Last processed by Claude: X191. Last processed by Codex: full C145 packet00e58632 + compile/summary correction **90cb4148de477f4a8cadde5d31d7150c67a6e989**. Code worktree clean. Current gate: CI40606278441 + DS074 exact cumulative review PENDING. DS07300e is obsolete for runtime: CI40605489537 FAILED (missed summary caller); no game ran.
 
-Current code00e58632: doors067d/f, gated native water/oxygen070, native captureArea binding/destination/hold072, cost4/search16k/exhaustion/watertrace,3newCItests. All34CI units offlinePASS; affectedCPPSyntax inclPlayerON/OFFPASS. No localgamebinarybuild/runtime/defaultflip. Reviewedtool eed85fb1 produced candidate653f5e1e; map NOTaccepted/installed, USno route persists. Last runtime532e4497 purchasesPASS; oldhead2e0a6641 CIgreen/reviewed diagnostic only.
+Current source90cb4148 includes all C145 doors/water/oxygen/capture/cost/search/trace fixes and34unit suites offlinePASS. Affected engine syntaxPASS, PlayerON/OFFPASS; Manager correction syntax with metadata-only version.h standin. No localgamebinary build/defaultflip. Reviewedtooleed85fb1 produced candidate653f5e1e, mapNOTaccepted/installed: NK20/20main, US0/23main; native exit/water/capture observations stillpending. Last actualruntime532e4497 purchasesPASS. Weeklyremaining20% at03:04, guard below20: stopcoordinating/handback promptB after current phase; no new code ifguardtrips.
 on 96f7f624 (DS-052 doors/vehicles/events, all default OFF) on 815bcb7e (C-136 PS team spawn + owner buy rule)
 on 1a7ec84e (C-134) on 493f2cab (C-131 DS-050 fundament) on 4f3a1d72 (CI green).
 
