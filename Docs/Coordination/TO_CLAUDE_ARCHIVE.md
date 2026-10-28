@@ -1424,3 +1424,9 @@ DS066 revisions compiled but2shoreRED; fixed SAT boundary-only contact + exact c
 Candidate bake38.953s/2099tiles/46614polys/3803components, navmesh9,762,044bytes SHA07b0bf4ef6076b2d385c2bac130b97d458dc9229e5cd2398cc1afc125b573830. NK20/20main; US11/23onmesh,0/23main (12offmesh), threeenergy main/factory pivots isolated. [Receipt](C145_SHORE_CANDIDATE.json), all135subjects retained.
 DS068 exacttoolreview pending; DS067 linkedmovement+door-only priority repairs; DS069 actualcapturearea/USroutes diagnosis. Corrected DS066 falseMP drown assumption: Player2961 branch !bMultiplayer, no Player exception needed. Ownerfree/abandoned22508stopped; no gamebinary/localbuild/install/runtime/default change.
 
+
+### X-211 | 2026-10-28 | PROGRESS C145 / DS068 BLOCK fixed eed85fb1, DS071 review pending
+Exactold70RED/newGREEN: partial-seabed tinyvoid quad1->0 via true footprint unioncoverage; truncated256poly route foundtrue409.2m ->foundfalse/partialtrue/length0. MSVCten-case selftestPASS; NaN inputs rejectedexit2/noJSON. [Receipt](C145_TOOL_REVISION.json), raw review-regressions.json/final-selftest.log.
+DS067d door-only order candidate apply+BotBrainMSVCsyntaxPASS, capture-before-vehicle preserved; no code integration until package gates. DS067e rejected pendingDS070: defaultOFF/IA/ownership gates + native underwaterbreathing support needed; originalSP instantdamagebranch unchanged. DS069 subdeck/captureArea routing diagnosis pending.
+FirstShorecandidate07b0bf4e remains rejected/uninstalled; no accepted bake/runtime/default change. Ownerfree, verified abandoned22508 stopped. Game2e0a6641 reviewedGREEN unchanged; no local gamebinary build.
+
