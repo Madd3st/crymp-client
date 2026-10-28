@@ -67,8 +67,10 @@ native Strength arc:
   `needed > sprintSpeed` -> infeasible (do not start, log/ban).
 * Jump links keep the current run/sprint choice; drops unchanged. No per-map entries.
 
-Reviewable change (proposal, not pushed as game code): `Docs/Research/DeepSeek/patches/ds083_strength_speed.patch`
-(applies clean on `b06681ea`, no build; `BotJumpLink.h` + `BotBrain.cpp` + `BotJumpLinkTests.cpp`).
+Reviewable change (proposal, not pushed as game code): **`Docs/Research/DeepSeek/patches/ds084_strength_speed.patch`**
+(supersedes the rejected `ds083_strength_speed.patch`; applies clean on `b06681ea`, no build). See
+`DS084_STRENGTH_SPEED_PATCH.md`: actual `jumpHeight/gravity/inAir` cap through `BotIntent.speedCap` +
+`BotLocomotion`, sprint disabled when bounded, normal/drop/long Strength legacy preserved.
 * `Code/CryGame/Bots/BotJumpLink.h`: add `StrengthNeededSpeed(a,b)`, `TakeoffGait()`, `SpeedFeasible()`,
   `LinkParams::runSpeed/sprintSpeed` (4.5/6.75, matching the baker's `vh` and the player sprint). Engine-free.
 * `Code/CryGame/Bots/BotBrain.cpp:1465`: use `m_link.TakeoffGait()` instead of unconditional Sprint; at link

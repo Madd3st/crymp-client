@@ -1,0 +1,173 @@
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 4583117..9f2e38f 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -1337,6 +1337,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+ 		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
+ 	m_blackboard.obstacleJump=BotJump::None;
+ 	m_intent.linkJump=false;
++	m_intent.speedCap=0.f; // DS-084: cleared every tick; ApplyLinkExecutor sets it for a capped Strength link
+ 	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
+ 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
+ 	// wb_bot_jump_sanity: on a navmesh path the mesh already proved the way (jumps come from baked links); the low
+@@ -1432,6 +1433,17 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
+ 		WB_LOG(2,"[WarsBots] #%d LINK start kind=%s a=(%.2f,%.2f,%.2f) b=(%.2f,%.2f,%.2f) energy=%.0f actor=%u.",m_number,NavLinkName(l->kind),
+ 			l->a[0],l->a[1],l->a[2],l->b[0],l->b[1],l->b[2],m_blackboard.energy,actor.GetEntityId());
+ 	}
++	// DS-084: cap a steep-short upward Strength link from the live actor params (PlayerMovement.cpp:1130+:
++	// mult 4.7, v0 = sqrt(2*g*jumpHeight*4.7) - 0.5*g*inAir). The old Act always sprinted (6.75 blocked by the
++	// arc audit). Long/flat/drop links stay legacy; invalid physics/energy leaves the cap 0 (existing gates).
++	if (m_link.Active() && m_link.Move()==LinkMove::Strength)
++	{
++		const SPlayerParams* pp=static_cast<const SPlayerParams*>(actor.GetActorParams());
++		const SPlayerStats* st=static_cast<const SPlayerStats*>(actor.GetActorStats());
++		const bool energyOk=m_blackboard.suitActive && m_blackboard.mode==NANOMODE_STRENGTH && m_blackboard.energy>=70.f;
++		const StrengthSpeedCap cap=m_link.SpeedCap(st?st->gravity.len():0.f, pp?pp->jumpHeight:0.f, energyOk, st?st->inAir:0.f);
++		if (cap.valid) m_intent.speedCap=cap.cap;
++	}
+ 	LinkInput in;
+ 	in.now=m_now; in.feet=JVec{feet.x,feet.y,feet.z}; in.grounded=m_blackboard.grounded;
+ 	in.strengthActive=m_blackboard.suitActive && m_blackboard.mode==NANOMODE_STRENGTH;
+@@ -1462,7 +1474,7 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
+ 	WBI(move,true);
+ 	m_intent.destination=Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z);
+ 	WBI(gait,o.slow?BotGait::Walk:BotGait::Run);
+-	if (m_link.Phase()==LinkPhase::Act && m_link.Move()!=LinkMove::Drop) WBI(gait,BotGait::Sprint); // c066: Strength links still land short
++	if (m_link.Phase()==LinkPhase::Act && m_link.Move()!=LinkMove::Drop) WBI(gait, m_intent.speedCap>0.f?BotGait::Run:BotGait::Sprint); // DS-084: capped link runs; every other link keeps the legacy sprint
+ 	WBI(jump,o.jump==LinkJumpRequest::Strength?BotJump::Strength:(o.jump==LinkJumpRequest::Normal?BotJump::Normal:BotJump::None));
+ 	m_intent.linkJump=m_intent.jump!=BotJump::None;
+ 	if (o.wantStrength) WBI(suitMode,NANOMODE_STRENGTH);
+diff --git a/Code/CryGame/Bots/BotIntent.h b/Code/CryGame/Bots/BotIntent.h
+index 440aa25..1b2103f 100644
+--- a/Code/CryGame/Bots/BotIntent.h
++++ b/Code/CryGame/Bots/BotIntent.h
+@@ -25,6 +25,7 @@ struct BotIntent
+ 	bool linkJump = false; // C-036: jump on a baked navmesh link (arc checked offline) - skip the local JumpSpace probe
+ 	bool meshPath = false;
+ 	float arrive = 0.8f; // BotMovement stops this close to destination; corner following (wb_bot_corners) owns arrival
++	float speedCap = 0.f; // DS-084: bounded take-off/air speed for a steep-short Strength link; 0 = legacy
+ 	// T-1: source line (BotBrain.cpp) of the last write per channel this tick; 0 = default
+ 	struct Why { short suitMode = 0, jump = 0, gait = 0, aim = 0, move = 0; } why; // destination is a Detour corner (wb_bot_navmesh): stairs are walkable, skip the knee ray
+ 	void MoveTo(const Vec3& point, const Vec3& look) { move = true; destination = point; aim = look; }
+diff --git a/Code/CryGame/Bots/BotJumpLink.h b/Code/CryGame/Bots/BotJumpLink.h
+index 25c8baf..c3c08c7 100644
+--- a/Code/CryGame/Bots/BotJumpLink.h
++++ b/Code/CryGame/Bots/BotJumpLink.h
+@@ -12,6 +12,7 @@
+ // Pure logic, no engine types; Tests/BotJumpLinkTests.cpp.
+ #pragma once
+ #include <cmath>
++#include <algorithm>
+ 
+ namespace WarsBots {
+ 
+@@ -58,6 +59,39 @@ struct LinkParams {
+ 	float maxStrengthRise = 3.72f;     // DS-046: native Strength jump rise ~3.62 m; a +4.30 m link cannot land
+ };
+ 
++// DS-084: native Strength jump v0 from the actual actor params (PlayerMovement.cpp:1130+: mult 4.7,
++// v0 = sqrt(2*g*jumpHeight*4.7) - 0.5*g*inAir). For a steep-short upward link whose needed horizontal speed is
++// inside the audited run band, cap the ground/air speed and disable sprint. Long/flat/drop links keep the legacy
++// sprint; invalid physics or missing suit energy gives no cap (the executor's rise/energy gates still apply).
++struct StrengthSpeedCap
++{
++	bool valid = false;
++	float needed = 0.f;   // horizontal m/s needed to reach b on the descending branch
++	float cap = 0.f;      // bounded desired speed for run-up/Act/Air
++};
++
++inline StrengthSpeedCap StrengthSpeedCapFor(const JVec& a, const JVec& b, float gravity, float jumpHeight,
++	bool energyOk, float airTime = 0.f)
++{
++	StrengthSpeedCap r;
++	if (!(gravity > 0.f) || !(jumpHeight > 0.f) || !energyOk) return r;
++	const float dz = b.z - a.z;
++	if (dz <= 0.5f) return r;                       // not a steep upward link (drop/flat/downward)
++	const float v0 = std::sqrt(2.f * gravity * jumpHeight * 4.7f) - 0.5f * gravity * std::max(0.f, airTime);
++	if (!(v0 > 0.f)) return r;
++	const float disc = v0 * v0 - 2.f * gravity * dz;
++	if (disc <= 0.f) return r;
++	const float t = (v0 + std::sqrt(disc)) / gravity;
++	const float dx = b.x - a.x, dy = b.y - a.y;
++	const float dist = std::sqrt(dx * dx + dy * dy);
++	if (!(t > 1e-3f) || !(dist > 0.05f)) return r;
++	r.needed = dist / t;
++	if (r.needed > 3.6f) return r;                  // too long to cap inside the audited clear band; legacy sprint
++	r.cap = std::min(4.0f, std::max(2.5f, r.needed * 1.1f));
++	r.valid = true;
++	return r;
++}
++
+ class BotJumpLink {
+ public:
+ 	explicit BotJumpLink(const LinkParams& p = LinkParams()) : m_p(p) {}
+@@ -66,6 +100,11 @@ public:
+ 	LinkPhase Phase() const { return m_phase; }
+ 	LinkMove Move() const { return m_move; }
+ 	void Reset() { m_phase = LinkPhase::Idle; }
++	// DS-084: bounded speed for this link from the live actor params; invalid means "keep the legacy path".
++	StrengthSpeedCap SpeedCap(float gravity, float jumpHeight, bool energyOk, float airTime = 0.f) const
++	{
++		return StrengthSpeedCapFor(m_a, m_b, gravity, jumpHeight, energyOk, airTime);
++	}
+ 
+ 	void Start(float now, LinkMove move, const JVec& a, const JVec& b)
+ 	{
+diff --git a/Code/CryGame/Bots/BotLocomotion.cpp b/Code/CryGame/Bots/BotLocomotion.cpp
+index fadde73..ac5cfb4 100644
+--- a/Code/CryGame/Bots/BotLocomotion.cpp
++++ b/Code/CryGame/Bots/BotLocomotion.cpp
+@@ -126,17 +126,18 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
+     const bool eligible=intent.move && !state.waterMovement && intent.gait==BotGait::Sprint &&
+         (pace?intent.combat!=BotCombatIntent::Fire:intent.combat==BotCombatIntent::None) &&
+         state.grounded && state.suitActive && !jump && !m_pending && !m_airborne && !actor.WarsBotWeaponFiring();
+-    const bool sprint=eligible && (pace?PaceSprintEnergy(m_sprinting,state.energy):state.energy>45.f);
++    const bool sprint=eligible && intent.speedCap<=0.f && (pace?PaceSprintEnergy(m_sprinting,state.energy):state.energy>45.f);
+     m_sprinting=sprint;
+     const EStance stance=state.waterMovement?STANCE_SWIM:intent.stance;
+     bool accepted=false;
+     if(intent.move){
+         const float base=intent.gait==BotGait::Walk?1.3f:(pace?actor.GetStanceMaxSpeed(stance):2.5f);
++        const float capped=intent.speedCap>0.f?min(base,intent.speedCap):base; // DS-084: bounded Strength take-off
+         const float pseudo=pace?actor.CalculatePseudoSpeed(sprint):-1.f;
+         // DS-070: ProcessSwimming applies the request in view space (PlayerMovement.cpp:835-836) and the WarsBot view
+         // follows the aim while strafing (Player.cpp:5085-5090), so strafing in water would swim toward the aim.
+         const bool strafe=intent.strafe && !state.waterMovement;
+-        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,base,stance,sprint?2.7f:1.5f,(jump||m_pending||m_airborne)&&!state.waterMovement,strafe,pseudo,intent.meshPath,intent.arrive,state.waterMovement);
++        accepted=m_movement.Move(actor,intent.destination,intent.aim,dt,capped,stance,sprint?2.7f:1.5f,(jump||m_pending||m_airborne)&&!state.waterMovement,strafe,pseudo,intent.meshPath,intent.arrive,state.waterMovement);
+     }else {m_movement.Stop(actor);m_movement.Aim(actor,intent.aim);}
+ 	state.blocked=intent.move && !accepted;
+ 	actor.SetWarsBotActions(sprint && accepted,intent.move && accepted,stance);
+diff --git a/Tests/BotJumpLinkTests.cpp b/Tests/BotJumpLinkTests.cpp
+index 4500d18..f4fce27 100644
+--- a/Tests/BotJumpLinkTests.cpp
++++ b/Tests/BotJumpLinkTests.cpp
+@@ -68,6 +68,28 @@ int main()
+ 		in = At(2.5f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; o = L.Update(in);
+ 		assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoTakeoff);
+ 	}
++	// 8. DS-084: bounded Strength take-off speed from the live actor params, not the audit's 3.62/9.81 assumption.
++	// The C145 reverse link (rise 2.89, distance 3.42) is steep-short: cap inside the audited run band and Run;
++	// normal/drop/long Strength links must report no cap so the legacy sprint path is untouched.
++	{
++		const JVec c{2110.56f, 1885.58f, 103.18f}, d{2113.98f, 1885.51f, 106.07f};
++		const StrengthSpeedCap cap = StrengthSpeedCapFor(c, d, 9.81f, 1.0f, true, 0.0f);
++		assert(cap.valid);
++		assert(cap.needed > 2.0f && cap.needed < 2.5f);   // jumpHeight 1 * 4.7 gives a higher v0 than the audit apex
++		assert(cap.cap >= 2.5f && cap.cap <= 4.0f);
++		BotJumpLink L; L.Start(0, LinkMove::Strength, c, d);
++		assert(L.SpeedCap(9.81f, 1.0f, true).valid);
++		// Invalid physics / suit / missing jump params: no cap; the executor's rise/energy gates still apply.
++		assert(!StrengthSpeedCapFor(c, d, 0.f, 1.0f, true).valid);
++		assert(!StrengthSpeedCapFor(c, d, 9.81f, 0.f, true).valid);
++		assert(!StrengthSpeedCapFor(c, d, 9.81f, 1.0f, false).valid);
++		assert(!StrengthSpeedCapFor(c, d, 9.81f, 1.0f, true, 100.0f).valid); // huge inAir -> v0 <= 0
++		// Legacy preserved: long/flat/downward Strength links and arcs above the jump report no cap.
++		assert(!StrengthSpeedCapFor(JVec{0, 0, 10}, JVec{10, 0, 10}, 9.81f, 1.0f, true).valid);
++		assert(!StrengthSpeedCapFor(JVec{0, 0, 10}, JVec{3, 0, 10}, 9.81f, 1.0f, true).valid);
++		assert(!StrengthSpeedCapFor(JVec{0, 0, 10}, JVec{3, 0, 8}, 9.81f, 1.0f, true).valid);
++		assert(!StrengthSpeedCapFor(JVec{0, 0, 0}, JVec{1, 0, 20}, 9.81f, 1.0f, true).valid);
++	}
+ 	std::puts("BotJumpLinkTests OK");
+ 	return 0;
+ }
