@@ -1,5 +1,10 @@
 # C146 human-route analysis checklist (offline, after the owner recording)
 
+**DONE 2026-10-28: the recording arrived (`C146-native-Shore-b06681ea-20261028-151609`). Result and measured
+numbers: `C146_HUMAN_ROUTE_RESULT.md`. Short answer: the owner used the flooded-bilge swim (life 1) and
+shaft ladder + ramp + **Strength jump** 103.125 -> 106.02 (rise 2.892, apex 3.557, take-off vh 3.5-3.75, `sprint=0`)
++ ring drop into the sea (life 2) - not the upper hatch ladders and not a 6.75 m/s sprint.**
+
 Purpose: compare the owner's real US submarine exit on Shore with the bot's one-Strength-link candidate
 (cockpit 2110.56,1885.58,103.18 -> east ring 2113.98,1885.51,106.07) and the ladder/shaft alternatives.
 No game/build/install/triage; analysis only, on the archived session files.
