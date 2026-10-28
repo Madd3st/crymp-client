@@ -1,6 +1,22 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS089 v3 patch - fixture plane measured, deep-float box sized (1.18..2.31 m), RayClear advancement propagated · waiting mailbox
+NOW: DS090 def8a65d: OK (source review; core water-only/StartRef, measured fixture, B1, actualCore 1095/41, RayClear 1083; C148 after exact CI green) · waiting mailbox
+
+### DS090 · 2026-10-28 · OK · exact def8a65d cumulative water+B1 review
+`review def8a65d99e4640c9c765375f5739d010835e67e: OK` - `Docs/Research/DeepSeek/DS090_REVIEW_DEF8A65D.md`.
+- Core: single `StartRef` water-only (`IsWaterPoly` `kWaterArea=4`; no dry/seabed/stacked fallback), `WaterQueryBounds(lift)`
+  bounded 1.2..2.8 sized from the native plane; `Project`/`Reachable`/`FindPathLinks`/`RayClear` share it; dry
+  default 1.5/1.0/3.0 unchanged. `WallClearance` unchanged/unused (v3 doc sentence mismatch only).
+- Native: `BotBlackboard.waterZ=worldWaterLevel` + `waterValid`; `WaterStartBounds` requires waterMovement+valid+lift>0.05;
+  Steer/SteerCorners RayClear/roam/PS snapshot use it; no new flag/default.
+- Fixture: degenerate `bminY==bmaxY` cause fixed (90..110, vertsY100, cs0.1/XZ*100/ch0.1, tile 40x30, plane
+  measured 95..105); raw RED/water GREEN/deep 2.3/land/hole/ray assertions kept; six units + 3 syntax PASS.
+- ActualCore: 1095/41; RayClear 1083/1095 (12 blocked observed; the `break` guard remains); path
+  99.511->101.711/101.811->99.511->land 101.531; shore physical handover unknown/not claimed.
+- B1: `RoamFallbackFraction` + tests + CI; water local holds; the 41-hole `mesh=nullptr` legacy local is the data
+  item, not a B1 regression.
+- C148 only after exact CI 40703800474 is green; one shared <=300 s E223 one-Strength run, no forced spawn/
+  teleport, no unchanged repeat/water-only. No game/build/triage.
 
 ### DS089 · 2026-10-28 · REVISED · water patch v3 answers BLOCK dca52434
 `patches/ds089_water_query_v3.patch` (b066, 8 files, `git apply --check` OK); `Docs/Research/DeepSeek/DS089_WATER_QUERY_V3.md`.
