@@ -1,0 +1,126 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index 20a590ff..4c27c0da 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -40,7 +40,7 @@ jobs:
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
+-                     'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy',
++                     'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy','BotRoamFallback',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+           foreach ($t in $tests) {
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index 45831170..eb2765fd 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -18,6 +18,7 @@
+ #include "CryGame/Bots/BotAuditFixes.h"
+ #include "CryGame/Bots/BotNavMesh.h"
+ #include "CryGame/Bots/BotNavMeshCore.h"
++#include "CryGame/Bots/BotRoamFallback.h"
+ #include "CryGame/Bots/BotPSCaptureRuntime.h"
+ #include "CryGame/Bots/BotPSBuy.h"
+ #include "CryCommon/CryScriptSystem/IScriptSystem.h"
+@@ -913,7 +914,22 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 			else
+ 			{
+ 				const float angle = (m_patrolStep * 2.399963f) + m_phase;
+-				m_patrolGoal = feet + Vec3(cosf(angle),sinf(angle),0) * (6.0f + (m_patrolStep%3)*2.0f);
++				const Vec3 local = feet + Vec3(cosf(angle),sinf(angle),0) * (6.0f + (m_patrolStep%3)*2.0f);
++				// DS-082 B1: the local fallback is not a path request. Walk only the reachable fraction of the leg
++				// (C145 US t173..179 steered through the hull and logged NAV fallback/stuck); without a mesh keep the
++				// old full-leg goal.
++				float fraction = 1.0f;
++				if (mesh)
++				{
++					bool sampled[4];
++					for (int i = 0; i < 4; ++i)
++					{
++						const Vec3 p = feet + (local - feet) * (1.0f - 0.25f * float(i));
++						sampled[i] = reachable(p);
++					}
++					fraction = RoamFallbackFraction(true, sampled);
++				}
++				m_patrolGoal = fraction > 0.f ? feet + (local - feet) * fraction : feet;
+ 				m_patrolUntil = m_now + 4.0f;
+ 			}
+ 			m_detour = false;
+diff --git a/Code/CryGame/Bots/BotRoamFallback.h b/Code/CryGame/Bots/BotRoamFallback.h
+new file mode 100644
+index 00000000..8a9ce6f9
+--- /dev/null
++++ b/Code/CryGame/Bots/BotRoamFallback.h
+@@ -0,0 +1,21 @@
++// DS-082 B1: local roam fallback sampling, engine-free.
++//
++// The 6-10 m golden-angle point at BotBrain::UpdateRoam's last resort is not a path request. When it lands outside
++// the bot's nav part (through a hull wall or in an off-mesh pocket) the old code steered straight at it for the 1.5 s
++// blocked window (C145 US run t173..179: NAV fallback/stuck). The adapter samples the leg at 1/4, 1/2, 3/4 and full
++// length with the existing NavMeshCore::Reachable and walks only the reachable fraction; 0 means hold this leg.
++// Without a navmesh the old full-leg behaviour is preserved (no extra probes).
++#pragma once
++
++namespace WarsBots
++{
++// reachable[0] = full local point, [1] = 3/4, [2] = 1/2, [3] = 1/4 of the leg (from the bot's feet).
++// Returns 1.0, 0.75, 0.5, 0.25 or 0.0 (hold). meshAvailable=false returns 1.0 (legacy behaviour).
++inline float RoamFallbackFraction(bool meshAvailable, const bool reachable[4])
++{
++	if (!meshAvailable) return 1.0f;
++	for (int i = 0; i < 4; ++i)
++		if (reachable[i]) return 1.0f - 0.25f * float(i);
++	return 0.0f;
++}
++}
+diff --git a/Tests/BotRoamFallbackTests.cpp b/Tests/BotRoamFallbackTests.cpp
+new file mode 100644
+index 00000000..59129013
+--- /dev/null
++++ b/Tests/BotRoamFallbackTests.cpp
+@@ -0,0 +1,44 @@
++// DS-082 B1 regression: local roam fallback sampling. Full/3-4/1-2/1-4/none and no-mesh cases; the old code always
++// returned the full leg, which produced the C145 US NAV fallback/stuck window.
++#include "CryGame/Bots/BotRoamFallback.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++int main()
++{
++	{
++		const bool r[4] = { true, false, false, false };
++		assert(RoamFallbackFraction(true, r) == 1.0f); // full leg
++	}
++	{
++		const bool r[4] = { false, true, false, false };
++		assert(RoamFallbackFraction(true, r) == 0.75f); // blocked at full length
++	}
++	{
++		const bool r[4] = { false, false, true, false };
++		assert(RoamFallbackFraction(true, r) == 0.5f);
++	}
++	{
++		const bool r[4] = { false, false, false, true };
++		assert(RoamFallbackFraction(true, r) == 0.25f); // only the nearest quarter is on the part
++	}
++	{
++		const bool r[4] = { false, false, false, false };
++		assert(RoamFallbackFraction(true, r) == 0.0f); // hold this leg, never steer into the hull
++	}
++	{
++		// The first reachable fraction wins even when a closer sample is also reachable.
++		const bool r[4] = { false, true, true, true };
++		assert(RoamFallbackFraction(true, r) == 0.75f);
++	}
++	{
++		// No navmesh: legacy full-leg behaviour, no probes.
++		const bool r[4] = { false, false, false, false };
++		assert(RoamFallbackFraction(false, r) == 1.0f);
++	}
++
++	std::puts("BotRoamFallbackTests OK");
++	return 0;
++}

@@ -164,3 +164,24 @@ goal patch is needed before that.
 
 No unchanged upper-deck re-run, no soak, no fine-mask/lower-zmin/autolink repeat, no fabricated hull link, no
 teleport/spawn workaround, no grants/immunity, no boats/swim controller, no defaults, no net/Lua change.
+
+## 9. B1 offline regression (DS-082 follow-up, 2026-10-28)
+
+Codex did not integrate the original one-block fallback guard: it asked for a red/green regression over the
+blocked/full/quarter/none/no-mesh cases with real adapter semantics and CI registration. This is now
+`patches/ds082b_roam_fallback.patch` (base `b06681ea`, applies clean, no build):
+
+* `BotRoamFallback.h` is engine-free: `RoamFallbackFraction(meshAvailable, reachable[4])` returns 1.0/0.75/0.5/0.25 or
+  0 (hold), where the samples are full, 3/4, 1/2, 1/4 of the local leg; `meshAvailable=false` keeps the old full leg.
+* `BotBrain::UpdateRoam` samples the leg with the existing `reachable` lambda only when the mesh is present and moves
+  to `feet + (local-feet)*fraction`; 0 holds the leg instead of steering into the hull.
+* `Tests/BotRoamFallbackTests.cpp` (CI `BotRoamFallback`) covers full, blocked-at-full, half, quarter, none, first
+  reachable wins, and no-mesh. The old code fails the blocked/quarter/none cases (it always returned the full leg).
+
+Static asset check (preliminary, read-only): the verified Crysis 2007 `level.pak` `brush.lst` contains
+`sub_ladder_longshaft`, `_top`, `_middle`, `_bottom`, `sub_ladder_forwardhatch_b`, `shaft_floor`,
+`hull_ext_3_mp_bottomroom_shaft` and `stairwell_opening500x200y`; this proves the assets are placed in the level, not
+that the 2115..2117/1880..1882/z90..100 shaft is traversable. Exact transform/proxy/material mapping is the next
+offline step (B2), not a ladder subsystem.
+
+No game, build, install, triage write, default flip or hull link.
