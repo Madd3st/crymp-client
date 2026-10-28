@@ -1,3 +1,9 @@
+# C146 owner native route ready; await recording, 2026-10-28
+
+LatestX234 QA c6f93a8b. OwnerofferedresuscitateUS/showrealexit/video, thenaskedresumeafterlimits; currentaccountordinaryallowed5hused0%/weeklyused16%, noresetaction. Tools/Record-WarsBotsShoreRoute.ps1 exactb066/CI40649771503GREEN/DS081OKdd68f2ce verifiedAST/PS5PrepareOnly, no game/GUI. C146nativeplayer/zerobots/no navinstall; owner launchescommand, normalUSrouteupper/lowerifpossible, logs+20Hzdemo/F8, ownserverstop/archive/fullmemoryrestore afterclientclose. AwaitownerDONE; no automatedgameprobeswhilepending/playing. No default/Playableclaim.
+
+DS084 datareviewb06b420dOK (E223singleStrength onb066/initialupper/typedlink/selectedcapture/linkstart/restoreconditions); speculative speedpatch3ec91e44 remainsheld. Stockapex4.7 model fullSprintnotcollisionblocked vsinitialconservative3.62; actualroute mayworkwithoutcodefix. B1stillstagedONLY baseb066 inQA/build/ds076-code, backup05209e29. PreserveWIP. Humanroute canidentifyintendedladder/water pathway andlowerdeckbeforefurthercoding. DeepSeek e7e92 promptC; offlineanalysis only untilfootage/logs. Foregroundlease removed onyield toresumeWindowswake; no concurrentforeground/backgroundwrites.
+
 # C145 data-first native Strength prototype review pending, 2026-10-28
 
 DS084 now data-first: stockBasicActorjumpHeight1/g9.81/native4.7 multiplier impliesapex4.7, while initialconservative3.62modelonlyassumption. Fullsprintcollision differs, native horizontal defect notyetobserved onnewroute. Existing codeb066 green/reviewed + singlelink candidateE2235993 graphproved; independentDS084datareview before one<=120s nativejump/upperexit onnewdata/jump_links1, no newcode/CI/forcedspawn. Prospective speedpatch held untilnativeevidence, ds083c gait-only rejected. B1stagedWIPpreserved. Lower12USspawns stillunfixed; noPlayableclaim.
