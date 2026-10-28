@@ -1,5 +1,8 @@
 # Coordinator handover when Claude is out of limits (prepared 2026-10-27 15:30 MSK; **D-031 ACTIVE since 27.10 21:05 (Claude weekly limit ~3 %)**)
 
+**Current owner override D-035 (28.10): Codex has returned as interim coordinator + integrator + QA (prompt A). DeepSeek returns to prompt C, own branch only. The earlier below-20% fallback/QA-only stop is superseded for this session by the owner. Other guards and scope remain.**
+
+
 Owner asks: who coordinates WarsBots while Claude is unavailable, and with what prompt. Decision for the owner: **D-031**.
 
 ## What the coordinator actually does (measured on 25–27.10)

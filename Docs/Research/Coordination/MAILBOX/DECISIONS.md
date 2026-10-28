@@ -39,3 +39,5 @@ Answer in chat with Claude or Codex as `D-001: yes` etc. Agents record the answe
 | D-033 | Next 1–2 days: fundament wave (flags 52 → cleanup, IBotGameMode instead of PS string checks, PS measurement, then split BotBrain 1583 lines) in parallel with PS features, before more IA behaviour flags? (DeepSeek audit DS-S6) | yes — debt now slows every integration | **yes** (owner, 27.10 17:52) — plan `Docs/Research/UPSTREAM_READINESS.md` |
 
 | D-034 | Avoid purposeless isolated runs; analyse strange behaviour with DeepSeek, fix related problems and finish features in coherent batches, then validate against explicit criteria. Targeted probes only for a named missing observation. | batch diagnosis, fixes and QA | **yes** (owner, 28.10: «лечить проблемы пачками и фичи допиливать также») |
+
+| D-035 | Return coordination to Codex after D031 low-budget fallback? | Codex resumes interim coordination, integration and QA; DeepSeek returns to patch author and independent reviewer (prompt C). The current low-budget QA-only stop is superseded for this session; exact SHA/green CI/review and owner-only defaults remain. | **yes** (owner, 28.10: «давай вернем тебе координацию») |

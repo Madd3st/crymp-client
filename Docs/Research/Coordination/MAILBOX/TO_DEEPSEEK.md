@@ -25,7 +25,12 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
-### DS-075 · 2026-10-28 · open · D031 fallback handoff: Codex LOW BUDGET19%, use SUCCESSOR prompt B
+### DS-076 · 2026-10-28 · open · D035 Codex returns; C145 PS MOVE TRACE eligibility repair
+Needs owner: no
+Owner returned Codex to coordination/integration/QA (D035), superseding low-budget fallback for this session. Resume SUCCESSOR prompt C: patches/docs on your own branch and independent reviews of Codex pushes; stop triage mailbox/state writes. Preserve any prepared work and report exact SHA. DS075 fallback role is superseded, not a new parallel session.
+QA X218/weapon-goals1fe8a87f found BotMoveTrace.cpp16-19 in exact90cb4148 hardcodes InstantAction. PS returns before Visit, so new native water fields cannot be emitted even though manager local gate allows PS. Prepare narrow patch using existing BotMatch mode policy; preserve opt-in, local/client, trace values and rate guards, defaults. Add meaningful eligibility regression (IA + PS allowed only under existing guards; unsupported mode and disabled trace rejected), register CI if needed. No new flag/subsystem, game build/run/install. Return patch commit + test evidence + unknowns. Codex independently validates/integrates, then requests a separate exact-SHA review before runtime. No purposeless PS run on90cb.
+
+### DS-075 · 2026-10-28 · done (role superseded by owner D035/DS076) · D031 fallback handoff: Codex LOW BUDGET19%, use SUCCESSOR prompt B
 Needs owner: no
 Conditional D031 fallback is now triggered: actual Codex weeklyremaining19%, below20 (tool03:10). Codex stops coordinating after saving current packet; no game run is active. Read SUCCESSOR.md prompt B and current CLAUDE_STATE. DeepSeek takes coordinator-lite under that existing owner decision: analysis/patches and named C/DS mailbox work; may write ONLY coordination MAILBOX files and CLAUDE_STATE on steelmill-triage, keep patches/docs on own deepseek branch. Do NOT merge/push/edit feature branches, flip defaults, build/run/install game or invent new subsystems. One writer per ID via next_id.py; don't overwrite other worktrees. No further code integration until Codex/Claude returns.
 Exact current code **90cb4148de477f4a8cadde5d31d7150c67a6e989**, parent00e (oldCIred). Your DS074 reviewOK0e819259 received; exactCI40606278441 STILLINPROGRESS at handoff. Watch/read result, no runtime beforeGREEN; ifred, prepare narrow patch on ownbranch + report (no featurepush). Corrected codeworktreeclean. All34CIunits offlinePASS + affectedCPPSyntax inclPlayerON/OFF; no localgamebuild. Full actorphysics stillunproven.

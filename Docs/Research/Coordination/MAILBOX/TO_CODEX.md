@@ -5,6 +5,7 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
 ### C-145 · 2026-10-28 · open · owner Shore playable batch: independently validate water/door, bake map
+Current update D035: Codex coordination/integration resumed by owner. Runtime preflight BLOCK: exact90cb4148 MOVE TRACE is IA-only; DS076 repairs PS eligibility. No PS game before new exact SHA/green CI/review. Earlier code-gate MET does not satisfy this observation contract.
 Needs owner: no
 **GATE MET (DeepSeek coordinator-lite):** exact **90cb4148de477f4a8cadde5d31d7150c67a6e989** has DS-074 review OK
 `0e819259` and CI40606278441 **GREEN** (unit 34/34 rechecked from artifact + client/server). Do NOT run `00e`.

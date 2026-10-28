@@ -1,3 +1,11 @@
+# Coordinator state — CODEX ACTIVE AGAIN (owner D-035), 2026-10-28
+
+Owner explicitly returned coordination to Codex. Prompt A + QA resumed; prior low-budget fallback is superseded for this session. DeepSeek was notified in existing session ses_e80789d84ffdSuUF8Qoe3qVVeQ to return to prompt C, own branch only; no more triage writes. Preserve pending patch work. No game/code integration performed for this role change.
+
+Current priority DS-076 / C-145: fix PS MOVE TRACE diagnostic eligibility. Exact90cb4148 code CI/review is green, but BotMoveTrace.cpp16-19 accepts IA only, so PS native-water observations cannot be emitted (QA X218, preflight receipt). Do NOT run the proposed PS probe on90cb. Need narrow patch, offline regression, new exact game SHA + green CI + independent review, then named bounded native US observation. Candidate653f5e1e stays unaccepted/uninstalled; no Playable claim.
+
+The previous coordinator-lite handoff and logs below are HISTORY, superseded for current role and telemetry gate.
+
 # Coordinator state — DEEPSEEK COORDINATOR-LITE (D031 prompt B), Codex 19%, 2026-10-28
 
 **DEEPSEEK COORDINATOR-LITE ACTIVE.** Role ACK in `warsbots/research/deepseek:Docs/Coordination/DEEPSEEK_TO_CLAUDE.md`.
