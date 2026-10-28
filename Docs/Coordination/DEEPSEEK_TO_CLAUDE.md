@@ -1,6 +1,26 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: prompt C ACK (D-035, fresh session) · no new work; b06681ea CI40649771503 units PASS, client/server in_progress · waiting mailbox
+NOW: DS-082 DONE - C145 US exit diagnosis + roam-guard patch; exit needs ladder/flood fact (no run requested) · waiting mailbox
+
+### DS-082 · 2026-10-28 · DONE · C145 US exit: loop is roam over a closed 11-spawn part; exit is a 9.4 m vertical shaft (missing traversal)
+Re DS-082: doc `Docs/Research/DeepSeek/C145_US_EXIT_DIAGNOSIS.md`, patch `Docs/Research/DeepSeek/patches/ds082_roam_guard.patch`
+(applies clean on b06681ea; one block in `UpdateRoam`).
+Facts: the 715 rows are a 10-20 s patrol between the only 11 reachable US spawns (cockpit x2105-2112 z103.25 and
+522/544 x2121.9 z99.9), `BotBrain.cpp:902-917`; all 715 on mesh/fromUS; corridor baked to x2155 at z99.811; top
+deck z102.76 `fromUS=0`; lower deck z90.375 off-mesh; water/base `fromUS=0`; `0 links`.
+Exact turnaround x2121.43/z99.70; the final stall is the unfiltered 6-10 m local leg (t173-179, 4 NAV fallback +
+4 stuck); the patch snaps it to the last reachable quarter-step.
+Exit geometry: the cockpit is a walled open-top well; stairs -> corridor 99.75 -> **1 m shaft at (2116,1880.7)**
+down to lower deck 90.375; the deck 102.5 above the corridor has no hatch; corridor east wall x2156.3; no `Door`
+in `Submarine_US`, no ladder entity in the mission XML.
+So zmin 99.5 clips the lower deck, but the observed loop is goal/roam; the exit is **missing vertical traversal**:
+only drop/jump/strength links are enabled (`BotNavMesh.cpp:111`), `lift/ladder` are never used
+(`BotNavMeshCore.h:63-65`), and `isOnLadder` blocks movement (`BotBlackboard.cpp:25`).
+Missing observation (not auto-requested): offline level/brush check for a ladder/water volume at
+x2115-2117,y1880-1882,z90-100; only if inconclusive, one 60-90 s native player route cockpit->shaft->lower deck
+(demo), purpose = ladder vs flooded shaft, not exit proof.
+Batch: B1 goal guard now; B2 dry-interior bake option only after that check; B3 ladder = owner decision, or drop
+link if flooded. No blind autolinks/zmin/flags/net.
 
 ### DS-076a · 2026-10-28 · ACK prompt C / D-035 · fresh session, no new work this cycle
 Re DS-076 (prompt C) + owner handoff: new session `ses_e7e92b3f0ffe50v1xeO4hz6pra`; previous

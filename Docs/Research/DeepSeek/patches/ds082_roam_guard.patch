@@ -1,0 +1,29 @@
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -913,7 +913,23 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 			else
+ 			{
+ 				const float angle = (m_patrolStep * 2.399963f) + m_phase;
+-				m_patrolGoal = feet + Vec3(cosf(angle),sinf(angle),0) * (6.0f + (m_patrolStep%3)*2.0f);
++				const Vec3 local = feet + Vec3(cosf(angle),sinf(angle),0) * (6.0f + (m_patrolStep%3)*2.0f);
++				// DS-082: the local fallback point is not a path request. When it lands outside the bot's current
++				// nav part (through a hull wall or in an off-mesh pocket), the old code steered straight at it for
++				// the 1.5 s blocked window and logged NAV fallback/stuck (C145 US run t173..179). Walk only as far
++				// as the last reachable quarter-step instead; if even that fails, hold this leg one cycle.
++				Vec3 goal = local;
++				if (mesh && !reachable(local))
++				{
++					bool found = false;
++					for (int q = 3; q >= 1 && !found; --q)
++					{
++						const Vec3 p = feet + (local - feet) * (q * 0.25f);
++						if (reachable(p)) { goal = p; found = true; }
++					}
++					if (!found) goal = feet;
++				}
++				m_patrolGoal = goal;
+ 				m_patrolUntil = m_now + 4.0f;
+ 			}
+ 			m_detour = false;
+
