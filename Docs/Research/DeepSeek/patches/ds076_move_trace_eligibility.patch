@@ -1,0 +1,122 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index 877cd5a9..48edc6d2 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -40,7 +40,7 @@ jobs:
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
+-                     'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace',
++                     'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+           foreach ($t in $tests) {
+diff --git a/Code/CryGame/Bots/BotMoveTrace.cpp b/Code/CryGame/Bots/BotMoveTrace.cpp
+index 6bf7f530..f401692f 100644
+--- a/Code/CryGame/Bots/BotMoveTrace.cpp
++++ b/Code/CryGame/Bots/BotMoveTrace.cpp
+@@ -1,7 +1,9 @@
+ #include "PortIncludes.h"
+ #include "BotConfig.h"
+ #include "BotMoveTrace.h"
++#include "BotMoveTraceEligibility.h"
+ #include "BotManager.h"
++#include "BotMatch.h"
+ #include "BotLog.h"
+ #include "CryGame/Game.h"
+ #include "CryGame/GameRules.h"
+@@ -13,9 +15,14 @@ void BotMoveTrace::Update(IGameFramework* framework,const BotManager& manager)
+ {
+  const int& flag=BotConfig::Get().moveTrace;
+  CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+- const bool enabled=(flag==1 || flag==2) && framework && rules &&
+-  !std::strcmp(rules->GetEntity()->GetClass()->GetName(),"InstantAction") &&
+-  (gEnv->bServer?manager.CanRunLocalIA():gEnv->bMultiplayer);
++ // DS-076/C145 X-218: use the existing BotMatch policy instead of a hardcoded "InstantAction" class name, so the
++ // planned PowerStruggle native-water observation can reach Visit. Opt-in flag and local/multiplayer guards unchanged.
++ MoveTraceMode mode=MoveTraceMode::Unsupported;
++ if(rules){
++  if(BotMatch::IsPowerStruggle(*rules))mode=MoveTraceMode::PowerStruggle;
++  else if(BotMatch::IsBotMode(*rules))mode=MoveTraceMode::InstantAction;
++ }
++ const bool enabled=framework && rules && MoveTraceEligible(flag,gEnv->bServer,manager.CanRunLocalIA(),gEnv->bMultiplayer,mode);
+  if(!enabled){if(m_clock.active)Reset();return;}
+  const float now=gEnv->pTimer->GetCurrTime();// C-084: the owner's client trace at wb_move_trace_hz (circle/wall jumps need >= 20 Hz); server and bots stay 4 Hz
+  const bool due=m_clock.Poll(now,true,gEnv->bServer?4.f:float(BotConfig::Get().moveTraceHz));++m_frame;
+diff --git a/Code/CryGame/Bots/BotMoveTraceEligibility.h b/Code/CryGame/Bots/BotMoveTraceEligibility.h
+new file mode 100644
+index 00000000..eaeab326
+--- /dev/null
++++ b/Code/CryGame/Bots/BotMoveTraceEligibility.h
+@@ -0,0 +1,25 @@
++// DS-076: MOVE TRACE diagnostic eligibility (engine-free).
++// C145 preflight X-218: BotMoveTrace.cpp used to require the rules class name "InstantAction", so PowerStruggle
++// returned before Visit and the native water fields could never be observed. The engine maps the existing
++// BotMatch policy to MoveTraceMode; this predicate keeps the opt-in flag and the local/server + client/multiplayer
++// guards unchanged. No new wb_* flag and no default change.
++#pragma once
++
++namespace WarsBots
++{
++enum class MoveTraceMode
++{
++	Unsupported = 0,
++	InstantAction,
++	PowerStruggle,
++};
++
++// flag: wb_move_trace (1 or 2); server: gEnv->bServer; localAllowed: BotManager::CanRunLocalIA();
++// multiplayer: gEnv->bMultiplayer; mode: BotMatch policy for the live game rules.
++inline bool MoveTraceEligible(int flag, bool server, bool localAllowed, bool multiplayer, MoveTraceMode mode)
++{
++	if (flag != 1 && flag != 2) return false;
++	if (mode != MoveTraceMode::InstantAction && mode != MoveTraceMode::PowerStruggle) return false;
++	return server ? localAllowed : multiplayer;
++}
++}
+diff --git a/Tests/BotMoveTraceEligibilityTests.cpp b/Tests/BotMoveTraceEligibilityTests.cpp
+new file mode 100644
+index 00000000..fc998000
+--- /dev/null
++++ b/Tests/BotMoveTraceEligibilityTests.cpp
+@@ -0,0 +1,40 @@
++// DS-076 / C145 X-218: the diagnostic MOVE TRACE must accept both supported bot modes (Instant Action and
++// PowerStruggle) while keeping the opt-in flag and the existing local/server and client/multiplayer guards.
++#include "CryGame/Bots/BotMoveTraceEligibility.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++int main()
++{
++	// C145 blocker: PowerStruggle on the allowed local server must now be eligible (previously rejected by the
++	// hardcoded InstantAction class check).
++	assert(MoveTraceEligible(1, true, true, true, MoveTraceMode::PowerStruggle));
++	assert(MoveTraceEligible(2, true, true, true, MoveTraceMode::PowerStruggle));
++
++	// Instant Action keeps working on the same server gate.
++	assert(MoveTraceEligible(1, true, true, true, MoveTraceMode::InstantAction));
++	assert(MoveTraceEligible(1, false, false, true, MoveTraceMode::InstantAction)); // client + multiplayer
++
++	// Client replica capture (flag 2) for PS needs multiplayer, not the server local gate.
++	assert(MoveTraceEligible(2, false, false, true, MoveTraceMode::PowerStruggle));
++
++	// Disabled trace: 0 and any unsupported value must fail.
++	assert(!MoveTraceEligible(0, true, true, true, MoveTraceMode::InstantAction));
++	assert(!MoveTraceEligible(0, true, true, true, MoveTraceMode::PowerStruggle));
++	assert(!MoveTraceEligible(3, true, true, true, MoveTraceMode::PowerStruggle));
++
++	// Unsupported rules class (neither IA nor PS) never enables the trace.
++	assert(!MoveTraceEligible(1, true, true, true, MoveTraceMode::Unsupported));
++	assert(!MoveTraceEligible(2, false, false, true, MoveTraceMode::Unsupported));
++
++	// Existing guards stay: a non-local server and a non-multiplayer client are still rejected for both modes.
++	assert(!MoveTraceEligible(1, true, false, true, MoveTraceMode::InstantAction));
++	assert(!MoveTraceEligible(1, true, false, true, MoveTraceMode::PowerStruggle));
++	assert(!MoveTraceEligible(1, false, true, false, MoveTraceMode::InstantAction));
++	assert(!MoveTraceEligible(1, false, true, false, MoveTraceMode::PowerStruggle));
++
++	std::puts("BotMoveTraceEligibilityTests OK");
++	return 0;
++}
