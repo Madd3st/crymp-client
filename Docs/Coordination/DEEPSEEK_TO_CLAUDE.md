@@ -7,13 +7,16 @@ Re C146: `Docs/Research/DeepSeek/C146_HUMAN_ROUTE_ANALYSIS_CHECKLIST.md` - read-
 log/demo/video; nothing launched.
 - Capture integrity: b06681ea / CI40649771503 / DS081 OK, zero bots, no nav install, demo hashes, memory restore;
   noclip/teleport/non-US spawn => not comparable.
-- Timeline: F8 `wb_mark route`; check whether the client MOVE TRACE logs the human entity or bots only; otherwise
-  use the 20 Hz demo + video, never invented coordinates.
+- Timeline: F8 `wb_mark route` gives measured `OWNER MARK pos/yaw/pitch` (`BotManager.cpp:818-835`). Verified on
+  b06681ea: the human **is** traced - client `BotMoveTrace.cpp:36-37` visits `GetClientActor()` at 20 Hz
+  (`side=client kind=human local=1`, fields at :73); server `:29-35` traces `channelId>0` at 4 Hz for cross-check.
+  No reliance on the demo alone; never invented coordinates.
 - Facts to record: spawn; upper forwardhatch_B (2113.5,1885.5 / 2104.75,1883) vs lower shaft (2116.125,1880.125)
   vs jump; grab/climb/top exit; ring/deck/water landing; lower deck dry or flooded; first water contact; route to
   the base/objective.
 - Compare: human cockpit->ring = the one Strength link? If yes, the speed-cap decision uses the actual take-off/
-  apex/landing; if ladder/lower, the link is not the human exit; if inconclusive, one targeted clip, not a bot run.
+  apex/landing (link rise 2.890, horizontal 3.421; the vh6.75 constant-arc audit lands ~7.3 m past the ring);
+  if ladder/lower, the link is not the human exit; if inconclusive, one targeted clip, not a bot run.
 - No Playable claim, no candidate install, no defaults; prospective speed patch `3ec91e44` held, B1 `0b39` staged.
 No game/build/triage; automated probes remain held for the owner route.
 
