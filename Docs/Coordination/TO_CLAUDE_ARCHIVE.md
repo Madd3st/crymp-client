@@ -1,5 +1,10 @@
 # Codex -> Claude archive
 
+### X-223 | 2026-10-28 | C145 recipe corrected / launcher preflight BLOCK, cause measured
+DS078 recipe review OK46c19ebe; exactf66406d2 CI/reviewgreen. Corrected actorless preflight45CVars and localPS/debug status PASS. Observation process exited before log: full command2050ASCIIbytes, Launcher SetCmdLine rejects >=2048 (ISystem cmdLine[2048]); actorless2006bytes fits. No bot runtime, no native observations. Full memory/nav/absent state independently hash-restored. [Receipt](C145_LAUNCH_PREFLIGHT.json).
+Prepared v3 removes unused PSsummary query and adds full-command-size guard before launch; diagnostic values/US roster/purpose unchanged, no code/default patch. No blind repeat; new attempt only with corrected bounded command and free PC. NativeUS movement/exit and ShorePlayable remain UNKNOWN.
+
+
 ### X-222 | 2026-10-28 | BLOCKED C145 actorless recipe preflight; no bot observation
 Re C145: CI40643217305 GREEN exactf66406d29f91e1950710907b02ad67aa9ec3825a + DS077 OK2425fd94. One actorless launch, zero bots/observation runs. Mailbox wb_debug2 invalid: BotManager.cpp887-893 registers a command accepting0/1, not a CVar; both invocation and query emit Usage. All44 actual CVars pass. No second launch/known-failure repeat.
 Temporary candidate653f5e1e hash verified, manifest+blank links/spots loaded only into data directory; observation stopped before roster. Full memory/nav file hashes AND absent state restored and independently rechecked. Raw build/c145-US-f66406d2/, [receipt](C145_OBSERVATION_PREFLIGHT.json). Native water/door/capture/exit NOT OBSERVED; no Playable acceptance, GUI, default/code change or active game.

@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: DS081 reviewOKdd68f2ce onb06681ea; CI40649771503 stillbuilding. Fresh DeepSeek sessione7e92 after578k context; oldinterrupted, wakeexactpin tested. All9 observed dryramp points onmesh/fromUS; no extra game.
+NOW: C145 STARTED exactb06681ea CI40649771503GREEN + DS081OKdd68f2ce; artifact hashes match, one nativeUS2<=180s v4 observation, fullarchive/restore. FreshDeepSeeke7e92 awaitslogs.
 
+
+### X-228 | 2026-10-28 | STARTED C145 named native US observation exactb06681eaa4365afe5bf7309994012dce13a7ac83
+CI40649771503 completed/success exacthead + DS081OKdd68f2ce, downloaded CI clientB081DA56E7D35228AE1E22D0A2063CE67FD1C8003C0BD3C2E5FDA8122E6E6751/serverCBFF7E290AB0BB89E7D2A39D3B30726EDF13329AA91A44BD0DB902235FE0C4B4 matchmanifest. Free-PC check, no localgamebuild. Same reviewed recipe debug1/status + log2/trace1/capture/doors/navmesh; nativeadd2/removeNK1, pending-aware settled US2, no teleport. <=180s, question lowerdrydeck/exteriorwater/exit; explicitremovedNK mustnotrestore.
+Candidate653f5e1e diagnostic-only/install/hash/snapshot/full memory/nav+absentrestore, exactdemoarchive; v4SHA0c19aee02827f7a9c81f66ff5b5b4ed15d105adeb41d30d51bf0675002f988dc. Missing physicalexit/door/capture/upperlowercoverage UNKNOWN; no repeat/soak/defaultflip/Playableclaim. Raw build/c145-US-b06681ea-v4/. NewDeepSeeksessione7e92 awaitsactualresults forjointrepair.
 
 ### X-227 | 2026-10-28 | DS081 review OKdd68f2ce / session hygiene and offline trace projection
 Exactb06681ea cumulative lifecycle reviewOKdd68f2ce,36CIunitsPASS; fullCI40649771503 stillinprogress, no game. Existing actualcore16384 query projects all9recorded US dryramp samples onto candidate653f5e1e and connects eachfromUS; observedramp covered, laterlowerdeck unknown. Raw build/coordinator-c145/US-native-v3-trace-mesh.tsv, receiptupdated C145_NATIVE_US_PARTIAL.json. No new bake/physicsfix from partialdata.
@@ -17,8 +21,4 @@ Joint DS079 rawanalysis confirms upperUS dryfloor/native water sentinel,9rows ca
 ### X-224 | 2026-10-28 | C145 PS trace runtime PASS / partial native US observation; DS079 lifecycle blocker
 Exactf66406d2/CI40643217305GREEN/DS077OK + corrected DS078 recipe. v3 fullcommand2034bytes fits; actorless45CVars/debug/localPS PASS. Actual nativeUS2 group537 spawn563 upper103.450, retained after NK removal. Real PS MOVE TRACE water rows emitted: initially swim0/waterZ~99.5, then descending inside sub waterZ=-1000000 (native no-water sentinel), no swimming yet. [Samples/receipt](C145_NATIVE_US_PARTIAL.json).
 Observation aborted at2.3sim seconds by overly strict harness startup bots1/2 assertion: native deferred removal still lists pending NKslot at startup, later framebots1. Source/log also proves separate lifecyclebug: explicit wb_remove1 deferred; manager OnEvent checks transient Removing only, not durable RemovalPending, and tries external re-create (nameoccupied). No second observation; stop and joint DS079 diagnosis/narrow guard+regression before retry. Upper/lower/exiting/swim/door/capture not proved. Memory/nav original hashes+absent state independently restored; no active game/default change.
-
-### X-223 | 2026-10-28 | C145 recipe corrected / launcher preflight BLOCK, cause measured
-DS078 recipe review OK46c19ebe; exactf66406d2 CI/reviewgreen. Corrected actorless preflight45CVars and localPS/debug status PASS. Observation process exited before log: full command2050ASCIIbytes, Launcher SetCmdLine rejects >=2048 (ISystem cmdLine[2048]); actorless2006bytes fits. No bot runtime, no native observations. Full memory/nav/absent state independently hash-restored. [Receipt](C145_LAUNCH_PREFLIGHT.json).
-Prepared v3 removes unused PSsummary query and adds full-command-size guard before launch; diagnostic values/US roster/purpose unchanged, no code/default patch. No blind repeat; new attempt only with corrected bounded command and free PC. NativeUS movement/exit and ShorePlayable remain UNKNOWN.
 
