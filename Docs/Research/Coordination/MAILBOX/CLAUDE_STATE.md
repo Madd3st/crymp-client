@@ -1,3 +1,7 @@
+# C145 offline contribution X230 DONE6c79eebe; DS082 pending, 2026-10-28
+
+Codex offline contribution X230 DONE6c79eebe (weapon-goals), Docs/Coordination/C145_OFFLINE_CORRIDOR.md + reproducible grid/sections: actual16384core/candidate653f5e1e has upperUS paths to x2146,z99.811295 beyond observedturnx2121.430. Grid348: lowlayer97projected/60USpaths; middle106projected/0USpaths; top116projected/0USpaths,all0NK. Thus earlyturn is not eastern componentboundary; inspect selectedgoal/pathfollowing as well as staticexit/layeridentity. Triangle intersections unclassified, not clearance/physicalproof. Nativegroup537 links23upper/middle/lower spawns; noDoor/ladderentity in inspectedbox, staticbrushes notexcluded. No rebake/code/game/install/datachange. DS082 stillpending; no unchangedrepeat/soak/Playableclaim.
+
 # C145 nativeUS180s result; offline exit repair DS082, 2026-10-28
 
 X229 C145 nativeUS180s DONEb06681ea: telemetry/explicitremovalPASS, upperexitFAIL dryloop,715rows swim0/noHP loss; all715onmesh/fromUS,0fromNK, projectedlowerlimit99.811. Fivecapturedestsresolve but actualcapture/door/swim NOTEXERCISED. Data/demosarchived+hash/absent restored, no gameactive. DS082 fulljoint offlinegeometry/topology/goal repair; no unchangedrepeat/newwatercontrollerguess. ShorePlayable NOTproved.
