@@ -1,0 +1,40 @@
+{
+  "task": "C150",
+  "source": "b8b444d6c858f27a1fdde0d93b25a318cafc6937",
+  "ci": 40709459511,
+  "tooling_commit": "b6930859",
+  "review": "46f44f26e2e6e8b531857ecd1627da19f946f5cc",
+  "root": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Showcase-b8b444d6",
+  "profiles": {
+    "Steelmill": {
+      "directory": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Showcase-b8b444d6\\Steelmill",
+      "start": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Showcase-b8b444d6\\Steelmill\\START.cmd",
+      "zip": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Showcase-b8b444d6\\Steelmill.zip",
+      "zip_sha256": "16195859415ac25b966ff209cda5324ab8d0e2fe699800823809725fb30a4aba",
+      "zip_bytes": 14914985,
+      "manifest_sha256": "593b3b5d386fa388143e557804d70b687c8fdf10dc4a642c947078c9518bd3a0",
+      "critical_files": 15,
+      "integrity": "PASS",
+      "zip_crc_and_payload": "PASS"
+    },
+    "Shore": {
+      "directory": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Showcase-b8b444d6\\Shore",
+      "start": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Showcase-b8b444d6\\Shore\\START.cmd",
+      "zip": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Showcase-b8b444d6\\Shore.zip",
+      "zip_sha256": "47629db6ab22a73aa7a1ffb3f9fc09232fd52a4cc8d8da0b1262fc8ae5a71062",
+      "zip_bytes": 17875815,
+      "manifest_sha256": "4a065c8d200664014a40c03b7f65fba9f4ec3aa4b8fb78d8a6d12bf415eef00c",
+      "critical_files": 15,
+      "integrity": "PASS",
+      "zip_crc_and_payload": "PASS"
+    }
+  },
+  "prepare_only": "both PASS",
+  "filesystem_tests": "existing/absent/active-client-defer PASS",
+  "new_game_runs": 0,
+  "local_game_builds": 0,
+  "desktop_shortcuts": [
+    "C:/Users/Magic8/OneDrive/Рабочий стол/WarsBots - Steelmill (8 bots).lnk",
+    "C:/Users/Magic8/OneDrive/Рабочий стол/WarsBots - Shore (route demo).lnk"
+  ]
+}

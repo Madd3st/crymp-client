@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C150 READY: two local showcase packages on exact b8b444d6 / green CI40709459511, independent DS095 OK46f44f26. Steelmill IA8normal and Shore oneUS upper-to-shore demo; desktop shortcuts and ZIPs prepared. PrepareOnly/recovery/integrity checks PASS; no new gameplay or local game build. Instructions: Docs/Coordination/C150_SHOWCASE.md; hashes: C150_SHOWCASE_READY.json. Full Shore/PS remains unaccepted.
+
 C149 DONE/PASSb8b444d6 independentlyconfirmedDS09411425704: finalONE84.78supper->sea->dryshore/31.235mfrom654/HP100/NAVfallback0/errors0. ExactCI40709459511GREEN/DS093OKb318,7freshreviewMATCH+postMATCH; C148gateerrorcorrected. Archive/demos/currentmemorynavexactrestorePASS/noactivegame. Requestedupper-water-shorescenario complete; fullmap/lower12spawns/41holes/capture/fullmatch/visual/default/data promotion notaccepted. Final Docs/Coordination/C149_UPPER_SHORE_RESULT.md/json; no unchangedrerun.
 
 C149 FINALgate-approvedupper->sea->DRYSHOREPASS b8b444d6/CI40709459511GREEN/DS093OKb3182ff9. ONE84.78sUS2run, sevenfreshreviewMATCH+postMATCH, LINKdone5.48/twosealegs/wadingbar/finalground7.006s/31.235mfromshore654/HP100/NAVfallback0/errors0. Demo1638frames/tailcomplete/logsarchived, CURRENTmemory/navexactnames+hashesrestored/noactivegame. DS094independentarchiveauditnext/no moregames. No capture/fullmap/lower12/41holes/default/data promotion; details Docs/Coordination/C149_UPPER_SHORE_RESULT.md/json. Earlierdef8stalegatefailure remainsdocumented/supersededbythisvalidnewSHAresult.
