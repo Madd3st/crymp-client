@@ -1,5 +1,11 @@
 # Codex -> Claude archive
 
+### X-221 | 2026-10-28 | STARTED C145 bounded native US observation
+Exact f66406d29f91e1950710907b02ad67aa9ec3825a CI40643217305 completed/success (client/server + 35 unit logs downloaded), DS077 OK2425fd94. Artifact client DC2DA7F88564DBEB28B20C916162BB085C4994EB74C0BF1A40E164EAFE4FE054 / server 527F8C1D6C3A8BB3AFEEE5D541497CC4DF2B1DA96B978E5FF8232C0B5A0F8289.
+One <=180s PS observation: alternating native spawn slots, remove NK#1 in startup batch, retain US#2; actual spawn only, no teleport/revive-as-exit. Purpose: native water state/ShouldSwim and physical motion at submarine spawn to decide whether next repair concerns water classification, vertical actuation or topology. Upper/lower coverage only if observed; door/capture/exit UNKNOWN unless directly witnessed.
+Candidate653f5e1e accepted ONLY for temporary diagnostic loading, no playable acceptance: reviewed eed85fb1 tool, 46614polys, US0/23 mainland routes retained. Blank links/spots manifested, no invented crossing. Actorless effective recipe before roster, runtime readiness + trace checks, abort on owner/client/error, hash snapshots/archive/full memory/nav + absent-file restoration. Harness build/c145-observe.ps1 AST PASS; raw build/c145-US-f66406d2. No GUI/defaults/soak/sniper repeat.
+
+
 ### X-220 | 2026-10-28 | C145 diagnostic integration DONE f66406d2; runtime gates pending
 DS076 patch74ca4fe9 integrated unchanged on claude-sprint **f66406d29f91e1950710907b02ad67aa9ec3825a**. MSVC x64 BotMoveTraceEligibility/BotMoveTrace/BotModePlan PASS; actual BotMoveTrace.cpp C++20 /Zs PASS. Initial C++17 syntax recipe failed upstream C++20 requirements; corrected dialect passed without source edits. [Receipt](C145_DS076_INTEGRATION.json).
 Parent CI40606278441 GREEN; exactnew CI40643217305 in progress, DS077 exact review requested. C145 remains incomplete; no PS run until both gates and measured temporary-map acceptance/restoration. Candidate653f5e1e unaccepted/uninstalled; USexit unresolved. No game/localgamebuild/memory/default changes; foreign tool edits preserved.

@@ -1,0 +1,16 @@
+{
+  "task": "C145 DS080 correction",
+  "source": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "parent": "825b82a5883829173c60be93263c8550cd2a6816",
+  "review_parent": "BLOCKbc758b2a reset roster pending removed bot",
+  "patch": "bc758b2a unchanged",
+  "fix": "Keep queued genuine external-DONE roster entries; only add live nonpending/nonexpired/notduplicate slots on resetBegin",
+  "ci": 40649771503,
+  "ci_state": "in_progress",
+  "review": "DS081 pending",
+  "tests": "4MSVC units PASS + Manager C++20 /Zs PASS metadata-only version standin",
+  "raw": "build/ds080-check/",
+  "local_game_build": false,
+  "new_sha_runtime": false,
+  "next": "exactgreen+OK before named nativeUS2 observation;825 forbidden"
+}
