@@ -1,0 +1,35 @@
+{
+  "task": "C148",
+  "source": "def8a65d99e4640c9c765375f5739d010835e67e",
+  "parent": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "ci": 40703800474,
+  "ci_state": "pending_full_build",
+  "review_task": "DS090",
+  "patch_source": "ad6053e4",
+  "units_pass": [
+    "BotNavMeshWater",
+    "BotNavMeshCore",
+    "BotPSCapture",
+    "BotRoamFallback",
+    "BotCorners",
+    "BotWaterPolicy"
+  ],
+  "syntax_pass": [
+    "BotBrain",
+    "BotBlackboard",
+    "BotPSCapture"
+  ],
+  "water_oracle": {
+    "rows": 1136,
+    "raw_project": 0,
+    "water_project": 1095,
+    "reachable": 1095,
+    "paths": 1095,
+    "ray_clear": 1083,
+    "holes": 41
+  },
+  "harness": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c148-upper-to-shore.ps1",
+  "harness_sha256": "6ce0f19d975507728b215ea23d5a2b57ead234845511fa04829aaf2fc4de1394",
+  "expected_command_bytes": 2011,
+  "new_game_runs": 0
+}

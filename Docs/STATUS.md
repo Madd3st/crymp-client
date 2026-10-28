@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C148 integrateddef8a65d waternav(nativequalifiedboundedwateronlystart+PSgoal+cornerRayClear) + reviewedB1roamguard. SixMSVCunits/threeactualadaptersyntaxPASS; CI40703800474 fullbuild andDS090independentreviewpending, no newruntime. Correcteddegenerateverticalsyntheticfixture/allassertionskept; actual1136rows Project/Reach/Paths1095/41holes, RayClear1083. One sharedwholeupper->sea->shore afterexactgates; no default/newflag/speedpatch/Playableclaim. Sourceclean, dataunchanged.
+
 DS088 offline review BLOCK (DeepSeek6a352c56): MSVCcore/Detour compilePASS, suppliedwaterunitFAILexit5 atline54; actualboundedwaterpaths1085/1136,51start_off_mesh vspriorcounterfactual1095/41. RayClear gates byPlane corneradvancement; optimization-only rationale insufficient. Report Docs/Coordination/C147_DS088_REVIEW.md + oracle; revisedpatch/controls beforeintegration. Gameb066/B1staged unchanged, no CI/game/install/memory change; C147shoreopen, upper/seaPASS retained.
 
 
