@@ -1,0 +1,110 @@
+{
+  "task": "C145 existing Strength exit candidate",
+  "code": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "map": "Shore.US-strength-candidate.navmesh",
+  "sha256": "e2235993ce72eb4549788ad7bd1a171ab415c8e8b4c6da69fdb49ed941ef30de",
+  "tool": "eed85fb1 reviewed; unchanged standalone baker",
+  "input": "verified a943e070 Shore.crop.obj.gz unchanged canonical geometry",
+  "params": {
+    "cs": 0.1,
+    "ch": 0.1,
+    "radius": 0.3,
+    "wall_radius": 0.0,
+    "height": 1.8,
+    "climb": 0.5,
+    "slope": 45.0,
+    "tile": 256,
+    "min_region": 2,
+    "partition": "watershed",
+    "recast": "v1.6.0"
+  },
+  "mesh": {
+    "tiles": 2099,
+    "tiles_grid": [
+      46,
+      46
+    ],
+    "polys": 46614,
+    "max_tile_polys": 301,
+    "components": 3803,
+    "area_m2": 2380477,
+    "main_area_m2": 2111095,
+    "two_way_area_m2": 2111095,
+    "offmesh_links": 1,
+    "generated": {
+      "drop": 0,
+      "jump": 0,
+      "strength": 0
+    }
+  },
+  "water": {
+    "z": 99.5,
+    "cell": 2.0,
+    "cells": 189169,
+    "blocked_cells": 148679,
+    "unknown_cells": 2622,
+    "surface_tris": 378338,
+    "area": 4,
+    "area_cost": 4.0
+  },
+  "links": [
+    {
+      "a": [
+        2110.56,
+        1885.58,
+        103.18
+      ],
+      "b": [
+        2113.98,
+        1885.51,
+        106.07
+      ],
+      "bidir": false,
+      "kind": "strength"
+    }
+  ],
+  "graph_control_crop": "0USsea on existing10autolinks; one audited reverseStrength ALONE reaches both sea probes; actualCore path kindStrength, not ladder",
+  "full_graph_actual_core": [
+    "target=64 reachable=1 path=1 reason=ok endDistance=0.00 corners=42 links=1",
+    "target=316 reachable=1 path=1 reason=ok endDistance=31.02 corners=49 links=1",
+    "target=344 reachable=0 path=0 reason=other_component endDistance=-1.00 corners=0 links=0",
+    "target=579 reachable=1 path=1 reason=ok endDistance=0.00 corners=47 links=1",
+    "target=654 reachable=1 path=1 reason=ok endDistance=0.00 corners=21 links=1",
+    "target=120 reachable=1 path=1 reason=ok endDistance=0.04 corners=51 links=1"
+  ],
+  "full_local_sea_actual_core": [
+    "kinds=1",
+    "path=1 why=ok corners=11 links=1",
+    "link kind=strength a=(2110.560,1885.580,103.211) b=(2113.980,1885.510,106.039)"
+  ],
+  "arc_audit": {
+    "raw": "build/coordinator-c145/upper-strength-arc.cpp/.log",
+    "geometry_triangles": 369728,
+    "radius": 0.4,
+    "lateral_lanes": 3,
+    "heights": [
+      0.05,
+      0.9,
+      1.5
+    ],
+    "dt": 0.01,
+    "assumption": "parabolic g9.81/apex3.62 derived prior native max-rise observation; NOT current actor-param/sweep/runtime proof",
+    "result": [
+      "nativeApex=3.620 nativeV0=8.4276 rise=2.890 distance=3.421 descendingT=1.245 neededVH=2.748 tris=369728",
+      "vh=2.500 blocked=0 t=0.000 lane=0 height=0 end=(2113.672,1885.516,106.070)",
+      "vh=2.748 blocked=0 t=0.000 lane=0 height=0 end=(2113.980,1885.510,106.070)",
+      "vh=3.000 blocked=0 t=0.000 lane=0 height=0 end=(2114.294,1885.504,106.070)",
+      "vh=4.000 blocked=0 t=0.000 lane=0 height=0 end=(2115.539,1885.478,106.070)",
+      "vh=6.750 blocked=1 t=0.440 lane=0 height=0 end=(2118.961,1885.408,106.070)"
+    ]
+  },
+  "correction": "DS083 ring-not-baked was wrong: actual ring points (2113.98,1885.51,106.07),(2103.5,1883,106.1),(2114.5,1885.5,106.1) project106.038..106.05; earlier query points were insidecockpit",
+  "limitations": [
+    "candidate NOT installed/accepted for play",
+    "4of5 capturedest graphreachable;344chosenpoint remains other_component although previous alternative inside-area samples reachable",
+    "316path currently rolling256poly prefix enddistance31.02, not full-route proof",
+    "actual native horizontal speed needs existing executor cap+runtime verification, fullsprint arc blocked",
+    "lower12nativeUSspawns still clipped, no fullPlayable acceptance"
+  ],
+  "next": "DS084 existing Strength speed policy/adapter+unit regressions, no new ladder subsystem; B1 already prepared; exact new CI/review before any game"
+}
