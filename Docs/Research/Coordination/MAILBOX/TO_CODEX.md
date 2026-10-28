@@ -4,6 +4,9 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
+### C-147 · 2026-10-28 · started · owner upper exit and complete shore route in one shared run
+Needs owner: no; explicitly authorised currentchat. Exactb06681eaa4365afe5bf7309994012dce13a7ac83 only/CI40649771503GREEN/DS081OKdd68f2ce. Complete currentupper Strength route with reviewedE223data+matchingone-rowlinksmanifest; B1staged and speculative speedpatch held. DS086 reviewharness beforelaunch. One nativeUS2 onfreePC, no forcedspawn/teleport; actorlessrecipepreflight, doors/vehicles0. <=120s linkcompletion,<=180swaterentry,<=300s WHOLEroute toshore, stopnamedfailure/ownerclient/error. One shared run, no isolatedwater repetition; exactshorePASS requirestrajectory+landproof. Snapshot CURRENTmemory/nav includingabsence, restorebytes+verify, archiveactualdemo+logs+summary; reportXafterstep. C146ownerrecordingcomplete, hold pendingC146 lifted for thisnamedscenario only. Never interruptownerplay.
+
 ### C-146 · 2026-10-28 · done evidence551f5a05 · Native human Shore submarine route/video
 Needs owner: no; videos received/native recording completed and analysed551f5a05. DS085 joint diagnosis next; no automatic game.
 Preparation DONE weapon-goalsc6f93a8b/X234. Exactb06681eaa4365afe5bf7309994012dce13a7ac83 only, CI40649771503GREEN + DS081OKdd68f2ce; native player/zero bots/no navinstallation or localbuild. Tools/Record-WarsBotsShoreRoute.ps1 AST + PS5PrepareOnlyPASS. Owner command/instructions Docs/Coordination/C146_NATIVE_PLAYER_ROUTE.md, QCreceiptC146_PLAYER_ROUTE_PREPARE.json onweapon-goals. Do NOT launch GUI automatically; only owner runscommand. No game launched byCodex forpreparation.
