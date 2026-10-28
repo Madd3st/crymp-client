@@ -1,0 +1,19 @@
+{
+  "task": "C146 native player route",
+  "source": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "ci": 40649771503,
+  "ci_result": "completed/success exacthead reverified",
+  "review": "DS081 OKdd68f2ce",
+  "script": "Tools\\Record-WarsBotsShoreRoute.ps1",
+  "script_sha256": "771558069eb232c808c54b7ec2c8fcbf777c38ab530c7e8fd52f35397aa48d56",
+  "verification": "PowerShell AST + Windows PowerShell5 PrepareOnly PASS; no game launched",
+  "bots": 0,
+  "mode": "PowerStruggle Shore; owner chooses US in normal team menu",
+  "map_data_install": false,
+  "local_game_build": false,
+  "runtime": "AWAITING OWNER; script launches only when owner executes command",
+  "recording": "server/client MOVE TRACE + native20Hz demo; F8 wb_mark route; separate screen video optional",
+  "completion": "No timer/+quit; after owner closes client normally, own server stops, demo/log archives and full memory+absent-file restore",
+  "raw_root": "build/owner-playtests/C146-native-Shore-b06681ea-<MSK timestamp>",
+  "prospective_speed_patch": "3ec91e44 held pending native evidence; B1 stillstaged only; C145 automated games held for ownerroute"
+}
