@@ -38,6 +38,12 @@ int main()
 		const bool r[4] = { false, false, false, false };
 		assert(RoamFallbackFraction(false, r) == 1.0f);
 	}
+	{
+		// DS-092: only the gated native-water fact lifts the local goal to the water plane; dry keeps the feet z.
+		assert(RoamGoalZ(false, 98.0f, 99.5f) == 98.0f);
+		assert(RoamGoalZ(true, 98.0f, 99.5f) == 99.5f);
+		assert(RoamGoalZ(true, 97.2f, 99.59f) == 99.59f);
+	}
 
 	std::puts("BotRoamFallbackTests OK");
 	return 0;

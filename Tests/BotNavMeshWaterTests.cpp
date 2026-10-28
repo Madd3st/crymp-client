@@ -1,5 +1,6 @@
 // A synthetic connected mesh with a cheap land detour around a water shortcut. No engine or baked assets needed.
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotRoamFallback.h"
 #include "DetourNavMeshBuilder.h"
 #include "DetourNavMesh.h"
 #include <algorithm>
@@ -78,6 +79,18 @@ int main()
   // (e) corner ray: raw feet fail (C147 0/1085), the plane-sized box makes the ray usable.
   if(nav.RayClear(swim,land)){std::puts("DS089 raw-feet ray unexpectedly clear");return 16;}
   if(!nav.RayClear(swim,land,&water)){std::puts("DS089 water ray not clear");return 17;}
+  // (f) DS-092: the local water leg's GOAL is projected with the dry box, so a goal at the swimmer's feet z is not
+  // pathable while the same XY at the native plane is - this is why the committed patrol goal must be lifted too,
+  // not only the four samples.
+  const float goalFeetZ[3]={18,-15,planeZ-1.5f};   // 3 m along the water row, feet height
+  const float goalWaterZ[3]={18,-15,WarsBots::RoamGoalZ(true,swim[2],planeZ)};       // the same leg at the native water plane
+  std::vector<float> lp; std::vector<WarsBots::NavPathLink> ll; const char* lw=nullptr;
+  if(nav.FindPathLinks(swim,goalFeetZ,lp,ll,&lw,&water)){std::puts("DS092 feet-z water goal unexpectedly pathable");return 18;}
+  if(nav.Reachable(swim,goalFeetZ,2.6f,&water)){std::puts("DS092 feet-z water goal unexpectedly reachable");return 19;}
+  if(!nav.FindPathLinks(swim,goalWaterZ,lp,ll,&lw,&water)){std::puts(lw?lw:"DS092 water-plane goal path failed");return 20;}
+  if(!nav.Reachable(swim,goalWaterZ,2.6f,&water)){std::puts("DS092 water-plane goal not reachable");return 21;}
+  const float offGoal[3]={60,-15,planeZ};          // fail-closed: off-mesh local goal stays rejected
+  if(nav.Reachable(swim,offGoal,2.6f,&water)){std::puts("DS092 off-mesh water goal accepted");return 22;}
  }
  std::puts("BotNavMeshWaterTests OK");return 0;
 }

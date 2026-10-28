@@ -957,17 +957,28 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 				// (C145 US t173..179 steered through the hull and logged NAV fallback/stuck); without a mesh keep the
 				// old full-leg goal.
 				float fraction = 1.0f;
+				// DS-092: the local water leg is sampled and committed at the gated native water plane. The path goal is
+				// projected with the dry box (up 1.0), so a goal at the swimmer's feet z is unreachable even in open
+				// water; dry callers keep feet.z exactly (waterStart is false).
+				const float goalZ = RoamGoalZ(mesh && waterStart, feet.z, m_blackboard.waterZ);
 				if (mesh)
 				{
 					bool sampled[4];
 					for (int i = 0; i < 4; ++i)
 					{
-						const Vec3 p = feet + (local - feet) * (1.0f - 0.25f * float(i));
+						Vec3 p = feet + (local - feet) * (1.0f - 0.25f * float(i));
+						p.z = goalZ;
 						sampled[i] = reachable(p);
 					}
 					fraction = RoamFallbackFraction(true, sampled);
 				}
-				m_patrolGoal = fraction > 0.f ? feet + (local - feet) * fraction : feet;
+				if (fraction > 0.f)
+				{
+					Vec3 goal = feet + (local - feet) * fraction;
+					goal.z = goalZ;
+					m_patrolGoal = goal;
+				}
+				else m_patrolGoal = feet;   // fraction 0: hold this leg at the feet, as before
 				m_patrolUntil = m_now + 4.0f;
 			}
 			m_detour = false;

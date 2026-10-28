@@ -18,4 +18,14 @@ inline float RoamFallbackFraction(bool meshAvailable, const bool reachable[4])
 		if (reachable[i]) return 1.0f - 0.25f * float(i);
 	return 0.0f;
 }
+
+// DS-092: a native swimmer's local roam leg is a WATER leg. Both the 4 samples *and* the committed goal must be
+// built at the qualified native water plane, never at the feet z: NavMeshCore projects a path goal with the dry goal
+// box (up 1.0), so a goal 1.4-2.3 m below the baked surface is unreachable even though the leg is open water
+// (C147 feet 97.2..98.6 vs plane 99.511). Only the already-gated `waterStart` fact (waterMovement + valid plane +
+// lift > 0.05, see BotBrain's WaterStartBounds) may lift it; dry callers keep the feet z byte-identically.
+inline float RoamGoalZ(bool waterStart, float feetZ, float waterZ)
+{
+	return waterStart ? waterZ : feetZ;
+}
 }
