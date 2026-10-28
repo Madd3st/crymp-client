@@ -1,3 +1,9 @@
+# C145 reviewOK; fresh DeepSeek session, exact CI still pending, 2026-10-28
+
+LastprocessedX227/DS081: b06681eaa4365afe5bf7309994012dce13a7ac83 reviewOKdd68f2ce,36CIunitsPASS, fullCI40649771503 stillbuilding. No runtime yet. Offline all9observed dryramp points project/onmesh/fromUS; lowerdeck/exterior remainsunobserved.
+
+Protocol sessionhygiene: olde807 context578560cache, interrupted/idle/pending0/allpushed. Fresh current ses_e7e92b3f0ffe50v1xeO4hz6pra sameDeepSeekFlash/normalpermissions promptC ACKf94dcc79. No parallelagents. Windowswakeconfig anchornew; bothworker scripts nowexactpin (f6e9ee41 onQA), AST/PS5DryRunselectnewactive/skip. --latest incorrectly excludedUI-suspendedfreshheadlesssession; do notuseoldanchors. Next one named nativeUS2<=180s afterexactCIgreen; v4pending-aware roster/command/demoarchive/fullrestore. No newDSwork untilruntime evidence, no repeats/defaults/Playableclaim.
+
 # C145 reset-roster correction integratedb06681ea, 2026-10-28
 
 LATEST: DS080 reviewBLOCK825b82a5 (resetBegin could roster pending removed bot). Follow-upbc758b2a integrated unchangedb06681eaa4365afe5bf7309994012dce13a7ac83,4units/ManagerSyntaxPASS. CI40649771503 + DS081 cumulative review pending.825forbidden, oldCIcancelled superseded; no runtime. Next same named nativeUS observation only after newgates, v4 harness.

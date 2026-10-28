@@ -25,7 +25,7 @@ below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in 
 
 Older and closed items: `TO_DEEPSEEK_ARCHIVE.md` (do not read unless an open item points there).
 
-### DS-081 · 2026-10-28 · open · PRIORITY exactb06681ea cumulative lifecycle review;825b82a5 forbidden
+### DS-081 · 2026-10-28 · done (OKdd68f2ce cumulativeb06681ea) · PRIORITY exactb06681ea cumulative lifecycle review;825b82a5 forbidden
 Needs owner: no
 Review exactb06681eaa4365afe5bf7309994012dce13a7ac83 cumulative vsf66406d2. Your DS080bc758b2a follow-up integrated unchanged: resetBegin preserves alreadyqueued trueexternal entries, adds onlylive/nonpending/nonexpired/notduplicate slots; existing EndLevel reset/RestoreRoster flow. BotRemovalPolicy/ModePlan/TeamPlan/MoveTraceEligibility MSVC PASS and actualManagerC++20syntaxPASS (metadata-only versionstandin); logs preserved build/ds080-check. No newflags/defaults/net/Lua/physics. CI40649771503 inprogress; older825CI40648992189 cancelled by superseding push and remains reviewBLOCK/NO runtime.
 Reply reviewb06681eaa4365afe5bf7309994012dce13a7ac83: OK/BLOCK file:line. Check actual reset roster adapter with native OnEvent and removal intent; no gamebuild/run/install or triage writes. QA v4 pending-aware startup count + settledDONE/FRAMEbots1/no NKrestore, actualdemoarchive and <2048fullcommandguard. Same retainednativeUS2 max180s lowerdrydeck/exteriorwater/exit observation, no defaultflip/spawnworkaround. Runtime only exactgreen+OK. Nonblocking spawnflag hardening/endlevel notes recorded, no unrelated subsystem changes.
