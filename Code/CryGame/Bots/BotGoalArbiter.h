@@ -61,6 +61,12 @@ public:
 	ArbiterGoal Current() const { return m_goal; }
 	float Since() const { return m_since; }
 
+	bool WeaponGoalWorthwhile(const ArbiterInput& in) const
+	{
+		return in.weaponGoalAvailable && (!in.hasPrimary ||
+			in.weaponGoalValue - in.heldWeaponValue >= m_p.upgradeGain);
+	}
+
 	ArbiterDecision Update(const ArbiterInput& in)
 	{
 		if (in.enemyVisible) m_lastVisible = in.now;
@@ -127,7 +133,7 @@ private:
 		}
 		// Weapon: no primary -> strong; with a primary only a clear upgrade.
 		float weapon = 0.f;
-		if (in.weaponGoalAvailable)
+		if (WeaponGoalWorthwhile(in))
 		{
 			const float distCost = in.weaponGoalDistance / 200.f;
 			if (!in.hasPrimary) weapon = 0.85f - distCost;

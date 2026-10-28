@@ -12,6 +12,14 @@ static ArbiterInput Base(float t)
 
 int main()
 {
+	// C153: a primary gained through another gameplay path makes the old pickup worthless.
+	// Commitment must not keep pursuing an inferior item after its utility disappears.
+	{
+		GoalArbiter a; ArbiterInput in=Base(0.f);
+		assert(a.Update(in).goal==ArbiterGoal::Weapon);
+		in.now=0.1f;in.hasPrimary=true;in.heldWeaponValue=1.f;
+		assert(a.Update(in).goal!=ArbiterGoal::Weapon);
+	}
 	// C153: the first arbiter tick can follow a long first-primary shortcut. A newly lost, known threat that
 	// just damaged us must interrupt even before m_started; otherwise the high weapon score consumes the tick.
 	{

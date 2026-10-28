@@ -23,6 +23,10 @@ int main()
     // Acquire gate: free goal + expired throttle only. An existing goal is never re-acquired (hold, no switch).
     assert(MayAcquireWeaponGoal(0u, 10.0f, 10.0f));
     assert(!MayAcquireWeaponGoal(0u, 9.9f, 10.0f));
+    // C153 R1: unchosen candidate refreshes, active pursuit remains stable; both obey the existing throttle.
+    assert(MayAcquireWeaponGoal(77u, 10.0f, 10.0f, false));
+    assert(!MayAcquireWeaponGoal(77u, 9.9f, 10.0f, false));
+    assert(!MayAcquireWeaponGoal(77u, 10.0f, 10.0f, true));
     assert(!MayAcquireWeaponGoal(7u, 100.0f, 0.0f));      // repeated ticks with the same target
     assert(!WeaponGoalPursues(0.0f));
     assert(WeaponGoalPursues(0.1f));

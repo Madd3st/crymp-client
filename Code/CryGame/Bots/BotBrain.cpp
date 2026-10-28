@@ -557,6 +557,7 @@ bool BotBrain::PSTryBuy(BotInstance& bot,CPlayer& actor)
 		bool ok=false; ss->EndCall(ok); return ok;
 	};
 	const bool primary=buy(plan.primary);
+	if (primary) SetUpgradeTarget(0); // Re-score against the new inventory, without banning the old item.
 	const bool laser=primary&&plan.buyLaser?buy(plan.laser):false;
 	const bool ammo=primary&&plan.buyAmmo?buy(plan.ammo):false;
 	m_psBuys+=int(primary)+int(laser)+int(ammo);
@@ -746,7 +747,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 			if ((item->GetWorldPos() - actor.GetEntity()->GetWorldPos()).GetLengthSquared2D() <= 4.0f && fabs_tpl(item->GetWorldPos().z - actor.GetEntity()->GetWorldPos().z) <= 2.2f)
 			{
 				WBI(move,false);
-				if (BotWeapons::PickUp(actor, m_weaponTarget, PickupRange())) { m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass(); m_weaponTarget = 0; Change(State::SEARCHING_ENEMY); }
+				if (BotWeapons::PickUp(actor, m_weaponTarget, PickupRange())) { m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass(); m_weaponTarget = 0; SetUpgradeTarget(0); Change(State::SEARCHING_ENEMY); }
 				else m_weaponTarget = 0;
 			}
 			else { const Vec3 step=Steer(actor.GetEntity()->GetWorldPos(),item->GetWorldPos()); WBI_MOVETO(step,step+Vec3(0,0,1.2f)); TravelGait((item->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength()); }
@@ -755,7 +756,7 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 		{
 			WBI(move,false);
 			m_fallbackGiven = true; // At most one test supply per life, never per frame.
-			if (BotWeapons::GiveTestSCAR(actor)) Change(State::SEARCHING_ENEMY);
+			if (BotWeapons::GiveTestSCAR(actor)) { SetUpgradeTarget(0); Change(State::SEARCHING_ENEMY); }
 		}
 		else { m_weaponTarget = 0; WBI(move,false); Change(State::SEEKING_WEAPON); }
 		ExecuteIntent(actor,decisionTime);
@@ -791,14 +792,15 @@ void BotBrain::SetUpgradeTarget(EntityId id)
 }
 
 // DS-097: the only place that creates a weapon goal (was BotBrain.cpp:788-792 unconditional + :1761-1762 in the arbiter).
-// A tracked goal is held, not re-scanned, and "nothing found" is throttled too: no proximity query and nav path per tick.
+// Active pursuit is held; unchosen candidates refresh on the same throttle. Empty scans are throttled too.
 bool BotBrain::TryAcquireUpgradeGoal(CPlayer& actor)
 {
-	if (!WarsBots::MayAcquireWeaponGoal(m_upgradeTarget, m_now, m_nextUpgradeSearch)) return false;
+	if (!WarsBots::MayAcquireWeaponGoal(m_upgradeTarget, m_now, m_nextUpgradeSearch,
+		WarsBots::WeaponGoalPursues(m_upgradeSince))) return false;
 	const bool sniperOnly = BotConfig::Get().sniperReach==1 && PickupRange()>30.0f && !BotWeapons::HoldsSniper(actor);
 	const EntityId id = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 || sniperOnly, sniperOnly);
 	m_nextUpgradeSearch = m_now + 3.0f;
-	if (!id) return false;
+	if (!id) { SetUpgradeTarget(0); return false; }
 	SetUpgradeTarget(id);
 	return true;
 }
@@ -1805,9 +1807,13 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
 	in.weaponGoalAvailable=item!=nullptr;
 	in.weaponGoalDistance=item ? (item->GetWorldPos()-feet).GetLength() : 1e9f;
 	in.weaponGoalValue=item ? FightValue(item->GetClass()->GetName(),PickupRange()) : 0.0f;
+	in.heldWeaponValue=BotWeapons::HeldValue(actor,PickupRange());
+	// Inventory may improve outside this pursuit (PS buy, script grant, another pickup). A worthless goal is gone,
+	// not merely a low score that commitment can keep alive. Temporary combat suppression below is not cancellation.
+	if (m_upgradeTarget && !m_arbiter.WeaponGoalWorthwhile(in))
+	{ SetUpgradeTarget(0); in.weaponGoalAvailable=false; in.weaponGoalValue=0.0f; }
 	// DS-040: never shop for a gun while a visible enemy is inside the hold range; that was the 19.6 s sidearm gap.
 	if (BotConfig::Get().proFire==1 && in.enemyVisible && in.enemyDistance<=m_profile.holdRange) { in.weaponGoalAvailable=false; in.weaponGoalValue=0.0f; }
-	in.heldWeaponValue=BotWeapons::HeldValue(actor,PickupRange());
 	const ArbiterDecision d=m_arbiter.Update(in);
 	if (d.switched)
 		WB_LOG(2,"[WarsBots] #%d ARBITER goal=%s reason=%s score=%.2f actor=%u.",m_number,GoalArbiter::GoalName(d.goal),

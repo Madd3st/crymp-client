@@ -7,11 +7,11 @@
 
 namespace WarsBots {
 
-// A new goal may be created only when none is tracked and the 3 s throttle has expired. Refreshing a tracked goal is
-// not an acquisition: it must keep its own budget (hold semantics).
-inline bool MayAcquireWeaponGoal(unsigned target, float now, float nextSearch)
+// Hold an active pursuit, but refresh an unchosen candidate on the existing search throttle.
+// A cached low-value candidate must not hide newly available weapons for the rest of the life.
+inline bool MayAcquireWeaponGoal(unsigned target, float now, float nextSearch, bool pursuing = true)
 {
-    return target == 0u && now >= nextSearch;
+    return (target == 0u || !pursuing) && now >= nextSearch;
 }
 
 // pursuitSince == 0 means "acquired, not yet pursued" (candidate only). The total budget starts at the first tick that
