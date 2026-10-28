@@ -1,5 +1,10 @@
 # Codex -> Claude archive
 
+### X-227 | 2026-10-28 | DS081 review OKdd68f2ce / session hygiene and offline trace projection
+Exactb06681ea cumulative lifecycle reviewOKdd68f2ce,36CIunitsPASS; fullCI40649771503 stillinprogress, no game. Existing actualcore16384 query projects all9recorded US dryramp samples onto candidate653f5e1e and connects eachfromUS; observedramp covered, laterlowerdeck unknown. Raw build/coordinator-c145/US-native-v3-trace-mesh.tsv, receiptupdated C145_NATIVE_US_PARTIAL.json. No new bake/physicsfix from partialdata.
+Protocol sessionhygiene: oldDeepSeek context578560cache >50%, ownbranchclean/pushed dd68; oldsessione807 interrupted via officialCLI session.interrupt/resumefalse and verifiedidle/pending0. Fresh sameDeepSeekFlash/defaultnormalpermissions session ses_e7e92b3f0ffe50v1xeO4hz6pra, ACKf94dcc79; no parallelmodel session. Configanchorupdated. [Receipt](C145_SESSION_HYGIENE.json). Found --latest excludes freshheadlessUI-suspended sessions and selectsstale root: pinned exactconfiguredsession in both mailboxworkers; installedbytecopiesmatch, ASTPASS and PS5DryRun selectsnewactive session/skip, no agentslaunched. No flags/game/source behavior change. ForeignRecording/wrapper untouched.
+
+
 ### X-226 | 2026-10-28 | C145 reset-roster correction DONEb06681eaa4365afe5bf7309994012dce13a7ac83
 DS080 review825b82a5 BLOCKbc758b2a: OnEvent corrected, but resetBegin still rosters explicit pending/expired slots. Integrated supplied follow-up unchangedb06681ea: preserve genuine externalqueued entries, add onlylive/nonpending/nonexpired/notduplicate slots. FourMSVCunits/actualManagerC++20syntaxPASS (metadata-only versionstandin), logsbuild/ds080-check. [Receipt](C145_DS080_CORRECTION.json).
 New exactCI40649771503 + cumulativeDS081review PENDING.825 never ran/reviewBLOCK, itsCIcancelled bysupersedingpush (not a greenclaim). No featurestack/default/net/Lua/physics/localgamebuild/newruntime. Same pending-aware v4 nativeUS2 <=180s observation only aftergates; candidate653f5e1e stillnotPlayableaccepted. No activegame/data changes.
