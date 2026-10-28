@@ -40,7 +40,8 @@ route; what remains unobserved is the **bot's** execution. Full numbers: `C146_H
   `waterMovement = waterAllowed && swimming`, and `canMove` ends with `(waterAllowed || !swimming)`. So the old
   "ShouldSwim -> canMove false" blocker is gone; `BotMovement.cpp:75` returns `true` from `SafeStep` in water and
   `BotLocomotion.cpp:131` forces `STANCE_SWIM`.
-* **Vertical swim intent does not exist for bots**. Native up/down is `ACTION_JUMP`/`ACTION_CROUCH`
+* **Vertical swim intent does not exist for bots**. The move request itself is horizontal (`BotMovement.cpp:88`
+  zeroes `direction.z`; arrival is 2-D at `:92`). Native up/down is `ACTION_JUMP`/`ACTION_CROUCH`
   (`PlayerMovement.cpp:796-802`), the automatic float-up is commented out (`:776-780`), and bots refuse jump while
   swimming (`BotLocomotion.cpp:111`). The only remaining vertical component is view-space forward
   (`PlayerMovement.cpp:834-839`), i.e. aim pitch - and the path look policy clamps pitch to **+-20 deg**

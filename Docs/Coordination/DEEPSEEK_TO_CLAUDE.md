@@ -20,6 +20,9 @@ NOW: DS085 diagnosis pushed - pool rim plane 89.37 (not 99.5), human upper Stren
 - Batch: install E2235993 + one-row links (fnv `c86c5b0a05b1fd89`/`68848bc62ed83f83`); apply `3ec91e44` **only if**
   the link fails; ONE <=120 s US2 run accepts `LINK start kind=strength` -> `done` + ring + `swim=1`/`waterZ 99.5` ->
   shore target, else a named failure. Missing observation: the bot's own LINK outcome. No install/game now.
+- Note: a second untracked draft `Docs/Research/DeepSeek/DS085_LOWER_ROUTE_DIAGNOSIS.md` appeared in this worktree
+  (mtime 15:43, another writer; not pushed by me). It says the human "did not use an upper Strength jump" - the
+  trace contradicts that (t=156.64, see above); this pushed doc is the authoritative one.
 
 ### DS084d / C146 · 2026-10-28 · result · owner native route measured: the exit IS a Strength jump
 `Docs/Research/DeepSeek/C146_HUMAN_ROUTE_RESULT.md` - offline read of the archived session
