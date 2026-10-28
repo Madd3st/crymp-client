@@ -1,3 +1,7 @@
+# C145 launcher preflight correction, 2026-10-28
+
+X223: DS078 recipe OK46c19ebe;45CVars/localPS/debug passed actorless. Observation full command2050bytes exceeds launcher2048buffer, no bot runtime. Data restored independently. v3 drops unused summaryquery and measures command size before launch, exactf66406d2 gates unchanged. Next one named nativeUS observation, no other runtime or Playable claim.
+
 # C145 corrected observation recipe accepted, 2026-10-28
 
 D035 coordinator active. DS078 recipe-only review OK46c19ebe: wb_debug1 command/status, wb_log2 actual CVar. Exactf66406d2 CI40643217305GREEN + DS077OK2425fd94. One named <=180s retained nativeUS2 observation after actorless effective preflight, temporary candidate653f5e1e/hash/archive/full restore; no teleport/defaults. Previous X222 actorless failure superseded by corrected recipe, not ignored. Next measured nativewater/motion and DeepSeek joint diagnosis, no Playable claim.
