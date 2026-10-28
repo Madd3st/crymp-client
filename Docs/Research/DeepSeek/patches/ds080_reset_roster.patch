@@ -1,0 +1,55 @@
+diff --git a/Code/CryGame/Bots/BotManager.cpp b/Code/CryGame/Bots/BotManager.cpp
+index 98b32217..eeb21a4f 100644
+--- a/Code/CryGame/Bots/BotManager.cpp
++++ b/Code/CryGame/Bots/BotManager.cpp
+@@ -537,9 +537,15 @@ void BotManager::OnActionEvent(const SActionEvent& event)
+ 	if (event.m_event == eAE_resetBegin)
+ 	{
+ 		// Native IA restart (e.g. PreGame start timer). Remember who existed, then clean up.
+-		m_roster.clear();
++		// DS-080: keep external-DONE entries already queued, add live bots, but never resurrect an explicit pending
++		// removal or an already-DONE slot (the v3 log shows a deferred removal pending for ~0.2 s).
+ 		for (BotInstance* bot : Ordered())
++		{
++			const bool queued = std::any_of(m_roster.begin(), m_roster.end(),
++				[number = bot->Number()](const RosterEntry& entry) { return entry.number == number; });
++			if (!ShouldRosterForReset(bot->RemovalPending(), bot->Expired(), queued)) continue;
+ 			m_roster.push_back({ bot->Number(), bot->Profile(), bot->AIEnabled() });
++		}
+ 		if (!m_roster.empty())
+ 			WB_LOG(0, "[WarsBots] Game reset: removing %d bots, will restore after reset.", int(m_roster.size()));
+ 		EndLevel();
+diff --git a/Code/CryGame/Bots/BotRemovalPolicy.h b/Code/CryGame/Bots/BotRemovalPolicy.h
+index 65641e55..fc177090 100644
+--- a/Code/CryGame/Bots/BotRemovalPolicy.h
++++ b/Code/CryGame/Bots/BotRemovalPolicy.h
+@@ -24,4 +24,11 @@ inline BotDoneAction BotDoneDecision(bool known, bool levelReady, bool removing,
+ 	if (removing || removalPending || expired) return BotDoneAction::Ignore;
+ 	return BotDoneAction::RestoreExternal;
+ }
++
++// DS-080: the reset roster (eAE_resetBegin -> RestoreRoster) must not resurrect a bot whose explicit removal is still
++// pending, an already-DONE slot, or a number already queued by a true external DONE.
++inline bool ShouldRosterForReset(bool removalPending, bool expired, bool alreadyQueued)
++{
++	return !removalPending && !expired && !alreadyQueued;
++}
+ }
+diff --git a/Tests/BotRemovalPolicyTests.cpp b/Tests/BotRemovalPolicyTests.cpp
+index b1b3a3c0..21a7cbba 100644
+--- a/Tests/BotRemovalPolicyTests.cpp
++++ b/Tests/BotRemovalPolicyTests.cpp
+@@ -23,6 +23,13 @@ int main()
+ 	// Foreign/unknown entity id never resolves to a registered bot.
+ 	assert(BotDoneDecision(false, true, false, false, false) == BotDoneAction::Ignore);
+ 
++	// DS-080 reset roster: only a live bot may be queued; an explicit pending removal, an already-DONE slot and a
++	// number already queued by a true external DONE are skipped.
++	assert(ShouldRosterForReset(false, false, false));
++	assert(!ShouldRosterForReset(true, false, false));
++	assert(!ShouldRosterForReset(false, true, false));
++	assert(!ShouldRosterForReset(false, false, true));
++
+ 	std::puts("BotRemovalPolicyTests OK");
+ 	return 0;
+ }
