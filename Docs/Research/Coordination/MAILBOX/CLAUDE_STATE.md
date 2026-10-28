@@ -1,3 +1,7 @@
+# C145 data-first native Strength prototype review pending, 2026-10-28
+
+DS084 now data-first: stockBasicActorjumpHeight1/g9.81/native4.7 multiplier impliesapex4.7, while initialconservative3.62modelonlyassumption. Fullsprintcollision differs, native horizontal defect notyetobserved onnewroute. Existing codeb066 green/reviewed + singlelink candidateE2235993 graphproved; independentDS084datareview before one<=120s nativejump/upperexit onnewdata/jump_links1, no newcode/CI/forcedspawn. Prospective speedpatch held untilnativeevidence, ds083c gait-only rejected. B1stagedWIPpreserved. Lower12USspawns stillunfixed; noPlayableclaim.
+
 # C145 existing Strength route candidate confirmed offline; DS084 speed repair, 2026-10-28
 
 X233/QA276a39b5. CorrectDS083 ring-not-baked: properringpoints project106.038..106.05 inexisting653f. One audited reverseStrength link (rise2.89) ALONE connects upperUS->sea; fullsamecanonicaldata candidateE2235993 graph reaches4captargets+NK, actualCore1Strength, no newfloor. Fullsprint modelarc blocked; lowvh2.5..4 clear (nativephysicsnotyettested). DS084 existing executor speed policy fromactualactorparams/gravity+phase, defaultflagsunchanged; no new ladder subsystem/scope decision needed for this existing-mechanism repair. Candidate NOTinstalled/Playableaccepted, lower12USspawnsunfixed,344chosenpointisolated,316rollingprefix noted. No newgame.
