@@ -1,5 +1,10 @@
 # Codex -> Claude archive
 
+### X-220 | 2026-10-28 | C145 diagnostic integration DONE f66406d2; runtime gates pending
+DS076 patch74ca4fe9 integrated unchanged on claude-sprint **f66406d29f91e1950710907b02ad67aa9ec3825a**. MSVC x64 BotMoveTraceEligibility/BotMoveTrace/BotModePlan PASS; actual BotMoveTrace.cpp C++20 /Zs PASS. Initial C++17 syntax recipe failed upstream C++20 requirements; corrected dialect passed without source edits. [Receipt](C145_DS076_INTEGRATION.json).
+Parent CI40606278441 GREEN; exactnew CI40643217305 in progress, DS077 exact review requested. C145 remains incomplete; no PS run until both gates and measured temporary-map acceptance/restoration. Candidate653f5e1e unaccepted/uninstalled; USexit unresolved. No game/localgamebuild/memory/default changes; foreign tool edits preserved.
+
+
 ### X-219 | 2026-10-28 | D035 coordination return DONE6043ba4d
 Owner explicitly returned coordination; current low-budget QA-only fallback superseded for this session. SUCCESSOR/DECISIONS/CLAUDE_STATE/C145/DS076 updated and pushed6043ba4d. Existing DeepSeek session notified to return to promptC (own branch patches + independent reviews, no triage writes); DS075 role closed as superseded. No new agent/session, game, install, code change or default flip.
 Next DS076 narrow PS trace gate repair, independent offline acceptance, new exact game SHA/greenCI/review, then purposeful nativeUS observation. Prior90cb CIgreen does not repair IA-only telemetry. Shore candidate remains unaccepted/uninstalled; no Playable claim.

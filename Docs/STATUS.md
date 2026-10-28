@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C145 current825b82a5: DS079 explicit deferred-removal fix integrated,4MSVCunits/Manager syntaxPASS; CI40648992189 + DS080review pending. Real PS native-water telemetry proved onf664; partialupperUS trace dry then no-water sentinel, exit remainsUNKNOWN. QA pending-aware harness prepared, originalmemory/nav restored, no gameonnewSHA. D035 coordinator active, no defaults/Playable acceptance. Older notes below are history.
+
 C145 BLOCKED before bot observation: exactf66406d2 CI40643217305GREEN + DS077OK2425fd94. Actorless recipe rejects mailbox wb_debug2 (command accepts only0/1); 44CVars pass. Zero bots/observation runs, full memory/nav hashes and absent-state restored. DS078 independent recipe review requested; no repeat/game/default changes; Shore remains unaccepted for play.
 
 C145 DS076 integration DONE f66406d29f91e1950710907b02ad67aa9ec3825a: diagnostic PS eligibility, three MSVC units + C++20 engine syntax PASS; CI40643217305/DS077 review pending. No game/install/memory changes; map653f5e1e unaccepted, C145 incomplete. D035 coordinator active; source on claude-sprint, reports on weapon-goals.

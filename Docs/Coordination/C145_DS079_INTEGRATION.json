@@ -1,0 +1,30 @@
+{
+  "task": "C145 DS079",
+  "source": "825b82a5883829173c60be93263c8550cd2a6816",
+  "parent": "f66406d29f91e1950710907b02ad67aa9ec3825a",
+  "patch_commit": "de29c702",
+  "patch_unchanged": true,
+  "ci": 40648992189,
+  "ci_state": "in_progress",
+  "review": "DS080 pending",
+  "units": [
+    "BotRemovalPolicy",
+    "BotModePlan",
+    "BotTeamPlan",
+    "BotMoveTraceEligibility"
+  ],
+  "units_result": "PASS MSVC x64",
+  "engine_syntax": "Manager C++20 /Zs PASS, version metadata standin only",
+  "local_game_build": false,
+  "runtime_newsha": false,
+  "harness_v4_sha256": "0c19aee02827f7a9c81f66ff5b5b4ed15d105adeb41d30d51bf0675002f988dc",
+  "partial_demo_archive": [
+    {
+      "name": "Multiplayer_PS_Shore-20261028-100605-1.wbdemo",
+      "bytes": 3738,
+      "sha256": "bb8616964aa0dac0cd8374f315575680b46ba0707c0d3552006979e2a4d5d235"
+    }
+  ],
+  "map": "candidate653f5e1e diagnostic only, original state restored",
+  "next": "exactCIgreen+DS080OK, one nativeUS2 <=180s observation"
+}
