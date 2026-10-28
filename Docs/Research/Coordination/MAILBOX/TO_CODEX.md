@@ -5,6 +5,7 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
 ### C-145 · 2026-10-28 · open · owner Shore playable batch: native US water/motion observation
+LATEST: DS080 reviewBLOCK825b82a5 (resetBegin could roster pending removed bot). Follow-upbc758b2a integrated unchangedb06681eaa4365afe5bf7309994012dce13a7ac83,4units/ManagerSyntaxPASS. CI40649771503 + DS081 cumulative review pending.825forbidden, oldCIcancelled superseded; no runtime. Next same named nativeUS observation only after newgates, v4 harness.
 LATEST: DS079 lifecycle patch integrated825b82a5883829173c60be93263c8550cd2a6816. New CI40648992189 + DS080 independent review PENDING, no runtime before both. This SHA supersedesf664 for next observation. QA v4 pending-aware roster/archive/command guards, SHA2560c19aee02827f7a9c81f66ff5b5b4ed15d105adeb41d30d51bf0675002f988dc. Nativewater diagnostic alreadyproved; remaining observation lowerdeck/exterior water/exit, no teleport/forcedlinks.
 X224: native PS MOVE TRACE PASS (9rows to2.293s), upperUS563 dry, then absent-water sentinel. Partial observation aborted by premature immediate registry-count assertion. Explicit deferred wb_remove also triggers erroneous external restore: DS079 guard/regression and joint diagnosis now required before next run. No blind repeat; full data restored; exit UNKNOWN.
 Needs owner: no
