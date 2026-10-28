@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C152 DONE: joint DeepSeek DS096e4051c5f plan, triage sourceef3e6b70 / wikif722312. Goal lifecycle/weapons -> reliable routes -> combat -> PS loop -> teamwork -> client acceptance, with source/oracles/metrics and explicit unknowns; no new game/build/code changes. Receipt Docs/Coordination/C152_WIKI_PUBLICATION.json. DeepSeek restarted after50% to ses_e7c28cb99ffedE7cJpyFzQPm1V, installedwakeexactpin/dryrunPASS.
+
 C151 DONE: wiki3370918d4171620481ce021c5673f02eae675bdc from triagecebeb1b0, 16pages with newcomer/engineering paths, current source/evidence/launch/troubleshooting. Links73local+27GitPASS and exact publication blobs verified. Docs index and current Research STATUS updated with preserved history. Steelmill START/ZIP delivered first; game packages/source unchanged, no new game/build. Receipt Docs/Coordination/C151_WIKI_PUBLICATION.json.
 
 C150 READY: two local showcase packages on exact b8b444d6 / green CI40709459511, independent DS095 OK46f44f26. Steelmill IA8normal and Shore oneUS upper-to-shore demo; desktop shortcuts and ZIPs prepared. PrepareOnly/recovery/integrity checks PASS; no new gameplay or local game build. Instructions: Docs/Coordination/C150_SHOWCASE.md; hashes: C150_SHOWCASE_READY.json. Full Shore/PS remains unaccepted.
