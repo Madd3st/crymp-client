@@ -1,3 +1,9 @@
+# C146 evidence archived551f5a05; DS085 joint diagnosis, 2026-10-28
+
+Owner videos analysed with b066 native logs: drylowerfloor90.125/no-water -> pool/ocean99.5 -> underwater83.656 -> outside100.112 -> BOAT to shore. Laterlognative shaftclimb is inference outside73sclip. Old25.10clip is Steelmillb521feeb historical, not currentregression. See weapon-goals Docs/Coordination/C146_VIDEO_ANALYSIS.md/json. Demo6214frames/onehuman/exactb066 verified; archivebeforememoryhashesverify. Launcher restore receipt exists but currentmemory differs (Shorehash/extrafiles), causeunknown, currentfilesretaineduntouched. No newgame/code/localgamebuild/Playableclaim.
+
+DS085 open: joint lowerroute/nativewater/vertical/topology diagnosis and minimal coherent repair with offlineoracles; one shared meaningful acceptance later, no unchangedrepeats. B1stagedbaseb066/backup05209e29 preserve, Strengthspeedpatch3ec91e44 held/nativefailureunobserved; E223upperStrength route remains separateunrunprototype. Lower12spawns unmeshed. DeepSeek currente7e92 promptC; foregroundlease released onlyafterhandoff. C145 remains active; C146 evidence complete551f5a05.
+
 # C146 owner native route ready; await recording, 2026-10-28
 
 LatestX234 QA c6f93a8b. OwnerofferedresuscitateUS/showrealexit/video, thenaskedresumeafterlimits; currentaccountordinaryallowed5hused0%/weeklyused16%, noresetaction. Tools/Record-WarsBotsShoreRoute.ps1 exactb066/CI40649771503GREEN/DS081OKdd68f2ce verifiedAST/PS5PrepareOnly, no game/GUI. C146nativeplayer/zerobots/no navinstall; owner launchescommand, normalUSrouteupper/lowerifpossible, logs+20Hzdemo/F8, ownserverstop/archive/fullmemoryrestore afterclientclose. AwaitownerDONE; no automatedgameprobeswhilepending/playing. No default/Playableclaim.
