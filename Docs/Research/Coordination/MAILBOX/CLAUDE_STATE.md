@@ -1,3 +1,7 @@
+# C145 DS082 assessment1055ee0d; offline follow-up pending, 2026-10-28
+
+C145 X230 follow-up DONE1055ee0d: DS0821e9fc9c3 received, roamcycle agrees; B1 held for offline red/green regression. Native ladder assets/mat_ladder positively confirmed; static placement atshaft and lowerwater remainUNKNOWN. DS082 follow-up open, no integration/runtime/GUI/defaults; no unchangedrepeat/soak.
+
 # C145 offline contribution X230 DONE6c79eebe; DS082 pending, 2026-10-28
 
 Codex offline contribution X230 DONE6c79eebe (weapon-goals), Docs/Coordination/C145_OFFLINE_CORRIDOR.md + reproducible grid/sections: actual16384core/candidate653f5e1e has upperUS paths to x2146,z99.811295 beyond observedturnx2121.430. Grid348: lowlayer97projected/60USpaths; middle106projected/0USpaths; top116projected/0USpaths,all0NK. Thus earlyturn is not eastern componentboundary; inspect selectedgoal/pathfollowing as well as staticexit/layeridentity. Triangle intersections unclassified, not clearance/physicalproof. Nativegroup537 links23upper/middle/lower spawns; noDoor/ladderentity in inspectedbox, staticbrushes notexcluded. No rebake/code/game/install/datachange. DS082 stillpending; no unchangedrepeat/soak/Playableclaim.
