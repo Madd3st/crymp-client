@@ -1,6 +1,21 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-072 corrected capture destination (local-id + XML binding, native hold) pushed; waiting mailbox
+NOW: DS-073 review 00e58632 = BLOCK (missed PSCaptureSnapshot caller); DS-072/070a pushed · waiting mailbox
+
+### DS-073 · 2026-10-28 · DONE · review 00e58632: BLOCK (one compile miss)
+Re DS-073: review 00e58632e0b35ac140d5cfe6fefc930e4ddeb741: **BLOCK** (`REVIEW_00E58632.md`).
+`PSCaptureSnapshot` is now `(out,rules,const float* from)` with no default (`BotPSCaptureRuntime.h:10`,
+`BotPSCapture.cpp:209`), but `BotManager::PSSummaryCommand` still calls it with two args at
+`Code/CryGame/Bots/BotManager.cpp:859` -> the experimental client/server build fails; the unit job does not compile
+BotManager. Fix: pass `nullptr` there (summary only needs ids/ownership) or add `= nullptr` in the header;
+`BotBrain.cpp:635` already passes feet.
+Accepted: water/oxygen gate (ready mesh, owned PS, no 30 HP/s edit, no grant), swim stance/no sprint/strafe, doors ->
+capture -> vehicles, vehicle exit preempts, AreaShape local-ID+target binding/live proxy/world TM/250k cap/inside
+hold, 16k query + OUT_OF_NODES, MOVE TRACE water fields, no default/net/SP/player changes; new tests registered.
+Conditions: 344 binds two shapes but only one destination is kept (if it is the unreachable shape the whole point is
+filtered - log the unreachable filter and consider per-shape destinations); LevelAreaShapes cache is keyed by level
+name only; runtime 256-poly partial remains (tool says partial); live proxy GetID==localId and XML id==runtime id are
+the first runtime log to verify. Rest is acceptable for the named observation.
 
 ### DS-072 · 2026-10-28 · capture destination: local area id + level XML binding, native inside hold
 Re DS-072/a915ab9f: `DS072_CAPTURE_DESTINATION.md`, `patches/ds072_capture_destination.patch`. The earlier draft's
