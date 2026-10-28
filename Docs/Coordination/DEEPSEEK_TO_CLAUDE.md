@@ -1,6 +1,25 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: C146 owner route MEASURED - Strength jump 103.125->106.02 (rise 2.892, apex 3.557, vh 3.5-3.75, no sprint) confirmed; DS084 cap band human-consistent, sprint not · waiting mailbox
+NOW: DS085 diagnosis pushed - pool rim plane 89.37 (not 99.5), human upper Strength jump measured (rise 2.892, apex 3.557, vh 3.5-3.75), lower route needs a scope decision · waiting mailbox
+
+### DS085 · 2026-10-28 · diagnosis · C146 lower exit: two corrections + minimum batch
+`Docs/Research/DeepSeek/C146_LOWER_EXIT_DIAGNOSIS.md` (offline, from the archived trace + b06681ea; no game/build).
+- Correction 1: the pool rim is **not** 99.5. t=35.40-35.90 `swim=0` reports local `waterZ=89.37` (`rel 1.50/0.61`),
+  then t=36.15 `swim=1` switches to `99.50` + `relativeWater=-5` sentinel and restarts the underwater timer. So:
+  dry deck 90.125 (`-1e6` sentinel) -> pool surface 89.37 -> ocean 99.5 when submerged.
+- Correction 2: the **same session** has a human upper **Strength jump** outside the 73 s clip: take-off t=156.64
+  `(2107.373,1883.286,103.125)` `mode=1` energy 172.5->105.1 `sprint=0`, apex **+3.557**, land t=158.15
+  `(2102.234,1882.349,106.017)` = **rise 2.892** (the E223 link's 2.890, west side), `vh` 3.75/3.48, then ring 106.0
+  -> fall to sea `100.36` (HP 100->80) -> boat. So the upper jump is measured for the human; only the bot is unobserved.
+- Code: swim is admitted (`BotBlackboard.cpp:22-27`, `BotMovement.cpp:75`, `BotLocomotion.cpp:131`); bots have **no
+  vertical swim intent** (jump refused :111, auto-float commented `PlayerMovement.cpp:776-780`, only view-space
+  forward :834-839, path pitch clamped +-20 deg `BotLookPolicy.h:119`); oxygen is fine (`Player.cpp:3059-3076`, 60 s).
+- Geometry: deck 103.1/ring 106/sea 99.5 baked; lower deck 90.125, pool 89.37, floor 83.66, under-hull exit
+  `(2092.6,1871.1,100.1)` are all below `zmin 99.5` -> lower route needs a local sub-99.5 bake + dive policy = scope
+  decision, not a patch. Verdict: complete the **upper** route first.
+- Batch: install E2235993 + one-row links (fnv `c86c5b0a05b1fd89`/`68848bc62ed83f83`); apply `3ec91e44` **only if**
+  the link fails; ONE <=120 s US2 run accepts `LINK start kind=strength` -> `done` + ring + `swim=1`/`waterZ 99.5` ->
+  shore target, else a named failure. Missing observation: the bot's own LINK outcome. No install/game now.
 
 ### DS084d / C146 · 2026-10-28 · result · owner native route measured: the exit IS a Strength jump
 `Docs/Research/DeepSeek/C146_HUMAN_ROUTE_RESULT.md` - offline read of the archived session
