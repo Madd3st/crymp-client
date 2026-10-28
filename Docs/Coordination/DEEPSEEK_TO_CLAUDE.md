@@ -18,6 +18,15 @@ NOW: DS087 DONE - C147 upper PASS/water FAIL: bounded water-start query + PS goa
   654 (1794.5,1690.6,101.5): current `FindPathLinks`/`Reachable` RED, water box GREEN; Codex actualCore counterfactual.
 - Remaining unknown: actual water->land path/`RayClear`/shore target; next exact SHA green+review then one shared
   upper->sea->shore acceptance. Upper PASS unmodified; speed patch held; B1 staged; memory/nav restored.
+- Independent review: `DS087_REVIEW_WATER_QUERY.md`. Patch `git apply --check` OK on pristine b06681ea (8 files);
+  `kWaterArea` exists (`BotNavMeshCore.cpp:23`) so `IsWaterPoly` compiles; defaulted params keep every caller
+  (`BotWeapons.cpp:135`, `BotBrain.cpp:875/897/966/1038/1058`, `BotManager.cpp:870`, tests) compiling; the roam
+  no-goal fallback (`BotBrain.cpp:916`) still yields a local goal, so a disconnected water patch cannot wedge it.
+- Review notes: `QueryBoundsFor` is dead (runtime uses `WaterQueryBounds()` directly - use it with
+  `m_blackboard.waterValid` or drop it); vantage/weapon scans stay on the dry box (fine in water); log BOTH mesh and
+  legacy reasons next time. Offline `area-query`: sea-entry feet hit `99.511` only with up=2.0 (runtime 1.0 fails),
+  and water<->land is patchy at x=2120 (`fromNK=0` y=1600..1632, `1` at y>=1636) -> `other_component` in the oracle
+  means a bake (shoreline) item, not this patch. My z-tolerance draft is withdrawn.
 No game/build/triage.
 
 ### DS086 · 2026-10-28 · OK · C147 one shared upper exit -> shore harness
