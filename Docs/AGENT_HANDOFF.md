@@ -1,5 +1,8 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+DS088 offline review BLOCK (DeepSeek6a352c56): MSVCcore/Detour compilePASS, suppliedwaterunitFAILexit5 atline54; actualboundedwaterpaths1085/1136,51start_off_mesh vspriorcounterfactual1095/41. RayClear gates byPlane corneradvancement; optimization-only rationale insufficient. Report Docs/Coordination/C147_DS088_REVIEW.md + oracle; revisedpatch/controls beforeintegration. Gameb066/B1staged unchanged, no CI/game/install/memory change; C147shoreopen, upper/seaPASS retained.
+
+
 C145 offline corridor contribution X230: actual-core paths reach x2146 beyond observed turn x2121.430; stacked layers project differently. DS082 exit/goal repair pending; no new game/code/data changes. Evidence Docs/Coordination/C145_OFFLINE_CORRIDOR.md; Shore not accepted for play.
 
 C145 BLOCKED before bot observation: exactf66406d2 CI40643217305GREEN + DS077OK2425fd94. Actorless recipe rejects mailbox wb_debug2 (command accepts only0/1); 44CVars pass. Zero bots/observation runs, full memory/nav hashes and absent-state restored. DS078 independent recipe review requested; no repeat/game/default changes; Shore remains unaccepted for play.
