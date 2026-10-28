@@ -856,7 +856,7 @@ void BotManager::PSSummaryCommand(IConsoleCmdArgs*)
 	if (!self || !rules) return;
 	if (!BotMatch::IsPowerStruggle(*rules)) { WB_LOG(0, "[WarsBots] PS SUMMARY skipped: not PowerStruggle."); return; }
 	std::vector<PsCapturePoint> points;
-	PSCaptureSnapshot(points, *rules);
+	PSCaptureSnapshot(points, *rules, nullptr); // summary counts all native capturables, not one actor's route filter
 	int held[3] = {0, 0, 0};
 	for (const PsCapturePoint& point : points) if (point.ownerTeam >= 0 && point.ownerTeam < 3) ++held[point.ownerTeam];
 	WB_LOG(0, "[WarsBots] PS SUMMARY points=%d team1_held=%d team2_held=%d.", int(points.size()), held[1], held[2]);

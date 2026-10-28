@@ -147,12 +147,14 @@ const std::vector<PsCapturePoint>& BasePoints()
 {
 	static std::string levelName;
 	static std::vector<PsCapturePoint> points;
+	static NavMeshCore* cachedMesh=nullptr;
 	if (!g_pGame || !g_pGame->GetIGameFramework()) return points;
 	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
 	const char* name = level && level->GetLevelInfo() ? level->GetLevelInfo()->GetName() : nullptr;
 	const std::string current = name ? name : "";
-	if(!CurrentNavMesh()){levelName=current;points.clear();return points;}
-	if (current == levelName && !points.empty()) return points;
+	NavMeshCore* mesh=CurrentNavMesh();
+	if (current == levelName && mesh==cachedMesh && !points.empty()) return points;
+	cachedMesh=mesh;
 	levelName = current;
 	points.clear();
 	if (!gEnv || !gEnv->pEntitySystem) return points;
@@ -179,24 +181,25 @@ const std::vector<PsCapturePoint>& BasePoints()
 
 		int localAreaId = 0; // local area number from the map, never an EntityId
 		props->GetValue("captureAreaId", localAreaId);
-		Vec3 destination;
+		Vec3 destination(0,0,0);
 		int areaEntityId = 0;
 		const char* why = "no_area_id";
-		if (!localAreaId || !AreaDestination(int(entity->GetId()), localAreaId, destination, areaEntityId, &why))
+		const bool validDestination=localAreaId && AreaDestination(int(entity->GetId()), localAreaId, destination, areaEntityId, &why);
+		if (!validDestination)
 		{
 			WB_LOG(0, "[WarsBots] PS CAPTURE skip id=%u area=%d reason=%s.", unsigned(entity->GetId()), localAreaId, why);
-			continue; // fail closed: never aim at the entity pivot
+			// Keep native metadata for the summary. hasDestination=false keeps this out of the planner.
 		}
 		PsCapturePoint point;
 		point.id = int(entity->GetId());
 		point.areaId = areaEntityId;
 		point.areaLocalId = localAreaId;
-		point.hasDestination = true;
+		point.hasDestination = validDestination;
 		point.value = index > 0 ? index : 1;
 		point.captureSeconds = int(captureTime);
 		point.power = isEnergy;
 		point.x = destination.x; point.y = destination.y; point.z = destination.z;
-		WB_LOG(0, "[WarsBots] PS CAPTURE dest id=%u area=%d shape=%d pos=(%.2f,%.2f,%.2f).",
+		if(validDestination) WB_LOG(0, "[WarsBots] PS CAPTURE dest id=%u area=%d shape=%d pos=(%.2f,%.2f,%.2f).",
 			unsigned(entity->GetId()), localAreaId, areaEntityId, destination.x, destination.y, destination.z);
 		points.push_back(point);
 	}
@@ -212,7 +215,7 @@ void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const
 	NavMeshCore* mesh=CurrentNavMesh();
 	for(PsCapturePoint& point:out){point.ownerTeam=rules.GetTeam(EntityId(point.id));
 	 const float goal[3]={point.x,point.y,point.z};
-	 if(!mesh||!from||!mesh->Reachable(from,goal))point.hasDestination=false;
+	 if(from&&(!mesh||!mesh->Reachable(from,goal)))point.hasDestination=false;
 	}
 }
 
