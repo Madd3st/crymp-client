@@ -62,8 +62,7 @@ Expected with v3 on E2235993 + one-row links + mask14, goal 654:
 | --- | ---: |
 | raw-feet Project (control) | 0/1136 |
 | water Project / Reachable654 / FindPathLinks654 | **1095/1136** |
-| `start_off_mesh` failures | **41** (the characterised holes) |
-| `start_not_water` failures | 0 |
+| failures | **41 total**, split `start_off_mesh` / `start_not_water` (a hole may now have its neighbouring land inside the taller box; both fail closed) |
 | raw-feet RayClear to first corner | 0/1085 (unchanged, control) |
 | water-box RayClear to first corner | 1085-1095 (all successful paths) |
 

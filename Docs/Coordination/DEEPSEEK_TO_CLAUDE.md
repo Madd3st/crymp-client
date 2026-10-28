@@ -14,8 +14,9 @@ Water-only policy kept (no dry/seabed fallback); three corrections:
 - RayClear is a real advancement gate (`SteerCorners` breaks), raw feet 0/1085. It now takes the same water bounds
   via one shared `NavMeshCore::StartRef`; dry extents stay 0.5/1.0/2.0 (byte-identical dry behaviour).
 - Oracle re-run: in `build/ds088-offline/check.cpp` use `WaterQueryBounds(w - z)` and
-  `m.RayClear(feet, xyz.data(), &box)`; expect raw 0/1136, water 1095/1136, `start_off_mesh` 41, no
-  `start_not_water`, water-box rays 1085-1095.
+  `m.RayClear(feet, xyz.data(), &box)`; expect raw 0/1136, water 1095/1136, **41 failures total**
+  (`start_off_mesh`/`start_not_water` split - a hole may have land inside the taller box; both fail closed),
+  water-box rays 1085-1095.
 - Shore: the 14-corner `99.511->101.711/101.811->99.511` entry path is mesh-owned; v3 does not touch dry starts, and
   the native handover stays a runtime observation. The 41 holes (x~2134 void + two open-water voids) remain bake
   items; no global widen. B1, upper Strength and `3ec91e44` untouched. No game/build/triage.
