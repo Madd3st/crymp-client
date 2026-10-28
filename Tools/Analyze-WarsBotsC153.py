@@ -19,7 +19,7 @@ for line in log.splitlines():
     m=re.search(r'^([\d.]+).*REAL PICKUP actor=(\d+) item=(\d+) acquired=1 class=(\w+)',line)
     if m and m[4]!='SOCOM':
         row={'t':float(m[1]),'actor':int(m[2]),'item':int(m[3]),'class':m[4]};pickups.append(row);first.setdefault(row['actor'],row)
-assert set(first)==set(created.values()),'not all eight actors made real primary pickups'
+assert set(created.values())<=set(first),'not all current eight actors made real primary pickups'
 assert 'TEST GRANT SCAR' not in log
 goals=[];replacements=[];active={};repeated_pursuit=[];pursuing={}
 for line in log.splitlines():
@@ -28,7 +28,7 @@ for line in log.splitlines():
     m=re.search(r'^([\d.]+).*#(\d+) WEAPON GOAL previous=(\d+) target=(\d+) event=(acquire|clear)',line)
     if m:
         t,n,old,new=float(m[1]),int(m[2]),int(m[3]),int(m[4]);goals.append({'t':t,'bot':n,'previous':old,'target':new,'event':m[5]})
-        if old and new and old!=new:replacements.append(goals[-1])
+        if old and new and old!=new and pursuing.get(n)==old:replacements.append(goals[-1])
         if new:active[n]=new
         else:active.pop(n,None)
         pursuing.pop(n,None)
@@ -59,13 +59,13 @@ for record in read(root/'demo-archive.json'):
         assert o+3<=len(b),'demo record header truncated'
         _,length=struct.unpack_from('<BH',b,o);o+=3+length;assert o<=len(b),'demo payload truncated'
     d=demo.read(p);build=str(d['header']['build']);assert version==2 and d['frames'] and 8<=len(build)<=40 and a.source.startswith(build)
-    ids={actor['id'] for actor in d['actors'].values() if actor['kind']=='bot'};assert ids==set(created.values())
+    ids={actor['id'] for actor in d['actors'].values() if actor['kind']=='bot'};assert set(created.values())<=ids
     primary={'SCAR','FY71','SMG','Shotgun','DSG1','GaussRifle','Hurricane'}
     held={row['id'] for row in d['inv'] if any(cls in primary and clip+reserve>0 for cls,clip,reserve in row['items'])}
-    assert held==ids,'demo inventory does not independently show armed primary for every bot'
+    assert set(created.values())<=held,'demo inventory does not independently show armed primary for every current bot'
     demos.append({'name':p.name,'sha256':digest(p),'frames':len(d['frames']),'tail_complete':True,'header':d['header'],'bots':len(ids),'event_counts':{kind:sum(e['kind']==kind for e in d['events']) for kind in ('pickup','kill','revive','shot','hit')}})
 assert demos
-assert runtime['runtime_criteria_pass']
+assert runtime['runtime_criteria_pass'] and runtime['quality_pass']
 summary={'schema':'warsbots-run-summary/1','task':'C153','source':a.source,'verdict':'PASS','client_visual':'NOT TESTED','archive':str(root),'created':created,'first_real_primary':list(first.values()),'real_primary_pickups':len(pickups),'weapon_goal_events':len(goals),'mid_goal_replacements':replacements,'repeated_pursuit_anchors':repeated_pursuit,'timeout_events':len(re.findall('unreachable; skipping it',log)),'unavailable_cancels':len(re.findall('reason=unavailable',log)),'runtime':runtime,'restore':restore,'demos':demos,'trace_sha256':digest(trace),'limits':'Headless shared batch only. Timeout/stolen/urgent controls have offline evidence; absent runtime events are not claimed exercised. No cross-build performance or full-Shore/client claim.'}
 (root/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 (root/'weapon-goals.json').write_text(json.dumps(goals,indent=2)+'\n',encoding='utf-8')

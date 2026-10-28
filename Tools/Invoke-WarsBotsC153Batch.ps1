@@ -59,7 +59,7 @@ New-Item -ItemType Directory -Force $logs|Out-Null
 Snapshot-Data $out
 $state=@{source=$CodeSha;map='Steelmill';bots=8;phase='snapshot_complete';directory=$out;server_exe=$serverExe;server_pid=$null;server_started=$null;server_log=$preLog;client_log=$null;client_pid=$null}
 Save-Session $state
-$passed=$false;$runtimeEvidence=$null
+$passed=$false;$qualityPass=$false;$failureReason=$null;$runtimeEvidence=$null
 function Start-Phase([string]$arguments,[string]$log,[bool]$bots){
  if(@(Game-Processes).Count){throw 'Game appeared before phase'}
  $p=Start-Process $serverExe -ArgumentList $arguments -WorkingDirectory $game -WindowStyle Hidden -PassThru
@@ -91,7 +91,7 @@ try{
  foreach($file in @($preLog,($preLog -replace '\.log$','.bots.log'))){if(Test-Path $file){Copy-Item $file -Destination $out}}
  Assert-ReviewFresh
  $server=Start-Phase $runArgs $serverLog $true
- $start=[DateTime]::UtcNow;$reviewAt=$start;$trace=$serverLog -replace '\.log$','.bots.log'
+ $start=[DateTime]::UtcNow;$reviewAt=$start;$rosterAt=$start;$rosterSignature='';$trace=$serverLog -replace '\.log$','.bots.log'
  do{
   Start-Sleep -Seconds 1
   if($server.HasExited){throw 'Server exited before result'}
@@ -100,15 +100,23 @@ try{
   $text=Get-Content $serverLog -Raw;$side=Get-Content $trace -Raw
   if($text -match '\[Error\]|Lua Error|Script Error|RMI.*not a client' -or $side -match 'STATE CONFLICT'){throw 'Runtime error/state conflict; archive for analysis'}
   $pickupActors=@([regex]::Matches($side,'REAL PICKUP actor=(\d+).*acquired=1 class=(SCAR|FY71|SMG|Shotgun|DSG1|GaussRifle|Hurricane)\b')|ForEach-Object {$_.Groups[1].Value}|Sort-Object -Unique)
-  $attacks=[regex]::Matches($side,'AI state=ATTACKING').Count
-  $revives=[regex]::Matches($side,'revive result EntityId=\d+ sameEntity=1 alive=1').Count
+  # Game reset can recreate the same eight slots with new EntityIds. Judge the latest roster, not all historic IDs.
+  $created=[regex]::Matches($side,'#(\d+) created EntityId=(\d+)');$roster=@{};$lastCreate=0
+  foreach($birth in $created){$roster[$birth.Groups[1].Value]=$birth.Groups[2].Value;$lastCreate=$birth.Index}
+  $currentIds=@($roster.Values|Sort-Object -Unique);$signature=$currentIds -join ','
+  if($signature -ne $rosterSignature){$rosterSignature=$signature;$rosterAt=[DateTime]::UtcNow}
+  $currentPickups=@($currentIds|Where-Object {$_ -in $pickupActors})
+  $currentSide=$side.Substring($lastCreate)
+  $attacks=[regex]::Matches($currentSide,'AI state=ATTACKING').Count
+  $revives=[regex]::Matches($currentSide,'revive result EntityId=\d+ sameEntity=1 alive=1').Count
   $elapsed=([DateTime]::UtcNow-$start).TotalSeconds
-  $runtimeEvidence=@{ready_elapsed_seconds=$elapsed;real_primary_pickup_actor_ids=$pickupActors;attacking_states=$attacks;revive_log_events=$revives;test_grants=[regex]::Matches($side,'TEST GRANT SCAR').Count;client_visual='NOT TESTED'}
-  $passed=$pickupActors.Count -eq 8 -and $attacks -gt 0 -and $revives -gt 0 -and $runtimeEvidence.test_grants -eq 0 -and $elapsed -ge 90
+  $runtimeEvidence=@{observation_seconds=$elapsed;current_roster_ids=$currentIds;current_real_primary_pickup_ids=$currentPickups;historic_pickup_actor_ids=$pickupActors;attacking_states=$attacks;revive_log_events=$revives;test_grants=[regex]::Matches($side,'TEST GRANT SCAR').Count;client_visual='NOT TESTED'}
+  $passed=$currentIds.Count -eq 8 -and $currentPickups.Count -eq 8 -and $attacks -gt 0 -and $revives -gt 0 -and $runtimeEvidence.test_grants -eq 0 -and $elapsed -ge 90 -and ([DateTime]::UtcNow-$rosterAt).TotalSeconds -ge 10
  }while(-not $passed -and $elapsed -lt 300)
  if(-not $passed){throw 'Shared goals/weapons acceptance incomplete by300s; no automatic repeat'}
  Assert-ReviewFresh
-}finally{
- Save-Json @{task='C153';source=$CodeSha;runtime_criteria_pass=$passed;evidence=$runtimeEvidence;client_visual='NOT TESTED'} (Join-Path $out 'runtime-result.json')
+ $qualityPass=$true
+}catch{$failureReason=$_.Exception.Message;throw}finally{
+ Save-Json @{task='C153';source=$CodeSha;runtime_criteria_pass=$passed;quality_pass=$qualityPass;failure=$failureReason;evidence=$runtimeEvidence;client_visual='NOT TESTED'} (Join-Path $out 'runtime-result.json')
  Restore-Data $state
 }
