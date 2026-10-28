@@ -11,7 +11,8 @@ try {
   # Fresh nonpersistent job: no desktop-thread writer conflict, no extra saved chat, normal review.
   $prompt|& $cfg.CodexCmd --approve-for-me exec --ephemeral -C $cfg.CodexRepo --json - *> $log
  }else{
-  $session=& $cfg.Python (Join-Path $PSScriptRoot 'session_state.py') --session $cfg.DeepSeekSession --latest|ConvertFrom-Json
+  # Pin the configured session: headless fresh sessions may be UI-suspended and excluded by --latest.
+ $session=& $cfg.Python (Join-Path $PSScriptRoot 'session_state.py') --session $cfg.DeepSeekSession|ConvertFrom-Json
   if($LASTEXITCODE -or -not $session){throw 'Current DeepSeek session lookup failed'}
   if(-not $session.idle -or $session.age_seconds -lt $cfg.IdleMin*60){throw 'DEFERRED current DeepSeek session active/recent'}
   Set-Location -LiteralPath $cfg.DeepSeekSessionDirectory

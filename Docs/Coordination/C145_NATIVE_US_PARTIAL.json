@@ -183,5 +183,13 @@
         100.779
       ]
     }
-  ]
+  ],
+  "offline_mesh_projection": {
+    "raw": "build/coordinator-c145/US-native-v3-trace-mesh.tsv",
+    "candidate_sha256": "653f5e1e130e4cc4ca70aba63fbde545c3b19d487f55b41140b1d36be02ad87e",
+    "samples": 9,
+    "projected": 9,
+    "connected_from_US": 9,
+    "meaning": "Observed upper dry ramp is covered; no evidence yet about later lower-deck gap"
+  }
 }
