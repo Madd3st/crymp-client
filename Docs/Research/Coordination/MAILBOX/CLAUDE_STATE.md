@@ -1,3 +1,7 @@
+# C145 exactb06681ea GREEN+reviewOK, named US observation STARTED, 2026-10-28
+
+CI40649771503 completed/success/headb06681eaa4365afe5bf7309994012dce13a7ac83 + DS081OKdd68f2ce. Downloaded exact artifact clientb081da56/servercbff7e29 hashes matchmanifest. One <=180s nativeUS2 observation via QA v4pending-aware/commandguard/demoarchive, no othergame before/after. Temporarymesh653f5e1e diagnostic-only withhashsnapshots/restoration. Question lowerdrydeck->exterior water/exit, lifecycle removecancellation. NewDeepSeek sessione7e92 waitinglogs; no Playableclaim/defaults.
+
 # C145 reviewOK; fresh DeepSeek session, exact CI still pending, 2026-10-28
 
 LastprocessedX227/DS081: b06681eaa4365afe5bf7309994012dce13a7ac83 reviewOKdd68f2ce,36CIunitsPASS, fullCI40649771503 stillbuilding. No runtime yet. Offline all9observed dryramp points project/onmesh/fromUS; lowerdeck/exterior remainsunobserved.
