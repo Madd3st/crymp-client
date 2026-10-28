@@ -4,7 +4,8 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
-### C-147 · 2026-10-28 · started · owner upper exit and complete shore route in one shared run
+### C-147 · 2026-10-28 · partial316af4da / upperPASS shoreFAIL / DS087 repair · owner upper exit and complete shore route in one shared run
+LATEST C147 actualrun301.68s DONE316af4da onb066/E223: LINKdone5.55/seaentry14.027/health100, no shoreat300s;142NAVfallbacks127start_unprojected. Freshcurrentmemory/navEXACTnames+hashesrestored, demo5984framesarchived, no gameactive. DS087 jointwaterprojection/PSgoal/shore repair+offlineoracles BEFOREnewCI/review/sharedacceptance. Upperexitworks without speedpatch; keepheld/B1stagedpreserved. No unchangedrepeat. Task remainsopen untilshoreproved.
 Needs owner: no; explicitly authorised currentchat. Exactb06681eaa4365afe5bf7309994012dce13a7ac83 only/CI40649771503GREEN/DS081OKdd68f2ce. Complete currentupper Strength route with reviewedE223data+matchingone-rowlinksmanifest; B1staged and speculative speedpatch held. DS086 reviewharness beforelaunch. One nativeUS2 onfreePC, no forcedspawn/teleport; actorlessrecipepreflight, doors/vehicles0. <=120s linkcompletion,<=180swaterentry,<=300s WHOLEroute toshore, stopnamedfailure/ownerclient/error. One shared run, no isolatedwater repetition; exactshorePASS requirestrajectory+landproof. Snapshot CURRENTmemory/nav includingabsence, restorebytes+verify, archiveactualdemo+logs+summary; reportXafterstep. C146ownerrecordingcomplete, hold pendingC146 lifted for thisnamedscenario only. Never interruptownerplay.
 
 ### C-146 · 2026-10-28 · done evidence551f5a05 · Native human Shore submarine route/video

@@ -1,3 +1,9 @@
+# C147 upper exit PASS / shore FAIL316af4da; DS087 water batch, 2026-10-28
+
+One shared301.68s nativeUS2 exactb066/CI40649771503GREEN/DS081OK, E223oneStrength/DS086OK45d78996. LINKdone5.55 at2114.53,1885.63,105.92; seaentry14.027; health100. Whole shoreFAIL:142NAVfallbacks127start_unprojected, swimmerfeet~98 vswatermesh99.5, laterroam/NKgoals/loopnear2115,1596. No codepatch/forcedspawn/boat. Results weapon-goals316af4da Docs/Coordination/C147_UPPER_SHORE_RESULT.md/json; localQA build/c147-upper-shore-b06681ea-v1 logs/trace/demo5984frames. FreshCURRENTmemory/nav names+hashes EXACT restored, Shorecandidate removed/noactivegame.
+
+DS087 diagnose actualcorewaterprojection/goalcontinuity/shore access then minimalpatch+offlineoracles, no unchangedrepeat; successfuljumpneedsno speculative3ec91e44patch. PreserveB1stagedbaseb066. Next code integration needs exactnewSHA/CIgreen+independentreview beforeone sharedacceptance; C147shorepending. ExistingDeepSeeke7 promptC, no otherwriters/foregroundlease releasedafterhandoff.
+
 # C146 evidence archived551f5a05; DS085 joint diagnosis, 2026-10-28
 
 Owner videos analysed with b066 native logs: drylowerfloor90.125/no-water -> pool/ocean99.5 -> underwater83.656 -> outside100.112 -> BOAT to shore. Laterlognative shaftclimb is inference outside73sclip. Old25.10clip is Steelmillb521feeb historical, not currentregression. See weapon-goals Docs/Coordination/C146_VIDEO_ANALYSIS.md/json. Demo6214frames/onehuman/exactb066 verified; archivebeforememoryhashesverify. Launcher restore receipt exists but currentmemory differs (Shorehash/extrafiles), causeunknown, currentfilesretaineduntouched. No newgame/code/localgamebuild/Playableclaim.
