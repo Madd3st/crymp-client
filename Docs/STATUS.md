@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+QA status: exact90cb4148de477f4a8cadde5d31d7150c67a6e989 CI40606278441 GREEN + DS074reviewOK0e819259 verified. Freshcode gate met; C145 runtime NOTRUN, Shorecandidate653f5e1e notaccepted/installed, USexit unresolved. DeepSeek coordinator-lite active; Codex QA-only/LOWBUDGET. Earlier CI-pending notes below are history.
+
 CODEX LOW BUDGET19% (03:10,28.10): D031 limitguard triggered. Codex coordinator/codework STOPPED; DeepSeek coordinator-lite promptB handoff DS075/triage0f06c173 sent. No featuremerges/defaultflip/game byDeepSeek. Currentcode90cb4148 clean, DS074reviewOK0e819259, exactCI40606278441 stillpending at handoff; no artifact/runtime beforeGREEN. C145 notcomplete; map653f5e1e notaccepted/installed. All prior WIP/current-role notes below are history; live tenlinehandoff in triage MAILBOX/CLAUDE_STATE. Codex QAonly named gated mailbox tasks asbudgetpermits.
 
 C145 current source90cb4148de477f4a8cadde5d31d7150c67a6e989, clean worktree. Parent00e CI40605489537FAILED on missed summarycaller; correctionsyntaxPASS, exactnewCI40606278441 + DS074 reviewpending. No game ran; old00e must not run. Current C145 mailbox/CLAUDE_STATE pin90cb4148. D031weeklyremaining20% at03:04, recheck limitguard before nextphase. Candidate653f5e1e notaccepted/installed; no Playableclaim.

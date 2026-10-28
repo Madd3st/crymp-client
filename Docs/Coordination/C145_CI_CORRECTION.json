@@ -7,7 +7,7 @@
   "correction": "explicit nullptr unfiltered summary; retain native capturable metadata independent of valid destination; planner still failsclosed; cache refresh on mesh availability",
   "affected_cpp_syntax": "PASS (Manager version.h is metadata-only syntax standin)",
   "ci": 40606278441,
-  "ci_status": "in_progress at handoff",
+  "ci_status": "success (headSha90cb4148 verified)",
   "independent_review": "DS074 OK0e819259",
   "game_runs": 0,
   "local_game_build": false,

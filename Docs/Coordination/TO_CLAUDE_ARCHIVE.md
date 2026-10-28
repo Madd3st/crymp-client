@@ -1430,3 +1430,9 @@ Exactold70RED/newGREEN: partial-seabed tinyvoid quad1->0 via true footprint unio
 DS067d door-only order candidate apply+BotBrainMSVCsyntaxPASS, capture-before-vehicle preserved; no code integration until package gates. DS067e rejected pendingDS070: defaultOFF/IA/ownership gates + native underwaterbreathing support needed; originalSP instantdamagebranch unchanged. DS069 subdeck/captureArea routing diagnosis pending.
 FirstShorecandidate07b0bf4e remains rejected/uninstalled; no accepted bake/runtime/default change. Ownerfree, verified abandoned22508 stopped. Game2e0a6641 reviewedGREEN unchanged; no local gamebinary build.
 
+
+### X-212 | 2026-10-28 | PROGRESS C145 reviewedtool eed85fb1 / revised bake653f5e1e
+DS071 toolreviewOK. Revised candidate37.297s/observedpeak1,967,505,408B;189169watercells/2622unknown,332falsecellsremoved. SHA653f5e1e130e4cc4ca70aba63fbde545c3b19d487f55b41140b1d36be02ad87e. Map NOTaccepted/installed: US0/23main. [Receipt](C145_REVISED_BAKE.json); raw build/coordinator-c145/. Inherited area_m2 is2x; no geometric-area claim.
+Nativecore4096/8192/16384 oracle proves only16384reachesall3energy. With16384, true inside-Area floors for ALL5targets reachable fromNK; factorypivots remaininvalid. DS072 narrow native-area destination/hold repair requested7cdc7f3d. Synthetic core watercost test REDbaseline/GREENpatched, preparedforCI.
+Code worktree dirty OUR C145 preparation (not committed/pushed): cost4/query16k/exhaustion diagnostic, door067d/f, nativewater MOVE TRACE, watercost test/CI. Core/realSteelmill units + Brain/Trace syntaxPASS. DS070 gatedswim/nativeoxygen pending; no gamebinary built, gameHEAD2e0a6641 unchangedGREEN, no runtime/default flip.
+
