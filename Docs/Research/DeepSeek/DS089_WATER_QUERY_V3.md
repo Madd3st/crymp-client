@@ -9,12 +9,15 @@ Keeps the DS-088 water-only policy (no dry/seabed/stacked fallback) and adds the
 ## 1. Fixture: the raw-dry RED assumption was wrong (BLOCK item 1)
 
 The synthetic fixture's polygon plane is **not** z=100. `dtCreateNavMeshData` is fed `bmin[1]=bmax[1]=100` while the
-vertices are at local 0, and the effective snapped height differs; the previous test hard-coded `100` for both the
-plane and the swimmer, so `plane-1.5 = 98.5` was still inside the dry box (`[98.5-3, 98.5+1]` -> up to 99.5) and the
-RED assertion failed under MSVC (`raw dry projection unexpectedly found`, exit 5).
+vertices are at local 0, so the effective snapped height is whatever Detour's quantization/clamping produces - it is
+not the `bmin` literal, and it is what the old test wrongly hard-coded. With the real plane at `planeZ <= 99.5`, the
+old swimmer `98.5 = planeZ-1.5` sat inside the dry box `[95.5, 99.5]` (up to `swim+1`), so the RED assertion failed
+under MSVC (`raw dry projection unexpectedly found`, exit 5). A fixed `planeZ-1.5` cannot be used: whether the dry
+box reaches the plane depends on the actual height, which is why the test must measure it.
 
-Fix (in `Tests/BotNavMeshWaterTests.cpp`): **measure the plane** from a known on-mesh land point
-(`nav.Project((5,-15,100)) -> planeZ`, asserted 95..105), then build every control from it:
+Fix (in `Tests/BotNavMeshWaterTests.cpp`): **measure the plane** from a known on-mesh point
+(`nav.Project((5,-15,100)) -> planeZ`, asserted 95..105, printed as `DS089 fixture planeZ=...`), then build every
+control relative to it:
 
 * `swim = planeZ - 1.5` -> dry `Project`/`Reachable` must be false (RED, b06681ea behaviour);
 * `WaterQueryBounds(1.5)` -> projects onto the water poly and reaches land (GREEN);

@@ -321,10 +321,10 @@ index edccba4..d3f6ea7 100644
 +void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const float* from, const NavQueryBounds* startBounds = nullptr);
  }
 diff --git a/Tests/BotNavMeshWaterTests.cpp b/Tests/BotNavMeshWaterTests.cpp
-index d54c90c..b66e706 100644
+index d54c90c..98f1503 100644
 --- a/Tests/BotNavMeshWaterTests.cpp
 +++ b/Tests/BotNavMeshWaterTests.cpp
-@@ -43,5 +43,40 @@ int main()
+@@ -43,5 +43,41 @@ int main()
   float deviation=0;for(size_t i=0;i<path.size();i+=3)deviation=std::max(deviation,std::fabs(path[i+1]+15));
   std::printf("water detour: corners=%zu deviation=%.2f\n",path.size()/3,deviation);
   if(deviation<4.5f){std::puts("water shortcut selected despite expensive area");return 1;}
@@ -337,6 +337,7 @@ index d54c90c..b66e706 100644
 +  if(!nav.Project(onMesh,plane)){std::puts("DS089 fixture plane not found");return 5;}
 +  const float planeZ=plane[2];
 +  if(planeZ<95.0f||planeZ>105.0f){std::puts("DS089 fixture plane out of range");return 5;}
++  std::printf("DS089 fixture planeZ=%.3f\n",planeZ);
 +  const float land[3]={5,-15,planeZ};          // dry land at the measured plane
 +  const float swim[3]={15,-15,planeZ-1.5f};    // water row x1, native float 1.5 m below the plane
 +  const float deep[3]={15,-15,planeZ-2.3f};    // C147 measured floats up to 2.31 m below the plane
