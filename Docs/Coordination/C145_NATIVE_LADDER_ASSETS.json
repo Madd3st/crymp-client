@@ -1,0 +1,346 @@
+{
+  "method": "Length-checked brush.lst string/object tables +5543x76records; objectIndex at8, Matrix34 float12 at24; all1069objectindicescovered, allmatricesfinite. Validate spatially against native geometry beforeproduction use",
+  "bad_records": [],
+  "ladders": [
+    {
+      "record": 934,
+      "object": 412,
+      "asset": "objects/library/architecture/submarine/props/ladders/sub_ladder_longshaft_middle.cgf",
+      "matrix": [
+        1.0,
+        1.1920928244535389e-07,
+        0.0,
+        2116.125,
+        -1.1920928244535389e-07,
+        1.0,
+        0.0,
+        1880.125,
+        0.0,
+        0.0,
+        1.0,
+        91.25
+      ],
+      "translation": [
+        2116.125,
+        1880.125,
+        91.25
+      ],
+      "bbox_local": [
+        -0.23879092931747437,
+        -0.02794364094734192,
+        0.0,
+        0.23879092931747437,
+        0.02794364094734192,
+        4.000000953674316
+      ],
+      "world_bbox": [
+        [
+          2115.8862090673515,
+          1880.0970563305866,
+          91.25
+        ],
+        [
+          2116.3637909326485,
+          1880.1529436694134,
+          95.25000095367432
+        ]
+      ],
+      "native_export_vertices_near_bbox": 85,
+      "rotation_det": 1.0000000000000142
+    },
+    {
+      "record": 2478,
+      "object": 682,
+      "asset": "objects/library/architecture/submarine/props/ladders/sub_ladder_longshaft_top.cgf",
+      "matrix": [
+        1.0,
+        1.1920928244535389e-07,
+        0.0,
+        2116.125,
+        -1.1920928244535389e-07,
+        1.0,
+        0.0,
+        1880.125,
+        0.0,
+        0.0,
+        1.0,
+        95.25
+      ],
+      "translation": [
+        2116.125,
+        1880.125,
+        95.25
+      ],
+      "bbox_local": [
+        -0.23879092931747437,
+        -0.2397564947605133,
+        0.0,
+        0.23879092931747437,
+        0.02794364094734192,
+        4.5
+      ],
+      "world_bbox": [
+        [
+          2115.886209042101,
+          1879.8852434767734,
+          95.25
+        ],
+        [
+          2116.3637909326485,
+          1880.1529436694134,
+          99.75
+        ]
+      ],
+      "native_export_vertices_near_bbox": 435,
+      "rotation_det": 1.0000000000000142
+    },
+    {
+      "record": 3369,
+      "object": 797,
+      "asset": "objects/library/architecture/submarine/props/ladders/sub_ladder_forwardhatch_b.cgf",
+      "matrix": [
+        1.7881393432617188e-07,
+        -1.0,
+        0.0,
+        2113.5,
+        1.0,
+        1.7881393432617188e-07,
+        0.0,
+        1885.5,
+        0.0,
+        0.0,
+        1.0,
+        103.25
+      ],
+      "translation": [
+        2113.5,
+        1885.5,
+        103.25
+      ],
+      "bbox_local": [
+        -0.2650749981403351,
+        -0.2650749087333679,
+        0.0,
+        0.26507511734962463,
+        0.2650749087333679,
+        3.6163275241851807
+      ],
+      "world_bbox": [
+        [
+          2113.2349250438674,
+          1885.2349249544607,
+          103.25
+        ],
+        [
+          2113.7650749561326,
+          1885.7650751647486,
+          106.86632752418518
+        ]
+      ],
+      "native_export_vertices_near_bbox": 204,
+      "rotation_det": 1.000000000000032
+    },
+    {
+      "record": 3538,
+      "object": 816,
+      "asset": "objects/library/architecture/submarine/props/ladders/sub_ladder_longshaft_bottom.cgf",
+      "matrix": [
+        1.0,
+        1.1920928244535389e-07,
+        0.0,
+        2116.125,
+        -1.1920928244535389e-07,
+        1.0,
+        0.0,
+        1880.125,
+        0.0,
+        0.0,
+        1.0,
+        90.25
+      ],
+      "translation": [
+        2116.125,
+        1880.125,
+        90.25
+      ],
+      "bbox_local": [
+        -0.23879092931747437,
+        -0.02794364094734192,
+        0.0,
+        0.23879092931747437,
+        0.02794364094734192,
+        1.0000014305114746
+      ],
+      "world_bbox": [
+        [
+          2115.8862090673515,
+          1880.0970563305866,
+          90.25
+        ],
+        [
+          2116.3637909326485,
+          1880.1529436694134,
+          91.25000143051147
+        ]
+      ],
+      "native_export_vertices_near_bbox": 54,
+      "rotation_det": 1.0000000000000142
+    },
+    {
+      "record": 3688,
+      "object": 835,
+      "asset": "objects/library/architecture/submarine/props/ladders/sub_ladder_longshaft.cgf",
+      "matrix": [
+        1.0,
+        1.1920928244535389e-07,
+        0.0,
+        2116.125,
+        -1.1920928244535389e-07,
+        1.0,
+        0.0,
+        1880.125,
+        0.0,
+        0.0,
+        1.0,
+        90.25
+      ],
+      "translation": [
+        2116.125,
+        1880.125,
+        90.25
+      ],
+      "bbox_local": [
+        -0.2650749981403351,
+        -0.2650749087333679,
+        -0.02972698211669922,
+        0.26507511734962463,
+        0.2650749087333679,
+        10.041205406188965
+      ],
+      "world_bbox": [
+        [
+          2115.85992497026,
+          1879.8599250596671,
+          90.2202730178833
+        ],
+        [
+          2116.390075148949,
+          1880.3900749403329,
+          100.29120540618896
+        ]
+      ],
+      "native_export_vertices_near_bbox": 565,
+      "rotation_det": 1.0000000000000142
+    },
+    {
+      "record": 4827,
+      "object": 797,
+      "asset": "objects/library/architecture/submarine/props/ladders/sub_ladder_forwardhatch_b.cgf",
+      "matrix": [
+        -1.1920928955078125e-07,
+        0.9999999403953552,
+        0.0,
+        2104.75,
+        -0.9999999403953552,
+        -1.1920928955078125e-07,
+        0.0,
+        1883.0,
+        -0.0,
+        0.0,
+        1.0,
+        103.25
+      ],
+      "translation": [
+        2104.75,
+        1883.0,
+        103.25
+      ],
+      "bbox_local": [
+        -0.2650749981403351,
+        -0.2650749087333679,
+        0.0,
+        0.26507511734962463,
+        0.2650749087333679,
+        3.6163275241851807
+      ],
+      "world_bbox": [
+        [
+          2104.484925075467,
+          1882.7349248668506,
+          103.25
+        ],
+        [
+          2105.015074924533,
+          1883.26507501394,
+          106.86632752418518
+        ]
+      ],
+      "native_export_vertices_near_bbox": 204,
+      "rotation_det": 0.9999998807907282
+    }
+  ],
+  "task": "C145 offline native ladder assets",
+  "source_code": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "brush_lst_sha256": "0e544a00a948489d37753b0726dfca307639f16d3d91ab015af02bf0b5158864",
+  "material": {
+    "path": "Objects/Library/Architecture/Submarine/props/ladders/sub_ladders.mtl",
+    "sha256": "b5d3719ad4b053566afe523befcd809ca416d26f5229e66c0c57b8a2384076b6",
+    "submaterials": [
+      {
+        "index": 0,
+        "name": "sub_ladder",
+        "surface": "mat_metal_pipe"
+      },
+      {
+        "index": 1,
+        "name": "nodraw",
+        "surface": "mat_nodraw"
+      },
+      {
+        "index": 2,
+        "name": "collision",
+        "surface": "mat_metal_thick"
+      },
+      {
+        "index": 3,
+        "name": "ladderproxy",
+        "surface": "mat_ladder"
+      }
+    ]
+  },
+  "assets": {
+    "objects/library/architecture/submarine/props/ladders/sub_ladder_longshaft_middle.cgf": {
+      "sha256": "fc438cae47347ae3c27ab8dc0ac9c5117e621dc13fe1154dd3f4a423001d3019",
+      "bytes": 51392,
+      "contains_ladderproxy_node_string": true,
+      "contains_sub_ladders_material_string": true
+    },
+    "objects/library/architecture/submarine/props/ladders/sub_ladder_longshaft_top.cgf": {
+      "sha256": "218651b128c813ec49f94bea407203e017aad927a4e18cfd0e2c120d8857b3a7",
+      "bytes": 78899,
+      "contains_ladderproxy_node_string": true,
+      "contains_sub_ladders_material_string": true
+    },
+    "objects/library/architecture/submarine/props/ladders/sub_ladder_forwardhatch_b.cgf": {
+      "sha256": "4a2db936ad1b4802bfb375e5d69515ed00e881769c8c253c2e3d32edff566091",
+      "bytes": 59745,
+      "contains_ladderproxy_node_string": true,
+      "contains_sub_ladders_material_string": true
+    },
+    "objects/library/architecture/submarine/props/ladders/sub_ladder_longshaft_bottom.cgf": {
+      "sha256": "86e5fdc9bed3600176e85a2f4afe96de5039795807c2e4cc3eabf91b760f3734",
+      "bytes": 17216,
+      "contains_ladderproxy_node_string": true,
+      "contains_sub_ladders_material_string": true
+    },
+    "objects/library/architecture/submarine/props/ladders/sub_ladder_longshaft.cgf": {
+      "sha256": "5e062d2eec1f7fd3c5cf8b40dfe98a54c9d563673a1aa8b8110df9bdc35fb03c",
+      "bytes": 5048,
+      "contains_ladderproxy_node_string": true,
+      "contains_sub_ladders_material_string": true
+    }
+  },
+  "source_evidence": "Player.cpp IsLadderUsable lines7126-7223 uses ray surface_idx == native mat_ladder, not a Ladder mission entity",
+  "conclusion": "Ladder CGFs including ladderproxy/mat_ladder are actually placed at the shaft and two upper cockpit edges; upper route must be checked before claiming shaft is the only exit",
+  "unknown": "CGF render/physics binding and native usable ladder route not yet exercised; no bot ladder executor/nav links enabled today; no runtime or bake changed"
+}
