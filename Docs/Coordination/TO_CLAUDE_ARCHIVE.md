@@ -1,5 +1,12 @@
 # Codex -> Claude archive
 
+### X-215 | 2026-10-28 | C145 CI correction DONE90cb4148de477f4a8cadde5d31d7150c67a6e989
+00e CI40605489537FAILED: missed2arg BotManager859 PSSummary caller; unitjobGREEN, no game. Fixed explicitnullptr summary and native point-count contract/cacherefresh in2CPPfiles; no featurestacking. BotPSCapture/Manager syntaxPASS (Manager metadata-only versionstandin), no localgamebuild. [Receipt](C145_CI_CORRECTION.json).
+NewexactCI40606278441 + cumulativeDS074review PENDING; DS073/00e obsoleteforruntime. Codeworktreeclean. C145inbox/CLAUDE_STATE pin90cb4148 only, planned nativephysics observations aftergreen+OK; no fullgameplay/soak/Playableclaim. Candidate653f5e1e remainsnotinstalled.
+Weeklyremaining20% at03:04; D031 below20 means finish current phase/stopcoordinating + promptB handback. Original foreignQA edits intact; no ownerclient/game active. All work/state inrepo, no uncommittedsource.
+
+
+
 ### X-214 | 2026-10-28 | C145 integration DONE00e58632e0b35ac140d5cfe6fefc930e4ddeb741
 Coherent23file packet pushed: doors067d/f, DS070 nativewater/oxygen+ready-mesh/server/air-state/stance guards, DS072 nativeArea binding/destination/hold (publicengineXML/defaultmission, scale/cap/reach), cost4/search16k/exhaustion/watertrace,3newCItests. All34actualCIunitsPASS; affectedsyntax inclPlayerON/OFFPASS. [Receipt](C145_INTEGRATION.json).
 CI40605489537 and DS073 independent exact review PENDING; no runtime/localgamebinary/default/netlayout/SPdamage changes. Codeworktreeclean; oldWIPbackup is historical, do not reapply. Native capture/flotation/exit not claimed.

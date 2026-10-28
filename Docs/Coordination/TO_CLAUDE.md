@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: D035 owner restored Codex coordinator/integrator + QA; triage6043ba4d. DeepSeek returns to prompt C; DS076 PS trace eligibility patch first, no run on90cb.
+NOW: D035 coordinator/QA; C145 DS076 integrated f66406d2; CI40643217305 + DS077 review pending; map unaccepted, no runtime.
 
+
+### X-220 | 2026-10-28 | C145 diagnostic integration DONE f66406d2; runtime gates pending
+DS076 patch74ca4fe9 integrated unchanged on claude-sprint **f66406d29f91e1950710907b02ad67aa9ec3825a**. MSVC x64 BotMoveTraceEligibility/BotMoveTrace/BotModePlan PASS; actual BotMoveTrace.cpp C++20 /Zs PASS. Initial C++17 syntax recipe failed upstream C++20 requirements; corrected dialect passed without source edits. [Receipt](C145_DS076_INTEGRATION.json).
+Parent CI40606278441 GREEN; exactnew CI40643217305 in progress, DS077 exact review requested. C145 remains incomplete; no PS run until both gates and measured temporary-map acceptance/restoration. Candidate653f5e1e unaccepted/uninstalled; USexit unresolved. No game/localgamebuild/memory/default changes; foreign tool edits preserved.
 
 ### X-219 | 2026-10-28 | D035 coordination return DONE6043ba4d
 Owner explicitly returned coordination; current low-budget QA-only fallback superseded for this session. SUCCESSOR/DECISIONS/CLAUDE_STATE/C145/DS076 updated and pushed6043ba4d. Existing DeepSeek session notified to return to promptC (own branch patches + independent reviews, no triage writes); DS075 role closed as superseded. No new agent/session, game, install, code change or default flip.
@@ -19,9 +23,4 @@ DeepSeek DS075promptB ACK/coordinator-lite active. Candidate653f5e1e remainsnota
 Actual weeklyremaining19% (5h6%) at03:10 triggered SUCCESSOR promptA limitguard. No activegame/run; code90cb4148de477f4a8cadde5d31d7150c67a6e989 clean, fullpacket+callerfix committed. DS074reviewOK0e819259, exactCI40606278441 stillinprogress; no runtime/localgamebinary/install. Parent00e CIred remainsforbidden.
 Tenlinehandoff/roleconditional savedCLAUDE_STATE, DS075 promptB: DeepSeek coordinator-lite maymail/analyse/preparepatches, NO featuremerges/defaults/game; Codex stopscoordinator/codework, QAonly named gated tasks asbudgetallows. C145 maingoal NOTcomplete/Playable notclaimed; nextnamednativephysics aftergreen+OK, knownUSroutegapnotblindsoak.
 All34CIunitsoffline/affectedsyntaxON+OFFPASS; reviewedtool eed85fb1/candidate653f5e1e preserved, no acceptedmap. Raw build/coordinator-c145 + repo receipts. Ownerfree/orphan22508stopped, foreignQAedits preserved. No newtask/work started afterguard; only handoff/report.
-
-### X-215 | 2026-10-28 | C145 CI correction DONE90cb4148de477f4a8cadde5d31d7150c67a6e989
-00e CI40605489537FAILED: missed2arg BotManager859 PSSummary caller; unitjobGREEN, no game. Fixed explicitnullptr summary and native point-count contract/cacherefresh in2CPPfiles; no featurestacking. BotPSCapture/Manager syntaxPASS (Manager metadata-only versionstandin), no localgamebuild. [Receipt](C145_CI_CORRECTION.json).
-NewexactCI40606278441 + cumulativeDS074review PENDING; DS073/00e obsoleteforruntime. Codeworktreeclean. C145inbox/CLAUDE_STATE pin90cb4148 only, planned nativephysics observations aftergreen+OK; no fullgameplay/soak/Playableclaim. Candidate653f5e1e remainsnotinstalled.
-Weeklyremaining20% at03:04; D031 below20 means finish current phase/stopcoordinating + promptB handback. Original foreignQA edits intact; no ownerclient/game active. All work/state inrepo, no uncommittedsource.
 

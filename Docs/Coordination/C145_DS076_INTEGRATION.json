@@ -1,0 +1,23 @@
+{
+    "map_installed":  false,
+    "units":  "PASS",
+    "memory_modified":  false,
+    "patch_unchanged":  true,
+    "ci_status":  "in_progress",
+    "msvc_units":  [
+                       "BotMoveTraceEligibility",
+                       "BotMoveTrace",
+                       "BotModePlan"
+                   ],
+    "ci":  40643217305,
+    "parent":  "90cb4148de477f4a8cadde5d31d7150c67a6e989",
+    "patch":  "74ca4fe9",
+    "initial_recipe_correction":  "C++17 upstream syntax errors; C++20 PASS without source edit",
+    "raw":  "build/ds076-check/",
+    "candidate":  "653f5e1e unaccepted",
+    "source":  "f66406d29f91e1950710907b02ad67aa9ec3825a",
+    "review":  "DS077 pending",
+    "game_runs":  0,
+    "engine_syntax":  "BotMoveTrace.cpp MSVC x64 C++20 /Zs PASS",
+    "local_game_build":  false
+}

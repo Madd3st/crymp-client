@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C145 DS076 integration DONE f66406d29f91e1950710907b02ad67aa9ec3825a: diagnostic PS eligibility, three MSVC units + C++20 engine syntax PASS; CI40643217305/DS077 review pending. No game/install/memory changes; map653f5e1e unaccepted, C145 incomplete. D035 coordinator active; source on claude-sprint, reports on weapon-goals.
+
 Owner D035 returned Codex coordinator/integrator + QA (triage6043ba4d). Earlier low-budget QA-only stop is superseded for this session. DeepSeek returns to prompt C, own branch patches and independent review. DS076 fixes IA-only PS trace gate before any C145 observation; no game/install/default change. Older role notes below are history.
 
 C145 QA preflight BLOCK on90cb4148: MOVE TRACE Update is IA-only (BotMoveTrace.cpp16-19), so required PS water telemetry cannot appear. CodeCI/reviewgreen alone does not pass this observation contract. No game/mapinstall/sourcechange. ReportX218/C145_PS_TRACE_PREFLIGHT.json routed to DeepSeek coordinator-lite for diagnostic patch/new exactSHA gate; CodexQA-only budgetguard retained.

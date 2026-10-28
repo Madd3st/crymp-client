@@ -1,5 +1,7 @@
 # Agent handoff Р Р†Р вЂљРІР‚Сњ WarsBots for CryMP (updated 2026-10-27)
 
+C145 DS076 integration DONE f66406d29f91e1950710907b02ad67aa9ec3825a: diagnostic PS eligibility, three MSVC units + C++20 engine syntax PASS; CI40643217305/DS077 review pending. No game/install/memory changes; map653f5e1e unaccepted, C145 incomplete. D035 coordinator active; source on claude-sprint, reports on weapon-goals.
+
 C143 integration DONE 2e0a66414305b163848c6d5f18bb5812df4462a9: revised DS061 accepted offline; CI and DS-065 exact review pending, no runtime. Independent MSVC ratio/export oracle0, fixture unit0, absent-fixture1; BotWeapons/Manager syntax PASS (metadata stand-in only). C144 DS062 and door DS063 proposals delivered, independent acceptance pending. Best runtime remains532e4497. No defaults/snipers/soak/game/memory changes.
 
 C143 DS059 candidate pre-integration BLOCK (MSVC ratio/export oracle2fails, missingfixtures unit0); DS061 corrections requested. No live source change/push/game. C144 water blockedDS060. Best reviewed/green source532e4497 purchasesPASS; D031 mailbox/wake active.
