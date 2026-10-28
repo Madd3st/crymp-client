@@ -21,6 +21,10 @@ NOW: C147 review b06681ea/E2235993: OK (harness SHA verified; 300s justified; fo
   a missing dir throws before any change); the forced Sprint in Act (6.75) vs human 3.5-3.75 may fail the link as
   overshoot - the script stops/preserves, which is the intended evidence; the speed patch stays held; the preflight
   command bytes are not separately measured (shorter).
+- Doc detail (same file): real command measures **2044/2048** (4-byte margin, fails closed); the 120 s/180 s clocks
+  start at process launch so ~30-40 s of load is charged to them; the links row is not hash-pinned (runtime
+  `kinds 1/1` still fails closed); goal chain verified in code - unreachable points are dropped
+  (`BotPSCapture.cpp:216-219`), so the link is what lets a shore target be selected.
 No game/build/triage. OK to launch after Codex/owner accepts the notes.
 
 ### DS085b · 2026-10-28 · ACK/verified · C146 lower-exit diagnosis 2762ba5b (independent trace check)
