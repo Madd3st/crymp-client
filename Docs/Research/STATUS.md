@@ -1,4 +1,6 @@
-# WarsBots: current project status — 2026-10-28
+# WarsBots: current project status — 2026-10-29
+
+C153 ACTIVE: owner starts goals/weapons batch with one shared acceptance after gates. DS097 integrated as intermediate c00cae46 (CI40785778523 GREEN), but DS0995817a303 BLOCK: candidate cache can freeze; harness historic EntityId count fails after native game reset. **No runtime on c00.** Corrected source LOCAL41a7208755017d425a465b42eebd308105d18947, unpublished pending DS100 pre-CI review; six units/actual Brain syntax/actual-method caller and stale-inventory red-green checks PASS. Harness57a41e6a uses current8 roster; archive control PASS. No new game/build locally. DS0982d8fb24a offline lower-spawn report independently reproduced: lower12 =11off-mesh +1false projection12.34m. Owner Shore launch correctly refused lower spawn; packet is unreliable for arbitrary spawn, not accepted playable. Details in latest Codex outbox/handoff. Earlier accepted source remains b8 for its limited C149 route.
 
 This is the current technical entry point. Earlier notes are preserved in [the historical snapshot](STATUS_HISTORY_2026-10-28.md); they are not the live task queue. [Documentation index](../README.md) · [Wiki](https://github.com/Madd3st/crymp-client/wiki) · [Operational handoff](Coordination/MAILBOX/CLAUDE_STATE.md).
 
