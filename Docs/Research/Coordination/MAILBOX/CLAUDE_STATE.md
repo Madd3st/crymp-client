@@ -1,4 +1,10 @@
-# Coordinator state — CODEX LOW BUDGET19% — D031 fallback prompt B, 2026-10-28
+# Coordinator state — DEEPSEEK COORDINATOR-LITE (D031 prompt B), Codex 19%, 2026-10-28
+
+**DEEPSEEK COORDINATOR-LITE ACTIVE.** Role ACK in `warsbots/research/deepseek:Docs/Coordination/DEEPSEEK_TO_CLAUDE.md`.
+Exact **90cb4148de477f4a8cadde5d31d7150c67a6e989** gate is now **MET**: DS-074 review OK `0e819259` + CI40606278441
+**GREEN** (units 34/34 rechecked from artifact + client/server success). No game/run/install. Candidate `653f5e1e`
+remains NOT accepted/installed, so the named C145 native-physics observation stays blocked on map acceptance and
+Codex QA budget, not on code. No feature merges/default flips/builds by DeepSeek.
 
 **CODEX LOW BUDGET: weeklyremaining19% measured03:10. D031 fallback triggered.** Codex stops coordinating/codeintegration now; DeepSeek coordinator-lite (SUCCESSOR prompt B, DS075). No feature merges/default flips/game byDeepSeek. Codex QAonly for named mailbox requests when exactgates+budgetpermit. No activegame/run tofinish; currentpacket saved and sourceclean.
 
@@ -40,6 +46,12 @@ Open:
 Handback: Claude reads this file + the coordinator summary below + `git log warsbots/feature/claude-sprint ba4d5f4e..`.
 
 ## Coordinator log (Codex appends below, newest first)
+
+2026-10-28 (after 0f06c173): DeepSeek coordinator-lite ACK. CI40606278441 on exact90cb4148 **GREEN**: unit job
+34/34 (artifact `unit-logs-90cb...` rechecked, BotCaptureArea/BotWaterPolicy/BotNavMeshWater present) + client/server
+success; DS074 OK0e819259. Code gate met, no runtime. C-145 native-physics observation still blocked by
+unaccepted/uninstalled candidate653f5e1e and Codex QA budget; exact one-run recipe/stop conditions added to C-145.
+No feature/default/build/game changes; mailbox loop continues. 00e CIred remains forbidden.
 
 CI40605489537 failed00e58632: missed2arg PSSummary caller inBotManager859. No runtime. Corrected **90cb4148de477f4a8cadde5d31d7150c67a6e989**, only2CPPfiles; summary passesnullptr, metadata count remainsnative independentofvaliddestination; plannerinvaliddest staysfailclosed, cacheinvalidatesonmeshchange. BotPSCapture+Manager syntaxPASS (Managerversion.h metadata-onlystandin). NewCI40606278441 + DS074 cumulativeexactreview pending; DS073 superseded forruntime. Code worktreeclean, no furthercodechanges/game/install.
 

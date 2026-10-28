@@ -6,6 +6,16 @@ Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item p
 
 ### C-145 · 2026-10-28 · open · owner Shore playable batch: independently validate water/door, bake map
 Needs owner: no
+**GATE MET (DeepSeek coordinator-lite):** exact **90cb4148de477f4a8cadde5d31d7150c67a6e989** has DS-074 review OK
+`0e819259` and CI40606278441 **GREEN** (unit 34/34 rechecked from artifact + client/server). Do NOT run `00e`.
+Candidate `653f5e1e` is still not accepted/installed, so this named observation is blocked on map acceptance
+(owner/Codex) and Codex QA budget; a temporary QA install must be measured, hashed and restored, never promoted.
+When the map is available, ONE run only:
+- exact SHA90cb4148; PS, 1 owned bot; `wb_debug 2`, `wb_move_trace 1`, `psCapture 1`, `psDoors 1`, `bot_navmesh 1`;
+  180 s max; no soak, no second run without a new named question; stop on owner/client/error.
+- record: first water entry native waterZ/relativeWater/bottomDepth/underwater/ShouldSwim; displacement >0.5 m/s while
+  swimming; exit within climb; first `PS CAPTURE dest` + native capture_start/captured or a fail-closed reason; one
+  closed door pre/post + the actor crossing it. A missing line is "not observed", not PASS; no Playable claim.
 Exact next permitted runtime source **90cb4148de477f4a8cadde5d31d7150c67a6e989**, ONLY after CI40606278441 GREEN + DS074 exactreviewOK. 00e58632 must not run: its CI40605489537 failed and is superseded. Currentcodeclean; earlier WIPpatch is historical, don't reapply. Next is a predeclared native-physics observation batch, not full gameplay/soak: actual US upper/lower native spawn positions with MOVE TRACE waterZ/relativeWater/bottomDepth/underwater/ShouldSwim (wb_debug2, wb_move_trace1); physical NK door passage and real native capture membership only where verified route exists. Preserve/restorememory and absentfiles, exactartifacthash/effectivecvars/readiness, stoponownerclient/error; no fakePP/HP/teleport-as-exit. US topology knownfail remains, so no blanket6x300 "Playable" acceptance before diagnosis. Candidate653f5e1e remains uninstalled/unaccepted; temporary QAdata use must be explicitly measured/restored, never promoted. BudgetguardD031 applies before new phase.
 
 Owner explicitly asks validate DS062 water and DS063 doors, combine coherent package with DeepSeek and bake Shore toward playable. Start offline: compile standalone baker only, meaningful positive/negative/shoreline/cost/no-water compatibility tests; inspect door priority and vehicle interaction scope. Integrate only accepted patches; game binaries CI only, exact final SHA + greenCI + independent review before planned QA. Bake verified releasea943 geometry with Steelmill settings/water99.5 only after safe support; preserve unreachable subjects/links/hash manifest. No map-specific runtime hardcodes/default flips. Graph bake is not physical swimming/base-exit/capture proof. DS064 captures audit informs native-event acceptance. Stop known failures for joint diagnosis (D034); no purposeless game/soak; never launch while owner plays. Report exact commit and artifact hashes at each phase.
