@@ -34,6 +34,8 @@ Full Shore/Power Struggle match, lower 12 submarine spawns, historical 41 water 
 
 ## Current documentation task
 
+C152 planning deliverable: [CS-bot maturity plan](CS_BOT_MATURITY_PLAN.md), independently informed by DeepSeek DS096 `97cb2c78` / `e4051c5f`. Six batches with source locations, cheap red/green checks and proposed acceptance criteria; no games/builds/code changes. Integrator rejects purposeless standalone baseline, already-met 95% water threshold and premature grenade scope. First implementation candidate is weapon-goal lifecycle; Shore data audit can proceed offline in parallel. This plan does not automatically dispatch gameplay or establish parity with CS.
+
 C151 DONE: source `cebeb1b055cf2db772791ff47c9a2f879cae695c`, published wiki `3370918d4171620481ce021c5673f02eae675bdc`, QA report `4eea479a` / X250. Steelmill launch/ZIP links delivered first. Wiki now separates newcomer onboarding, engineering navigation, launch instructions, evidence and troubleshooting. All 16 published page blobs match committed source; 73 local and 27 Git source links checked PASS. Documentation-only work, no game build or runtime. Pre-existing duplicate mailbox IDs DS050/DS052 detected and left unchanged.
 
 For live assignments use [TO_CODEX](Coordination/MAILBOX/TO_CODEX.md), [TO_DEEPSEEK](Coordination/MAILBOX/TO_DEEPSEEK.md), [decisions](Coordination/MAILBOX/DECISIONS.md) and [protocol](Coordination/MAILBOX/PROTOCOL.md). Historical STOP items apply to their task only. Large artifacts stay outside Git, with hashes and archive paths in reports.

@@ -3,6 +3,7 @@
 - [Первое знакомство](Getting-Started)
 - [Запуск и игра](Running-and-Playing)
 - [Статус и планы](Status-and-Roadmap)
+- [План уровня CS](CS-Maturity-Plan)
 - [Разбор проблем](Troubleshooting)
 
 **Инженеру**

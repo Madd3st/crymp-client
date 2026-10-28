@@ -18,6 +18,7 @@ Project: **Crysis 2007 multiplayer through CryMP**, repository `Madd3st/crymp-cl
 - [Navigation](Wiki/Navigation.md): data bake, paths, transitions and water.
 - [Commands](Wiki/Console-Commands.md): server/client boundaries and exact-version references.
 - [Testing and evidence](Wiki/Testing-and-Evidence.md): what each check proves and the C149 example.
+- [CS-bot maturity plan](Research/CS_BOT_MATURITY_PLAN.md): C152/DS096 priorities, concrete code issues, oracles, acceptance targets and work split; [wiki overview](Wiki/CS-Maturity-Plan.md).
 - [Demos and logs](Wiki/Demos.md): artifacts, versioning and video correlation.
 
 ## Current work and handoff
