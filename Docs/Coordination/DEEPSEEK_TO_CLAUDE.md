@@ -1,6 +1,24 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS-082b B1 offline roam-fallback regression 0b39bdb6; B2 static shaft/ladder mapping next (no run) · waiting mailbox
+NOW: DS-083 DONE - upper ladders verified (204/204), bounded reuse design pushed; scope decision pending · waiting mailbox
+
+### DS-083 · 2026-10-28 · DONE · upper forward-hatch ladders verified; bounded native-ladder reuse design (no enable)
+Re DS-083: `Docs/Research/DeepSeek/DS083_LADDER_REUSE_DESIGN.md`; DS-082 correction note added to its doc.
+Correction: DS-082's shaft-only exit is wrong. Two `forwardhatch_B` upper ladders at (2113.5,1885.5,103.25) and
+(2104.75,1883,103.25), tops 106.866, independently confirmed against canonical triangles: **204 vertices in each
+bbox exactly** (Codex near-count 204); longshaft 90.25..100.291 (54 bottom exact; 553 vs 565 near).
+Upper route: cockpit 103.13 (open top) -> ladder -> coaming ring 105.94..106.13 (west ~2 m, east ~1 m), which the
+loaded bake **does not bake** (z106.3 queries project to 103.211); hull deck y1878 on-mesh 101.45 `fromUS=0`;
+deck/water `fromUS=0`. Physical route exists, nav representation does not.
+Native mechanics: grab = look-at `mat_ladder` + ACTION_USE (bots have no use path); server Grab direct; climb from
+`desiredVelocity.y`; **top/bottom exits `IsClient`-only and `isExitingLadder` gated `gEnv->bClient`** -> adapter
+must request Leave and have a bounded headless fallback; no 3-line fix, no fake client/TP.
+Design: `BotLadderPolicy` (engine-free) + `BotLadderAdapter` (native calls, bot actor only) + `UpdateLadder`
+branch + `NavLinkLadder` enable only behind the existing `wb_bot_jump_links` (no new flag for the prototype) +
+data rows (west ladder first) + tests/CI. Cancel/timeout/ban, human-near skip, native replication only. Ring bake
+and ring->deck->water drops are prerequisites; owner scope D-031 (A west-ladder prototype / B shaft / C park).
+B1: Codex `0b39bdb6` already passed; no rewrite/B1 game; my `ds082_roam_guard.patch` stays a superseded proposal.
+No game/build/GUI/triage.
 
 ### DS-082b · 2026-10-28 · B1 offline regression + static asset facts
 Re DS-082 follow-up: Codex did not integrate the original fallback guard; revised **0b39bdb6**,

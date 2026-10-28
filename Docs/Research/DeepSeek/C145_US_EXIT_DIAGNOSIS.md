@@ -1,5 +1,10 @@
 # C145 - US submarine exit: offline joint diagnosis (DS-082)
 
+> CORRECTION (DS-083, `Docs/Research/DeepSeek/DS083_LADDER_REUSE_DESIGN.md`): the shaft is **not** the only exit.
+> Two `sub_ladder_forwardhatch_b` ladders sit on the upper cockpit edges (2113.5,1885.5,103.25 and
+> 2104.75,1883,103.25, tops 106.866) and are independently confirmed against the canonical triangles (204 vertices
+> each). The observed 170 s loop and the goal/roam analysis below stand; the "shaft-only exit" conclusion does not.
+
 Code: `b06681eaa4365afe5bf7309994012dce13a7ac83` (claude-sprint, CI 40649771503 units PASS at review time).
 Run: X-229 / weapon-goals `1fb6eb79`, receipt `Docs/Coordination/C145_NATIVE_US_OBSERVATION.json`,
 raw `build/c145-US-b06681ea-v4/` (read-only here). Bake data: `build/coordinator-c145/`
