@@ -1,3 +1,7 @@
+# C145 nativeUS180s result; offline exit repair DS082, 2026-10-28
+
+X229 C145 nativeUS180s DONEb06681ea: telemetry/explicitremovalPASS, upperexitFAIL dryloop,715rows swim0/noHP loss; all715onmesh/fromUS,0fromNK, projectedlowerlimit99.811. Fivecapturedestsresolve but actualcapture/door/swim NOTEXERCISED. Data/demosarchived+hash/absent restored, no gameactive. DS082 fulljoint offlinegeometry/topology/goal repair; no unchangedrepeat/newwatercontrollerguess. ShorePlayable NOTproved.
+
 # C145 exactb06681ea GREEN+reviewOK, named US observation STARTED, 2026-10-28
 
 CI40649771503 completed/success/headb06681eaa4365afe5bf7309994012dce13a7ac83 + DS081OKdd68f2ce. Downloaded exact artifact clientb081da56/servercbff7e29 hashes matchmanifest. One <=180s nativeUS2 observation via QA v4pending-aware/commandguard/demoarchive, no othergame before/after. Temporarymesh653f5e1e diagnostic-only withhashsnapshots/restoration. Question lowerdrydeck->exterior water/exit, lifecycle removecancellation. NewDeepSeek sessione7e92 waitinglogs; no Playableclaim/defaults.
