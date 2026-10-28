@@ -33,5 +33,7 @@
     "checked_after_preflight": true,
     "checked_every_15s_during_run": true
   },
-  "new_game_runs": 0
+  "new_game_runs": 0,
+  "review": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
+  "review_branch_head": "b3182ff90373ad00731e75ea7d44df82a15c15d2"
 }
