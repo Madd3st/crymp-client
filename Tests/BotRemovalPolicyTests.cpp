@@ -23,6 +23,13 @@ int main()
 	// Foreign/unknown entity id never resolves to a registered bot.
 	assert(BotDoneDecision(false, true, false, false, false) == BotDoneAction::Ignore);
 
+	// DS-080 reset roster: only a live bot may be queued; an explicit pending removal, an already-DONE slot and a
+	// number already queued by a true external DONE are skipped.
+	assert(ShouldRosterForReset(false, false, false));
+	assert(!ShouldRosterForReset(true, false, false));
+	assert(!ShouldRosterForReset(false, true, false));
+	assert(!ShouldRosterForReset(false, false, true));
+
 	std::puts("BotRemovalPolicyTests OK");
 	return 0;
 }

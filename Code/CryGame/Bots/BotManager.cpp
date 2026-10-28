@@ -537,9 +537,15 @@ void BotManager::OnActionEvent(const SActionEvent& event)
 	if (event.m_event == eAE_resetBegin)
 	{
 		// Native IA restart (e.g. PreGame start timer). Remember who existed, then clean up.
-		m_roster.clear();
+		// DS-080: keep external-DONE entries already queued, add live bots, but never resurrect an explicit pending
+		// removal or an already-DONE slot (the v3 log shows a deferred removal pending for ~0.2 s).
 		for (BotInstance* bot : Ordered())
+		{
+			const bool queued = std::any_of(m_roster.begin(), m_roster.end(),
+				[number = bot->Number()](const RosterEntry& entry) { return entry.number == number; });
+			if (!ShouldRosterForReset(bot->RemovalPending(), bot->Expired(), queued)) continue;
 			m_roster.push_back({ bot->Number(), bot->Profile(), bot->AIEnabled() });
+		}
 		if (!m_roster.empty())
 			WB_LOG(0, "[WarsBots] Game reset: removing %d bots, will restore after reset.", int(m_roster.size()));
 		EndLevel();

@@ -24,4 +24,11 @@ inline BotDoneAction BotDoneDecision(bool known, bool levelReady, bool removing,
 	if (removing || removalPending || expired) return BotDoneAction::Ignore;
 	return BotDoneAction::RestoreExternal;
 }
+
+// DS-080: the reset roster (eAE_resetBegin -> RestoreRoster) must not resurrect a bot whose explicit removal is still
+// pending, an already-DONE slot, or a number already queued by a true external DONE.
+inline bool ShouldRosterForReset(bool removalPending, bool expired, bool alreadyQueued)
+{
+	return !removalPending && !expired && !alreadyQueued;
+}
 }
