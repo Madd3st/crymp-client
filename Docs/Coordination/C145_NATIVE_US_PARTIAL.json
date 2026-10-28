@@ -1,0 +1,187 @@
+{
+  "task": "C145",
+  "source": "f66406d29f91e1950710907b02ad67aa9ec3825a",
+  "ci": 40643217305,
+  "review": "DS077 OK2425fd94; recipe DS078 OK46c19ebe",
+  "diagnostic": "PASS real PS native-water MOVE TRACE",
+  "observation": "PARTIAL aborted by harness immediate registry-count assertion",
+  "spawn": "US2 group537 spawn563 upper z103.450",
+  "trace_rows": 9,
+  "last_simulation_time": "1",
+  "swimming_observed": false,
+  "water_absent_sentinel_observed": true,
+  "lifecycle_bug": "explicit wb_remove1 deferred; OnEvent only checks Removing not RemovalPending, misclassifies deferred DONE as external and attempts re-create",
+  "harness_bug": "startup status bots2/2 includes pending removal; asserting immediate bots1/2 is invalid",
+  "restore_verified": {
+    "memory": true,
+    "nav": true
+  },
+  "exit": "UNKNOWN",
+  "capture": "UNKNOWN",
+  "door": "UNKNOWN",
+  "next": "DS079 joint diagnosis + narrow explicit-removal guard patch/regression, then new exact SHA/greenCI/review and corrected delayed roster validation",
+  "samples": [
+    {
+      "actor": "65481",
+      "t": "0",
+      "speed": "0.000",
+      "vz": "-1.192",
+      "health": "100",
+      "stance": "-1",
+      "swim": "0",
+      "waterZ": "99.50",
+      "relativeWater": "5.00",
+      "bottomDepth": "-3.63",
+      "underwater": "-0.20",
+      "position": [
+        2109.0,
+        1882.5,
+        103.367
+      ]
+    },
+    {
+      "actor": "65481",
+      "t": "0",
+      "speed": "1.123",
+      "vz": "-2.142",
+      "health": "100",
+      "stance": "0",
+      "swim": "0",
+      "waterZ": "99.57",
+      "relativeWater": "5.00",
+      "bottomDepth": "-3.56",
+      "underwater": "-0.48",
+      "position": [
+        2109.018,
+        1882.517,
+        103.184
+      ]
+    },
+    {
+      "actor": "65481",
+      "t": "1",
+      "speed": "5.271",
+      "vz": "-0.000",
+      "health": "100",
+      "stance": "0",
+      "swim": "0",
+      "waterZ": "99.61",
+      "relativeWater": "4.95",
+      "bottomDepth": "-3.52",
+      "underwater": "-0.72",
+      "position": [
+        2109.465,
+        1882.61,
+        103.125
+      ]
+    },
+    {
+      "actor": "65481",
+      "t": "1",
+      "speed": "6.705",
+      "vz": "-0.000",
+      "health": "100",
+      "stance": "0",
+      "swim": "0",
+      "waterZ": "99.54",
+      "relativeWater": "5.00",
+      "bottomDepth": "-3.58",
+      "underwater": "-0.95",
+      "position": [
+        2111.152,
+        1882.809,
+        103.125
+      ]
+    },
+    {
+      "actor": "65481",
+      "t": "1",
+      "speed": "6.745",
+      "vz": "0.000",
+      "health": "100",
+      "stance": "0",
+      "swim": "0",
+      "waterZ": "99.46",
+      "relativeWater": "5.00",
+      "bottomDepth": "-3.67",
+      "underwater": "-1.23",
+      "position": [
+        2113.156,
+        1883.029,
+        103.125
+      ]
+    },
+    {
+      "actor": "65481",
+      "t": "1",
+      "speed": "5.426",
+      "vz": "-1.903",
+      "health": "100",
+      "stance": "0",
+      "swim": "0",
+      "waterZ": "-1000000.00",
+      "relativeWater": "5.00",
+      "bottomDepth": "-1000103.19",
+      "underwater": "-1.46",
+      "position": [
+        2114.693,
+        1883.158,
+        103.037
+      ]
+    },
+    {
+      "actor": "65481",
+      "t": "1",
+      "speed": "4.593",
+      "vz": "-3.127",
+      "health": "100",
+      "stance": "0",
+      "swim": "0",
+      "waterZ": "-1000000.00",
+      "relativeWater": "5.00",
+      "bottomDepth": "-1000102.25",
+      "underwater": "-1.73",
+      "position": [
+        2116.031,
+        1883.126,
+        102.234
+      ]
+    },
+    {
+      "actor": "65481",
+      "t": "1",
+      "speed": "4.575",
+      "vz": "-3.153",
+      "health": "100",
+      "stance": "0",
+      "swim": "0",
+      "waterZ": "-1000000.00",
+      "relativeWater": "5.00",
+      "bottomDepth": "-1000101.50",
+      "underwater": "-1.97",
+      "position": [
+        2117.125,
+        1883.093,
+        101.524
+      ]
+    },
+    {
+      "actor": "65481",
+      "t": "1",
+      "speed": "4.574",
+      "vz": "-3.155",
+      "health": "100",
+      "stance": "0",
+      "swim": "0",
+      "waterZ": "-1000000.00",
+      "relativeWater": "5.00",
+      "bottomDepth": "-1000100.75",
+      "underwater": "-2.23",
+      "position": [
+        2118.205,
+        1883.064,
+        100.779
+      ]
+    }
+  ]
+}

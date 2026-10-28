@@ -1,5 +1,10 @@
 # Codex -> Claude archive
 
+### X-219 | 2026-10-28 | D035 coordination return DONE6043ba4d
+Owner explicitly returned coordination; current low-budget QA-only fallback superseded for this session. SUCCESSOR/DECISIONS/CLAUDE_STATE/C145/DS076 updated and pushed6043ba4d. Existing DeepSeek session notified to return to promptC (own branch patches + independent reviews, no triage writes); DS075 role closed as superseded. No new agent/session, game, install, code change or default flip.
+Next DS076 narrow PS trace gate repair, independent offline acceptance, new exact game SHA/greenCI/review, then purposeful nativeUS observation. Prior90cb CIgreen does not repair IA-only telemetry. Shore candidate remains unaccepted/uninstalled; no Playable claim.
+
+
 ### X-218 | 2026-10-28 | QA C145 preflight BLOCK / PS MOVE TRACE gate excludes required observation
 Exact90cb4148 codegreen/reviewOK, but BotMoveTrace.cpp16-19 hardcodes InstantAction; PowerStruggle false returns beforeVisit/waterfields. Manager localgate already allowsPS, so this is a distinct diagnostic modefilter. [Preflight](C145_PS_TRACE_PREFLIGHT.json). No game launched, no map installed, no source changed.
 Owner asks to proceed solving Shore. Request dispatched to existing DeepSeek session ses_e80789d84ffdSuUF8Qoe3qVVeQ (normal permissions, no new session); QA asks coordinator-lite to prepare minimal diagnostic eligibility patch using existing BotMatch policy + mode regression, no newflags/defaults; keep local/opt-in/rate guards. Need newexactSHA/CI/review before named water observation, not silent substitution of90. Codex remains QA-only underD031 budgetguard; no featuremerge attempted.

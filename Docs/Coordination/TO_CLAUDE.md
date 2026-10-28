@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C145 DS078 recipe OK46c19ebe; actorless all45 CVars/debug/local gates PASS. Observation2050-byte command exceeded engine2048 buffer; no bot runtime, restored. v3 removes unused summary + prelaunch length guard.
+NOW: C145 real PS water trace PASS on f66406d2; partial2.3s upper US native observation, no swim yet. Harness immediate-count assertion + deferred removal/recreate bug; DS079 next, data restored, no repeat.
 
+
+### X-224 | 2026-10-28 | C145 PS trace runtime PASS / partial native US observation; DS079 lifecycle blocker
+Exactf66406d2/CI40643217305GREEN/DS077OK + corrected DS078 recipe. v3 fullcommand2034bytes fits; actorless45CVars/debug/localPS PASS. Actual nativeUS2 group537 spawn563 upper103.450, retained after NK removal. Real PS MOVE TRACE water rows emitted: initially swim0/waterZ~99.5, then descending inside sub waterZ=-1000000 (native no-water sentinel), no swimming yet. [Samples/receipt](C145_NATIVE_US_PARTIAL.json).
+Observation aborted at2.3sim seconds by overly strict harness startup bots1/2 assertion: native deferred removal still lists pending NKslot at startup, later framebots1. Source/log also proves separate lifecyclebug: explicit wb_remove1 deferred; manager OnEvent checks transient Removing only, not durable RemovalPending, and tries external re-create (nameoccupied). No second observation; stop and joint DS079 diagnosis/narrow guard+regression before retry. Upper/lower/exiting/swim/door/capture not proved. Memory/nav original hashes+absent state independently restored; no active game/default change.
 
 ### X-223 | 2026-10-28 | C145 recipe corrected / launcher preflight BLOCK, cause measured
 DS078 recipe review OK46c19ebe; exactf66406d2 CI/reviewgreen. Corrected actorless preflight45CVars and localPS/debug status PASS. Observation process exited before log: full command2050ASCIIbytes, Launcher SetCmdLine rejects >=2048 (ISystem cmdLine[2048]); actorless2006bytes fits. No bot runtime, no native observations. Full memory/nav/absent state independently hash-restored. [Receipt](C145_LAUNCH_PREFLIGHT.json).
@@ -19,8 +23,4 @@ Candidate653f5e1e accepted ONLY for temporary diagnostic loading, no playable ac
 ### X-220 | 2026-10-28 | C145 diagnostic integration DONE f66406d2; runtime gates pending
 DS076 patch74ca4fe9 integrated unchanged on claude-sprint **f66406d29f91e1950710907b02ad67aa9ec3825a**. MSVC x64 BotMoveTraceEligibility/BotMoveTrace/BotModePlan PASS; actual BotMoveTrace.cpp C++20 /Zs PASS. Initial C++17 syntax recipe failed upstream C++20 requirements; corrected dialect passed without source edits. [Receipt](C145_DS076_INTEGRATION.json).
 Parent CI40606278441 GREEN; exactnew CI40643217305 in progress, DS077 exact review requested. C145 remains incomplete; no PS run until both gates and measured temporary-map acceptance/restoration. Candidate653f5e1e unaccepted/uninstalled; USexit unresolved. No game/localgamebuild/memory/default changes; foreign tool edits preserved.
-
-### X-219 | 2026-10-28 | D035 coordination return DONE6043ba4d
-Owner explicitly returned coordination; current low-budget QA-only fallback superseded for this session. SUCCESSOR/DECISIONS/CLAUDE_STATE/C145/DS076 updated and pushed6043ba4d. Existing DeepSeek session notified to return to promptC (own branch patches + independent reviews, no triage writes); DS075 role closed as superseded. No new agent/session, game, install, code change or default flip.
-Next DS076 narrow PS trace gate repair, independent offline acceptance, new exact game SHA/greenCI/review, then purposeful nativeUS observation. Prior90cb CIgreen does not repair IA-only telemetry. Shore candidate remains unaccepted/uninstalled; no Playable claim.
 
