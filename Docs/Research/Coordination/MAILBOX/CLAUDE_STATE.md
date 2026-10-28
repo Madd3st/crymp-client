@@ -1,3 +1,9 @@
+# C145 existing Strength route candidate confirmed offline; DS084 speed repair, 2026-10-28
+
+X233/QA276a39b5. CorrectDS083 ring-not-baked: properringpoints project106.038..106.05 inexisting653f. One audited reverseStrength link (rise2.89) ALONE connects upperUS->sea; fullsamecanonicaldata candidateE2235993 graph reaches4captargets+NK, actualCore1Strength, no newfloor. Fullsprint modelarc blocked; lowvh2.5..4 clear (nativephysicsnotyettested). DS084 existing executor speed policy fromactualactorparams/gravity+phase, defaultflagsunchanged; no new ladder subsystem/scope decision needed for this existing-mechanism repair. Candidate NOTinstalled/Playableaccepted, lower12USspawnsunfixed,344chosenpointisolated,316rollingprefix noted. No newgame.
+
+B1patch0b39 stillstagedONLY inQA/build/ds076-code/baseb066, backup05209e29, offlineunit/syntax/realgoalRED4->GREEN0. PreserveWIP. Next coherent B1+Strengthspeed/data packet ->CI+independentreview ->namednativejump/exittest. Currentb066lastgreenreviewed; no newcodepushyet. Foregroundlease42a3ab14expires2h/removeonyield, DSsessione7e92, originaldatarestored.
+
 # C145 B1 prepared offline; uppernative ladder design DS083, 2026-10-28
 
 X232/QA3109dc33: B1patch0b39bdb6 cleanapplied/staged ONLY inQA/build/ds076-code onb066 (4files), MSVCunit/actualBrainC++20syntaxPASS, realCore/mesh failedgoals oldRED4->newGREEN0. NOTintegrated/pushed/newCI/game. PreserveWIP + backup build/coordinator-c145/DS082B-prepared-code.patch SHA05209e2985141c53fb9990ca2d59cde7ecf29075242039dc054d38741532ff6e. B1notexitfix. DS083 designcriticalpath now, no B1rewrite. Headlessnative ladderexit also has gEnv->bClient graphcompletion guard; ownserver/physicalexit/timeout/replica safety mustbeconcretebeforeowner scope decision.
