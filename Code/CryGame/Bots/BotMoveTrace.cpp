@@ -1,7 +1,9 @@
 #include "PortIncludes.h"
 #include "BotConfig.h"
 #include "BotMoveTrace.h"
+#include "BotMoveTraceEligibility.h"
 #include "BotManager.h"
+#include "BotMatch.h"
 #include "BotLog.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
@@ -13,9 +15,14 @@ void BotMoveTrace::Update(IGameFramework* framework,const BotManager& manager)
 {
  const int& flag=BotConfig::Get().moveTrace;
  CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
- const bool enabled=(flag==1 || flag==2) && framework && rules &&
-  !std::strcmp(rules->GetEntity()->GetClass()->GetName(),"InstantAction") &&
-  (gEnv->bServer?manager.CanRunLocalIA():gEnv->bMultiplayer);
+ // DS-076/C145 X-218: use the existing BotMatch policy instead of a hardcoded "InstantAction" class name, so the
+ // planned PowerStruggle native-water observation can reach Visit. Opt-in flag and local/multiplayer guards unchanged.
+ MoveTraceMode mode=MoveTraceMode::Unsupported;
+ if(rules){
+  if(BotMatch::IsPowerStruggle(*rules))mode=MoveTraceMode::PowerStruggle;
+  else if(BotMatch::IsBotMode(*rules))mode=MoveTraceMode::InstantAction;
+ }
+ const bool enabled=framework && rules && MoveTraceEligible(flag,gEnv->bServer,manager.CanRunLocalIA(),gEnv->bMultiplayer,mode);
  if(!enabled){if(m_clock.active)Reset();return;}
  const float now=gEnv->pTimer->GetCurrTime();// C-084: the owner's client trace at wb_move_trace_hz (circle/wall jumps need >= 20 Hz); server and bots stay 4 Hz
  const bool due=m_clock.Poll(now,true,gEnv->bServer?4.f:float(BotConfig::Get().moveTraceHz));++m_frame;
