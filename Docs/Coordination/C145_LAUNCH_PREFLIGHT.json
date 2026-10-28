@@ -1,0 +1,19 @@
+{
+  "task": "C145",
+  "sha": "f66406d29f91e1950710907b02ad67aa9ec3825a",
+  "state": "actorless recipe PASS; observation launcher rejected before logging",
+  "cause": "full command2050bytes >=2048 char engine buffer",
+  "source": [
+    "Code/Launcher/Launcher.cpp:1023-1042",
+    "Code/CryCommon/CrySystem/ISystem.h:368"
+  ],
+  "preflight_command_bytes": 2006,
+  "observation_command_bytes": 2050,
+  "bot_observation_runs": 0,
+  "restore_verified": {
+    "memory": true,
+    "nav": true
+  },
+  "correction": "Remove unused +wb_ps_summary; guard full command size before starting; same CVars/debug/status/roster unchanged",
+  "v3_harness_sha256": "c13748344b4553ea295b62d293cd50c5b900c89d8722d30c90522caf0709a86d"
+}
