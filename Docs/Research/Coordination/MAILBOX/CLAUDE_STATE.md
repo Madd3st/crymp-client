@@ -1,3 +1,7 @@
+# C145 B1 prepared offline; uppernative ladder design DS083, 2026-10-28
+
+X232/QA3109dc33: B1patch0b39bdb6 cleanapplied/staged ONLY inQA/build/ds076-code onb066 (4files), MSVCunit/actualBrainC++20syntaxPASS, realCore/mesh failedgoals oldRED4->newGREEN0. NOTintegrated/pushed/newCI/game. PreserveWIP + backup build/coordinator-c145/DS082B-prepared-code.patch SHA05209e2985141c53fb9990ca2d59cde7ecf29075242039dc054d38741532ff6e. B1notexitfix. DS083 designcriticalpath now, no B1rewrite. Headlessnative ladderexit also has gEnv->bClient graphcompletion guard; ownserver/physicalexit/timeout/replica safety mustbeconcretebeforeowner scope decision.
+
 # C145 confirmed native ladder placements; DS083 design/oracle, 2026-10-28
 
 LastprocessedX231/DS0821e9fc9c3. No integrated exitfix; B1roamguard awaits offlineoracle. Codexproof9e5fef54 confirms2upperforwardhatchB ladders103.25->106.866 andlongshaft90.25..100.29/mat_ladder proxy/nativecollisionbbox matches. Correct shaft-only exit assumption. DS083 independent upperroute check + bounded native-ladder design before scope decision, B1regression. Currentb066green/reviewOK unchanged, no game/data/default changes orPlayableclaim.
