@@ -29,7 +29,9 @@
     "holes": 41
   },
   "harness": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c148-upper-to-shore.ps1",
-  "harness_sha256": "6ce0f19d975507728b215ea23d5a2b57ead234845511fa04829aaf2fc4de1394",
+  "harness_sha256": "9f14e9a7e782d85e73e174d6294e487eb45d69501592391ea0cf4fd0574f2dd2",
   "expected_command_bytes": 2011,
-  "new_game_runs": 0
+  "new_game_runs": 0,
+  "review": "80144e6077050ad098c27517eea445cdb7941262",
+  "early_stop": "dry land after swim, >100m from submarine, within40m of native shore capture target; final trajectory review required"
 }
