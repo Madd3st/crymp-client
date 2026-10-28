@@ -12,6 +12,7 @@
 #include "CryGame/Bots/BotCombat.h"
 #include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotMatch.h"
+#include "CryGame/Bots/BotRemovalPolicy.h"
 #include "CryGame/Bots/BotTeamPlan.h"
 #include "CryGame/Bots/BotSpectator.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
@@ -464,9 +465,13 @@ void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)
 	// Do not erase here: this can arrive from inside RemoveEntity called by our own Remove().
 	BotInstance* bot = Find(entity->GetId());
 	if (!bot) return;
-	// Removed by someone else while the level lives: native IA RestartGame -> GameFramework::Reset
-	// deletes runtime-spawned actors without eAE_resetBegin. Re-create the same bot next frame.
-	if (!bot->Removing() && m_levelReady)
+	// DS-079: only a true external deletion restores. An explicit removal may be deferred, so `Removing()` (transient,
+	// true only inside RemoveEntity) is not enough: RemovalPending() carries the durable intent, Expired() covers a
+	// duplicate DONE after OnEntityDone. A foreign entity never resolves to a registered bot (known=false).
+	// True external case: native IA RestartGame -> GameFramework::Reset deletes runtime actors without
+	// eAE_resetBegin, so the same bot is re-created next frame.
+	const BotDoneAction action = BotDoneDecision(true, m_levelReady, bot->Removing(), bot->RemovalPending(), bot->Expired());
+	if (action == BotDoneAction::RestoreExternal)
 	{
 		m_roster.push_back({ bot->Number(), bot->Profile(), bot->AIEnabled() });
 		m_restorePending = true;
