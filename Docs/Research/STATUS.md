@@ -34,6 +34,6 @@ Full Shore/Power Struggle match, lower 12 submarine spawns, historical 41 water 
 
 ## Current documentation task
 
-C151: owner asked to receive Steelmill first, then substantially improve wiki and documentation. Steelmill launch/ZIP links delivered first. Wiki now separates newcomer onboarding, engineering navigation, launch instructions, evidence and troubleshooting. Source and published wiki SHAs are recorded in mailbox completion and Codex outbox. Documentation-only work requires diff/link/source checks, no game build or runtime.
+C151 DONE: source `cebeb1b055cf2db772791ff47c9a2f879cae695c`, published wiki `3370918d4171620481ce021c5673f02eae675bdc`, QA report `4eea479a` / X250. Steelmill launch/ZIP links delivered first. Wiki now separates newcomer onboarding, engineering navigation, launch instructions, evidence and troubleshooting. All 16 published page blobs match committed source; 73 local and 27 Git source links checked PASS. Documentation-only work, no game build or runtime. Pre-existing duplicate mailbox IDs DS050/DS052 detected and left unchanged.
 
 For live assignments use [TO_CODEX](Coordination/MAILBOX/TO_CODEX.md), [TO_DEEPSEEK](Coordination/MAILBOX/TO_DEEPSEEK.md), [decisions](Coordination/MAILBOX/DECISIONS.md) and [protocol](Coordination/MAILBOX/PROTOCOL.md). Historical STOP items apply to their task only. Large artifacts stay outside Git, with hashes and archive paths in reports.

@@ -4,7 +4,8 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
-### C-151 · 2026-10-28 · STARTED · owner: deliver Steelmill first, then improve wiki and documentation
+### C-151 · 2026-10-28 · DONE sourcecebeb1b0 / wiki3370918 / report4eea479a · owner: deliver Steelmill first, then improve wiki and documentation
+Completed: direct Steelmill START/ZIP links delivered first. Published 16 pages from cebeb1b055cf2db772791ff47c9a2f879cae695c to wiki3370918d4171620481ce021c5673f02eae675bdc; newcomer and engineer routes, corrected branches/status/launch/navigation, evidence and troubleshooting. Docs/README and current Research STATUS updated, historical status preserved. 73local+27Git source links PASS; published blobs match source, diffcheckPASS. X250/report4eea479a and machine receipt on weapon-goals. No game/build or game source changes. Existing duplicate DS050/DS052 detected and preserved as unrelated historical issue.
 Needs owner: no. Steelmill START.cmd/ZIP and desktop shortcut delivered first in chat; exact C150 b8b444d6/CI40709459511. Rework Docs/Wiki on triage for newcomers and engineers: correct branch ownership, explicit tested status, launch steps, source/data/tool navigation, troubleshooting and evidence workflow. Update current Research STATUS and documentation index, preserve historical evidence. Publish reviewed local Markdown to existing GitHub wiki via its Git remote; validate local links and pinned source paths before push. Documentation only, no game/build/feature flags. Report exact source and wiki commits; no purposeless gameplay.
 
 ### C-150 · 2026-10-28 · DONE prepared 75f9a670 / DS095 OK46f44f26 · owner two local showcase builds Steelmill/Shore
