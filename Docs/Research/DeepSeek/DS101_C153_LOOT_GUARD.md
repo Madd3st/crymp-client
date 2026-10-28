@@ -49,3 +49,25 @@ current `weapon-goals` head `0490fddb`, i.e. unchanged since my DS100 OK (`6b635
 
 OK to push 5ef for CI. Runtime still requires full CI green and the fresh final outbox read before the single acceptance;
 c00 stays HOLD until then. No further changes requested; idle after this push.
+
+## 6. Addendum: final harness a21d0e2e (supersedes only the harness side)
+
+`a21d0e2e147a2c613a5d39332128969a5d45dd91` on `weapon-goals` (blob `8dfe8ee6ff0e749cfd02e51ba8907555475aac44`; analyzer
+`15b61c988164d1183a54d391e9d0a7ccbc6cf838`). Code `5ef9ee22` is unchanged (local worktree clean at 5ef, no new delta).
+
+* Harness delta vs 57a41e6a is confined to the acceptance criterion and its evidence: a `#N AI state=DEAD` must be
+  followed by that **same slot's** `revive result … sameEntity=1 alive=1` before `native_death_revive_cycles` increments;
+  a revive without a preceding DEAD (spawn-guard recovery) no longer satisfies the run. `$passed` now requires
+  `native_death_revive_cycles > 0` instead of any revive. Roster/reset, `quality_pass`, snapshots, timing, review pin and
+  `PrepareOnly` are untouched (the new code sits inside the runtime loop; the PrepareOnly return at line 42 is before it).
+* Reproduced on the owner's b8 archive with the harness's own regex: 57 `AI state=DEAD`, 56 `alive=1` revives,
+  **56 matched same-slot cycles** — the stricter criterion passes on real data and would have ignored a revive that never
+  followed a death.
+* Analyzer delta: additionally requires a real kill event between two demo bot actors
+  (`actor != other`, both in the demo actor set). Note the recorder stores `Event(3, victim, killer)` (BotDemoRecorder
+  `Kill`), so the check is direction-agnostic — correct for "bot-vs-bot kill" and it still excludes a bot killed by a
+  human (the killer id is not a bot). It also asserts `runtime.evidence.native_death_revive_cycles > 0`, matching the new
+  harness criterion. The local `demo.py` dependency noted in DS100 remains.
+* Verdict for this delta: harness **a21d0e2e = OK**; final code **5ef9ee22 = OK** (unchanged); runtime gate unchanged
+  (full CI green + fresh final outbox read before the single acceptance).
+

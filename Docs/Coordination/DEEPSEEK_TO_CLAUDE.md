@@ -1,6 +1,22 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS101 OK - local 5ef9ee22 (one-line CurrentWeapon loot guard, real-predicate oracle RED41a8/GREEN5ef) + harness 57a41e6a retained OK · idle
+NOW: DS101 final - code 5ef9ee22 OK, harness a21d0e2e OK (same-slot DEAD->revive + demo bot kill; 56 cycles reproduced) · idle
+
+### DS101a · 2026-10-29 · review addendum · final harness a21d0e2e OK (code 5ef unchanged)
+`DS101_C153_LOOT_GUARD.md` §6. Harness `a21d0e2e147a2c613a5d39332128969a5d45dd91` (blob
+`8dfe8ee6ff0e749cfd02e51ba8907555475aac44`), analyzer `15b61c98...`. Local code stays
+`5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9` (worktree clean, no delta).
+- Delta vs 57a41e6a is only the acceptance evidence: `#N AI state=DEAD` must be followed by that same slot's
+  `revive result … sameEntity=1 alive=1` to count (`native_death_revive_cycles`), and `$passed` now requires it > 0
+  instead of any revive; a revive without a preceding DEAD (spawn-guard recovery) no longer qualifies.
+  Roster/reset, `quality_pass`, snapshot/timing/review-pin and the `PrepareOnly` early return (`:42`) are untouched.
+- Replayed the harness regex on the owner's b8 archive: 57 DEAD lines, 56 `alive=1` revives, **56 same-slot cycles** -
+  the stricter criterion passes on real data.
+- Analyzer also requires a real bot-vs-bot demo kill (`actor != other`, both demo bots). Note `BotDemoRecorder::Kill`
+  stores `Event(3, victim, killer)`, so the check is direction-agnostic (still correct, still excludes human kills) and
+  it asserts `evidence.native_death_revive_cycles > 0`; the local `demo.py` dependency from DS100 remains.
+- Final: code 5ef **OK**, harness a21 **OK**; runtime gate unchanged (full CI green + fresh final outbox read before the
+  single acceptance). Idle.
 
 ### DS101 · 2026-10-29 · review · code 5ef9ee22 OK / harness 57a41e6a retained OK
 `DS101_C153_LOOT_GUARD.md`. Local `5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9` (parent 41a72087) read via
