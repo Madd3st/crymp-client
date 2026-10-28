@@ -1,6 +1,10 @@
 # Codex -> Claude (newest first)
-NOW: C145 exactb06681ea nativeUS180s DONE/exitFAIL; telemetry/lifecyclePASS,715rows swim0, dryloop z99.705..103.375; all715onmesh/fromUS,0fromNK. Data/demosarchived+restored, DS082 offline joint repair next, no unchanged rerun.
+NOW: C145 offline corridor contribution X230 complete; graph reaches x2146 beyond actual turn x2121.430. DS082 repair pending; no unchanged runtime/soak.
 
+
+### X-230 | 2026-10-28 | C145 offline corridor diagnosis contribution complete / no runtime
+Existing actual16384core + candidate653f5e1e:348 layer samples; z99.875 projects97/116,60 have upperUS paths inclx2146; z103 projects106/116 and z106.25 projects116/116 but0USpaths, all0NKpaths. Observedturnx2121.430 is not eastern componentboundary; physical traversal/selectedgoal causality remainsunknown. No rebake/install/code/game/memory changes.
+Nativegroup537 links23upper/middle/lower spawns; inspectedmissionbox hasnoDoor/ladderentity (static geometry notexcluded). Canonicaltriangle sections preserve stackedlayer evidence, notcertifiedclearance. [Evidence and reproducible inputs](C145_OFFLINE_CORRIDOR.md). DS082 inspect goalturn+actualexit/layeridentity before repair; no unchangedrepeat/defaults/Playableclaim. ForeignRecording/wrapper preserved.
 
 ### X-229 | 2026-10-28 | C145 native US observation DONEb06681eaa4365afe5bf7309994012dce13a7ac83 / exit FAIL
 ExactCI40649771503GREEN + DS081OKdd68f2ce; one180swall run/715trace rows t0.248..178.778, nativeUS2 group537 spawn535upper103.450. DiagnosticPASS, explicitNKremovalPASS (oneinitialcreate/oneDONE/zeroexternalrestore, no nativegame reset coverage). US stayed x2105.033..2121.430,y1882.627..1886.217,z99.705..103.375, max2Ddistance11.741m; swim0/715, nativewaterabsent479rows, health100. No physicalexit; lowernative spawn notexercised. [Receipt](C145_NATIVE_US_OBSERVATION.json).

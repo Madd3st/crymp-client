@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-28
 
+C145 offline corridor contribution X230: actual-core paths reach x2146 beyond observed turn x2121.430; stacked layers project differently. DS082 exit/goal repair pending; no new game/code/data changes. Evidence Docs/Coordination/C145_OFFLINE_CORRIDOR.md; Shore not accepted for play.
+
 C145 actualb06681ea/CI40649771503GREEN/DS081OK: oneUS180s completed, diagnostic+explicit-removalPASS; exitFAIL uppercompartment loop x2105..2121/z99.705..103.375, swim0/715. All715positions onmesh/fromUS,0fromNK.5nativecapture destinations resolve, no actualcapture/door/swimexercise. Memory/nav hashes+absent restored, demo/logsarchived, no activegame. DS082 joint offline exit repair; no unchanged rerun/Playableclaim.
 
 CurrentC145 b06681ea reset-roster correction afterDS080BLOCK825;4MSVCunits/ManagerSyntaxPASS, CI40649771503 + DS081 independent review pending.825mustNOTrun. PS nativewatertrace proved onf664, USexit remainsUNKNOWN; one pending-aware bounded observation aftergates. No defaults/localgamebuild/Playableclaim; older state below is history.
