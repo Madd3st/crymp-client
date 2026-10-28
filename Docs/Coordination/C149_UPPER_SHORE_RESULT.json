@@ -341,5 +341,7 @@
       "started": "2026-10-28T18:02:43"
     },
     "record_tail_complete": true
-  }
+  },
+  "independent_result_audit": "114257044f743b88520bf60648486dc5debe9961",
+  "final_acceptance": "PASS for requested upper submarine -> sea -> dry shore scenario only"
 }

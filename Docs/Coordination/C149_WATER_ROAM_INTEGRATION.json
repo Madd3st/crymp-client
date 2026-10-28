@@ -33,12 +33,14 @@
     "checked_after_preflight": true,
     "checked_every_15s_during_run": true
   },
-  "new_game_runs": 0,
+  "new_game_runs": 1,
   "review": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
   "review_branch_head": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
-  "state": "green_and_latest_review_revalidated_starting_final_shared_run",
+  "state": "complete_final_shared_route_pass_independently_audited",
   "artifact_sha256": {
     "CryMP-Client64.exe": "ae9ee3fa059ea31557f644eaaafe990876f5e6beda93c46c80329f63a2ea889e",
     "CryMP-Server64.exe": "8fd34b5399b1bb0cba0b5c610bc29d37141776993bff9c9535462e7644404d70"
-  }
+  },
+  "runtime_result": "C149_UPPER_SHORE_RESULT.json",
+  "independent_result_audit": "114257044f743b88520bf60648486dc5debe9961"
 }
