@@ -1,0 +1,94 @@
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index cd9aef9..51be486 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -957,17 +957,28 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 				// (C145 US t173..179 steered through the hull and logged NAV fallback/stuck); without a mesh keep the
+ 				// old full-leg goal.
+ 				float fraction = 1.0f;
++				// DS-092: the local water leg is sampled and committed at the gated native water plane. The path goal is
++				// projected with the dry box (up 1.0), so a goal at the swimmer's feet z is unreachable even in open
++				// water; dry callers keep feet.z exactly (waterStart is false).
++				const float goalZ = RoamGoalZ(waterStart, feet.z, m_blackboard.waterZ);
+ 				if (mesh)
+ 				{
+ 					bool sampled[4];
+ 					for (int i = 0; i < 4; ++i)
+ 					{
+-						const Vec3 p = feet + (local - feet) * (1.0f - 0.25f * float(i));
++						Vec3 p = feet + (local - feet) * (1.0f - 0.25f * float(i));
++						p.z = goalZ;
+ 						sampled[i] = reachable(p);
+ 					}
+ 					fraction = RoamFallbackFraction(true, sampled);
+ 				}
+-				m_patrolGoal = fraction > 0.f ? feet + (local - feet) * fraction : feet;
++				if (fraction > 0.f)
++				{
++					Vec3 goal = feet + (local - feet) * fraction;
++					goal.z = goalZ;
++					m_patrolGoal = goal;
++				}
++				else m_patrolGoal = feet;   // fraction 0: hold this leg at the feet, as before
+ 				m_patrolUntil = m_now + 4.0f;
+ 			}
+ 			m_detour = false;
+diff --git a/Code/CryGame/Bots/BotRoamFallback.h b/Code/CryGame/Bots/BotRoamFallback.h
+index 8a9ce6f..0f15300 100644
+--- a/Code/CryGame/Bots/BotRoamFallback.h
++++ b/Code/CryGame/Bots/BotRoamFallback.h
+@@ -18,4 +18,14 @@ inline float RoamFallbackFraction(bool meshAvailable, const bool reachable[4])
+ 		if (reachable[i]) return 1.0f - 0.25f * float(i);
+ 	return 0.0f;
+ }
++
++// DS-092: a native swimmer's local roam leg is a WATER leg. Both the 4 samples *and* the committed goal must be
++// built at the qualified native water plane, never at the feet z: NavMeshCore projects a path goal with the dry goal
++// box (up 1.0), so a goal 1.4-2.3 m below the baked surface is unreachable even though the leg is open water
++// (C147 feet 97.2..98.6 vs plane 99.511). Only the already-gated `waterStart` fact (waterMovement + valid plane +
++// lift > 0.05, see BotBrain's WaterStartBounds) may lift it; dry callers keep the feet z byte-identically.
++inline float RoamGoalZ(bool waterStart, float feetZ, float waterZ)
++{
++	return waterStart ? waterZ : feetZ;
++}
+ }
+diff --git a/Tests/BotNavMeshWaterTests.cpp b/Tests/BotNavMeshWaterTests.cpp
+index 4608bec..5ec0d3f 100644
+--- a/Tests/BotNavMeshWaterTests.cpp
++++ b/Tests/BotNavMeshWaterTests.cpp
+@@ -78,6 +78,18 @@ int main()
+   // (e) corner ray: raw feet fail (C147 0/1085), the plane-sized box makes the ray usable.
+   if(nav.RayClear(swim,land)){std::puts("DS089 raw-feet ray unexpectedly clear");return 16;}
+   if(!nav.RayClear(swim,land,&water)){std::puts("DS089 water ray not clear");return 17;}
++  // (f) DS-092: the local water leg's GOAL is projected with the dry box, so a goal at the swimmer's feet z is not
++  // pathable while the same XY at the native plane is - this is why the committed patrol goal must be lifted too,
++  // not only the four samples.
++  const float goalFeetZ[3]={18,-15,planeZ-1.5f};   // 3 m along the water row, feet height
++  const float goalWaterZ[3]={18,-15,planeZ};       // the same leg at the native water plane
++  std::vector<float> lp; std::vector<WarsBots::NavPathLink> ll; const char* lw=nullptr;
++  if(nav.FindPathLinks(swim,goalFeetZ,lp,ll,&lw,&water)){std::puts("DS092 feet-z water goal unexpectedly pathable");return 18;}
++  if(nav.Reachable(swim,goalFeetZ,2.6f,&water)){std::puts("DS092 feet-z water goal unexpectedly reachable");return 19;}
++  if(!nav.FindPathLinks(swim,goalWaterZ,lp,ll,&lw,&water)){std::puts(lw?lw:"DS092 water-plane goal path failed");return 20;}
++  if(!nav.Reachable(swim,goalWaterZ,2.6f,&water)){std::puts("DS092 water-plane goal not reachable");return 21;}
++  const float offGoal[3]={60,-15,planeZ};          // fail-closed: off-mesh local goal stays rejected
++  if(nav.Reachable(swim,offGoal,2.6f,&water)){std::puts("DS092 off-mesh water goal accepted");return 22;}
+  }
+  std::puts("BotNavMeshWaterTests OK");return 0;
+ }
+diff --git a/Tests/BotRoamFallbackTests.cpp b/Tests/BotRoamFallbackTests.cpp
+index 5912901..a8da00c 100644
+--- a/Tests/BotRoamFallbackTests.cpp
++++ b/Tests/BotRoamFallbackTests.cpp
+@@ -38,6 +38,12 @@ int main()
+ 		const bool r[4] = { false, false, false, false };
+ 		assert(RoamFallbackFraction(false, r) == 1.0f);
+ 	}
++	{
++		// DS-092: only the gated native-water fact lifts the local goal to the water plane; dry keeps the feet z.
++		assert(RoamGoalZ(false, 98.0f, 99.5f) == 98.0f);
++		assert(RoamGoalZ(true, 98.0f, 99.5f) == 99.5f);
++		assert(RoamGoalZ(true, 97.2f, 99.59f) == 99.59f);
++	}
+ 
+ 	std::puts("BotRoamFallbackTests OK");
+ 	return 0;
