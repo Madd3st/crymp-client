@@ -4,7 +4,7 @@
   "parent": "def8a65d99e4640c9c765375f5739d010835e67e",
   "patch": "d0f760e0",
   "ci": 40709459511,
-  "ci_state": "pending",
+  "ci_state": "completed_success",
   "review_task": "DS093",
   "units_pass": [
     "BotNavMeshWater",
@@ -25,7 +25,7 @@
     "contradictions": 0
   },
   "harness": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c149-upper-to-shore.ps1",
-  "harness_sha256": "7a46d1e25c2683132485f1dbc44d3465143fa52e801399c9bd924647ddfc5674",
+  "harness_sha256": "ec5d4d2d1d490ca3a202731f40812aa85cf7d14fff41bbe988dd5390071e2370",
   "fresh_review_guard": {
     "matching_pin": "PASS",
     "changed_pin": "BLOCK",
@@ -35,5 +35,10 @@
   },
   "new_game_runs": 0,
   "review": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
-  "review_branch_head": "b3182ff90373ad00731e75ea7d44df82a15c15d2"
+  "review_branch_head": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
+  "state": "green_and_latest_review_revalidated_starting_final_shared_run",
+  "artifact_sha256": {
+    "CryMP-Client64.exe": "ae9ee3fa059ea31557f644eaaafe990876f5e6beda93c46c80329f63a2ea889e",
+    "CryMP-Server64.exe": "8fd34b5399b1bb0cba0b5c610bc29d37141776993bff9c9535462e7644404d70"
+  }
 }
