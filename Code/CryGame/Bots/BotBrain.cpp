@@ -18,6 +18,7 @@
 #include "CryGame/Bots/BotAuditFixes.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotRoamFallback.h"
 #include "CryGame/Bots/BotPSCaptureRuntime.h"
 #include "CryGame/Bots/BotPSBuy.h"
 #include "CryCommon/CryScriptSystem/IScriptSystem.h"
@@ -53,6 +54,19 @@ const char* NameOf(BotBrain::State state)
 	case BotBrain::State::RESPAWNING: return "RESPAWNING";
 	}
 	return "UNKNOWN";
+}
+
+// DS-089: bounded water start for the path/reach/ray queries of a native swimmer. Sized from the measured
+// feet->native-plane offset (C147: 1.18..2.31 m), so a fixed 2.0 m box no longer loses the deep-float rows; the box
+// is still bounded (WaterQueryBounds clamps to 2.8 m) and the core accepts it only on a baked water polygon. Dry
+// callers (`waterMovement` false, sentinel plane, feet at/above the plane) get no bounds and keep the old box.
+bool WaterStartBounds(const BotBlackboard& bb, float feetZ, NavQueryBounds& out)
+{
+	if (!bb.waterMovement || !bb.waterValid) return false;
+	const float lift = bb.waterZ - feetZ;
+	if (!(lift > 0.05f)) return false;
+	out = WaterQueryBounds(lift);
+	return true;
 }
 }
 
@@ -190,7 +204,12 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		{
 			std::vector<float> xyz; const char* why = "navmesh";
 			const float a[3] = {feet.x, feet.y, feet.z}, b[3] = {goal.x, goal.y, goal.z};
-			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why);
+			// DS-089: a native swimmer floats 1.2-2.3 m below the water surface; use the plane-sized bounded water start
+			// box only while the native water movement is active. The core accepts only the baked water polygon and
+			// fails closed on a missing/non-water ref (no dry/seabed/stacked fallback).
+			NavQueryBounds water;
+			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water); // DS-089: sized from the native plane
+			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why, waterStart ? &water : nullptr);
 			if (!found) m_pathLinks.clear();
 			m_meshPathActive = found;
 			m_path.clear();
@@ -256,7 +275,11 @@ Vec3 BotBrain::SteerCorners(NavMeshCore& mesh, const Vec3& feet)
 		if (byPlane)
 		{
 			const float a3[3] = {feet.x, feet.y, feet.z}, b3[3] = {n.x, n.y, n.z};
-			if (!mesh.RayClear(a3, b3)) break; // crossed the line but the next leg is not in straight reach yet
+			// DS-089: a swimmer's raw feet are below the water poly, so the ray start is snapped with the same bounded
+			// water box; without it RayClear failed on every water corner (0/1085) and blocked corner advancement.
+			NavQueryBounds water;
+			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
+			if (!mesh.RayClear(a3, b3, waterStart ? &water : nullptr)) break; // crossed the line but the next leg is not in straight reach yet
 		}
 		++m_pathIndex;
 	}
@@ -632,7 +655,10 @@ bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTim
 	{
 		m_nextPsCapture=m_now+2.0f;
 		const float from[3]={feet.x,feet.y,feet.z};
-		PSCaptureSnapshot(m_psPoints,*rules,from);
+		// DS-087/089: keep the PS capture goal alive from the same bounded, plane-sized water start.
+		NavQueryBounds water;
+		const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
+		PSCaptureSnapshot(m_psPoints,*rules,from, waterStart?&water:nullptr);
 	}
 	// DS-072: hold on native area membership of the current target, not a 6 m sphere around the entity pivot.
 	bool inside=false;
@@ -872,7 +898,13 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			NavMeshCore* mesh = CurrentNavMesh();
 			const float from[3] = {feet.x, feet.y, feet.z}, to[3] = {heard.x, heard.y, heard.z};
 			float snap[3];
-			if (!mesh || !mesh->Project(from, snap) || mesh->Reachable(from, to))
+			NavQueryBounds water;
+			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
+			const NavQueryBounds* startBounds = waterStart ? &water : nullptr;
+			const bool projected = !mesh || (startBounds
+				? mesh->Project(from, snap, startBounds->side, startBounds->up, startBounds->down, true)
+				: mesh->Project(from, snap));
+			if (!mesh || !projected || mesh->Reachable(from, to, 2.6f, startBounds))
 			{
 				m_patrolGoal = heard; m_patrolUntil = m_now + 8.0f; m_detour = false;
 				WB_LOG(2, "[WarsBots] #%d HEARD gunshot at (%.1f,%.1f,%.1f), investigating.", m_number, heard.x, heard.y, heard.z);
@@ -893,8 +925,15 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			NavMeshCore* mesh = CurrentNavMesh();
 			const float from[3] = {feet.x, feet.y, feet.z};
 			float snap[3];
-			if (mesh && !mesh->Project(from, snap)) mesh = nullptr; // off the mesh: keep the old goal choice
-			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q); };
+			// DS-087: project the swimming start with the bounded water box; dry floors keep the default box.
+			NavQueryBounds water;
+			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
+			const NavQueryBounds* startBounds = waterStart ? &water : nullptr;
+			const bool projected = !mesh || (startBounds
+				? mesh->Project(from, snap, startBounds->side, startBounds->up, startBounds->down, true)
+				: mesh->Project(from, snap));
+			if (mesh && !projected) mesh = nullptr; // off the mesh: keep the old goal choice
+			auto reachable = [&](const Vec3& p) { const float q[3] = {p.x, p.y, p.z}; return !mesh || mesh->Reachable(from, q, 2.6f, startBounds); };
 			if (!m_detour && (m_patrolStep & 1) && g_pGame->GetBotManager().Nav().PickHotspot(m_rng + m_patrolStep, safe, hotspot, &feet, actor.GetEntityId()) &&
 				(hotspot - feet).GetLengthSquared2D() > 64.0f && reachable(hotspot))
 			{ m_patrolGoal = hotspot; m_patrolUntil = m_now + 30.0f; picked = true; }
@@ -913,7 +952,22 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			else
 			{
 				const float angle = (m_patrolStep * 2.399963f) + m_phase;
-				m_patrolGoal = feet + Vec3(cosf(angle),sinf(angle),0) * (6.0f + (m_patrolStep%3)*2.0f);
+				const Vec3 local = feet + Vec3(cosf(angle),sinf(angle),0) * (6.0f + (m_patrolStep%3)*2.0f);
+				// DS-082 B1: the local fallback is not a path request. Walk only the reachable fraction of the leg
+				// (C145 US t173..179 steered through the hull and logged NAV fallback/stuck); without a mesh keep the
+				// old full-leg goal.
+				float fraction = 1.0f;
+				if (mesh)
+				{
+					bool sampled[4];
+					for (int i = 0; i < 4; ++i)
+					{
+						const Vec3 p = feet + (local - feet) * (1.0f - 0.25f * float(i));
+						sampled[i] = reachable(p);
+					}
+					fraction = RoamFallbackFraction(true, sampled);
+				}
+				m_patrolGoal = fraction > 0.f ? feet + (local - feet) * fraction : feet;
 				m_patrolUntil = m_now + 4.0f;
 			}
 			m_detour = false;

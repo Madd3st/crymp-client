@@ -182,15 +182,40 @@ unsigned long long NavMeshCore::Nearest(const float* p, float* snapped, float si
 	return ref;
 }
 
-bool NavMeshCore::Project(const float* p, float* out, float side, float up, float down) const
+bool NavMeshCore::Project(const float* p, float* out, float side, float up, float down, bool waterOnly) const
 {
-	return Nearest(p, out, side, up, down) != 0;
+	const unsigned long long ref = Nearest(p, out, side, up, down);
+	if (!ref) return false;
+	return !waterOnly || IsWaterPoly(ref);
 }
 
-bool NavMeshCore::RayClear(const float* a, const float* b) const
+// DS-087: the water query box is accepted only on the baked water surface, never on a dry/stacked floor.
+bool NavMeshCore::IsWaterPoly(unsigned long long ref) const
+{
+	const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
+	if (!m_mesh || dtStatusFailed(m_mesh->getTileAndPolyByRef((dtPolyRef)ref, &tile, &poly)) || !poly) return false;
+	return poly->getArea() == kWaterArea;
+}
+
+// DS-088/089: one start resolution for path, reachability and ray queries. No bounds = the old dry box. A native-water
+// start must project to the baked water area; no ref (surface hole) or a non-water ref (dry/seabed/stacked floor)
+// fails closed and never falls back to the dry box - the native hand-over is the dry caller once ShouldSwim ends.
+unsigned long long NavMeshCore::StartRef(const float* start, float* snapped, const NavQueryBounds* bounds, bool* notWater) const
+{
+	if (notWater) *notWater = false;
+	if (!bounds) return Nearest(start, snapped, 1.5f, 1.0f, 3.0f);
+	const unsigned long long ref = Nearest(start, snapped, bounds->side, bounds->up, bounds->down);
+	if (!ref) return 0;
+	if (!IsWaterPoly(ref)) { if (notWater) *notWater = true; return 0; }
+	return ref;
+}
+
+bool NavMeshCore::RayClear(const float* a, const float* b, const NavQueryBounds* startBounds) const
 {
 	float snapped[3];
-	const dtPolyRef ref = (dtPolyRef)Nearest(a, snapped, 0.5f, 1.0f, 2.0f);
+	// DS-089: a swimmer's raw feet are below the water poly; the water start box is snapped before the ray, exactly
+	// like the path start, so a corner-plane crossing is not lost to start_off_mesh. Dry callers keep 0.5/1.0/2.0.
+	const dtPolyRef ref = startBounds ? (dtPolyRef)StartRef(a, snapped, startBounds) : (dtPolyRef)Nearest(a, snapped, 0.5f, 1.0f, 2.0f);
 	if (!ref) return false;
 	float s[3], e[3]; ToRecast(snapped, s); ToRecast(b, e);
 	float t = 0, normal[3]; dtPolyRef path[64]; int n = 0;
@@ -233,9 +258,9 @@ bool NavMeshCore::WallClearance(const float* p, float maxRadius, float& dist, fl
 	return true;
 }
 
-bool NavMeshCore::Reachable(const float* start, const float* goal, float goalDown) const
+bool NavMeshCore::Reachable(const float* start, const float* goal, float goalDown, const NavQueryBounds* startBounds) const
 {
-	const unsigned long long a = Nearest(start, nullptr, 1.5f, 1.0f, 3.0f);
+	const unsigned long long a = StartRef(start, nullptr, startBounds);
 	const unsigned long long b = Nearest(goal, nullptr, 1.5f, 1.0f, goalDown);
 	if (!a || !b) return false;
 	auto ia = m_comp.find(a), ib = m_comp.find(b);
@@ -313,14 +338,17 @@ void NavMeshCore::BanLink(unsigned long long ref)
 }
 
 bool NavMeshCore::FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,
-	const char** reason) const
+	const char** reason, const NavQueryBounds* startBounds) const
 {
 	xyz.clear(); links.clear();
 	auto fail = [&](const char* why) { if (reason) *reason = why; return false; };
 	if (!m_query) return fail("navmesh_not_loaded");
 	float s[3], g[3];
-	const dtPolyRef a = Nearest(start, s, 1.5f, 1.0f, 3.0f);
-	if (!a) return fail("start_off_mesh");
+	bool notWater = false;
+	const dtPolyRef a = StartRef(start, s, startBounds, &notWater);
+	// DS-088: a water start is water-only; a non-water ref is not a shore transition (the dry caller handles the
+	// land when the native water movement ends). Fail closed instead of falling back to a submerged/stacked floor.
+	if (!a) return fail(notWater ? "start_not_water" : "start_off_mesh");
 	const dtPolyRef b = Nearest(goal, g, 1.5f, 1.0f, 2.6f);
 	if (!b) return fail("goal_off_mesh");
 	auto ia = m_comp.find(a), ib = m_comp.find(b);

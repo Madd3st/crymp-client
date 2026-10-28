@@ -17,6 +17,9 @@ struct BotBlackboard
 	// DS-070: one gated water policy. `swimming` records the native ShouldSwim() state; `waterMovement` is the only
 	// exception used by movement, trap recovery and native oxygen, and it is false unless BotWaterAllowed().
 	bool waterAllowed = false, swimming = false, waterMovement = false;
+	// DS-089: native water plane, used to size the bounded swim query start (worldWaterLevel; -1e6 sentinel invalid).
+	float waterZ = 0.f;
+	bool waterValid = false;
 	BotJump obstacleJump = BotJump::None;
 	void Sample(CPlayer& actor, float now);
 };

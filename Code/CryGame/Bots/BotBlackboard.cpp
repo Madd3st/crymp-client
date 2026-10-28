@@ -22,6 +22,9 @@ void BotBlackboard::Sample(CPlayer& actor, float now)
 	waterAllowed = BotWaterAllowedFor(actor);
 	swimming = actor.ShouldSwim();
 	waterMovement = waterAllowed && swimming;
+	// DS-089: the water query box is sized from the native plane; the sentinel keeps the dry query.
+	waterZ = stats.worldWaterLevel;
+	waterValid = waterZ > -9999.f;
 	canMove = health > 0 && !actor.IsFrozen() && !stats.isRagDoll && !stats.isOnLadder.Value() &&
 		stats.inFreefall.Value() <= 0 && !stats.inZeroG && !stats.isGrabbed && !stats.animationControlled &&
 		!stats.spectatorMode && !stats.flyMode && !actor.GetLinkedEntity() && (waterAllowed || !swimming);

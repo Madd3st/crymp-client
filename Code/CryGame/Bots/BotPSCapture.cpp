@@ -209,13 +209,13 @@ const std::vector<PsCapturePoint>& BasePoints()
 
 } // namespace
 
-void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const float* from)
+void PSCaptureSnapshot(std::vector<PsCapturePoint>& out, CGameRules& rules,const float* from, const NavQueryBounds* startBounds)
 {
 	out = BasePoints();
 	NavMeshCore* mesh=CurrentNavMesh();
 	for(PsCapturePoint& point:out){point.ownerTeam=rules.GetTeam(EntityId(point.id));
 	 const float goal[3]={point.x,point.y,point.z};
-	 if(from&&(!mesh||!mesh->Reachable(from,goal)))point.hasDestination=false;
+	 if(from&&(!mesh||!mesh->Reachable(from,goal,2.6f,startBounds)))point.hasDestination=false;
 	}
 }
 
