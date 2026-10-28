@@ -4,7 +4,8 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
-### C-152 · 2026-10-28 · STARTED · owner: joint DeepSeek plan for Counter-Strike-level bots
+### C-152 · 2026-10-28 · DONE planef3e6b70 / wikif722312 / reportbb1ca112 · owner: joint DeepSeek plan for Counter-Strike-level bots
+Delivered full Docs/Research/CS_BOT_MATURITY_PLAN.md and wiki CS-Maturity-Plan; independent DS09697cb2c78/e4051c5f read, six batches with locations/oracles/proposed acceptance and priority adjustments. No standalone metrics game, premature grenades or already-met95%water gate; no parity claim. Links81+29/exact17publishedblobs PASS. First proposed patch: weapon-goal lifecycle/caller timer; Shore data audit parallel, implementation not dispatched. Sourceef3e6b70ab0dd4961fdbffe8c28aff54b34784e1/wikif722312cf0a0ed7518024057bb3d3a5c1bc6e4cc/QA X252bb1ca112. No new gameplay/build/code/default changes.
 Needs owner: no. Analyse exact claude-sprint b8b444d6 and existing evidence jointly with DeepSeek DS096. Produce concrete prioritized improvement batches, current gaps/unknowns, source locations, dependency order, cheap red/green checks and shared runtime acceptance criteria. Define comparable CS-style capabilities rather than claim measured cross-game parity; separate IA maturity from Shore PS completion. Planning/docs only: no gameplay, builds, game code/default changes. Publish plan and wiki roadmap, report source and publication SHAs. No purposeless isolated runs.
 
 ### C-151 · 2026-10-28 · DONE sourcecebeb1b0 / wiki3370918 / report4eea479a · owner: deliver Steelmill first, then improve wiki and documentation
