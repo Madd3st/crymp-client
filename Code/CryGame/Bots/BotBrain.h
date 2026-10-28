@@ -83,6 +83,9 @@ private:
 	bool EyeRayClear(CPlayer& actor, const Vec3& from, const Vec3& to) const;
 	bool UpdateArbitrated(BotInstance& bot, CPlayer& actor, IActor* enemy, float decisionTime, bool socomQA);
 	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld, bool pathCost = false, bool sniperOnly = false);
+	// DS-097: the single writer of the weapon goal. The pure rules live in BotWeaponGoal.h; both callers only ask here.
+	bool TryAcquireUpgradeGoal(CPlayer& actor);
+	void SetUpgradeTarget(EntityId id);
 	BotLookPolicy m_look;
 	Vec3 m_lookDir = Vec3(0,1,0);
 	bool m_lookValid = false;

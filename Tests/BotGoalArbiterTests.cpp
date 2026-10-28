@@ -12,6 +12,18 @@ static ArbiterInput Base(float t)
 
 int main()
 {
+	// C153: the first arbiter tick can follow a long first-primary shortcut. A newly lost, known threat that
+	// just damaged us must interrupt even before m_started; otherwise the high weapon score consumes the tick.
+	{
+		GoalArbiter a; ArbiterInput in=Base(1.f);
+		in.damagedRecently=true; in.enemyVisible=false; in.lastSeenAge=0.3f; in.enemyDistance=20.f;
+		const ArbiterDecision d=a.Update(in);
+		assert(d.goal==ArbiterGoal::Fight && d.reason==ArbiterReason::Damaged);
+		GoalArbiter b; in.lastSeenAge=2.f;
+		assert(b.Update(in).goal==ArbiterGoal::Weapon);
+		GoalArbiter c; in.lastSeenAge=1e9f;
+		assert(c.Update(in).goal==ArbiterGoal::Weapon);
+	}
 	// 1. The flip scenario from DECISION_FLIPS.md: pistol only, enemy 40 m away, LOS toggling every 0.1 s tick.
 	//    Old logic flips CHASING <-> MOVING_TO_WEAPON every tick; the arbiter must stay on Weapon.
 	{

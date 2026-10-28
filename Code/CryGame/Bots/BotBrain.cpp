@@ -15,6 +15,7 @@
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Bots/BotWeaponRank.h"
 #include "CryGame/Bots/BotUpgradeGate.h"
+#include "CryGame/Bots/BotWeaponGoal.h"
 #include "CryGame/Bots/BotAuditFixes.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
@@ -418,8 +419,11 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	// is within 10 m; the candidate is scored by navmesh walk length, not straight distance (UpdateUpgrade pathCost).
 	{
 		const float enemyD = enemy ? (enemy->GetEntity()->GetWorldPos()-actor.GetEntity()->GetWorldPos()).GetLength() : 1e9f;
+		const float seenAge = enemy && m_combat.LastSeen()>0.0f ? m_now-m_combat.LastSeen() : 1e9f;
+		const bool urgentFight = enemy && FirstPrimaryCombatUrgent(m_blackboard.damagedUntil-m_now>2.4f,
+			m_combat.Visible(),seenAge);
 		if (m_now>=m_escapeUntil && m_now>=m_withdrawUntil &&
-			ShouldSeekFirstPrimary(BotConfig::Get().firstPrimary==1,BotWeapons::HasPrimary(actor),enemyD,socomQA) &&
+			ShouldSeekFirstPrimary(BotConfig::Get().firstPrimary==1,BotWeapons::HasPrimary(actor),enemyD,socomQA,urgentFight) &&
 			UpdateUpgrade(bot,actor,enemy,decisionTime,socomQA,true)) return;
 	}
 	if (m_lastFightTarget)
@@ -776,6 +780,29 @@ EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost,bo
 	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical, pathCost, sniperOnly);
 }
 
+// DS-097: reset the goal and its clocks together, so a stale progress/budget stamp can never outlive its target.
+void BotBrain::SetUpgradeTarget(EntityId id)
+{
+	if (m_upgradeTarget!=id)
+		WB_LOG(2,"[WarsBots] #%d WEAPON GOAL previous=%u target=%u event=%s.",m_number,m_upgradeTarget,id,id?"acquire":"clear");
+	m_upgradeTarget = id;
+	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = 0; m_upgradePathSig = 0;
+	m_upgradeSince = 0; // re-anchored on the first tick that actually pursues the goal
+}
+
+// DS-097: the only place that creates a weapon goal (was BotBrain.cpp:788-792 unconditional + :1761-1762 in the arbiter).
+// A tracked goal is held, not re-scanned, and "nothing found" is throttled too: no proximity query and nav path per tick.
+bool BotBrain::TryAcquireUpgradeGoal(CPlayer& actor)
+{
+	if (!WarsBots::MayAcquireWeaponGoal(m_upgradeTarget, m_now, m_nextUpgradeSearch)) return false;
+	const bool sniperOnly = BotConfig::Get().sniperReach==1 && PickupRange()>30.0f && !BotWeapons::HoldsSniper(actor);
+	const EntityId id = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 || sniperOnly, sniperOnly);
+	m_nextUpgradeSearch = m_now + 3.0f;
+	if (!id) return false;
+	SetUpgradeTarget(id);
+	return true;
+}
+
 bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
 {
 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
@@ -786,14 +813,18 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 	if (!socomQA && WarsBots::ShouldSearchUpgrade(hasPrimary,BotConfig::Get().weaponRank==1,sniperMind,force,enemy && m_combat.Visible()))
 	{
 		const bool sniperOnly = BotConfig::Get().sniperReach==1 && sniperMind && !BotWeapons::HoldsSniper(actor);
+		TryAcquireUpgradeGoal(actor);
+		// DS-097: a goal is created once (3 s throttle, only when none is tracked) and the total budget starts on the
+		// first tick that actually walks to it, so a mere candidate look cannot age it or restart the timeout.
+		if (m_upgradeTarget && !WarsBots::WeaponGoalPursues(m_upgradeSince))
 		{
-			m_upgradeTarget = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 || sniperOnly, sniperOnly);
-			m_upgradeSince = m_now;
-			m_nextUpgradeSearch = m_now + 3.0f;
+			m_upgradeSince=m_now; m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0;
+			WB_LOG(2,"[WarsBots] #%d WEAPON GOAL target=%u event=pursue since=%.3f.",m_number,m_upgradeTarget,m_upgradeSince);
 		}
+		else if (m_upgradeTarget && m_upgradeTarget != m_upgradeTracked)
+		{ m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0; }
 		// Unreachable (on a ledge, behind glass, taken): give up when the walk stops getting closer for 8 s (c067: a
 		// flat 10 s dropped every DSG1/Gauss trip - 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
-		if (m_upgradeTarget != m_upgradeTracked || !m_upgradeTarget) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0; }
 		if (IEntity* goal = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr)
 		{
 			const Vec3 feet=actor.GetEntity()->GetWorldPos();
@@ -817,17 +848,17 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 		if (BotConfig::Get().linkFailFast==1 && m_link.Active()) m_upgradeBestAt = m_now;
 		const float progressTimeout = sniperOnly ? 20.0f : 8.0f;
 		const float totalTimeout = sniperOnly ? 90.0f : 60.0f;
-		if (m_upgradeTarget && (m_now - m_upgradeBestAt > progressTimeout || m_now - m_upgradeSince > totalTimeout))
+		if (m_upgradeTarget && WarsBots::WeaponGoalExpired(m_now, m_upgradeSince, m_upgradeBestAt, progressTimeout, totalTimeout))
 		{
 			WB_LOG(2, "[WarsBots] #%d weapon %u unreachable; skipping it.", m_number, m_upgradeTarget);
-			MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
+			MarkBadItem(m_upgradeTarget); SetUpgradeTarget(0);
 		}
 		// A selected item can disappear or gain an owner while we approach it.
 		// Do not chase another player's gun until the ten-second timeout.
 		if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor, m_upgradeTarget))
 		{
 			WB_LOG(2, "[WarsBots] #%d weapon goal cancelled item=%u reason=unavailable.", m_number, m_upgradeTarget);
-			m_upgradeTarget = 0;
+			SetUpgradeTarget(0);
 		}
 		IEntity* item = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
 		if (item)
@@ -841,7 +872,7 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 				WBI(move,false);
 				if (BotWeapons::PickUp(actor, m_upgradeTarget, PickupRange())) m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass();
 				else MarkBadItem(m_upgradeTarget);
-				m_upgradeTarget = 0;
+				SetUpgradeTarget(0);
 			}
 			else { const Vec3 step=Steer(feet,item->GetWorldPos()); WBI_MOVETO(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
 			ExecuteIntent(actor,decisionTime);
@@ -870,7 +901,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			m_lootUntil=0;
 			if (drop)
 			{
-				m_upgradeTarget=drop; m_upgradeSince=m_now;
+				SetUpgradeTarget(drop); // DS-097: the budget starts in UpdateUpgrade when the bot actually walks to it
 				WB_LOG(2,"[WarsBots] #%d LOOT item=%u at (%.1f,%.1f,%.1f) actor=%u.",m_number,drop,m_lootPos.x,m_lootPos.y,m_lootPos.z,actor.GetEntityId());
 			}
 		}
@@ -1758,9 +1789,10 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	const bool hasPrimary=BotWeapons::HasPrimary(actor);
 	const bool ranked=BotConfig::Get().weaponRank==1;
-	if ((!hasPrimary || ranked) && m_now>=m_nextUpgradeSearch && !m_upgradeTarget)
-{ const bool sniperOnly=BotConfig::Get().sniperReach==1 && PickupRange()>30.0f && !BotWeapons::HoldsSniper(actor); m_upgradeTarget=UpgradeCandidate(actor,hasPrimary,BotConfig::Get().firstPrimary==1 || sniperOnly,sniperOnly); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
-	if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor,m_upgradeTarget)) m_upgradeTarget=0;
+	// DS-097: same single writer and 3 s throttle as UpdateUpgrade. This call only keeps the arbiter's candidate view;
+	// it does not start the budget, so a goal the arbiter scores but does not chase cannot time out into a false ban.
+	if (!hasPrimary || ranked) TryAcquireUpgradeGoal(actor);
+	if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor,m_upgradeTarget)) SetUpgradeTarget(0);
 	IEntity* item=m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
 	ArbiterInput in;
 	in.now=m_now;

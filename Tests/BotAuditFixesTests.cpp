@@ -18,6 +18,15 @@ int main()
     CHECK(!ShouldSeekFirstPrimary(true, false, 20.0f, true));
     CHECK(!ShouldSeekFirstPrimary(false, false, 20.0f, false));
 
+    // C153: the early rifle shortcut must not consume a tick the damage interrupt needs for a known enemy.
+    CHECK(FirstPrimaryCombatUrgent(true, true, 5.0f));
+    CHECK(FirstPrimaryCombatUrgent(true, false, 0.5f));
+    CHECK(!FirstPrimaryCombatUrgent(true, false, 1.0f));
+    CHECK(!FirstPrimaryCombatUrgent(true, false, 1e9f));
+    CHECK(!FirstPrimaryCombatUrgent(false, true, 0.0f));
+    CHECK(!ShouldSeekFirstPrimary(true, false, 20.0f, false, FirstPrimaryCombatUrgent(true, true, 0.0f)));
+    CHECK(ShouldSeekFirstPrimary(true, false, 20.0f, false, FirstPrimaryCombatUrgent(false, true, 0.0f)));
+
     // #3: finish lock at <=25 HP; a new enemy within 8 m that is hitting us wins.
     CHECK(KeepLowHpTarget(true, true, true, 25, 0.5f, 12.0f, false, false));
     CHECK(KeepLowHpTarget(true, true, true, 10, 0.9f, 8.0f, true, false));

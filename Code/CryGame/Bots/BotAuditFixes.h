@@ -4,10 +4,17 @@
 
 namespace WarsBots {
 
-// Spawn pistol -> rifle first, unless an enemy is close enough to fight now.
-inline bool ShouldSeekFirstPrimary(bool enabled, bool hasPrimary, float enemyDistance, bool socomQA)
+// Match the damage interrupt before the first-primary shortcut can bypass the goal arbiter.
+// Hearing/damage without a known opponent is not a visual sighting.
+inline bool FirstPrimaryCombatUrgent(bool damagedRecently, bool enemyVisible, float lastSeenAge)
 {
-    return enabled && !socomQA && !hasPrimary && enemyDistance > 10.0f;
+    return damagedRecently && (enemyVisible || lastSeenAge < 1.0f);
+}
+
+// Spawn pistol -> rifle first, unless an enemy is close enough or a known threat just hit us.
+inline bool ShouldSeekFirstPrimary(bool enabled, bool hasPrimary, float enemyDistance, bool socomQA, bool combatUrgent = false)
+{
+    return enabled && !socomQA && !hasPrimary && !combatUrgent && enemyDistance > 10.0f;
 }
 
 // Keep a <=25 HP target until it is dead/lost > 1 s, unless a new enemy within 8 m is the one hitting us.

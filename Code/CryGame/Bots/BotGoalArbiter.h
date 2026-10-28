@@ -72,6 +72,10 @@ public:
 		if (!m_started)
 		{
 			m_started = true;
+			// C153: first-primary can postpone our first tick until a known threat deals damage.
+			// Apply the same damage interrupt before initial scoring, not only on later committed ticks.
+			if (in.damagedRecently && (visible || in.lastSeenAge < 1.f))
+				return Switch(in.now, ArbiterGoal::Fight, ArbiterReason::Damaged, s);
 			return Switch(in.now, Best(s), ArbiterReason::Start, s);
 		}
 		const int cur = int(m_goal);
