@@ -19,4 +19,3 @@ public class Section145 {
 "@
 Add-Type -TypeDefinition $code
 [Section145]::Run((Join-Path $pwd 'build/coordinator-c145/Shore.US.exact-subset.obj'),(Join-Path $pwd 'build/coordinator-c145/US-canonical-sections.tsv'))
-
