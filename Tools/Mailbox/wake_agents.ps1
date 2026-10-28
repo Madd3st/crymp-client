@@ -15,6 +15,10 @@ function Recent-Repo($repo){
 }
 function Wake($agent,$repo,$prefix,$outbox){
  if(-not $repo){return}
+ if($agent -eq 'codex'){
+  $leasePath=Join-Path $dir 'codex-desktop-lease.json'
+  if(Test-Path -LiteralPath $leasePath){$lease=Get-Content -LiteralPath $leasePath -Raw -Encoding UTF8|ConvertFrom-Json;if($lease.repo -eq $repo -and [DateTime]::Parse([string]$lease.expiresUtc).ToUniversalTime() -gt [DateTime]::UtcNow){Log 'codex: foreground coordinator lease active, skip';return}}
+ }
  $stateFile=Join-Path $dir "wake-$agent-v2.json";$old=$null
  if(Test-Path $stateFile){$old=Get-Content $stateFile -Raw -Encoding UTF8|ConvertFrom-Json}
  if($old -and $old.worker){$p=Get-CimInstance Win32_Process -Filter "ProcessId=$($old.worker)";if($p -and $p.CommandLine -like '*run_mailbox_wake.ps1*' -and $p.CommandLine -like "* -Agent $agent *"){Log "${agent}: previous worker active, skip";return}}

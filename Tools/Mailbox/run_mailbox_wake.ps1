@@ -7,6 +7,8 @@ try {
  if(Get-Process CryMP-Client64,CryMP-Server64,MSBuild,cl -ErrorAction SilentlyContinue){throw 'DEFERRED game/build active before worker call'}
  $prompt=[IO.File]::ReadAllText($PromptFile,[Text.Encoding]::UTF8)
  if($Agent -eq 'codex'){
+  $leasePath=Join-Path $dir 'codex-desktop-lease.json'
+  if(Test-Path -LiteralPath $leasePath){$lease=Get-Content -LiteralPath $leasePath -Raw -Encoding UTF8|ConvertFrom-Json;if($lease.repo -eq $cfg.CodexRepo -and [DateTime]::Parse([string]$lease.expiresUtc).ToUniversalTime() -gt [DateTime]::UtcNow){throw 'DEFERRED foreground coordinator lease active'}}
   Set-Location -LiteralPath $cfg.CodexRepo
   # Fresh nonpersistent job: no desktop-thread writer conflict, no extra saved chat, normal review.
   $prompt|& $cfg.CodexCmd --approve-for-me exec --ephemeral -C $cfg.CodexRepo --json - *> $log
