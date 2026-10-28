@@ -1,3 +1,8 @@
+# C145 actorless preflight BLOCKED; no bot observation, 2026-10-28
+
+LastprocessedX222; C145 BLOCKED before bot observation: exactf66406d2 CI40643217305GREEN + DS077OK2425fd94. Actorless recipe rejects mailbox wb_debug2 (command accepts only0/1); 44CVars pass. Zero bots/observation runs, full memory/nav hashes and absent-state restored. DS078 independent recipe review requested; no repeat/game/default changes; Shore remains unaccepted for play.
+Next DS078 recipe-only review (debug command vs log CVar); do not silently run wb_debug2 or alter game source to accept it. No activegame. Prior STARTED/pending notes below are history.
+
 # C145 bounded native US observation STARTED, 2026-10-28
 
 D035 coordinator/QA active. Lastprocessed DS077/X221. Exactf66406d29f91e1950710907b02ad67aa9ec3825a CI40643217305GREEN + DS077OK2425fd94; 35 unit logs downloaded. One <=180s nativeUS2 observation after actorless recipe preflight, NK1 removed in startup batch. Candidate653f5e1e temporary diagnostic only, US0/23mainland known. No teleport/revive workaround. Snapshot/archive/restore memory/nav and absent files; stop on client/error. Next measured water/ShouldSwim/motion verdict, joint DeepSeek diagnosis; no repeat/soak/defaults. Earlier pending gates below are history.
