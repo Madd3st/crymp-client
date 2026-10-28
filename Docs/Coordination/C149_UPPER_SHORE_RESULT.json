@@ -1,0 +1,345 @@
+{
+  "schema": "warsbots-run-summary/1",
+  "task": "C149",
+  "source": "b8b444d6c858f27a1fdde0d93b25a318cafc6937",
+  "ci": 40709459511,
+  "code_review": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
+  "harness_review": "DS093/fresh-head guard; baseline DS086",
+  "data_sha256": "e2235993ce72eb4549788ad7bd1a171ab415c8e8b4c6da69fdb49ed941ef30de",
+  "trace_samples": 330,
+  "first": {
+    "actor": 65481.0,
+    "t": 0.278,
+    "speed": 0.0,
+    "vz": -1.192,
+    "mode": 3.0,
+    "energy": 200.0,
+    "grounded": 1.0,
+    "flying": 1.0,
+    "jump": 0.0,
+    "land": 0.0,
+    "health": 100.0,
+    "swim": 0.0,
+    "waterZ": 99.5,
+    "relativeWater": 5.0,
+    "underwater": -0.21,
+    "pos": [
+      2110.5,
+      1882.5,
+      103.367
+    ]
+  },
+  "last": {
+    "actor": 65481.0,
+    "t": 82.548,
+    "speed": 6.75,
+    "vz": 0.036,
+    "mode": 3.0,
+    "energy": 92.3,
+    "grounded": 1.0,
+    "flying": 0.0,
+    "jump": 0.0,
+    "land": 0.0,
+    "health": 100.0,
+    "swim": 0.0,
+    "waterZ": 99.49,
+    "relativeWater": 2.9,
+    "underwater": -67.06,
+    "pos": [
+      1825.403,
+      1685.867,
+      100.957
+    ]
+  },
+  "link_events": [
+    "0.92 [WarsBots] #2 LINK start kind=strength a=(2110.56,1885.58,103.21) b=(2113.98,1885.51,106.04) energy=191 actor=65481.",
+    "5.48 [WarsBots] #2 LINK done kind=strength at=(2114.97,1885.80,105.91) actor=65481."
+  ],
+  "capture_goals": [
+    "0.28 [WarsBots] #2 PS CAPTURE target=654 pos=(1794.5,1690.6,101.5) team=2 hold=0 actor=65481."
+  ],
+  "nav_fallback_count": 0,
+  "nav_fallback_reasons": {
+    "start_unprojected": 0,
+    "no_route": 0,
+    "other_component": 0,
+    "search_exhausted": 0
+  },
+  "water_samples": 142,
+  "first_water": {
+    "actor": 65481.0,
+    "t": 14.285,
+    "speed": 4.944,
+    "vz": -1.138,
+    "mode": 3.0,
+    "energy": 103.9,
+    "grounded": 1.0,
+    "flying": 1.0,
+    "jump": 0.0,
+    "land": 0.0,
+    "health": 100.0,
+    "swim": 1.0,
+    "waterZ": 99.43,
+    "relativeWater": -0.5,
+    "underwater": 0.0,
+    "pos": [
+      2054.111,
+      1880.155,
+      97.501
+    ]
+  },
+  "dry_land_candidate": {
+    "actor": 65481.0,
+    "t": 81.298,
+    "speed": 6.727,
+    "vz": 0.384,
+    "mode": 3.0,
+    "energy": 79.8,
+    "grounded": 1.0,
+    "flying": 0.0,
+    "jump": 0.0,
+    "land": 0.0,
+    "health": 100.0,
+    "swim": 0.0,
+    "waterZ": 99.45,
+    "relativeWater": 2.76,
+    "underwater": -65.81,
+    "pos": [
+      1833.807,
+      1686.355,
+      100.778
+    ]
+  },
+  "minimum_health": 100.0,
+  "restoration": {
+    "memory": {
+      "exact_names_and_hashes": true,
+      "expected": {
+        "Multiplayer_IA_Steelmill.mem": "e1b92da29b6c8fb74dc6412447161c126684cacba287035b8447ae8078233095",
+        "Multiplayer_IA_Steelmill.nav.json": "97f6f29357b12d0a675af083c45717406977c8d8a0a773f173e1dd57d7b3efde",
+        "Multiplayer_PS_Plantation.mem": "7c804b285a675426cd05daf2e67cf8f03f1f383b89d281b7defa963930b3f1f9",
+        "Multiplayer_PS_Shore.mem": "b3bff8dfb0930c0a78d84c2a85709705dfb08e14d6e202c98568cb298083ff39"
+      },
+      "actual": {
+        "Multiplayer_IA_Steelmill.mem": "e1b92da29b6c8fb74dc6412447161c126684cacba287035b8447ae8078233095",
+        "Multiplayer_IA_Steelmill.nav.json": "97f6f29357b12d0a675af083c45717406977c8d8a0a773f173e1dd57d7b3efde",
+        "Multiplayer_PS_Plantation.mem": "7c804b285a675426cd05daf2e67cf8f03f1f383b89d281b7defa963930b3f1f9",
+        "Multiplayer_PS_Shore.mem": "b3bff8dfb0930c0a78d84c2a85709705dfb08e14d6e202c98568cb298083ff39"
+      }
+    },
+    "nav": {
+      "exact_names_and_hashes": true,
+      "expected": {
+        "Armada.links.txt": "ce3326caf751661cf43f820560a390cc2ee5ee008c2d56e9e67d11cee7f34247",
+        "Armada.manifest.json": "5ed27f25f015095bd9ad11d9fe5888f61a7411f9dc17b17ad3722cc8c37fb861",
+        "Armada.navmesh": "87f0438cca0b531f6f227f83d640916afb93667802973e763333f73d78957590",
+        "Armada.spots.txt": "71ac48ed80c2068f6273868966362d1aefbebc0db5d34599cf0e121da53c1293",
+        "Outpost.links.txt": "0e6651a3da7536b5a20d3f1e9f81bc8ee588d0366d84e196c1e1b6dad0dc4d23",
+        "Outpost.manifest.json": "fa57ed4f696ce19334c2d447826e1b9d63de9a7425ef35927a547f7c43eef0e6",
+        "Outpost.navmesh": "944297ac9d51e5614b05401350df107a436b7606ff8174905057ba973468d18a",
+        "Outpost.spots.txt": "f041dbab3924403df302bdaf6169c180257cad8c49822bef044f6a980225e681",
+        "Quarry.links.txt": "2daa4f3ad189b0e90ffdb11312156c1b229cab67d6f49a20e642608e00d053e1",
+        "Quarry.manifest.json": "39bedf0452d93ca4982feb3434ba4c3c4342df3ba0c7ad42e6c1408725fdda2a",
+        "Quarry.navmesh": "3a2f6d50ffadf13238d80429e2269193857cc93eb9d7735574a131c4c7dc98e7",
+        "Quarry.spots.txt": "2a4e9c01df4f8653ab576c2695f1ffc3a2e72a9dbf7e5e355e1a3f0727a4addb",
+        "Steelmill.links.txt": "554072102e6e39797a4dd67754384106a2e297ff863f88ab8833d67f3c3d7c1b",
+        "Steelmill.manifest.json": "d0bedbaba64f76d43761205c22567790dd22f78039116af12df2fc8297bae2da",
+        "Steelmill.navmesh": "cfc11810626c6fa0859a055592e6c5ab12d12777f40f52aeb8c6208eefaf503b",
+        "Steelmill.spots.txt": "25c3eecf0699b9795bb214b322e9155b6bf5f207bc5e29e41479655a25cef4b5"
+      },
+      "actual": {
+        "Armada.links.txt": "ce3326caf751661cf43f820560a390cc2ee5ee008c2d56e9e67d11cee7f34247",
+        "Armada.manifest.json": "5ed27f25f015095bd9ad11d9fe5888f61a7411f9dc17b17ad3722cc8c37fb861",
+        "Armada.navmesh": "87f0438cca0b531f6f227f83d640916afb93667802973e763333f73d78957590",
+        "Armada.spots.txt": "71ac48ed80c2068f6273868966362d1aefbebc0db5d34599cf0e121da53c1293",
+        "Outpost.links.txt": "0e6651a3da7536b5a20d3f1e9f81bc8ee588d0366d84e196c1e1b6dad0dc4d23",
+        "Outpost.manifest.json": "fa57ed4f696ce19334c2d447826e1b9d63de9a7425ef35927a547f7c43eef0e6",
+        "Outpost.navmesh": "944297ac9d51e5614b05401350df107a436b7606ff8174905057ba973468d18a",
+        "Outpost.spots.txt": "f041dbab3924403df302bdaf6169c180257cad8c49822bef044f6a980225e681",
+        "Quarry.links.txt": "2daa4f3ad189b0e90ffdb11312156c1b229cab67d6f49a20e642608e00d053e1",
+        "Quarry.manifest.json": "39bedf0452d93ca4982feb3434ba4c3c4342df3ba0c7ad42e6c1408725fdda2a",
+        "Quarry.navmesh": "3a2f6d50ffadf13238d80429e2269193857cc93eb9d7735574a131c4c7dc98e7",
+        "Quarry.spots.txt": "2a4e9c01df4f8653ab576c2695f1ffc3a2e72a9dbf7e5e355e1a3f0727a4addb",
+        "Steelmill.links.txt": "554072102e6e39797a4dd67754384106a2e297ff863f88ab8833d67f3c3d7c1b",
+        "Steelmill.manifest.json": "d0bedbaba64f76d43761205c22567790dd22f78039116af12df2fc8297bae2da",
+        "Steelmill.navmesh": "cfc11810626c6fa0859a055592e6c5ab12d12777f40f52aeb8c6208eefaf503b",
+        "Steelmill.spots.txt": "25c3eecf0699b9795bb214b322e9155b6bf5f207bc5e29e41479655a25cef4b5"
+      }
+    }
+  },
+  "harness_error": null,
+  "verdict": "PASS: gate-approved final shared upper Strength exit -> sea -> dry shore near654; no full capture/map acceptance",
+  "errors": [],
+  "review_gate_valid_at_launch": true,
+  "review_freshness": {
+    "checks": 7,
+    "all_match": true,
+    "first_utc": "2026-10-28T15:02:37.4356242Z",
+    "last_utc": "2026-10-28T15:04:05.9149212Z",
+    "approved": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
+    "after_run": {
+      "utc": "2026-10-28T15:08:48.731260+00:00",
+      "approved": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
+      "observed": "b3182ff90373ad00731e75ea7d44df82a15c15d2",
+      "verdict": "MATCH_AFTER_RUN"
+    }
+  },
+  "segments": [
+    {
+      "swim": 0,
+      "start_t": 0.278,
+      "start": [
+        2110.5,
+        1882.5,
+        103.367
+      ],
+      "end_t": 14.033,
+      "end": [
+        2055.354,
+        1880.944,
+        98.292
+      ]
+    },
+    {
+      "swim": 1,
+      "start_t": 14.285,
+      "start": [
+        2054.111,
+        1880.155,
+        97.501
+      ],
+      "end_t": 28.035,
+      "end": [
+        2014.171,
+        1851.234,
+        98.086
+      ]
+    },
+    {
+      "swim": 0,
+      "start_t": 28.308,
+      "start": [
+        2013.522,
+        1850.666,
+        98.153
+      ],
+      "end_t": 53.795,
+      "end": [
+        1948.722,
+        1695.089,
+        98.248
+      ]
+    },
+    {
+      "swim": 1,
+      "start_t": 54.058,
+      "start": [
+        1947.35,
+        1694.995,
+        98.006
+      ],
+      "end_t": 75.295,
+      "end": [
+        1871.167,
+        1689.236,
+        98.064
+      ]
+    },
+    {
+      "swim": 0,
+      "start_t": 75.542,
+      "start": [
+        1870.346,
+        1689.176,
+        98.026
+      ],
+      "end_t": 82.548,
+      "end": [
+        1825.403,
+        1685.867,
+        100.957
+      ]
+    }
+  ],
+  "shore_endpoint": {
+    "actor": 65481.0,
+    "t": 82.548,
+    "speed": 6.75,
+    "vz": 0.036,
+    "mode": 3.0,
+    "energy": 92.3,
+    "grounded": 1.0,
+    "flying": 0.0,
+    "jump": 0.0,
+    "land": 0.0,
+    "health": 100.0,
+    "swim": 0.0,
+    "waterZ": 99.49,
+    "relativeWater": 2.9,
+    "underwater": -67.06,
+    "pos": [
+      1825.403,
+      1685.867,
+      100.957
+    ]
+  },
+  "endpoint_distance_to_target654": 31.235150503879517,
+  "endpoint_feet_above_native_water": 1.4669999999999987,
+  "final_non_swimming_seconds": 7.006,
+  "wall_seconds": 84.7825187,
+  "harness_sha256": "ec5d4d2d1d490ca3a202731f40812aa85cf7d14fff41bbe988dd5390071e2370",
+  "endpoint_core_proof": {
+    "on_mesh": true,
+    "snapped": [
+      1825.403,
+      1685.867,
+      101.034
+    ],
+    "water_poly": false,
+    "reachable_target654": true,
+    "remaining_path_corners": 3,
+    "remaining_path_links": 0,
+    "end_distance": 0.001
+  },
+  "demo": {
+    "file": "Multiplayer_PS_Shore-20261028-180243-1.wbdemo",
+    "sha256": "f151a843c14843b2be63e62fec58281132d15385004a22229e461db19fde9ecc",
+    "version": 2,
+    "frames": 1638,
+    "actors": {
+      "65481": {
+        "id": 65481,
+        "kind": "bot",
+        "name": "WarsBot_02 [Normal/Assault]",
+        "profile": "normal/assault"
+      }
+    },
+    "header": {
+      "build": "b8b444d6c858f27a1fdde0d93b25a318cafc6937",
+      "flags": {
+        "wb_bot_aim_model": 1,
+        "wb_bot_arbiter": 1,
+        "wb_bot_look": 1,
+        "wb_bot_navmesh": 1,
+        "wb_bot_pace": 1,
+        "wb_bot_perception": 1,
+        "wb_bot_turn_cap": 1,
+        "wb_bot_weapon_rank": 1,
+        "wb_demo_hz": 20,
+        "wb_demo_record": 1,
+        "wb_move_trace": 1,
+        "wb_qa_socom_only": 0,
+        "wb_reachable_goals": 0,
+        "wb_revive_guard": 1,
+        "wb_spawn_exclude195": 1,
+        "wb_trap_recovery": 1
+      },
+      "hz": 20,
+      "map": "Multiplayer/PS/Shore",
+      "navmesh": "none",
+      "server": "c149",
+      "started": "2026-10-28T18:02:43"
+    },
+    "record_tail_complete": true
+  }
+}
