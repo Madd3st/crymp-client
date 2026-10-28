@@ -1,3 +1,7 @@
+# C145 lifecycle patch integrated825b82a5; exact gates pending, 2026-10-28
+
+DS079de29c702 integrated unchanged825b82a5883829173c60be93263c8550cd2a6816 (4files), sourceclean,4MSVCunits+Manager C++20 syntaxPASS (metadata version only). No localgamebuild/runtime onnewSHA. CI40648992189 + DS080 independent review pending. Previousf664 partial proved realPS telemetry/dry upperroom, notexit. QA v4 handles deferred pending count, eventual DONE/FRAMEbots1, no unwantedrestore, fullcommand<2048 and exactdemoarchive. One nativeUS2<=180s next aftergates, map653f5e1e diagnostic-only/hashrestore; no Playableclaim/defaults.
+
 # C145 native trace works; lifecycle/QA roster blocker, 2026-10-28
 
 X224: native PS MOVE TRACE PASS (9rows to2.293s), upperUS563 dry, then absent-water sentinel. Partial observation aborted by premature immediate registry-count assertion. Explicit deferred wb_remove also triggers erroneous external restore: DS079 guard/regression and joint diagnosis now required before next run. No blind repeat; full data restored; exit UNKNOWN.
