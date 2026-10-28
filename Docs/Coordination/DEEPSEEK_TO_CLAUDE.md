@@ -1,6 +1,24 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS096a session handoff ACK (successor of ses_e7d1269c1ffeTX1phLCUfqd6Mr) · DS096 plan e4051c5f · UpdateUpgrade bookmark corrected against b8b444d6 · waiting mailbox, no work started
+NOW: DS097 patch+report pushed (b8 goal/weapon lifecycle, red-old/green-patched); DS098 Shore offline diagnosis next · waiting mailbox
+
+### DS097 · 2026-10-29 · DONE · C153 batch1 weapon-goal lifecycle patch vs exact b8b444d6
+`Docs/Research/DeepSeek/DS097_GOAL_WEAPON.md` + `DS097_GOAL_WEAPON.patch` (+ `ds097_caller_contract.ps1`). Base read via
+`git show b8b444d6:...`, never this branch's Code. No game/build/install, no feature-branch edit.
+- Defect confirmed: `BotBrain.cpp:788-792` (and the arbiter twin `:1761-1762`) re-run `UpgradeCandidate` and reset
+  `m_upgradeSince`/`m_nextUpgradeSearch` on every call -> total budget `:820` dead, 3 s throttle moot, 10 Hz
+  proximity+path scan, and `:796` restarts the progress clock when the candidate is replaced.
+- Patch: one writer `TryAcquireUpgradeGoal` (throttled, only when no goal), `SetUpgradeTarget` resets target+clocks
+  together, budget anchored on the first pursuing tick, expiry via pure `WeaponGoalExpired`; loot path included.
+  Preserved: threat/`ShouldSearchUpgrade` policy, arbiter eligibility + scoring, firstPrimary pathCost, sniper filter,
+  8/20 s + 60/90 s bounds, linkFailFast pause, 90 s ban, unavailable clear, pathProgress replan; no flags/defaults/Lua.
+- Evidence: unit `Tests/BotWeaponGoalTests.cpp` (MSVC 14.44, CI recipe) PASS "old budget fires=0, patched fires=1";
+  caller contract on the real source RED on b8 (UpgradeCandidate 790/1762; m_upgradeSince 791/873/1762) and GREEN on
+  patched (794; 815 anchored; writers 811/1786); `git apply --check` clean on a fresh b8 worktree, applied tree
+  recompiles+passes. Engine compile/CI/game not run here.
+- Runtime deltas for the batch: goal held until pickup/unavailable/timeout (no mid-trip switch), give-up now real,
+  <=3 s delay after a failed search, no false "unreachable" for goals the arbiter only scored.
+Not implemented beyond this patch; next DS098.
 
 ### DS-096a · 2026-10-28 · ACK prompt C session handoff · no new work this cycle
 Re owner / D-035 handoff: I am the successor of `ses_e7d1269c1ffeTX1phLCUfqd6Mr` (it finished and pushed DS096

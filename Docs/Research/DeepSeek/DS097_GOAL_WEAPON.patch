@@ -1,0 +1,269 @@
+diff --git a/.github/workflows/warsbots-ci.yml b/.github/workflows/warsbots-ci.yml
+index 4c27c0da..4693d93c 100644
+--- a/.github/workflows/warsbots-ci.yml
++++ b/.github/workflows/warsbots-ci.yml
+@@ -39,7 +39,7 @@ jobs:
+           New-Item -ItemType Directory -Force units | Out-Null
+           # Engine-free tests (same list Codex builds by hand, plus new ones). Tests that need engine headers
+           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
+-          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
++          $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotWeaponGoal','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
+                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy','BotRoamFallback',
+                      'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan')
+           $failed = @()
+diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
+index aa5b2fad..55d10c39 100644
+--- a/Code/CryGame/Bots/BotBrain.cpp
++++ b/Code/CryGame/Bots/BotBrain.cpp
+@@ -15,6 +15,7 @@
+ #include "CryGame/Bots/BotWeapons.h"
+ #include "CryGame/Bots/BotWeaponRank.h"
+ #include "CryGame/Bots/BotUpgradeGate.h"
++#include "CryGame/Bots/BotWeaponGoal.h"
+ #include "CryGame/Bots/BotAuditFixes.h"
+ #include "CryGame/Bots/BotNavMesh.h"
+ #include "CryGame/Bots/BotNavMeshCore.h"
+@@ -776,6 +777,27 @@ EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost,bo
+ 	return BotWeapons::FindNearby(actor, typical>30.0f ? 200.0f : 45.0f, nullptr, m_life, true, skip, skipCount, typical, pathCost, sniperOnly);
+ }
+ 
++// DS-097: reset the goal and its clocks together, so a stale progress/budget stamp can never outlive its target.
++void BotBrain::SetUpgradeTarget(EntityId id)
++{
++	m_upgradeTarget = id;
++	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = 0; m_upgradePathSig = 0;
++	m_upgradeSince = 0; // re-anchored on the first tick that actually pursues the goal
++}
++
++// DS-097: the only place that creates a weapon goal (was BotBrain.cpp:788-792 unconditional + :1761-1762 in the arbiter).
++// A tracked goal is held, not re-scanned, and "nothing found" is throttled too: no proximity query and nav path per tick.
++bool BotBrain::TryAcquireUpgradeGoal(CPlayer& actor)
++{
++	if (!WarsBots::MayAcquireWeaponGoal(m_upgradeTarget, m_now, m_nextUpgradeSearch)) return false;
++	const bool sniperOnly = BotConfig::Get().sniperReach==1 && PickupRange()>30.0f && !BotWeapons::HoldsSniper(actor);
++	const EntityId id = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 || sniperOnly, sniperOnly);
++	m_nextUpgradeSearch = m_now + 3.0f;
++	if (!id) return false;
++	SetUpgradeTarget(id);
++	return true;
++}
++
+ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float decisionTime,bool socomQA,bool force)
+ {
+ 	// Holding only the spawn pistol and nobody in sight: go for a rifle like a player would.
+@@ -786,14 +808,15 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
+ 	if (!socomQA && WarsBots::ShouldSearchUpgrade(hasPrimary,BotConfig::Get().weaponRank==1,sniperMind,force,enemy && m_combat.Visible()))
+ 	{
+ 		const bool sniperOnly = BotConfig::Get().sniperReach==1 && sniperMind && !BotWeapons::HoldsSniper(actor);
+-		{
+-			m_upgradeTarget = UpgradeCandidate(actor, false, BotConfig::Get().firstPrimary==1 || sniperOnly, sniperOnly);
+-			m_upgradeSince = m_now;
+-			m_nextUpgradeSearch = m_now + 3.0f;
+-		}
++		TryAcquireUpgradeGoal(actor);
++		// DS-097: a goal is created once (3 s throttle, only when none is tracked) and the total budget starts on the
++		// first tick that actually walks to it, so a mere candidate look cannot age it or restart the timeout.
++		if (m_upgradeTarget && !WarsBots::WeaponGoalPursues(m_upgradeSince))
++		{ m_upgradeSince=m_now; m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0; }
++		else if (m_upgradeTarget && m_upgradeTarget != m_upgradeTracked)
++		{ m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0; }
+ 		// Unreachable (on a ledge, behind glass, taken): give up when the walk stops getting closer for 8 s (c067: a
+ 		// flat 10 s dropped every DSG1/Gauss trip - 100+ m with stairs and jump links), at most 60 s, skip it for 90 s.
+-		if (m_upgradeTarget != m_upgradeTracked || !m_upgradeTarget) { m_upgradeTracked=m_upgradeTarget; m_upgradeBest=1e9f; m_upgradeBestAt=m_now; m_upgradePathSig=0; }
+ 		if (IEntity* goal = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr)
+ 		{
+ 			const Vec3 feet=actor.GetEntity()->GetWorldPos();
+@@ -817,17 +840,17 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
+ 		if (BotConfig::Get().linkFailFast==1 && m_link.Active()) m_upgradeBestAt = m_now;
+ 		const float progressTimeout = sniperOnly ? 20.0f : 8.0f;
+ 		const float totalTimeout = sniperOnly ? 90.0f : 60.0f;
+-		if (m_upgradeTarget && (m_now - m_upgradeBestAt > progressTimeout || m_now - m_upgradeSince > totalTimeout))
++		if (m_upgradeTarget && WarsBots::WeaponGoalExpired(m_now, m_upgradeSince, m_upgradeBestAt, progressTimeout, totalTimeout))
+ 		{
+ 			WB_LOG(2, "[WarsBots] #%d weapon %u unreachable; skipping it.", m_number, m_upgradeTarget);
+-			MarkBadItem(m_upgradeTarget); m_upgradeTarget = 0;
++			MarkBadItem(m_upgradeTarget); SetUpgradeTarget(0);
+ 		}
+ 		// A selected item can disappear or gain an owner while we approach it.
+ 		// Do not chase another player's gun until the ten-second timeout.
+ 		if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor, m_upgradeTarget))
+ 		{
+ 			WB_LOG(2, "[WarsBots] #%d weapon goal cancelled item=%u reason=unavailable.", m_number, m_upgradeTarget);
+-			m_upgradeTarget = 0;
++			SetUpgradeTarget(0);
+ 		}
+ 		IEntity* item = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
+ 		if (item)
+@@ -841,7 +864,7 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
+ 				WBI(move,false);
+ 				if (BotWeapons::PickUp(actor, m_upgradeTarget, PickupRange())) m_previousWeaponClass = actor.GetCurrentItem()->GetEntity()->GetClass();
+ 				else MarkBadItem(m_upgradeTarget);
+-				m_upgradeTarget = 0;
++				SetUpgradeTarget(0);
+ 			}
+ 			else { const Vec3 step=Steer(feet,item->GetWorldPos()); WBI_MOVETO(step,step+Vec3(0,0,1.2f)); TravelGait(d); }
+ 			ExecuteIntent(actor,decisionTime);
+@@ -870,7 +893,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
+ 			m_lootUntil=0;
+ 			if (drop)
+ 			{
+-				m_upgradeTarget=drop; m_upgradeSince=m_now;
++				SetUpgradeTarget(drop); // DS-097: the budget starts in UpdateUpgrade when the bot actually walks to it
+ 				WB_LOG(2,"[WarsBots] #%d LOOT item=%u at (%.1f,%.1f,%.1f) actor=%u.",m_number,drop,m_lootPos.x,m_lootPos.y,m_lootPos.z,actor.GetEntityId());
+ 			}
+ 		}
+@@ -1758,9 +1781,10 @@ bool BotBrain::UpdateArbitrated(BotInstance& bot,CPlayer& actor,IActor* enemy,fl
+ 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
+ 	const bool hasPrimary=BotWeapons::HasPrimary(actor);
+ 	const bool ranked=BotConfig::Get().weaponRank==1;
+-	if ((!hasPrimary || ranked) && m_now>=m_nextUpgradeSearch && !m_upgradeTarget)
+-{ const bool sniperOnly=BotConfig::Get().sniperReach==1 && PickupRange()>30.0f && !BotWeapons::HoldsSniper(actor); m_upgradeTarget=UpgradeCandidate(actor,hasPrimary,BotConfig::Get().firstPrimary==1 || sniperOnly,sniperOnly); m_upgradeSince=m_now; m_nextUpgradeSearch=m_now+3.0f; }
+-	if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor,m_upgradeTarget)) m_upgradeTarget=0;
++	// DS-097: same single writer and 3 s throttle as UpdateUpgrade. This call only keeps the arbiter's candidate view;
++	// it does not start the budget, so a goal the arbiter scores but does not chase cannot time out into a false ban.
++	if (!hasPrimary || ranked) TryAcquireUpgradeGoal(actor);
++	if (m_upgradeTarget && !BotWeapons::AvailableForPickup(actor,m_upgradeTarget)) SetUpgradeTarget(0);
+ 	IEntity* item=m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
+ 	ArbiterInput in;
+ 	in.now=m_now;
+diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
+index a4d83dd6..33b7177d 100644
+--- a/Code/CryGame/Bots/BotBrain.h
++++ b/Code/CryGame/Bots/BotBrain.h
+@@ -83,6 +83,9 @@ private:
+ 	bool EyeRayClear(CPlayer& actor, const Vec3& from, const Vec3& to) const;
+ 	bool UpdateArbitrated(BotInstance& bot, CPlayer& actor, IActor* enemy, float decisionTime, bool socomQA);
+ 	EntityId UpgradeCandidate(CPlayer& actor, bool anyHeld, bool pathCost = false, bool sniperOnly = false);
++	// DS-097: the single writer of the weapon goal. The pure rules live in BotWeaponGoal.h; both callers only ask here.
++	bool TryAcquireUpgradeGoal(CPlayer& actor);
++	void SetUpgradeTarget(EntityId id);
+ 	BotLookPolicy m_look;
+ 	Vec3 m_lookDir = Vec3(0,1,0);
+ 	bool m_lookValid = false;
+diff --git a/Code/CryGame/Bots/BotWeaponGoal.h b/Code/CryGame/Bots/BotWeaponGoal.h
+new file mode 100644
+index 00000000..877ba242
+--- /dev/null
++++ b/Code/CryGame/Bots/BotWeaponGoal.h
+@@ -0,0 +1,31 @@
++// DS-097: weapon-goal lifecycle, engine-free. One writer may create a goal; a tick that merely looks at a candidate
++// (goal arbiter) never starts the budget, and repeated ticks with the same target never restart it.
++// The b8 defect: BotBrain.cpp:788-792 re-ran UpgradeCandidate and reset m_upgradeSince/m_nextUpgradeSearch on every
++// UpdateUpgrade call, so the 60 s/90 s total budget at :820 could not fire and the 3 s re-search throttle was moot.
++// Tests/BotWeaponGoalTests.cpp; callers are BotBrain::UpdateUpgrade and BotBrain::UpdateArbitrated.
++#pragma once
++
++namespace WarsBots {
++
++// A new goal may be created only when none is tracked and the 3 s throttle has expired. Refreshing a tracked goal is
++// not an acquisition: it must keep its own budget (hold semantics).
++inline bool MayAcquireWeaponGoal(unsigned target, float now, float nextSearch)
++{
++    return target == 0u && now >= nextSearch;
++}
++
++// pursuitSince == 0 means "acquired, not yet pursued" (candidate only). The total budget starts at the first tick that
++// actually walks to the goal, so a candidate the arbiter looked at but never chased cannot age into a false ban.
++inline bool WeaponGoalPursues(float pursuitSince)
++{
++    return pursuitSince > 0.0f;
++}
++
++// Progress timeout (the goal stopped getting closer) or the total budget from the first pursuit tick. Sniper goals pass
++// 20 s/90 s, general goals 8 s/60 s; the caller keeps path progress and replan behaviour.
++inline bool WeaponGoalExpired(float now, float pursuitSince, float bestAt, float progressTimeout, float totalTimeout)
++{
++    return pursuitSince > 0.0f && (now - bestAt > progressTimeout || now - pursuitSince > totalTimeout);
++}
++
++} // namespace WarsBots
+diff --git a/Tests/BotWeaponGoalTests.cpp b/Tests/BotWeaponGoalTests.cpp
+new file mode 100644
+index 00000000..0018a6e0
+--- /dev/null
++++ b/Tests/BotWeaponGoalTests.cpp
+@@ -0,0 +1,84 @@
++// DS-097 tests: weapon-goal lifecycle (engine-free, no engine headers).
++// The rules under test are the ones BotBrain::UpdateUpgrade / BotBrain::UpdateArbitrated call at b8b444d6:
++//   * a goal is created once and held while it exists (no re-scan/switch every tick),
++//   * the total budget starts on the first tick that pursues the goal, not on a candidate look,
++//   * progress/replan refreshes only the progress stamp, never the total budget.
++#include "CryGame/Bots/BotWeaponGoal.h"
++#include <cassert>
++#include <cstdio>
++
++using namespace WarsBots;
++
++// The b8b444d6 behaviour (BotBrain.cpp:788-792): every call re-picked the candidate and reset both stamps, so the
++// 60 s / 90 s branch at :820 could not fire. Reproduced here only as the red baseline for the new rules.
++static bool OldBudgetExpires(float now, float progressTimeout, float totalTimeout)
++{
++    float since = 0.0f, bestAt = 0.0f;
++    for (float t = 0.0f; t <= now + 0.001f; t += 0.1f) { since = t; bestAt = t; } // unconditional reset each tick
++    return WeaponGoalExpired(now, since, bestAt, progressTimeout, totalTimeout);
++}
++
++int main()
++{
++    // Acquire gate: free goal + expired throttle only. An existing goal is never re-acquired (hold, no switch).
++    assert(MayAcquireWeaponGoal(0u, 10.0f, 10.0f));
++    assert(!MayAcquireWeaponGoal(0u, 9.9f, 10.0f));
++    assert(!MayAcquireWeaponGoal(7u, 100.0f, 0.0f));      // repeated ticks with the same target
++    assert(!WeaponGoalPursues(0.0f));
++    assert(WeaponGoalPursues(0.1f));
++
++    // Repeated ticks, same target: pursuit starts once. Steady progress keeps the progress stamp fresh, but the total
++    // budget is anchored at the first pursuit tick and still ends the trip.
++    const float acquiredAt = 1.0f;
++    float since = 0.0f, bestAt = 0.0f;
++    bool totalFired = false;
++    for (int tick = 0; tick < 700; ++tick)
++    {
++        const float now = acquiredAt + 0.1f * float(tick);
++        if (!WeaponGoalPursues(since)) { since = now; bestAt = now; } // first pursuit tick
++        assert(!MayAcquireWeaponGoal(9u, now, since + 3.0f));         // tracked goal is held, never re-acquired
++        bestAt = now;                                                 // walking towards it / replanning
++        if (WeaponGoalExpired(now, since, bestAt, 8.0f, 60.0f))
++        {
++            totalFired = (now - since > 60.0f);
++            break;
++        }
++    }
++    assert(totalFired);
++    assert(since == acquiredAt);
++    assert(!WeaponGoalExpired(59.9f, since, 59.9f, 8.0f, 60.0f));
++    assert(WeaponGoalExpired(61.1f, since, 61.0f, 8.0f, 60.0f));  // total budget, even with fresh progress
++
++    // Progress timeout: 8 s general, 20 s sniper; progress/replan refreshes bestAt but must not touch since.
++    assert(WeaponGoalExpired(9.1f, 1.0f, 1.0f, 8.0f, 60.0f));
++    assert(!WeaponGoalExpired(9.1f, 1.0f, 1.0f, 20.0f, 90.0f));
++    assert(WeaponGoalExpired(21.1f, 1.0f, 1.0f, 20.0f, 90.0f));
++    // A replan every 5 s (new navmesh path) is progress, not a new budget.
++    for (int t = 5; t <= 55; t += 5) assert(!WeaponGoalExpired(float(t), 1.0f, float(t), 8.0f, 60.0f));
++    assert(WeaponGoalExpired(61.1f, 1.0f, 56.0f, 8.0f, 60.0f));
++
++    // Candidate look only (goal arbiter, since == 0): no progress and no total budget yet -> never a false ban.
++    assert(!WeaponGoalExpired(1.0e6f, 0.0f, 0.0f, 8.0f, 60.0f));
++    // ... and when the arbiter finally chases it, the budget starts there, not at the earlier look.
++    assert(!WeaponGoalExpired(1000.1f, 1000.0f, 1000.0f, 8.0f, 60.0f));
++    assert(WeaponGoalExpired(1060.2f, 1000.0f, 1000.0f, 8.0f, 60.0f));
++
++    // Old block (red baseline) vs the new rules: the same 60 s trip at the same tick rate.
++    assert(!OldBudgetExpires(600.0f, 8.0f, 60.0f));               // b8: never gives up
++    assert(WeaponGoalExpired(61.1f, 1.0f, 1.0f, 8.0f, 60.0f));    // patched: fires
++
++    // Item unavailable/stolen: the caller clears the goal; the 3 s throttle still applies, then a retry is allowed.
++    assert(!MayAcquireWeaponGoal(0u, 1.0f, 4.0f));                // cleared early, throttle not expired
++    assert(MayAcquireWeaponGoal(0u, 4.0f, 4.0f));                 // retry after the throttle
++    // Timeout/ban: the caller marks the item bad and clears; the gate allows the next candidate after the throttle.
++    assert(MayAcquireWeaponGoal(0u, 63.0f, 3.0f));
++
++    // Primary acquired: no early re-acquire while the throttle runs, and a visible-threat tick is refused by the
++    // callers' ShouldSearchUpgrade (BotUpgradeGateTests), so acquisition is not even reached there.
++    assert(!MayAcquireWeaponGoal(0u, 0.5f, 3.0f));
++    assert(MayAcquireWeaponGoal(0u, 3.0f, 3.0f));
++
++    std::printf("weapon goal: all tests passed (old budget fires=%d, patched fires=%d)\n",
++        OldBudgetExpires(600.0f, 8.0f, 60.0f) ? 1 : 0, WeaponGoalExpired(61.1f, 1.0f, 1.0f, 8.0f, 60.0f) ? 1 : 0);
++    return 0;
++}
