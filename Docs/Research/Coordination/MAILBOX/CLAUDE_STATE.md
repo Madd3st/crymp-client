@@ -1,4 +1,18 @@
-# Claude coordinator state (27.10 21:20 MSK)
+# Coordinator state — CODEX LOW BUDGET19% — D031 fallback prompt B, 2026-10-28
+
+**CODEX LOW BUDGET: weeklyremaining19% measured03:10. D031 fallback triggered.** Codex stops coordinating/codeintegration now; DeepSeek coordinator-lite (SUCCESSOR prompt B, DS075). No feature merges/default flips/game byDeepSeek. Codex QAonly for named mailbox requests when exactgates+budgetpermit. No activegame/run tofinish; currentpacket saved and sourceclean.
+
+Handoff (10 lines):
+1. Currentcode90cb4148de477f4a8cadde5d31d7150c67a6e989; code worktree crymp-coordinator-sprint clean.
+2. DS074 reviewOK0e819259; CI40606278441 stillinprogress at handoff, no artifact/game beforeGREEN.
+3. Parent00e CI40605489537FAILED (summarycaller), superseded; never run it.
+4. Package: doors, gatednativewater/oxygen, nativecaptureArea/destination/hold, cost4/search16k/exhaustion/watertrace.
+5. All34units offlinePASS, affectedsyntax/PlayerON+OFFPASS; Manager version.h was syntaxmetadataonly, no localgamebuild.
+6. Reviewedtool eed85fb1, revisedmesh653f5e1e (37.297s/peak1.967GB), NOTaccepted/installed forplay.
+7. NK20/20main; US0/23main/12offmesh; maskresolution/lowz/rawjump variants do not fixexit. No forcedhull links/spawnworkaround.
+8. All5nativecaptureArea floor routes existfromNK at16knodes; actualcapture/physicaldoor/water/ascent unproven.
+9. Ownerfree, abandonedserver22508stopped; no newgame/memory changes; foreignQA recording/wrapper preserved.
+10. Next: readCIresult, then C145 namednativephysics only afterGREEN+review; ifred preparepatch only. DS075 coordinator-lite/no featurewrites.
 
 **D-031 ACTIVE since 27.10 21:05** (Claude weekly limit ~3 %). Codex = interim coordinator + integrator
 (SUCCESSOR.md prompt A), DeepSeek = reviewer of every Codex code push (prompt C). Claude's hourly cloud task

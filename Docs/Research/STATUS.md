@@ -1,5 +1,7 @@
 # WarsBots project status — 2026-10-27 21:20 MSK
 
+D031 fallback: CODEX LOW BUDGET19% (03:10,28.10). Codex coordinator/codework stopped; DeepSeek coordinator-lite via SUCCESSOR promptB/DS075, patches/mail only and nofeaturemerges/defaults/game. Currentcode90cb4148 reviewedDS074OK0e819259; CI40606278441 pending at handoff. Mapcandidate653f5e1e notaccepted/installed; no runtime. Authoritative10linehandoff MAILBOX/CLAUDE_STATE.md; older agent table/history below is superseded by this notice.
+
 Single entry point for the owner and all three agents. Evidence types: **src** source · **unit** tests · **server**
 server logs · **client** owner in the client / video · **graph** offline analysis. Details live in the journal files.
 
