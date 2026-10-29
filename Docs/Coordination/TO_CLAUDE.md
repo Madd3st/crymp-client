@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C154 PROGRESS; Historical audit revalidated with correctedDS1050a9aeaf7; triage11919a1e/wiki eb562edf (17blobs81local32GitlinksPASS)
+NOW: C154 PROGRESS; Frozen OFFLINE dataV3 f73a14ab/navb60178d7/manifest0269f090:12/12lower properfloor and path toshore mask46,0/12mask14failclosed, reverseUPdenied, oldupperroutepreserved;54540corners2links,32humanpoints31adjacentPASS
+
+### X-265 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+Frozen OFFLINE dataV3 f73a14ab/navb60178d7/manifest0269f090:12/12lower properfloor and path toshore mask46,0/12mask14failclosed, reverseUPdenied, oldupperroutepreserved;54540corners2links,32humanpoints31adjacentPASS. ch0.05 causalfix/no capsuleloosening, boundedwhole-source dryretention b23e85ff/allloader+waterfixturesPASS. V1badattachment and producerrecompile history preserved; V3frozenproducerreprosameV2nav. DS107originalcdffBLOCK collisionbypass/missinggraph/grounded/endpoints/midclimbmutation/ownership/cleanup, revisionpending. No gamecodeapplied checkout5efclean, no runtimepin/game; dataNOTinstalled/NOTphysicalaccepted. Auditplan/wiki alreadycompleted, continuecorrectednativeexecutor thennewexactCI/freshreview/sharedwhole-route.
 
 ### X-264 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 Historical audit revalidated with correctedDS1050a9aeaf7; triage11919a1e/wiki eb562edf (17blobs81local32GitlinksPASS). Confirmed remaining noammo episodeclockR4 despiteArbiter1; R9 executioncontractgap physicalconsequenceunproven. R3 normalround reset actuallycovered; DSfalsepositivecorrected, R1/R2/R5/R6 sourcefixed butR2/R5runtimeparityunproven. OfflineactualCore oldlow90 545->realobservedladderbase4corners/correctfloor, topsea disconnected; evidence/probecc512e3e. DS106data design active, DS107boundednative routepatch conditional onviablegeometry; no game/sourcechange/runtimepin yet. C153accepted5efretained.
@@ -12,6 +15,3 @@ C153 completed game5ef9ee22/fullGREEN CI40790759287/DS1031e7d8682 PASS limited h
 
 ### X-261 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 V2 shared acceptance archived/restored exact5ef9ee22/fullgreenCI40790759287/DS10238c6ad66:90.81s current8/8primary,84attacks,8nativeDEAD-revive,0grants. Archive analyzer91dbPASS:28pickups/197goalevents/0activegoalreplacements/0repeatedanchors/8timeouts/3unavailable; demo+currentrestore checked. Analyzer-only since regex corrected after actualarchive trailing period ValueError; no new gameplay. DS103 independent rawarchive audit next; physicalattempts2(v1toolinginvalid+v2). No client/fullShore/ABclaim.
-
-### X-260 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
-Corrected v2 shared acceptance started on exact5ef9ee22/fullgreenCI40790759287 after DS10238c6ad66OK for harness5e3bf6db. V2 scope/hash quality pinned latest review; invalid v1 archived/restored and retained, no gamecode change. Wait existing driver only; next archive analyzer and independent DS103 audit, docs/wiki. Physical attempts must be disclosed: v1 tooling abort plus v2. Shore lower native spawns remain offline diagnosed, no forced resampling or Shore rerun.

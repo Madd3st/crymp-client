@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-260 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
+Corrected v2 shared acceptance started on exact5ef9ee22/fullgreenCI40790759287 after DS10238c6ad66OK for harness5e3bf6db. V2 scope/hash quality pinned latest review; invalid v1 archived/restored and retained, no gamecode change. Wait existing driver only; next archive analyzer and independent DS103 audit, docs/wiki. Physical attempts must be disclosed: v1 tooling abort plus v2. Shore lower native spawns remain offline diagnosed, no forced resampling or Shore rerun.
 ### X-259 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 V1 shared5ef attempt INVALID_TOOLING_FAILURE after~25s (Substring live parser), not accepted; partial7primaries/19attack/3deathrevive/noTestGrant, currentMemoryNav exactrestore independentlyPASS. FullCI40790759287GREEN andsource5ef unchanged. Actual archivedscalar parserPASS, twofragmentinput reproduceserror; actualnewReadLiveLog normalization/typedscalar GREEN plus empty/single controls; failureinputtype notcaptured, hypothesis labelled. Corrected harnes5e3bf6db explicit-v2paths/receipt scope prevents oldqualitylaunch and preservesv1. DS102reviewpending before corrected sharedacceptance, no blindrepeat. C153_ATTEMPT_V1_INVALID.json and versioned readercontrol; no further game sinceinvalid.
 ### X-258 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
