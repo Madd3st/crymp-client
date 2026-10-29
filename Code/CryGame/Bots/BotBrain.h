@@ -11,6 +11,7 @@
 #include "CryGame/Bots/BotAimModel.h"
 #include "CryGame/Bots/BotSuitPolicy.h"
 #include "CryGame/Bots/BotJumpLink.h"
+#include "CryGame/Bots/BotLadder.h"
 #include "CryGame/Bots/BotVantage.h"
 #include "CryGame/Bots/BotTactics.h"
 #include "CryGame/Bots/BotTraits.h"
@@ -145,6 +146,14 @@ private:
 	BotJumpLink m_link;
 	NavPathLink m_linkNow;
 	void ApplyLinkExecutor(CPlayer& actor);
+	// DS-107: native ladder edge (wb_bot_ladder). The policy is pure; the adapter performs the native calls.
+	BotLadder m_ladder;
+	NavPathLink m_ladderNow;
+	bool m_ladderNativeLocked = false;
+	bool m_ladderCancelPending = false; // ResetLife saw an active climb; next Update clears native mode
+	bool ApplyLadderExecutor(CPlayer& actor);
+	void UpdateLadder(CPlayer& actor, float dt);
+	void CancelLadder(CPlayer& actor, const char* why, bool ban);
 	BotVantage m_vantage;            // owner 25.10 sniper spots (wb_bot_vantage)
 	// wb_bot_tactics (BotTactics.h): angle hold from cover, jump-strafe, loot after a kill
 	BotAngleHold m_hold;

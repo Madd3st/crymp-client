@@ -36,6 +36,7 @@ struct BotConfig {
  int clientSmooth=0; // O-025 client replica: smooth replicated direction/aim steps (BotReplicaSmooth.h), default OFF
  int botNavmesh=0;
  int jumpLinks=0;
+ int ladder=0;        // C154/DS-107: real UP-only long-shaft ladder link (NavLinkLadder), native exit, default OFF
  int weaponHandling=0; // owner 25.10: LAM laser on (off in cloak) + zoom at distance (BotWeaponHandling.h), default OFF
  int nameProfile=0;
  int vantage=0;

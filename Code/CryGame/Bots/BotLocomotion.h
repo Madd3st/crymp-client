@@ -13,6 +13,9 @@ public:
 	void Observe(CPlayer& actor, BotBlackboard& state, float now);
 	BotJump Obstacle(CPlayer& actor, const Vec3& direction) const;
 	bool Execute(CPlayer& actor, const BotIntent& intent, BotBlackboard& state, float now, float dt);
+	// DS-107: only while the native ladder is actually attached may SafeStep be bypassed; approach/settle use the
+	// normal safe executor. Keep the real movement request so ProcessMovementOnLadder sees desiredVelocity.y.
+	bool ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt, bool nativeAttached);
 	void Look(CPlayer& actor, const Vec3& target);
 private:
 	bool JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength) const;

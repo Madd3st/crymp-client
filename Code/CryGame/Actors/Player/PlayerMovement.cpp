@@ -9,6 +9,8 @@
 #include "PlayerMovement.h"
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 #include "CryGame/Bots/BotPace.h"
+#include "CryGame/Bots/BotConfig.h"
+#include "CryGame/Bots/BotManager.h"
 #endif
 #include "CryCommon/CryGame/GameUtils.h"
 #include "CryGame/Game.h"
@@ -32,6 +34,18 @@
 	  } \
 	} \
 }
+
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+// DS-107: only the explicitly gated, owned server WarsBot may use the native ladder exit checks. Humans, clients,
+// other actors and the flag-OFF build keep the old IsClient/bClient behavior.
+static bool WarsBotLadderServer(const CPlayer& player)
+{
+	return gEnv && gEnv->bServer && g_pGame && player.IsWarsBotActor() && WarsBots::BotConfig::Get().ladder == 1 &&
+		g_pGame->GetBotManager().Owns(player.GetEntityId());
+}
+#else
+static bool WarsBotLadderServer(const CPlayer&) { return false; }
+#endif
 
 #define LADDER_TOP_DISTANCE 2.41f
 //-----------------------------------------------------------------------------------------------
@@ -1570,11 +1584,15 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 
 	if (m_stats.isExitingLadder)
 	{
-		if (gEnv->bClient)
+		const bool warsBot = WarsBotLadderServer(player);
+		if (gEnv->bClient || warsBot)
 		{
 			IAnimatedCharacter* pAC = m_player.GetAnimatedCharacter();
 			IAnimationGraphState* pAGState = pAC ? pAC->GetAnimationGraphState() : NULL;
 			const char* agOutputOnLadder = pAGState ? pAGState->QueryOutput("OnLadder") : NULL;
+			// DS-107: an owned bot must not turn a missing graph/output into a premature ReachedEnd. Keep the native
+			// exiting state and let the policy fail closed (BlockedTop) unless the graph gives a real completion.
+			if (warsBot && (!pAC || !pAGState || !agOutputOnLadder)) return;
 			bool onLadder = agOutputOnLadder && agOutputOnLadder[0] == '1';
 			if (!onLadder)
 				player.RequestLeaveLadder(CPlayer::eLAT_ReachedEnd);
@@ -1590,7 +1608,7 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 	float bottomDist = (m_stats.ladderBottom - player.GetEntity()->GetWorldPos()).len();
 
 	//Just another check
-	if (player.IsClient() && m_movement.desiredVelocity.y < -0.01f)
+	if ((player.IsClient() || WarsBotLadderServer(player)) && m_movement.desiredVelocity.y < -0.01f)
 	{
 		// check collision with terrain/static objects when moving down, some ladders are very badly placed ;(
 		// player will need to detach
@@ -1609,7 +1627,7 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 		}
 	}
 
-	if (player.IsClient() && ((topDist < LADDER_TOP_DISTANCE && m_movement.desiredVelocity.y > 0.01f) || (bottomDist < 0.1f && m_movement.desiredVelocity.y < -0.01f)))
+	if ((player.IsClient() || WarsBotLadderServer(player)) && ((topDist < LADDER_TOP_DISTANCE && m_movement.desiredVelocity.y > 0.01f) || (bottomDist < 0.1f && m_movement.desiredVelocity.y < -0.01f)))
 	{
 		if (m_movement.desiredVelocity.y > 0.01f)
 		{

@@ -106,9 +106,16 @@ NavMeshCore* CurrentNavMesh()
 	}
 	if (s.mesh.Ready())
 	{
-		// C-036: links only with wb_bot_jump_links=1 (and only kinds with an executor: drop, jump, Strength).
-		const unsigned short want = BotConfig::Get().jumpLinks == 1 && s.kinds > 0
-			? (unsigned short)(NavLinkFlag(NavLinkDrop) | NavLinkFlag(NavLinkJump) | NavLinkFlag(NavLinkStrength)) : 0;
+		// C-036: links only with an executor: drop/jump/Strength via wb_bot_jump_links, and the real UP-only
+		// ladder via wb_bot_ladder (DS-107). Never enable a kind without its executor.
+		unsigned short want = 0;
+		if (s.kinds > 0)
+		{
+			if (BotConfig::Get().jumpLinks == 1)
+				want |= (unsigned short)(NavLinkFlag(NavLinkDrop) | NavLinkFlag(NavLinkJump) | NavLinkFlag(NavLinkStrength));
+			if (BotConfig::Get().ladder == 1)
+				want |= NavLinkFlag(NavLinkLadder);
+		}
 		if (want != s.mesh.LinkMask())
 		{
 			s.mesh.SetLinkMask(want);
