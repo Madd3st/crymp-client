@@ -1,0 +1,48 @@
+{
+  "task": "C155",
+  "source": "abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e",
+  "classic_receipt": "C155_CLASSIC_READY.json",
+  "classic_integrity": "PASS",
+  "free_C_before_bytes": 20419727360,
+  "free_C_after_bytes": 26865905664,
+  "geometry": {
+    "files": 4,
+    "source_bytes": 3740408407,
+    "archive": "E:\\WarsBots\\Archive\\2026-10-29\\C019-geometry\\manifest.json"
+  },
+  "worktrees": {
+    "clean_removed": 9,
+    "dirty_removed": 30,
+    "dirty_source_bytes": 2642958728,
+    "remaining": 11,
+    "archive": "E:\\WarsBots\\Archive\\2026-10-29\\Git-worktrees",
+    "bundle_sha256": "ff228d357f7b8841a089d9cb9c3dfa01b892406e92f71293ed60b2ab2234be27",
+    "source_payload_manifest_sha256": "e0ffddd5d51e9304c9196c378e97d752413fc6f1318571ce87f8eb2fd5b1bc45"
+  },
+  "derived_binaries": {
+    "files": 305,
+    "source_bytes": 286651392,
+    "archive": "E:\\WarsBots\\Archive\\2026-10-29\\CI-binaries\\manifest.json"
+  },
+  "preserved": [
+    "current game source clean exact abac",
+    "paired current CI binaries and V5 data hashes",
+    "four controlled C154 attempt directories",
+    "frozen C150 Steelmill/Shore package payloads",
+    "owner videos, live Memory/Navmesh, current QA foreign edits",
+    "DeepSeek own active repo and current code/docs/wiki checkouts"
+  ],
+  "app_chat_archive": {
+    "thread_id": "01a183e2-b413-78f2-ae1f-0ba05b68a114",
+    "archived": true,
+    "deletion": false
+  },
+  "bulk_archive_root": "E:\\WarsBots\\Archive\\2026-10-29",
+  "validation": "payload hashes verified before C removal; final archive hashes/HEAD bundle and protected source/data/package hashes PASS",
+  "limits": [
+    "No game launch or local game build for packaging/cleanup",
+    "C154 upper exit still not fixed; no whole-route acceptance claimed",
+    "Free space can change independently; byte totals are logical file lengths",
+    "App session/database files not manually deleted"
+  ]
+}
