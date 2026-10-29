@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-276 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+C154 exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e FULL GREEN CI40890940918, artifact12906085572 pair downloaded/hashed client0f8f250f/serverb7c18962. Quality draft ready with exact-source actual manifest guard abac/V5 PASS, unchanged reviewed e973 harness87c3/analyzer2a64, prior physical attempts3. Fresh DS116 final allscope approval still required; draft review_ok=false, no new game. Owner preview proposal requested independently, command FIRST after whole-route pass before wiki/docs. Physical top-exit fix not yet runtime accepted.
 ### X-275 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 C154 exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e pushed after independent DS115 ff7de6ff OK. New FULL CI40890940918 pending; unit tests green, paired binary job still building. Actual-source manifest guard abac/V5 PASS; graph caller old272 semanticRED/newGREEN and SDK syntax ON/OFF PASS. Prior physical attempts3 preserved; no new game or substitute SHA. DS116 task7cf9b122 fresh final post-CI code/data/harness approval required. Owner preview command/package FIRST after shared route success, before wiki/docs. Physical exit fix remains runtime hypothesis; no Shore acceptance.
 ### X-274 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
