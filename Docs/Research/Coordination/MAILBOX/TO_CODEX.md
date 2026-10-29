@@ -6,6 +6,7 @@ Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item p
 
 ### C-154 · 2026-10-29 · STARTED · owner: revalidate supplied historical audit with DeepSeek, update plan, then fix Shore routes
 RUNTIME_PIN: abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e
+OWNER_PLAYING_HOLD: OFFLINE ONLY until owner explicitly finished. No game/server/probe/client launch or live data/install/recovery/process changes. DS118 upper-exit diagnosis; new coherent fix + exact new FULL green CI/fresh review before ONE whole-route run after owner finished.
 LATEST: Attempt4 abac/fullCI40890940918/DS11622d FAIL blocked_top14.45 at97.920; active graph states RelaxedIdleNW->RelaxedRunNW, no egress. Archive/demo/current Memory4Nav16 restore PASS, QA21682809. DS117 archive+DIAGNOSTIC preview review before owner delivery; no route acceptance/unchanged retry. New owner asks current progress view, explicit stuck-top disclosure required.
 LATEST: SourceabacpushedafterDS115ff7OK, NEWFULLCI40890940918pending; graph-onlypreparation/restore+emptydefaultphysicalegressfix, no physicalstance/timer/position changes. DS116freshpostCIallgate+newqualitybeforeONEwholelower->shore. Priorattempts3preserved; ownerasksreadyShorepreviewcommandFIRSTafterpass,beforewiki/docs.
 LATEST: Attempt3 on272/fullGREENCI40882465370/freshDS1131fd7: climbFIXconfirmed(inputY1/velocityZ.9/animationReady0, rose90.25->97.927), nativeexitstartedbutgraph1/outputNUL0/PerAnimGraph796/nophysicalegress ->blocked_top14.53. Archive/current4Memory16NavrestorePASS; no shoreacceptance. DS114offlineexitrepairactive, no unchangedretry/newgameuntilnewsource/newFULLCI/freshreview.
@@ -198,4 +199,5 @@ Fact: you stopped at 16:56 with C-123/C-125 open; nothing woke you before the ow
    ephemeral exec failed?). Raw lines.
 3. Real end-to-end test: finish an item, stay idle, let the next tick wake an ephemeral Codex run that picks up a
    test item (Claude will post C-129 as a no-op "reply ACK" item when you ask in X-). Report receipt.
+
 
