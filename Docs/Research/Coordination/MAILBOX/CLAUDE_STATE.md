@@ -1,3 +1,9 @@
+# C154 ACTIVE: full exact3cfd CI40855444355 GREEN, pair downloaded; final fresh review pending
+
+Source3cfd859676d83bdecc1b091d3b9202323b039135 ONLY. FULLGREENCI40855444355, exactpairedartifact downloaded/hashed QA/build/ci-3cfd8596/ci-provenance.json. DS109codeOKe8e63bd8, DS110harnessfe42OK0c4cd6c5; freshFINALpostCI code/data/harnessverdict requested in currente78e3f9e session, qualityreceipt mustpinthatlatesthead. No game/install yet. No gameprocessat13:24. Sharedlower545setup(native registeredonce, disclosedsyntheticdeath) thenwholeladder/exit/settle/stairs/Strength/water/dryshore7s; no postsetuprescue/death/revive. FrozenV4b601/c7e9. Archivechecker andactualCoreendpointprobe ready: knownC149drynewV4PASS, nativewaterrefuseddry, lowerwithoutladderunreachable. RuntimePASSprovisionaluntilarchive/demo/restore+independentaudit; no fullPS/client/defaultclaim. Next finalfreshOK/qualitythenonecommonrun. QA X269efc081eb, checks34hashesa05aaebc, docs0d8a7fa1 pendingwiki finalpublication.
+
+## Earlier state/history
+
 # C154 ACTIVE: exact3cfd pushed after DS109OK; new FULL CI pending
 
 RUNTIME_PIN 3cfd859676d83bdecc1b091d3b9202323b039135 ONLY. DS109e8e63bd8 independent cumulative code/caller/data OK beforepush. Motionmode blocker resolved18abab5a, realadaptermode REDold0b/GREENnew+PlayerSDKON/OFFPASS, sourcecaller17semanticRED01e/currentallGREEN and CIwired. QAfe42d8ef shared lower545 whole-route harness PrepareOnlyPASS1460/1506bytes+13analyzercontrols, DS110reviewpending. NeedNEWFULLgreenCI(exact3cfd), exactpairdownload+hashes, freshindependentpostCIcode/data/harnessOK+qualitypins beforegame. No game/install yet, dataV4b601/c7e9unchanged. Native registeredlower545onceisdisclosedsetup, notnaturalRNG/upperresample; no postsetupdeath/revive/rescue permitted. No fullShore/clientclaim. Auditplan/wiki done11919a1e/eb562edf. FreshnormalFlash e78e3f9e, wakeDryRunPASS; olde7ae617kretired7807dc5c. ForeignQAchangespreserved.
