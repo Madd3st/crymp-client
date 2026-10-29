@@ -1,0 +1,17 @@
+diff --git a/Code/CryGame/Bots/BotLocomotion.cpp b/Code/CryGame/Bots/BotLocomotion.cpp
+index 8a219d34..45b5993f 100644
+--- a/Code/CryGame/Bots/BotLocomotion.cpp
++++ b/Code/CryGame/Bots/BotLocomotion.cpp
+@@ -156,8 +156,11 @@ bool BotLocomotion::ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3
+ 	// the ordinary safe executor instead.
+ 	// PlayerMovementController divides desired speed by stance speed. Supply normal full forward input, not 1 m/s
+ 	// (which would become a ~0.25 m/s climb and exhaust the route deadline before reaching the 9.5 m shaft top).
++	// DS-124: the native non-sprint input value is CPlayer::CalculatePseudoSpeed(false) == 1.0
++	// (Player.cpp:2503-2515), not BotMovement's 0.3/0.5 fallback. Pass the real native value so the ladder
++	// executor's graph input shape matches a human walking onto the same ladder (consistency, not exit root cause).
+ 	const bool accepted = m_movement.Move(actor, moveTo, aim, dt, actor.GetStanceMaxSpeed(STANCE_STAND), STANCE_STAND, 1.5f,
+-		nativeAttached, false, -1.f, false, 0.5f, false);
++		nativeAttached, false, actor.CalculatePseudoSpeed(false), false, 0.5f, false);
+ 	actor.SetWarsBotActions(false, accepted, STANCE_STAND);
+ 	if (!accepted) m_movement.Aim(actor, aim);
+ 	return accepted;
