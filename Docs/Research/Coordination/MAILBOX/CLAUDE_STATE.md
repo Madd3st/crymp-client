@@ -1,3 +1,9 @@
+# C153 ACTIVE: corrected v2 shared acceptance in progress
+
+C153 v2 RUNNING on exact 5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 / FULL GREEN CI40790759287. DS102 38c6ad6680959c6187c77e5036cebb0adfba564e explicitly approves corrected harness5e3bf6db; fresh review read, quality receipt updated with c153-live-reader-v2 scope and current harness hash. V1 INVALID_TOOLING_FAILURE retained in build/c153-batch-5ef9ee22 (archived_restored, data verified); V2 output build/c153-batch-5ef9ee22-v2, driver build/c153-v2-driver.log. NO second launcher/run. Wait existing driver, analyze archive with Tools/Analyze-WarsBotsC153.py, then DS103 independent archive audit, docs/wiki/report. No client launched, no gamecode change since5ef. Shore lower-spawn offline diagnosis complete; no Shore rerun or resampling.
+
+## Earlier state (historical, superseded)
+
 # C153 ACTIVE: pushed5ef9ee22 / DS101 final207bb951OK / CI40790759287 pending; no runtime
 
 LATEST: DS101codeOK4143bd12, final code+harnessa21OK207bb951de7f4d3dd17f6e6400f8a4be0a51b39b explicit read. Exact game5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 pushed to claude-sprint AFTER code reviewOK; **NEW CI40790759287** in_progress, units including committed actualcallerPASS, fullclientserverbuilding. AwaitFULLGREEN, download ONLY exact pairedCIartifacts, then freshfetch/read latest independent outbox and createqualityreceipt pinned latestOKhead before ONE sharedtest. No new game yet; NEVER substitute c00CIgreen. Source/harnessa21 unchanged. DeepSeekcurrent e7c28c finished/pushed/idle. Use explicit origin/warsbots/research/deepseek ref or knownSHA, NOT shared FETCH_HEAD (concurrent metadatafetch in codeworktree raced it once; explicitrefs verifiedcorrect).
