@@ -1,6 +1,25 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS105a correction pushed (R3 downgraded, R2/R5 fixed) · DS106 Shore lower-route design continuing · last push 2026-10-29 04:55
+NOW: DS106 lower-route data/design pushed · reading DS107 for bounded native ladder patch · last push 2026-10-29 05:35
+
+### DS106 · 2026-10-29 · design · Shore lower route: zmin clip + one real ladder link; 545->deck GREEN
+`DS106_SHORE_LOWER_ROUTE.md`, `ds106_lower_route_recipe.ps1`, `proto/ds106_nav_probe.cpp`. Offline only; no game.
+- Root cause is three gaps: C145 bake `--zmin 99.5` intentionally dropped the 90.1 deck; no graph connector; no
+  spawn layer check. E223 re-measured: spawn 545 `Project=false`, spawn 530 snaps `+12.331 m`.
+- `US-low90` already proves 23/23 spawns project and 545 -> ladder base = 4 corners, but 545 -> 99.88/103.25 =
+  `other_component`. Adding one **real** ladder row at the validated long shaft
+  (`2116.100 1880.600 90.168 -> 2117.500 1880.600 99.768 1 ladder`) gives 545 -> 99.768 path found (5 corners,
+  1 ladder link, Reachable=true). The 1.4 m top offset is the deck ladder opening, not an invented link.
+- Design: (A) full-map bake `--zmin 90 --water 99.5`, one manual ladder link, no through-hull links; (B) spawn
+  validation `Project` + `|dz|<=2.5` (water-only alternative, 8 bounded retries via `skipId`); (C) small default-OFF
+  native ladder actuator: `IsLadderUsable`/`RequestGrabOnLadder`, forward move while `isOnLadder`, exit
+  `eLAT_ReachedEnd` only at `top-0.5`, 15 s timeout, ban on fail. No fake position, no timed detach, no `direction.z`
+  hack; `eLAT_ExitTop` is client-animation-only (`PlayerMovement.cpp:1612-1635`).
+- Limits: the exact subset has no 99.75->103.34 ramp, so 545 -> 103.25/sea/captures is NOT proven; full-map bake must
+  re-check it. Bilge dive (`z 83.66`) remains deferred: `BotMovement.cpp:91-92` zeroes `direction.z` and swimming
+  jumps are refused (`BotLocomotion.cpp:111`).
+- Oracles: RED E223 545/530 + low90 other_component; GREEN one-link path + spawn layer; executor unit RED on 5ef.
+  Next: read DS107 and prepare the bounded exact-5ef patch/tests on own branch.
 
 ### DS105a · 2026-10-29 · correction · R3 downgraded to unproven hook-gap risk; R2/R5 prose fixed
 `DS105_C154_AUDIT_REVALIDATION.md` updated (same file). Owner review accepted; no game/build.
