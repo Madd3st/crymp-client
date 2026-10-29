@@ -1,3 +1,9 @@
+# C154 ACTIVE: exact3cfd pushed after DS109OK; new FULL CI pending
+
+RUNTIME_PIN 3cfd859676d83bdecc1b091d3b9202323b039135 ONLY. DS109e8e63bd8 independent cumulative code/caller/data OK beforepush. Motionmode blocker resolved18abab5a, realadaptermode REDold0b/GREENnew+PlayerSDKON/OFFPASS, sourcecaller17semanticRED01e/currentallGREEN and CIwired. QAfe42d8ef shared lower545 whole-route harness PrepareOnlyPASS1460/1506bytes+13analyzercontrols, DS110reviewpending. NeedNEWFULLgreenCI(exact3cfd), exactpairdownload+hashes, freshindependentpostCIcode/data/harnessOK+qualitypins beforegame. No game/install yet, dataV4b601/c7e9unchanged. Native registeredlower545onceisdisclosedsetup, notnaturalRNG/upperresample; no postsetupdeath/revive/rescue permitted. No fullShore/clientclaim. Auditplan/wiki done11919a1e/eb562edf. FreshnormalFlash e78e3f9e, wakeDryRunPASS; olde7ae617kretired7807dc5c. ForeignQAchangespreserved.
+
+## Earlier state/history
+
 # C154 ACTIVE: local3cfd final pre-CI review, no CI/game yet
 
 Exact LOCAL `3cfd859676d83bdecc1b091d3b9202323b039135` NOTPUSHED/NO CI/RUNTIME. DS1087807dc5c caller/data review plus Player movement-mode blocker; scoped fix18abab5a and actual extracted mode REDold0b/GREENnew, Player SDK ON/OFF PASS. Caller fixture integrated+CI, corrected per-revision header/fresh per-tick input, 17semanticRED old01e/currentGREEN; oldcompilerfail nevercountsRED. Existing actualweaponcallerPASS. DS109 finalpreCI review requested on exact3cfd; no gameuntilOK/newFULLgreenCI/freshpostCIreview+harness. Netzero56->56 retained. DataV4 b601/c7e9 QA metadata committed04ca2bcb, no install. Auditplan/wiki done11919a1e/eb562edf, R4/R9 remainplan; no fullShore claim. New normalFlash successor e78e3f9e; olde7ae retired617k+ and pushed7807dc5c. QA foreignRecording/wrapperpreserved. NEXT harnessprepare/codeDS109thenCI.
