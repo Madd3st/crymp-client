@@ -1,16 +1,17 @@
 diff --git a/Code/CryGame/Actors/Player/PlayerMovement.cpp b/Code/CryGame/Actors/Player/PlayerMovement.cpp
-index f92cbe93..668d86f0 100644
+index f92cbe93..49e4c954 100644
 --- a/Code/CryGame/Actors/Player/PlayerMovement.cpp
 +++ b/Code/CryGame/Actors/Player/PlayerMovement.cpp
-@@ -9,6 +9,7 @@
+@@ -9,6 +9,8 @@
  #include "PlayerMovement.h"
  #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
  #include "CryGame/Bots/BotPace.h"
 +#include "CryGame/Bots/BotConfig.h"
++#include "CryGame/Bots/BotManager.h"
  #endif
  #include "CryCommon/CryGame/GameUtils.h"
  #include "CryGame/Game.h"
-@@ -33,6 +34,17 @@
+@@ -33,6 +35,18 @@
  	} \
  }
  
@@ -19,7 +20,8 @@ index f92cbe93..668d86f0 100644
 +// other actors and the flag-OFF build keep the old IsClient/bClient behavior.
 +static bool WarsBotLadderServer(const CPlayer& player)
 +{
-+	return gEnv && gEnv->bServer && player.IsWarsBotActor() && WarsBots::BotConfig::Get().ladder == 1;
++	return gEnv && gEnv->bServer && g_pGame && player.IsWarsBotActor() && WarsBots::BotConfig::Get().ladder == 1 &&
++		g_pGame->GetBotManager().Owns(player.GetEntityId());
 +}
 +#else
 +static bool WarsBotLadderServer(const CPlayer&) { return false; }
@@ -28,16 +30,24 @@ index f92cbe93..668d86f0 100644
  #define LADDER_TOP_DISTANCE 2.41f
  //-----------------------------------------------------------------------------------------------
  //-----------------------------------------------------------------------------------------------
-@@ -1570,7 +1582,7 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
+@@ -1570,11 +1584,15 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
  
  	if (m_stats.isExitingLadder)
  	{
 -		if (gEnv->bClient)
-+		if (gEnv->bClient || WarsBotLadderServer(player))
++		const bool warsBot = WarsBotLadderServer(player);
++		if (gEnv->bClient || warsBot)
  		{
  			IAnimatedCharacter* pAC = m_player.GetAnimatedCharacter();
  			IAnimationGraphState* pAGState = pAC ? pAC->GetAnimationGraphState() : NULL;
-@@ -1590,7 +1602,7 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
+ 			const char* agOutputOnLadder = pAGState ? pAGState->QueryOutput("OnLadder") : NULL;
++			// DS-107: an owned bot must not turn a missing graph/output into a premature ReachedEnd. Keep the native
++			// exiting state and let the policy fail closed (BlockedTop) unless the graph gives a real completion.
++			if (warsBot && (!pAC || !pAGState || !agOutputOnLadder)) return;
+ 			bool onLadder = agOutputOnLadder && agOutputOnLadder[0] == '1';
+ 			if (!onLadder)
+ 				player.RequestLeaveLadder(CPlayer::eLAT_ReachedEnd);
+@@ -1590,7 +1608,7 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
  	float bottomDist = (m_stats.ladderBottom - player.GetEntity()->GetWorldPos()).len();
  
  	//Just another check
@@ -46,7 +56,7 @@ index f92cbe93..668d86f0 100644
  	{
  		// check collision with terrain/static objects when moving down, some ladders are very badly placed ;(
  		// player will need to detach
-@@ -1609,7 +1621,7 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
+@@ -1609,7 +1627,7 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
  		}
  	}
  
@@ -56,7 +66,7 @@ index f92cbe93..668d86f0 100644
  		if (m_movement.desiredVelocity.y > 0.01f)
  		{
 diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
-index f52c82ba..94a6bf28 100644
+index f52c82ba..ff757d04 100644
 --- a/Code/CryGame/Bots/BotBrain.cpp
 +++ b/Code/CryGame/Bots/BotBrain.cpp
 @@ -321,7 +321,7 @@ void BotBrain::ResetLife()
@@ -64,123 +74,187 @@ index f52c82ba..94a6bf28 100644
  	m_patrolUntil = 0;
  	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
 -	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_cornerSlow = false; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
-+	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_cornerSlow = false; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset(); m_ladder.Reset();
++	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_cornerSlow = false; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset(); m_ladder.Reset(); m_ladderNativeLocked = false;
  	m_vantage.Reset(CurrentVantage(),m_number);
  	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
  	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
-@@ -365,6 +365,11 @@ void BotBrain::Stop(BotInstance& bot)
+@@ -365,6 +365,9 @@ void BotBrain::Stop(BotInstance& bot)
  {
  	if (!m_running) return;
  	m_trap.Reset(); m_trapStepUntil=0;
-+	// DS-107: leave the native ladder mode before the actor/controller is stopped; this is cleanup, not route success.
-+	if (CActor* actor = bot.GetActor())
-+		if (m_ladder.Active() && static_cast<CPlayer*>(actor)->GetPlayerStats()->isOnLadder.Value())
-+			static_cast<CPlayer*>(actor)->RequestLeaveLadder(CPlayer::eLAT_ReachedEnd);
-+	m_ladder.Reset();
++	// DS-107: one owned cancellation path clears native ladder mode as a failure (never route success).
++	if (CActor* actor = bot.GetActor()) CancelLadder(static_cast<CPlayer&>(*actor), "stop", true);
++	else { m_ladder.Reset(); m_ladderNativeLocked = false; }
  	m_running = false; // Cancel respawn before touching entity/weapon lifetime.
  	m_combat.Reset();
  	if (CActor* actor = bot.GetActor())
-@@ -398,6 +403,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
+@@ -398,6 +401,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
  	m_blackboard.Sample(actor,m_now);
  	m_locomotion.Observe(actor,m_blackboard,m_now);
      UpdateTelemetry(actor);
-+    // DS-107: death/stop must clear the native ladder mode before the ordinary dead/stop path runs.
-+    if (actor.GetHealth()<=0 && m_ladder.Active()) { actor.RequestLeaveLadder(CPlayer::eLAT_ReachedEnd); m_ladder.Reset(); }
++    // DS-107: death/stop must clear the native ladder mode through the single cancellation path.
++    if (actor.GetHealth()<=0 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"death",true);
      if(UpdateDead(bot,actor,dt))return;
  	if (BotConfig::Get().botTurnCap==1) UpdateTurnCap(actor,dt); // C-044: per-frame capped view toward the decided look point
  	m_tick += dt;
-@@ -410,6 +417,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
+@@ -410,6 +415,9 @@ void BotBrain::Update(BotInstance& bot, float dt)
  
  	m_intent=BotIntent();
  	WBI(aim,actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f));
-+	// DS-107: the native ladder owns the whole decision tick while active; no weapon/combat/roam may override it.
-+	if (BotConfig::Get().ladder==1 && m_ladder.Active()) { UpdateLadder(bot,actor,decisionTime); return; }
++	// DS-107: a gate turned OFF mid-climb must still clean the native mode; when ON the ladder owns the tick.
++	if (BotConfig::Get().ladder!=1 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"gate_off",true);
++	if (BotConfig::Get().ladder==1 && m_ladder.Active()) { UpdateLadder(actor,decisionTime); return; }
      if(UpdateTest(actor,decisionTime))return;
      const int& qaWeapon=BotConfig::Get().qaSocomOnly;
      const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
-@@ -1436,6 +1445,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+@@ -1436,6 +1444,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
  	m_blackboard.obstacleJump=BotJump::None;
  	m_intent.linkJump=false;
  	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
-+	if (BotConfig::Get().ladder==1) ApplyLadderExecutor(actor); // DS-107: start a real ladder edge
++	if (BotConfig::Get().ladder==1 && ApplyLadderExecutor(actor)) return; // DS-107: immediate/exclusive ownership
  	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
  	// wb_bot_jump_sanity: on a navmesh path the mesh already proved the way (jumps come from baked links); the low
  	// obstacle rays read stair steps as a wall and asked for Strength jumps at every staircase (149 of 364, owner
-@@ -1510,10 +1520,84 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+@@ -1510,10 +1519,149 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
  			BotWeapons::Handle(actor,dist,m_blackboard.suitActive && m_blackboard.mode==NANOMODE_CLOAK);
  	}
  }
 +// ---------------------------------------------------------------------------------------------- C154/DS-107 ladder
-+// Starts at a real NavLinkLadder corner. The pure policy owns approach/grab/climb/exit; the native CPlayerMovement
-+// owns the actual ladder motion and its collision/ray/animation exit. No SetPos/SetWorldTM and no height-only detach.
-+void BotBrain::ApplyLadderExecutor(CPlayer& actor)
++// Starts at a real NavLinkLadder corner. The pure policy owns approach/grab/forward-climb/native-exit/settle; the
++// native CPlayerMovement top ray and animation/OnLadder completion initiate and complete the exit. Bot logic never
++// requests eLAT_ExitTop, never steers sideways while attached, never snaps and never treats height alone as success.
++bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 +{
-+	if (m_ladder.Active()) return;
++	if (m_ladder.Active()) return true;
 +	NavMeshCore* mesh=CurrentNavMesh();
-+	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return;
++	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return false;
 +	const NavPathLink* l=LinkAtCorner(m_pathIndex);
-+	if (!l || l->kind!=NavLinkLadder) return;
++	if (!l || l->kind!=NavLinkLadder) return false;
 +	const Vec3 a(l->a[0],l->a[1],l->a[2]);
 +	const Vec3 feet=m_blackboard.position;
-+	if ((a-feet).GetLengthSquared2D()>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return;
++	if ((a-feet).GetLengthSquared2D()>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return false;
 +	m_ladderNow=*l;
 +	m_ladder.Start(m_now,LVec{l->a[0],l->a[1],l->a[2]},LVec{l->b[0],l->b[1],l->b[2]});
++	m_ladderNativeLocked=false;
 +	WB_LOG(2,"[WarsBots] #%d LADDER start a=(%.2f,%.2f,%.2f) b=(%.2f,%.2f,%.2f) actor=%u.",m_number,
 +		l->a[0],l->a[1],l->a[2],l->b[0],l->b[1],l->b[2],actor.GetEntityId());
++	return true;
 +}
 +
-+void BotBrain::UpdateLadder(BotInstance& bot, CPlayer& actor, float dt)
++// One cancellation path for fail / flag-OFF / death / stop / reset. It clears native ladder mode as a FAILURE
++// (never success), stops bot input/fire, and optionally bans the link and re-paths.
++void BotBrain::CancelLadder(CPlayer& actor, const char* why, bool ban)
++{
++	SPlayerStats* stats=actor.GetPlayerStats();
++	const bool nativeAttached=stats && (stats->isOnLadder.Value() || stats->isExitingLadder);
++	if (!m_ladder.Active() && !m_ladderNativeLocked && !nativeAttached)
++	{
++		if (ban) { m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0; }
++		return;
++	}
++	WB_LOG(1,"[WarsBots] #%d LADDER cancel reason=%s nativeOn=%d exiting=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
++		why,nativeAttached?1:0,(stats&&stats->isExitingLadder)?1:0,
++		actor.GetEntity()->GetWorldPos().x,actor.GetEntity()->GetWorldPos().y,actor.GetEntity()->GetWorldPos().z,
++		actor.GetEntityId());
++	m_combat.StopFire();
++	m_intent=BotIntent();
++	if (nativeAttached) actor.RequestLeaveLadder(CPlayer::eLAT_ReachedEnd); // cleanup only, never route success
++	m_locomotion.Stop(actor);
++	actor.SetWarsBotActions(false,false,STANCE_STAND);
++	if (ban)
++	{
++		NavMeshCore* mesh=CurrentNavMesh();
++		if (mesh && m_ladderNow.ref && mesh->NoteLinkFailure(m_ladderNow.ref)) mesh->BanLink(m_ladderNow.ref);
++		m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0;
++	}
++	m_ladder.Reset(); m_ladderNativeLocked=false;
++}
++
++void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 +{
 +	SPlayerStats* stats=actor.GetPlayerStats();
 +	const Vec3 feet=actor.GetEntity()->GetWorldPos();
++	if (stats && (stats->isFrozen.Value() || stats->isRagdoll || actor.GetLinkedVehicle()))
++	{
++		CancelLadder(actor,"frozen_ragdoll_vehicle",true);
++		return;
++	}
 +	const Vec3 center(m_ladderNow.a[0],m_ladderNow.a[1],m_ladderNow.a[2]+1.2f);
-+	m_locomotion.Look(actor,center); // make the native IsLadderUsable ray see mat_ladder
 +	LadderInput in;
-+	in.now=m_now; in.feet=LVec{feet.x,feet.y,feet.z};
++	in.now=m_now; in.feet=LVec{feet.x,feet.y,feet.z}; in.grounded=m_blackboard.grounded;
 +	in.onLadder=stats && stats->isOnLadder.Value();
 +	in.exiting=stats && stats->isExitingLadder;
-+	in.canGrab=actor.IsLadderUsable();
-+	if (in.canGrab && stats)
-+		m_ladder.SetNative(LVec{stats->ladderBottom.x,stats->ladderBottom.y,stats->ladderBottom.z},
-+			LVec{stats->ladderTop.x,stats->ladderTop.y,stats->ladderTop.z},
-+			LVec{stats->ladderOrientation.x,stats->ladderOrientation.y,stats->ladderOrientation.z});
++	in.atTop=stats && (stats->ladderTop - feet).len() < 2.5f;
++	// Probe mat_ladder only before the grab. Once the native frame is accepted/rejected it is locked for this edge;
++	// no per-tick IsLadderUsable may mutate top/bottom mid-climb.
++	const LadderPhase phase=m_ladder.Phase();
++	if ((phase==LadderPhase::Approach || phase==LadderPhase::Grab) && !in.onLadder && !m_ladderNativeLocked)
++	{
++		m_locomotion.Look(actor,center);
++		in.canGrab=actor.IsLadderUsable();
++		if (in.canGrab)
++		{
++			if (!stats || !m_ladder.SetNative(
++				LVec{stats->ladderBottom.x,stats->ladderBottom.y,stats->ladderBottom.z},
++				LVec{stats->ladderTop.x,stats->ladderTop.y,stats->ladderTop.z},
++				LVec{stats->ladderOrientation.x,stats->ladderOrientation.y,stats->ladderOrientation.z}))
++				m_ladder.RejectNative();
++			m_ladderNativeLocked=true;
++		}
++	}
 +	const LadderOutput o=m_ladder.Update(in);
 +	if (o.grab) actor.RequestGrabOnLadder(CPlayer::eLAT_Use);
-+	if (o.requestExit) actor.RequestLeaveLadder(CPlayer::eLAT_ExitTop);
-+	NavMeshCore* mesh=CurrentNavMesh();
 +	if (o.phase==LadderPhase::Done)
 +	{
-+		WB_LOG(2,"[WarsBots] #%d LADDER done nativeOn=%d exiting=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
-+			in.onLadder?1:0,in.exiting?1:0,feet.x,feet.y,feet.z,actor.GetEntityId());
++		WB_LOG(2,"[WarsBots] #%d LADDER done nativeOn=%d exiting=%d grounded=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
++			in.onLadder?1:0,in.exiting?1:0,in.grounded?1:0,feet.x,feet.y,feet.z,actor.GetEntityId());
 +		const size_t next=size_t(m_ladderNow.corner)+1;
 +		m_cornerFor=size_t(-1);
 +		m_pathIndex=m_path.empty()?0:(next<m_path.size()?next:m_path.size()-1);
-+		m_ladder.Reset();
++		m_ladder.Reset(); m_ladderNativeLocked=false;
 +		return;
 +	}
 +	if (o.phase==LadderPhase::Failed)
 +	{
-+		static const char* const why[]={"none","timeout","no_grab","lost","blocked_top","wrong_floor"};
-+		WB_LOG(1,"[WarsBots] #%d LADDER failed reason=%s nativeOn=%d exiting=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
-+			why[int(o.fail)],in.onLadder?1:0,in.exiting?1:0,feet.x,feet.y,feet.z,actor.GetEntityId());
-+		if (mesh && mesh->NoteLinkFailure(m_ladderNow.ref)) mesh->BanLink(m_ladderNow.ref);
-+		m_ladder.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1);
-+		m_nextRepath=m_minRepath=0;
++		static const char* const why[]={"none","timeout","no_grab","lost","blocked_top","wrong_floor","wrong_ladder"};
++		WB_LOG(1,"[WarsBots] #%d LADDER failed reason=%s nativeOn=%d exiting=%d grounded=%d pos=(%.2f,%.2f,%.2f) actor=%u.",
++			m_number,why[int(o.fail)],in.onLadder?1:0,in.exiting?1:0,in.grounded?1:0,feet.x,feet.y,feet.z,actor.GetEntityId());
++		CancelLadder(actor,why[int(o.fail)],true);
 +		return;
 +	}
 +	m_intent=BotIntent();
-+	WBI(move,true);
-+	WBI(destination,Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z));
-+	WBI(aim,center);
-+	WBI(gait,BotGait::Walk);
-+	WBI(suitMode,NANOMODE_DEFENSE);
-+	m_intent.combat=BotCombatIntent::None; m_intent.jump=BotJump::None; m_intent.linkJump=false;
-+	m_intent.meshPath=false; m_intent.arrive=0.5f;
 +	m_combat.StopFire();
-+	m_locomotion.ExecuteLadder(actor,m_intent.destination,m_intent.aim,dt);
-+	if (m_verbose) WB_LOG(2,"[WarsBots] #%d LADDER phase=%d grab=%d exit=%d climb=%d nativeOn=%d exiting=%d pos=(%.2f,%.2f,%.2f) actor=%u.",
-+		m_number,int(o.phase),o.grab?1:0,o.requestExit?1:0,o.climbing?1:0,in.onLadder?1:0,in.exiting?1:0,
-+		feet.x,feet.y,feet.z,actor.GetEntityId());
++	if (o.phase==LadderPhase::WaitExit)
++	{
++		// Native root motion owns the exit. Do not send Stop or a sideways target: wait for native completion.
++		m_intent=BotIntent();
++	}
++	else if (in.onLadder)
++	{
++		WBI(move,true);
++		WBI(destination,Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z));
++		WBI(aim,center);
++		WBI(gait,BotGait::Walk);
++		WBI(suitMode,NANOMODE_DEFENSE);
++		m_intent.combat=BotCombatIntent::None; m_intent.jump=BotJump::None; m_intent.linkJump=false;
++		m_intent.meshPath=false; m_intent.arrive=0.5f;
++		m_locomotion.ExecuteLadder(actor,m_intent.destination,m_intent.aim,dt,true);
++	}
++	else
++	{
++		// Approach, grab approach and post-exit settle use the ordinary safe executor and its canMove/gates.
++		WBI(move,true);
++		WBI(destination,Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z));
++		WBI(aim,center);
++		WBI(gait,BotGait::Walk);
++		WBI(suitMode,NANOMODE_DEFENSE);
++		m_intent.combat=BotCombatIntent::None; m_intent.jump=BotJump::None; m_intent.linkJump=false;
++		m_intent.meshPath=false; m_intent.arrive=0.5f;
++		m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
++	}
++	if (m_verbose) WB_LOG(2,"[WarsBots] #%d LADDER phase=%d grab=%d climb=%d settle=%d nativeOn=%d exiting=%d grounded=%d vz=%.2f pos=(%.2f,%.2f,%.2f) actor=%u.",
++		m_number,int(o.phase),o.grab?1:0,o.climbing?1:0,o.settling?1:0,in.onLadder?1:0,in.exiting?1:0,in.grounded?1:0,
++		m_blackboard.velocity.z,feet.x,feet.y,feet.z,actor.GetEntityId());
 +}
 +
  // ---------------------------------------------------------------------------------------------- C-036 links
@@ -192,7 +266,7 @@ index f52c82ba..94a6bf28 100644
  	const Vec3 feet=m_blackboard.position;
  	if (!mesh) { m_link.Reset(); return; }
 diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
-index 33b7177d..6c15ff99 100644
+index 33b7177d..aa3b0f1a 100644
 --- a/Code/CryGame/Bots/BotBrain.h
 +++ b/Code/CryGame/Bots/BotBrain.h
 @@ -11,6 +11,7 @@
@@ -203,15 +277,17 @@ index 33b7177d..6c15ff99 100644
  #include "CryGame/Bots/BotVantage.h"
  #include "CryGame/Bots/BotTactics.h"
  #include "CryGame/Bots/BotTraits.h"
-@@ -145,6 +146,11 @@ private:
+@@ -145,6 +146,13 @@ private:
  	BotJumpLink m_link;
  	NavPathLink m_linkNow;
  	void ApplyLinkExecutor(CPlayer& actor);
 +	// DS-107: native ladder edge (wb_bot_ladder). The policy is pure; the adapter performs the native calls.
 +	BotLadder m_ladder;
 +	NavPathLink m_ladderNow;
-+	void ApplyLadderExecutor(CPlayer& actor);
-+	void UpdateLadder(BotInstance& bot, CPlayer& actor, float dt);
++	bool m_ladderNativeLocked = false;
++	bool ApplyLadderExecutor(CPlayer& actor);
++	void UpdateLadder(CPlayer& actor, float dt);
++	void CancelLadder(CPlayer& actor, const char* why, bool ban);
  	BotVantage m_vantage;            // owner 25.10 sniper spots (wb_bot_vantage)
  	// wb_bot_tactics (BotTactics.h): angle hold from cover, jump-strafe, loot after a kill
  	BotAngleHold m_hold;
@@ -241,15 +317,17 @@ index 5ba5cb0e..20364e86 100644
   int vantage=0;
 diff --git a/Code/CryGame/Bots/BotLadder.h b/Code/CryGame/Bots/BotLadder.h
 new file mode 100644
-index 00000000..47c99c86
+index 00000000..97e8a5d9
 --- /dev/null
 +++ b/Code/CryGame/Bots/BotLadder.h
-@@ -0,0 +1,159 @@
-+// C154 / DS-107: bounded native ladder policy (wb_bot_ladder, default OFF).
-+// The policy is engine-free: it only decides approach / grab / climb / native-exit phases and the move target.
-+// The engine adapter (BotBrain) performs IsLadderUsable/RequestGrabOnLadder/RequestLeaveLadder and lets the stock
-+// CPlayerMovement collision/ray/animation checks own the exit. No SetPos/SetWorldTM, no height-only detach:
-+// success requires native !onLadder && !exiting plus a physical post-exit floor/position.
+@@ -0,0 +1,193 @@
++// C154 / DS-107 revision 2: bounded native ladder policy (wb_bot_ladder, default OFF).
++// The policy is engine-free: it decides approach / grab / forward climb / native-exit wait / safe settle.
++// The engine adapter (BotBrain) performs IsLadderUsable/RequestGrabOnLadder only before the grab, locks the native
++// ladder frame, and lets the stock CPlayerMovement top ray + animation/OnLadder completion initiate eLAT_ExitTop.
++// Bot logic never calls RequestLeaveLadder(eLAT_ExitTop), never steers sideways while attached, never uses a
++// height-only success, and never snaps the actor. Success requires native !onLadder && !exiting, grounded, and a
++// physical post-exit floor/target check.
 +#pragma once
 +#include <cmath>
 +
@@ -257,23 +335,25 @@ index 00000000..47c99c86
 +
 +struct LVec { float x = 0, y = 0, z = 0; };
 +
-+enum class LadderPhase { Idle = 0, Approach, Grab, Climb, Exit, Done, Failed };
-+enum class LadderFail { None = 0, Timeout, NoGrab, Lost, BlockedTop, WrongFloor };
++enum class LadderPhase { Idle = 0, Approach, Grab, Climb, WaitExit, Settle, Done, Failed };
++enum class LadderFail { None = 0, Timeout, NoGrab, Lost, BlockedTop, WrongFloor, WrongLadder };
 +
 +struct LadderInput {
 +	float now = 0.f;
 +	LVec feet;
++	bool grounded = false;
 +	bool onLadder = false;      // native m_stats.isOnLadder
-+	bool exiting = false;       // native m_stats.isExitingLadder
-+	bool canGrab = false;       // native IsLadderUsable() (mat_ladder ray/geometry)
++	bool exiting = false;       // native m_stats.isExitingLadder (native top check initiated)
++	bool atTop = false;         // native distance to ladderTop inside LADDER_TOP_DISTANCE
++	bool canGrab = false;       // native IsLadderUsable() only before the grab
 +};
 +
 +struct LadderOutput {
 +	LadderPhase phase = LadderPhase::Idle;
 +	LVec moveTo;
 +	bool grab = false;          // adapter may call RequestGrabOnLadder(eLAT_Use)
-+	bool requestExit = false;   // adapter may call RequestLeaveLadder(eLAT_ExitTop)
-+	bool climbing = false;
++	bool climbing = false;      // keep forward into the ladder; no sideways steer
++	bool settling = false;      // normal safe movement to the landing floor
 +	LadderFail fail = LadderFail::None;
 +};
 +
@@ -281,10 +361,14 @@ index 00000000..47c99c86
 +	float approachRadius = 1.2f;
 +	float grabTime = 1.0f;
 +	float total = 15.f;
-+	float topEps = 2.5f;        // native ladderTop band (LADDER_TOP_DISTANCE 2.41 + margin; human exit 99.54)
-+	float exitTime = 1.5f;      // native collision/animation completion window
-+	float floorDz = 1.0f;       // post-exit physical floor tolerance
++	float topEps = 2.5f;        // native ladderTop band (LADDER_TOP_DISTANCE 2.41 + margin)
++	float exitWait = 2.0f;      // native animation/root-motion completion
++	float settleTime = 4.0f;
++	float floorDz = 1.0f;
 +	float floorDist = 2.5f;
++	float nativeBottomTol = 1.5f;
++	float nativeTopTol = 2.5f;
++	float minRise = 4.0f;
 +};
 +
 +class BotLadder {
@@ -294,20 +378,28 @@ index 00000000..47c99c86
 +	{
 +		m_phase = LadderPhase::Idle; m_fail = LadderFail::None;
 +		m_start = m_phaseAt = 0.f; m_a = m_b = m_bottom = m_top = m_into = LVec();
++		m_rejectNative = false; m_atTopSince = -1.f;
 +	}
 +	void Start(float now, const LVec& a, const LVec& b)
 +	{
 +		m_a = a; m_b = b; m_bottom = a; m_top = b;
 +		m_into = Horiz(b.x - a.x, b.y - a.y);
 +		m_start = m_phaseAt = now; m_phase = LadderPhase::Approach;
-+		m_fail = LadderFail::None;
++		m_fail = LadderFail::None; m_rejectNative = false; m_atTopSince = -1.f;
 +	}
-+	// Called after IsLadderUsable() set the native ladder stats. orientation points from the ladder to the player.
-+	void SetNative(const LVec& bottom, const LVec& top, const LVec& orientation)
++	// Called only before the grab. Returns false when the native ladder frame is not the requested UP edge.
++	bool SetNative(const LVec& bottom, const LVec& top, const LVec& orientation)
 +	{
++		const float rise = top.z - bottom.z;
++		if (!Finite(bottom) || !Finite(top) || !Finite(orientation) || rise < m_p.minRise) return false;
++		if (Dist2D(bottom, m_a) > m_p.nativeBottomTol || std::fabs(bottom.z - m_a.z) > m_p.nativeBottomTol) return false;
++		if (Dist2D(top, m_b) > m_p.nativeTopTol || std::fabs(top.z - m_b.z) > m_p.nativeTopTol) return false;
++		if (std::sqrt(orientation.x * orientation.x + orientation.y * orientation.y) < 0.2f) return false;
 +		m_bottom = bottom; m_top = top;
 +		m_into = Horiz(-orientation.x, -orientation.y);
++		return true;
 +	}
++	void RejectNative() { m_rejectNative = true; }
 +	bool Active() const { return m_phase != LadderPhase::Idle && m_phase != LadderPhase::Done && m_phase != LadderPhase::Failed; }
 +	LadderPhase Phase() const { return m_phase; }
 +	LadderFail Fail() const { return m_fail; }
@@ -318,12 +410,13 @@ index 00000000..47c99c86
 +	LadderOutput Update(const LadderInput& in)
 +	{
 +		LadderOutput o;
-+		for (int i = 0; i < 3; ++i)
++		for (int i = 0; i < 4; ++i)
 +		{
 +			const LadderPhase before = m_phase;
 +			o = Step(in);
-+			if (m_phase == before || (m_phase != LadderPhase::Grab && m_phase != LadderPhase::Climb && m_phase != LadderPhase::Exit))
-+				break;
++			if (m_phase == before) break;
++			if (m_phase != LadderPhase::Grab && m_phase != LadderPhase::Climb &&
++				m_phase != LadderPhase::WaitExit && m_phase != LadderPhase::Settle) break;
 +		}
 +		return o;
 +	}
@@ -346,31 +439,43 @@ index 00000000..47c99c86
 +			o.moveTo = m_a;
 +			o.grab = in.canGrab;
 +			if (in.onLadder) Enter(LadderPhase::Climb, in.now);
++			else if (m_rejectNative) return Fail(o, LadderFail::WrongLadder);
 +			else if (in.now - m_phaseAt > m_p.grabTime) return Fail(o, LadderFail::NoGrab);
 +			break;
 +		case LadderPhase::Climb:
 +			o.climbing = true;
++			// Keep the real forward climb while attached; never steer sideways or inject z.
 +			o.moveTo = LVec{ in.feet.x + m_into.x * 2.f, in.feet.y + m_into.y * 2.f, in.feet.z };
-+			if (!in.onLadder)
++			if (in.exiting) Enter(LadderPhase::WaitExit, in.now);
++			else if (!in.onLadder)
 +			{
-+				// A native detach below the top band is a lost climb, never a success.
++				// A native detach below the top band is a lost climb, never success.
 +				if (in.feet.z < m_top.z - m_p.topEps) return Fail(o, LadderFail::Lost);
-+				Enter(LadderPhase::Exit, in.now);
++				Enter(LadderPhase::Settle, in.now);
 +			}
-+			else if (in.feet.z >= m_top.z - m_p.topEps) Enter(LadderPhase::Exit, in.now);
-+			break;
-+		case LadderPhase::Exit:
-+			o.moveTo = m_b;
-+			o.requestExit = true;
-+			if (!in.onLadder && !in.exiting)
++			else if (in.atTop)
 +			{
-+				if (in.feet.z >= m_b.z - m_p.floorDz && Dist2D(in.feet, m_b) <= m_p.floorDist)
-+				{
-+					m_phase = LadderPhase::Done; o.phase = m_phase; return o;
-+				}
-+				return Fail(o, LadderFail::WrongFloor);
++				// At the native top band but the native ray/animation has not started the exit: keep forward, but
++				// report a real blocked top instead of climbing forever or detaching by height.
++				if (m_atTopSince < 0.f) m_atTopSince = in.now;
++				else if (in.now - m_atTopSince > m_p.exitWait) return Fail(o, LadderFail::BlockedTop);
 +			}
-+			if (in.now - m_phaseAt > m_p.exitTime) return Fail(o, LadderFail::BlockedTop);
++			else m_atTopSince = -1.f;
++			break;
++		case LadderPhase::WaitExit:
++			// Native root motion owns the exit; stop bot steering and wait for the native completion.
++			o.moveTo = in.feet;
++			if (!in.onLadder && !in.exiting) Enter(LadderPhase::Settle, in.now);
++			else if (in.now - m_phaseAt > m_p.exitWait) return Fail(o, LadderFail::BlockedTop);
++			break;
++		case LadderPhase::Settle:
++			o.settling = true;
++			o.moveTo = m_b;
++			if (in.grounded && in.feet.z >= m_b.z - m_p.floorDz && Dist2D(in.feet, m_b) <= m_p.floorDist)
++			{
++				m_phase = LadderPhase::Done; o.phase = m_phase; return o;
++			}
++			if (in.now - m_phaseAt > m_p.settleTime) return Fail(o, LadderFail::WrongFloor);
 +			break;
 +		default: break;
 +		}
@@ -378,6 +483,10 @@ index 00000000..47c99c86
 +		return o;
 +	}
 +
++	static bool Finite(const LVec& v)
++	{
++		return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z);
++	}
 +	static LVec Horiz(float x, float y)
 +	{
 +		const float l = std::sqrt(x * x + y * y);
@@ -392,7 +501,7 @@ index 00000000..47c99c86
 +	LadderOutput Fail(LadderOutput o, LadderFail why)
 +	{
 +		m_phase = LadderPhase::Failed; m_fail = why;
-+		o.phase = m_phase; o.fail = why; o.grab = false; o.requestExit = false; o.climbing = false;
++		o.phase = m_phase; o.fail = why; o.grab = false; o.climbing = false; o.settling = false;
 +		return o;
 +	}
 +
@@ -400,24 +509,27 @@ index 00000000..47c99c86
 +	LadderPhase m_phase = LadderPhase::Idle;
 +	LadderFail m_fail = LadderFail::None;
 +	LVec m_a, m_b, m_bottom, m_top, m_into;
-+	float m_start = 0.f, m_phaseAt = 0.f;
++	float m_start = 0.f, m_phaseAt = 0.f, m_atTopSince = -1.f;
++	bool m_rejectNative = false;
 +};
 +
 +} // namespace WarsBots
 diff --git a/Code/CryGame/Bots/BotLocomotion.cpp b/Code/CryGame/Bots/BotLocomotion.cpp
-index fadde733..99e865d8 100644
+index fadde733..a25ca8b8 100644
 --- a/Code/CryGame/Bots/BotLocomotion.cpp
 +++ b/Code/CryGame/Bots/BotLocomotion.cpp
-@@ -146,5 +146,15 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
+@@ -146,5 +146,17 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
  	actor.GetMovementController()->RequestMovement(request);
  	return accepted;
  }
 +// DS-107: while the native ladder is active, ordinary canMove/SafeStep must not Stop the climb. This still goes
 +// through BotMovement::Move and the real movement controller, so ProcessMovementOnLadder receives desiredVelocity.y.
-+bool BotLocomotion::ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt)
++bool BotLocomotion::ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt, bool nativeAttached)
 +{
-+	const bool accepted = m_movement.Move(actor, moveTo, aim, dt, 1.3f, STANCE_STAND, 1.5f,
-+		true, false, -1.f, false, 0.5f, false);
++	// The SafeStep exception exists only while the native ladder is attached. Approach and post-exit settle call
++	// the ordinary safe executor instead.
++	const bool accepted = m_movement.Move(actor, moveTo, aim, dt, 1.0f, STANCE_STAND, 1.5f,
++		nativeAttached, false, -1.f, false, 0.5f, false);
 +	actor.SetWarsBotActions(false, accepted, STANCE_STAND);
 +	if (!accepted) m_movement.Aim(actor, aim);
 +	return accepted;
@@ -425,16 +537,16 @@ index fadde733..99e865d8 100644
  void BotLocomotion::Look(CPlayer& actor, const Vec3& target) { m_movement.Look(actor, target); }
  }
 diff --git a/Code/CryGame/Bots/BotLocomotion.h b/Code/CryGame/Bots/BotLocomotion.h
-index 7ad2cb8f..e87b95d6 100644
+index 7ad2cb8f..41ea88db 100644
 --- a/Code/CryGame/Bots/BotLocomotion.h
 +++ b/Code/CryGame/Bots/BotLocomotion.h
 @@ -13,6 +13,9 @@ public:
  	void Observe(CPlayer& actor, BotBlackboard& state, float now);
  	BotJump Obstacle(CPlayer& actor, const Vec3& direction) const;
  	bool Execute(CPlayer& actor, const BotIntent& intent, BotBlackboard& state, float now, float dt);
-+	// DS-107: native ladder owns movement; bypass canMove/SafeStep but keep the real movement request so the
-+	// native ProcessMovementOnLadder sees desiredVelocity.y. No jump, no injected z.
-+	bool ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt);
++	// DS-107: only while the native ladder is actually attached may SafeStep be bypassed; approach/settle use the
++	// normal safe executor. Keep the real movement request so ProcessMovementOnLadder sees desiredVelocity.y.
++	bool ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt, bool nativeAttached);
  	void Look(CPlayer& actor, const Vec3& target);
  private:
  	bool JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength) const;
@@ -464,77 +576,110 @@ index 0a076a91..fefafaa3 100644
  			s.mesh.SetLinkMask(want);
 diff --git a/Tests/BotLadderTests.cpp b/Tests/BotLadderTests.cpp
 new file mode 100644
-index 00000000..229dabed
+index 00000000..04a2b3c3
 --- /dev/null
 +++ b/Tests/BotLadderTests.cpp
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,103 @@
 +#include "CryGame/Bots/BotLadder.h"
 +#include <cassert>
 +#include <cstdio>
 +using namespace WarsBots;
 +
-+static LadderInput At(float t, float x, float y, float z, bool onLadder = false, bool exiting = false, bool canGrab = false)
++static LadderInput At(float t, float x, float y, float z, bool grounded = true, bool onLadder = false,
++	bool exiting = false, bool canGrab = false)
 +{
-+	LadderInput in; in.now = t; in.feet = { x, y, z }; in.onLadder = onLadder; in.exiting = exiting; in.canGrab = canGrab;
++	LadderInput in; in.now = t; in.feet = { x, y, z }; in.grounded = grounded; in.onLadder = onLadder;
++	in.exiting = exiting; in.canGrab = canGrab;
 +	return in;
 +}
 +
 +int main()
 +{
 +	const LVec a{ 0, 0, 10 }, b{ 1, 0, 20 };
-+	// 1. Approach -> Grab; a missing mat_ladder match never requests a grab and fails after the window.
++	const LVec bottom{ 0.2f, 0.1f, 10.4f }, top{ 0.2f, 0.1f, 20.3f }, orientation{ 0, 1, 0 };
++
++	// 1. Native frame validation: a short/wrong ladder is rejected; the real UP edge is accepted.
++	{
++		BotLadder L; L.Start(0, a, b);
++		assert(!L.SetNative(LVec{ 0, 0, 10 }, LVec{ 0, 0, 12 }, orientation)); // short segment
++		assert(!L.SetNative(LVec{ 30, 0, 10 }, LVec{ 30, 0, 20 }, orientation)); // wrong floor
++		assert(L.SetNative(bottom, top, orientation));
++	}
++	// 2. Approach -> Grab; no mat_ladder match never requests a grab and fails after the window.
 +	{
 +		BotLadder L; L.Start(0, a, b);
 +		LadderOutput o = L.Update(At(0, 0, 3, 10)); assert(o.phase == LadderPhase::Approach && o.moveTo.z == 10.f);
 +		o = L.Update(At(0.2f, 0, 0.5f, 10)); assert(o.phase == LadderPhase::Grab && !o.grab);
 +		o = L.Update(At(1.4f, 0, 0.5f, 10)); assert(o.fail == LadderFail::NoGrab && !L.Active());
 +	}
-+	// 2. Grab with a real mat_ladder match -> native onLadder -> Climb; move target goes into the ladder.
++	// 3. Grab -> Climb; the bot keeps forward into the ladder, no sideways steer, no exit request.
 +	{
-+		BotLadder L; L.Start(0, a, b); L.SetNative(a, b, LVec{ 0, 1, 0 }); // player on +y, into = -y
++		BotLadder L; L.Start(0, a, b); assert(L.SetNative(bottom, top, orientation));
 +		L.Update(At(0, 0, 0.5f, 10));
-+		LadderOutput o = L.Update(At(0.2f, 0, 0.5f, 10, false, false, true));
++		LadderOutput o = L.Update(At(0.2f, 0, 0.5f, 10, true, false, false, true));
 +		assert(o.phase == LadderPhase::Grab && o.grab);
-+		o = L.Update(At(0.3f, 0, 0.5f, 10, true, false, true));
++		o = L.Update(At(0.3f, 0, 0.5f, 10, true, true));
 +		assert(o.phase == LadderPhase::Climb && o.climbing);
-+		assert(o.moveTo.y < -1.f && o.moveTo.z == 10.f); // horizontal into -y, no injected z
++		assert(o.moveTo.y < -1.f && o.moveTo.z == 10.f);
 +	}
-+	// 3. Native top band -> eLAT_ExitTop request; pending native exit is not success.
++	// 4. Native top check starts eLAT_ExitTop: WaitExit stops steering, pending is not success.
 +	{
-+		BotLadder L; L.Start(0, a, b); L.SetNative(a, b, LVec{ 0, 1, 0 });
-+		L.Update(At(0, 0, 0.5f, 10)); L.Update(At(0.1f, 0, 0.5f, 10, true));
-+		LadderOutput o = L.Update(At(8.0f, 0, 0.5f, 19.5f, true));
-+		assert(o.phase == LadderPhase::Exit && o.requestExit);
-+		o = L.Update(At(8.2f, 0, 0.5f, 19.5f, true, true));
-+		assert(o.phase == LadderPhase::Exit && o.requestExit && L.Active());
++		BotLadder L; L.Start(0, a, b); assert(L.SetNative(bottom, top, orientation));
++		L.Update(At(0, 0, 0.5f, 10)); L.Update(At(0.1f, 0, 0.5f, 10, true, true));
++		LadderOutput o = L.Update(At(8.0f, 0, 0.5f, 19.5f, true, true, true));
++		assert(o.phase == LadderPhase::WaitExit && !o.climbing && o.moveTo.z == 19.5f);
++		o = L.Update(At(8.2f, 0, 0.5f, 19.5f, true, true, true));
++		assert(o.phase == LadderPhase::WaitExit && L.Active());
 +	}
-+	// 4. Native exit completes on the physical deck -> Done; wrong floor or blocked top never succeeds.
++	// 5. Native completion: not grounded -> Settle (safe movement); grounded near the landing floor -> Done.
 +	{
-+		BotLadder L; L.Start(0, a, b); L.SetNative(a, b, LVec{ 0, 1, 0 });
-+		L.Update(At(0, 0, 0.5f, 10)); L.Update(At(0.1f, 0, 0.5f, 10, true));
-+		L.Update(At(8.0f, 0, 0.5f, 19.5f, true));
-+		LadderOutput o = L.Update(At(8.2f, 0.2f, 0.1f, 19.5f, false, false));
++		BotLadder L; L.Start(0, a, b); assert(L.SetNative(bottom, top, orientation));
++		L.Update(At(0, 0, 0.5f, 10)); L.Update(At(0.1f, 0, 0.5f, 10, true, true));
++		L.Update(At(8.0f, 0, 0.5f, 19.5f, true, true, true));
++		LadderOutput o = L.Update(At(8.2f, 0.2f, 0.1f, 19.5f, false, false, false));
++		assert(o.phase == LadderPhase::Settle && o.settling && o.moveTo.x == b.x);
++		o = L.Update(At(8.4f, 0.2f, 0.1f, 19.5f, true, false, false));
 +		assert(o.phase == LadderPhase::Done && !L.Active());
-+
-+		BotLadder M; M.Start(0, a, b); M.SetNative(a, b, LVec{ 0, 1, 0 });
-+		M.Update(At(0, 0, 0.5f, 10)); M.Update(At(0.1f, 0, 0.5f, 10, true));
-+		M.Update(At(8.0f, 0, 0.5f, 19.5f, true));
-+		o = M.Update(At(8.2f, 5, 5, 5, false, false)); assert(o.fail == LadderFail::WrongFloor);
-+
-+		BotLadder N; N.Start(0, a, b); N.SetNative(a, b, LVec{ 0, 1, 0 });
-+		N.Update(At(0, 0, 0.5f, 10)); N.Update(At(0.1f, 0, 0.5f, 10, true));
-+		N.Update(At(8.0f, 0, 0.5f, 19.5f, true));
-+		o = N.Update(At(9.6f, 0, 0.5f, 19.5f, true, true)); assert(o.fail == LadderFail::BlockedTop);
 +	}
-+	// 5. Detach before the top without ever being on the ladder is Lost; total timeout is Timeout; reset is Idle.
++	// 6. Blocked top: native exiting never completes -> BlockedTop (no fake ReachedEnd).
 +	{
-+		BotLadder L; L.Start(0, a, b); L.SetNative(a, b, LVec{ 0, 1, 0 });
-+		L.Update(At(0, 0, 0.5f, 10)); L.Update(At(0.1f, 0, 0.5f, 10, true));
-+		LadderOutput o = L.Update(At(0.2f, 0, 0.5f, 10, false)); assert(o.fail == LadderFail::Lost);
++		BotLadder L; L.Start(0, a, b); assert(L.SetNative(bottom, top, orientation));
++		L.Update(At(0, 0, 0.5f, 10)); L.Update(At(0.1f, 0, 0.5f, 10, true, true));
++		L.Update(At(8.0f, 0, 0.5f, 19.5f, true, true, true));
++		LadderOutput o = L.Update(At(10.1f, 0, 0.5f, 19.5f, true, true, true));
++		assert(o.fail == LadderFail::BlockedTop);
 +
-+		BotLadder M; M.Start(0, a, b); o = M.Update(At(16.1f, 0, 3, 10)); assert(o.fail == LadderFail::Timeout);
-+		M.Reset(); assert(!M.Active() && M.Phase() == LadderPhase::Idle);
++		// Native top band reached but the native ray/animation never starts the exit: real blocked top, not height success.
++		BotLadder A; A.Start(0, a, b); assert(A.SetNative(bottom, top, orientation));
++		A.Update(At(0, 0, 0.5f, 10)); A.Update(At(0.1f, 0, 0.5f, 10, true, true));
++		LadderInput top = At(8.0f, 0, 0.5f, 19.5f, true, true, false); top.atTop = true;
++		o = A.Update(top); assert(o.phase == LadderPhase::Climb);
++		top.now = 10.1f; o = A.Update(top); assert(o.fail == LadderFail::BlockedTop);
 +	}
-+	std::printf("BotLadder tests PASS\n");
++	// 7. Wrong floor: detached away from the landing floor -> WrongFloor; premature detach -> Lost.
++	{
++		BotLadder L; L.Start(0, a, b); assert(L.SetNative(bottom, top, orientation));
++		L.Update(At(0, 0, 0.5f, 10)); L.Update(At(0.1f, 0, 0.5f, 10, true, true));
++		L.Update(At(8.0f, 0, 0.5f, 19.5f, true, true, true));
++		L.Update(At(8.2f, 5, 5, 5, false, false, false));
++		LadderOutput o = L.Update(At(12.3f, 5, 5, 5, false, false, false));
++		assert(o.fail == LadderFail::WrongFloor);
++
++		BotLadder M; M.Start(0, a, b); assert(M.SetNative(bottom, top, orientation));
++		M.Update(At(0, 0, 0.5f, 10)); M.Update(At(0.1f, 0, 0.5f, 10, true, true));
++		o = M.Update(At(0.2f, 0, 0.5f, 10, true, false, false)); assert(o.fail == LadderFail::Lost);
++	}
++	// 8. Wrong native ladder -> WrongLadder; reset/cancel clears an active climb; total timeout fails.
++	{
++		BotLadder L; L.Start(0, a, b); L.RejectNative();
++		LadderOutput o = L.Update(At(0, 0, 0.5f, 10)); assert(o.fail == LadderFail::WrongLadder);
++
++		BotLadder M; M.Start(0, a, b); assert(M.SetNative(bottom, top, orientation));
++		M.Update(At(0, 0, 0.5f, 10)); M.Update(At(0.1f, 0, 0.5f, 10, true, true));
++		M.Reset(); assert(!M.Active() && M.Phase() == LadderPhase::Idle);
++
++		BotLadder N; N.Start(0, a, b); o = N.Update(At(15.1f, 0, 3, 10)); assert(o.fail == LadderFail::Timeout);
++	}
++	std::printf("BotLadder revision 2 tests PASS\n");
 +	return 0;
 +}

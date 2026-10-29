@@ -41,6 +41,26 @@ the shaft centre is the ladder opening in the deck, not an invented shortcut. Th
 connector is a data row, not a teleport. The SCC count stays 86 because the edge is one-way; the directed reach is
 what the route uses.
 
+## 2b. Full-map V2 candidate (offline, NOT accepted)
+
+Codex `QA/build/c154-bake/Shore-candidate-v2.receipt.json` (46.1 s, `installed=false`, `game_runs=0`):
+`--zmin 99.5 --retain-box 2103 1877 90 2138 1892 99.5 --water 99.5 --ch 0.05`, navmesh sha
+`b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609`, 46,830 polys, 2 links,
+**124/124 spawns project** (E223 had 112/124). The two links are exactly the accepted upper Strength row and the
+UP-only ladder `2116.125 1880.625 90.250 -> 2117.500 1880.600 99.768 0 ladder`.
+
+Actual-core query on that same data (`full-v2-mask14.log` / `full-v2-mask46.log`):
+
+| Mask | lower 545 -> ladder top / upper / sea / dry shore 654 |
+| --- | --- |
+| 14 (drop+jump+strength) | FAIL `other_component` at the ladder; lower deck is isolated |
+| 46 (+ladder) | PASS: ladder top 7 corners/1 link, upper 13/1, sea 23/2, dry shore 654 **40 corners/2 links** |
+
+31/31 native C146 adjacent trace points pass with `ch 0.05`. The ladder edge ends at `2117.500,1880.600,99.768`
+beside the observed native exit; the native root motion lands near `2116.2,1879.7,99.54`, then the bot must safely
+settle/walk ~1.5 m to that end. Do not snap. The earlier V1 endpoint at the exact human exit failed Detour's 0.3 m
+attach radius and is archived as a data failure; V2's real adjacent floor edge connects.
+
 ## 3. The two human routes and why only one is minimal now
 
 * **Life 2 (ladder, preferred):** lower deck -> native long shaft `z 90.31 -> 99.54` at 1.00 m/s -> 99.75 deck ->
@@ -58,7 +78,8 @@ A global `--zmin 90` is **rejected**: it would admit the submerged sea floor as 
 `--zmin 99.5 --water 99.5` defaults and all original geometry in the water-mask input. Codex adds an explicit
 `--retain-box` dry-interior exception around the hull volume (the dry lower deck/shaft only; not the bilge at
 `89.37` and not the pool floor at `83.66`), with exact-loader negative controls and all water fixtures PASS. That
-tool is **pending Codex review/deployment**, not available today. The vertical voxel must be **`ch 0.05`**, not
+tool now exists as the offline **V2 candidate** (`Shore-candidate-v2.receipt.json`, section 2b), not accepted or
+deployed. The vertical voxel must be **`ch 0.05`**, not
 `0.1`: the exact C146 32-point corridor has two `other_component` gaps at `ch 0.1` (`149.895`, `155.648`) and both
 close at `ch 0.05` with 31/31 adjacent paths, while `cs 0.05` alone does not. The matched no-retain baseline is
 bit-identical to archived `US-low90` (sha `E1ADC571…`), so this is a real grid effect, not a loosened capsule. Add
@@ -109,7 +130,8 @@ decide the exit:
 * **GREEN (data):** full-map bake with the Codex `--retain-box` (global 99.5 unchanged), **`ch 0.05`**, and the one
   UP-only ladder row: all 12 lower spawns project with `|snap| <= 0.25 m`, 545 -> 99.768 returns a path with exactly
   one `ladder` link, 99.768 -> 545 has no route, the C146 corridor is 31/31 adjacent, and 530's false projection is
-  rejected by the fail-closed layer check.
+  rejected by the fail-closed layer check. On V2, mask 14 fails at the ladder while **mask 46** reaches ladder
+  top/upper/sea/dry-shore 654 (40 corners, exactly 2 links).
 * **GREEN (executor, engine-free unit):** fake ladder API feeds approach/grab/climb/native-exit; assert no grab
   without `IsLadderUsable`, no manual `ReachedEnd`/height-only success, exit only after native
   `!isOnLadder && !isExitingLadder`, timeout is FAIL, one ban after a failed exit. RED on 5ef: no ladder kind/executor

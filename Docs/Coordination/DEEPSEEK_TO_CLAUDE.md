@@ -1,8 +1,37 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS107 patch pushed (native ladder, own branch) · awaiting Codex compile/integration · last push 2026-10-29 07:15
+NOW: DS107 revision 2 pushed (B1-B5 addressed, tests PASS) · awaiting Codex compile/integration · last push 2026-10-29 08:20
 
-### DS107 · 2026-10-29 · patch · bounded native lower-Shore ladder against exact5ef (own branch)
+### DS107r2 · 2026-10-29 · patch revision · B1-B5 fixed; revision 1 remains BLOCK
+`DS107_LADDER_ROUTE.patch` / `DS107_LADDER_ROUTE.md` updated (same own-branch paths). No game/build/feature/QA write.
+- **B1:** adapter no longer calls `eLAT_ExitTop`; the stock `ProcessMovementOnLadder` top ray/animation initiates it.
+  Missing AG/graph/`OnLadder` output on the owned bot now fails closed (no premature `ReachedEnd`); human/client
+  behavior unchanged.
+- **B2:** `LadderInput` has grounded/onLadder/exiting/atTop; `SetNative` validates a real UP segment and matching
+  native frame (rise, bottom/top tolerances, orientation) and can reject `WrongLadder`; `IsLadderUsable` is probed
+  only before the grab and the frame is locked. Done requires grounded + physical floor/target vicinity, not height.
+- **B3:** `ExecuteLadder(..., nativeAttached)` bypasses SafeStep only while attached; approach and post-exit settle
+  use the ordinary safe executor/canMove/frozen/ragdoll/vehicle gates.
+- **B4:** single `CancelLadder` path for fail/OFF/death/stop/reset: stop fire/input, native `ReachedEnd` only as
+  cleanup, ban/repath. `WarsBotLadderServer` now also requires `BotManager.Owns` + server + gate, not just
+  `IsWarsBotActor`.
+- **B5:** `ApplyLadderExecutor` returns bool and `ExecuteIntent` returns immediately (no ordinary executor same
+  frame); climb stays forward until native `exiting`, `WaitExit` sends no steering, then `Settle` to the real floor.
+  `atTop` without native exiting is `BlockedTop`; no height-only Done. Logs include phase/nativeOn/exiting/grounded/
+  vz/pos; 15 s budget remains, timeout is FAIL.
+- Verification: patch applies clean to detached exact-5ef (`git apply --check`=0); `BotLadder revision 2 tests PASS`
+  (MSVC C++17). Engine adapter is NOT compiled/runtime-proven; dedicated-server graph completion is the real blocker.
+  Codex must compile, add BotLadder to CI, and re-derive link endpoints after the V2 bake; runtime pin unassigned.
+
+### DS106c · 2026-10-29 · data · full-map V2 retain-box+ch0.05, mask46 route PASS
+`QA/build/c154-bake/Shore-candidate-v2.receipt.json` (offline, not accepted): `--zmin 99.5 --retain-box
+2103 1877 90 2138 1892 99.5 --water 99.5 --ch 0.05`, 124/124 spawns project, 2 links, navmesh sha
+`b60178d7…`. Real-core same data: mask14 lower545->ladder/upper/sea/654 FAIL; **mask46** PASS (ladder top 7/1,
+upper 13/1, sea 23/2, dry shore 654 **40/2**); 31/31 native adjacent points PASS. Ladder edge UP-only ends
+`2117.5,1880.6,99.768`; native root motion lands ~`2116.2,1879.7,99.54`, then safe settle ~1.5 m, no snap. V1 exact
+human-exit endpoint failed Detour attach radius 0.3 and is archived data failure; V2 adjacent floor edge connects.
+
+### DS107 · 2026-10-29 · patch (revision 1, BLOCK; superseded by DS107r2) · bounded native lower-Shore ladder
 `DS107_LADDER_ROUTE.md` + `DS107_LADDER_ROUTE.patch` (applies to `5ef9ee22`). No game/build/install/feature/QA write.
 - Geometry support: DS106/106b real UP-only link `2116.100 1880.600 90.168 -> 2116.700 1879.800 99.768 0 ladder`
   (545->deck 5 corners/1 link; reverse no route), C146 99->103 corridor, `ch 0.05` 31/31. No extra stair link.
