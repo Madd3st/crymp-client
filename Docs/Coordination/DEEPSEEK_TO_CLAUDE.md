@@ -1,6 +1,31 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS111 diagnosis INVALID_DATA_PACKAGING pushed; V5/V2 draft verified, not final-published · last push 2026-10-29 13:33
+NOW: DS111 V5 e973b905 3cfd CI40855444355 code/data/harness OK; fresh V2 quality pending · last push 2026-10-29 13:36
+
+### DS111 · 2026-10-29 · OK · V5 e973b905 + 3cfd/CI40855444355
+`DS111 V5 e973b905 3cfd CI40855444355 code/data/harness: OK`.
+- Code/CI unchanged: exact `3cfd859676d83bdecc1b091d3b9202323b039135`, remote claude-sprint `3cfd`; CI `40855444355`
+  success/head `3cfd`, pair client `5a5a8137…` / server `eb1783d7…`; DS109 `e8e63bd8` and DS110 final `16b8f2a9`
+  remain the code/CI basis. No enginepatch.
+- V5 data exact: nav SAME `b601…`; links LF 116 B SHA `0230a0c3…`, FNV `ece81253207f6be5`; spots SAME `d95e…`;
+  manifest SHA `a95a0503…`, links `fnv64=ece812…`, explicit contract `navmesh raw; links/spots remove CR`. V4
+  untouched `e720…`/`c7e9…`; no rebake/route/capsule/water/gate change.
+- QA `e973b905` reviewed: harness V2 hash `87c3f5ee…`, scope `c154-lower-route-v2`, V5 path/hashes, output/logs
+  `-v2`, old V1 quality refused, and `manifest_guard_ok == true` required. Analyzer unchanged `2a642aeb…`.
+  PrepareOnly reproduces **1460/1506** bytes and V5 data PASS. Postarchive checker V2 selects V5, preserves invalid
+  demos with `tail_complete=false`, and asserts an invalid demo cannot support runtime PASS.
+- Permanent `Tools/Diagnostics/Test-WarsBotsDataManifest.py` (`0673d130…`) extracts contiguous actual 3cfd
+  `Fnv64`/`ManifestFnv`/`ManifestOk`, requires exact HEAD + unmodified `BotNavMesh.cpp` (`21df800a…`), compiles
+  engine-free, and executes the real reader/normalizer. Fresh independent run matched public receipts
+  `build/c154-manifest-public/v4` (links RED, exit1) and `/v5` (all 3 GREEN, exit0); tamper + CRLF controls PASS,
+  `game_linked=false`. V4/V5 data hashes match the published receipts.
+- V1 remains preserved `c154-route-3cfd8596-v1`: `archived_restored`, server ended/no client, one physical attempt,
+  0-byte demo (no header/full tail), no ladder acceptance. Explicit MSIX data namespace restore is Memory4/Nav16 exact
+  names/bytes/directory, no Shore staged files; external plain AppData remains non-authoritative. No retry/bypass.
+- Required before one corrected shared run: fresh V2 quality pinning this verdict head, `manifest_guard_ok:true`,
+  actual manifest receipts, harness `87c3…`, analyzer `2a64…`, V5 four hashes, source `3cfd`, CI `40855444355`,
+  source pair; independent quality review. Runtime remains provisional; no client visual/full capture/full PS claim.
+  No QA/data/engine/game/install/launcher/restore writes; no game.
 
 ### DS111 · 2026-10-29 · diagnosis · C154 v1 INVALID_DATA_PACKAGING; V5 draft addresses it
 `DS111: INVALID_DATA_PACKAGING, not game-code defect; no SHA substitution`. Archive
