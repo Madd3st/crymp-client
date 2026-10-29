@@ -1,56 +1,7 @@
-# WarsBots: current project status — 2026-10-29
+# Current research status — 2026-10-29
 
-C154, 29.10: **диагностический показ Shore**, а не пройденный маршрут. Сборка `abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e`, полный зелёный CI `40890940918`, независимое ревью DS117 `ccbbe1cf`. Бот поднимается по лестнице, но верхний выход всё ещё блокируется на высоте 97,92 м; общий прогон №4 остановлен через 14,45 с. Запись полная, Memory 4 / Navmesh 16 восстановлены побайтно. Следующий шаг — офлайн-разбор перехода графа `RelaxedIdleNW -> RelaxedRunNW`, без повторения неизменённого прогона.
+C155 classic Steelmill delivered FIRST: abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e/fullCI40890940918/DS1215c12d27b, E:/WarsBots/Showcases/Steelmill-Classic-abac72a9, IA8twoeachskill, all16hashes+PrepareOnlyPASS. No new gameplay for packaging. Cleanuparchives onE verified before exact C removal; active source/currentC154evidence/ownervideos preserved. Current task/state no longer contains staleopen assignments; full old mail in datedarchive.
 
-На ПК владельца отдельный пакет: `C:\Users\Magic8\WarsBotsBuild\WarsBots-Preview-abac72a9\START.cmd`. Выбрать наблюдателя, F6 — следовать за ботом, F1 — переключить вид. Один штатный диагностический respawn на нижнем зарегистрированном спавне 545 запланирован через 60 с после загрузки сервера; это подготовка показа, не естественный случайный спавн. Если загрузка клиента заняла дольше — закрыть игру и запустить показ заново. Не закрывать окно PowerShell до обычного выхода из игры: оно архивирует журналы и восстанавливает данные. Старый пакет C150 `b8b444d6` не изменён. Полный матч PS и клиентская анимация пока не подтверждены.
+C154 remains upperexitFAIL onabac, four controlled attempts retained, DS117ccbbe1cf archiveaudit; owner preview same defect97.932, native human same shaft exits99.750 (QA3e0d9713/DS119735f052d). DS118v1 stale-walk/lateStop idea withdrawn; DS120designnotimplemented. Additional correction: ExecuteLadder arg7=probe1.5, pseudoarg10=-1 yields0.5; native CalculatePseudoSpeed(false)=1.0. This is a source parity gap, not proven physicalrootcause. DS122 concrete guarded proposal after DS123 handoff; no standalone diagnostic game. Newcode/fullnewCI/freshreview thenONEwholelower545-to-shore whenownerfree. No fullPS/client/default promotion.
 
-C154 current source **`272a430604fd67d01362e771faacbeff23157a56`**, pushed after independent DS112 final `d9128bda` OK; NEW full CI **40882465370 GREEN**, exact client/server pair downloaded and hashed; fresh DS113 final approval pending. Native climb physics no longer waits for a cosmetic manual-animation FIFO for an owned live, unfrozen, non-ragdoll server bot. Native axis/speed/top collision and strict physical/graph exit checks remain; zero/down input is preserved. Actual climb-tail regression RED on old3cfd / GREEN on272 plus real SDK ON/OFF syntax PASS. New native input/velocity/animation and exit telemetry will distinguish remaining causes. No local game build or new272 gameplay yet; fresh DS113 all-scope approval after full CI is required before one whole lower545→shore run.
-
-Two C154 gameplay attempts on3cfd are preserved: V1 INVALID_DATA_PACKAGING (raw CRLF FNV versus production text normalization); V2 loaded corrected data, reached and grabbed the ladder, but never rose above90.25 and timed out at27.03. V2 has107 trace rows and exact source/full-tail demo checks; CURRENT Memory4/Nav16 names/bytes/directory restored. No lower exit, shore, capture or client acceptance. [V2 evidence](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C154_ATTEMPT_V2_LADDER_STALL.json).
-
-Frozen C154 DATA V5: navmesh `b60178d7…`, canonical-LF links `0230a0c3…`, manifest `a95a0503…`; actual production manifest reader/normalizer passes, tampering is rejected. Geometry/route coordinates unchanged from V3/V4. Graph12/12 lower→shore with UP-ladder, 0/12 when disabled; vertical cell0.05 fixes two observed stair gaps and bounded dry-room triangles retain the lower floor without reducing agent dimensions. This is graph evidence. Gate `wb_bot_ladder` defaults0; net-zero56→56 retires diagnostic `wb_nav_knee_fix`, retaining `wb_nav_audit [0|1|2|stop]`.
-
-
-C154 ACTIVE: owner historical audit revalidated jointly (DS105 corrected0a9aeaf7). R4 ammo-search episode deadline confirmed remaining; R9 jump-direction contract gap confirmed, physical consequence unproven. R1/R2/R5/R6 source-fixed; R2/R5 runtime parity not tested. R3 ordinary round chain covered via framework reset; no demonstrated direct bypass, first DS105 false positive corrected. Plan updated with these distinctions. Next active work Shore lower dry-floor + real transition; offline545 reaches observed ladderbase on existing low90 mesh but not top/sea. No new runtime pin/game. Details C154_AUDIT_REVALIDATION.md.
-
-C153 DONE: goals/weapons shared headless acceptance 5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 / FULLGREEN CI40790759287 / independent DS103 1e7d868299615f7c3fa6496d4ef97416eaab7970. Two physical attempts: V1 INVALID_TOOLING_FAILURE preserved and restored, V2 PASS90.81s/current8primary/84attacks/8matcheddeathrevive/0grants; demo1821frames/13kills/fulltail. Activegoalreplacements0/repeatedanchors0 in197events, current Memory4/Nav16 exactrestore. No client/AB/fullShore claim; no more game. C150 showcase unchanged b8. DS098 offline lower12=11off+1falseprojection12.34m; native545 failure explained, lower route NOT fixed, no resample/teleport/loosergate. Result QA Docs/Coordination/C153_GOAL_WEAPON_RESULT.md/json; next planned batch routes/topology, not automatic runtime.
-
-This is the current technical entry point. Earlier notes are preserved in [the historical snapshot](STATUS_HISTORY_2026-10-28.md); they are not the live task queue. [Documentation index](../README.md) · [Wiki](https://github.com/Madd3st/crymp-client/wiki) · [Operational handoff](Coordination/MAILBOX/CLAUDE_STATE.md).
-
-## Source of truth
-
-| Area | Branch / reference |
-| --- | --- |
-| Game code | `warsbots/feature/claude-sprint`; C153 IA source `5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9`; C149 Shore upper-route source `b8b444d6c858f27a1fdde0d93b25a318cafc6937` |
-| Build | C153 green CI `40790759287`, DS101/102 code/harness review, DS103 archive audit `1e7d8682`; C149 uses CI `40709459511` |
-| Coordination, research, wiki source | `warsbots/research/steelmill-triage` |
-| QA tools, X reports and receipts | `warsbots/feature/weapon-goals`; its game code is stale |
-| Independent review and proposed patches | `warsbots/research/deepseek` |
-
-Codex is interim coordinator/integrator and QA under D031/D035. DeepSeek supplies analysis, patches and independent review. Claude is out of limits; resume via handoff. No game builds locally on the owner's PC; download the exact green CI pair. No gameplay while the owner plays, no purposeless isolated runs, no default promotion without owner decision.
-
-## Latest completed work
-
-| Task | Result and evidence | Limits |
-| --- | --- | --- |
-| C149 upper submarine → water → shore | PASS b8b444d6; independent DS094 audit `11425704`; QA report `83042341` | One native US bot, E223 data, 84.78 s, HP100, zero NAVfallback/errors, dry endpoint 31.235 m from target654; capture/full map not accepted |
-| C150 owner-PC showcase | READY tooling `b6930859`, report `75f9a670`, independent frozen-package review DS095 `46f44f26` | Steelmill IA8normal and Shore oneUS route; PrepareOnly/recovery/hash/ZIP checks PASS, no fresh gameplay during packaging |
-
-C150 local root: `C:/Users/Magic8/WarsBotsBuild/WarsBots-Showcase-b8b444d6`. Two folders, ZIPs and desktop shortcuts. Keep launcher open, exit Crysis normally and wait for `Archived and restored` before switching maps. [Human instructions](../Wiki/Running-and-Playing.md).
-
-QA evidence on weapon-goals:
-- [C149 route result](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C149_UPPER_SHORE_RESULT.md)
-- [C150 package instructions](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C150_SHOWCASE.md)
-- [C150 integrity receipt](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C150_SHOWCASE_READY.json)
-
-## What remains unaccepted
-
-Full Shore/Power Struggle match, lower 12 submarine spawns, historical 41 water coverage holes, isolated objectives, end-to-end capture/economy/vehicle routes and current visual client quality. A module, offline path or upper-exit PASS does not establish these outcomes. Earlier C148 physical evidence had a stale-review procedural failure; the valid accepted route is C149 on new b8 with fresh gates.
-
-## Current documentation task
-
-C152 planning deliverable: [CS-bot maturity plan](CS_BOT_MATURITY_PLAN.md), independently informed by DeepSeek DS096 `97cb2c78` / `e4051c5f`. Six batches with source locations, cheap red/green checks and proposed acceptance criteria; no games/builds/code changes. Integrator rejects purposeless standalone baseline, already-met 95% water threshold and premature grenade scope. First implementation candidate is weapon-goal lifecycle; Shore data audit can proceed offline in parallel. This plan does not automatically dispatch gameplay or establish parity with CS.
-
-C151 DONE: source `cebeb1b055cf2db772791ff47c9a2f879cae695c`, published wiki `3370918d4171620481ce021c5673f02eae675bdc`, QA report `4eea479a` / X250. Steelmill launch/ZIP links delivered first. Wiki now separates newcomer onboarding, engineering navigation, launch instructions, evidence and troubleshooting. All 16 published page blobs match committed source; 73 local and 27 Git source links checked PASS. Documentation-only work, no game build or runtime. Pre-existing duplicate mailbox IDs DS050/DS052 detected and left unchanged.
-
-For live assignments use [TO_CODEX](Coordination/MAILBOX/TO_CODEX.md), [TO_DEEPSEEK](Coordination/MAILBOX/TO_DEEPSEEK.md), [decisions](Coordination/MAILBOX/DECISIONS.md) and [protocol](Coordination/MAILBOX/PROTOCOL.md). Historical STOP items apply to their task only. Large artifacts stay outside Git, with hashes and archive paths in reports.
+Read [active state](Coordination/MAILBOX/CLAUDE_STATE.md), [operations](Coordination/OPERATIONS.md), [wiki status](../Wiki/Status-and-Roadmap.md), [storage map](../Wiki/Artifacts-and-Storage.md). Prior status and closed correspondence are in [dated archive](Coordination/Archive/2026-10-29/Research-STATUS.md).

@@ -6,7 +6,7 @@ Project: **Crysis 2007 multiplayer through CryMP**, repository `Madd3st/crymp-cl
 
 - [Wiki home](Wiki/Home.md): choose a reading route.
 - [First visit](Wiki/Getting-Started.md): purpose, terms and first demonstration.
-- [Run and play](Wiki/Running-and-Playing.md): C150 Steelmill/Shore packages, controls and recovery.
+- [Run and play](Wiki/Running-and-Playing.md): C155 classic Steelmill (2 bots per skill), Shore diagnostic limits, controls and recovery.
 - [Status and roadmap](Wiki/Status-and-Roadmap.md): verified capabilities and remaining acceptance work.
 - [Troubleshooting](Wiki/Troubleshooting.md): failed launch or useful bug report.
 
@@ -30,3 +30,6 @@ Project: **Crysis 2007 multiplayer through CryMP**, repository `Madd3st/crymp-cl
 `Docs/Wiki/*.md` is the source of the [GitHub Wiki](https://github.com/Madd3st/crymp-client/wiki). Commit source changes to triage, copy the exact committed blobs into the existing `crymp-client.wiki.git` checkout, inspect its diff, commit and push. Record source SHA and wiki SHA in the completion report. Validate relative wiki links against page filenames and GitHub source links against their stated branch/SHA. No binary build is required for Markdown changes.
 
 Historical experiments remain evidence for their own version and recipe; they do not override current STATUS or mailbox. Existing SDK/component licenses remain in force.
+
+- [Working checkout/storage/archive map](Wiki/Artifacts-and-Storage.md).
+- [Agent operations and retention](Research/Coordination/OPERATIONS.md).

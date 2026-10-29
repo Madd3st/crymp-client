@@ -19,3 +19,5 @@
 - [Команда и процесс](Team-and-Process)
 - [Исследования и идеи](Research-and-Ideas)
 - [Словарь](Glossary)
+
+- [Рабочие каталоги и архивы](Artifacts-and-Storage)
