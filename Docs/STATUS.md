@@ -1,9 +1,39 @@
-# WarsBots for CryMP: status, 2026-10-23
+# WarsBots for CryMP: status, 2026-10-29
 
 Repository: https://github.com/Madd3st/crymp-client.
 Integration `warsbots/main`; working baseline `caf1a815` on `warsbots/main`; current WIP `warsbots/feature/ia-participants`.
 Local checkout: `C:\Users\Magic8\OneDrive\Документы\ChatGPT\Crysis wars bot\local\crymp-client`.
 See [port provenance](WARSBOTS_PORT.md), [tests](AI_TESTS.md), [handoff](AGENT_HANDOFF.md).
+
+Sections below from "Implemented" to the IA save checkpoint describe the local
+`ia-participants` checkout (HEAD `96a41b30`, 2026-10-28). They are still the state of
+that branch, but they are no longer the tip of the project: see "Current focus".
+
+## Current focus, 2026-10-29 (from remote branches; not re-run locally)
+
+Evidence level: these points are read from commits and documents on `origin` dated
+2026-10-29. No build, runtime trial or visual check was performed for this entry, and
+the local checkout does not contain this work.
+
+- Local `warsbots/feature/ia-participants` = `96a41b30` (docs-only: Astra review prompt).
+  The IA participant WIP is still unbuilt and undeployed: `BotMatch.cpp` 41/46
+  `Script::Call` C2660 remains unfixed, no IA EXEs were produced, Lua/HUD/score paths
+  were never run. Nothing in the checkpoint below has changed.
+- Active code branch is `warsbots/feature/claude-sprint` (C154, lower Shore ladder).
+  Candidate `307037bc`: full CI `40919291234` green, exact EXE pair downloaded and
+  hash-checked, DeepSeek DS126 `4c710aca` approved code/data/scenario, actual-source
+  caller and SDK ON/OFF tests passed. Physical top exit is NOT verified on this SHA.
+  Four controlled attempts are kept: packaging error, no climb, two stops at the top.
+- C155 classic Steelmill8 package delivered: `abac72a9`/full CI `40890940918`/DS121
+  `5c12d27b`, 16 hashes plus PrepareOnly PASS; 8 profiles (two per difficulty)
+  confirmed at owner start.
+- Game trials are currently held because the owner is playing classic Steelmill.
+  Next single run: lower545 -> ladder -> physical exit/top floor -> Strength -> water
+  -> dry shore, plus archive/demo/navigation/recovery audit.
+- Reporting branches: `warsbots/research/steelmill-triage` (public wiki status,
+  coordination mailbox) and `warsbots/feature/weapon-goals` (stale game code, do not
+  build from it). Source of truth for game code is `claude-sprint`.
+  Do not treat a green CI, an approved review or a demo archive as a physical pass.
 
 ## Implemented
 
@@ -87,6 +117,9 @@ Latest user priority: include the bot in the IA player table and match participa
 using EntityId and scoped game-mode handling, never a fake network channel.
 
 ## SAVE CHECKPOINT: IA participants WIP — BUILD FAIL, NOT DEPLOYED
+
+Still accurate on 2026-10-29: this branch was not continued after `96a41b30`
+(see "Current focus" for where development actually moved).
 
 Stopped on the user's explicit request to save remaining quota (2026-10-23).
 Do not continue gameplay/rebuilds merely because the earlier long task is incomplete.
