@@ -1,6 +1,18 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS106a corrections pushed (retain-box, fail-closed spawn, native exit) · DS107 native patch next · last push 2026-10-29 06:10
+NOW: DS106b data recipe corrected (retain-box + ch0.05) · DS107 native ladder patch next · last push 2026-10-29 06:45
+
+### DS106b · 2026-10-29 · correction · ch0.05 is the causal 99->103 fix; no extra stair link
+`DS106_SHORE_LOWER_ROUTE.md` / recipe updated with the actual C154 bake evidence. No game/build.
+- Exact C146 32 grounded points on US-low90 `ch 0.1`: 2 `other_component` gaps at `149.895
+  (2120.737,1880.972,99.744)` and `155.648 (2113.942,1883.214,103.335)`.
+- Same baker/geometry/agent dims with **only `ch 0.05`**: both gaps close, **31/31 adjacent paths**; `cs 0.05` alone
+  does not fix them. Matched no-retain baseline is bit-identical to archived US-low90 sha
+  `E1ADC571FA4776EFC402D7C21276AC7A58DB26DBE14B961206F01ECEA3AD7ACD`, so this is a real grid effect, not a loosened
+  capsule or invented link.
+- Production data recipe: global `--zmin 99.5 --water 99.5` unchanged + Codex `--retain-box` dry interior (pending)
+  + **`ch 0.05`**; no extra stair connector. The E223 walk-only 8-corner ladder-exit -> takeoff path remains the
+  independent check. The subset recipe's `zmin 90` stays diagnostic-only and is rejected for production.
 
 ### DS106a · 2026-10-29 · correction · three rejected remedies removed; native exit and real 99->103 corridor
 `DS106_SHORE_LOWER_ROUTE.md` / recipe updated after owner review. No game/build.

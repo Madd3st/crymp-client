@@ -1,8 +1,9 @@
 # DS-106 offline recipe: Shore lower-deck DIAGNOSTIC subset bake + one real UP-only ladder link + NavMeshCore query.
 # Read-only on the game/QA inputs; all outputs go to a private temp directory. No game, install or QA write.
 # WARNING: the --zmin 90 below is a diagnostic subset only and is REJECTED for production (it admits the submerged
-# sea floor). Production keeps global --zmin 99.5 --water 99.5 and uses Codex's --retain-box dry-interior exception
-# (pending review/deployment). Do not copy this command as a map bake.
+# sea floor). Production keeps global --zmin 99.5 --water 99.5, uses Codex's --retain-box dry-interior exception
+# (pending review/deployment) and ch 0.05 (ch 0.1 leaves two 99->103 corridor gaps; ch 0.05 fixes both, cs-only does
+# not). Do not copy this command as a map bake.
 param(
     [string]$QaRoot = 'C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build',
     [string]$OutDir = (Join-Path $env:TEMP 'ds106-lower-route')

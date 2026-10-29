@@ -31,6 +31,9 @@ candidate bake/query below ran in a private temp directory with the existing off
 | Same link, 99.768 -> 545 | **other_component** (correct for an UP-only production edge) |
 | Same, 545 -> 103.25 | still `other_component` in the subset; the subset does not represent the 99.75 -> 103.34 corridor |
 | E223, ladder exit `2116.211,1879.724,99.540` -> takeoff `2107.373,1883.286,103.125` | **walk-only path found, 8 corners, 0 links**; every C146 corridor point projects (99.81 -> 103.21) |
+| US-low90, exact C146 32 grounded points, `ch 0.1` | 2 `other_component` gaps: `149.895 (2120.737,1880.972,99.744)` and `155.648 (2113.942,1883.214,103.335)` |
+| Same geometry/agent, **only `ch 0.05`** | both gaps fixed, **31/31 adjacent paths**; `cs 0.05` alone does **not** fix them |
+| Matched no-retain baseline | bit-identical to archived `US-low90` sha `E1ADC571FA4776EFC402D7C21276AC7A58DB26DBE14B961206F01ECEA3AD7ACD` |
 
 The candidate link used the baked lower floor and the nearest baked upper-deck poly next to the shaft opening:
 `2116.100 1880.600 90.168 -> 2116.700 1879.800 99.768 0 ladder` (`bidir=0`, UP only). The horizontal offset from
@@ -55,9 +58,13 @@ A global `--zmin 90` is **rejected**: it would admit the submerged sea floor as 
 `--zmin 99.5 --water 99.5` defaults and all original geometry in the water-mask input. Codex adds an explicit
 `--retain-box` dry-interior exception around the hull volume (the dry lower deck/shaft only; not the bilge at
 `89.37` and not the pool floor at `83.66`), with exact-loader negative controls and all water fixtures PASS. That
-tool is **pending Codex review/deployment**, not available today. Add exactly one **UP-only** manual ladder row at
-the validated shaft; no through-hull links. The full-map bake must keep the existing 99.75 -> 103.34 corridor; E223
-already has it (walk-only 8-corner path below), so no second link is invented.
+tool is **pending Codex review/deployment**, not available today. The vertical voxel must be **`ch 0.05`**, not
+`0.1`: the exact C146 32-point corridor has two `other_component` gaps at `ch 0.1` (`149.895`, `155.648`) and both
+close at `ch 0.05` with 31/31 adjacent paths, while `cs 0.05` alone does not. The matched no-retain baseline is
+bit-identical to archived `US-low90` (sha `E1ADC571…`), so this is a real grid effect, not a loosened capsule. Add
+exactly one **UP-only** manual ladder row at the validated shaft; no through-hull links and no extra stair connector.
+The full-map bake must keep the existing 99.75 -> 103.34 corridor; E223 already has it (walk-only 8-corner path
+below), so the fine vertical mesh is the data fix, not another link.
 
 **B. Spawn layer validation (fail closed, no resampling).**
 After the PS group spawn is chosen (`BotManager.cpp:390-405`) and before the position is used, require either:
@@ -99,9 +106,10 @@ decide the exit:
 
 * **RED (already measured):** E223 545 `Project=false`; 530 snaps `+12.331 m`; `US-low90` 545 -> upper
   `other_component`; `BotNavMesh.cpp:109-111` never enables the ladder kind.
-* **GREEN (data):** full-map bake with the Codex `--retain-box` (global 99.5 unchanged) and the one UP-only ladder
-  row: all 12 lower spawns project with `|snap| <= 0.25 m`, 545 -> 99.768 returns a path with exactly one `ladder`
-  link, 99.768 -> 545 has no route, and 530's false projection is rejected by the fail-closed layer check.
+* **GREEN (data):** full-map bake with the Codex `--retain-box` (global 99.5 unchanged), **`ch 0.05`**, and the one
+  UP-only ladder row: all 12 lower spawns project with `|snap| <= 0.25 m`, 545 -> 99.768 returns a path with exactly
+  one `ladder` link, 99.768 -> 545 has no route, the C146 corridor is 31/31 adjacent, and 530's false projection is
+  rejected by the fail-closed layer check.
 * **GREEN (executor, engine-free unit):** fake ladder API feeds approach/grab/climb/native-exit; assert no grab
   without `IsLadderUsable`, no manual `ReachedEnd`/height-only success, exit only after native
   `!isOnLadder && !isExitingLadder`, timeout is FAIL, one ban after a failed exit. RED on 5ef: no ladder kind/executor
