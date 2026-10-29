@@ -28,9 +28,9 @@ $manifest=Get-Content (Join-Path $data 'Steelmill.manifest.json') -Raw -Encoding
 $manifestRecord=@($package.files|Where-Object {$_.name -eq 'Data/Steelmill.manifest.json'})
 if($manifestRecord.Count -ne 1 -or (Get-FileHash (Join-Path $data 'Steelmill.manifest.json')).Hash -ne $manifestRecord[0].sha256){throw 'Canonical manifest mismatch'}
 $port=46163
-$out=Join-Path $repo ('build/c153-batch-'+$CodeSha.Substring(0,8))
+$out=Join-Path $repo ('build/c153-batch-'+$CodeSha.Substring(0,8)+'-v2')
 $logs=Join-Path $env:LOCALAPPDATA 'WarsBots/Logs'
-$label='C153-'+$CodeSha.Substring(0,8)
+$label='C153-'+$CodeSha.Substring(0,8)+'-v2'
 $preLog=Join-Path $logs ($label+'-pre.log');$serverLog=Join-Path $logs ($label+'.log')
 $serverExe=[IO.Path]::GetFullPath((Join-Path $ci 'CryMP-Server64.exe'))
 $sets=' +wb_debug 1';foreach($p in $preset.flags.PSObject.Properties){$sets+=' +'+$p.Name+' '+[int]$p.Value}
@@ -41,7 +41,7 @@ $runArgs=$base.Replace('__LOG__',(Quote-Arg $serverLog))+' +wb_add 8 normal +wb_
 foreach($argsText in @($preArgs,$runArgs)){if([Text.Encoding]::UTF8.GetByteCount((Quote-Arg $serverExe)+' '+$argsText) -ge 2048){throw 'Native command buffer overflow'}}
 if($PrepareOnly){@{source=$CodeSha;preflight_arguments=$preArgs;server_arguments=$runArgs;runtime='NOT LAUNCHED';data_hashes='PASS'}|ConvertTo-Json;return}
 $quality=Get-Content $qualityPath -Raw -Encoding UTF8|ConvertFrom-Json
-if($quality.task -ne 'C153' -or $quality.source -ne $CodeSha -or -not $quality.ci_success -or -not $quality.ci_source_match -or -not $quality.review_ok -or -not $quality.review_branch_head){throw 'Exact C153 CI/review quality receipt required'}
+if($quality.task -ne 'C153' -or $quality.harness_scope -ne 'c153-live-reader-v2' -or $quality.source -ne $CodeSha -or -not $quality.ci_success -or -not $quality.ci_source_match -or -not $quality.review_ok -or -not $quality.review_branch_head){throw 'Exact C153 v2 CI/review quality receipt required'}
 if(@(Game-Processes).Count){throw 'Owner game/server active; no test'}
 if(Get-NetUDPEndpoint -LocalPort $port -ErrorAction SilentlyContinue){throw 'Port occupied'}
 if((Test-Path $out) -or (Test-Path $preLog) -or (Test-Path $serverLog)){throw 'Duplicate shared acceptance refused'}
@@ -60,6 +60,15 @@ Snapshot-Data $out
 $state=@{source=$CodeSha;map='Steelmill';bots=8;phase='snapshot_complete';directory=$out;server_exe=$serverExe;server_pid=$null;server_started=$null;server_log=$preLog;client_log=$null;client_pid=$null}
 Save-Session $state
 $passed=$false;$qualityPass=$false;$failureReason=$null;$runtimeEvidence=$null
+function Read-LiveLog([string]$Path){
+ if(-not(Test-Path -LiteralPath $Path)){return ''}
+ # A growing file can be returned as multiple output fragments. Regex coerces an array to one string, while
+ # member enumeration then runs Substring on each fragment. Normalize once and parse that immutable scalar.
+ $pieces=@(Get-Content -LiteralPath $Path -Raw -Encoding UTF8)
+ $value=[string]::Concat([object[]]$pieces)
+ if($pieces.Count -gt 1){@{utc=[DateTime]::UtcNow.ToString('o');file=[IO.Path]::GetFileName($Path);chunks=$pieces.Count;characters=$value.Length}|ConvertTo-Json -Compress|Add-Content (Join-Path $out 'live-reader-audit.jsonl') -Encoding UTF8}
+ return $value
+}
 function Start-Phase([string]$arguments,[string]$log,[bool]$bots){
  if(@(Game-Processes).Count){throw 'Game appeared before phase'}
  $p=Start-Process $serverExe -ArgumentList $arguments -WorkingDirectory $game -WindowStyle Hidden -PassThru
@@ -69,7 +78,7 @@ function Start-Phase([string]$arguments,[string]$log,[bool]$bots){
   Start-Sleep -Milliseconds 500
   if($p.HasExited){throw 'Own server exited during readiness'}
   if(@(Game-Processes|Where-Object {$_.Id -ne $p.Id}).Count){throw 'Owner game appeared; defer cleanup if needed'}
-  $text=if(Test-Path $log){Get-Content $log -Raw}else{''};$trace=$log -replace '\.log$','.bots.log';$side=if(Test-Path $trace){Get-Content $trace -Raw}else{''}
+  [string]$text=Read-LiveLog $log;$trace=$log -replace '\.log$','.bots.log';[string]$side=Read-LiveLog $trace
   if($text -match '\[Error\]|Lua Error|Script Error|RMI.*not a client'){throw 'Readiness error'}
   $ready=$text -match 'RULES INFO class=InstantAction' -and $text -match 'gate=1 levelReady=1'
   if($bots){$ready=$ready -and $side -match '#8 created EntityId=' -and $side -match 'FRAME .*bots=8 server=1' -and $side -match 'NAVMESH loaded.*Steelmill: 9333 polys' -and $side -match 'NAVMESH links ON:'}else{$ready=$ready -and $text -match 'bots=0/8 defaultVerbose=1'}
@@ -97,7 +106,7 @@ try{
   if($server.HasExited){throw 'Server exited before result'}
   if(@(Game-Processes|Where-Object {$_.Id -ne $server.Id}).Count){throw 'Owner game appeared during acceptance'}
   if(([DateTime]::UtcNow-$reviewAt).TotalSeconds -ge 15){Assert-ReviewFresh;$reviewAt=[DateTime]::UtcNow}
-  $text=Get-Content $serverLog -Raw;$side=Get-Content $trace -Raw
+  [string]$text=Read-LiveLog $serverLog;[string]$side=Read-LiveLog $trace
   if($text -match '\[Error\]|Lua Error|Script Error|RMI.*not a client' -or $side -match 'STATE CONFLICT'){throw 'Runtime error/state conflict; archive for analysis'}
   $pickupActors=@([regex]::Matches($side,'REAL PICKUP actor=(\d+).*acquired=1 class=(SCAR|FY71|SMG|Shotgun|DSG1|GaussRifle|Hurricane)\b')|ForEach-Object {$_.Groups[1].Value}|Sort-Object -Unique)
   # Game reset can recreate the same eight slots with new EntityIds. Judge the latest roster, not all historic IDs.
