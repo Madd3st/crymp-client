@@ -45,25 +45,23 @@ intent), whether `m_actions` contained `ACTION_MOVE`, whether `m_linkStats.CanMo
 `eCMT_Fly` request would pass the physics/`AlwaysPhysics` path. The proposed input fallback below covers the
 headless-no-character/zero-input case defensively; it is not proof that this was the runtime input value.
 
-## Proposed minimal coherent fix (player movement, scoped)
+## Candidate 272 (accepted) and the input-fallback decision
 
-Before the native move calculation in `ProcessMovementOnLadder`, supply the owned-bot intent input only when the
-controller produced no ladder input:
-
-```cpp
-if (WarsBotLadderServer(player) && (m_actions & ACTION_MOVE) &&
-    cry_fabsf(m_movement.desiredVelocity.y) < 0.01f)
-    m_movement.desiredVelocity.y = 1.0f; // one-way UP ladder intent
-```
-
-Then keep the existing native velocity when the animation gate fails only for the owned gated bot:
+Candidate `272a430604fd67d01362e771faacbeff23157a56` implements only the animation-gate bypass for the owned gated
+bot; it deliberately does **not** add a speculative zero-input/`ACTION_MOVE` fallback. That is the right scope:
+V2's same actor physically walked ~5 m before the attach, the character was present then, and `GrabOnLadder`
+does not delete the body character; zero input was not logged. A fallback could hide a bad controller projection or
+stale intent. Zero and down intent are preserved by the candidate's controls.
 
 ```cpp
-if (!player.UpdateLadderAnimation(CPlayer::eLS_Climb, eLDir, animTime))
-{
-    if (!WarsBotLadderServer(player))
-        return; // humans/clients/flag-OFF/non-owned unchanged
-}
+const bool animationReady = player.UpdateLadderAnimation(CPlayer::eLS_Climb, eLDir, animTime);
+bool authoritativeClimb = false;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+authoritativeClimb = WarsBotLadderServer(player) && player.GetHealth() > 0 &&
+                     !player.IsFrozen() && !m_stats.isRagDoll;
+#endif
+if (!animationReady && !authoritativeClimb)
+    return; // humans/clients/flag-OFF/non-owned unchanged
 m_request.type = eCMT_Fly;
 m_request.velocity = move;
 ```
@@ -71,11 +69,11 @@ m_request.velocity = move;
 - Scoped by the existing `WarsBotLadderServer` (owned server, `wb_bot_ladder==1`); human/client/non-owner retain
   the exact old animation gate.
 - No `SetPos`, `SetWorldTM` bot logic, impulse, direct `eLAT_ExitTop`, timer completion or manifest bypass; native
-  `AdjustPlayerPositionOnLadder`, top ray and exit handling remain.
-- Add one existing-`wb_log` verbose diagnostic at this branch (desiredVelocity.y, actions, animation gate result,
-  request type/velocity) to distinguish animation-gate from input/physics on the next exact run; no new flag.
-- If the new run still has zero `desiredVelocity.y` with `ACTION_MOVE` absent, the input fallback condition needs
-  review; do not claim the animation gate is the sole cause before that evidence.
+  `AdjustPlayerPositionOnLadder`, top ray, axis/speed and strict exit handling remain.
+- `WB_LOG(2)` records native input/computed velocity/animationReady and exit graph/output/motionFlags/pos for the
+  next exact run; no new flag.
+- If the new run still has zero `desiredVelocity.y`, that is a separate input failure. Do not add a fallback or
+  claim the animation gate is the sole cause without a reachable actual caller state and a bounded intent guard.
 
 ## Actual-caller fixture
 
@@ -92,7 +90,7 @@ It compiles an engine-free mock caller and tests:
 | old, no character/FIFO manual animation | RED: no `eCMT_Fly` |
 | old, FIFO with `CA_MANUAL_UPDATE` | GREEN control: native request set |
 | proposed, owned, no FIFO, desired input 1.0 | GREEN |
-| proposed, owned, no FIFO, desired input 0 + `ACTION_MOVE` | GREEN (scoped input fallback) |
+| proposed, owned, no FIFO, desired input 0 + `ACTION_MOVE` | hypothetical fallback only; **not in 272** |
 | proposed, non-owned, no FIFO | RED (old gate preserved) |
 
 Local MSVC run: `DS112 actual climb fixture: old RED, manual-FIFO control, proposed GREEN, non-owned preserved`
