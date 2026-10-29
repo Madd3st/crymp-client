@@ -1,6 +1,35 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS114 v3 — graph-input-only preparation (no physical stance), exact restore, empty-output=complete only with egress · 2026-10-29 17:58
+NOW: DS115 abac72a9 OK — graph-only preparation reviewed, cleanup bindings + 18 controls, CI-wired; runtime unproven until new CI/route · 2026-10-29 18:12
+
+### DS115 · 2026-10-29 18:12 · review OK · local `abac72a9` graph preparation, no physical stance change
+`DS115 abac72a9: OK` (local only; not pushed/CI/game).
+- Scope of the diff (272 -> abac): Player.cpp +57 (Prepare/Restore + Revive/LeaveLadder restore), Player.h +8
+  (guarded members, `InputID` is `uint8` at `IAnimationGraph.h:124` so the stored id type is right), PlayerMovement
+  +10 (exit telemetry `active=`/`state=` and the empty-default rule), BotBrain +2 (restore in CancelLadder before its
+  early return and on Done), new `Tests/test_bot_ladder_graph_caller.py`, CI +3. Nothing else.
+- Prepare guards match the brief: server + `IsWarsBotActor` + BotManager owns + `ladder==1` + `isOnLadder` + HP>0 +
+  not frozen + not ragdoll; validates the input with `GetInputName` before use (`Player.cpp:7459-7461`); snapshots
+  value/default/activation once; sets only the animation `Stance="relaxed"` and activation (only if it was false);
+  physical actor, capsule and speed untouched; no `Update`/position/timer.
+- Restore is exact and idempotent: `ClearInput` when the snapshot was default else `SetInput(previous)` plus the
+  previous activation (`:7483-7496`); wired on native leave (`LeaveLadder`, non-ExitTop branch), `Revive`, `Done`,
+  and `CancelLadder` before its early return; gate-off is covered by `BotBrain.cpp:423` -> CancelLadder; changed graph
+  and lost ownership skip writes and consume the cache (tested).
+- Exit rule: empty default now passes the invalid-output check but still needs `NativeLadderExitPhysicalReady`
+  (near native top **and** laterally out of the shaft), so `97.927` in the shaft cannot detach; `'0'` keeps the same
+  veto, `'1'` waits, other bytes still refused; the block is inside `if (warsBot)`, so humans/clients keep stock.
+- Interface compile facts checked against the real header: `SetInput(InputID,const char*)` returns bool (417),
+  `ClearInput`/`GetInput`/`IsDefaultInputValue`/`GetInputName`/`GetInputId` present, `string`/`strcmp` already used
+  in Player.h/Player.cpp, types visible via Actor.h includes.
+- Test: extracts the actual `UpdateLadderAnimation` prefix plus the actual Prepare/Restore; 18 controls (own, default,
+  crouch/active, rollback on rejected SetInput, changed graph, owner lost, OFF, frozen, dead, ragdoll, not-on-ladder,
+  null graph, Exit-only no-op); old 272 is RED by construction (its prefix never prepares); CI runs it.
+- Limits (not blockers): Prepare runs on climb ticks and at ExitTop only, so the stance input is not re-applied
+  during the exiting frames — if the AC overwrites it, the new `state=%s active=%d` line will show it and a bounded
+  per-tick re-apply is the follow-up; a rejected `SetInput` rolls back and may log once per tick at `wb_log 2`.
+  The runtime graph hypothesis stays **unproven** until a new FULL CI, fresh review and the common route.
+- No new flags/defaults/body/net changes; no engine/QA/game/data writes. Ready for Codex to push and CI.
 
 ### DS114 · 2026-10-29 17:58 · v3 design · prepare the animation graph, never the actor
 - Physical-stance candidate **withdrawn**: `player.lua` (GameData.pak) leaves two stance rows as `stanceId=-2`
