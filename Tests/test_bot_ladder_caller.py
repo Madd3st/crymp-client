@@ -88,6 +88,7 @@ struct IAnimatedCharacter { IAnimationGraphState* ag=nullptr; IAnimationGraphSta
 struct CPlayer;
 struct CActor { CPlayer* p=nullptr; };
 struct CPlayer : CActor {
+ void RestoreWarsBotLadderGraph(){}
  enum ELadderActionType { eLAT_None, eLAT_ReachedEnd, eLAT_ExitTop, eLAT_Jump, eLAT_StrafeLeft, eLAT_StrafeRight, eLAT_Use, eLAT_Die };
  Entity e; SPlayerStats st; IAnimatedCharacter ac; IAnimationGraphState ag;
  CPlayer(){p=this;}
@@ -266,6 +267,7 @@ int main(){
   p.ag.out=""; m.ExitBlock(p); check(p.leaves==0,"exit: empty graph output must not leave");
   p.ag.out="0"; p.e.p=Vec3(0,0,10); m.ExitBlock(p); check(p.leaves==0,"exit: graph0 before physical egress must not leave");
   p.e.p=Vec3(0.6f,0.6f,19.5f); m.ExitBlock(p); check(p.leaves==1,"exit: graph0 after physical egress leaves");
+  p.leaves=0;p.st.isExitingLadder=true;p.st.isOnLadder=true;p.ag.out="";m.ExitBlock(p);check(p.leaves==1,"exit: empty native default completes only after physical egress");
   p.leaves=0; p.warsBot=false; gEnv->bClient=true; p.st.isExitingLadder=true; p.ag.out="0"; p.e.p=Vec3(0,0,10); m.ExitBlock(p);
   check(p.leaves==1,"exit: human/client legacy behavior preserved"); gEnv->bClient=false;
  }
@@ -334,6 +336,8 @@ int main(){
 
 def build_harness(repo: Path, rev: str, out: Path) -> Path:
     def show(path: str) -> str:
+        if rev == 'WORKTREE':
+            return (repo / path).read_text(encoding='utf-8-sig')
         r = subprocess.run(['git', '-C', str(repo), 'show', f'{rev}:{path}'], capture_output=True, check=True)
         return r.stdout.decode('utf-8-sig', errors='replace')
 

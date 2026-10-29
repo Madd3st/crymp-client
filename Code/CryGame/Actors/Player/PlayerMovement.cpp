@@ -1594,8 +1594,10 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 			const char* agOutputOnLadder = pAGState ? pAGState->QueryOutput("OnLadder") : NULL;
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 			if (warsBot)
-				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d motionFlags=%u pos=(%.3f,%.3f,%.3f).",
+				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d active=%d state=%s motionFlags=%u pos=(%.3f,%.3f,%.3f).",
 					player.GetEntityId(),pAGState?1:0,agOutputOnLadder?int(static_cast<unsigned char>(agOutputOnLadder[0])):-1,
+					pAGState&&pAGState->GetAnimationActivation()?1:0,
+					pAGState&&pAGState->GetCurrentStateName()?pAGState->GetCurrentStateName():"<none>",
 					pAC?unsigned(pAC->GetParams().flags):0u,player.GetEntity()->GetWorldPos().x,
 					player.GetEntity()->GetWorldPos().y,player.GetEntity()->GetWorldPos().z);
 #endif
@@ -1605,9 +1607,11 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
 			if (warsBot)
 			{
-				if (agOutputOnLadder[0]!='0' && agOutputOnLadder[0]!='1') return;
+				// The stock graph has OnLadder=1 only in ladder states; completion may return its empty default.
+				// Empty is never completion by itself: require the same real physical egress as literal 0.
+				if (agOutputOnLadder[0] && agOutputOnLadder[0]!='0' && agOutputOnLadder[0]!='1') return;
 				const Vec3 feet=player.GetEntity()->GetWorldPos();
-				if (agOutputOnLadder[0]=='0' && !WarsBots::NativeLadderExitPhysicalReady(
+				if (agOutputOnLadder[0]!='1' && !WarsBots::NativeLadderExitPhysicalReady(
 					WarsBots::LVec{feet.x,feet.y,feet.z},
 					WarsBots::LVec{m_stats.ladderBottom.x,m_stats.ladderBottom.y,m_stats.ladderBottom.z},
 					WarsBots::LVec{m_stats.ladderTop.x,m_stats.ladderTop.y,m_stats.ladderTop.z})) return;

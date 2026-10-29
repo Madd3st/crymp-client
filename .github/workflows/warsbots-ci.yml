@@ -72,6 +72,9 @@ jobs:
           & python Tests/test_bot_ladder_climb_caller.py *> units/BotLadderClimbCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLadderClimbCaller-run.log; throw 'UNIT FAIL: native ladder climb caller' }
           'UNIT PASS native ladder climb caller'
+          & python Tests/test_bot_ladder_graph_caller.py *> units/BotLadderGraphCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotLadderGraphCaller-run.log; throw 'UNIT FAIL: native ladder graph caller' }
+          'UNIT PASS native ladder graph caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:

@@ -633,6 +633,8 @@ public:
 	void EnsureWarsBotSuit();
 	void SetWarsBotActions(bool sprint, bool moving, EStance stance);
 	void PublishWarsBotJump(bool strength);
+	bool PrepareWarsBotLadderGraph();
+	void RestoreWarsBotLadderGraph();
 	bool WarsBotWeaponFiring() const;
 	virtual void SerializeSpawnInfo(TSerialize ser) override;
 	virtual ISerializableInfoPtr GetSpawnInfo() override;
@@ -643,6 +645,12 @@ public:
 	uint8 m_warsBotStance = STANCE_STAND;
 	float m_warsBotNextNetworkLog = 0;
 	bool m_warsBotPose = false;
+	// Route-local animation inputs only; never a change to the physical stance or wire format.
+	IAnimationGraphState* m_warsBotLadderGraph = nullptr;
+	bool m_warsBotLadderGraphOverride = false, m_warsBotLadderGraphWasActive = false;
+	bool m_warsBotLadderGraphStanceDefault = true;
+	uint8 m_warsBotLadderGraphStanceId = 0;
+	string m_warsBotLadderGraphStance;
 	bool m_warsBotViewLimited = false;
 	bool m_warsBotStrafe = false;
 	Vec3 m_warsBotDirection = Vec3(0,1,0), m_warsBotAim = Vec3(0,0,0);

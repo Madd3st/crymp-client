@@ -1554,6 +1554,7 @@ void BotBrain::CancelLadder(CPlayer& actor, const char* why, bool ban)
 	const bool nativeAttached=stats && (stats->isOnLadder.Value() || stats->isExitingLadder);
 	const bool hadRoute=m_ladder.Active() || m_ladderNativeLocked || m_ladderNow.ref || m_ladderCancelPending;
 	m_ladderCancelPending=false; // also consume a reset whose native revive already cleared ladder stats
+	actor.RestoreWarsBotLadderGraph();
 	if (!hadRoute && !nativeAttached) return;
 	WB_LOG(1,"[WarsBots] #%d LADDER cancel reason=%s nativeOn=%d exiting=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
 		why,nativeAttached?1:0,(stats&&stats->isExitingLadder)?1:0,
@@ -1614,6 +1615,7 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 	}
 	if (o.phase==LadderPhase::Done)
 	{
+		actor.RestoreWarsBotLadderGraph();
 		WB_LOG(2,"[WarsBots] #%d LADDER done nativeOn=%d exiting=%d grounded=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
 			in.onLadder?1:0,in.exiting?1:0,in.grounded?1:0,feet.x,feet.y,feet.z,actor.GetEntityId());
 		const size_t next=size_t(m_ladderNow.corner)+1;

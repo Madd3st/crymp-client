@@ -3920,6 +3920,7 @@ bool CPlayer::IsThirdPerson() const
 void CPlayer::Revive(ReasonForRevive reason)
 {
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	RestoreWarsBotLadderGraph();
 	m_warsBotViewLimited=false; // Do not carry a former life's view override across revive.
 #endif
 	if (ShouldUseMPParams())
@@ -7374,6 +7375,9 @@ void CPlayer::LeaveLadder(ELadderActionType reason)
 				GetEntity()->SetWorldTM(finalPlayerPos);
 		}
 		UpdateLadderAnimation(CPlayer::eLS_Exit, CPlayer::eLDIR_Stationary);
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+		RestoreWarsBotLadderGraph();
+#endif
 	}
 
 	if (gEnv->bServer)
@@ -7441,8 +7445,61 @@ IMPLEMENT_RMI(CPlayer, ClLeaveLadder)
 }
 
 //-----------------------------------------------------------------------
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+bool CPlayer::PrepareWarsBotLadderGraph()
+{
+	if (!gEnv || !gEnv->bServer || !g_pGame || !IsWarsBotActor() ||
+		!g_pGame->GetBotManager().Owns(GetEntityId()) || WarsBots::BotConfig::Get().ladder!=1 ||
+		!m_stats.isOnLadder.Value() || GetHealth()<=0 || IsFrozen() || m_stats.isRagDoll) return false;
+	IAnimationGraphState* graph=m_pAnimatedCharacter ? m_pAnimatedCharacter->GetAnimationGraphState() : nullptr;
+	if (!graph) { WB_LOG(2,"[WarsBots] LADDER GRAPH refused actor=%u reason=no_graph.",GetEntityId()); return false; }
+	const IAnimationGraphState::InputID stance=graph->GetInputId("Stance");
+	const char* name=graph->GetInputName(stance);
+	if (!name || std::strcmp(name,"Stance"))
+	{ WB_LOG(2,"[WarsBots] LADDER GRAPH refused actor=%u reason=stance_input id=%u name=%s.",GetEntityId(),unsigned(stance),name?name:"<none>"); return false; }
+	if (m_warsBotLadderGraphOverride && m_warsBotLadderGraph!=graph) RestoreWarsBotLadderGraph();
+	if (!m_warsBotLadderGraphOverride)
+	{
+		char previous[256]={}; graph->GetInput(stance,previous);
+		m_warsBotLadderGraph=graph; m_warsBotLadderGraphStanceId=stance;
+		m_warsBotLadderGraphStance=previous;
+		m_warsBotLadderGraphStanceDefault=graph->IsDefaultInputValue(stance);
+		m_warsBotLadderGraphWasActive=graph->GetAnimationActivation();
+		m_warsBotLadderGraphOverride=true;
+		WB_LOG(2,"[WarsBots] LADDER GRAPH prepare actor=%u activeBefore=%d stanceBefore=%s defaultBefore=%d.",
+			GetEntityId(),m_warsBotLadderGraphWasActive?1:0,previous,m_warsBotLadderGraphStanceDefault?1:0);
+	}
+	// Player's physical relaxed stance is not configured. Set the animation input only: the installed
+	// native top-exit state inherits RelaxedNW, while normal bot movement requests the combat stance.
+	if (!graph->GetAnimationActivation()) graph->SetAnimationActivation(true);
+	if (!graph->SetInput(stance,"relaxed"))
+	{ WB_LOG(2,"[WarsBots] LADDER GRAPH refused actor=%u reason=set_stance.",GetEntityId()); RestoreWarsBotLadderGraph(); return false; }
+	return graph->GetAnimationActivation();
+}
+
+void CPlayer::RestoreWarsBotLadderGraph()
+{
+	if (!m_warsBotLadderGraphOverride) return;
+	m_warsBotLadderGraphOverride=false; // consume even if teardown has replaced the graph or entity ownership
+	IAnimationGraphState* graph=m_pAnimatedCharacter ? m_pAnimatedCharacter->GetAnimationGraphState() : nullptr;
+	if (gEnv && gEnv->bServer && g_pGame && IsWarsBotActor() &&
+		g_pGame->GetBotManager().Owns(GetEntityId()) && graph && graph==m_warsBotLadderGraph)
+	{
+		if (m_warsBotLadderGraphStanceDefault || m_warsBotLadderGraphStance.empty())
+			graph->ClearInput(m_warsBotLadderGraphStanceId);
+		else graph->SetInput(m_warsBotLadderGraphStanceId,m_warsBotLadderGraphStance.c_str());
+		graph->SetAnimationActivation(m_warsBotLadderGraphWasActive);
+		WB_LOG(2,"[WarsBots] LADDER GRAPH restored actor=%u active=%d.",GetEntityId(),m_warsBotLadderGraphWasActive?1:0);
+	}
+	m_warsBotLadderGraph=nullptr; m_warsBotLadderGraphStance.clear();
+}
+#endif
+
 bool CPlayer::UpdateLadderAnimation(ELadderState eLS, ELadderDirection eLDIR, float time /*=0.0f*/)
 {
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	if (eLS==eLS_Climb || eLS==eLS_ExitTop) PrepareWarsBotLadderGraph();
+#endif
 	switch (eLS)
 	{
 	case eLS_ExitTop:
