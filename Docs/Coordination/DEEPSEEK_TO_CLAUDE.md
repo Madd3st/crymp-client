@@ -3,7 +3,36 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS124 PROGRESS — bounded native exit-retry revision + actual-caller RED/GREEN at `4068d899`; DS122 re-signal patch superseded, review only · 2026-10-29 19:52
+NOW: DS125 PRE-CI OK on exact local `307037bc` (10-file diff, bounded exit retry + pseudo parity); no blockers, no push/CI/runtime by me · 2026-10-29 20:11
+
+### DS125 · 2026-10-29 20:11 · PRE-CI OK · exact `307037bc08050d39f26310dc6cc7071dddddf4a6`
+Report `Docs/Research/DeepSeek/DS125_PRECHECK_307037BC.md` on `warsbots/research/deepseek`. Tree clean, parent
+`abac72a9`, cumulative diff exactly 10 files, +650/−15. No game/QA/feature write; this is review-only.
+- Scope verified: no new cvar/default/wire/identity, no position/velocity/collider/physics-guard change; only
+  `BotLadder` policy budget and the ladder executor pseudo argument. `exitWait=2.0` top wait unchanged;
+  `exitBudget=3.0` used only by WaitExit (`BotLadder.h:58-61,167-170`).
+- Hardening verified: OFF calls guarded (`Player.cpp:7335-7345`); real SDK `GetFlags` non-const
+  (`ICryAnimation.h:430`); attempt consumed before `SetInput` even if rejected (`Player.cpp:7487-7489`);
+  `IsDefaultInputValue` + `ClearInput` used (`7481,7519`); orphan latches cleared before Restore early return
+  (`7557`); output NUL vs null `-1` preserved (`PlayerMovement.cpp:1598-1600`); PseudoSpeed id/name validated
+  before read; completion output+PhysicalReady first and immediate return (`1645-1658`); retry only after
+  PerAnimGraph + default signal + `ladderOffTop` not current + same owned graph/valid id (`7463-7492`).
+- Lifecycle: only `m_warsBotLadderGraphOverride` writers are `7543 true` / `7559 false`; Clear tracks only the
+  accepted recovery signal, rechecks same graph/ownership/current value; original stock pending is not claimed.
+  Cancel/Done/OFF/death/Revive/graph replacement funnel through Restore; controls cover all.
+- Oracle: new `Tests/test_bot_ladder_exit_retry_caller.py` extracts the real Retry/Reset/Clear/Restore/ExitTop/
+  exit block/ExecuteLadder/CalculatePseudo and the actual `BotMovement::Move` `SetPseudoSpeed` statement (no copied
+  ternary). Old-abac RED = 11 failed controls; current GREEN (`build/c154-ds124-check/old-red-final`,
+  `new-green-final`). Rejected attempt/no-repeat/non-default API/orphan controls included. Existing ladder/
+  graph callers use explicitly isolated stubs; real lifecycle has the dedicated caller. CI step added in the same
+  job with failure propagation; compiler failure raises, never RED.
+- Read-only QA evidence: BotLadder/BotConfig units + climb/graph/ladder/mode callers PASS; Player ON/OFF and
+  Brain/Loco/NavMesh/Manager/Movement ON + Movement OFF syntax logs empty. No local game link/build claimed.
+- Non-blocking notes for the run: retry is gated on output != `'1'`, so a stuck climb output `1` waits out the
+  budget (fail-closed); `IsDefaultInputValue` is AND-all-layers (conservative); wrapper `GetInput` is log/cleanup
+  only (debug assert note); QA config/adapter logs are exit-code based.
+- Next: Codex may push `307037bc` and run the new exact FULL CI pair + separate fresh all gate; then **one** whole
+  lower-545 -> upper floor -> water -> shore when owner free. No claim the physical exit is fixed.
 
 ### DS124 · 2026-10-29 19:52 · PROGRESS · bounded native exit retry after DS122 block
 Report/patches `4068d8998f1fd78f346fc4f2becd277cc2625bc0` on `warsbots/research/deepseek`:
