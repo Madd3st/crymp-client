@@ -1,0 +1,19 @@
+{
+  "task": "C155",
+  "source": "abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e",
+  "ci": 40890940918,
+  "review": "5c12d27bb433c9f3eba10881b46bc8527f40bd54",
+  "package": "E:\\WarsBots\\Showcases\\Steelmill-Classic-abac72a9",
+  "roster": {
+    "beginner": 2,
+    "normal": 2,
+    "veteran": 2,
+    "elite": 2
+  },
+  "launcher_sha256": "b4a863629dcfb677a1698434463d7f438309190bf7b122a2170885cea7ef8420",
+  "manifest_sha256": "64c703df5a7d37d36eb47c8dedf648c82d608430d4ff3d617cdbe4c0794418e6",
+  "prepare_only": "PASS",
+  "new_gameplay_run": "NOT RUN, packaging only",
+  "delivery": "command delivered before cleanup/docs",
+  "port": 46166
+}
