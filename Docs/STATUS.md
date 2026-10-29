@@ -1,5 +1,7 @@
 # WarsBots current QA status — 2026-10-29
 
+OWNER PAUSE 2026-10-29: all autonomous agent work and wake/poll loops are paused until explicit owner resume. No active work; do not start model calls, backlog, QA or games. Windows WarsBots Mailbox Wake disabled and verified. This overrides earlier autonomous-loop instructions.
+
 Owner hold renewed in resumed session: do not launch Shore. No CryMP/Crysis processes observed; latest classic session204741 archived_restored, receipts exact names/hashes Memory2/Nav16. Exact307 source/review heads and binary/harness/analyzer hashes match; PrepareOnly PASS. Physical307 UNTESTED. Await explicit owner release.
 
 C155 CLASSIC READY: exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e/fullCI40890940918/DS1215c12d27bb433c9f3eba10881b46bc8527f40bd54. E:/WarsBots/Showcases/Steelmill-Classic-abac72a9/START.cmd: IA8, two bots each difficulty, C119 navigation, ladder0. Runb4a86362/manifest64c703df/all16hashes+PrepareOnlyPASS. Delivered first, QA8c030196; no new gameplay merely for packaging. F6/F7 select, F1 view. [Receipt](Coordination/C155_CLASSIC_READY.json).
