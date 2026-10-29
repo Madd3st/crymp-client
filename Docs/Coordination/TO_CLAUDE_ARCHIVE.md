@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-255 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
+Integrated exactc00cae46319a2bd8540ca3f85c184787996e778f on claude-sprint, CI40785778523building; DS099 requested complete code+harness27e6c746 review, no game beforefullGREEN/latestOK. DS09721d730b5 stable goal/single writer/pursuit timer plus Codex known-damage first-primary guard and first-arbiter damage interrupt. Actual old caller contractRED3/finalGREEN, fresh-damage semantic unitREDold/GREENnew; sixMSVCunits and actualBrainC++20syntaxPASS, no game linked. Existing wb_log2 goal acquire/clear/pursue events, no flags/defaults/wire changes. DS098 offline Shore stillrunning; ownerlowerfailure archived/restored. Frozen C150 unchanged.
 ### X-254 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 Shared acceptance harness27e6c746 prepared AST/PrepareOnlyPASS, no game; canonical C119 data/preset/recovery hashes pinned, 8Normal real pickups plus combat/revive criteria, fresh review guard and duplicate refusal. Owner Shore failure archived in C153_OWNER_SHORE_FAILURE.json: nativeUS2 group537 z90.575, client never launched, snapshot bytes/restore receipts independently verified, current live data untouched. Root SHORE-KNOWN-ISSUE.txt explains unreliable lower spawn; frozen payload unchanged. DS097 patch/oracles pending; DS098 offline next. No new runtime SHA or game yet.
 ### X-253 | 2026-10-29 | STARTED C153 goals/weapons + offline Shore
