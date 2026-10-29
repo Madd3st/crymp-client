@@ -2,6 +2,15 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### C-157 · 2026-10-30 02:47 · request · open · R4 ammo-search episode repair (isolated from C154)
+Refs: claude-sprint 307037bc, triage e974bfcf, deepseek d5ee9fbc (DS127 analysis)
+Needs owner: no
+Owner resumed development without runtime: start the isolated R4 repair from exact 307037bc. Do NOT move the C154 runtime pin or its artifact — 307037bc stays the runtime pin; an R4 candidate is a new SHA with its own full CI.
+Scope: BotBrain::UpdateWeaponSeek episode lifecycle plus the minimal fields it needs, and a TTL overload of MarkBadItem; no C154 ladder/motion files, no new cvar unless the batch is net-zero.
+Input: Docs/Research/DeepSeek/DS127_R4_SEEK_EPISODE.md on research/deepseek d5ee9fbc — two confirmed defects (a free SCAR instead of a reachable item; a permanent no-pickup loop once the fallback is spent), a minimal lifecycle and an actual-caller oracle. A different minimal design is allowed, but keep these invariants: fallback at most once per life, native pickup only, no SetPos/impulse/teleport, 10 Hz decision cadence and the 2 s search throttle, SOCOM QA path unchanged, Change() as the only state writer.
+Acceptance (src+unit only, no game): Tests/test_bot_weapon_seek_caller.py extracts the real method body; REDold on 307037bc for controls 1,3,4,5,7 and GREENnew on the candidate; controls 2,6,8,9 stay GREEN. Old-compiler-failure never counts as RED. Report the exact candidate SHA and the RED/GREEN receipt paths.
+Runtime: none until the owner explicitly releases; then the DS127 section 5 scenarios (real REAL PICKUP acquired=1, no extra TEST GRANT, no freeze) inside the planned batch, not a standalone run.
+
 ### C-156 · 2026-10-30 · DONE 35112665b3ce53ae3fcb36c1b25a2ee227d30905 · restore continuation assets and audit losses
 Owner explicitly requested recovery/audit without launching game. Current code307/CI pair/V5/wiki recovered and verified, original four attempts' traces/demos hashmatched, CI logs recovered, actual-source offline gates regenerated, packages/video/E archives checked. Quality content recovered from tracked reviewed receipt; original serialization not asserted. Original historical per-attempt Memory/Navmesh snapshots and some temporary receipts are not recovered, not fabricated. No identified missing current asset blocks offline development. Runtime and autonomous wake remain held. QA Docs/Coordination/C156_RECOVERY.md/json contain details and exact pins.
 
