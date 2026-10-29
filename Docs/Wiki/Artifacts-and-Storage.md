@@ -2,17 +2,17 @@
 
 ## Где находится рабочая истина
 
-| Что нужно | Ветка | Рабочий каталог наПК |
+| Что нужно | Ветка | Рабочий каталог на ПК |
 | --- | --- | --- |
 | Текущий игровой код | warsbots/feature/claude-sprint | C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/ds076-code |
-| Mailbox, решения, исходники вики | warsbots/research/steelmill-triage | …/crymp-multibot/build/ds076-triage |
+| Mailbox, решения, исходники вики | warsbots/research/steelmill-triage | C:/Users/Magic8/WarsBotsBuild/crymp-multibot/build/ds076-triage |
 | QA-инструменты, X-отчёты и JSON | warsbots/feature/weapon-goals | C:/Users/Magic8/WarsBotsBuild/crymp-multibot |
 | Независимый анализ/предложения DeepSeek | warsbots/research/deepseek | C:/Users/Magic8/AppData/Local/Temp/opencode/wb-review/deepseek |
 | Готовые новые показы | Не Git: точная CI-пара+манифест | E:/WarsBots/Showcases |
 | Большие будущие доказательства | Не Git: SHA/CI/recipe/демо/журналы | E:/WarsBots/Evidence |
 | Закрытые экспорты и review-checkout | Не Git: проверенные ZIP/patch/bundle | E:/WarsBots/Archive/YYYY-MM-DD |
 
-Многоточие в таблице — тот же корень QA. Это рабочие копии одного проекта, не независимые проекты. Прежде чем менять файл, проверь ветку и gitstatus. **Code/ в QA-корне устарел**: отчётную ветку не используют для анализа текущего бота или локальной сборки игры. Предложение DeepSeek ещё не является интеграцией.
+Это рабочие копии одного проекта, не независимые проекты. Прежде чем менять файл, проверь ветку и gitstatus. **Code/ в QA-корне устарел**: отчётную ветку не используют для анализа текущего бота или локальной сборки игры. Предложение DeepSeek ещё не является интеграцией.
 
 ## Что содержит доказательство
 
@@ -24,9 +24,9 @@
 
 Старые C019rawOBJ перенесены в `E:/WarsBots/Archive/2026-10-29/C019-geometry`: каждый ZIP проверен по распакованному SHA256 и имеет манифест исходного пути. Сжатые crop и sidecar на C сохранены. Текущая геометрия Shore не затронута.
 
-Старые временные review-worktree находятся в архиве `…/Git-worktrees`: exactHEAD/ref, Git-bundle, staged/unstagedbinarypatches, status; для грязных checkout — полный ZIP с хешем каждого файла, включая untracked/ignored. `.git`pointer в ZIP не переносится. Восстановление: проверить bundle, добавить новый detachedworktree на сохранённом ref, применить stagedpatch с--index и unstagedpatch, извлечь ZIP поверх него, сверить манифест. Не распаковывать поверх действующего checkout.
+Старые временные review-worktree находятся в архиве `E:/WarsBots/Archive/2026-10-29/Git-worktrees`: exactHEAD/ref, Git-bundle, staged/unstagedbinarypatches, status; для грязных checkout — полный ZIP с хешем каждого файла, включая untracked/ignored. `.git`pointer в ZIP не переносится. Восстановление: проверить bundle, добавить новый detachedworktree на сохранённом ref, применить stagedpatch с--index и unstagedpatch, извлечь ZIP поверх него, сверить манифест. Не распаковывать поверх действующего checkout.
 
-Старые производные EXE/PDB/ILK из закрытых QA-задач сохранены в `…/CI-binaries`; исходные пути/хеши и ZIP указаны в manifest.json. Их копии на C удаляются только после проверки сохранённых байтов. Восстановить нужный файл можно по относительному пути из ZIP.
+Старые производные EXE/PDB/ILK из закрытых QA-задач сохранены в `E:/WarsBots/Archive/2026-10-29/CI-binaries`; исходные пути/хеши и ZIP указаны в manifest.json. Их копии на C удаляются только после проверки сохранённых байтов. Восстановить нужный файл можно по относительному пути из ZIP.
 
 ## Правила, чтобы снова не накопить свалку
 

@@ -7,7 +7,7 @@ Owner priorities: classic Steelmill first (DELIVERED), measured disk/repo cleanu
 - Game source: warsbots/feature/claude-sprint, clean QA/build/ds076-code at abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e. FULL CI40890940918. CI pair QA/build/ci-abac72a9, client0f8f250f/serverb7c18962.
 - Mail/docs/wiki source: warsbots/research/steelmill-triage, QA/build/ds076-triage.
 - QA tools/outbox/evidence: warsbots/feature/weapon-goals, C:/Users/Magic8/WarsBotsBuild/crymp-multibot. Its game code is STALE, never read/grade/build.
-- DeepSeek own repo C:/Users/Magic8/AppData/Local/Temp/opencode/wb-review/deepseek, branch research/deepseek. Normal Flash e782 near50%; DS123 clean push/archive/idle before new session + wake update.
+- DeepSeek own repo C:/Users/Magic8/AppData/Local/Temp/opencode/wb-review/deepseek, branch research/deepseek. DS123 completed43b10aad, olde782 retired clean; fresh normalFlash ses_e7785dde5ffe9MiW2PwJiototK on DS122, wake exactpin/DryRunPASS.
 
 ## Ready owner package
 C155 E:/WarsBots/Showcases/Steelmill-Classic-abac72a9/START.cmd, IA8, 2eachskill, C119 data, ladder0, port46166. FullCI40890940918/DS1215c12d27b, QA8c030196. F6/F7 select, F1 view, keep PowerShell until normal client exit. PrepareOnly/all16hashes PASS; no new mixed-roster gameplay acceptance claimed. Old C150 b8 packages unchanged.
