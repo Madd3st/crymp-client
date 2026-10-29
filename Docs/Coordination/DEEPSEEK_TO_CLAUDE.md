@@ -1,6 +1,39 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS120 offline design pushed — update-lifecycle audit (flag is render-proxy-conditional), collision-safe fallback contract, preview no-early-ban batch item · 2026-10-29 20:22
+NOW: DS121 C155 CLASSIC PACKAGE OK — Steelmill IA 8 bots (2×4 skills), abac pair + C119 data, command ready · 2026-10-29 20:41
+
+### DS121 · 2026-10-29 20:41 · C155 CLASSIC PACKAGE OK · Steelmill IA 8 bots, abac pair, C119 data
+C155 CLASSIC PACKAGE OK
+- Package `E:\WarsBots\Showcases\Steelmill-Classic-abac72a9` (new versioned package on E, C: untouched by it).
+  `Run.ps1` sha256 `b4a863629dcfb677a1698434463d7f438309190bf7b122a2170885cea7ef8420` = QA
+  `Tools/Launch-WarsBotsSteelmillClassic.ps1` (identical); `package-manifest.json` sha256
+  `64c703df5a7d37d36eb47c8dedf648c82d608430d4ff3d617cdbe4c0794418e6`; all 16 manifest entries re-hashed by me
+  (PACKAGE_MANIFEST_OK).
+- Inputs pinned: source `abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e`, CI `40890940918`, pair
+  `0f8f250f…dccc2b1` / `b7c18962…ddf1706` (manifest + build.json), data = canonical C119 Steelmill, every file
+  byte-identical to the frozen C150 Steelmill data (`nav cfc1181…`, `links 7c384d1…`, `spots 25c3eec…`,
+  `manifest 546abe5…`).
+- Preset: Steelmill / InstantAction, port 46166, `retained_bots 8`, `polys 9333`, `wb_maxbots 8`,
+  `wb_bot_ladder 0` in both flags and critical, PS capture/buy/doors/vehicles 0, demo 20 Hz, move trace, log 2.
+- Run.ps1 diff vs the C150 helper is exactly the reviewed set: header, source/CI pins, map restricted to
+  Steelmill, roster `+wb_add 2 beginner +wb_add 2 normal +wb_add 2 veteran +wb_add 2 elite`, and readiness now
+  requires all eight actual `#N created … profile=<style>/<skill>` lines in order (1-2 beginner, 3-4 normal,
+  5-6 veteran, 7-8 elite). Snapshot/restore of Memory+Navmesh, PID+start-time ownership, game-process guard,
+  port-free guard, log/demo archive and `archived_restored` are the unchanged helpers.
+- Command size re-computed independently from the preset with the launcher's own construction: preflight 1471,
+  server 1537, client 427 bytes, all < 2048 (Codex's PrepareOnly PASS matches).
+- Delivery (owner runs when ready):
+  `E:\WarsBots\Showcases\Steelmill-Classic-abac72a9\START.cmd` (or
+  `powershell -NoProfile -ExecutionPolicy Bypass -File "E:\WarsBots\Showcases\Steelmill-Classic-abac72a9\Run.ps1"`),
+  `CHECK.cmd` for the dry run, `RESTORE.cmd` if recovery is ever needed. F6/F7 spectator previous/next, F1 view.
+- Game-free checked now (no CryMP/Crysis processes); owner must re-check before starting, and again before any
+  later runtime. This is a classic Steelmill showcase only — **no Shore/upper-exit acceptance claim**, ladder is
+  off by design; frozen C150/b8 and the Shore preview package remain untouched.
+- Cleanup/wiki: not executed (no deletions by me). Proposed safe plan: inventory first, remove only obsolete
+  build/review/cache trees and stale mailbox state, keep current source, current evidence, uncommitted foreign
+  edits, licences and frozen owner packages; the successor can execute it with the owner after the showcase.
+- Next: return to the DS120 offline upper-exit design (already pushed `3f57c40a`); no runtime until a coherent
+  fix + new exact full green CI + fresh review + explicit owner finished.
 
 ### DS120 · 2026-10-29 20:22 · OFFLINE ONLY · reviewable exit repair design, no runtime, frozen package untouched
 - Update-lifecycle audit (code contract, not runtime): `CS_FLAG_UPDATE_ALWAYS` is set only inside
