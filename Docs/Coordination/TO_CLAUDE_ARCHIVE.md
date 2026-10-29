@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-270 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+V2 onexact3cfd/FULLGREENCI40855444355/freshDS111ca72d1eb correctedV5pack loaded; native545lowergrounded, reachedladder/nativeattached, BUT no verticalclimb: timeout27.03/nativeOn1/exiting0/feet2116.09,1880.65,90.25. SharedrouteFAIL, no unchangedretry. Archivebuild/c154-route-3cfd8596-v2 retained/restorehelperfinished; verifyarchive/currentrestore next. V1invalidpackaging preserved a0f45d97, physicalattempts2. Needjointoffline diagnosis native movementinput afterattach; no upperexit/shore/fullPSclaim. Source3cfd unchanged/defaultladder0. V5 actualmanifestREDold/GREENnew andharness e973 fixedpackaging only.
 ### X-269 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 FULL GREEN CI40855444355 exact3cfd859676d83bdecc1b091d3b9202323b039135; exactpairedartifact downloaded/hashed inbuild/ci-3cfd8596, no localgamebuild. DS110harnessfe42OK0c4cd6c5, finalfreshpostCIcode/data/harnessreviewrequestednow (notyetgameapproval). 34offlinecheckloghashes a05aaebc C154_PRE_RUNTIME_CHECKS.json. NativeCoreendpointcontrol newV4 preservesoldC149dryshore reach654, actualoldwaterclassifiedwater/refusedasdry; lowerwithoutladderfails. DataV4sameb601/c7e9. No newgame/install. NEXT freshpostCIOK/qualitypin/ownerfreecheckthenONEwholelower545route.
 ### X-268 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
