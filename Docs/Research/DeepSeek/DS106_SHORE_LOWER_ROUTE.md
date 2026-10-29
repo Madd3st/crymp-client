@@ -27,13 +27,16 @@ candidate bake/query below ran in a private temp directory with the existing off
 | E223, spawn 530 `(2113.62,1880.38,90.38)` | `Project=true`, snapped `z=102.711` -> **+12.331 m** false upper-deck hit |
 | `US-low90` (zmin 90), spawns | 23/23 project; 12 lower spawns in the 171 m² lower component; 545 -> ladder base = 4 corners |
 | `US-low90`, 545 -> upper deck 99.88 / 103.25 | `other_component` (no connector) |
-| `US-low90` + one `ladder` link, 545 -> 99.768 | **path found, 5 corners, 1 ladder link, Reachable=true** |
-| Same, 545 -> 103.25 | still `other_component` in the subset; the 99.75 -> 103.34 ramp is not in this exact subset |
+| `US-low90` + one **UP-only** `ladder` link, 545 -> 99.768 | **path found, 5 corners, 1 ladder link, directed Reachable=true** |
+| Same link, 99.768 -> 545 | **other_component** (correct for an UP-only production edge) |
+| Same, 545 -> 103.25 | still `other_component` in the subset; the subset does not represent the 99.75 -> 103.34 corridor |
+| E223, ladder exit `2116.211,1879.724,99.540` -> takeoff `2107.373,1883.286,103.125` | **walk-only path found, 8 corners, 0 links**; every C146 corridor point projects (99.81 -> 103.21) |
 
 The candidate link used the baked lower floor and the nearest baked upper-deck poly next to the shaft opening:
-`2116.100 1880.600 90.168 -> 2117.500 1880.600 99.768 1 ladder`. The 1.4 m horizontal offset from the shaft
-centre is the ladder opening in the deck, not an invented shortcut. This is a real native ladder, and the
-connector is a data row, not a teleport.
+`2116.100 1880.600 90.168 -> 2116.700 1879.800 99.768 0 ladder` (`bidir=0`, UP only). The horizontal offset from
+the shaft centre is the ladder opening in the deck, not an invented shortcut. This is a real native ladder, and the
+connector is a data row, not a teleport. The SCC count stays 86 because the edge is one-way; the directed reach is
+what the route uses.
 
 ## 3. The two human routes and why only one is minimal now
 
@@ -47,69 +50,87 @@ connector is a data row, not a teleport.
 
 ## 4. Minimal coherent fix (data + spawn + bounded native ladder actuator)
 
-**A. Data (one new full-map bake, no forced resample).**
-`--zmin 90.0 --water 99.5` on the full `Shore.crop.obj.gz` (not the US subset), keeping the C145 capsule/params.
-This includes the dry lower deck and the shaft but deliberately excludes the bilge water at `89.37` and the pool
-floor at `83.66`. The water mask already refuses a 99.5 water quad under a solid above-water deck
-(`recast_bake.cpp` `AddWaterSurface`: a triangle above `waterZ` blocks the cell), so the dry hull interior does not
-gain a fake sea surface. Add exactly one manual link row at the validated ladder; do not add links through the hull.
+**A. Data (Codex `--retain-box` dry-interior exception, not a global zmin drop).**
+A global `--zmin 90` is **rejected**: it would admit the submerged sea floor as walkable. Production keeps the global
+`--zmin 99.5 --water 99.5` defaults and all original geometry in the water-mask input. Codex adds an explicit
+`--retain-box` dry-interior exception around the hull volume (the dry lower deck/shaft only; not the bilge at
+`89.37` and not the pool floor at `83.66`), with exact-loader negative controls and all water fixtures PASS. That
+tool is **pending Codex review/deployment**, not available today. Add exactly one **UP-only** manual ladder row at
+the validated shaft; no through-hull links. The full-map bake must keep the existing 99.75 -> 103.34 corridor; E223
+already has it (walk-only 8-corner path below), so no second link is invented.
 
-**B. Spawn layer validation (pure helper + engine call).**
+**B. Spawn layer validation (fail closed, no resampling).**
 After the PS group spawn is chosen (`BotManager.cpp:390-405`) and before the position is used, require either:
 * dry: `Project(pos, snapped, 1.5, 1.0, 3.0)` and `|snapped.z - pos.z| <= 2.5`; or
 * water: `Project(..., waterOnly=true)` with the existing water bounds.
-On failure, ask the game for another spawn with the rejected id in `skipId`, bounded to 8 tries, then log and refuse.
-Never accept 530's +12 m projection and never silently fall back to an off-mesh point. The frozen C150 package keeps
-its `z>=99.5` readiness rule; a new package should use "projects on the mesh or is genuine water" instead.
+If the chosen spawn fails, **log and refuse the spawn**; do not retry with `skipId`, do not search for a convenient
+upper spawn, and do not silently fall back. That is the owner's no-forced-resampling rule. The frozen C150 package
+keeps its `z>=99.5` readiness rule; a new package should use the layer rule instead.
 
-**C. Bounded native ladder actuator (new small controller, default OFF).**
+**C. Bounded native ladder actuator (default OFF; native exit, no manual detach).**
 The native API is server-capable and already exists:
 `CPlayer::IsLadderUsable` (`Player.cpp:7126`), `RequestGrabOnLadder` (`:7226`), `GrabOnLadder` (`:7242`),
 `RequestLeaveLadder` (`:7311`), and `CPlayerMovement::ProcessMovementOnLadder` (`PlayerMovement.cpp:1568`). Bots
-have no `PlayerInput`, and the automatic top exit is inside `player.IsClient()` (`PlayerMovement.cpp:1612-1635`),
-so a server-only bot needs a tiny explicit controller:
+have no `PlayerInput`, and the native top/bottom checks are inside `player.IsClient()` (`PlayerMovement.cpp:1612`),
+so the adapter widens **only** the gated owned-WarsBot server path and lets the stock collision/ray/animation checks
+decide the exit:
 
 1. **Approach** the link base with the normal path; face the real ladder line (not the nav link's diagonal).
 2. **Grab** only when `IsLadderUsable()` is true (look ray hits `mat_ladder` within 2 m), then call
-   `RequestGrabOnLadder(eLAT_Use)`. On server this goes straight to `GrabOnLadder`; log the native entry snap and
-   fail if it moves the body more than 1.5 m from the approach point.
-3. **Climb** while `isOnLadder`: keep a horizontal move target `feet + ladderOrientation * 2.0` so the native
-   `desiredVelocity.y` stays positive; native movement owns the 1 m/s vertical motion. Do not inject z into
-   `BotMovement` and do not time-detach.
-4. **Exit** only when `feet.z >= ladderTop.z - 0.5`: call `RequestLeaveLadder(eLAT_ReachedEnd)` (not
-   `eLAT_ExitTop`, which waits for a client animation and would leave a server bot in `isExitingLadder`). Verify
-   `isOnLadder==false` and the body is on the deck before declaring done; otherwise fail and ban the link.
-5. **Cleanup/timeout:** 15 s total, 1 s grab window, always leave the ladder on stop/death/level end, restore the
+   `RequestGrabOnLadder(eLAT_Use)`. On server this goes straight to `GrabOnLadder`; log the native entry snap.
+3. **Climb** while `isOnLadder`: keep a horizontal move target into the ladder (`-ladderOrientation`) so native
+   `desiredVelocity.y` stays positive; native movement owns the vertical motion. Do not inject z and do not
+   time-detach.
+4. **Exit** at the native top: request `eLAT_ExitTop` and wait for the native collision/ray check plus the
+   animation/`OnLadder` completion (`!isOnLadder && !isExitingLadder`). A height-only `eLAT_ReachedEnd` at
+   `top-0.5` is **rejected**: it can leave the actor in the shaft centre under the ledge. No `SetPos`/`SetWorldTM`
+   in bot logic; the native grab alignment is the only allowed snap.
+5. **Completion check:** the native horizontal exit is C146 `t=148.644` at `(2116.211,1879.724,99.540)`,
+   `grounded=1`; after that the bot must be on the 99.75 corridor, then use the existing ramp/stairs to 103.125. If
+   native `isExitingLadder` never clears on a dedicated server, that is a **blocker to report**, not a fake success.
+6. **Cleanup/timeout:** 15 s total, 1 s grab window, always leave the ladder on stop/death/level end, restore the
    collider mode (native `LeaveLadder` does), and never keep a pending climb across a reset. A failed link is banned
-   for the level through the existing `NavMeshCore::BanLink`/`NoteLinkFailure`.
-6. **Gates:** ladder kind is enabled only when this executor is enabled (`wb_bot_ladder=1`, default OFF) and the
-   existing jump-link mask is on. Do not enable the ladder bit while the executor is absent: today
-   `BotNavMesh.cpp:109-111` enables only drop/jump/strength for exactly that reason. Net-zero flag rule applies to
-   the batch (retire/promote one old flag or name the diagnostic exit date).
+   for the level through the existing `NavMeshCore::BanLink`/`NoteLinkFailure`; OFF/no match cancels/repaths.
+7. **Gates:** ladder kind is enabled only when `wb_bot_ladder=1` (default OFF) and the existing jump-link mask is on;
+   union is `jump14 | ladder32 = 46`. Do not enable the ladder bit while the executor is absent. Net-zero flag rule
+   applies to the batch.
 
 ## 5. RED/GREEN oracles for the batch
 
 * **RED (already measured):** E223 545 `Project=false`; 530 snaps `+12.331 m`; `US-low90` 545 -> upper
   `other_component`; `BotNavMesh.cpp:109-111` never enables the ladder kind.
-* **GREEN (data):** full-map bake with `zmin 90` and the one real ladder row: all 12 lower spawns project with
-  `|snap| <= 0.25 m`, 545 -> 99.768 returns a path with exactly one `ladder` link, and 530's false projection is
-  rejected by the layer check.
-* **GREEN (executor, engine-free unit):** fake ladder API feeds approach/grab/climb/exit; assert no grab without
-  `IsLadderUsable`, no exit before `top-0.5`, no timeout detach, one ban after a failed exit. RED on 5ef: no ladder
-  kind/executor at all.
+* **GREEN (data):** full-map bake with the Codex `--retain-box` (global 99.5 unchanged) and the one UP-only ladder
+  row: all 12 lower spawns project with `|snap| <= 0.25 m`, 545 -> 99.768 returns a path with exactly one `ladder`
+  link, 99.768 -> 545 has no route, and 530's false projection is rejected by the fail-closed layer check.
+* **GREEN (executor, engine-free unit):** fake ladder API feeds approach/grab/climb/native-exit; assert no grab
+  without `IsLadderUsable`, no manual `ReachedEnd`/height-only success, exit only after native
+  `!isOnLadder && !isExitingLadder`, timeout is FAIL, one ban after a failed exit. RED on 5ef: no ladder kind/executor
+  at all.
 * **Runtime acceptance later (not this item):** one lower-spawn bot, no `start_off_mesh`, `LADDER` events, deck at
   `~99.7`, then the existing upper route; no client/visual/full-Shore claim until that run.
 
-## 6. What this does not prove
+## 6. The 99 -> 103 corridor is real geometry, not a missing link
 
-The subset does not contain the 99.75 -> 103.34 ramp or the full upper graph, so 545 -> 103.25/sea/captures is not
-proven by the 5-corner result. A full-map bake must re-check the ramp and the existing upper links, and the native
-ladder grab/exit/collision behaviour still needs the runtime acceptance. The bilge dive route is explicitly
+The exact subset does not represent the ramp, but the accepted E223 mesh does. C146 client trace rows 149-156 show
+**grounded, jump=0, Speed-suit=0** movement from the ladder exit `(2116.211,1879.724,99.540)` through
+`(2119.703,1883.319,99.750)`, `(2115.957,1883.350,102.330)`, `(2113.942,1883.214,103.335)` to
+`(2111.212,1883.218,103.125)` and the Strength takeoff `(2107.373,1883.286,103.125)`. On E223 every one of those
+points projects (99.81 -> 103.21) and a walk-only path from the ladder exit to the takeoff exists with 8 corners and
+0 links. So the corridor/ramp/stairs are **not absent**; the subset merely did not include them. Do not invent a
+second link there. The remaining unproven part is the lower ladder edge and its native grab/exit execution, not the
+99 -> 103 geometry.
+
+## 7. What this does not prove
+
+The 5-corner subset result does not prove the full 545 -> sea/captures route, because the subset lacks the upper
+graph; the full-map bake must re-check the retained corridor and existing upper links. The native ladder
+grab/exit/collision/animation completion still needs the runtime acceptance. The bilge dive route is explicitly
 deferred. No new gameplay, teleport, gate weakening or upper resampling is proposed.
 
-## 7. Reproducible recipe
+## 8. Reproducible recipe
 
 `ds106_lower_route_recipe.ps1` (own branch) contains the exact baker and probe commands. The probe source is
 `proto/ds106_nav_probe.cpp`; it links the same `BotNavMeshCore.cpp` + Detour sources as CI and prints
 `Project`/`FindPath`/`FindPathLinks`. The private run used the existing `recast_bake-final.exe` and
-`Shore.US.exact-subset.obj`; no QA or game directory was written.
+`Shore.US.exact-subset.obj`; no QA or game directory was written. **The recipe's `--zmin 90` is a diagnostic subset
+only and is rejected for production**; production uses Codex's `--retain-box` with global `--zmin 99.5 --water 99.5`.

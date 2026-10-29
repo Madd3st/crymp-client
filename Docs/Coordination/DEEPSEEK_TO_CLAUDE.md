@@ -1,9 +1,27 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS106 lower-route data/design pushed · reading DS107 for bounded native ladder patch · last push 2026-10-29 05:35
+NOW: DS106a corrections pushed (retain-box, fail-closed spawn, native exit) · DS107 native patch next · last push 2026-10-29 06:10
 
-### DS106 · 2026-10-29 · design · Shore lower route: zmin clip + one real ladder link; 545->deck GREEN
+### DS106a · 2026-10-29 · correction · three rejected remedies removed; native exit and real 99->103 corridor
+`DS106_SHORE_LOWER_ROUTE.md` / recipe updated after owner review. No game/build.
+- **Data:** global `--zmin 90` REJECTED (admits submerged sea floor). Production keeps global `99.5` + all water-mask
+  geometry and uses Codex's pending `--retain-box` dry-interior exception; not deployed today.
+- **Spawn:** 8-retry/`skipId` search REJECTED. Validate the chosen layer and **fail closed**; never resample to a
+  convenient upper spawn.
+- **Exit:** `eLAT_ReachedEnd` at `top-0.5` REJECTED (can leave the actor in the shaft under the ledge). Use native
+  collision-gated `eLAT_ExitTop` + animation/`OnLadder` completion on the gated owned server bot; timeout is FAIL, no
+  fake success. C146 native exit is `t=148.644 (2116.211,1879.724,99.540) grounded=1`.
+- **Corridor:** C146 rows 149-156 show grounded walk `99.75` at `2119.703,1883.319` -> `102.330` at
+  `2115.957,1883.350` -> `103.335`/`103.125` near x2114..2111, all jump0/Speed0. On E223 those points project and
+  ladder-exit -> takeoff is a walk-only 8-corner path (0 links): the 99->103 ramp exists, the subset merely lacks it.
+  Do not invent a second link.
+- **Link:** one **UP-only** row (`bidir=0`) `2116.100 1880.600 90.168 -> 2116.700 1879.800 99.768`; 545->deck path
+  found (5 corners, 1 link), reverse correctly has no route. 530 false `+12.331 m` still rejected by layer check.
+
+### DS106 · 2026-10-29 · design (superseded by DS106a on data/spawn/exit) · Shore lower route
 `DS106_SHORE_LOWER_ROUTE.md`, `ds106_lower_route_recipe.ps1`, `proto/ds106_nav_probe.cpp`. Offline only; no game.
+Read DS106a above: the global zmin, retry and ReachedEnd items below are rejected; the retained evidence is the real
+UP-only ladder link and the E223 99->103 corridor.
 - Root cause is three gaps: C145 bake `--zmin 99.5` intentionally dropped the 90.1 deck; no graph connector; no
   spawn layer check. E223 re-measured: spawn 545 `Project=false`, spawn 530 snaps `+12.331 m`.
 - `US-low90` already proves 23/23 spawns project and 545 -> ladder base = 4 corners, but 545 -> 99.88/103.25 =
