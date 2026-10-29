@@ -1,0 +1,22 @@
+{
+  "source": "abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e",
+  "session": "C155-SteelmillClassic-20261029-195133",
+  "observed_utc": "2026-10-29T17:25:41.453288+00:00",
+  "observation": "Read-only observation of owner-started active classic session, not a new QA run or completed archive",
+  "all_created_events_at_observation": 16,
+  "roster_created_lines": [
+    "[WarsBots] #1 created EntityId=65501 name=WarsBot_01 [Beginner/Universal] profile=universal/beginner position=(1196.500, 1338.000, 136.450).",
+    "[WarsBots] #2 created EntityId=65496 name=WarsBot_02 [Beginner/Assault] profile=assault/beginner position=(1292.861, 1364.796, 136.350).",
+    "[WarsBots] #3 created EntityId=65491 name=WarsBot_03 [Normal/Marksman] profile=marksman/normal position=(1318.031, 1393.326, 138.935).",
+    "[WarsBots] #4 created EntityId=65486 name=WarsBot_04 [Normal/Flanker] profile=flanker/normal position=(1368.146, 1335.167, 147.491).",
+    "[WarsBots] #5 created EntityId=65481 name=WarsBot_05 [Veteran/Defender] profile=defender/veteran position=(1316.875, 1310.125, 138.950).",
+    "[WarsBots] #6 created EntityId=65476 name=WarsBot_06 [Veteran/Hunter] profile=hunter/veteran position=(1206.333, 1366.625, 136.325).",
+    "[WarsBots] #7 created EntityId=65471 name=WarsBot_07 [Elite/Universal] profile=universal/elite position=(1161.250, 1342.250, 136.450).",
+    "[WarsBots] #8 created EntityId=65466 name=WarsBot_08 [Elite/Assault] profile=assault/elite position=(1192.750, 1315.020, 136.450)."
+  ],
+  "two_each_profile_verified": true,
+  "game_actions": false,
+  "session_phase_at_observation": "owner_playing",
+  "gameplay_quality": "NOT ASSESSED",
+  "archive_restore": "pending normal owner exit"
+}
