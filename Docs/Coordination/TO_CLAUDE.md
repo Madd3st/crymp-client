@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C154 PROGRESS; LOCAL game0b02dc27 (NOTpushed/CI/runtime) integrates DS107r2 pluscaller safety fixes: actualGrabphase/framelock, pendingconsumedonce, onlyfailurebans, strictnativegraph+physicalegress, groundedabsZsettle0
+NOW: C154 PROGRESS; LOCAL3cfd859676d83bdecc1b091d3b9202323b039135 NOTpushed/CI/runtime
+
+### X-267 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+LOCAL3cfd859676d83bdecc1b091d3b9202323b039135 NOTpushed/CI/runtime. DS1087807dc5c reviewedcaller/data butnativePlayer movement-modeBLOCK; scoped graph exception18abab5a +SDKPlayerON/OFFPASS, realmodeold0bRED/newGREEN. Integratedactualcallers/CI andcorrectedDSfixture ownrevisionheader+freshper-tickinput, old01e17semanticRED/newGREEN, no compilefailureacceptedRED. DS109 finalpreCI requested37b82fa5. NewnormalFlashses_e78e3f9eeffe048ThB4BBvU891 wakepin/DryRunPASS; olde7ae retired617k afterpushed7807dc5c. DataV4unchanged/notinstalled; no games. Next exactreview/pushnewCI+harnessreview/onecoherentwholelowerroute.
 
 ### X-266 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 LOCAL game0b02dc27 (NOTpushed/CI/runtime) integrates DS107r2 pluscaller safety fixes: actualGrabphase/framelock, pendingconsumedonce, onlyfailurebans, strictnativegraph+physicalegress, groundedabsZsettle0.8, fullforwardnativeinput, Stoprunningfalsebeforecallbacks. Eightunits+actualBrain/Locomotion/NavMesh/Manager/PlayerMovementON/OFFsyntaxPASS; R2actualBrain01eREDbadfields preserved. DS108 independent exactlocal review+realcaller REDold/GREENnew tests requested ebaf310f; do notpush/game untilreview+oracles. Netzero56->56: newwb_bot_ladder0 retiresdiagnosticwb_nav_knee_fix, variants preserved wb_nav_audit [0|1|2|stop] default0/noactors, no gameplaydefaultpromotion. DataCURRENTV4 binarynavb601 same, manifestc7e96b3d, metadata actualps_capture gate corrected04ca2bcb, oldV3preserved. RuntimepinUNASSIGNED.
@@ -12,6 +15,3 @@ Historical audit revalidated with correctedDS1050a9aeaf7; triage11919a1e/wiki eb
 
 ### X-263 | 2026-10-29 | STARTED C154 owner audit + Shore routes
 Owner provided historical96a41b30 audit R1-R9; archive in triage846a2d26, DS105 revalidates exact current5ef, DS106 real lower-route topology/geometry repair design. Current fresh DeepSeek e7ae0b09 normalFlash. Confirm only current defects into plan, hypotheses separate; C153 acceptedIA limited scope retained. Route runtime pin unset until coherent newexactSHA/fullgreenCI/freshreview/data+restore gates; no audit/baseline/randomgame. C153 closed X262/wiki97720afb. Foreign QA files preserved.
-
-### X-262 | 2026-10-29 | DONE C153 goals/weapons + offline Shore
-C153 completed game5ef9ee22/fullGREEN CI40790759287/DS1031e7d8682 PASS limited headless8Normal:8/8primary,8death-revive,0grants,197goal events without midpursuit replace/repeatedanchor. Two physical attempts: invalidv1 toolingabort+v2pass, restoreexact4/16 in MSIXnamespace. Sourcebc5bd1d8/wikipublished97720afb/17exactblobs/81local+31GitlinksPASS, receipt C153_WIKI_PUBLICATION.json. DeepSeek successor3392d571 ACK new ses_e7ae0b092ffeNe8ylONa2yHpQG normal exactFlash, oldsession retired533k; Windowswake pin/DryRunPASS. Owner now authorises C154 audit revalidation then Shore routes; no further games until newexactreview/greenCI/data gates.

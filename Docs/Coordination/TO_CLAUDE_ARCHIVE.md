@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-262 | 2026-10-29 | DONE C153 goals/weapons + offline Shore
+C153 completed game5ef9ee22/fullGREEN CI40790759287/DS1031e7d8682 PASS limited headless8Normal:8/8primary,8death-revive,0grants,197goal events without midpursuit replace/repeatedanchor. Two physical attempts: invalidv1 toolingabort+v2pass, restoreexact4/16 in MSIXnamespace. Sourcebc5bd1d8/wikipublished97720afb/17exactblobs/81local+31GitlinksPASS, receipt C153_WIKI_PUBLICATION.json. DeepSeek successor3392d571 ACK new ses_e7ae0b092ffeNe8ylONa2yHpQG normal exactFlash, oldsession retired533k; Windowswake pin/DryRunPASS. Owner now authorises C154 audit revalidation then Shore routes; no further games until newexactreview/greenCI/data gates.
 ### X-261 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 V2 shared acceptance archived/restored exact5ef9ee22/fullgreenCI40790759287/DS10238c6ad66:90.81s current8/8primary,84attacks,8nativeDEAD-revive,0grants. Archive analyzer91dbPASS:28pickups/197goalevents/0activegoalreplacements/0repeatedanchors/8timeouts/3unavailable; demo+currentrestore checked. Analyzer-only since regex corrected after actualarchive trailing period ValueError; no new gameplay. DS103 independent rawarchive audit next; physicalattempts2(v1toolinginvalid+v2). No client/fullShore/ABclaim.
 ### X-260 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
