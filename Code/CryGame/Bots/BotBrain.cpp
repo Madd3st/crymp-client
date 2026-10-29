@@ -366,11 +366,11 @@ bool BotBrain::Start(BotInstance& bot)
 void BotBrain::Stop(BotInstance& bot)
 {
 	if (!m_running) return;
+	m_running = false; // Cancel respawn/re-entry before any native ladder, entity or weapon callback.
 	m_trap.Reset(); m_trapStepUntil=0;
 	// DS-107: one owned cancellation path clears native ladder mode as a failure (never route success).
 	if (CActor* actor = bot.GetActor()) CancelLadder(static_cast<CPlayer&>(*actor), "stop", false);
 	else { m_ladder.Reset(); m_ladderNativeLocked = false; }
-	m_running = false; // Cancel respawn before touching entity/weapon lifetime.
 	m_combat.Reset();
 	if (CActor* actor = bot.GetActor())
 	{
