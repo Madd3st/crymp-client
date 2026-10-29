@@ -1,0 +1,238 @@
+{
+  "schema": "warsbots-run-summary/1",
+  "task": "C154",
+  "source": "3cfd859676d83bdecc1b091d3b9202323b039135",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-route-3cfd8596-v2",
+  "verdict": "FAIL_NATIVE_LADDER_NO_VERTICAL_CLIMB",
+  "quality": {
+    "source": "3cfd859676d83bdecc1b091d3b9202323b039135",
+    "ci": 40855444355,
+    "ci_success": true,
+    "ci_source_match": true,
+    "artifact_id": 12889557005,
+    "client_sha256": "5a5a8137de51f5cc095bc48f090ef126d8176f7d4ac1a2bdc337a6f00640faf4",
+    "server_sha256": "eb1783d7e84a1a547618009d698d1540bbd0f4e8d7a95fcb07e1ebd2034a1a55",
+    "task": "C154",
+    "harness_scope": "c154-lower-route-v2",
+    "review": "ca72d1eb98d1b4c93e017468576f5a0fc4ebe6e1",
+    "review_branch_head": "ca72d1eb98d1b4c93e017468576f5a0fc4ebe6e1",
+    "review_ok": true,
+    "harness": "e973b90518daa58e83d4811952c0c8bd83f8217e",
+    "harness_sha256": "87c3f5ee79c5507e1952367edbf5b53d3ee3c211eb8de5614b67fef2ae24fbf4",
+    "analyzer_sha256": "2a642aebcfff2d10e119746b42f8e50f48a004d732f7aee106602b3e6fff88f7",
+    "data_hashes": {
+      "Shore.links.txt": "0230a0c3e59bb818888684012291ee39efaddb542917ac0bc5e02c8e13d32dcb",
+      "Shore.manifest.json": "a95a0503813e394161bf961f6556e26db672b46041a03079baac99d8191b13e2",
+      "Shore.navmesh": "b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609",
+      "Shore.spots.txt": "d95e1e11fa06194e44e1b1d3887fb00334d7f0ccc9528c9a1b439d7ba78b548b"
+    },
+    "client_visual": "NOT TESTED",
+    "manifest_guard_ok": true,
+    "manifest_guard_receipt_sha256": "9c30a69d700d8afdc857a36c4da3f9e17cb81b9bdb2738c12ebc828769996326"
+  },
+  "runtime": {
+    "runtime_criteria_pass": false,
+    "task": "C154",
+    "client_visual": "NOT TESTED",
+    "quality_pass": false,
+    "source": "3cfd859676d83bdecc1b091d3b9202323b039135",
+    "acceptance": "Runtime provisional; archive/demo/restore and independent audit still required",
+    "evidence": {
+      "status": "FAIL",
+      "failure": "Route/link failure: 27.03 [WarsBots] #2 LADDER failed reason=timeout nativeOn=1 exiting=0 grounded=1 pos=(2116.09,1880.65,90.25) actor=65481.",
+      "stages": {
+        "setup_revive": 36,
+        "lower_grounded": {
+          "t": 1.06,
+          "pos": [
+            2114.267,
+            1887.249,
+            90.079
+          ]
+        },
+        "ladder_start": 92,
+        "native_attached": 107
+      },
+      "actor": 65481,
+      "trace_rows": 107,
+      "setup": "one explicit native registered spawn545; setup death excluded",
+      "client_visual": "NOT TESTED"
+    },
+    "failure": "Route/link failure: 27.03 [WarsBots] #2 LADDER failed reason=timeout nativeOn=1 exiting=0 grounded=1 pos=(2116.09,1880.65,90.25) actor=65481."
+  },
+  "archive_route": {
+    "status": "FAIL",
+    "failure": "Route/link failure: 27.03 [WarsBots] #2 LADDER failed reason=timeout nativeOn=1 exiting=0 grounded=1 pos=(2116.09,1880.65,90.25) actor=65481.",
+    "stages": {
+      "setup_revive": 36,
+      "lower_grounded": {
+        "t": 1.06,
+        "pos": [
+          2114.267,
+          1887.249,
+          90.079
+        ]
+      },
+      "ladder_start": 92,
+      "native_attached": 107
+    },
+    "actor": 65481,
+    "trace_rows": 107,
+    "setup": "one explicit native registered spawn545; setup death excluded",
+    "client_visual": "NOT TESTED"
+  },
+  "restore": {
+    "memory": {
+      "exact_names_bytes_directory": "PASS",
+      "files": 4,
+      "logical_path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory"
+    },
+    "nav": {
+      "exact_names_bytes_directory": "PASS",
+      "files": 16,
+      "logical_path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Navmesh"
+    }
+  },
+  "demos": [
+    {
+      "name": "Multiplayer_PS_Shore-20261029-161519-1.wbdemo",
+      "sha256": "ab5b4301384c1a42217045a6938d6323869c2ae5f4f6f2b1f1d1e59c43c8e724",
+      "frames": 526,
+      "tail_complete": true,
+      "header": {
+        "build": "3cfd859676d83bdecc1b091d3b9202323b039135",
+        "flags": {
+          "wb_bot_aim_model": 1,
+          "wb_bot_arbiter": 1,
+          "wb_bot_look": 1,
+          "wb_bot_navmesh": 1,
+          "wb_bot_pace": 1,
+          "wb_bot_perception": 1,
+          "wb_bot_turn_cap": 1,
+          "wb_bot_weapon_rank": 1,
+          "wb_demo_hz": 20,
+          "wb_demo_record": 1,
+          "wb_move_trace": 1,
+          "wb_qa_socom_only": 0,
+          "wb_reachable_goals": 0,
+          "wb_revive_guard": 1,
+          "wb_spawn_exclude195": 1,
+          "wb_trap_recovery": 1
+        },
+        "hz": 20,
+        "map": "Multiplayer/PS/Shore",
+        "navmesh": "none",
+        "server": "C154-3cfd8596-v2",
+        "started": "2026-10-29T16:15:19"
+      },
+      "bot_actor_ids": [
+        65481
+      ],
+      "events": [
+        {
+          "t": 0.064,
+          "kind": "suit",
+          "actor": 65486,
+          "other": 0,
+          "value": 3.0,
+          "pos": [
+            1841.4434814453125,
+            1240.727294921875,
+            114.76405334472656
+          ]
+        },
+        {
+          "t": 0.064,
+          "kind": "suit",
+          "actor": 65481,
+          "other": 0,
+          "value": 3.0,
+          "pos": [
+            2109.0,
+            1882.5,
+            103.44999694824219
+          ]
+        },
+        {
+          "t": 0.064,
+          "kind": "kill",
+          "actor": 65481,
+          "other": 65481,
+          "value": 0.0,
+          "pos": [
+            2109.0,
+            1882.5,
+            103.44999694824219
+          ]
+        },
+        {
+          "t": 0.064,
+          "kind": "suit",
+          "actor": 65481,
+          "other": 0,
+          "value": 3.0,
+          "pos": [
+            2114.5,
+            1887.875,
+            90.57499694824219
+          ]
+        },
+        {
+          "t": 0.064,
+          "kind": "revive",
+          "actor": 65481,
+          "other": 0,
+          "value": 545.0,
+          "pos": [
+            2114.5,
+            1887.875,
+            90.57499694824219
+          ]
+        },
+        {
+          "t": 0.306,
+          "kind": "suit",
+          "actor": 65481,
+          "other": 0,
+          "value": 0.0,
+          "pos": [
+            2114.5,
+            1887.875,
+            90.57499694824219
+          ]
+        },
+        {
+          "t": 0.972,
+          "kind": "land",
+          "actor": 65481,
+          "other": 0,
+          "value": 0.5659332275390625,
+          "pos": [
+            2114.3359375,
+            1887.4345703125,
+            90.0690689086914
+          ]
+        },
+        {
+          "t": 1.649,
+          "kind": "suit",
+          "actor": 65481,
+          "other": 0,
+          "value": 3.0,
+          "pos": [
+            2114.103271484375,
+            1882.478759765625,
+            90.125
+          ]
+        }
+      ]
+    }
+  ],
+  "endpoint_core": null,
+  "trace_sha256": "ffa7046e06bf5f7790c5cb032943af5cf8edc2e9dd8a5746ef82938e7419075f",
+  "physical_gameplay_attempts": 1,
+  "limits": "One disclosed native545 setup; no random lower-spawn coverage/full capture/fullPS/client/default promotion.",
+  "physical_gameplay_attempts_in_task": 2,
+  "attempt_number": 2,
+  "next": "DS112 offline diagnosis and exact local272 independent review; no unchanged retry"
+}
