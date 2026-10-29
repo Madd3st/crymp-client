@@ -1,0 +1,88 @@
+{
+  "task": "C154",
+  "source": "3cfd859676d83bdecc1b091d3b9202323b039135",
+  "source_status": "PUSHED exact; runtime acceptance pending",
+  "baseline_local_never_pushed": "01e15a93b35e8ef88e34c5d06e4dab4ac65442f5",
+  "pre_ci_review": "e8e63bd8",
+  "pre_game_harness_review": "0c4cd6c5db402ff92db1d487ef780a2a7bc43f2e",
+  "ci": 40855444355,
+  "ci_status_at_record": "units PASS, full build pending",
+  "game_built_locally": false,
+  "new_gameplay_attempts_at_record": 0,
+  "actual_callers": {
+    "old_semantic_failures": 17,
+    "new": "PASS",
+    "old_policy_header_used": true,
+    "fresh_input_each_tick": true,
+    "compiler_failure_counts_red": false,
+    "coverage_limit": "UpdateLadder probe/grab blocks, not whole engine method"
+  },
+  "actual_motion_mode": {
+    "old0b": "semantic RED",
+    "new": "PASS",
+    "player_sdk_syntax_on_off": "PASS"
+  },
+  "related_eight_units": "PASS",
+  "five_sdk_adapters_on_plus_movement_off": "PASS",
+  "net_zero_flags": {
+    "before": 56,
+    "after": 56,
+    "added": "wb_bot_ladder=0",
+    "deleted": "wb_nav_knee_fix",
+    "preserved_diagnostic": "wb_nav_audit [0|1|2|stop]"
+  },
+  "harness": {
+    "commit": "fe42d8ef",
+    "prepare_only_command_bytes": [
+      1460,
+      1506
+    ],
+    "analyzer_controls": 13,
+    "shared_route": "one native registered545 setup -> native climb/exit/settle -> stairs -> Strength -> water -> dryshore7s",
+    "synthetic_setup_death": "explicitly excluded, disclosed",
+    "no_post_setup_rescue_or_revive": true
+  },
+  "data_v4": {
+    "Shore.links.txt": "e7204de31a25482fd0d6d75feb55cb7e85255dc1e72f8a9bbf4f38f3191b7c2b",
+    "Shore.manifest.json": "c7e96b3d0458e93cab370989ca476126fe191ba54d5edff38f14db5fffd44747",
+    "Shore.navmesh": "b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609",
+    "Shore.spots.txt": "d95e1e11fa06194e44e1b1d3887fb00334d7f0ccc9528c9a1b439d7ba78b548b"
+  },
+  "logs_sha256": {
+    "build\\c154-integration\\ds107r2-red\\Brain-syntax.log": "e0073945d5626af1e87f2dac3925568db4333d7b30b329e1f0927504bccddbe8",
+    "build\\c154-integration\\local-fix-v3\\BotAuditFixes-compile.log": "5f9b8b12ce62d43710ab0a437201c3260733425ac4a99e89126975dbb0d9866c",
+    "build\\c154-integration\\local-fix-v3\\BotAuditFixes-run.log": "6d3cb645d7da6e478e5dbf4bb166919bc276be42879f82223335a3fa7af308f1",
+    "build\\c154-integration\\local-fix-v3\\BotBrain-syntax-ON.log": "72e6a0c761c35a000a1d7991bc48a6f1569032b0965bf9f0eff44f656c6eaab8",
+    "build\\c154-integration\\local-fix-v3\\BotConfig-compile.log": "a8a234b2f49bd918e9a233cde885749085676211ada8dacf2141a2c049b5ddf2",
+    "build\\c154-integration\\local-fix-v3\\BotConfig-run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build\\c154-integration\\local-fix-v3\\BotDecisionCommit-compile.log": "2121e0240b815ab1ddff2f43aafd77ba17b8e00c8aaa005fadaab91657d0963f",
+    "build\\c154-integration\\local-fix-v3\\BotDecisionCommit-run.log": "39ca751f8f3e2e544afa611453db755479f1677c9f751eea6a778481626f996e",
+    "build\\c154-integration\\local-fix-v3\\BotGoalArbiter-compile.log": "31dc65a2c05f8e5036ea85d3f6c42e53553efcd7f72a5b77c066f03fe6b7c0fe",
+    "build\\c154-integration\\local-fix-v3\\BotGoalArbiter-run.log": "aaf9e5ade74de6bf538a4c9dcedc33ee21101a0f9adc6d6d38b603d4c07dc157",
+    "build\\c154-integration\\local-fix-v3\\BotLadder-compile.log": "ea62e5e1a4e302c86bcaa8b0b81e999762e2710768566f944b7e79bedcd18218",
+    "build\\c154-integration\\local-fix-v3\\BotLadder-run.log": "7754a830122b0914291ab48db63a8fe3cd1800cd69d50a765fff5b81ce0ac540",
+    "build\\c154-integration\\local-fix-v3\\BotLocomotion-syntax-ON.log": "b1b4f8f7667b07863e09abb89c5a3c6e4ca5454f3b554baa400445ba85aae274",
+    "build\\c154-integration\\local-fix-v3\\BotManager-syntax-ON.log": "0b26e8488dc8099538d87ffb64256a961bcb68296bbb139815ea6994812239f5",
+    "build\\c154-integration\\local-fix-v3\\BotNavMesh-syntax-ON.log": "d8489ec8abb30d48577c67e42c25acff73313a9fba765c210591ba647b3462ef",
+    "build\\c154-integration\\local-fix-v3\\BotUpgradeGate-compile.log": "75618e8a61845943abcd6ff93c93ef4681dea6486b529220384d3adcf41301d7",
+    "build\\c154-integration\\local-fix-v3\\BotUpgradeGate-run.log": "93da53efcc74fffaf6d5789403fbb812986e99ee6e609068e2988a0ab19ce499",
+    "build\\c154-integration\\local-fix-v3\\BotWeaponGoal-compile.log": "c757c00abb8bcda3400c30129cdb038527c6ee8e606c7f6128bfb9c81c2eaeee",
+    "build\\c154-integration\\local-fix-v3\\BotWeaponGoal-run.log": "7d9a60a68fc21223bb72ec6b7a9d3a251b82b0c7681d93b8b1a43be4cb20d324",
+    "build\\c154-integration\\local-fix-v3\\BotWeaponRank-compile.log": "deed02bc656eb9a12bd92a87b5b07e4abc8df5aa7c9b6265a83cddc0aec83970",
+    "build\\c154-integration\\local-fix-v3\\BotWeaponRank-run.log": "dd529df0098e20dc142d581db01c7ca4d6b0c451942dd52e312b2d542ee80e85",
+    "build\\c154-integration\\local-fix-v3\\PlayerMovement-syntax-OFF.log": "bab17e380e30b85bbc8ff165814ffcb0f432a5db054b96cfabb58d59cdd3c260",
+    "build\\c154-integration\\local-fix-v3\\PlayerMovement-syntax-ON.log": "bab17e380e30b85bbc8ff165814ffcb0f432a5db054b96cfabb58d59cdd3c260",
+    "build\\c154-integration\\local0b-brain-syntax\\Brain-syntax.log": "72e6a0c761c35a000a1d7991bc48a6f1569032b0965bf9f0eff44f656c6eaab8",
+    "build\\c154-integration\\mode-old\\compile.log": "2b3780e0116974078c4d4c95363cc41a2b72e3e8ad03338d16dc368116129bfb",
+    "build\\c154-integration\\mode-old\\run.log": "503430217fa3a9a89ad9f724b46ea58f9788bb922d0e5e01f74862fab14ecad4",
+    "build\\c154-integration\\mode-new\\compile.log": "2b3780e0116974078c4d4c95363cc41a2b72e3e8ad03338d16dc368116129bfb",
+    "build\\c154-integration\\mode-new\\run.log": "df89eb4c483c5384bccf22297d3766190566c12a59aae8bea6c6450ff454dfe8",
+    "build\\c154-integration\\player-exit-v1\\Player-OFF.log": "b67f79f80e5f02ed5b7d3cdb1ec96b26484fada538c97f6617ddff95fe17c294",
+    "build\\c154-integration\\player-exit-v1\\Player-ON.log": "b67f79f80e5f02ed5b7d3cdb1ec96b26484fada538c97f6617ddff95fe17c294",
+    "build\\c154-integration\\real-callers-v1\\new\\compile.log": "7ba7235387b80b965f0dc48aed7daea66e71251f2d9fca166e573d35c6f93c3d",
+    "build\\c154-integration\\real-callers-v1\\new\\run.log": "e5559e2bc07266e67f619e67f61b8733e24e4a53caa2247b55519de5caa2c635",
+    "build\\c154-integration\\real-callers-v1\\old\\compile.log": "7ba7235387b80b965f0dc48aed7daea66e71251f2d9fca166e573d35c6f93c3d",
+    "build\\c154-integration\\real-callers-v1\\old\\run.log": "594659cbbc90baf227db04439b0f998e61f07058eee35aa071e632c6263f4d4e"
+  },
+  "limits": "Offline/source evidence only. No physical ladder/fullShore/client/default acceptance."
+}
