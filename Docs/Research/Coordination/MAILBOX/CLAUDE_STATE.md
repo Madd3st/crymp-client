@@ -4,6 +4,12 @@ OWNER PAUSE 2026-10-29: all autonomous agent work and wake/poll loops are paused
 
 Owner priorities: classic Steelmill first (DELIVERED), measured disk/repo cleanup + clear docs, continue upper Shore exit fix with DeepSeek, then ONE whole route. Owner said he left the previous game; he can launch the new classic package, so never infer the PC stays free.
 
+## Active queue — 30.10.2026
+- C154 remains paused by owner: candidate307/CI40919291234/DS126 code gate accepted historically, physical outcome UNTESTED. Do not run until explicit owner release and fresh complete gates.
+- Separate confirmed backlog: R4 ammo-search episode deadline; R9 generic-jump direction contract. D032 default promotion remains an owner decision. C155 and DS125/DS126 are complete, not new assignments.
+- The former build directory was deleted by an external general cleanup script (its receipt confirms this). Code307 and triage source389a929d worktrees have been recovered from Git, exact307 CI pair downloaded/hash-matched, V5 four data files recovered/hash-matched from frozen preview. Previous raw archives and offline receipts are not all recovered; do not assume their old paths exist. Recovered quality is reference-only, not active runtime approval. Locate/restore retained originals or regenerate appropriate offline gates before runtime. No game launched.
+- General cleanup script now excludes WarsBots; build is not disposable cache. Owner entry point: QA branch START_HERE.md. Historical overview documents there are redirected to an archive.
+
 ## Authority and checkout map
 - Interim coordinator/integrator/QA: Codex, owner D035 / SUCCESSOR prompt A. DeepSeek independent own-branch proposals/reviews only. Claude unavailable until owner's expected Sunday return; no automatic role reversal.
 - Game source: warsbots/feature/claude-sprint, clean QA/build/ds076-code at307037bc08050d39f26310dc6cc7071dddddf4a6 PUSHED, preCI DS125d19ca OK. FULL CI40919291234 SUCCESS; exactpairedartifact12917623035 downloaded/hashed, DS126 final4c710aca code/data/harnessOK; finalquality true/pinned. C155 classic remains frozen abac/fullCI40890940918. OWNER_PLAYING_HOLD: classic client+server observed running; no games until owner finishes.
