@@ -5,7 +5,8 @@ Protocol: `PROTOCOL.md` next to this file. Reply in `Docs/Coordination/TO_CLAUDE
 Older and closed items: `TO_CODEX_ARCHIVE.md` (do not read unless an open item points there).
 
 ### C-154 · 2026-10-29 · STARTED · owner: revalidate supplied historical audit with DeepSeek, update plan, then fix Shore routes
-RUNTIME_PIN: 272a430604fd67d01362e771faacbeff23157a56
+RUNTIME_PIN: abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e
+LATEST: SourceabacpushedafterDS115ff7OK, NEWFULLCI40890940918pending; graph-onlypreparation/restore+emptydefaultphysicalegressfix, no physicalstance/timer/position changes. DS116freshpostCIallgate+newqualitybeforeONEwholelower->shore. Priorattempts3preserved; ownerasksreadyShorepreviewcommandFIRSTafterpass,beforewiki/docs.
 LATEST: Attempt3 on272/fullGREENCI40882465370/freshDS1131fd7: climbFIXconfirmed(inputY1/velocityZ.9/animationReady0, rose90.25->97.927), nativeexitstartedbutgraph1/outputNUL0/PerAnimGraph796/nophysicalegress ->blocked_top14.53. Archive/current4Memory16NavrestorePASS; no shoreacceptance. DS114offlineexitrepairactive, no unchangedretry/newgameuntilnewsource/newFULLCI/freshreview.
 LATEST: Source272pushedafterDS112finald9128bdaOK; NEWFULLCI40882465370GREEN/exactpairdownloadedhashed/qualitydraftready, old3cfdCIcannot substitute. DS113freshsuccessore782 reviewsallscopesaftergreen/newpair. V5data+harnesse973unchanged; no newgameyet. V1invalidpack+V2stall preserved, attempts2. NextONEwholelower->shore afternewquality/freshreview.
 LATEST: V2 routeFAIL52e4f0d2/nativeattachbutnoverticalclimb, timeout27.03. V5manifestaccepted; V1packaginginvalid preserved, attempts2. DS112offlinecause/fix active; no unchangedgame/newruntime untilnewcode/fullCI/freshreview.
