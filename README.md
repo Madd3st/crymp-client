@@ -1,3 +1,5 @@
+> **WarsBots:** начните с [карты проекта и текущих задач](START_HERE.md). Ниже — исходный README CryMP.
+
 # CryMP
 
 Improved [Crysis (2007)](https://en.wikipedia.org/wiki/Crysis_(video_game)) with [CryMP](https://crymp.org) community

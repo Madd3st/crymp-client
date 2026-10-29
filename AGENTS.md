@@ -29,4 +29,4 @@ Do not replace upstream gameplay files with Crysis Wars versions.
 - Build: `Tools/Build-WarsBots.ps1` (OFF), add `-Experimental` for the port.
   MSVC x64 only. Read Docs/AI_TESTS.md before gameplay tests.
 
-Update STATUS and AGENT_HANDOFF once per completed task; do not rewrite all docs.
+Current owner/developer entry point: START_HERE.md. AGENT_HANDOFF/ROADMAP/ARCHITECTURE_REVIEW are historical redirects, not active task queues. Update the authoritative triage state and relevant QA result only when project state changes; do not add machine housekeeping reports. Never delete build wholesale: it contains active Git worktrees, frozen route data and evidence.

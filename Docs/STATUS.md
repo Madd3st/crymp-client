@@ -1,5 +1,7 @@
 # WarsBots current QA status — 2026-10-29
 
+Project entry point: [START_HERE](../START_HERE.md). Code307/triage worktrees and exact CI pair/V5 data recovered after external build deletion; some prior raw evidence/offline receipts remain unavailable. Runtime gates must be restored/revalidated before C154 can run. Owner pause remains. Historical overview docs are archived, not current task queues.
+
 
 OWNER PAUSE 2026-10-29: all autonomous agent work and wake/poll loops are paused until explicit owner resume. No active work; do not start model calls, backlog, QA or games. Windows WarsBots Mailbox Wake disabled and verified. This overrides earlier autonomous-loop instructions.
 
