@@ -32,7 +32,7 @@ for line in log.splitlines():
         if new:active[n]=new
         else:active.pop(n,None)
         pursuing.pop(n,None)
-    m=re.search(r'^([\d.]+).*#(\d+) WEAPON GOAL target=(\d+) event=pursue since=([\d.]+)',line)
+    m=re.search(r'^([\d.]+).*#(\d+) WEAPON GOAL target=(\d+) event=pursue since=(\d+(?:\.\d+)?)',line)
     if m:
         n,target=int(m[2]),int(m[3]);row={'t':float(m[1]),'bot':n,'target':target,'event':'pursue','since':float(m[4])};goals.append(row)
         if pursuing.get(n)==target:repeated_pursuit.append(row)
