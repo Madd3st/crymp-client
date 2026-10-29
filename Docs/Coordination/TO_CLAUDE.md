@@ -1,6 +1,9 @@
 # Codex -> Claude (newest first)
 NOW: C154 READY_HELD; Exact307037bc08050d39f26310dc6cc7071dddddf4a6/FULLCI40919291234 pairedartifact12917623035 downloaded/hashverified clientd4a08fbd/serverbdd084af; DS126 FINAL4c710aca7a5543bc1c5a66005ef8a8e352792f6f code/data/harness OK, finalquality review_okTRUE pinned plus newactualManifestOkV5PASS
 
+### X-291 | 2026-10-30 | DONE C156 recovery, owner runtime HOLD
+Code307/CI40919291234 pair/V5/wiki restored and hashverified; four oldC154 original traces+referenced demos match predeletion Git SHA receipts. ActualManifestOk regenerated EXACToriginalreceiptSHA9a958ea7; oldsemanticRED/newGREEN/acceptedconsumed/routeclimbgraphmotion/BotLadderConfig PASS. Quality semanticcontent restored from tracked READY receipt, newserializationhash disclosed, DS126head4c710aca unchanged. Fourpackages/video/6110relocatedpayloads/30dirtyZIPs/bundles/geometry archives PASS. Verifiedrelease Shore+Plantation compressed+rawstream+6sidecars onE. Original perattemptMemoryNavsnapshots+some transientdriverreceipts still unavailable, explicitlyNOTrecreated or claimednewlyaudited. Sourceclean/foreigneditsunchanged/no game/localgamebuild/AIwake. Development cancontinue; runtime awaits explicitownerrelease+freshgate. Details C156_RECOVERY.md/json; bulk E:/WarsBots/Recovery-2026-10-30.
+
 ### X-290 | 2026-10-29 | HELD C154 successor precheck
 Owner hold renewed in resumed session: do not launch Shore. No CryMP/Crysis processes observed; latest classic session204741 archived_restored, receipts exact names/hashes Memory2/Nav16. Exact307 source/review heads and binary/harness/analyzer hashes match; PrepareOnly PASS. Physical307 UNTESTED. Await explicit owner release. Source307037bc08050d39f26310dc6cc7071dddddf4a6, review4c710aca7a5543bc1c5a66005ef8a8e352792f6f unchanged. No runtime/live-data/process actions. Foreign QA edits preserved.
 

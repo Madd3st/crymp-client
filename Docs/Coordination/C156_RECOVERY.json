@@ -1,0 +1,55 @@
+{
+  "task": "C156",
+  "date": "2026-10-30",
+  "scope": "Restore current development assets and audit preservation after whole-build deletion; no gameplay",
+  "source": "307037bc08050d39f26310dc6cc7071dddddf4a6",
+  "source_clean": true,
+  "ci": 40919291234,
+  "review": "4c710aca7a5543bc1c5a66005ef8a8e352792f6f",
+  "wiki_head": "f78000be676a4f6034e8f4872076e54c23f1f6d1",
+  "game_launched": false,
+  "autonomous_wake": "DISABLED",
+  "recovered": [
+    "code and coordination worktrees",
+    "wiki checkout",
+    "exact CI client/server plus original unit/build logs",
+    "V5 navmesh/links/spots/manifest",
+    "all four original C154 traces and referenced demos",
+    "Shore/Plantation cropped source geometry and six sidecars on E",
+    "quality receipt content recovered from committed Git object"
+  ],
+  "passed": [
+    "CI full run and both jobs success on exact307",
+    "pair/data/harness/analyzer SHA256 pins",
+    "DS126 branch head unchanged",
+    "actual ManifestOk with tamper/CRLF controls: regenerated result exactly matches original receipt SHA256",
+    "bounded exit retry actual caller: old compiles and semantic RED, new GREEN",
+    "accepted-consumed control: no resend/no fake egress",
+    "route/climb/graph/motion caller controls",
+    "BotLadder and BotConfig units",
+    "C154 and C155 PrepareOnly: NOT LAUNCHED",
+    "four package payload manifests",
+    "owner video original hash",
+    "6110 relocated old payloads",
+    "30 archived dirty worktree ZIP hashes and bundle SHA/structure",
+    "C019 raw-geometry ZIP hashes and old CI ZIP hash",
+    "Git object connectivity/worktree registrations",
+    "foreign modified and untracked scripts unchanged"
+  ],
+  "preservation_checks": 76,
+  "quality": {
+    "content_equal_to_committed_reviewed_quality": true,
+    "original_serialized_bytes_recovered": false,
+    "recovered_sha256": "d05b688aa13742e3b0a428d101c55d9698eeb022e2bf47738da4de014da2ccc4",
+    "original_sha256": "d05b688aa13742e3b0a428d101c55d9698eeb022e2bf47738da4de014da2ccc4",
+    "manifest_receipt_hash_exact": true
+  },
+  "known_historical_losses": [
+    "Original per-attempt Memory/Navmesh before/after snapshot directories, and some transient driver/session/effective receipts from removed build. Old reports preserve their verdicts, but byte-for-byte restoration audit cannot be repeated from those reports alone.",
+    "Original uncropped temporary PS export and discarded offline build outputs were not reconstructed; verified cropped geometry plus metadata and source tests are available."
+  ],
+  "continuation": "Development and offline analysis can continue. No identified missing source/data/build blocks further work. New runtime requires explicit owner release and a fresh preflight; old per-attempt restore audits remain historical, not newly verified.",
+  "bulk_evidence_root": "E:\\WarsBots\\Recovery-2026-10-30",
+  "recovery_audit_sha256": "f9e0a49599a303027cc3b185235a8855593fc5e49f8e9ec08ad847488a6de65e",
+  "ci_original_log_sha256": "d66b8fc24f6e0fb036bb1d6818680441d3efa3a9c04daa586a3a28da6083e0b6"
+}
