@@ -61,6 +61,7 @@ struct CPlayer{
  uint8 m_warsBotLadderGraphStanceId=0;string m_warsBotLadderGraphStance;
  CPlayer(){ac.graph=&graph;}
  bool IsWarsBotActor(){return bot;}unsigned GetEntityId(){return 7;}int GetHealth(){return health;}bool IsFrozen(){return frozen;}
+ void ResetWarsBotLadderExitRetry(){} void ClearWarsBotLadderExitRetry(){} // isolated graph snapshot test; actual retry lifecycle has its own caller
  bool PrepareWarsBotLadderGraph();void RestoreWarsBotLadderGraph();void NativePrefix(int);
 };
 ''' + prepare + '\n' + restore + '\nvoid CPlayer::NativePrefix(int eLS){\n'+prefix+'\n}\n'+r'''

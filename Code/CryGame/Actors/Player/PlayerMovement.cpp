@@ -13,6 +13,8 @@
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotLadder.h"
 #include "CryGame/Bots/BotLog.h"
+#include "CryCommon/CryAnimation/ICryAnimation.h"
+#include <cstring>
 #endif
 #include "CryCommon/CryGame/GameUtils.h"
 #include "CryGame/Game.h"
@@ -1593,13 +1595,44 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 			IAnimationGraphState* pAGState = pAC ? pAC->GetAnimationGraphState() : NULL;
 			const char* agOutputOnLadder = pAGState ? pAGState->QueryOutput("OnLadder") : NULL;
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+			// DS-124: copy the scalar output and the state text BEFORE any graph write. SetInput may replace the
+			// queried state and invalidate the pointers above; nothing below may read them after a mutation.
+			const bool warsBotHasOutput = warsBot && agOutputOnLadder;
+			const char warsBotOutput = warsBotHasOutput ? agOutputOnLadder[0] : '\0';
+			char warsBotState[256] = {};
+			if (warsBot && pAGState)
+			{
+				if (const char* currentState = pAGState->GetCurrentStateName())
+					std::strncpy(warsBotState, currentState, sizeof(warsBotState)-1);
+			}
 			if (warsBot)
-				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d active=%d state=%s motionFlags=%u pos=(%.3f,%.3f,%.3f).",
-					player.GetEntityId(),pAGState?1:0,agOutputOnLadder?int(static_cast<unsigned char>(agOutputOnLadder[0])):-1,
+			{
+				const bool exitHeld = std::strstr(warsBotState, "ladderOffTop") != NULL;
+				char currentSignal[256] = {};
+				if (pAGState)
+				{
+					const IAnimationGraphState::InputID signalId = pAGState->GetInputId("Signal");
+					const char* signalName = pAGState->GetInputName(signalId);
+					if (signalName && std::strcmp(signalName, "Signal")==0) pAGState->GetInput(signalId, currentSignal);
+				}
+				float graphPseudo=-1.0f;
+				if (pAGState)
+				{
+					const auto id=pAGState->GetInputId("PseudoSpeed");
+					const char* name=pAGState->GetInputName(id);
+					if (name && std::strcmp(name,"PseudoSpeed")==0) graphPseudo=pAGState->GetInputAsFloat(id);
+				}
+				ICharacterInstance* character = player.GetEntity()->GetCharacter(0);
+				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d active=%d state=%s held=%d signal=%s pseudo=%.2f upd=%d motionFlags=%u pos=(%.3f,%.3f,%.3f).",
+					player.GetEntityId(),pAGState?1:0,warsBotHasOutput?int(static_cast<unsigned char>(warsBotOutput)):-1,
 					pAGState&&pAGState->GetAnimationActivation()?1:0,
-					pAGState&&pAGState->GetCurrentStateName()?pAGState->GetCurrentStateName():"<none>",
+					warsBotState[0]?warsBotState:"<none>",exitHeld?1:0,
+					currentSignal[0]?currentSignal:"<default>",
+					graphPseudo,
+					character&&(character->GetFlags()&CS_FLAG_UPDATE_ALWAYS)?1:0,
 					pAC?unsigned(pAC->GetParams().flags):0u,player.GetEntity()->GetWorldPos().x,
 					player.GetEntity()->GetWorldPos().y,player.GetEntity()->GetWorldPos().z);
+			}
 #endif
 			// DS-107: an owned bot must not turn a missing graph/output into a premature ReachedEnd. Keep the native
 			// exiting state and let the policy fail closed (BlockedTop) unless the graph gives a real completion.
@@ -1609,12 +1642,25 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 			{
 				// The stock graph has OnLadder=1 only in ladder states; completion may return its empty default.
 				// Empty is never completion by itself: require the same real physical egress as literal 0.
-				if (agOutputOnLadder[0] && agOutputOnLadder[0]!='0' && agOutputOnLadder[0]!='1') return;
-				const Vec3 feet=player.GetEntity()->GetWorldPos();
-				if (agOutputOnLadder[0]!='1' && !WarsBots::NativeLadderExitPhysicalReady(
-					WarsBots::LVec{feet.x,feet.y,feet.z},
-					WarsBots::LVec{m_stats.ladderBottom.x,m_stats.ladderBottom.y,m_stats.ladderBottom.z},
-					WarsBots::LVec{m_stats.ladderTop.x,m_stats.ladderTop.y,m_stats.ladderTop.z})) return;
+				if (warsBotOutput && warsBotOutput!='0' && warsBotOutput!='1') return;
+				if (warsBotOutput!='1')
+				{
+					const Vec3 feet=player.GetEntity()->GetWorldPos();
+					const bool physicalReady=WarsBots::NativeLadderExitPhysicalReady(
+						WarsBots::LVec{feet.x,feet.y,feet.z},
+						WarsBots::LVec{m_stats.ladderBottom.x,m_stats.ladderBottom.y,m_stats.ladderBottom.z},
+						WarsBots::LVec{m_stats.ladderTop.x,m_stats.ladderTop.y,m_stats.ladderTop.z});
+					// Completion is checked first and returns immediately: a real exit must never be re-signalled.
+					if (physicalReady)
+					{
+						player.RequestLeaveLadder(CPlayer::eLAT_ReachedEnd);
+						return;
+					}
+					// Not complete: at most one bounded recovery signal for this owned native exit. It does not
+					// move, teleport or complete the actor; the policy still fails closed after the exit budget.
+					player.TryWarsBotLadderExitRetry(pAGState);
+					return;
+				}
 			}
 #endif
 			bool onLadder = agOutputOnLadder && agOutputOnLadder[0] == '1';

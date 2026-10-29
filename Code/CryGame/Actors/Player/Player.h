@@ -635,6 +635,11 @@ public:
 	void PublishWarsBotJump(bool strength);
 	bool PrepareWarsBotLadderGraph();
 	void RestoreWarsBotLadderGraph();
+	// DS-124: actor-local bound for the one native ladder exit. At most one recovery signal per exit; the latch is
+	// reset on ExitTop/leave/cancel/OFF/death/revive and cleanup clears only our own still-current signal.
+	bool TryWarsBotLadderExitRetry(IAnimationGraphState* graph);
+	void ResetWarsBotLadderExitRetry();
+	void ClearWarsBotLadderExitRetry();
 	bool WarsBotWeaponFiring() const;
 	virtual void SerializeSpawnInfo(TSerialize ser) override;
 	virtual ISerializableInfoPtr GetSpawnInfo() override;
@@ -648,6 +653,8 @@ public:
 	// Route-local animation inputs only; never a change to the physical stance or wire format.
 	IAnimationGraphState* m_warsBotLadderGraph = nullptr;
 	bool m_warsBotLadderGraphOverride = false, m_warsBotLadderGraphWasActive = false;
+	bool m_warsBotLadderExitRetryUsed = false;     // one recovery signal already sent for this native exit
+	bool m_warsBotLadderExitSignalPending = false; // cleanup marker; recheck the actual Signal before clearing it
 	bool m_warsBotLadderGraphStanceDefault = true;
 	uint8 m_warsBotLadderGraphStanceId = 0;
 	string m_warsBotLadderGraphStance;

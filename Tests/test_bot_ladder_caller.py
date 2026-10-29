@@ -1,4 +1,4 @@
-﻿"""DS-108: compile and execute REAL WarsBots ladder caller blocks from two git revisions.
+"""DS-108: compile and execute REAL WarsBots ladder caller blocks from two git revisions.
 
 This is an engine-free actual-caller regression: it extracts the real method bodies / smallest real blocks from
 BotBrain.cpp, BotLocomotion.cpp, PlayerMovement.cpp, BotManager.cpp and BotLadder.h, then compiles them against a
@@ -82,13 +82,21 @@ struct SPlayerStats {
  int spectatorMode=0, flyMode=0;
  Vec3 ladderTop, ladderBottom, ladderOrientation;
 };
-struct Entity { Vec3 p; Vec3 GetWorldPos()const{return p;} };
-struct IAnimationGraphState { const char* out=nullptr; const char* QueryOutput(const char*){return out;} };
+struct ICharacterInstance { int GetFlags(){return 0;} };
+struct Entity { Vec3 p; Vec3 GetWorldPos()const{return p;} ICharacterInstance* GetCharacter(int){return nullptr;} };
+struct IAnimationGraphState {
+ using InputID=unsigned;const char* out=nullptr;const char* QueryOutput(const char*){return out;}
+ const char* GetCurrentStateName(){return "Mock";}
+ InputID GetInputId(const char*n){return std::strcmp(n,"Signal")==0?1u:2u;}
+ const char* GetInputName(InputID n){return n==1?"Signal":"PseudoSpeed";}
+ void GetInput(InputID,char*b){std::strcpy(b,"none");}float GetInputAsFloat(InputID){return .5f;}
+};
 struct IAnimatedCharacter { IAnimationGraphState* ag=nullptr; IAnimationGraphState* GetAnimationGraphState(){return ag;} };
 struct CPlayer;
 struct CActor { CPlayer* p=nullptr; };
 struct CPlayer : CActor {
  void RestoreWarsBotLadderGraph(){}
+ bool TryWarsBotLadderExitRetry(IAnimationGraphState*){return false;} // isolated route tests; real retry has a dedicated caller
  enum ELadderActionType { eLAT_None, eLAT_ReachedEnd, eLAT_ExitTop, eLAT_Jump, eLAT_StrafeLeft, eLAT_StrafeRight, eLAT_Use, eLAT_Die };
  Entity e; SPlayerStats st; IAnimatedCharacter ac; IAnimationGraphState ag;
  CPlayer(){p=this;}
@@ -107,6 +115,7 @@ struct CPlayer : CActor {
  void RequestLeaveLadder(ELadderActionType r){++leaves; lastLeave=r; st.isOnLadder=false; st.isExitingLadder=false;}
  void SetWarsBotActions(bool,bool,int){}
  float GetStanceMaxSpeed(int)const{return 2.5f;}
+ float CalculatePseudoSpeed(bool)const{return 1.0f;} // native value separately extracted by exit-retry caller
  void* GetLinkedEntity(){return nullptr;}
  void* GetLinkedVehicle(){return nullptr;}
 };

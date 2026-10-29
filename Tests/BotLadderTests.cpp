@@ -65,6 +65,8 @@ int main()
 		L.Update(At(0, 0, 0.5f, 10)); L.Update(At(0.1f, 0, 0.5f, 10, true, true));
 		L.Update(At(8.0f, 0, 0.5f, 19.5f, true, true, true));
 		LadderOutput o = L.Update(At(10.1f, 0, 0.5f, 19.5f, true, true, true));
+		assert(o.phase == LadderPhase::WaitExit); // observed native exit needs ~2 s plus handoff/frame headroom
+		o = L.Update(At(11.1f, 0, 0.5f, 19.5f, true, true, true));
 		assert(o.fail == LadderFail::BlockedTop);
 
 		// Native top band reached but the native ray/animation never starts the exit: real blocked top, not height success.

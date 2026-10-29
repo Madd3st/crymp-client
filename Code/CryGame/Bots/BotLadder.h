@@ -55,7 +55,10 @@ struct LadderParams {
 	float grabTime = 3.0f;      // allow the existing capped view to face the real material before grabbing
 	float total = 25.f;
 	float topEps = 2.5f;        // native ladderTop band (LADDER_TOP_DISTANCE 2.41 + margin)
-	float exitWait = 2.0f;      // native animation/root-motion completion
+	float exitWait = 2.0f;      // native ladderTop band wait before BlockedTop (exit not started)
+	// DS-124: WaitExit hard failure budget. The observed human same-shaft exit is ~2.0 s and the old 2.0 s window
+	// left no headroom for the 10 Hz brain / graph handoff. This is a FAILURE bound only (never success/detach).
+	float exitBudget = 3.0f;
 	float settleTime = 4.0f;
 	float floorDz = 1.0f;
 	float floorDist = 0.8f;     // finish the safe walk-off onto the actual path landing point
@@ -161,7 +164,8 @@ private:
 			// Native root motion owns the exit; stop bot steering and wait for the native completion.
 			o.moveTo = in.feet;
 			if (!in.onLadder && !in.exiting) Enter(LadderPhase::Settle, in.now);
-			else if (in.now - m_phaseAt > m_p.exitWait) return Fail(o, LadderFail::BlockedTop);
+			// Failure budget only: success stays the native detach plus the physical/grounded settle below.
+			else if (in.now - m_phaseAt > m_p.exitBudget) return Fail(o, LadderFail::BlockedTop);
 			break;
 		case LadderPhase::Settle:
 			if (in.onLadder || in.exiting) return Fail(o,LadderFail::Lost);

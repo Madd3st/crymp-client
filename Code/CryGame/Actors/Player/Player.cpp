@@ -7332,11 +7332,17 @@ void CPlayer::LeaveLadder(ELadderActionType reason)
 
 	if (reason == eLAT_ExitTop)
 	{
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+		ResetWarsBotLadderExitRetry(); // native signal below; one recovery attempt starts unused
+#endif
 		m_stats.isExitingLadder = true;
 		UpdateLadderAnimation(CPlayer::eLS_ExitTop, eLDIR_Up);
 	}
 	else
 	{
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+		ClearWarsBotLadderExitRetry();
+#endif
 		m_stats.isExitingLadder = false;
 		m_stats.isOnLadder = false;
 		m_stats.ladderAction = reason;
@@ -7446,6 +7452,74 @@ IMPLEMENT_RMI(CPlayer, ClLeaveLadder)
 
 //-----------------------------------------------------------------------
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+// DS-124: at most ONE recovery signal per owned native ladder exit. The stock LeaveLadder(eLAT_ExitTop) emits the
+// one-shot Signal before the next graph update, but the AC motion mode is only PerAnimGraph from the following
+// frame (PrePhysicsUpdate computed exiting=false on the trigger frame), so the handoff can consume the signal
+// before the exit can own motion (candidate handoff risk, not a proven engine cause). No per-frame spam:
+//  - only after the stock signal has been consumed/returned to default (a pending exit_ladder_top is preserved);
+//  - never while an off-top clip is current;
+//  - once per exit (actor latch), same graph/ownership/gate/state, valid Signal input id+name;
+//  - no movement, position, collider or completion write; completion stays with the stock output+physical guard.
+bool CPlayer::TryWarsBotLadderExitRetry(IAnimationGraphState* graph)
+{
+	if (!graph || !m_warsBotLadderGraphOverride || graph!=m_warsBotLadderGraph) return false;
+	if (!gEnv || !gEnv->bServer || !g_pGame || !IsWarsBotActor() || !g_pGame->GetBotManager().Owns(GetEntityId()))
+		return false;
+	if (WarsBots::BotConfig::Get().ladder!=1) return false;
+	if (!m_stats.isOnLadder.Value() || !m_stats.isExitingLadder) return false;
+	if (GetHealth()<=0 || IsFrozen() || m_stats.isRagDoll) return false;
+	// Only after the frame's AC mode handoff: PrePhysicsUpdate computes AlwaysPhysics on the trigger frame and
+	// PerAnimGraph from the next frame, so a retry is meaningful only once graph motion is actually selected.
+	if (!m_pAnimatedCharacter || !(m_pAnimatedCharacter->GetParams().flags & eACF_PerAnimGraph)) return false;
+	if (m_warsBotLadderExitRetryUsed) return false;
+	const IAnimationGraphState::InputID signal=graph->GetInputId("Signal");
+	const char* signalName=graph->GetInputName(signal);
+	if (!signalName || std::strcmp(signalName,"Signal")!=0) return false;
+	char current[256]={};
+	graph->GetInput(signal,current);
+	// The stock signal may still be pending: never overwrite/resend it. Only retry from the default/consumed value.
+	if (!graph->IsDefaultInputValue(signal)) return false;
+	char state[256]={};
+	if (const char* currentState=graph->GetCurrentStateName())
+		std::strncpy(state,currentState,sizeof(state)-1);
+	// Preserve an already playing/pending exit clip.
+	if (std::strstr(state,"ladderOffTop")) return false;
+	m_warsBotLadderExitRetryUsed=true; // consume even a rejected call: never retry every frame
+	if (!graph->SetInput(signal,"exit_ladder_top")) return false;
+	m_warsBotLadderExitSignalPending=true;
+	WB_LOG(2,"[WarsBots] LADDER EXIT RETRY actor=%u state=%s previousSignal=%s one_shot=1.",
+		GetEntityId(),state,current[0]?current:"<default>");
+	return true;
+}
+
+void CPlayer::ResetWarsBotLadderExitRetry()
+{
+	m_warsBotLadderExitRetryUsed=false;
+	m_warsBotLadderExitSignalPending=false;
+}
+
+// Cleanup for ExitTop/native leave/cancel/OFF/death/revive/graph replacement. It clears ONLY the signal this actor
+// itself set and only while it is still the current value on the same owned graph; unrelated inputs/states and a
+// replaced graph are never touched. Latches are always reset.
+void CPlayer::ClearWarsBotLadderExitRetry()
+{
+	const bool pending=m_warsBotLadderExitSignalPending;
+	m_warsBotLadderExitRetryUsed=false;
+	m_warsBotLadderExitSignalPending=false;
+	if (!pending || !gEnv || !gEnv->bServer || !g_pGame || !IsWarsBotActor() ||
+		!g_pGame->GetBotManager().Owns(GetEntityId())) return;
+	IAnimationGraphState* graph=m_pAnimatedCharacter ? m_pAnimatedCharacter->GetAnimationGraphState() : nullptr;
+	if (!graph || !m_warsBotLadderGraphOverride || graph!=m_warsBotLadderGraph) return;
+	const IAnimationGraphState::InputID signal=graph->GetInputId("Signal");
+	const char* signalName=graph->GetInputName(signal);
+	if (!signalName || std::strcmp(signalName,"Signal")!=0) return;
+	char current[256]={};
+	graph->GetInput(signal,current);
+	if (std::strcmp(current,"exit_ladder_top")!=0) return; // consumed already or a foreign signal: never clear it
+	graph->ClearInput(signal); // restore the default, not a guessed default string
+	WB_LOG(2,"[WarsBots] LADDER EXIT RETRY cleared actor=%u.",GetEntityId());
+}
+
 bool CPlayer::PrepareWarsBotLadderGraph()
 {
 	if (!gEnv || !gEnv->bServer || !g_pGame || !IsWarsBotActor() ||
@@ -7460,6 +7534,7 @@ bool CPlayer::PrepareWarsBotLadderGraph()
 	if (m_warsBotLadderGraphOverride && m_warsBotLadderGraph!=graph) RestoreWarsBotLadderGraph();
 	if (!m_warsBotLadderGraphOverride)
 	{
+		ResetWarsBotLadderExitRetry(); // a new native route starts with a fresh one-shot exit retry
 		char previous[256]={}; graph->GetInput(stance,previous);
 		m_warsBotLadderGraph=graph; m_warsBotLadderGraphStanceId=stance;
 		m_warsBotLadderGraphStance=previous;
@@ -7479,6 +7554,7 @@ bool CPlayer::PrepareWarsBotLadderGraph()
 
 void CPlayer::RestoreWarsBotLadderGraph()
 {
+	ClearWarsBotLadderExitRetry(); // also consume orphan latches before the early return
 	if (!m_warsBotLadderGraphOverride) return;
 	m_warsBotLadderGraphOverride=false; // consume even if teardown has replaced the graph or entity ownership
 	IAnimationGraphState* graph=m_pAnimatedCharacter ? m_pAnimatedCharacter->GetAnimationGraphState() : nullptr;
