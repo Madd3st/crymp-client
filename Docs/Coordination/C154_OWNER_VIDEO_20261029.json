@@ -1,0 +1,736 @@
+{
+  "task": "C154",
+  "source": "abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e",
+  "kind": "OWNER_PREVIEW_NOT_QA_ACCEPTANCE",
+  "video": {
+    "path": "C:\\Users\\Magic8\\Videos\\NVIDIA\\Desktop\\Desktop 2026.10.29 - 18.37.44.01.mp4",
+    "sha256": "b9fb7b87e4c8087d408f9c672d0063f2a5ba278e20037c2f58c3502cfb2bfa98",
+    "bytes": 130043340,
+    "duration_seconds": 204.17,
+    "audio": "present; not transcribed or relied upon"
+  },
+  "session": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Preview-abac72a9\\Sessions\\C154Preview-abac72a9-20261029-183709",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-owner-video-20261029\\archive",
+  "session_phase": "archived_restored",
+  "archived_files": [
+    {
+      "name": "C154Preview-abac72a9-20261029-183709-client.bots.log",
+      "sha256": "dc054e3229b5007755b33580e92d97b3ccda524204306c19ce0a76803e7c212a",
+      "bytes": 280186
+    },
+    {
+      "name": "C154Preview-abac72a9-20261029-183709-client.log",
+      "sha256": "6e6cf9af009e7d0bfcfaabd65a2bdac0b22ecfaf4202178438d0524871c045c4",
+      "bytes": 280513
+    },
+    {
+      "name": "C154Preview-abac72a9-20261029-183709-pre.bots.log",
+      "sha256": "7a8cadd38dfd280a064b83194cdd381365fcdbadf8c8cf48069035a0c97ddb0a",
+      "bytes": 682
+    },
+    {
+      "name": "C154Preview-abac72a9-20261029-183709-pre.log",
+      "sha256": "ce8f9d46450bba18d12317f1fd9841086214ff03b448b128010e4c2bbde2eb55",
+      "bytes": 5419
+    },
+    {
+      "name": "C154Preview-abac72a9-20261029-183709.bots.log",
+      "sha256": "fb17cf0abcc21c4d58f09f54bcda7d671ab29be1a28c23052a702956e7296a2c",
+      "bytes": 816212
+    },
+    {
+      "name": "C154Preview-abac72a9-20261029-183709.log",
+      "sha256": "43f87172683827e5fc2932f1267268afa2eda761dacf518504c83eb602dc5c2c",
+      "bytes": 809029
+    },
+    {
+      "name": "client-arguments.txt",
+      "sha256": "e3fe15a330bf365414ae576accc02a5b4863c73d98d101d84d4952d104ec4e01",
+      "bytes": 358
+    },
+    {
+      "name": "demo-archive.json",
+      "sha256": "77cb3261d9fcdc4c6e71ca3db03adcf9623df3cac8983a184878a60ee9b70392",
+      "bytes": 204
+    },
+    {
+      "name": "effective.json",
+      "sha256": "ca5fee3018db6a728331411e727480fb09d57e3a931fd7f9c386122f7ca71f16",
+      "bytes": 1943
+    },
+    {
+      "name": "memory-restored.json",
+      "sha256": "08bcbfbaf417b00a3f43a84406d1f75650c324b1061943d17b964c7073e80c1c",
+      "bytes": 525
+    },
+    {
+      "name": "Multiplayer_PS_Shore-20261029-183714-1.wbdemo",
+      "sha256": "fd2b20aefbc750967118cf142ea4e951db9e6f7eba16c15d45f5829af8afebca",
+      "bytes": 514858
+    },
+    {
+      "name": "nav-restored.json",
+      "sha256": "ea108537fdc39bdfa1216246e76323ae431f3dfa586d90b4e0622fc1cda6769f",
+      "bytes": 3273
+    },
+    {
+      "name": "preflight-arguments.txt",
+      "sha256": "aba46353db466c2104ee5c449e2e0e5d2a93adccc6b1556d17e0fba7f63a29c0",
+      "bytes": 1398
+    },
+    {
+      "name": "preflight-effective.json",
+      "sha256": "ca5fee3018db6a728331411e727480fb09d57e3a931fd7f9c386122f7ca71f16",
+      "bytes": 1943
+    },
+    {
+      "name": "server-arguments.txt",
+      "sha256": "0f92c3c927038a756d9fda9360e86025fbbdc7aee29e4b45d387e5cbc72ba03f",
+      "bytes": 1453
+    },
+    {
+      "name": "session.json",
+      "sha256": "b656b11ddab58e4f89936b1f29545c7b6b320f81cb54cbc3faeb3b38410b3eae",
+      "bytes": 789
+    }
+  ],
+  "visual_observations": [
+    "00:00-00:25 spectator follows bot in/under water and room geometry; not a successful exit",
+    "00:30 one scheduled bot death/revive is visible; it was disclosed diagnostic setup",
+    "00:35-01:10 bot remains in lower room; no new ladder start in server log after60s revive",
+    "02:39-02:54 owner demonstrates ladder/corridor/upper ascent to deck; human client trace separately proves same lower shaft physical exit"
+  ],
+  "server_events": [
+    "1.05 [WarsBots] #2 LADDER start a=(2116.12,1880.62,90.16) b=(2117.50,1880.60,99.76) actor=65481.",
+    "3.74 [WarsBots] LADDER GRAPH prepare actor=65481 activeBefore=1 stanceBefore=combat defaultBefore=0.",
+    "14.42 [WarsBots] #2 LADDER failed reason=blocked_top nativeOn=1 exiting=1 grounded=1 pos=(2116.12,1880.62,97.93) actor=65481.",
+    "14.42 [WarsBots] LADDER GRAPH restored actor=65481 active=1.",
+    "60.07 [WarsBots] DEBUG REVIVE actor=65481 bot=2 spawnId=545 manual=1 nativeKill=1 zOffset=0.200 hooks=0"
+  ],
+  "human_trace_timebase": "CLIENT LOG seconds, NOT video seconds; no exact clock synchronisation asserted",
+  "human_native_same_ladder": [
+    {
+      "actor": 65479,
+      "t": 178.902,
+      "pos": [
+        2116.125,
+        1880.625,
+        90.454
+      ],
+      "vz": 0.0,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 179.152,
+      "pos": [
+        2116.125,
+        1880.625,
+        90.454
+      ],
+      "vz": 0.0,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 179.403,
+      "pos": [
+        2116.125,
+        1880.625,
+        90.579
+      ],
+      "vz": 0.897,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 179.648,
+      "pos": [
+        2116.125,
+        1880.625,
+        90.816
+      ],
+      "vz": 1.076,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 179.899,
+      "pos": [
+        2116.125,
+        1880.625,
+        91.088
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 180.148,
+      "pos": [
+        2116.125,
+        1880.625,
+        91.357
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 180.402,
+      "pos": [
+        2116.125,
+        1880.625,
+        91.632
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 180.651,
+      "pos": [
+        2116.125,
+        1880.625,
+        91.901
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 180.902,
+      "pos": [
+        2116.125,
+        1880.625,
+        92.171
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 181.15,
+      "pos": [
+        2116.125,
+        1880.625,
+        92.44
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 181.4,
+      "pos": [
+        2116.125,
+        1880.625,
+        92.71
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 181.649,
+      "pos": [
+        2116.125,
+        1880.625,
+        92.979
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 181.9,
+      "pos": [
+        2116.125,
+        1880.625,
+        93.25
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 182.148,
+      "pos": [
+        2116.125,
+        1880.625,
+        93.519
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 182.403,
+      "pos": [
+        2116.125,
+        1880.625,
+        93.794
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 182.653,
+      "pos": [
+        2116.125,
+        1880.625,
+        94.064
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 182.901,
+      "pos": [
+        2116.125,
+        1880.625,
+        94.332
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 183.148,
+      "pos": [
+        2116.125,
+        1880.625,
+        94.598
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 183.398,
+      "pos": [
+        2116.125,
+        1880.625,
+        94.868
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 183.652,
+      "pos": [
+        2116.125,
+        1880.625,
+        95.143
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 183.901,
+      "pos": [
+        2116.125,
+        1880.625,
+        95.412
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 184.148,
+      "pos": [
+        2116.125,
+        1880.625,
+        95.68
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 184.402,
+      "pos": [
+        2116.125,
+        1880.625,
+        95.953
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 184.651,
+      "pos": [
+        2116.125,
+        1880.625,
+        96.222
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 184.902,
+      "pos": [
+        2116.125,
+        1880.625,
+        96.492
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 185.152,
+      "pos": [
+        2116.125,
+        1880.625,
+        96.762
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 185.402,
+      "pos": [
+        2116.125,
+        1880.625,
+        97.032
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 185.652,
+      "pos": [
+        2116.125,
+        1880.625,
+        97.302
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 185.902,
+      "pos": [
+        2116.125,
+        1880.625,
+        97.572
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 186.15,
+      "pos": [
+        2116.125,
+        1880.625,
+        97.839
+      ],
+      "vz": 1.077,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 186.398,
+      "pos": [
+        2116.125,
+        1880.624,
+        97.934
+      ],
+      "vz": 0.449,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 186.65,
+      "pos": [
+        2116.125,
+        1880.608,
+        98.112
+      ],
+      "vz": 0.73,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 186.902,
+      "pos": [
+        2116.125,
+        1880.594,
+        98.298
+      ],
+      "vz": 0.732,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 187.149,
+      "pos": [
+        2116.125,
+        1880.581,
+        98.479
+      ],
+      "vz": 0.739,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 187.4,
+      "pos": [
+        2116.125,
+        1880.568,
+        98.665
+      ],
+      "vz": 0.731,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 187.652,
+      "pos": [
+        2116.125,
+        1880.555,
+        98.85
+      ],
+      "vz": 0.733,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 187.899,
+      "pos": [
+        2116.163,
+        1880.183,
+        99.097
+      ],
+      "vz": 1.001,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 188.151,
+      "pos": [
+        2116.204,
+        1879.792,
+        99.35
+      ],
+      "vz": 1.006,
+      "grounded": 0,
+      "flying": 1,
+      "jump_stat": 1
+    },
+    {
+      "actor": 65479,
+      "t": 188.399,
+      "pos": [
+        2116.211,
+        1879.727,
+        99.392
+      ],
+      "vz": 0.0,
+      "grounded": 1,
+      "flying": 0,
+      "jump_stat": 0
+    },
+    {
+      "actor": 65479,
+      "t": 188.651,
+      "pos": [
+        2116.211,
+        1879.727,
+        99.392
+      ],
+      "vz": 0.0,
+      "grounded": 1,
+      "flying": 0,
+      "jump_stat": 0
+    },
+    {
+      "actor": 65479,
+      "t": 188.902,
+      "pos": [
+        2116.211,
+        1879.727,
+        99.623
+      ],
+      "vz": 0.0,
+      "grounded": 1,
+      "flying": 0,
+      "jump_stat": 0
+    },
+    {
+      "actor": 65479,
+      "t": 189.151,
+      "pos": [
+        2116.212,
+        1879.727,
+        99.75
+      ],
+      "vz": 0.0,
+      "grounded": 1,
+      "flying": 0,
+      "jump_stat": 0
+    },
+    {
+      "actor": 65479,
+      "t": 189.398,
+      "pos": [
+        2116.95,
+        1879.827,
+        99.75
+      ],
+      "vz": 0.0,
+      "grounded": 1,
+      "flying": 0,
+      "jump_stat": 0
+    },
+    {
+      "actor": 65479,
+      "t": 189.652,
+      "pos": [
+        2118.523,
+        1880.209,
+        99.75
+      ],
+      "vz": 0.0,
+      "grounded": 1,
+      "flying": 0,
+      "jump_stat": 0
+    },
+    {
+      "actor": 65479,
+      "t": 189.898,
+      "pos": [
+        2119.961,
+        1880.855,
+        99.75
+      ],
+      "vz": 0.0,
+      "grounded": 1,
+      "flying": 0,
+      "jump_stat": 0
+    },
+    {
+      "actor": 65479,
+      "t": 190.15,
+      "pos": [
+        2121.469,
+        1881.405,
+        99.75
+      ],
+      "vz": 0.0,
+      "grounded": 1,
+      "flying": 0,
+      "jump_stat": 0
+    }
+  ],
+  "comparison": {
+    "bot_actor": 65481,
+    "bot_exit_start_t_server": 12.3,
+    "bot_exit_feet": [
+      2116.125,
+      1880.625,
+      97.932
+    ],
+    "bot_fail_t_server": 14.42,
+    "human_actor": 65479,
+    "human_start_t_client": 179.152,
+    "human_exit_final_t_client": 189.151,
+    "human_exit_final_feet": [
+      2116.212,
+      1879.727,
+      99.75
+    ]
+  },
+  "preview_issue": "Bot starts immediately, fails and CancelLadder bans link before delayed60s revive; no later ladder start. NavMeshCore::BanLink zeros link poly flags for current mesh. Do not treat this preview as a new controlled lower-route acceptance or proof that bot freshly retried ladder after revive.",
+  "limits": [
+    "Video upload is not permission to resume runtime; explicit OWNER_PLAYING_HOLD remains",
+    "No new game/server/client/probe launch or live data/process modification",
+    "No physical root cause or fixed whole route claimed",
+    "Task controlled QA attempts remain4; this is additional owner preview, not an acceptance rerun"
+  ]
+}
