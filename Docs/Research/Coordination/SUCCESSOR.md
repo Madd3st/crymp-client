@@ -1,5 +1,7 @@
 # Coordinator handover when Claude is out of limits (prepared 2026-10-27 15:30 MSK; **D-031 ACTIVE since 27.10 21:05 (Claude weekly limit ~3 %)**)
 
+> **Действующий режим на 30.10.2026:** По поручению владельца выполняются только явно назначенные работы. Автоматические пробуждения, циклы wait_mail и самостоятельный перебор backlog выключены. **Игру и сервер агенту запускать запрещено до отдельного явного разрешения**, даже если игровых процессов нет. Сведения о том, что владелец играл 29 октября, являются историей, а не текущим состоянием ПК. Сначала читать [текущую передачу](MAILBOX/CLAUDE_STATE.md). Указанные ниже исторические loop/wake/fallback-инструкции не включают автономность заново.
+
 **Current owner override D-035 (28.10): Codex has returned as interim coordinator + integrator + QA (prompt A). DeepSeek returns to prompt C, own branch only. The earlier below-20% fallback/QA-only stop is superseded for this session by the owner. Other guards and scope remain.**
 
 

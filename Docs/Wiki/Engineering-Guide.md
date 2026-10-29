@@ -1,8 +1,10 @@
 # Маршрут инженера
 
+> 30.10.2026: По поручению владельца выполняются только явно назначенные работы. Автоматические пробуждения, циклы wait_mail и самостоятельный перебор backlog выключены. **Игру и сервер агенту запускать запрещено до отдельного явного разрешения**, даже если игровых процессов нет. Сведения о том, что владелец играл 29 октября, являются историей, а не текущим состоянием ПК. [Восстановление C156](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C156_RECOVERY.md).
+
 ## 1. Зафиксируй, что изучаешь
 
-Сначала `git status --short`, текущая ветка и SHA. Игровой код — `warsbots/feature/claude-sprint`; отчёты — `weapon-goals`; mailbox и вики — `steelmill-triage`. Не переключай общий checkout поверх чужих правок. Принятый C153 IA — `5ef9ee22`; C149 Shore и замороженные пакеты — `b8b444d6`. C155 классический пакет — `abac72a9` / CI40890940918; C154 на том же коде всё ещё не проходит верхний выход. Следующий фикс требует нового SHA/CI/ревью. [Рабочие каталоги и архивы](Artifacts-and-Storage) показывают, где читать код и где хранить доказательства. Ссылки в таблице ниже сохраняют исторический срез b8; для новой задачи подставь её точный SHA.
+Сначала `git status --short`, текущая ветка и SHA. Игровой код — `warsbots/feature/claude-sprint`; отчёты — `weapon-goals`; mailbox и вики — `steelmill-triage`. Не переключай общий checkout поверх чужих правок. Принятый C153 IA — `5ef9ee22`; C149 Shore и замороженные пакеты — `b8b444d6`. C155 классический пакет — `abac72a9` / CI40890940918; Старый C154 на abac не проходит верхний выход. Кандидат307 уже имеет полный CI40919291234 и DS126 OK, но в игре не проверен. Не добавлять новый фикс без причины. [Рабочие каталоги и архивы](Artifacts-and-Storage) показывают, где читать код и где хранить доказательства. Ссылки в таблице ниже указывают на текущий307; перед новой задачей сверить точный SHA.
 
 Для чтения другого состояния без переключения:
 
@@ -15,15 +17,15 @@ git show origin/warsbots/feature/claude-sprint:Code/CryGame/Bots/BotBrain.cpp
 
 ## 2. Найди слой ответственности
 
-| Что нужно понять | Проверенная точка входа на b8b444d6 |
+| Что нужно понять | Точка входа в код307 (не игровая приёмка) |
 | --- | --- |
-| Жизненный цикл и команды | [BotManager.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotManager.cpp), [BotInstance.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotInstance.cpp) |
-| Решения и связь подсистем | [BotBrain.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotBrain.cpp), [BotBlackboard.h](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotBlackboard.h) |
-| Разделение режимов игры | [BotGameMode.h](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotGameMode.h), [BotMatch.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotMatch.cpp) |
-| Движение и ввод | [BotMovement.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotMovement.cpp), [BotLocomotion.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotLocomotion.cpp) |
-| Запросы пути и вода | [BotNavMesh.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotNavMesh.cpp), [BotNavMeshCore.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotNavMeshCore.cpp), [BotWaterPolicy.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotWaterPolicy.cpp) |
-| Параметры и формат данных | [BotConfig.cpp](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotConfig.cpp), [BotDataPath.h](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/Code/CryGame/Bots/BotDataPath.h) |
-| Что проверяет CI | [warsbots-ci.yml](https://github.com/Madd3st/crymp-client/blob/b8b444d6c858f27a1fdde0d93b25a318cafc6937/.github/workflows/warsbots-ci.yml) |
+| Жизненный цикл и команды | [BotManager.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotManager.cpp), [BotInstance.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotInstance.cpp) |
+| Решения и связь подсистем | [BotBrain.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotBrain.cpp), [BotBlackboard.h](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotBlackboard.h) |
+| Разделение режимов игры | [BotGameMode.h](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotGameMode.h), [BotMatch.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotMatch.cpp) |
+| Движение и ввод | [BotMovement.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotMovement.cpp), [BotLocomotion.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotLocomotion.cpp) |
+| Запросы пути и вода | [BotNavMesh.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotNavMesh.cpp), [BotNavMeshCore.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotNavMeshCore.cpp), [BotWaterPolicy.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotWaterPolicy.cpp) |
+| Параметры и формат данных | [BotConfig.cpp](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotConfig.cpp), [BotDataPath.h](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/Code/CryGame/Bots/BotDataPath.h) |
+| Что проверяет CI | [warsbots-ci.yml](https://github.com/Madd3st/crymp-client/blob/307037bc08050d39f26310dc6cc7071dddddf4a6/.github/workflows/warsbots-ci.yml) |
 
 Например, «бот плывёт, но путь не находится» требует сопоставить фактическое положение, классификацию воды, начало/цель запроса Detour и результат запроса. Исправлять скорость плавания до такого анализа преждевременно.
 

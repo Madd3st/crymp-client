@@ -6,15 +6,11 @@ write only to your branch `warsbots/research/deepseek` (create it from `warsbots
 long material goes to `Docs/Research/DeepSeek/<name>.md`. Never build, never start the game or servers, never merge,
 never touch `warsbots/feature/*`. Code to read: `warsbots/feature/claude-sprint`.
 
-**Autonomous loop (D-014):** after each task push and answer, then run
-`powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Mailbox/wait_mail.ps1 -Agent deepseek -Repo <your clone> -TimeoutMin 9`
-(fetch the research branch first; repeat while it times out). The script must be the one from
-`warsbots/research/steelmill-triage` (≥ 1b2de254 knows `-Agent deepseek`); copies on other branches are stale — see DS-008. When no DS- item is open, work the **standing backlog**
-below from the top, one item per cycle, and report it as `DS-S<n> · <date>` in your answers file.
+**Режим на 30.10.2026:** автономные циклы, wake и самостоятельный standing backlog выключены. Новых DS-заданий нет; DS125/126 завершены. Только адресная новая задача от владельца/координатора; после ответа остановиться. Игру и сервер не запускать. Актуальный код307 и ограничения — в CLAUDE_STATE.md.
 
 **Owner D-034 (28.10): batch diagnosis and completion.** When Codex reports strange bot behaviour, analyse existing logs/demo across related symptoms and propose a coherent repair/feature-completion batch with red/green oracles and shared acceptance scenarios. Identify any truly missing observation before requesting a runtime probe. DS062/063 remain separately reviewable patches; Codex plans joint acceptance where useful instead of an automatic game run after every patch. No purposeless isolated runs or unchanged failure repeats; exact-SHA review gates remain. Push each diagnosis/deliverable promptly so integration can proceed.
 
-DS118 REVIEW NOTE: corrected150feb4b v1withdrawal accepted. Native held-forward nonzero pseudo verified PlayerInput899-910/NetPlayerInput49-55; next10Hz WaitExit fix not justified. No standalone instrumentation-only game is authorized: owner requested one shared route AFTER coherent fix, and owner videos/comments from current abac preview are incoming. Use saved artifacts/video to narrow first; any instrumentation folds into next coherent batch, do not ask for a random probe. Clock claims 6-20 graph updates are not established (archive ~30Hz gives about3 frames/0.1s). Graph FirstPersonMode contract only says skip skippable states; no proof template player-only. Current code remains abac unchanged; report hypotheses as hypotheses. Offline input-shape/order fixtures may document contracts, cannot claim physical fix. All runtime/live-data hold persists until explicit owner finished.
+DS118 — историческая диагностика с отозванными/исправленными гипотезами. Не исполнять её старые предложения как текущую задачу. Исправление DS124 интегрировано в307, DS125/126 завершены; физический результат307 не проверен. Runtime запрещён владельцем до отдельного разрешения, независимо от наличия игры.
 
 Historical tasks, including obsolete `open` labels, are preserved in [the dated archive](Archive/2026-10-29/TO_DEEPSEEK.md). They are NOT active assignments. Current work is only the items below; no automatic old-task reruns. Older standing backlog is deferred behind C154/C155; confirmed remaining R4/R9 are in CS_MATURITY_PLAN.
 

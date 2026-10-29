@@ -1,35 +1,36 @@
-# Current handoff — 2026-10-29
+# Текущая передача WarsBots — 30.10.2026
 
-OWNER PAUSE 2026-10-29: all autonomous agent work and wake/poll loops are paused until explicit owner resume. No active work; do not start model calls, backlog, QA or games. Windows WarsBots Mailbox Wake disabled and verified. This overrides earlier autonomous-loop instructions.
+По поручению владельца выполняются только явно назначенные работы. Автоматические пробуждения, циклы wait_mail и самостоятельный перебор backlog выключены. **Игру и сервер агенту запускать запрещено до отдельного явного разрешения**, даже если игровых процессов нет. Сведения о том, что владелец играл 29 октября, являются историей, а не текущим состоянием ПК.
 
-Owner priorities: classic Steelmill first (DELIVERED), measured disk/repo cleanup + clear docs, continue upper Shore exit fix with DeepSeek, then ONE whole route. Owner said he left the previous game; he can launch the new classic package, so never infer the PC stays free.
+## Кто и где работает
 
-## Active queue — 30.10.2026
-- C154 remains paused by owner: candidate307/CI40919291234/DS126 code gate accepted historically, physical outcome UNTESTED. Do not run until explicit owner release and fresh complete gates.
-- Separate confirmed backlog: R4 ammo-search episode deadline; R9 generic-jump direction contract. D032 default promotion remains an owner decision. C155 and DS125/DS126 are complete, not new assignments.
-- C156 recovery DONE QA35112665b3ce53ae3fcb36c1b25a2ee227d30905: clean code307/triage/wiki restored, exact307 CI pair+original CI logs and V5 hashes verified; original traces and referenced demos from ALL FOUR attempts recovered/hashmatched. ActualManifestOk regenerated with EXACToriginalreceiptSHA, REDold/GREENnew and accepted-consumed plus route/climb/graph/mode/units PASS. Reviewed quality semanticcontent restored from committed READY receipt and verified against live CI/review/data; serialized bytehash differs and is disclosed. No game launched. Source/CI/data needed for continuation are present. Original per-attempt Memory/Navmesh snapshots and some transient harness receipts remain unavailable: historical restores cannot be newly re-audited. Bulk evidence/restart material E:/WarsBots/Recovery-2026-10-30; see QA Docs/Coordination/C156_RECOVERY.md/json. Owner runtime/autonomy hold remains.
-- Follow-up E search: 36ZIP/73937members and1368original JSON files searched; 64snapshot manifests/268payloads SHA PASS,81restore receipts indexed, sixC155 receipt/beforemanifest pairs match. No original C154 snapshot/session/driver/effective set found; C127/C155 references kept isolated on E, never substituted into live data or C154. See current QA C156_RECOVERY report and E Recovery/deep-search indexes. No game.
-- General cleanup script now excludes WarsBots; build is not disposable cache. Owner entry point: QA branch START_HERE.md. Historical overview documents there are redirected to an archive.
+- Codex — временный координатор, интегратор и QA по D031/D035; DeepSeek — предложения и независимое ревью только в своей ветке. Роль не переключается автоматически по календарю или старому лимиту.
+- Игровой код: claude-sprint `307037bc08050d39f26310dc6cc7071dddddf4a6`, QA/build/ds076-code. Рабочая копия detached HEAD на точном SHA; перед изменениями проверить ветку и status.
+- Координация и исходники вики: steelmill-triage, QA/build/ds076-triage. QA-инструменты/результаты: weapon-goals, C:/Users/Magic8/WarsBotsBuild/crymp-multibot. Code/ QA-ветки устарел.
+- DeepSeek: C:/Users/Magic8/AppData/Local/Temp/opencode/wb-review/deepseek, ветка research/deepseek. DS126 review head `4c710aca7a5543bc1c5a66005ef8a8e352792f6f`; не двигать его ради фонового backlog.
+- Вики: QA/build/wiki-c085; публикация только из Docs/Wiki на triage. Стартовая инструкция: [START_HERE](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/START_HERE.md).
 
-## Authority and checkout map
-- Interim coordinator/integrator/QA: Codex, owner D035 / SUCCESSOR prompt A. DeepSeek independent own-branch proposals/reviews only. Claude unavailable until owner's expected Sunday return; no automatic role reversal.
-- Game source: warsbots/feature/claude-sprint, clean QA/build/ds076-code at307037bc08050d39f26310dc6cc7071dddddf4a6 PUSHED, preCI DS125d19ca OK. FULL CI40919291234 SUCCESS; exactpairedartifact12917623035 downloaded/hashed, DS126 final4c710aca code/data/harnessOK; finalquality true/pinned. C155 classic remains frozen abac/fullCI40890940918. OWNER_PLAYING_HOLD: classic client+server observed running; no games until owner finishes.
-- Mail/docs/wiki source: warsbots/research/steelmill-triage, QA/build/ds076-triage.
-- QA tools/outbox/evidence: warsbots/feature/weapon-goals, C:/Users/Magic8/WarsBotsBuild/crymp-multibot. Its game code is STALE, never read/grade/build.
-- DeepSeek own repo C:/Users/Magic8/AppData/Local/Temp/opencode/wb-review/deepseek, branch research/deepseek. DS123 completed43b10aad, olde782 retired clean; fresh normalFlash ses_e7785dde5ffe9MiW2PwJiototK on DS122, wake exactpin/DryRunPASS.
+## Открыто и завершено
 
-## Ready owner package
-C155 E:/WarsBots/Showcases/Steelmill-Classic-abac72a9/START.cmd, IA8, 2eachskill, C119 data, ladder0, port46166. FullCI40890940918/DS1215c12d27b, QA8c030196. F6/F7 select, F1 view, keep PowerShell until normal client exit. PrepareOnly/all16hashes PASS; no new mixed-roster gameplay acceptance claimed. Old C150 b8 packages unchanged.
+| Пункт | Состояние |
+| --- | --- |
+| C154 | Кандидат307/fullCI40919291234/DS126 code-data-harness OK. Физический результат307 НЕ проверен. Runtime запрещён владельцем |
+| C155 | Завершён: E:/WarsBots/Showcases/Steelmill-Classic-abac72a9, IA8/2каждойсложности, abac/fullCI40890940918/DS121 |
+| C156 | Восстановление завершено с указанными ниже историческими потерями; QA35112665 и последующий поиск QAffd2d87b |
+| R4 | Подтверждён deadline старого эпизода поиска боезапаса, исправление впереди |
+| R9 | Подтверждён контрактный риск смены направления generic jump, конкретное падение не доказано |
+| D032 | first_primary default — открытое решение владельца |
 
-## Active Shore defect and evidence
-C154 four controlled attempts; latest abac V4climbPASS/topFAIL97.920, DS117ccbbe1cf archiveaudit. No shore/fullPS/client acceptance. V5 frozen data QA/build/c154-route-data-v5: navb60178d7, links0230a0c3, spotsd95e1e11, manifesta95a0503; actualManifestOk abac receiptPASS. Harness e973b905 /87c3f5ee, analyzer2a642aeb; scope c154-lower-route-v2. Do not overwrite any prior archive.
-Owner extra preview failed97.932 (not controlledattempt5), video204.17s hashb9fb7b87, report QA3e0d9713. Native human same shaft actually exits to99.750 with lateralY1879.727; 46client samples retained. Audio not transcribed. DS119735f052d corroborates. Native graph update exists but server exit state never holds; physical root cause unproven. DS118v1 rejected; DS120design not integrated. Corrected DS1244068d899 integrated307: nativepseudo parity + bounded ONE posthandoff default-signal retry, failure budget3s only. Actualcaller oldabac semanticRED/newGREEN, SDKON/OFF andenginefree testsPASS, new307actualManifestOkV5PASS, DS125preCI d19ca OK. Physical fix unproven; DS1264c710aca newCI/data/harness/quality gate OK; physical UNTESTED, commonrun held while owner plays, no random diagnostic game.
-Frozen owner Shore preview on C is diagnostic/stuck-top and has an early-attempt/ban presentation limitation. Do not edit it while owner may use it; future package versioned.
+Следующий игровой шаг C154 — только после явного разрешения, свежих пинов/ревью/проверки процессов и НОВОГО snapshot живых данных: lower545 → штатная лестница → физический выход/верхний пол → Strength → вода → сухой берег; затем архив/демо/восстановление и независимый аудит. Ни нового прогона307, ни полного PS-принятия нет.
 
-## Cleanup and preservation
-C019 obsolete raw geometry archived E:/WarsBots/Archive/2026-10-29/C019-geometry with payload+ZIP hashes, exact fourCfiles removed. CurrentShore source geometry remains. Git review cleanup uses E:/WarsBots/Archive/2026-10-29/Git-worktrees, HEAD refs/bundle + dirty fullpayload/patches before removal. Do not remove currentds076-code/triage, wiki-c085, wb-review/deepseek, activeC154data/logs/demo, ownervideos, or foreign QA Recording/C126 files. Do not delete app sessions/databases. New bulk packages/evidence belong on E; archive index is required for any relocation.
+## Что восстановлено и что утрачено
 
-## Next actions and non-negotiable gates
-C155 completed QA df447475 / wiki6980abf (18pages89local33GitlinksPASS), freeC20.42GB->26.87GB, 39retiredreviewworktrees archived/removed plus4oldOBJ/305derivedbinaries; C155_HYGIENE_RESULT.json. DS123 archival/successor done43b; DS124 integrated307/DS125preCI done; FULLCI40919291234 and DS1264c710aca fresh allscope gate DONE; next ONEcommonrun only after owner explicitly finishes classic, plus fresh remotehead/source/process precheck. No local game build. New code requires new exact full-green CI pair + fresh independent code/data/harness review, owner-free check, ONE whole lower545→ladder→upperfloor→water→shore acceptance. Stock ownership/physical egress/grounded-floor guards stay; no SetPos/impulse/time-only detach or fake ReachedEnd. Archive/demo/Core/currentrestore audit required. Closed history is in Archive/2026-10-29; do not rerun obsolete open labels. Remaining audit R4ammoepisode deadline/R9genericjump contract stay in maturity plan, not magically fixed by ladder work.
+C156: исходники, CI-пара307, V5, вики, исходные логи и демо четырёх попыток восстановлены и проверены; офлайн-проверки пройдены. Оригинальные per-attempt снимки Memory/Navmesh и часть временных квитанций C154 не найдены. Reviewed quality восстановлен по содержимому сохранённого Git-отчёта, исходная сериализация не заявляется восстановленной. Снимки C127/C155 не подставлялись вместо C154.
 
+Заново пройдены oldsemanticRED/newGREEN, accepted-consumed/no-resend, route/climb/graph/motion, BotLadder/BotConfig. Результат actualManifestOk имеет тот же SHA256, что исходная квитанция. Новые офлайн-результаты не являются игровым доказательством.
 
+Полный комплект: E:/WarsBots/Recovery-2026-10-30, проверенный bundle/restart-kit, CI-логи, геометрия Shore/Plantation на E. Дополнительный поиск:36ZIP/73937members и1368originalJSON,64snapshot-манифеста/268payloadSHA PASS,81restore-квитанция; шестьC155 receipt/before совпали. C127/C155 reference-снимки изолированы, оригиналов C154 не найдено. [C156](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C156_RECOVERY.md).
+
+## Правила продолжения
+
+Не удалять build целиком: там живут worktree, данные и доказательства. Общий очиститель WarsBots уже исключает. Не возвращать устаревшие гигабайты на C без необходимости. Не подменять namespaces LOCALAPPDATA, живые Memory/Navmesh или чужие Recording/C126-файлы. Игровые сборки — только точный полный зелёный CI; никаких SetPos/импульсов/таймерного успеха/ослабления physical guards, IsPlayer/channel/defaults/wire ради C154. DS118v1 отозван, DS120 — исторический проект, текущий кандидат —307. Исторические open/STOP не новые задачи.

@@ -1,5 +1,7 @@
 # Карта репозитория
 
+> 30.10.2026: текущий код307, QA-инструкция [START_HERE](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/START_HERE.md), [состояние](Status-and-Roadmap). Рабочие копии восстановлены; build нельзя удалять как кэш. `master` и локальная `warsbots/main` не являются текущим выпуском ботов. Старые C070/C071/combat-port/locomotion архивированы; ветки с уникальными коммитами не удалены.
+
 Текущий проект — [Madd3st/crymp-client](https://github.com/Madd3st/crymp-client), порт WarsBots на CryMP. Старый репозиторий WarsBots и структура `Code/Mod/` относятся к прежнему этапу. Здесь игровой бот находится в `Code/CryGame/Bots/`.
 
 ## Сначала выбери ветку
