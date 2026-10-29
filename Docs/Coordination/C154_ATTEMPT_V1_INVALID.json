@@ -1,0 +1,81 @@
+{
+  "schema": "warsbots-run-summary/1",
+  "task": "C154",
+  "source": "3cfd859676d83bdecc1b091d3b9202323b039135",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-route-3cfd8596-v1",
+  "verdict": "INVALID_DATA_PACKAGING",
+  "quality": {
+    "source": "3cfd859676d83bdecc1b091d3b9202323b039135",
+    "ci": 40855444355,
+    "ci_success": true,
+    "ci_source_match": true,
+    "artifact_id": 12889557005,
+    "client_sha256": "5a5a8137de51f5cc095bc48f090ef126d8176f7d4ac1a2bdc337a6f00640faf4",
+    "server_sha256": "eb1783d7e84a1a547618009d698d1540bbd0f4e8d7a95fcb07e1ebd2034a1a55",
+    "task": "C154",
+    "harness_scope": "c154-lower-route-v1",
+    "review": "16b8f2a9e5c834a4e0db72f8bdc64290b5018195",
+    "review_branch_head": "16b8f2a9e5c834a4e0db72f8bdc64290b5018195",
+    "review_ok": true,
+    "harness": "fe42d8ef9521411ea7ca88cf8faf7f988c7fe6ea",
+    "harness_sha256": "b77cb884e12ae13c822403a4ceca5cafa834fc2241c049acf64d6d382e6774b0",
+    "analyzer_sha256": "2a642aebcfff2d10e119746b42f8e50f48a004d732f7aee106602b3e6fff88f7",
+    "data_hashes": {
+      "Shore.links.txt": "e7204de31a25482fd0d6d75feb55cb7e85255dc1e72f8a9bbf4f38f3191b7c2b",
+      "Shore.manifest.json": "c7e96b3d0458e93cab370989ca476126fe191ba54d5edff38f14db5fffd44747",
+      "Shore.navmesh": "b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609",
+      "Shore.spots.txt": "d95e1e11fa06194e44e1b1d3887fb00334d7f0ccc9528c9a1b439d7ba78b548b"
+    },
+    "client_visual": "NOT TESTED"
+  },
+  "runtime": {
+    "runtime_criteria_pass": false,
+    "task": "C154",
+    "client_visual": "NOT TESTED",
+    "quality_pass": false,
+    "source": "3cfd859676d83bdecc1b091d3b9202323b039135",
+    "acceptance": "Runtime provisional; archive/demo/restore and independent audit still required",
+    "evidence": null,
+    "failure": "Readiness error"
+  },
+  "archive_route": {
+    "status": "WAIT",
+    "failure": null,
+    "stages": {
+      "setup_revive": 36
+    },
+    "actor": 65481,
+    "trace_rows": 1,
+    "setup": "one explicit native registered spawn545; setup death excluded",
+    "client_visual": "NOT TESTED"
+  },
+  "restore": {
+    "memory": {
+      "exact_names_bytes_directory": "PASS",
+      "files": 4,
+      "logical_path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Memory"
+    },
+    "nav": {
+      "exact_names_bytes_directory": "PASS",
+      "files": 16,
+      "logical_path": "C:\\Users\\Magic8\\AppData\\Local\\WarsBots\\Navmesh"
+    }
+  },
+  "demos": [
+    {
+      "name": "Multiplayer_PS_Shore-20261029-132718-1.wbdemo",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "tail_complete": false,
+      "invalid_reason": "Readiness abort before demo header flush; no demo evidence claim",
+      "accepted_as_evidence": false
+    }
+  ],
+  "endpoint_core": null,
+  "trace_sha256": "67d99c0c7995251fd9358c571a7ad52bc6b2ee3284df6206223b35a2fc04b82d",
+  "physical_gameplay_attempts": 1,
+  "limits": "One disclosed native545 setup; no random lower-spawn coverage/full capture/fullPS/client/default promotion.",
+  "reason": "Production ManifestOk strips CR from text before FNV; V4 recorded raw CRLF FNV. Readiness stopped at links mismatch; no ladder result.",
+  "independent_archive_review": "DS111 pending",
+  "gameplay_seconds_last_trace": 0.265
+}
