@@ -51,5 +51,24 @@
   "continuation": "Development and offline analysis can continue. No identified missing source/data/build blocks further work. New runtime requires explicit owner release and a fresh preflight; old per-attempt restore audits remain historical, not newly verified.",
   "bulk_evidence_root": "E:\\WarsBots\\Recovery-2026-10-30",
   "recovery_audit_sha256": "f9e0a49599a303027cc3b185235a8855593fc5e49f8e9ec08ad847488a6de65e",
-  "ci_original_log_sha256": "d66b8fc24f6e0fb036bb1d6818680441d3efa3a9c04daa586a3a28da6083e0b6"
+  "ci_original_log_sha256": "d66b8fc24f6e0fb036bb1d6818680441d3efa3a9c04daa586a3a28da6083e0b6",
+  "additional_E_search": {
+    "searched_root": "E:\\WarsBots",
+    "zip_archives": 36,
+    "zip_members": 73937,
+    "snapshot_manifests": 64,
+    "snapshot_payload_files": 268,
+    "snapshot_payload_hashes_pass": true,
+    "provenance_sidecars": 3,
+    "restore_receipts_indexed": 81,
+    "all_indexed_receipts": 154,
+    "classic_sessions_receipt_matches": 6,
+    "isolated_reference_snapshot_sets": 3,
+    "original_C154_snapshot_sets_found": 0,
+    "original_C154_driver_session_effective_receipts_found": 0,
+    "game_launched": false,
+    "live_data_modified": false,
+    "original_json_files_content_scanned": 1368,
+    "original_attempt_json_label_matches": 0
+  }
 }
