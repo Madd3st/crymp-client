@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C154 PROGRESS; FULL GREEN CI40882465370 exact272a430604fd67d01362e771faacbeff23157a56, artifact12900903799 pairedclient25c78bf3/server780c67be downloaded/hashed
+NOW: C154 PROGRESS; Attempt3 exact272/FULLGREENCI40882465370/freshDS1131fd76799/V5+e973: physicalclimbFIXCONFIRMED inputY1/computedZ
+
+### X-274 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+Attempt3 exact272/FULLGREENCI40882465370/freshDS1131fd76799/V5+e973: physicalclimbFIXCONFIRMED inputY1/computedZ.900/animationReady0, foot90.25->97.927. WholecommonrouteFAILblocked_top14.53: nativeExitTopstartedbutgraph1/outputASCII0=NULempty(notchar0)/motionFlags796PerAnimGraph/nophysicalegress. No fakeReachedEnd/shoreclaim. Archivebuild/c154-route-272a4306-v2 preserved/demosource+fulltail/CURRENTMemory4Nav16exactrestorePASS/58traces/no client. Physicaltasktotal3(V1packinvalid/V2stall/V3topblocked). DS114offlineexitrepairtaskactive, installednativegraphassetsverifiedpresent(hashinventoryonly/noresourceGit), no unchangedretry/newgameuntilnewcode/newFULLCI/freshreview. Code272unchanged/defaultladder0.
 
 ### X-273 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 FULL GREEN CI40882465370 exact272a430604fd67d01362e771faacbeff23157a56, artifact12900903799 pairedclient25c78bf3/server780c67be downloaded/hashed. Qualitydraft allCI/source/pair/e973harness87c3/analyzer2a64/V5hashes/actualmanifestguardNEW272 verified; review_okfalse untilfreshDS113final allscope+draft approval. DS113postCIreviewnotified, taskstate d8dcab78; no new272game/data install yet, no oldCI substitute. Newsourceanimationdependencyfix+diagnostics DS112d912OK, notsoleV2runtimecauseproof. Priorphysicalattempts2 preserved. NextfinalfreshOK/quality/ownerfreecheckthenONEwholelower545->shore; archive/demo/Core/restore+independentaudit afterrun.
@@ -12,6 +15,3 @@ LOCAL272a430604fd67d01362e771faacbeff23157a56 NOTpushed/CI/runtime: scopedownedl
 
 ### X-270 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 V2 onexact3cfd/FULLGREENCI40855444355/freshDS111ca72d1eb correctedV5pack loaded; native545lowergrounded, reachedladder/nativeattached, BUT no verticalclimb: timeout27.03/nativeOn1/exiting0/feet2116.09,1880.65,90.25. SharedrouteFAIL, no unchangedretry. Archivebuild/c154-route-3cfd8596-v2 retained/restorehelperfinished; verifyarchive/currentrestore next. V1invalidpackaging preserved a0f45d97, physicalattempts2. Needjointoffline diagnosis native movementinput afterattach; no upperexit/shore/fullPSclaim. Source3cfd unchanged/defaultladder0. V5 actualmanifestREDold/GREENnew andharness e973 fixedpackaging only.
-
-### X-269 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
-FULL GREEN CI40855444355 exact3cfd859676d83bdecc1b091d3b9202323b039135; exactpairedartifact downloaded/hashed inbuild/ci-3cfd8596, no localgamebuild. DS110harnessfe42OK0c4cd6c5, finalfreshpostCIcode/data/harnessreviewrequestednow (notyetgameapproval). 34offlinecheckloghashes a05aaebc C154_PRE_RUNTIME_CHECKS.json. NativeCoreendpointcontrol newV4 preservesoldC149dryshore reach654, actualoldwaterclassifiedwater/refusedasdry; lowerwithoutladderfails. DataV4sameb601/c7e9. No newgame/install. NEXT freshpostCIOK/qualitypin/ownerfreecheckthenONEwholelower545route.

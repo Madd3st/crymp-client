@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-269 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+FULL GREEN CI40855444355 exact3cfd859676d83bdecc1b091d3b9202323b039135; exactpairedartifact downloaded/hashed inbuild/ci-3cfd8596, no localgamebuild. DS110harnessfe42OK0c4cd6c5, finalfreshpostCIcode/data/harnessreviewrequestednow (notyetgameapproval). 34offlinecheckloghashes a05aaebc C154_PRE_RUNTIME_CHECKS.json. NativeCoreendpointcontrol newV4 preservesoldC149dryshore reach654, actualoldwaterclassifiedwater/refusedasdry; lowerwithoutladderfails. DataV4sameb601/c7e9. No newgame/install. NEXT freshpostCIOK/qualitypin/ownerfreecheckthenONEwholelower545route.
 ### X-268 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 Source3cfd859676d83bdecc1b091d3b9202323b039135 PUSHED claude-sprint afterDS109e8e63bd8OK. NEWCI40855444355 inprogress, no runtimeyet. Taskexactpin2d84c996, old5efCIcannot substitute. QAsharedwholelowerharnessfe42d8ef prepared1460/1506bytes+13analyzercontrolsPASS, DS110reviewpending. Sourceintegration/evidence C154_SHORE_INTEGRATION.md; no localgamebuild/data install/client. Native545registeredsetup once disclosed; postsetup norescue/revive/death, wholeladder+stairs+Strength+water+dryshore7s gate. Next fullCI/newpairhashes/freshindependentfinalOK then onecommonrun.
 ### X-267 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
