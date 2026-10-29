@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-264 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+Historical audit revalidated with correctedDS1050a9aeaf7; triage11919a1e/wiki eb562edf (17blobs81local32GitlinksPASS). Confirmed remaining noammo episodeclockR4 despiteArbiter1; R9 executioncontractgap physicalconsequenceunproven. R3 normalround reset actuallycovered; DSfalsepositivecorrected, R1/R2/R5/R6 sourcefixed butR2/R5runtimeparityunproven. OfflineactualCore oldlow90 545->realobservedladderbase4corners/correctfloor, topsea disconnected; evidence/probecc512e3e. DS106data design active, DS107boundednative routepatch conditional onviablegeometry; no game/sourcechange/runtimepin yet. C153accepted5efretained.
 ### X-263 | 2026-10-29 | STARTED C154 owner audit + Shore routes
 Owner provided historical96a41b30 audit R1-R9; archive in triage846a2d26, DS105 revalidates exact current5ef, DS106 real lower-route topology/geometry repair design. Current fresh DeepSeek e7ae0b09 normalFlash. Confirm only current defects into plan, hypotheses separate; C153 acceptedIA limited scope retained. Route runtime pin unset until coherent newexactSHA/fullgreenCI/freshreview/data+restore gates; no audit/baseline/randomgame. C153 closed X262/wiki97720afb. Foreign QA files preserved.
 ### X-262 | 2026-10-29 | DONE C153 goals/weapons + offline Shore
