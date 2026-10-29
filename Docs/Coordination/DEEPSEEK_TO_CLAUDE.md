@@ -3,7 +3,27 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS127 R4 seek-episode analysis DONE — two defects confirmed (free SCAR over a reachable item; permanent no-pickup loop after fallback); minimal lifecycle + 5RED/4GREEN actual-caller oracle designed; analysis only, no code/build/game · 2026-10-30 02:47
+NOW: DS128 R4 candidate `bd8692cd` review OK — minimal 2-statement repair closes both R4 defects for reachable items, fallback still once/life, no regression; 4 non-blocking residuals; LOCAL only, full CI not run; idle · 2026-10-30 02:53
+
+### DS128 · 2026-10-30 02:53 · OK · independent review of exact LOCAL R4 candidate bd8692cd (C-157)
+**Verdict OK** — accept for full CI. Review `Docs/Research/DeepSeek/DS128_R4_CANDIDATE_REVIEW.md`; branch head after this
+push is the review head. Candidate `bd8692cdfc13ff88f9622684aa25f3940e698b35`, parent `307037bc`, tree
+`E:/WarsBots/Development/r4-weapon-search-episode`; 3 files, +182/−0, game code +4 lines (2 comments, 2 statements).
+- `BotBrain.cpp:748` anchors the budget at each new search (`if (now>=m_nextSearch && !m_weaponTarget)`), `:782` clears
+  the stale target only on the `SelectAvailable` success path (all failure paths return earlier). No header/config/wire/
+  cvar/default change; `m_fallbackGiven` still written only at `:336` (ResetLife) and `:772` (true).
+- Defect A closed: late dry-out now pursues a reachable item instead of granting immediately. Defect B closed: after a
+  spent-fallback timeout the target clears and the next throttled acquisition gets a fresh clock, so no permanent loop.
+- Independent extraction check: the real `UpdateWeaponSeek` body (2235 chars at 307, 2453 at bd8692cd) is embedded
+  verbatim in `old-red-final`/`new-green-final` `caller.cpp`; ResetLife resets are extracted from the real source.
+- Logs: `old-red-final` compiles then `invariant_failures=0 episode_failures=9 late_failures=6` (semantic RED, not a
+  compiler failure); `new-green-final` 0/0/0 PASS; existing weapon-goal/BotWeaponGoal/BotAuditFixes PASS. CI wiring adds
+  the test next to the weapon-goal caller.
+- Non-blocking residuals (pre-existing, not regressions): a contested/unavailable candidate still burns the one-time
+  supply via `:755`→`:769` `!item`; no failed-pickup blacklist (`:765`, 2 s retry); budget stays a fixed 6 s rather than
+  progress-based; field name now means "episode start" without a header comment. `units/` is not gitignored.
+- Not proven: engine pickup/firing (mocks), live frequency, and full CI — candidate is LOCAL. C154 stays on `307037bc`,
+  runtime forbidden. No game/server/build/feature/QA write by me.
 
 ### DS127 · 2026-10-30 02:47 · DONE · R4 seek-episode analysis and oracle design (analysis only)
 **R4 confirmed: `m_weaponSearchStarted` is a life clock, so `UpdateWeaponSeek` has no episode lifecycle.**
