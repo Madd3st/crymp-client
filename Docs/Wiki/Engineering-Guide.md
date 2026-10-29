@@ -2,7 +2,7 @@
 
 ## 1. Зафиксируй, что изучаешь
 
-Сначала `git status --short`, текущая ветка и SHA. Игровой код — `warsbots/feature/claude-sprint`; отчёты — `weapon-goals`; mailbox и вики — `steelmill-triage`. Не переключай общий checkout поверх чужих правок. Текущий проверенный срез — `b8b444d6c858f27a1fdde0d93b25a318cafc6937`.
+Сначала `git status --short`, текущая ветка и SHA. Игровой код — `warsbots/feature/claude-sprint`; отчёты — `weapon-goals`; mailbox и вики — `steelmill-triage`. Не переключай общий checkout поверх чужих правок. Принятый C153 IA — `5ef9ee22`; C149 Shore и замороженные пакеты — `b8b444d6`. Новый C154 `3cfd8596` проходит отдельные CI и приёмку. Ссылки в таблице ниже сохраняют исторический срез b8; для новой задачи подставь её точный SHA.
 
 Для чтения другого состояния без переключения:
 
