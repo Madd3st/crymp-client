@@ -1,6 +1,35 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS118 v2 corrected — v1 patch/oracle withdrawn (WaitExit too late for the one-shot signal); hypotheses separated, instrumentation first · 2026-10-29 19:47
+NOW: DS119 offline — human same-shaft exit is client-side root motion; bot graph decays Idle->Walk->walkToIdle; ban is failure-derived · 2026-10-29 20:05
+
+### DS119 · 2026-10-29 20:05 · OFFLINE ONLY · same-shaft human trace vs bot: caller difference + corrected hypotheses
+- Owner hold respected (no game/server/client/probe/live data/install/recovery). Vision used once
+  (`frame-070.jpg`, upper corridor/deck spectator view, no shaft in that frame); no frame sync, audio not used.
+- Human actor 65479 at the same shaft: climb `90.454 -> 97.839` at `vz=1.077` (bot 0.900); exit is a two-phase
+  root-motion curve — trigger `97.934 vz 0.449`, `~0.73 m/s` up to `98.85`, then diagonal to `99.35 y=1879.792`,
+  `grounded=1` at `99.392`, settles `99.75` at `(2116.2, 1879.7)`. About 1.9 m up + 0.85 m lateral in ~2 s.
+- Owner-session bot (same pair abac/V5): start 1.05, prepare 3.74 `activeBefore=1 stanceBefore=combat`, exit 12.30
+  `output=49 IdleNW`, 12.33 `output=0 WalkNW`, 12.36-14.42 `relaxed_walkToIdle_nw_01`, feet frozen `97.932`,
+  fail 14.42. So the movement request **decays** (Idle -> Walk -> walkToIdle) instead of being stale — DS118 v1
+  wording corrected. Headless attempt4 showed RunNW; the reason for the difference is unknown.
+- Caller difference (source): a client calls `RequestLeaveLadder` -> `SvRequestLeaveLadder` RMI
+  (`Player.cpp:7310-7324`) and its own animation/root motion moves the client actor (client-authoritative MP);
+  the owned server bot calls `LeaveLadder` locally, the exiting branch sets no `m_request`
+  (`PlayerMovement.cpp:1587-1620`), so only a server-side animation could move it — and the server graph does not
+  enter the exit state. That is the concrete correlate; C-2 (first-person/closed template) stays a hypothesis.
+  Clock correction accepted: ~3 graph frames per 0.1 s at ~30 Hz, not 6-20.
+- Preview vs defect: the link ban is **failure-derived** — the first immediate attempt fails at the top and bans
+  the link, so the 60.07 revive finds nothing to climb (log: revive ok, no second `LADDER start`). With a working
+  exit the first attempt would not ban and the same schedule would show the reveal. Do not clear bans blindly or
+  edit the frozen package.
+- Narrow candidate (needs explicit owner decision): either (a) prove/hold the server exit state (unproven; needs
+  the AG input trace the owner ruled out as a standalone probe), or (b) a physically validated server exit
+  executor, using the human trace as the reference: stock `eCMT_Fly` climb to the shaft top, then real
+  forward/lateral movement onto the deck at `y≈1879.7`, completion only with `NativeLadderExitPhysicalReady`
+  (near top + lateral out of shaft) and the upper floor grounded (`z≈99.39..99.75`). No SetPos/impulse/timer/
+  manual ReachedEnd/new cvar; humans/OFF/non-owned unchanged. (b) is an invariant change, then new source + full
+  green CI + fresh review + owner finished before one route.
+- Doc: `Docs/Research/DeepSeek/DS119_HUMAN_VS_BOT_EXIT.md`. No runtime; no package/source change by DeepSeek.
 
 ### DS118 · 2026-10-29 19:47 · OFFLINE ONLY · corrected diagnosis; no behaviour patch is justified yet
 - v1 corrections accepted and verified: `MOTION INTENT requestedBase` is telemetry from `m_intent`
