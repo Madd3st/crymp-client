@@ -1,6 +1,38 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS114 v2 corrected — stance hypothesis confirmed against installed XML; bounded candidate + oracles; system activation API is a no-op stub · 2026-10-29 17:40
+NOW: DS114 v3 — graph-input-only preparation (no physical stance), exact restore, empty-output=complete only with egress · 2026-10-29 17:58
+
+### DS114 · 2026-10-29 17:58 · v3 design · prepare the animation graph, never the actor
+- Physical-stance candidate **withdrawn**: `player.lua` (GameData.pak) leaves two stance rows as `stanceId=-2`
+  "ignored by CActor::SetupStance" (90-93, 149-152) → `STANCE_RELAXED` is not configured for Player;
+  `SetupStance` refuses `< STANCE_NULL` (`Actor.cpp:1277-1281`, enum `IAgent.h:381-393`); forcing it would use
+  zero/invalid speeds and the controller divides by that stance speed (`PlayerMovementController.cpp:847,856`).
+  Player STAND = `combat`, maxSpeed 4.5 (`player.lua:79-87`).
+- Corrected facts kept: `motionFlags=796`=`EAnimatedCharacterFlags` 0x31C (not anim flags); exit trigger is
+  `Signal=exit_ladder_top` (`Player.cpp:7449`), caller ignores the false return (`:7335`); empty `OnLadder` = no
+  current state output (`IAnimationGraph.h:497-499`); native AABB top `100.291` vs nav endpoint `99.768`, feet
+  `97.927` is 2.364 below the native top.
+- Bounded candidate (owned `WarsBotLadderServer` attached only): snapshot via `GetInputId("Stance")` +
+  `GetInputName` validation + `GetInput(char[256])`/`IsDefaultInputValue` + `GetAnimationActivation()`; set the
+  **animation** Stance input to `relaxed` (re-applied while attached) and call `SetAnimationActivation(true)` only
+  if it was false; keep actor STAND, base `GetStanceMaxSpeed(STANCE_STAND)`=4.5, same capsule and climb speed; no
+  `Update()`, no double tick.
+- Restore exactly once on native leave / Done / Failed / Cancel / death / ragdoll / frozen / OFF / stop:
+  `ClearInput` when the snapshot was default else `SetInput(previous)`, plus previous activation; never for
+  non-owned actors.
+- Exit stays stock and physical: strict guard `NativeLadderExitPhysicalReady` (near top **and** laterally out of the
+  shaft) unchanged; `'0'` → existing path with veto; empty/default after the state ends → completion **only** with
+  real egress, never at `97.927`; otherwise wait and fail closed `blocked_top`. No manual `ReachedEnd`.
+- Interface support confirmed: string `SetInput` (365-368), `ClearInput` (418), `GetInput` (422),
+  `IsDefaultInputValue` (425), `GetInputName` (428), `GetInputId` (468), activation get/set (474-475).
+  System-level `SetAnimationGraphActivation(EntityId,bool)` is an **empty stub** (`AnimationGraphSystem.cpp:65-67`).
+- Telemetry in existing `WB_LOG(2)`: state name, activation before/after, Stance before/after, Item (read-only).
+  Unknowns it settles: AC overwrite, graph ticking, off-top root motion, item value, `UsingLookIK`.
+- Oracle (engine-free, extracted caller, RED 272 / GREEN candidate): snapshot/set/restore semantics, ID validation by
+  name, owned-only scope, zero `Update()`, no `SetStance`/capsule/speed change, empty+egress completes vs empty+shaft
+  waits, no SetPos/impulse/timer; DS112+DS108 stay green. Supported vs assumed listed in the doc.
+- Doc v3: `Docs/Research/DeepSeek/DS114_EXIT_DIAGNOSIS.md`. No engine/QA/game/data/install writes; Codex owns the
+  candidate and any future run.
 
 ### DS114 · 2026-10-29 17:40 · corrected diagnosis · native exit needs graph `Stance=relaxed`; bounded candidate + oracles
 - All three corrections accepted: `motionFlags=796` is `EAnimatedCharacterFlags` 0x31C
