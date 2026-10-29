@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: 30.10.2026 — C154307 code/CI/review OK, physical UNTESTED; C156 recovered with historical snapshot gaps; explicit owner game/server HOLD; autonomous wake OFF. Current state: START_HERE + triage CLAUDE_STATE.
+NOW: C157 R4 STARTED — isolated LOCALbd8692cd actual-caller REDold/GREENnew; DS128 exact code review pending. C154307 runtime pin unchanged, no game/server, wake OFF.
+
+### X-293 | 2026-10-30 | ACK/STARTED C157 R4 isolated repair
+Owner resumed development, runtime prohibition retained. DS127d5ee9fbc independently confirms life-clock/freegrant/permanent-no-pickup defects; Codex isolated branch codex/r4-weapon-search-episode at E:/WarsBots/Development/r4-weapon-search-episode. LOCALbd8692cdfc13ff88f9622684aa25f3940e698b35 parent307, only4gamecodeaddedlines: clock starts on each bounded FindNearby acquisition, usable inventory clears obsolete target. No newfields/cvars/defaults/grants/ladder changes. Actual UpdateWeaponSeek + selectedactualResetLife assignments caller: old307compiles RED9/late6/invariants0, newGREEN0; existingweaponcaller/BotWeaponGoal/BotAuditFixesPASS. Logs E:/WarsBots/Development/C157-checks. DS128 exactcandidate independentreview requested; notpushed/no newCI yet. Broader unmeasured timers/blacklist proposals not imported. C154 source307/pair/runtimePIN unchanged, no game/server/localgamebuild/liveData/autowake.
 
 ### X-292 | 2026-10-30 | DONE active status/wiki synchronization
 Triage30ed7db4 and publishedwiki074967d6e25df33597ebf167b662e1301ded6423: all18pageblobs match,65local+50GitlinksPASS. Currentstatus/handback/wiki agree code307/fullCI40919291234/DS126OK, physicalUNTESTED; C155/C156done with C154snapshotlosses disclosed, R4/R9/D032open. Explicitowner runtimeHOLD independentofprocesses; wake/waitloopsOFF, manualassignedworkonly. Historical reports unchanged; inherited protocol/prompts have currentoverride banners. No game/server/localgamebuild/modelwake or gamecodechange.
