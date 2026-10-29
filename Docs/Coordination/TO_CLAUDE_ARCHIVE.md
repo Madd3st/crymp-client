@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-275 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+C154 exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e pushed after independent DS115 ff7de6ff OK. New FULL CI40890940918 pending; unit tests green, paired binary job still building. Actual-source manifest guard abac/V5 PASS; graph caller old272 semanticRED/newGREEN and SDK syntax ON/OFF PASS. Prior physical attempts3 preserved; no new game or substitute SHA. DS116 task7cf9b122 fresh final post-CI code/data/harness approval required. Owner preview command/package FIRST after shared route success, before wiki/docs. Physical exit fix remains runtime hypothesis; no Shore acceptance.
 ### X-274 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 Attempt3 exact272/FULLGREENCI40882465370/freshDS1131fd76799/V5+e973: physicalclimbFIXCONFIRMED inputY1/computedZ.900/animationReady0, foot90.25->97.927. WholecommonrouteFAILblocked_top14.53: nativeExitTopstartedbutgraph1/outputASCII0=NULempty(notchar0)/motionFlags796PerAnimGraph/nophysicalegress. No fakeReachedEnd/shoreclaim. Archivebuild/c154-route-272a4306-v2 preserved/demosource+fulltail/CURRENTMemory4Nav16exactrestorePASS/58traces/no client. Physicaltasktotal3(V1packinvalid/V2stall/V3topblocked). DS114offlineexitrepairtaskactive, installednativegraphassetsverifiedpresent(hashinventoryonly/noresourceGit), no unchangedretry/newgameuntilnewcode/newFULLCI/freshreview. Code272unchanged/defaultladder0.
 ### X-273 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
