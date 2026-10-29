@@ -66,19 +66,19 @@ index f92cbe93..49e4c954 100644
  		if (m_movement.desiredVelocity.y > 0.01f)
  		{
 diff --git a/Code/CryGame/Bots/BotBrain.cpp b/Code/CryGame/Bots/BotBrain.cpp
-index f52c82ba..ff757d04 100644
+index f52c82ba..88dcf6c8 100644
 --- a/Code/CryGame/Bots/BotBrain.cpp
 +++ b/Code/CryGame/Bots/BotBrain.cpp
-@@ -321,7 +321,7 @@ void BotBrain::ResetLife()
- 	m_weaponTarget = 0;
+@@ -322,6 +322,8 @@ void BotBrain::ResetLife()
  	m_patrolUntil = 0;
  	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
--	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_cornerSlow = false; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
-+	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_cornerSlow = false; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset(); m_ladder.Reset(); m_ladderNativeLocked = false;
+ 	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_cornerSlow = false; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
++	if (m_ladder.Active() || m_ladderNativeLocked) m_ladderCancelPending = true;
++	m_ladder.Reset(); m_ladderNativeLocked = false;
  	m_vantage.Reset(CurrentVantage(),m_number);
  	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
  	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
-@@ -365,6 +365,9 @@ void BotBrain::Stop(BotInstance& bot)
+@@ -365,6 +367,9 @@ void BotBrain::Stop(BotInstance& bot)
  {
  	if (!m_running) return;
  	m_trap.Reset(); m_trapStepUntil=0;
@@ -88,16 +88,19 @@ index f52c82ba..ff757d04 100644
  	m_running = false; // Cancel respawn before touching entity/weapon lifetime.
  	m_combat.Reset();
  	if (CActor* actor = bot.GetActor())
-@@ -398,6 +401,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
+@@ -397,7 +402,11 @@ void BotBrain::Update(BotInstance& bot, float dt)
+     m_actorId=actor.GetEntityId();
  	m_blackboard.Sample(actor,m_now);
  	m_locomotion.Observe(actor,m_blackboard,m_now);
++    // DS-107: ResetLife cannot touch the actor; perform its native-ladder cleanup on the next owned update.
++    if (m_ladderCancelPending) CancelLadder(actor,"reset",true);
      UpdateTelemetry(actor);
 +    // DS-107: death/stop must clear the native ladder mode through the single cancellation path.
 +    if (actor.GetHealth()<=0 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"death",true);
      if(UpdateDead(bot,actor,dt))return;
  	if (BotConfig::Get().botTurnCap==1) UpdateTurnCap(actor,dt); // C-044: per-frame capped view toward the decided look point
  	m_tick += dt;
-@@ -410,6 +415,9 @@ void BotBrain::Update(BotInstance& bot, float dt)
+@@ -410,6 +419,9 @@ void BotBrain::Update(BotInstance& bot, float dt)
  
  	m_intent=BotIntent();
  	WBI(aim,actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f));
@@ -107,7 +110,7 @@ index f52c82ba..ff757d04 100644
      if(UpdateTest(actor,decisionTime))return;
      const int& qaWeapon=BotConfig::Get().qaSocomOnly;
      const bool socomQA=qaWeapon==1 && bot.CanRunLocalIA();
-@@ -1436,6 +1444,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+@@ -1436,6 +1448,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
  	m_blackboard.obstacleJump=BotJump::None;
  	m_intent.linkJump=false;
  	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
@@ -115,7 +118,7 @@ index f52c82ba..ff757d04 100644
  	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
  	// wb_bot_jump_sanity: on a navmesh path the mesh already proved the way (jumps come from baked links); the low
  	// obstacle rays read stair steps as a wall and asked for Strength jumps at every staircase (149 of 364, owner
-@@ -1510,10 +1519,149 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
+@@ -1510,10 +1523,149 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
  			BotWeapons::Handle(actor,dist,m_blackboard.suitActive && m_blackboard.mode==NANOMODE_CLOAK);
  	}
  }
@@ -135,7 +138,7 @@ index f52c82ba..ff757d04 100644
 +	if ((a-feet).GetLengthSquared2D()>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return false;
 +	m_ladderNow=*l;
 +	m_ladder.Start(m_now,LVec{l->a[0],l->a[1],l->a[2]},LVec{l->b[0],l->b[1],l->b[2]});
-+	m_ladderNativeLocked=false;
++	m_ladderNativeLocked=false; m_ladderCancelPending=false;
 +	WB_LOG(2,"[WarsBots] #%d LADDER start a=(%.2f,%.2f,%.2f) b=(%.2f,%.2f,%.2f) actor=%u.",m_number,
 +		l->a[0],l->a[1],l->a[2],l->b[0],l->b[1],l->b[2],actor.GetEntityId());
 +	return true;
@@ -167,7 +170,7 @@ index f52c82ba..ff757d04 100644
 +		if (mesh && m_ladderNow.ref && mesh->NoteLinkFailure(m_ladderNow.ref)) mesh->BanLink(m_ladderNow.ref);
 +		m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0;
 +	}
-+	m_ladder.Reset(); m_ladderNativeLocked=false;
++	m_ladder.Reset(); m_ladderNativeLocked=false; m_ladderCancelPending=false;
 +}
 +
 +void BotBrain::UpdateLadder(CPlayer& actor, float dt)
@@ -266,7 +269,7 @@ index f52c82ba..ff757d04 100644
  	const Vec3 feet=m_blackboard.position;
  	if (!mesh) { m_link.Reset(); return; }
 diff --git a/Code/CryGame/Bots/BotBrain.h b/Code/CryGame/Bots/BotBrain.h
-index 33b7177d..aa3b0f1a 100644
+index 33b7177d..0435c742 100644
 --- a/Code/CryGame/Bots/BotBrain.h
 +++ b/Code/CryGame/Bots/BotBrain.h
 @@ -11,6 +11,7 @@
@@ -277,7 +280,7 @@ index 33b7177d..aa3b0f1a 100644
  #include "CryGame/Bots/BotVantage.h"
  #include "CryGame/Bots/BotTactics.h"
  #include "CryGame/Bots/BotTraits.h"
-@@ -145,6 +146,13 @@ private:
+@@ -145,6 +146,14 @@ private:
  	BotJumpLink m_link;
  	NavPathLink m_linkNow;
  	void ApplyLinkExecutor(CPlayer& actor);
@@ -285,6 +288,7 @@ index 33b7177d..aa3b0f1a 100644
 +	BotLadder m_ladder;
 +	NavPathLink m_ladderNow;
 +	bool m_ladderNativeLocked = false;
++	bool m_ladderCancelPending = false; // ResetLife saw an active climb; next Update clears native mode
 +	bool ApplyLadderExecutor(CPlayer& actor);
 +	void UpdateLadder(CPlayer& actor, float dt);
 +	void CancelLadder(CPlayer& actor, const char* why, bool ban);
@@ -292,7 +296,7 @@ index 33b7177d..aa3b0f1a 100644
  	// wb_bot_tactics (BotTactics.h): angle hold from cover, jump-strafe, loot after a kill
  	BotAngleHold m_hold;
 diff --git a/Code/CryGame/Bots/BotConfig.cpp b/Code/CryGame/Bots/BotConfig.cpp
-index 4089f634..7d029379 100644
+index 4089f634..3c078e3f 100644
 --- a/Code/CryGame/Bots/BotConfig.cpp
 +++ b/Code/CryGame/Bots/BotConfig.cpp
 @@ -41,6 +41,7 @@ const IntBinding kInts[]={
