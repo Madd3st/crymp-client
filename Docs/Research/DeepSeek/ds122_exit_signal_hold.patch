@@ -1,0 +1,69 @@
+diff --git a/Code/CryGame/Actors/Player/Player.cpp b/Code/CryGame/Actors/Player/Player.cpp
+index 469a6df2..4f71a22d 100644
+--- a/Code/CryGame/Actors/Player/Player.cpp
++++ b/Code/CryGame/Actors/Player/Player.cpp
+@@ -7332,6 +7332,19 @@ void CPlayer::LeaveLadder(ELadderActionType reason)
+ 
+ 	if (reason == eLAT_ExitTop)
+ 	{
++#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
++		// DS-122: record the graph state at the exact moment the stock one-shot exit signal is issued. This decides
++		// whether the owned bot was still in the ladder state (the signal can select the installed off-top state)
++		// or had already fallen back to a locomotion state. No graph input is changed here.
++		if (gEnv && gEnv->bServer && g_pGame && IsWarsBotActor() && g_pGame->GetBotManager().Owns(GetEntityId()) &&
++			WarsBots::BotConfig::Get().ladder==1 && m_pAnimatedCharacter)
++		{
++			IAnimationGraphState* graph=m_pAnimatedCharacter->GetAnimationGraphState();
++			const char* output=graph ? graph->QueryOutput("OnLadder") : NULL;
++			WB_LOG(2,"[WarsBots] LADDER EXIT SIGNAL actor=%u state=%s output=%s.",
++				GetEntityId(),graph&&graph->GetCurrentStateName()?graph->GetCurrentStateName():"<none>",output?output:"<none>");
++		}
++#endif
+ 		m_stats.isExitingLadder = true;
+ 		UpdateLadderAnimation(CPlayer::eLS_ExitTop, eLDIR_Up);
+ 	}
+diff --git a/Code/CryGame/Actors/Player/PlayerMovement.cpp b/Code/CryGame/Actors/Player/PlayerMovement.cpp
+index 0b1ee554..827e708e 100644
+--- a/Code/CryGame/Actors/Player/PlayerMovement.cpp
++++ b/Code/CryGame/Actors/Player/PlayerMovement.cpp
+@@ -13,6 +13,8 @@
+ #include "CryGame/Bots/BotManager.h"
+ #include "CryGame/Bots/BotLadder.h"
+ #include "CryGame/Bots/BotLog.h"
++#include "CryCommon/CryAnimation/ICryAnimation.h"
++#include <cstring>
+ #endif
+ #include "CryCommon/CryGame/GameUtils.h"
+ #include "CryGame/Game.h"
+@@ -1594,12 +1596,29 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
+ 			const char* agOutputOnLadder = pAGState ? pAGState->QueryOutput("OnLadder") : NULL;
+ #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+ 			if (warsBot)
+-				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d active=%d state=%s motionFlags=%u pos=(%.3f,%.3f,%.3f).",
++			{
++				// DS-122: LeaveLadder(eLAT_ExitTop) sets the one-shot graph Signal "exit_ladder_top" exactly once,
++				// and the installed relaxed_ladderOffTop_nw state is selected only by that signal. A human client
++				// has an input writer before each graph update; an owned server bot has none, while its last
++				// locomotion request keeps PseudoSpeed/DesiredSpeed matching RelaxedIdleNW/RelaxedRunNW (attempt 4
++				// at 12.40/12.43: OnLadder 1 -> 0, state IdleNW -> RunNW, feet frozen at 97.920). Re-assert the
++				// same stock signal while the native off-top state is not current. This sets no position, velocity
++				// or collider and adds no completion rule: the stock OnLadder output plus
++				// NativeLadderExitPhysicalReady below still decide the exit, and the policy still fails closed.
++				const char* state = pAGState ? pAGState->GetCurrentStateName() : NULL;
++				const bool exitHeld = state && std::strstr(state, "ladderOffTop") != NULL;
++				if (pAGState && !exitHeld) pAGState->SetInput("Signal", "exit_ladder_top");
++				const ICharacterInstance* character = player.GetEntity()->GetCharacter(0);
++				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d active=%d state=%s held=%d sig=%d pseudo=%.2f upd=%d motionFlags=%u pos=(%.3f,%.3f,%.3f).",
+ 					player.GetEntityId(),pAGState?1:0,agOutputOnLadder?int(static_cast<unsigned char>(agOutputOnLadder[0])):-1,
+ 					pAGState&&pAGState->GetAnimationActivation()?1:0,
+-					pAGState&&pAGState->GetCurrentStateName()?pAGState->GetCurrentStateName():"<none>",
++					state?state:"<none>",exitHeld?1:0,
++					pAGState&&pAGState->IsSignalledInput(pAGState->GetInputId("Signal"))?1:0,
++					pAGState?pAGState->GetInputAsFloat(pAGState->GetInputId("PseudoSpeed")):0.0f,
++					character&&(character->GetFlags()&CS_FLAG_UPDATE_ALWAYS)?1:0,
+ 					pAC?unsigned(pAC->GetParams().flags):0u,player.GetEntity()->GetWorldPos().x,
+ 					player.GetEntity()->GetWorldPos().y,player.GetEntity()->GetWorldPos().z);
++			}
+ #endif
+ 			// DS-107: an owned bot must not turn a missing graph/output into a premature ReachedEnd. Keep the native
+ 			// exiting state and let the policy fail closed (BlockedTop) unless the graph gives a real completion.
