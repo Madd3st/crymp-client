@@ -1,6 +1,36 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS119 offline — human same-shaft exit is client-side root motion; bot graph decays Idle->Walk->walkToIdle; ban is failure-derived · 2026-10-29 20:05
+NOW: DS120 offline design pushed — update-lifecycle audit (flag is render-proxy-conditional), collision-safe fallback contract, preview no-early-ban batch item · 2026-10-29 20:22
+
+### DS120 · 2026-10-29 20:22 · OFFLINE ONLY · reviewable exit repair design, no runtime, frozen package untouched
+- Update-lifecycle audit (code contract, not runtime): `CS_FLAG_UPDATE_ALWAYS` is set only inside
+  `!IsClient()` **and** a non-null render proxy (`Player.cpp:4449-4469`); `SetForceSkeletonUpdate(4)` under
+  `m_warsBotPose` (`:1718-1723`) is skeleton-pose only and does **not** prove that flag. Whether a server bot owns
+  a render proxy stays a runtime unknown.
+- The bot's AG does tick: the owner log shows real state changes `IdleNW -> WalkNW -> walkToIdle`, so "graph never
+  updates" is disproven; what is unproven is whether an entered ladder exit state would drive **root motion** on
+  the dedicated server. First-person contract only skips `skipFirstPerson` states — no proof the template is
+  player-only. No `IsPlayer`/channel flips, no physical RELAXED, no double graph Update.
+- Verdict: the native graph is not disproven as the exit owner; the observed failure is state selection. Since a
+  standalone instrumentation run is not authorised, the fallback is specified as the "if needed" branch.
+- Collision-safe fallback design (owned/live/on-ladder/exiting/flag1 only, humans/OFF/non-owned untouched):
+  native link frame only (`m_stats.ladderTop/Bottom/orientation/upDir`), stock `eCMT_Fly` climb to the native top,
+  then native lateral movement along `ladderOrientation` with **explicit swept clearance** (feet/mid/head rays,
+  same world mask as the stock top ray `PlayerMovement.cpp:1657`) and a **ground probe** before committing.
+  `GrabOnLadder` sets `eColliderMode_PushesPlayersOnly` (`Player.cpp:7255-7256`), so "physical movement" alone is
+  not collision — the design requires a normal collider mode for the owned bot during phase 2 and the stock
+  restore (`:7343-7344`) on real leave. Completion only via stock `ReachedEnd` when
+  `NativeLadderExitPhysicalReady` (near top + lateral out of shaft) holds and the policy sees the upper floor
+  grounded; blocked ray/no floor/bounds → existing `blocked_top`, no pass-through, no timer/SetPos/impulse.
+- Batch item 2 (preview): the immediate first attempt fails and bans the link before the 60 s revive. Design:
+  keep the ladder closed until the reveal by generalising the existing delayed-command pattern
+  (`wb_revive_at after`, `BotManager.cpp:951-959`) into a local-IA-only `wb_after <1..300> <command…>`, so a
+  future versioned package can start with `wb_bot_ladder 0`, let the client join, then enable + revive at 545.
+  Frozen current package untouched.
+- Controls proposed: RED on `abac72a9` (no motion/no state hold), fallback GREEN with blocked hatch/wall and
+  missing-floor counterexamples, collider-mode restoration on leave/cancel/death, human/client/OFF zero-call
+  controls, no SetPos/impulse/timer in the extracted block. Code contract vs runtime unknown kept explicit.
+- Doc: `Docs/Research/DeepSeek/DS120_EXIT_REPAIR_DESIGN.md`. No game/QA/install/live writes; own branch only.
 
 ### DS119 · 2026-10-29 20:05 · OFFLINE ONLY · same-shaft human trace vs bot: caller difference + corrected hypotheses
 - Owner hold respected (no game/server/client/probe/live data/install/recovery). Vision used once
