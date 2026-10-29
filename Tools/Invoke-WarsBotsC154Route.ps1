@@ -1,4 +1,4 @@
-# C154: one whole lower545 -> native ladder -> stairs -> upper Strength -> sea -> dry shore acceptance.
+# C154 v2: V5 canonical-LF manifest data; v1 readiness abort is preserved, never overwritten.
 [CmdletBinding()]
 param([Parameter(Mandatory)][ValidatePattern('^[0-9a-f]{40}$')][string]$CodeSha,[switch]$PrepareOnly)
 $ErrorActionPreference='Stop'
@@ -22,13 +22,13 @@ if($parseErrors.Count){throw 'Helper parse error'}
 $wanted=@('Save-Json','Game-Processes','Quote-Arg','Stop-OwnServer','Save-Session','Snapshot-Data','Restore-Data')
 foreach($f in $ast.EndBlock.Statements|Where-Object {$_ -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $_.Name -in $wanted}){. ([scriptblock]::Create($f.Extent.Text))}
 $targets=@{memory=(Join-Path $env:LOCALAPPDATA 'WarsBots/Memory');nav=(Join-Path $env:LOCALAPPDATA 'WarsBots/Navmesh')}
-$data=Join-Path $repo 'build/c154-route-data-v4'
-$expectedData=@{'Shore.navmesh'='b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609';'Shore.links.txt'='e7204de31a25482fd0d6d75feb55cb7e85255dc1e72f8a9bbf4f38f3191b7c2b';'Shore.spots.txt'='d95e1e11fa06194e44e1b1d3887fb00334d7f0ccc9528c9a1b439d7ba78b548b';'Shore.manifest.json'='c7e96b3d0458e93cab370989ca476126fe191ba54d5edff38f14db5fffd44747'}
+$data=Join-Path $repo 'build/c154-route-data-v5'
+$expectedData=@{'Shore.navmesh'='b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609';'Shore.links.txt'='0230a0c3e59bb818888684012291ee39efaddb542917ac0bc5e02c8e13d32dcb';'Shore.spots.txt'='d95e1e11fa06194e44e1b1d3887fb00334d7f0ccc9528c9a1b439d7ba78b548b';'Shore.manifest.json'='a95a0503813e394161bf961f6556e26db672b46041a03079baac99d8191b13e2'}
 foreach($name in $expectedData.Keys){if((Get-FileHash (Join-Path $data $name)).Hash -ne $expectedData[$name]){throw "Candidate mismatch: $name"}}
 $port=46164
-$out=Join-Path $repo ('build/c154-route-'+$CodeSha.Substring(0,8)+'-v1')
+$out=Join-Path $repo ('build/c154-route-'+$CodeSha.Substring(0,8)+'-v2')
 $logs=Join-Path $env:LOCALAPPDATA 'WarsBots/Logs'
-$label='C154-'+$CodeSha.Substring(0,8)+'-v1'
+$label='C154-'+$CodeSha.Substring(0,8)+'-v2'
 $preLog=Join-Path $logs ($label+'-pre.log');$serverLog=Join-Path $logs ($label+'.log')
 $trace=$serverLog -replace '\.log$','.bots.log'
 $serverExe=[IO.Path]::GetFullPath((Join-Path $ci 'CryMP-Server64.exe'))
@@ -44,7 +44,7 @@ $runArgs=$base.Replace('__LOG__',(Quote-Arg $serverLog))+' +wb_add 2 normal +wb_
 $commandBytes=@(foreach($arguments in @($preArgs,$runArgs)){$bytes=[Text.Encoding]::UTF8.GetByteCount((Quote-Arg $serverExe)+' '+$arguments);if($bytes -ge 2048){throw "Native command buffer overflow $bytes"};$bytes})
 if($PrepareOnly){@{source=$CodeSha;preflight_arguments=$preArgs;server_arguments=$runArgs;command_bytes=$commandBytes;runtime='NOT LAUNCHED';data_hashes='PASS'}|ConvertTo-Json;return}
 $quality=Get-Content $qualityPath -Raw -Encoding UTF8|ConvertFrom-Json
-if($quality.task -ne 'C154' -or $quality.harness_scope -ne 'c154-lower-route-v1' -or $quality.source -ne $CodeSha -or -not $quality.ci_success -or -not $quality.ci_source_match -or -not $quality.review_ok -or -not $quality.review_branch_head){throw 'Exact C154 CI/review receipt required'}
+if($quality.task -ne 'C154' -or $quality.harness_scope -ne 'c154-lower-route-v2' -or $quality.source -ne $CodeSha -or -not $quality.ci_success -or -not $quality.ci_source_match -or -not $quality.review_ok -or -not $quality.review_branch_head){throw 'Exact C154 v2 CI/review receipt required; old v1 rejected'}
 if($quality.harness_sha256 -ne (Get-FileHash $PSCommandPath).Hash -or $quality.analyzer_sha256 -ne (Get-FileHash $analyzer).Hash){throw 'Reviewed harness/analyzer changed'}
 foreach($name in $expectedData.Keys){if($quality.data_hashes.$name -ne $expectedData[$name]){throw 'Reviewed data pin mismatch'}}
 if(@(Game-Processes).Count){throw 'Owner game/server active; no test'}
