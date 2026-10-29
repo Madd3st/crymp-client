@@ -3,7 +3,33 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS125 PRE-CI OK on exact local `307037bc` (10-file diff, bounded exit retry + pseudo parity); no blockers, no push/CI/runtime by me · 2026-10-29 20:11
+NOW: DS126 `307037bc` CI40919291234 code/data/harness OK — pair/provenance/quality/manifest/harness/analyzer verified; physical UNTESTED; IDLE/head stable · 2026-10-29 20:33
+
+### DS126 · 2026-10-29 20:33 · OK · exact307 CI40919291234 code/data/harness gate (physical UNTESTED)
+**DS126 307037bc CI40919291234 code/data/harness: OK**
+Review `Docs/Research/DeepSeek/DS126_307_GATE_REVIEW.md` (commit `4e27ac48`); final review head is the branch
+head after this outbox push. No game/server/client/probe/install/QA/feature write by me; owner may be playing.
+- CI `40919291234`: `success`, exact head `307037bc`, push to `claude-sprint`, attempt 1; unit job
+  `123607844493` success (new exit-retry caller ran), client/server job `123607844840` success (17:13:45Z→17:24:02Z).
+  Artifact `12917623035`, digest `sha256:2003a25a57afa20a89175093daa1f62e3f5c9124ef134cfa609d15c5bb49553a`.
+- Downloaded pair recomputed: client `d4a08fbd3216088a21125127a4cc87d4a4ab4d0f7347c98ce259abe2a35d7fe8`,
+  server `bdd084af320a7bd5892f521a895742c1f0c2b07421ac468e1dff21d110303226`; `sha256.txt` and
+  `ci-provenance.json` match, provenance run jobs/ids/timestamps match the live API, `ci_source_match=true`.
+- `c154-quality-draft.json`: source/ci/pair/artifact/task/scope correct; harness `e973b905…` and
+  `harness_sha256=87c3f5ee…` verified on `Tools/Invoke-WarsBotsC154Route.ps1`; analyzer
+  `2a642aebcfff2d10e119746b42f8e50f48a004d732f7aee106602b3e6fff88f7` verified on the actual file; V5 data
+  `0230a0c3/b60178d7/d95e1e11/a95a0503` recomputed; `manifest_guard_receipt_sha256=9a958ea7…` matches the new
+  `build/c154-307-manifest/v5/result.json` (source hash `21df800a…` = `BotNavMesh.cpp` at 307, tamper/CRLF PASS,
+  game_linked=false). `review_ok=false` is the correct pre-approval state.
+- `accepted-consumed-control` GREEN: accepted retry consumed to default/Idle is never resent, no fabricated
+  egress. Code is the DS125-reviewed 307 with no post-review delta; feature-OFF guarded, no new cvar/default/
+  wire/identity or physical-guard change. Physical root cause/outcome remains UNTESTED.
+- Wake read-only: `WarsBots Mailbox Wake` Ready, same user SID `…-1006`, LastTaskResult 0, active config pins
+  `ses_e7785dde5ffe9MiW2PwJiototK` (exists, pending 0); stale backup config only in
+  `build/c141-wake-before` (old session, unreferenced). No mutation.
+- Next: Codex pins this final review head in `c154-quality-draft.json` and sets `review_ok=true`; then the ONE
+  lower-545 -> upper floor -> water -> dry shore run only when owner/game free. No default/PS/client promotion;
+  no claim the exit is fixed before that run. IDLE.
 
 ### DS125 · 2026-10-29 20:11 · PRE-CI OK · exact `307037bc08050d39f26310dc6cc7071dddddf4a6`
 Report `Docs/Research/DeepSeek/DS125_PRECHECK_307037BC.md` on `warsbots/research/deepseek`. Tree clean, parent
