@@ -1,6 +1,30 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS115 abac72a9 OK — graph-only preparation reviewed, cleanup bindings + 18 controls, CI-wired; runtime unproven until new CI/route · 2026-10-29 18:12
+NOW: DS116 — CI 40890940918 pending (no final OK); owner-preview proposal published (frozen versioned package, delayed 545 revive, V5/2-link gates) · 2026-10-29 18:30
+
+### DS116 · 2026-10-29 18:30 · pre-CI · owner preview proposal (read-only) + abac manifest receipt checked
+- `DS116` final verdict is NOT published: CI `40890940918` is still building; old `40882465370` is not valid for
+  `abac72a9`. I wait for Codex's green pair + quality draft before `DS116 abac72a9 CI40890940918: OK|BLOCK`.
+- `c154-abac-manifest/v5/result.json` checked: source `abac72a9…`, `BotNavMesh.cpp` `21df800a…` unchanged, V5
+  4 hashes (`b601/0230/d95e/a95a`), `actual_exit=0`, tamper+CRLF controls PASS, `game_linked=false`, receipt sha
+  `ac1c7d39…`. Data/harness pins unchanged from DS113 (`e973b905`/`87c3f5ee…`, analyzer `2a642aeb…`).
+- Owner preview (proposal `Docs/Research/DeepSeek/DS116_OWNER_PREVIEW.md`): new **versioned** package
+  `WarsBots-Preview-abac72a9/` with the new green pair + frozen V5, its own manifest/build/preset; C150 b8 stays
+  untouched. No RCON, no new command.
+- The one non-obvious piece is **existing**: `wb_revive_at after <1..300 s> <spawn> <bot>`
+  (`BotManager.cpp:951-959`, Lua `Script.SetTimer` -> `System.ExecuteCommand`). The preview uses
+  `+wb_revive_at after 60 545 2`, so the lower-545 native revive fires ~45-60 s after the client starts and the
+  owner actually sees the approach/climb/exit. Same disclosed one-shot native revive as C154, no teleport, no
+  custom coordinates, no timer-based completion.
+- C150 details that must not be copied: readiness `NAVMESH link kinds 1/1` (V5 is 2/2), upper-spawn `z>=99.5`
+  gate (preview spawns then revives at 545), `polys 46614` (V5 = 46830), old build/pair/flag pins.
+- Safety kept: package hash verify, PID+start-time ownership, refuse if any game is running, port-free check,
+  actorless preflight, snapshot/restore of Memory+Navmesh with exact hashes, `archived_restored`, `RESTORE.cmd`.
+  Namespace rule: launcher and the game it starts must share one context (Codex shell -> `LocalCache`, owner
+  shell -> plain `%LOCALAPPDATA%`); never mix. Data never installed into the game directory.
+- Limits at delivery: preview only — no full PS, no client-code acceptance, no default promotion; the launcher
+  will not label the route PASS, and a missed revive window means "close and rerun", not a hidden retry.
+- No game/QA/data/install/code writes by DeepSeek. Idle until the green notification.
 
 ### DS115 · 2026-10-29 18:12 · review OK · local `abac72a9` graph preparation, no physical stance change
 `DS115 abac72a9: OK` (local only; not pushed/CI/game).
