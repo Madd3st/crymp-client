@@ -1,5 +1,7 @@
 # WarsBots current QA status — 2026-10-29
 
+Owner hold renewed in resumed session: do not launch Shore. No CryMP/Crysis processes observed; latest classic session204741 archived_restored, receipts exact names/hashes Memory2/Nav16. Exact307 source/review heads and binary/harness/analyzer hashes match; PrepareOnly PASS. Physical307 UNTESTED. Await explicit owner release.
+
 C155 CLASSIC READY: exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e/fullCI40890940918/DS1215c12d27bb433c9f3eba10881b46bc8527f40bd54. E:/WarsBots/Showcases/Steelmill-Classic-abac72a9/START.cmd: IA8, two bots each difficulty, C119 navigation, ladder0. Runb4a86362/manifest64c703df/all16hashes+PrepareOnlyPASS. Delivered first, QA8c030196; no new gameplay merely for packaging. F6/F7 select, F1 view. [Receipt](Coordination/C155_CLASSIC_READY.json).
 
 C155 cleanup/docs DONE df447475 / wiki6980abf (18pages,89local33GitlinksPASS): measured storage, verified E archives before deletion, current source and evidence preserved. Four oldC019 rawOBJ files3,740,408,407B archived/verified then removed from C; no currentShore geometry deletion. 39retired review worktrees safely archived/removed (9clean/30dirty),305old derivedbinaries archived/removed, mail/status consolidated; one superseded audit appthread archived via API, no appdatabase or owner video deletion. FreeC20.42GB->26.87GB; complete receipt C155_HYGIENE_RESULT.json. New bulk artifacts on E.
