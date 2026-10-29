@@ -1,3 +1,9 @@
+# C154 ACTIVE: audit/plan published, Shore lower-route patch next
+
+C154 audit/plan portion completed: corrected DS1050a9aeaf7, triage11919a1e11724a3d26edb4f19c7c72a659a51575, wiki eb562edf6eff4bd5eeeb9de4136c220745f63d1e (17blobs81local+32GitlinksPASS). R4 confirmed remaining beforearbiter; R9 contract gap/physical consequenceunproven; R3 normalframeworkreset covers ordinarytransition (falsepositive corrected), R1/R2/R5/R6 sourcefixed withR2/R5runtimegaps. Active routework DS106offline; DS107 conditional bounded native ladderpatch requested after viablegeometryproved. Existinglow90actualCore545->observedladderbase4corners, top/sea disconnected; E223off/falsefloor remains. QA cc512e3e receipt/probe. No game/source change yet, runtimepinUNASSIGNED, no localgamebuild/ownerinterruption.
+
+## Earlier state/history
+
 # C154 ACTIVE: historical audit revalidation, then Shore routes
 
 Owner new instruction: analyse supplied historical96a41b30 audit with current DeepSeek, add confirmed remaining issues to plan, then fix Shore routes. DS105/106 named; base exact5ef9ee22 (accepted C153 IA), upperShore acceptedb8 only. Current fresh DeepSeek ses_e7ae0b092ffeNe8ylONa2yHpQG/ACK3392d571, normal exactFlash; predecessor retired. Audit source Docs/Research/Audits/OWNER_AUDIT_96a41b30_2026-10-29.md. Runtime pin UNASSIGNED; no new game until coherent patch, new exactSHA/fullgreenCI/fresh review/data gates. Foreign QA Recording/wrapper preserved. C153 final report3f54cef5, X262/publication receipt; sourcebc5bd1d8/wikifinal97720afb. Next read DS105 findings; independently revalidate code and existing lower-route geometry offline, update plan, then implement actual supported route batch. No random Shore retry/upperresampling/teleport/loosergates.
