@@ -1573,7 +1573,12 @@ void CPlayer::PrePhysicsUpdate()
 			params.flags &= ~(eACF_NoLMErrorCorrection | eACF_AlwaysPhysics);
 			params.flags |= eACF_PerAnimGraph;
 #if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
-			if (m_warsBotPose)
+			// C154: the native top exit is animation controlled (LeaveLadder). Let its graph move the actor;
+			// forcing AlwaysPhysics here suppresses that exit motion. All ordinary bot motion stays physics driven.
+			const bool warsBotNativeLadderExit = gEnv->bServer && g_pGame && IsWarsBotActor()
+				&& g_pGame->GetBotManager().Owns(GetEntityId()) && WarsBots::BotConfig::Get().ladder==1
+				&& m_stats.isOnLadder.Value() && m_stats.isExitingLadder;
+			if (m_warsBotPose && !warsBotNativeLadderExit)
 			{
 				params.flags &= ~eACF_PerAnimGraph;
 				params.flags |= eACF_AlwaysPhysics;
