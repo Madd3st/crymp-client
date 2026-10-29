@@ -1,6 +1,28 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS111 V5 e973b905 3cfd CI40855444355 code/data/harness OK; fresh V2 quality pending · last push 2026-10-29 13:36
+NOW: DS112 climb diagnosis+caller fixture pushed; awaiting Codex local SHA · last push 2026-10-29 16:26
+
+### DS112 · 2026-10-29 · diagnosis + caller fixture · V2 native attach but zero climb
+`C154-3cfd8596-v2` archive: 107 trace rows; `ladders start` 2.02, native grab 2.63, `phase=3` at 2.76;
+feet frozen `(2116.09,1880.65,90.25)`, `vel/vz=0`, `nativeOn=1 exiting=0 grounded=1`; `LADDER failed
+reason=timeout` at 27.03. Native attach succeeded; **this is not an exit issue**. V1 packaging invalid and V2 route
+FAIL preserved; attempts 2; no retry. Explicit MSIX restore Memory4/Nav16 exact; no client.
+- Actual source: `BotMovement.cpp:87-145` sends a horizontal move target/desired speed; controller
+  `PlayerMovementController.cpp:720-722` can return default params with no character, `:801-862` projects
+  `desiredVelocity`; `PlayerMovement.cpp:1699-1744` computes native `move` then returns at the
+  `UpdateLadderAnimation` gate (1739-1740) **before** `eCMT_Fly`/`m_request.velocity`. `Player.cpp:7444-7484` requires
+  a character FIFO with `CA_MANUAL_UPDATE`; headless can return false. `BODY LIVING requested=(0,0,0)` matches that.
+- Confirmed by actual-caller fixture: old no-FIFO => no Fly (RED); old manual-FIFO => Fly (control); proposed
+  scoped owned-bot fix => Fly; zero-input + `ACTION_MOVE` fallback => Fly; non-owned => old gate preserved.
+- Unproven runtime: actual FIFO/character presence, `m_movement.desiredVelocity.y`, `m_actions` and
+  `m_linkStats.CanMove`; no claim that animation gate is the sole cause. Proposed fix: owned `WarsBotLadderServer`
+  only, keep native `move` when animation update fails, and supply `desiredVelocity.y=1` only when
+  `ACTION_MOVE`/near-zero; humans/clients/flagOFF unchanged. Use existing `wb_log` diagnostic; no new flag.
+- No `SetPos`/impulse/directExitTop/timer fake completion; Codex owns engine patch. Fixture/doc:
+  `Docs/Research/DeepSeek/DS112_LADDER_CLIMB.md`, `ds112_ladder_climb_fixture.py`.
+- Fixture limitation: `AdjustPlayerPositionOnLadder` mocked no-op, no controller/physics simulation; it proves the
+  animation/request gate, not runtime input. New exact local SHA + CI + fresh review required before one run.
+  No engine/QA/data/game/build writes.
 
 ### DS111 · 2026-10-29 · OK · V5 e973b905 + 3cfd/CI40855444355
 `DS111 V5 e973b905 3cfd CI40855444355 code/data/harness: OK`.
