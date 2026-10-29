@@ -1,9 +1,36 @@
 # C154 Shore lower-route integration — source and offline checks
 
-Game source: **`3cfd859676d83bdecc1b091d3b9202323b039135`**, `warsbots/feature/claude-sprint`.
-CI: [40855444355](https://github.com/Madd3st/crymp-client/actions/runs/40855444355), initially pending.
-Independent pre-CI review: DeepSeek **`e8e63bd8`**, DS109 OK for this exact code, caller tests and frozen data.
+Current game source: **`272a430604fd67d01362e771faacbeff23157a56`**, `warsbots/feature/claude-sprint`.
+NEW CI: [40882465370](https://github.com/Madd3st/crymp-client/actions/runs/40882465370), pending full build;
+units PASS. Independent pre-CI review: DeepSeek DS112 final **`d9128bda`** OK for this exact candidate.
+Previous integration `3cfd8596` had full green CI40855444355 and DS109/110/111 reviews, but the physical ladder
+climb failed in V2. Its CI cannot substitute for the new272 result.
 No physical route acceptance is claimed by this document.
+
+## Native climb correction after V2
+
+V2 reached and grabbed the real ladder, then remained at90.25 with zero vertical velocity until timeout27.03.
+[Archived failure and exact restore](C154_ATTEMPT_V2_LADDER_STALL.json). This is separate from the preserved
+[V1 manifest packaging failure](C154_ATTEMPT_V1_INVALID.json); two gameplay attempts preceded the new candidate.
+
+The actual native climb body computed its velocity, then returned before submitting `eCMT_Fly` whenever
+`UpdateLadderAnimation` could not seek a manual animation. That dependency is confirmed in source and in an
+actual extracted caller. V2 lacked telemetry for the native input/FIFO, so it does not prove this was the sole
+runtime cause. Candidate272 allows the stock native physics request to continue for an owned, live, unfrozen,
+non-ragdoll server bot with ladder gate1. Human/client/non-owner/flagOFF paths retain the original gate. No
+speculative input fallback: zero input stays zero, downward input stays downward. Axis, speed, top collision and
+strict physical/graph exit checks are unchanged; no custom coordinates, impulse or fake completion.
+
+`Tests/test_bot_ladder_climb_caller.py` extracts the actual native climb tail and ownership helper, then runs
+12 controls: old3cfd semantic RED, new272 GREEN; manual-animation ready, human/OFF/non-owner/client/dead/frozen/
+ragdoll and zero/down controls. It mocks animation readiness and adjustment, so it does not simulate the whole
+controller or physics. Actual PlayerMovement SDK syntax ON and OFF passes. The new test is wired into CI.
+Existing `wb_log` diagnostics now record native input, computed velocity and animation readiness, plus exit graph
+output, movement flags and position. The next single whole-route test must verify climb and exit with this evidence.
+
+Data V5 and reviewed harness `e973b905` remain unchanged. The actual production manifest guard passes on the
+new272 source pin (`build/c154-272-manifest/v5/result.json`); old/new receipts are preserved. Full new CI, exact pair
+hashes and fresh DS113 code/data/harness/quality approval are required before the next shared lower545→shore run.
 
 ## Changes
 
