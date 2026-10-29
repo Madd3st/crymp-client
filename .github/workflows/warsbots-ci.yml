@@ -69,6 +69,9 @@ jobs:
           & python Tests/test_bot_ladder_motion_mode.py *> units/BotLadderMotionMode-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLadderMotionMode-run.log; throw 'UNIT FAIL: real ladder motion mode' }
           'UNIT PASS real ladder callers and motion mode'
+          & python Tests/test_bot_ladder_climb_caller.py *> units/BotLadderClimbCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotLadderClimbCaller-run.log; throw 'UNIT FAIL: native ladder climb caller' }
+          'UNIT PASS native ladder climb caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:

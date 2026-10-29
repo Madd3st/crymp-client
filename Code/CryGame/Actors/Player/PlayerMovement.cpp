@@ -12,6 +12,7 @@
 #include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Bots/BotManager.h"
 #include "CryGame/Bots/BotLadder.h"
+#include "CryGame/Bots/BotLog.h"
 #endif
 #include "CryCommon/CryGame/GameUtils.h"
 #include "CryGame/Game.h"
@@ -1591,6 +1592,13 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 			IAnimatedCharacter* pAC = m_player.GetAnimatedCharacter();
 			IAnimationGraphState* pAGState = pAC ? pAC->GetAnimationGraphState() : NULL;
 			const char* agOutputOnLadder = pAGState ? pAGState->QueryOutput("OnLadder") : NULL;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+			if (warsBot)
+				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d motionFlags=%u pos=(%.3f,%.3f,%.3f).",
+					player.GetEntityId(),pAGState?1:0,agOutputOnLadder?int(static_cast<unsigned char>(agOutputOnLadder[0])):-1,
+					pAC?unsigned(pAC->GetParams().flags):0u,player.GetEntity()->GetWorldPos().x,
+					player.GetEntity()->GetWorldPos().y,player.GetEntity()->GetWorldPos().z);
+#endif
 			// DS-107: an owned bot must not turn a missing graph/output into a premature ReachedEnd. Keep the native
 			// exiting state and let the policy fail closed (BlockedTop) unless the graph gives a real completion.
 			if (warsBot && (!pAC || !pAGState || !agOutputOnLadder)) return;
@@ -1736,7 +1744,18 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 		bottomDist += (move.z * gEnv->pTimer->GetFrameTime());
 		float animTime = bottomDist - cry_floorf(bottomDist);
 		CPlayer::ELadderDirection eLDir = (m_movement.desiredVelocity.y >= 0.0f ? CPlayer::eLDIR_Up : CPlayer::eLDIR_Down);
-		if (!player.UpdateLadderAnimation(CPlayer::eLS_Climb, eLDir, animTime))
+		const bool animationReady = player.UpdateLadderAnimation(CPlayer::eLS_Climb, eLDir, animTime);
+		bool authoritativeClimb = false;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+		// DS112: an owned, live server bot has no client-authoritative climb position. Native physics input
+		// must not wait for the cosmetic manual-animation FIFO. Keep the stock native axis/speed/top ray.
+		authoritativeClimb = WarsBotLadderServer(player) && player.GetHealth()>0 && !player.IsFrozen() && !m_stats.isRagDoll;
+		if (authoritativeClimb)
+			WB_LOG(2,"[WarsBots] LADDER NATIVE actor=%u input=(%.3f,%.3f,%.3f) velocity=(%.3f,%.3f,%.3f) animationReady=%d.",
+				player.GetEntityId(),m_movement.desiredVelocity.x,m_movement.desiredVelocity.y,m_movement.desiredVelocity.z,
+				move.x,move.y,move.z,animationReady?1:0);
+#endif
+		if (!animationReady && !authoritativeClimb)
 			return;
 	}
 
