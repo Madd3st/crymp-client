@@ -5,6 +5,7 @@
 ## Кто и где работает
 
 - Codex — временный координатор, интегратор и QA по D031/D035; DeepSeek — предложения и независимое ревью только в своей ветке. Роль не переключается автоматически по календарю или старому лимиту.
+- Со слов владельца30.10, Claude ожидается примерно через два дня (ориентир01.11.2026). Подготовить понятную передачу в Git; фактический возврат и смена роли подтверждаются явно, не происходят автоматически по дате.
 - Игровой код: claude-sprint `307037bc08050d39f26310dc6cc7071dddddf4a6`, QA/build/ds076-code. Рабочая копия detached HEAD на точном SHA; перед изменениями проверить ветку и status.
 - Координация и исходники вики: steelmill-triage, QA/build/ds076-triage. QA-инструменты/результаты: weapon-goals, C:/Users/Magic8/WarsBotsBuild/crymp-multibot. Code/ QA-ветки устарел.
 - DeepSeek: C:/Users/Magic8/AppData/Local/Temp/opencode/wb-review/deepseek, ветка research/deepseek. DS126 review head `4c710aca7a5543bc1c5a66005ef8a8e352792f6f`; не двигать его ради фонового backlog.
