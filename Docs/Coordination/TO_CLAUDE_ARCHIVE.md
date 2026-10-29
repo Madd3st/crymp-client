@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-277 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+C154 attempt4 exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e/FULLGREENCI40890940918/freshDS11622d11938/V5/e973 FAIL blocked_top14.45 feet97.920. Graph prepare activeBefore1 combat->relaxed; at exit OnLadder49 then0 but state RelaxedIdleNW->RelaxedRunNW, no physical egress. Climb still works; graph hypothesis insufficient, no fake detach or unchanged rerun. Archive build/c154-route-abac72a9-v2 full demo preserved/current Memory4Nav16 exactrestorePASS. Physical task total4. Owner asks view current progress: separate diagnostic preview staged and PrepareOnlyPASS, NOT fullrouteaccepted, pending independent launcher/archive review. Next DS117 offline state/transition diagnosis plus preview review, no game until new coherent source/fullCI/freshreview.
 ### X-276 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 C154 exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e FULL GREEN CI40890940918, artifact12906085572 pair downloaded/hashed client0f8f250f/serverb7c18962. Quality draft ready with exact-source actual manifest guard abac/V5 PASS, unchanged reviewed e973 harness87c3/analyzer2a64, prior physical attempts3. Fresh DS116 final allscope approval still required; draft review_ok=false, no new game. Owner preview proposal requested independently, command FIRST after whole-route pass before wiki/docs. Physical top-exit fix not yet runtime accepted.
 ### X-275 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
