@@ -71,6 +71,25 @@ C. **Probe first**: log `OnLadder` over the whole climb (never non-empty here) p
    `isOnLadder` to prove the graph can never signal. Cheap, but does not fix; the current `LADDER EXIT` line
    already shows `graph=1 output=empty` at 21 consecutive frames, so the added value is small.
 
+### 4b. Refinement after reading the exiting branch end-to-end (prefer this over B)
+
+The exiting branch (`PlayerMovement.cpp:1587-1620`) never sets `m_request`: it checks the graph, optionally calls
+`ReachedEnd`, then `return`s. So once `RequestLeaveLadder(eLAT_ExitTop)` has run, an owned bot has **no motion
+source at all** — the observed exact freeze. Implementing B by "continuing physics inside the exiting state"
+would therefore mean re-adding motion to a state that stock code deliberately leaves to the animation.
+
+D. **Do not enter the animation exit for owned bots at all** (cleanest, same physical guarantee):
+   - in the top trigger (`:1650`) keep the stock forward-clearance ray, but for `WarsBotLadderServer` require the
+     feet to actually reach the top (`topDist` ≈ 0 / `z >= ladderTop.z - eps`) instead of the 2.41 m radius;
+   - when that holds, call `RequestLeaveLadder(eLAT_ReachedEnd)` directly (no `isExitingLadder`, no exit anim),
+     which is the stock "detach" path (`Player.cpp:7337-7344` clears `isOnLadder`, restores the collider);
+   - keep the normal native climb tail (`eCMT_Fly` + stock `move`) until then, so the last 1.8 m are real physics;
+   - humans/OFF/non-owner/client keep the exact old graph/animation exit.
+   Oracle: owned bot must reach `z >= top-eps` with a clear forward ray before detaching; if the last metres are
+   blocked it must fail closed (`blocked_top`), never detach mid-shaft; human controls unchanged.
+   This keeps the stock axis/speed/collision and needs no `SetPos`/impulse/timer, and it removes the deadlock
+   instead of keeping the bot in a state stock code cannot advance.
+
 ## 5. What is still unproven / risks
 
 - Whether any server-bot animated character can ever produce `OnLadder` (option A) — unproven; current evidence
