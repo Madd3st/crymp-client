@@ -149,7 +149,7 @@ void BotManager::Initialize(IGameFramework* framework)
     console->AddCommand("wb_qa_time_scale",QATimeScaleCommand,0,"Diagnostic only:1..8, password-protected local dedicated IA/no humans; resets on level end");
     console->AddCommand("wb_geom_export",GeometryExportCommand,0,"Offline local IA or PowerStruggle/no actors: static collision OBJ + spawn/item JSON; optional path.obj and play-area box x0 y0 x1 y1");
 	console->AddCommand("wb_nav_export", NavExportCommand, 0, "wb_nav_export [path.json] or after <1..30 seconds>: local IA graph snapshot, no rays/memory changes");
-	console->AddCommand("wb_nav_audit",NavAuditCommand,0,"Local IA/no actors: build export-only graph using knee variant; stop resets to ordinary graph");
+	console->AddCommand("wb_nav_audit",NavAuditCommand,0,"Local/no actors: wb_nav_audit [0|1|2|stop]; explicit export-only knee variant, default0; stop resets ordinary graph");
     console->AddCommand("wb_nav", NavCommand, 0, "Navigation graph status for this level");
 	console->AddCommand("wb_select", SelectCommand, 0, "wb_select <botNumber>: target of the legacy wb_bot_*/wb_probe_* commands");
 	console->AddCommand("wb_probe_spawn", ProbeSpawnCommand, 0, "wb_probe_spawn x y z: add one bot without AI");
@@ -1081,12 +1081,16 @@ void BotManager::NavExportCommand(IConsoleCmdArgs* args)
 
 void BotManager::NavAuditCommand(IConsoleCmdArgs* args)
 {
- BotManager* self=Self();if(!self || !self->CanRunLocalIA())return;
+ BotManager* self=Self();if(!self || !self->CanRunLocalIA() || !args)return;
  CGameRules::TPlayers players;g_pGame->GetGameRules()->GetPlayers(players);
  if(self->Count() || !players.empty()){WB_LOG(0,"[WarsBots] NAV AUDIT refused: no bots/players allowed");return;}
  if(args->GetArgCount()==2 && !std::strcmp(args->GetArg(1),"stop")){self->m_nav.Reset();return;}
- if(args->GetArgCount()!=1)return;
- self->m_nav.StartAudit(BotConfig::Get().navKneeFix);
+ // C154 net-zero flags: retire the latched wb_nav_knee_fix switch; preserve its diagnostic modes per command.
+ int variant=0;
+ if(args->GetArgCount()==2) {
+  if(!ParseInt(args->GetArg(1),variant) || variant<0 || variant>2) {WB_LOG(0,"[WarsBots] Usage: wb_nav_audit [0|1|2|stop]");return;}
+ } else if(args->GetArgCount()!=1) {WB_LOG(0,"[WarsBots] Usage: wb_nav_audit [0|1|2|stop]");return;}
+ self->m_nav.StartAudit(variant);
 }
 
 void BotManager::NavCommand(IConsoleCmdArgs*)

@@ -150,9 +150,13 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 // through BotMovement::Move and the real movement controller, so ProcessMovementOnLadder receives desiredVelocity.y.
 bool BotLocomotion::ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt, bool nativeAttached)
 {
+	const SPlayerStats* stats=actor.GetPlayerStats();
+	if (!nativeAttached || !stats || !stats->isOnLadder.Value() || stats->isExitingLadder) return false;
 	// The SafeStep exception exists only while the native ladder is attached. Approach and post-exit settle call
 	// the ordinary safe executor instead.
-	const bool accepted = m_movement.Move(actor, moveTo, aim, dt, 1.0f, STANCE_STAND, 1.5f,
+	// PlayerMovementController divides desired speed by stance speed. Supply normal full forward input, not 1 m/s
+	// (which would become a ~0.25 m/s climb and exhaust the route deadline before reaching the 9.5 m shaft top).
+	const bool accepted = m_movement.Move(actor, moveTo, aim, dt, actor.GetStanceMaxSpeed(STANCE_STAND), STANCE_STAND, 1.5f,
 		nativeAttached, false, -1.f, false, 0.5f, false);
 	actor.SetWarsBotActions(false, accepted, STANCE_STAND);
 	if (!accepted) m_movement.Aim(actor, aim);

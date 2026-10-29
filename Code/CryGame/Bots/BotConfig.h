@@ -14,7 +14,6 @@ struct BotConfig {
  int trapRecovery=0;
  int physicsDiagnostics=0;
  int moveTrace=0;
- int navKneeFix=0;
  int spawnExclude195=1;
  int reviveGuard=1;
  int botPace=1;

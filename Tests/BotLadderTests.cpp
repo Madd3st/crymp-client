@@ -28,7 +28,7 @@ int main()
 		BotLadder L; L.Start(0, a, b);
 		LadderOutput o = L.Update(At(0, 0, 3, 10)); assert(o.phase == LadderPhase::Approach && o.moveTo.z == 10.f);
 		o = L.Update(At(0.2f, 0, 0.5f, 10)); assert(o.phase == LadderPhase::Grab && !o.grab);
-		o = L.Update(At(1.4f, 0, 0.5f, 10)); assert(o.fail == LadderFail::NoGrab && !L.Active());
+		o = L.Update(At(3.4f, 0, 0.5f, 10)); assert(o.fail == LadderFail::NoGrab && !L.Active());
 	}
 	// 3. Grab -> Climb; the bot keeps forward into the ladder, no sideways steer, no exit request.
 	{
@@ -56,7 +56,7 @@ int main()
 		L.Update(At(8.0f, 0, 0.5f, 19.5f, true, true, true));
 		LadderOutput o = L.Update(At(8.2f, 0.2f, 0.1f, 19.5f, false, false, false));
 		assert(o.phase == LadderPhase::Settle && o.settling && o.moveTo.x == b.x);
-		o = L.Update(At(8.4f, 0.2f, 0.1f, 19.5f, true, false, false));
+		o = L.Update(At(8.4f, 0.5f, 0.1f, 19.5f, true, false, false));
 		assert(o.phase == LadderPhase::Done && !L.Active());
 	}
 	// 6. Blocked top: native exiting never completes -> BlockedTop (no fake ReachedEnd).
@@ -96,8 +96,27 @@ int main()
 		M.Update(At(0, 0, 0.5f, 10)); M.Update(At(0.1f, 0, 0.5f, 10, true, true));
 		M.Reset(); assert(!M.Active() && M.Phase() == LadderPhase::Idle);
 
-		BotLadder N; N.Start(0, a, b); o = N.Update(At(15.1f, 0, 3, 10)); assert(o.fail == LadderFail::Timeout);
+		BotLadder N; N.Start(0, a, b); o = N.Update(At(25.1f, 0, 3, 10)); assert(o.fail == LadderFail::Timeout);
 	}
-	std::printf("BotLadder revision 2 tests PASS\n");
+	// 9. A roof above the requested floor, a reattachment, or an unvalidated native frame cannot finish the route.
+	for (int mode=0;mode<2;++mode)
+	{
+		BotLadder L;L.Start(0,a,b);assert(L.SetNative(bottom,top,orientation));
+		L.Update(At(0,0,0.5f,10));L.Update(At(.1f,0,0.5f,10,true,true));
+		L.Update(At(8,0,0.5f,19.5f,true,true,true));
+		L.Update(At(8.2f,1,0,20,false,false,false));
+		const auto o=L.Update(mode==0?At(8.3f,1,0,30,true):At(8.3f,1,0,20,true,true));
+		assert(o.phase!=LadderPhase::Done);
+	}
+	{
+		BotLadder L;L.Start(0,a,b);
+		const auto o=L.Update(At(0,0,0,10,true,false,false,true));assert(!o.grab);
+		assert(L.Update(At(.1f,0,0,10,true,true)).fail==LadderFail::WrongLadder);
+	}
+	// 10. An early/absent graph completion must not detach a bot still in the shaft; actual lateral egress can finish.
+	assert(!NativeLadderExitPhysicalReady(LVec{0,0,17.6f},LVec{0,0,10},LVec{0,0,20}));
+	assert(!NativeLadderExitPhysicalReady(LVec{0,0,19.3f},LVec{0,0,10},LVec{0,0,20}));
+	assert(NativeLadderExitPhysicalReady(LVec{0,-.9f,19.3f},LVec{0,0,10},LVec{0,0,20}));
+	std::printf("BotLadder native-frame, exit and settle tests PASS\n");
 	return 0;
 }

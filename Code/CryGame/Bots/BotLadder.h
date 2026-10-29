@@ -7,10 +7,26 @@
 // physical post-exit floor/target check.
 #pragma once
 #include <cmath>
+#include <initializer_list>
 
 namespace WarsBots {
 
 struct LVec { float x = 0, y = 0, z = 0; };
+
+// The native graph can already report 0 before an owned server bot has performed its exit root motion.
+// Require the real long-shaft egress position as well: near the top and sideways out of the shaft, never a timer.
+inline bool NativeLadderExitPhysicalReady(const LVec& feet, const LVec& bottom, const LVec& top)
+{
+	for (float v : {feet.x,feet.y,feet.z,bottom.x,bottom.y,bottom.z,top.x,top.y,top.z})
+		if (!std::isfinite(v)) return false;
+	const float x=top.x-bottom.x,y=top.y-bottom.y,z=top.z-bottom.z;
+	const float length=std::sqrt(x*x+y*y+z*z);
+	if (length<4.f) return false; // this opt-in executor supports the verified long shaft
+	const float dx=feet.x-bottom.x,dy=feet.y-bottom.y,dz=feet.z-bottom.z;
+	const float along=(dx*x+dy*y+dz*z)/length;
+	const float side2=dx*dx+dy*dy+dz*dz-along*along;
+	return along>=length-1.2f && along<=length+0.75f && side2>=0.35f*0.35f && side2<=2.5f*2.5f;
+}
 
 enum class LadderPhase { Idle = 0, Approach, Grab, Climb, WaitExit, Settle, Done, Failed };
 enum class LadderFail { None = 0, Timeout, NoGrab, Lost, BlockedTop, WrongFloor, WrongLadder };
@@ -36,13 +52,13 @@ struct LadderOutput {
 
 struct LadderParams {
 	float approachRadius = 1.2f;
-	float grabTime = 1.0f;
-	float total = 15.f;
+	float grabTime = 3.0f;      // allow the existing capped view to face the real material before grabbing
+	float total = 25.f;
 	float topEps = 2.5f;        // native ladderTop band (LADDER_TOP_DISTANCE 2.41 + margin)
 	float exitWait = 2.0f;      // native animation/root-motion completion
 	float settleTime = 4.0f;
 	float floorDz = 1.0f;
-	float floorDist = 2.5f;
+	float floorDist = 0.8f;     // finish the safe walk-off onto the actual path landing point
 	float nativeBottomTol = 1.5f;
 	float nativeTopTol = 2.5f;
 	float minRise = 4.0f;
@@ -55,14 +71,14 @@ public:
 	{
 		m_phase = LadderPhase::Idle; m_fail = LadderFail::None;
 		m_start = m_phaseAt = 0.f; m_a = m_b = m_bottom = m_top = m_into = LVec();
-		m_rejectNative = false; m_atTopSince = -1.f;
+		m_rejectNative = false; m_nativeValid=false; m_atTopSince = -1.f;
 	}
 	void Start(float now, const LVec& a, const LVec& b)
 	{
 		m_a = a; m_b = b; m_bottom = a; m_top = b;
 		m_into = Horiz(b.x - a.x, b.y - a.y);
 		m_start = m_phaseAt = now; m_phase = LadderPhase::Approach;
-		m_fail = LadderFail::None; m_rejectNative = false; m_atTopSince = -1.f;
+		m_fail = LadderFail::None; m_rejectNative = false; m_nativeValid=false; m_atTopSince = -1.f;
 	}
 	// Called only before the grab. Returns false when the native ladder frame is not the requested UP edge.
 	bool SetNative(const LVec& bottom, const LVec& top, const LVec& orientation)
@@ -74,6 +90,7 @@ public:
 		if (std::sqrt(orientation.x * orientation.x + orientation.y * orientation.y) < 0.2f) return false;
 		m_bottom = bottom; m_top = top;
 		m_into = Horiz(-orientation.x, -orientation.y);
+		m_nativeValid=true;
 		return true;
 	}
 	void RejectNative() { m_rejectNative = true; }
@@ -114,7 +131,8 @@ private:
 			break;
 		case LadderPhase::Grab:
 			o.moveTo = m_a;
-			o.grab = in.canGrab;
+			o.grab = in.canGrab && m_nativeValid;
+			if (in.onLadder && !m_nativeValid) return Fail(o,LadderFail::WrongLadder);
 			if (in.onLadder) Enter(LadderPhase::Climb, in.now);
 			else if (m_rejectNative) return Fail(o, LadderFail::WrongLadder);
 			else if (in.now - m_phaseAt > m_p.grabTime) return Fail(o, LadderFail::NoGrab);
@@ -146,9 +164,10 @@ private:
 			else if (in.now - m_phaseAt > m_p.exitWait) return Fail(o, LadderFail::BlockedTop);
 			break;
 		case LadderPhase::Settle:
+			if (in.onLadder || in.exiting) return Fail(o,LadderFail::Lost);
 			o.settling = true;
 			o.moveTo = m_b;
-			if (in.grounded && in.feet.z >= m_b.z - m_p.floorDz && Dist2D(in.feet, m_b) <= m_p.floorDist)
+			if (!in.onLadder && !in.exiting && in.grounded && std::fabs(in.feet.z-m_b.z)<=m_p.floorDz && Dist2D(in.feet, m_b) <= m_p.floorDist)
 			{
 				m_phase = LadderPhase::Done; o.phase = m_phase; return o;
 			}
@@ -188,6 +207,7 @@ private:
 	LVec m_a, m_b, m_bottom, m_top, m_into;
 	float m_start = 0.f, m_phaseAt = 0.f, m_atTopSince = -1.f;
 	bool m_rejectNative = false;
+	bool m_nativeValid=false;
 };
 
 } // namespace WarsBots

@@ -41,7 +41,7 @@ jobs:
           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotWeaponGoal','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy','BotRoamFallback',
-                     'BotReplicaSmooth','BotJumpLink','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan')
+                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan')
           $failed = @()
           foreach ($t in $tests) {
             $src = "Tests/${t}Tests.cpp"

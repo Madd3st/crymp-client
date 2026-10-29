@@ -368,7 +368,7 @@ void BotBrain::Stop(BotInstance& bot)
 	if (!m_running) return;
 	m_trap.Reset(); m_trapStepUntil=0;
 	// DS-107: one owned cancellation path clears native ladder mode as a failure (never route success).
-	if (CActor* actor = bot.GetActor()) CancelLadder(static_cast<CPlayer&>(*actor), "stop", true);
+	if (CActor* actor = bot.GetActor()) CancelLadder(static_cast<CPlayer&>(*actor), "stop", false);
 	else { m_ladder.Reset(); m_ladderNativeLocked = false; }
 	m_running = false; // Cancel respawn before touching entity/weapon lifetime.
 	m_combat.Reset();
@@ -403,10 +403,10 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	m_blackboard.Sample(actor,m_now);
 	m_locomotion.Observe(actor,m_blackboard,m_now);
     // DS-107: ResetLife cannot touch the actor; perform its native-ladder cleanup on the next owned update.
-    if (m_ladderCancelPending) CancelLadder(actor,"reset",true);
+    if (m_ladderCancelPending) CancelLadder(actor,"reset",false);
     UpdateTelemetry(actor);
     // DS-107: death/stop must clear the native ladder mode through the single cancellation path.
-    if (actor.GetHealth()<=0 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"death",true);
+    if (actor.GetHealth()<=0 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"death",false);
     if(UpdateDead(bot,actor,dt))return;
 	if (BotConfig::Get().botTurnCap==1) UpdateTurnCap(actor,dt); // C-044: per-frame capped view toward the decided look point
 	m_tick += dt;
@@ -420,7 +420,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	m_intent=BotIntent();
 	WBI(aim,actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f));
 	// DS-107: a gate turned OFF mid-climb must still clean the native mode; when ON the ladder owns the tick.
-	if (BotConfig::Get().ladder!=1 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"gate_off",true);
+	if (BotConfig::Get().ladder!=1 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"gate_off",false);
 	if (BotConfig::Get().ladder==1 && m_ladder.Active()) { UpdateLadder(actor,decisionTime); return; }
     if(UpdateTest(actor,decisionTime))return;
     const int& qaWeapon=BotConfig::Get().qaSocomOnly;
@@ -1530,6 +1530,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 {
 	if (m_ladder.Active()) return true;
+	if (m_link.Active()) return false; // an existing jump/drop keeps ownership until its own completion
 	NavMeshCore* mesh=CurrentNavMesh();
 	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return false;
 	const NavPathLink* l=LinkAtCorner(m_pathIndex);
@@ -1551,11 +1552,9 @@ void BotBrain::CancelLadder(CPlayer& actor, const char* why, bool ban)
 {
 	SPlayerStats* stats=actor.GetPlayerStats();
 	const bool nativeAttached=stats && (stats->isOnLadder.Value() || stats->isExitingLadder);
-	if (!m_ladder.Active() && !m_ladderNativeLocked && !nativeAttached)
-	{
-		if (ban) { m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0; }
-		return;
-	}
+	const bool hadRoute=m_ladder.Active() || m_ladderNativeLocked || m_ladderNow.ref || m_ladderCancelPending;
+	m_ladderCancelPending=false; // also consume a reset whose native revive already cleared ladder stats
+	if (!hadRoute && !nativeAttached) return;
 	WB_LOG(1,"[WarsBots] #%d LADDER cancel reason=%s nativeOn=%d exiting=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
 		why,nativeAttached?1:0,(stats&&stats->isExitingLadder)?1:0,
 		actor.GetEntity()->GetWorldPos().x,actor.GetEntity()->GetWorldPos().y,actor.GetEntity()->GetWorldPos().z,
@@ -1568,19 +1567,20 @@ void BotBrain::CancelLadder(CPlayer& actor, const char* why, bool ban)
 	if (ban)
 	{
 		NavMeshCore* mesh=CurrentNavMesh();
-		if (mesh && m_ladderNow.ref && mesh->NoteLinkFailure(m_ladderNow.ref)) mesh->BanLink(m_ladderNow.ref);
-		m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0;
+		if (mesh && m_ladderNow.ref) mesh->BanLink(m_ladderNow.ref);
 	}
-	m_ladder.Reset(); m_ladderNativeLocked=false; m_ladderCancelPending=false;
+	m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0; m_meshPathActive=false;
+	m_ladder.Reset(); m_ladderNativeLocked=false; m_ladderNow=NavPathLink();
 }
 
 void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 {
 	SPlayerStats* stats=actor.GetPlayerStats();
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
-	if (stats && (stats->isFrozen.Value() || stats->isRagdoll || actor.GetLinkedVehicle()))
+	if (!stats || actor.IsFrozen() || stats->isRagDoll || actor.GetLinkedEntity() ||
+		stats->inFreefall.Value()>0 || stats->inZeroG || stats->isGrabbed || stats->spectatorMode || stats->flyMode)
 	{
-		CancelLadder(actor,"frozen_ragdoll_vehicle",true);
+		CancelLadder(actor,"movement_state",false);
 		return;
 	}
 	const Vec3 center(m_ladderNow.a[0],m_ladderNow.a[1],m_ladderNow.a[2]+1.2f);
@@ -1589,13 +1589,13 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 	in.onLadder=stats && stats->isOnLadder.Value();
 	in.exiting=stats && stats->isExitingLadder;
 	in.atTop=stats && (stats->ladderTop - feet).len() < 2.5f;
-	// Probe mat_ladder only before the grab. Once the native frame is accepted/rejected it is locked for this edge;
-	// no per-tick IsLadderUsable may mutate top/bottom mid-climb.
+	// Probe in the actual grab phase. Once attached, the native frame is locked: no ray may mutate it mid-climb.
 	const LadderPhase phase=m_ladder.Phase();
 	if ((phase==LadderPhase::Approach || phase==LadderPhase::Grab) && !in.onLadder && !m_ladderNativeLocked)
 	{
 		m_locomotion.Look(actor,center);
-		in.canGrab=actor.IsLadderUsable();
+		// Validate in the actual grab phase, immediately before the native call. Lock only after attachment.
+		in.canGrab=phase==LadderPhase::Grab && actor.IsLadderUsable();
 		if (in.canGrab)
 		{
 			if (!stats || !m_ladder.SetNative(
@@ -1603,11 +1603,15 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 				LVec{stats->ladderTop.x,stats->ladderTop.y,stats->ladderTop.z},
 				LVec{stats->ladderOrientation.x,stats->ladderOrientation.y,stats->ladderOrientation.z}))
 				m_ladder.RejectNative();
-			m_ladderNativeLocked=true;
 		}
 	}
 	const LadderOutput o=m_ladder.Update(in);
-	if (o.grab) actor.RequestGrabOnLadder(CPlayer::eLAT_Use);
+	if (o.grab)
+	{
+		actor.RequestGrabOnLadder(CPlayer::eLAT_Use);
+		m_ladderNativeLocked=stats && stats->isOnLadder.Value();
+		in.onLadder=m_ladderNativeLocked;
+	}
 	if (o.phase==LadderPhase::Done)
 	{
 		WB_LOG(2,"[WarsBots] #%d LADDER done nativeOn=%d exiting=%d grounded=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
@@ -1615,7 +1619,7 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 		const size_t next=size_t(m_ladderNow.corner)+1;
 		m_cornerFor=size_t(-1);
 		m_pathIndex=m_path.empty()?0:(next<m_path.size()?next:m_path.size()-1);
-		m_ladder.Reset(); m_ladderNativeLocked=false;
+		m_ladder.Reset(); m_ladderNativeLocked=false; m_ladderCancelPending=false; m_ladderNow=NavPathLink();
 		return;
 	}
 	if (o.phase==LadderPhase::Failed)
@@ -1628,16 +1632,17 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 	}
 	m_intent=BotIntent();
 	m_combat.StopFire();
+	const LVec& into=m_ladder.Into();
+	WBI(aim,feet+Vec3(into.x*2.f,into.y*2.f,1.6f)); // retain a real view target while native exit owns motion
 	if (o.phase==LadderPhase::WaitExit)
 	{
 		// Native root motion owns the exit. Do not send Stop or a sideways target: wait for native completion.
-		m_intent=BotIntent();
 	}
 	else if (in.onLadder)
 	{
 		WBI(move,true);
-		WBI(destination,Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z));
-		WBI(aim,center);
+		const Vec3 current=actor.GetEntity()->GetWorldPos();
+		m_intent.destination=current+Vec3(into.x*2.f,into.y*2.f,0);
 		WBI(gait,BotGait::Walk);
 		WBI(suitMode,NANOMODE_DEFENSE);
 		m_intent.combat=BotCombatIntent::None; m_intent.jump=BotJump::None; m_intent.linkJump=false;
@@ -1648,7 +1653,7 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 	{
 		// Approach, grab approach and post-exit settle use the ordinary safe executor and its canMove/gates.
 		WBI(move,true);
-		WBI(destination,Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z));
+		m_intent.destination=Vec3(o.moveTo.x,o.moveTo.y,o.moveTo.z);
 		WBI(aim,center);
 		WBI(gait,BotGait::Walk);
 		WBI(suitMode,NANOMODE_DEFENSE);
@@ -1674,6 +1679,7 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 		if (!m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return;
 		const NavPathLink* l=LinkAtCorner(m_pathIndex);
 		if (!l) return;
+		if (l->kind!=NavLinkDrop && l->kind!=NavLinkJump && l->kind!=NavLinkStrength) return;
 		const Vec3 a(l->a[0],l->a[1],l->a[2]);
 		if ((a-feet).GetLengthSquared2D()>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return;
 		m_linkNow=*l;

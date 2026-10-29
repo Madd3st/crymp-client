@@ -11,6 +11,7 @@
 #include "CryGame/Bots/BotPace.h"
 #include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Bots/BotManager.h"
+#include "CryGame/Bots/BotLadder.h"
 #endif
 #include "CryCommon/CryGame/GameUtils.h"
 #include "CryGame/Game.h"
@@ -1593,6 +1594,17 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 			// DS-107: an owned bot must not turn a missing graph/output into a premature ReachedEnd. Keep the native
 			// exiting state and let the policy fail closed (BlockedTop) unless the graph gives a real completion.
 			if (warsBot && (!pAC || !pAGState || !agOutputOnLadder)) return;
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+			if (warsBot)
+			{
+				if (agOutputOnLadder[0]!='0' && agOutputOnLadder[0]!='1') return;
+				const Vec3 feet=player.GetEntity()->GetWorldPos();
+				if (agOutputOnLadder[0]=='0' && !WarsBots::NativeLadderExitPhysicalReady(
+					WarsBots::LVec{feet.x,feet.y,feet.z},
+					WarsBots::LVec{m_stats.ladderBottom.x,m_stats.ladderBottom.y,m_stats.ladderBottom.z},
+					WarsBots::LVec{m_stats.ladderTop.x,m_stats.ladderTop.y,m_stats.ladderTop.z})) return;
+			}
+#endif
 			bool onLadder = agOutputOnLadder && agOutputOnLadder[0] == '1';
 			if (!onLadder)
 				player.RequestLeaveLadder(CPlayer::eLAT_ReachedEnd);
