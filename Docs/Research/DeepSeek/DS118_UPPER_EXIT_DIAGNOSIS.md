@@ -1,77 +1,85 @@
-# DS118 — offline diagnosis: why the owned bot's native top exit never gets root motion
+# DS118 (v2, corrected) — upper exit: what is *not* proven, and what the ordering rules out
 
-Owner is playing the preview: this is a code/docs-only analysis. No game, server, probe, install or data action.
-Basis: attempt-4 archive `c154-route-abac72a9-v2`, source `abac72a9` (`QA/build/ds076-code`, clean), extracted
-`PlayerFullBody.xml` (`QA/build/c154-exit-assets`), DS117 findings.
+Owner is playing the preview: offline only, no game/server/probe/install/data action. This file replaces the
+v1 diagnosis; v1's primary hypothesis and its patch/oracle are withdrawn.
 
-## 1. Confirmed facts (from the attempt-4 log, no interpretation)
+## 1. Corrections accepted (all from the owner's review, verified in source)
 
-- Prepare worked: `3.85 LADDER GRAPH prepare … activeBefore=1 stanceBefore=combat defaultBefore=0`; graph
-  already active, only the animation `Stance` was overridden. Physical actor/capsule/speed unchanged.
-- Climb: 270 `LADDER NATIVE` rows `input=(0,1,0) velocity=(0,0,0.900) animationReady=0`, z `90.33 -> 97.86`.
-- Top: `12.40 LADDER EXIT … output='1' state=RelaxedIdleNW+NothingNW`, `12.43 … output=default
-  state=RelaxedRunNW+NothingNW`, feet `(2116.125,1880.625,97.920)` for the next 2 s, `14.45 blocked_top`,
-  `LADDER GRAPH restored active=1`.
-- Between the exit and the cancel the log contains **exactly one** movement line:
-  `12.43 MOTION INTENT gait=0 requestedBase=1.30 actual=0.00 blocked=1`. There is no further move/stop request
-  while the native exit is pending.
-- `PlayerMovement.cpp:1587-1620` (exiting branch) sets no `m_request`, by design; the native exit is meant to be
-  animation/root-motion driven. `BotBrain.cpp:1639-1642` (WaitExit) deliberately sends **nothing** ("Do not send
-  Stop or a sideways target").
+1. `BotBrain.cpp:492-494` `MOTION INTENT requestedBase=…` is **telemetry computed from `m_intent`**
+   (`m_intent.move ? (gait==Walk ? 1.3 : 2.5) : 0`), not a `RequestMovement` event and not the real desired
+   speed. Its 12.43 line therefore does not prove a "walk 1.3 writer"; v1's inference is withdrawn.
+2. `BotLocomotion::ExecuteLadder` (`BotLocomotion.cpp:151-164`) uses `GetStanceMaxSpeed(STANCE_STAND)` plus a
+   **constant pseudo 1.5**, and returns immediately when `stats->isExitingLadder` (`:154`). So during the exit the
+   last real request is the climb request (stance speed, pseudo 1.5), not a walk request; "stale walk 1.3" is
+   wrong. A stale request remains a plausible *code risk*, but the physical cause is a hypothesis, not a finding.
+3. `BotMovement::Stop` (`BotMovement.cpp:12-23`) calls `SetWarsBotMotion(forward,0,lookAhead)` **first**
+   (`:14-15`), which overwrites the aim, then sends `ClearMoveTarget/DesiredSpeed 0/PseudoSpeed 0`. v1's oracle
+   claim "aim retained" is withdrawn.
+4. Ordering: the exit signal is emitted **inside the movement update** —
+   `ProcessMovementOnLadder` top ray -> `RequestLeaveLadder(eLAT_ExitTop)` -> `LeaveLadder` ->
+   `UpdateLadderAnimation(eLS_ExitTop)` -> `SetInput("Signal","exit_ladder_top")`
+   (`PlayerMovement.cpp:1650-1672`, `Player.cpp:7332-7336`, `:7449`). The brain learns `exiting` only at its next
+   10 Hz tick (`BotBrain` decision cadence ~0.1 s), i.e. 6-20 graph updates later. A `Stop` issued at the
+   transition to `WaitExit` (`BotBrain.cpp:1639-1642`) is therefore **after** the signal window and cannot be the
+   fix. The observed `output='1'/IdleNW` -> `output=default/RunNW` already happened before any WaitExit action.
+5. Native path is not "always zero": `CNetPlayerInput::PreUpdate` (`NetPlayerInput.cpp:15-68`) rebuilds the
+   request **every frame** from `m_curInput.deltaMovement` (`AddDeltaMovement`), with
+   `pseudoSpeed = deltaMovement.len2()>0 ? CalculatePseudoSpeed(sprint) : 0`. A human holding forward on a ladder
+   has a non-zero pseudo too, so "the human request is zero" is not established. The difference, if any, is in the
+   *request type/values* or in the graph environment, not simply in zero vs non-zero.
+6. Graph environment: the native local player is `IsPlayer() == true` (first-person graph path), the owned bot is
+   not; the off-top template `IdleSignalPlayerAnimation` is implemented in closed code. This is a hypothesis
+   area only — nothing here proves it.
+7. Force-skeleton/render plumbing already exists for bots: `SetForceSkeletonUpdate(4)` under `m_warsBotPose`
+   (`Player.cpp:1718-1723`) and `CS_FLAG_UPDATE_ALWAYS` in `PostPhysicalize` (`:4463-4467`). No blind enabling is
+   proposed.
+8. Installed graph matches the extracted asset (`PlayerFullBody.xml` sha
+   `80232bb29f917ba2ae92700cd01b8a07fb2b64e4e399e976632d3b1634bcc8fa` == `QA/build/c154-exit-assets`); no
+   override/mismatch claim.
 
-## 2. Native vs bot writers — the asymmetry
+## 2. What the log still establishes (no interpretation)
 
-- Human/server player: the movement controller is fed from live input every frame (client) or from the native
-  ladder code; on a ladder the ladder owns the frame and the crouch/move input is consumed by the ladder branch.
-  A zero or ladder-bound request is present each frame, so `PseudoSpeed`/desired velocity cannot stay at a stale
-  locomotion value.
-- Owned bot on a dedicated server: the only writer is the AI. `CPlayer::UpdateWarsBotMotion`
-  (`Player.cpp:5082-5142`) rotates the body and updates actions, but its **server** branch (`:5116-5114`) never
-  issues a `RequestMovement`; the request path (`CMovementRequest` with `SetPseudoSpeed(...)`) exists only in the
-  client-replica branch (`:5129-5140`). So after the AI stops calling `BotMovement::Move`, the movement
-  controller keeps the **last** request (walk, base 1.30) until someone overwrites it.
-- Consequence: while WaitExit "sends nothing", the graph keeps receiving the stale locomotion input
-  (`PseudoSpeed > 0`), the locomotion states `RelaxedIdleNW`/`RelaxedRunNW` (`PlayerFullBody.xml:1119-1127`,
-  `:1140-1145`) stay eligible, and the one-shot `Signal(exit_ladder_top)` state `relaxed_ladderOffTop_nw`
-  (`:5054-5060`, set once by `Player.cpp:7335/7449`) cannot hold. Result: no exit clip, no root motion, capsule
-  frozen, strict egress guard refuses — exactly what the log shows.
+- Prepare worked (`activeBefore=1, stanceBefore=combat`), climb unchanged (270 native rows, z 90.33 -> 97.86).
+- At the top: `output='1' state=RelaxedIdleNW` then `output=default state=RelaxedRunNW`, feet pinned `97.920`,
+  `blocked_top` at 14.45, graph restored. The exit state never holds; no egress; guard correctly refuses.
+- Nothing in the log shows a `RequestMovement` after the exit; the graph sits in locomotion states for ~2 s.
 
-## 3. Hypotheses, kept separate
+## 3. Candidate causes, kept separate and untested
 
-- **H-A (primary, input-level): stale locomotion request keeps the graph out of the exit state.** Confirmed
-  indirectly by the single 12.43 request and the state switch; would be proven by the exit window showing
-  `PseudoSpeed/desiredVelocity = 0` while the state is the ladder exit state.
-- **H-B (ordering): the exit signal is consumed before the state can hold.** `LeaveLadder` sets the signal during
-  the movement/physics update; if the graph re-evaluates in the same frame with a locomotion state winning, the
-  signal is lost. Fixing H-A would also cover H-B, so H-B is not separately actionable yet.
-- **H-C (root-motion policy): PerAnimGraph/animation-controlled view on the off-top state needs a specific AC
-  movement/collider state.** No evidence in the log (the state never ran), so unproven; do not change collider or
-  movement mode on this basis.
-- Explicitly not assumed: that `Stance` is a hard filter (DS115: `forceGuard=0` soft preference), that graph flags
-  equal animation `CA_*` flags, or that physical `STANCE_RELAXED` (-2 in `player.lua`) is usable.
+- **C-1 request shape**: the bot's last request is a *move-target* request (`SetMoveTarget` + `SetDesiredSpeed`,
+  pseudo 1.5) while the human's is a *delta-movement* request with `CalculatePseudoSpeed`. The AG may derive
+  `PseudoSpeed`/movement inputs differently for the two shapes (e.g. pseudo 1.5 saturating a locomotion state).
+  Test: compare the controller's `params` (desiredVelocity/pseudo) and the AG inputs for the same climb/exit.
+- **C-2 graph environment**: first-person/`IsPlayer` differences or the closed `IdleSignalPlayerAnimation`
+  template (`animationControlledView=1`) may make the off-top state unavailable/zero-root-motion for a non-player
+  actor. Unverifiable offline; needs the AG input/state trace.
+- **C-3 one-shot signal consumed before the ladder state can hold**: the signal is set once; if any locomotion
+  state outranks it in that same graph update, the signal is gone before the next brain tick (see 1.4). This is an
+  ordering fact; whether it is *the* cause depends on C-1/C-2.
+- Explicitly not assumed: `Stance` as a hard filter (`forceGuard=0`), graph flags = animation `CA_*` flags,
+  physical `STANCE_RELAXED` (-2), height/timeout detach.
 
-## 4. Minimal candidate (own branch proposal; Codex owns integration)
+## 4. Consequence for the next patch (no behaviour change proposed yet)
 
-Change only the owned ladder WaitExit branch (`BotBrain.cpp:1639-1642`): instead of "send nothing", issue one
-explicit zero request through the existing helper `BotMovement::Stop(actor)` (`BotMovement.cpp:12-23`:
-`ClearMoveTarget`, `SetDesiredSpeed(0)`, `SetPseudoSpeed(0)`, real `RequestMovement`). Latch it once on the
-transition to WaitExit (repeat only if the movement state drifts). Scope guards: `WarsBotLadderServer`,
-`isOnLadder && isExitingLadder`, alive, not frozen, not ragdoll, `wb_bot_ladder==1`, BotManager owns.
-Nothing else changes: stock top ray, stock exit signal, `NativeLadderExitPhysicalReady` guard, empty-output rule,
-graph prepare/restore, physical stance/capsule/speed. No SetPos/impulse/timer, no manual `ReachedEnd`, no new cvar.
+- The v1 "Stop in WaitExit" patch is **withdrawn**: it is late by construction (1.4) and its aim side effect
+  contradicts its own oracle (1.3).
+- Since C-1/C-2 are not distinguishable from the current log, the coherent narrow step is **instrumentation
+  only** in the existing `WB_LOG(2)` exit line for the owned bot: state name (already), `PseudoSpeed`,
+  `desiredVelocity`, `Action` string, `FirstPersonMode`, `Item`/`Stance` graph inputs. No new cvar, no behaviour
+  change, no forced `Update()`. That single run would separate C-1 from C-2 and only then justify a patch.
+- If the owner wants a behaviour change without that data, the only defensible ordering fix is to neutralise the
+  movement request **in the same frame and before** `RequestLeaveLadder(eLAT_ExitTop)` for owned bots
+  (`PlayerMovement.cpp:1671`), so the request shape seen by the graph at signal time is not the climb request.
+  This is explicitly unproven and must not be labelled a root-cause fix.
 
-Expected observable: `state=` in `LADDER EXIT` becomes the ladder exit state (or at least not Idle/Run), `output`
-stays `1` while the exit clip runs, feet leave the shaft, and only then does the physical guard allow `ReachedEnd`.
-If the state still does not hold with a zeroed request, H-C becomes the next investigation (and only then).
+## 5. Actual-caller checks that are meaningful (not self-fulfilling)
 
-## 5. Actual-caller oracle (engine-free, no game)
-
-Extend the DS112/DS115 pattern: extract the real `BotBrain` WaitExit branch and the real `BotMovement::Stop`
-body, mock `CPlayer`/`CMovementController`:
-- RED on `abac72a9`: WaitExit issues **zero** `RequestMovement` calls → mock request stays `desired=1.30,
-  pseudo=0.29` (the stale value) → assertion "exit must zero the movement request" fails (exit 1).
-- GREEN with the candidate: exactly one `RequestMovement` with cleared target, `desiredSpeed=0`, `pseudoSpeed=0`,
-  no move target, aim retained.
-- Negative controls: human / `wb_bot_ladder=0` / non-owner / not on ladder / not exiting / dead / frozen / ragdoll
-  → no request; a second tick must not spam (latched once); Stop must not call `RequestLeaveLadder` or any
-  position/timer API; leaving the exit must not restore a stale nonzero request.
+1. **Ordering refutation test** (supports no patch): extract the real top-ray/`RequestLeaveLadder` block and the
+   real `BotBrain` WaitExit branch; drive a mock 10 Hz brain clock against a mock per-frame graph tick and assert
+   that the signal timestamp always precedes the first WaitExit tick. This proves the WaitExit-Stop class of patch
+   cannot act in time — a negative result, not an assertion of a proposed patch.
+2. **Input-shape comparison test**: extract the real `CNetPlayerInput::PreUpdate` and the real
+   `BotMovement::Move` request construction; assert the two produce different `CMovementRequest` shapes for the
+   same ladder situation (delta vs move target, pseudo source). This documents C-1 without claiming a fix.
+3. Only after a discriminating run may a fix be proposed, with its own RED/GREEN against the *observed* state
+   transition (ladder exit state must hold and feet must leave the shaft), not against the patch's own intent.
