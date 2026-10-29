@@ -1,3 +1,9 @@
+# C153 ACTIVE: v2 archived, DS103 independent audit pending
+
+C153 v2 completed and archived_restored on exact5ef9ee22/fullgreenCI40790759287/DS10238c6ad66OK/harness5e3. Runtime90.81s, current8/8 realprimary,84ATTACKING,8trueDEAD->revive,0testgrants. Archive analyzer91db7d8f PASS:28realprimary,197goalevents,0activegoalreplacements/0repeatedpursuitanchors,8timeouts/3unavailable; demos and CURRENT Memory/Nav exactrestore checked. Pending independent DS103 audit before final acceptance/docs/wiki. Two physical attempts: invalidv1 toolingabort retained + v2; no more game needed. Analyzer-only narrow numeric regex fix91db excludes log sentence period from since float; no gameplay rerun.
+
+## Earlier state (historical, superseded)
+
 # C153 ACTIVE: corrected v2 shared acceptance in progress
 
 C153 v2 RUNNING on exact 5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 / FULL GREEN CI40790759287. DS102 38c6ad6680959c6187c77e5036cebb0adfba564e explicitly approves corrected harness5e3bf6db; fresh review read, quality receipt updated with c153-live-reader-v2 scope and current harness hash. V1 INVALID_TOOLING_FAILURE retained in build/c153-batch-5ef9ee22 (archived_restored, data verified); V2 output build/c153-batch-5ef9ee22-v2, driver build/c153-v2-driver.log. NO second launcher/run. Wait existing driver, analyze archive with Tools/Analyze-WarsBotsC153.py, then DS103 independent archive audit, docs/wiki/report. No client launched, no gamecode change since5ef. Shore lower-spawn offline diagnosis complete; no Shore rerun or resampling.
