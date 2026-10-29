@@ -41,3 +41,7 @@
 ```
 
 Сохрани каталог сессии целиком. Далее — совместный разбор с DeepSeek и связная пачка исправлений. Повторный прогон без нового вопроса обычно не добавляет знания.
+
+## QA и PowerShell показывают разные файлы AppData
+
+В C153 обнаружено перенаправление AppData приложения Codex MSIX. Для запущенного из него QA логический `%LOCALAPPDATA%/WarsBots` соответствует физическому `C:/Users/Magic8/AppData/Local/Packages/OpenAI.Codex_2p2nqsd0c76g0/LocalCache/Local/WarsBots`. Обычный внешний PowerShell видит отдельное дерево. Проверяй реальный каталог процесса и SHA256, не копируй старые файлы из одного дерева поверх другого. DeepSeek независимо проверил физический каталог прогона; Memory4/Navmesh16 совпали с исходным снимком. [Отчёт C153](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C153_GOAL_WEAPON_RESULT.md).

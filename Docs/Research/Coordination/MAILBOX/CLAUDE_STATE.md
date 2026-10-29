@@ -1,3 +1,9 @@
+# C153 DONE 5ef9ee22; docs publication / DeepSeek hygiene close-out
+
+C153 DONE on game5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 / FULLGREEN CI40790759287 / independent DS1031e7d868299615f7c3fa6496d4ef97416eaab7970 PASS (limited headless Steelmill batch). 8/8currentprimary,90.81s,84ATTACKING,8same-slotDEAD-revive,0grants;197goalevents/0midpursuitreplacements/0repeatedanchors;demo1821frames/13kills/fulltail. Physicalattempts2: V1 INVALID_TOOLING_FAILURE preserved, V2 PASS. Memory4/Nav16 exactrestore in Codex MSIX data namespace; external plainAppData differs, DS independently checked archived evidence and packaged files, no live-process claim. Client/AB/fullShore not tested. C150 showcase staysb8. Shore DS098lower12=11off+1falseprojection, owner545failure explained; lower route NOT fixed/noresampling. QA report3f54cef5 Docs/Coordination/C153_GOAL_WEAPON_RESULT.md/json. Docs/wiki source publication completing; no further game. Next planned batch routes after offline diagnosis, not automatic launch. DeepSeek oldsessione7c28c crossed50%context (533k); pushed1e7, idle; replace before further work and update Windowswake pin.
+
+## Historical steps (superseded by final result above)
+
 # C153 ACTIVE: v2 archived, DS103 independent audit pending
 
 C153 v2 completed and archived_restored on exact5ef9ee22/fullgreenCI40790759287/DS10238c6ad66OK/harness5e3. Runtime90.81s, current8/8 realprimary,84ATTACKING,8trueDEAD->revive,0testgrants. Archive analyzer91db7d8f PASS:28realprimary,197goalevents,0activegoalreplacements/0repeatedpursuitanchors,8timeouts/3unavailable; demos and CURRENT Memory/Nav exactrestore checked. Pending independent DS103 audit before final acceptance/docs/wiki. Two physical attempts: invalidv1 toolingabort retained + v2; no more game needed. Analyzer-only narrow numeric regex fix91db excludes log sentence period from since float; no gameplay rerun.

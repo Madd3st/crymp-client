@@ -1,6 +1,6 @@
 # WarsBots: current project status — 2026-10-29
 
-C153 ACTIVE: owner starts goals/weapons batch with one shared acceptance after gates. DS097 integrated as intermediate c00cae46 (CI40785778523 GREEN), but DS0995817a303 BLOCK: candidate cache can freeze; harness historic EntityId count fails after native game reset. **No runtime on c00.** Corrected source LOCAL41a7208755017d425a465b42eebd308105d18947, unpublished pending DS100 pre-CI review; six units/actual Brain syntax/actual-method caller and stale-inventory red-green checks PASS. Harness57a41e6a uses current8 roster; archive control PASS. No new game/build locally. DS0982d8fb24a offline lower-spawn report independently reproduced: lower12 =11off-mesh +1false projection12.34m. Owner Shore launch correctly refused lower spawn; packet is unreliable for arbitrary spawn, not accepted playable. Details in latest Codex outbox/handoff. Earlier accepted source remains b8 for its limited C149 route.
+C153 DONE: goals/weapons shared headless acceptance 5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 / FULLGREEN CI40790759287 / independent DS103 1e7d868299615f7c3fa6496d4ef97416eaab7970. Two physical attempts: V1 INVALID_TOOLING_FAILURE preserved and restored, V2 PASS90.81s/current8primary/84attacks/8matcheddeathrevive/0grants; demo1821frames/13kills/fulltail. Activegoalreplacements0/repeatedanchors0 in197events, current Memory4/Nav16 exactrestore. No client/AB/fullShore claim; no more game. C150 showcase unchanged b8. DS098 offline lower12=11off+1falseprojection12.34m; native545 failure explained, lower route NOT fixed, no resample/teleport/loosergate. Result QA Docs/Coordination/C153_GOAL_WEAPON_RESULT.md/json; next planned batch routes/topology, not automatic runtime.
 
 This is the current technical entry point. Earlier notes are preserved in [the historical snapshot](STATUS_HISTORY_2026-10-28.md); they are not the live task queue. [Documentation index](../README.md) · [Wiki](https://github.com/Madd3st/crymp-client/wiki) · [Operational handoff](Coordination/MAILBOX/CLAUDE_STATE.md).
 
@@ -8,8 +8,8 @@ This is the current technical entry point. Earlier notes are preserved in [the h
 
 | Area | Branch / reference |
 | --- | --- |
-| Game code | `warsbots/feature/claude-sprint`; accepted scenario source `b8b444d6c858f27a1fdde0d93b25a318cafc6937` |
-| Build | Green CI `40709459511`; code review DS093 `b3182ff9` |
+| Game code | `warsbots/feature/claude-sprint`; C153 IA source `5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9`; C149 Shore upper-route source `b8b444d6c858f27a1fdde0d93b25a318cafc6937` |
+| Build | C153 green CI `40790759287`, DS101/102 code/harness review, DS103 archive audit `1e7d8682`; C149 uses CI `40709459511` |
 | Coordination, research, wiki source | `warsbots/research/steelmill-triage` |
 | QA tools, X reports and receipts | `warsbots/feature/weapon-goals`; its game code is stale |
 | Independent review and proposed patches | `warsbots/research/deepseek` |
