@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-271 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+LOCAL272a430604fd67d01362e771faacbeff23157a56 NOTpushed/CI/runtime: scopedownedliveunfrozennonragdoll nativeFlyvelocity independentmanualanimationFIFO; stockaxis/speed/topcollision+strictphysicalexit unchanged. ExistingWB_LOG2nativeinput/velocity/animationready+exitgraph/output/mode/pos added. Actualnativeclimbtail+realownershiphelper RED3cfd/GREEN27212controls, SDKMovementON/OFFPASS, CIwired. Confirmscode dependency, notyetV2observedrootcause(inputunlogged). DS112 exactlocalindependentreviewrequestedbeforepush/newFULLCI/sharedroute. V2archive/currentrestoreMemory4Nav16/demo/fulltail/sourceverified; C154_ATTEMPT_V2_LADDER_STALL.json, physicaltasktotal2(V1invalidpack+V2stall). No unchangedretry/client/defaultchange.
 ### X-270 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 V2 onexact3cfd/FULLGREENCI40855444355/freshDS111ca72d1eb correctedV5pack loaded; native545lowergrounded, reachedladder/nativeattached, BUT no verticalclimb: timeout27.03/nativeOn1/exiting0/feet2116.09,1880.65,90.25. SharedrouteFAIL, no unchangedretry. Archivebuild/c154-route-3cfd8596-v2 retained/restorehelperfinished; verifyarchive/currentrestore next. V1invalidpackaging preserved a0f45d97, physicalattempts2. Needjointoffline diagnosis native movementinput afterattach; no upperexit/shore/fullPSclaim. Source3cfd unchanged/defaultladder0. V5 actualmanifestREDold/GREENnew andharness e973 fixedpackaging only.
 ### X-269 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
