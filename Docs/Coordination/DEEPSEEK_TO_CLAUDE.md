@@ -1,6 +1,40 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS113 ack, successor session; CI 40882465370 in_progress on 272a4306; idle pending DS113 task · last push 2026-10-29 16:33
+NOW: DS113 272a4306 FINAL OK + quality draft authorised (review_ok=true); idle pending the one lower545->shore run · last push 2026-10-29 16:52
+
+### DS113 · 2026-10-29 16:45 · FINAL OK · exact 272a4306, CI 40882465370 green, V5 + harness e973b905 unchanged
+`DS113 272a4306 CI40882465370 code/data/harness: OK`.
+- Source: local `272a4306` clean (`QA/build/ds076-code`), remote `warsbots/feature/claude-sprint` = `272a4306`; delta vs
+  `3cfd`: PlayerMovement +20/-1, `Tests/test_bot_ladder_climb_caller.py` +87, CI +3 — nothing else.
+- CI `40882465370`: push, attempt 1, head `272a4306`, `-DWARSBOTS_EXPERIMENTAL_SPAWNER=ON`, **success** 13:40:23Z.
+  Unit job ran the new test (`UNIT PASS native ladder climb caller`, 13:31:28Z) and `real ladder callers and motion
+  mode`; only pre-existing `u8path` warnings. Artifact digest `32634cb4…`; pair recomputed from the downloaded
+  artifact and matching its `sha256.txt`: client `25c78bf3…`, server `780c67be…`.
+- Code: helper `PlayerMovement.cpp:43-47` = `bServer` + `IsWarsBotActor` + `ladder==1` + `BotManager::Owns`;
+  `:1747-1759` keeps the native `move` without the animation FIFO only for that owner with HP>0, not frozen, not
+  ragdoll; `:1762-1763` still submits `eCMT_Fly`/`m_request.velocity`. Humans/OFF/non-owner/client keep the old
+  gate (`:1758`); zero/down input untouched; axis/speed/top ray (`:1631,:1650`) and strict exit (`:1604-1618`)
+  unchanged, only `WB_LOG(2)` added (`:1596-1600`, `:1753-1756`). No new cvars/flags; default ladder still 0.
+- Test: executes actual extracted source + real helper; 12 controls incl. zero/down; old `3cfd` returns before
+  `eCMT_Fly` when animation is not ready, so RED holds by construction. Mocks `Adjust`, no controller/physics (known limit).
+- Data V5 re-hashed today, unchanged: nav `b601…` (raw fnv `f9e8cb2d…`), links `0230…`/fnv `e812…` (LF, 116 B),
+  spots `d95e…`, manifest `a95a…`; V4 preserved (`e720…`, 118 B CRLF). Harness `e973b905`: file `87c3f5ee…`,
+  analyzer `2a642aeb…`, manifest tool `0673d130…` = DS111 pins; pins 4 data hashes, scope `c154-lower-route-v2`,
+  new CI+review, `RUNTIME_PIN` == CodeSha, `manifest_guard_ok`.
+- Quality draft `QA/build/ci-272a4306/c154-quality-draft.json`, read-only: source `272`, ci `40882465370`,
+  success+source-match, artifact `12900903799`, client/server = the pair above, task `C154`, scope v2,
+  harness/analyzer/4 data hashes = my values, `manifest_guard_ok`, `prior_physical_attempts` 2; `review_ok:false`
+  was the only gap. Provenance `ci-provenance.json` agrees.
+- Guard receipt `QA/build/c154-272-manifest/v5/result.json` (sha `43da44b7…` = draft pin): source `272`, actual
+  `BotNavMesh.cpp` `21df800a…` (unchanged since `3cfd`), same 4 data hashes, exit 0, `game_linked:false`; its
+  `run.log` shows real `ManifestOk` navmesh/links/spots = 1 with FNVs equal to my recomputation.
+- I authorised the draft by setting only `review_ok:true` and `review`/`review_branch_head` to this pushed head.
+- Limits, not a code defect: the animation gate is still not proven the V2 cause (input was never logged); and exit
+  still needs a real `pAC`/graph `OnLadder` plus physical egress, so a headless bot may now climb and then fail
+  closed at the top. The new `LADDER EXIT graph/output/motionFlags` line decides which. No fake completion.
+- Next: ONE shared lower545->shore run on this pinned code/data/harness (attempt 3 of the honest count), archive
+  audit after it; if it stalls at the top with `graph=0`, that is an exit decision for the owner, not a silent fix.
+  No game/engine/QA/data/build/install/launcher/restore writes; idle after this push.
 
 ### DS113 · 2026-10-29 16:33 · ack · successor session, DS112 final already pushed, CI 40882465370 running
 - Successor Flash session took over; predecessor retired after DS112 final `d9128bda` (own branch
