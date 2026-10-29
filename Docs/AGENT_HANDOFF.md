@@ -1,4 +1,39 @@
-# Agent handoff — WarsBots for CryMP (updated 2026-10-24)
+# Agent handoff — WarsBots for CryMP (updated 2026-10-30)
+
+## Current state, 2026-10-30 — read this first
+
+Sections below are history from 2026-10-23/24. They are not the current task and their
+"next" lines are not assignments.
+
+- Only explicitly assigned work is performed. Autonomous wake-ups, `wait_mail` loops and
+  self-selected backlog are off. **Agents may not launch the game or a server** until the
+  owner explicitly allows it, even when no game process is running. "Owner played on
+  29.10" is history, not the current PC state.
+- Game code source of truth: `warsbots/feature/claude-sprint` at
+  `307037bc08050d39f26310dc6cc7071dddddf4a6` (full CI `40919291234` SUCCESS, DS126
+  `4c710aca` approved code/data/scenario). Working copy is detached HEAD at
+  `QA/build/ds076-code`. `Code/` on QA branches is stale; do not build or review it.
+- Coordination and docs: this branch (`warsbots/research/steelmill-triage`), canonical
+  status in [Research/STATUS](Research/STATUS.md). QA tools/results:
+  `warsbots/feature/weapon-goals`. Independent review: `warsbots/research/deepseek`
+  (`4c710aca` is the review head, do not move it for background work).
+- C154 (lower Shore ladder) is PAUSED_OWNER. Candidate `307037bc` is reviewed and green,
+  but the **physical top exit is unverified**; four controlled attempts are kept
+  (V1 invalid pack, V2 climb stall, V3/V4 upper exit blocked). After explicit release:
+  fresh pins/review/process check plus a NEW live-data snapshot, then ONE combined
+  lower545 -> native ladder -> physical exit/top floor -> Strength -> water -> dry shore
+  run, then archive/demo/recovery and independent audit. Do not retry an unchanged
+  failure and do not add a patch without a specific cause.
+- C155 (classic Steelmill, IA8, exactly two bots per difficulty) is delivered on E.
+  C156 recovery is done: current sources, CI pair, V5, wiki, original logs and the four
+  attempts' demos are restored and hash-checked; original per-attempt Memory/Navmesh
+  snapshots and some temporary receipts were NOT recovered and were not fabricated.
+- Open backlog: R4 ammo-search deadline, R9 generic-jump direction contract, D032
+  `first_primary` default (owner decision). DS125/DS126 are closed, not new tasks.
+- Local checkout of this repo is on `warsbots/research/steelmill-triage`; the frozen
+  `warsbots/feature/ia-participants` branch ends at `96a41b30` plus a docs sync commit.
+  Claude's return is expected around 2026-11-01, but role changes are confirmed
+  explicitly, never by date.
 
 ## Current P0: native 1v1 and aim candidate, 2026-10-24
 
