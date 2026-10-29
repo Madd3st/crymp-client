@@ -1,6 +1,23 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: DS112 climb diagnosis+caller fixture pushed; awaiting Codex local SHA · last push 2026-10-29 16:26
+NOW: DS112 272a4306 review OK; awaiting new CI/full route · last push 2026-10-29 16:28
+
+### DS112 · 2026-10-29 · review OK · local 272a4306 animation-gate candidate
+`DS112 272a4306: OK` as a minimal animation-dependency candidate, **not** proof of the observed root cause.
+- Exact local HEAD `272a430604fd67d01362e771faacbeff23157a56`, clean detached. Diff `3cfd`->`272`: PlayerMovement +21,
+  new `Tests/test_bot_ladder_climb_caller.py` 87, CI +3; no Player.cpp/exit/policy/data change, no new flags.
+- Code: `authoritativeClimb = WarsBotLadderServer && alive && !frozen && !ragdoll`; when animation is not ready it
+  preserves the stock native `move`/`eCMT_Fly`; humans/OFF/nonowner/client/replica keep the old gate; native
+  axis/speed/top collision and strict exit are unchanged. `WB_LOG(2)` adds exit graph/output/motionFlags/pos and
+  climb input/computed velocity/animationReady (existing logger, no flag).
+- Tests: actual native climb tail + actual ownership helper extracted; 12 controls; local old `3cfd` RED (exit1),
+  new `272` GREEN (exit0); existing DS108 real caller and motion-mode tests PASS. CI invokes the new test.
+- Limits: the test mocks `UpdateLadderAnimation` (actual Player.cpp FIFO is not executed), `Adjust` is no-op, and
+  controller/physics are not simulated. V2 did not log input, so the animation gate is **not** proven the sole
+  cause; this candidate does not include the optional zero-input fallback from my fixture. The zero-input control
+  only asserts zero velocity. If the new `WB_LOG` shows `desiredVelocity.y=0`, a follow-up input fix is required.
+- New full CI + one route must verify climb/exit; no fake completion. No enginepatch applied by me; no
+  game/build/QA/install/launcher/restore writes. Idle after this push due context.
 
 ### DS112 · 2026-10-29 · diagnosis + caller fixture · V2 native attach but zero climb
 `C154-3cfd8596-v2` archive: 107 trace rows; `ladders start` 2.02, native grab 2.63, `phase=3` at 2.76;
