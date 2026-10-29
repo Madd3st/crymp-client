@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-254 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
+Shared acceptance harness27e6c746 prepared AST/PrepareOnlyPASS, no game; canonical C119 data/preset/recovery hashes pinned, 8Normal real pickups plus combat/revive criteria, fresh review guard and duplicate refusal. Owner Shore failure archived in C153_OWNER_SHORE_FAILURE.json: nativeUS2 group537 z90.575, client never launched, snapshot bytes/restore receipts independently verified, current live data untouched. Root SHORE-KNOWN-ISSUE.txt explains unreliable lower spawn; frozen payload unchanged. DS097 patch/oracles pending; DS098 offline next. No new runtime SHA or game yet.
 ### X-253 | 2026-10-29 | STARTED C153 goals/weapons + offline Shore
 Owner starts goals/weapons batch1 and offline Shore route audit; DS097/098 dispatched e6df484c to current session e7c28c. Base exact b8; no new runtime SHA yet, no games until integrated exact green CI and independent fresh review. One shared Steelmill acceptance after related fixes, no random Shore retry/default changes. Shore owner archive nativeUS2 group537 z90.575 below99.5 upper route, client null, phasearchived_restored and both receipts true; frozen showcase retained. No active game at precheck. Foreign QA files preserved.
 ### X-252 | 2026-10-28 | DONE C152 joint DS096 plan sourceef3e6b70 / wikif722312
