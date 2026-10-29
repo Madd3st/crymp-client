@@ -1,5 +1,7 @@
 # WarsBots for CryMP: QA status, 2026-10-29
 
+C154 IN PROGRESS: exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e / FULL CI40890940918 / DS11622d11938: fourth shared attempt confirms climb but still blocked_top at 14.45 s, feet97.920. Graph activated/relaxed but exit state becomes RelaxedIdleNW then RelaxedRunNW, no physical egress. Archive/demo retained, current Memory4/Nav16 exact restore PASS. No unchanged retry or whole-route acceptance. Owner requested live preview; separate versioned diagnostic preview prepared, review pending. Details C154_ATTEMPT_V4_TOP_EXIT.json.
+
 C153 DONE limited headless Steelmill batch on 5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9, FULLGREEN CI40790759287, independent DS103 1e7d868299615f7c3fa6496d4ef97416eaab7970. Current8/8primary,90.81s,84ATTACKING,8true death-revive,0grants; demo1821frames/13kills/complete, Memory4/Nav16 exactrestore. Physical attempts2: invalidv1 toolingabort + acceptedv2. Goal lifecycle/candidate refresh/inventory/threat/loot fixes, no defaults/wire changes. Shore offline lower12=11off+1false projection; no lower-route fix/fullPS/client acceptance. C150 packages unchanged b8. Details Docs/Coordination/C153_GOAL_WEAPON_RESULT.md/json and C153_SHORE_OFFLINE.md.
 
 C152 DONE: joint DeepSeek DS096e4051c5f plan, triage sourceef3e6b70 / wikif722312. Goal lifecycle/weapons -> reliable routes -> combat -> PS loop -> teamwork -> client acceptance, with source/oracles/metrics and explicit unknowns; no new game/build/code changes. Receipt Docs/Coordination/C152_WIKI_PUBLICATION.json. DeepSeek restarted after50% to ses_e7c28cb99ffedE7cJpyFzQPm1V, installedwakeexactpin/dryrunPASS.
@@ -860,3 +862,4 @@ Load: 15 bots Р В Р’В Р вЂ™Р’В Р В РІР‚в„ўР �
   issues found and fixed in `48155dfe` (bots stuck under unreachable weapons 57% of samples; few jumps).
 - Build infra moved out of OneDrive with EXE reuse; HEAD BUILD PASS; QA `j13` pending.
 - Not re-verified by the owner since the stale-build playtest.
+

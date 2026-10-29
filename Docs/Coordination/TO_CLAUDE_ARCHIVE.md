@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-272 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+Exact272a430604fd67d01362e771faacbeff23157a56 PUSHED afterDS112finald9128bdaOK; NEWCI40882465370pending/fullnewpairwatchactive. No newgameuntilFULLgreen/freshDS113allreview/quality; old3cfdCI notsubstitute. NewnormalFlashses_e78242320ffedqkABRn0vn2Fj9 replacesold509ke78(cleanpushedidle); wakepin/DryRunPASS, DS113taske755f62e. SameV5/harnesse973scopev2/analyzer2a64; actualmanifestguardNEW272receiptPASS build/c154-272-manifest/v5. Sourcefixisconfirmedanimationdependencycandidate, observedV2solecauseunknownuntilnewtelemetry/commonroute. Physicalattempts2remainpreserved; no inputfallback/default/client/fullShoreclaim.
 ### X-271 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 LOCAL272a430604fd67d01362e771faacbeff23157a56 NOTpushed/CI/runtime: scopedownedliveunfrozennonragdoll nativeFlyvelocity independentmanualanimationFIFO; stockaxis/speed/topcollision+strictphysicalexit unchanged. ExistingWB_LOG2nativeinput/velocity/animationready+exitgraph/output/mode/pos added. Actualnativeclimbtail+realownershiphelper RED3cfd/GREEN27212controls, SDKMovementON/OFFPASS, CIwired. Confirmscode dependency, notyetV2observedrootcause(inputunlogged). DS112 exactlocalindependentreviewrequestedbeforepush/newFULLCI/sharedroute. V2archive/currentrestoreMemory4Nav16/demo/fulltail/sourceverified; C154_ATTEMPT_V2_LADDER_STALL.json, physicaltasktotal2(V1invalidpack+V2stall). No unchangedretry/client/defaultchange.
 ### X-270 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
