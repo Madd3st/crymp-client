@@ -46,6 +46,7 @@ if($PrepareOnly){@{source=$CodeSha;preflight_arguments=$preArgs;server_arguments
 $quality=Get-Content $qualityPath -Raw -Encoding UTF8|ConvertFrom-Json
 if($quality.task -ne 'C154' -or $quality.harness_scope -ne 'c154-lower-route-v2' -or $quality.source -ne $CodeSha -or -not $quality.ci_success -or -not $quality.ci_source_match -or -not $quality.review_ok -or -not $quality.review_branch_head){throw 'Exact C154 v2 CI/review receipt required; old v1 rejected'}
 if($quality.harness_sha256 -ne (Get-FileHash $PSCommandPath).Hash -or $quality.analyzer_sha256 -ne (Get-FileHash $analyzer).Hash){throw 'Reviewed harness/analyzer changed'}
+if($quality.manifest_guard_ok -ne $true){throw 'Actual runtime manifest guard offline PASS required for this packet'}
 foreach($name in $expectedData.Keys){if($quality.data_hashes.$name -ne $expectedData[$name]){throw 'Reviewed data pin mismatch'}}
 if(@(Game-Processes).Count){throw 'Owner game/server active; no test'}
 if(Get-NetUDPEndpoint -LocalPort $port -ErrorAction SilentlyContinue){throw 'Port occupied'}
