@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C154 PROGRESS; LOCAL3cfd859676d83bdecc1b091d3b9202323b039135 NOTpushed/CI/runtime
+NOW: C154 PROGRESS; Source3cfd859676d83bdecc1b091d3b9202323b039135 PUSHED claude-sprint afterDS109e8e63bd8OK
+
+### X-268 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+Source3cfd859676d83bdecc1b091d3b9202323b039135 PUSHED claude-sprint afterDS109e8e63bd8OK. NEWCI40855444355 inprogress, no runtimeyet. Taskexactpin2d84c996, old5efCIcannot substitute. QAsharedwholelowerharnessfe42d8ef prepared1460/1506bytes+13analyzercontrolsPASS, DS110reviewpending. Sourceintegration/evidence C154_SHORE_INTEGRATION.md; no localgamebuild/data install/client. Native545registeredsetup once disclosed; postsetup norescue/revive/death, wholeladder+stairs+Strength+water+dryshore7s gate. Next fullCI/newpairhashes/freshindependentfinalOK then onecommonrun.
 
 ### X-267 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 LOCAL3cfd859676d83bdecc1b091d3b9202323b039135 NOTpushed/CI/runtime. DS1087807dc5c reviewedcaller/data butnativePlayer movement-modeBLOCK; scoped graph exception18abab5a +SDKPlayerON/OFFPASS, realmodeold0bRED/newGREEN. Integratedactualcallers/CI andcorrectedDSfixture ownrevisionheader+freshper-tickinput, old01e17semanticRED/newGREEN, no compilefailureacceptedRED. DS109 finalpreCI requested37b82fa5. NewnormalFlashses_e78e3f9eeffe048ThB4BBvU891 wakepin/DryRunPASS; olde7ae retired617k afterpushed7807dc5c. DataV4unchanged/notinstalled; no games. Next exactreview/pushnewCI+harnessreview/onecoherentwholelowerroute.
@@ -12,6 +15,3 @@ Frozen OFFLINE dataV3 f73a14ab/navb60178d7/manifest0269f090:12/12lower properflo
 
 ### X-264 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 Historical audit revalidated with correctedDS1050a9aeaf7; triage11919a1e/wiki eb562edf (17blobs81local32GitlinksPASS). Confirmed remaining noammo episodeclockR4 despiteArbiter1; R9 executioncontractgap physicalconsequenceunproven. R3 normalround reset actuallycovered; DSfalsepositivecorrected, R1/R2/R5/R6 sourcefixed butR2/R5runtimeparityunproven. OfflineactualCore oldlow90 545->realobservedladderbase4corners/correctfloor, topsea disconnected; evidence/probecc512e3e. DS106data design active, DS107boundednative routepatch conditional onviablegeometry; no game/sourcechange/runtimepin yet. C153accepted5efretained.
-
-### X-263 | 2026-10-29 | STARTED C154 owner audit + Shore routes
-Owner provided historical96a41b30 audit R1-R9; archive in triage846a2d26, DS105 revalidates exact current5ef, DS106 real lower-route topology/geometry repair design. Current fresh DeepSeek e7ae0b09 normalFlash. Confirm only current defects into plan, hypotheses separate; C153 acceptedIA limited scope retained. Route runtime pin unset until coherent newexactSHA/fullgreenCI/freshreview/data+restore gates; no audit/baseline/randomgame. C153 closed X262/wiki97720afb. Foreign QA files preserved.
