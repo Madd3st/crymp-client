@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C154 STARTED; Owner provided historical96a41b30 audit R1-R9; archive in triage846a2d26, DS105 revalidates exact current5ef, DS106 real lower-route topology/geometry repair design
+NOW: C154 PROGRESS; Historical audit revalidated with correctedDS1050a9aeaf7; triage11919a1e/wiki eb562edf (17blobs81local32GitlinksPASS)
+
+### X-264 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+Historical audit revalidated with correctedDS1050a9aeaf7; triage11919a1e/wiki eb562edf (17blobs81local32GitlinksPASS). Confirmed remaining noammo episodeclockR4 despiteArbiter1; R9 executioncontractgap physicalconsequenceunproven. R3 normalround reset actuallycovered; DSfalsepositivecorrected, R1/R2/R5/R6 sourcefixed butR2/R5runtimeparityunproven. OfflineactualCore oldlow90 545->realobservedladderbase4corners/correctfloor, topsea disconnected; evidence/probecc512e3e. DS106data design active, DS107boundednative routepatch conditional onviablegeometry; no game/sourcechange/runtimepin yet. C153accepted5efretained.
 
 ### X-263 | 2026-10-29 | STARTED C154 owner audit + Shore routes
 Owner provided historical96a41b30 audit R1-R9; archive in triage846a2d26, DS105 revalidates exact current5ef, DS106 real lower-route topology/geometry repair design. Current fresh DeepSeek e7ae0b09 normalFlash. Confirm only current defects into plan, hypotheses separate; C153 acceptedIA limited scope retained. Route runtime pin unset until coherent newexactSHA/fullgreenCI/freshreview/data+restore gates; no audit/baseline/randomgame. C153 closed X262/wiki97720afb. Foreign QA files preserved.
@@ -12,6 +15,3 @@ V2 shared acceptance archived/restored exact5ef9ee22/fullgreenCI40790759287/DS10
 
 ### X-260 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 Corrected v2 shared acceptance started on exact5ef9ee22/fullgreenCI40790759287 after DS10238c6ad66OK for harness5e3bf6db. V2 scope/hash quality pinned latest review; invalid v1 archived/restored and retained, no gamecode change. Wait existing driver only; next archive analyzer and independent DS103 audit, docs/wiki. Physical attempts must be disclosed: v1 tooling abort plus v2. Shore lower native spawns remain offline diagnosed, no forced resampling or Shore rerun.
-
-### X-259 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
-V1 shared5ef attempt INVALID_TOOLING_FAILURE after~25s (Substring live parser), not accepted; partial7primaries/19attack/3deathrevive/noTestGrant, currentMemoryNav exactrestore independentlyPASS. FullCI40790759287GREEN andsource5ef unchanged. Actual archivedscalar parserPASS, twofragmentinput reproduceserror; actualnewReadLiveLog normalization/typedscalar GREEN plus empty/single controls; failureinputtype notcaptured, hypothesis labelled. Corrected harnes5e3bf6db explicit-v2paths/receipt scope prevents oldqualitylaunch and preservesv1. DS102reviewpending before corrected sharedacceptance, no blindrepeat. C153_ATTEMPT_V1_INVALID.json and versioned readercontrol; no further game sinceinvalid.
