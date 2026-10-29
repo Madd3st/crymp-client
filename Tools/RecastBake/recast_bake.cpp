@@ -47,8 +47,19 @@ static bool ReadAll(const std::string& path, std::string& out)
 static void ToRecast(float x, float y, float z, float* o) { o[0] = x; o[1] = z; o[2] = -y; }
 static void ToCrysis(const float* r, float* o) { o[0] = r[0]; o[1] = -r[2]; o[2] = r[1]; }
 
+// Explicit dry-interior exceptions to the global seabed cutoff. Keep only whole source triangles:
+// intersection alone could admit a large seabed triangle far outside a room. Water masking still sees allTris.
+struct RetainBox {
+	float b[6]; // Crysis xmin ymin zmin xmax ymax zmax
+	bool Contains(const std::vector<float>& v, int a, int c, int d) const {
+		for (int i : {a,c,d}) for (int k=0;k<3;++k)
+			if (v[i*3+k]<b[k] || v[i*3+k]>b[k+3]) return false;
+		return true;
+	}
+};
+
 static bool LoadObj(const std::string& path, float zmin, float zmax, std::vector<float>& verts, std::vector<int>& tris,
-	int& dropped, std::vector<int>* allTris = nullptr)
+	int& dropped, std::vector<int>* allTris = nullptr, const std::vector<RetainBox>* retain = nullptr, int* retained = nullptr)
 {
 	std::string s;
 	if (!ReadAll(path, s)) return false;
@@ -56,6 +67,7 @@ static bool LoadObj(const std::string& path, float zmin, float zmax, std::vector
 	const char* p = s.c_str(); const char* end = p + s.size();
 	std::vector<int> idx;
 	dropped = 0;
+	if (retained) *retained=0;
 	while (p < end)
 	{
 		const char* nl = (const char*)memchr(p, '\n', end - p); if (!nl) nl = end;
@@ -82,7 +94,11 @@ static bool LoadObj(const std::string& path, float zmin, float zmax, std::vector
 				if (allTris) { allTris->push_back(a); allTris->push_back(b); allTris->push_back(c); }
 				const float za = v[a * 3 + 2], zb = v[b * 3 + 2], zc = v[c * 3 + 2];
 				const float lo = std::min(za, std::min(zb, zc)), hi = std::max(za, std::max(zb, zc));
-				if (lo > zmax || hi < zmin) { ++dropped; continue; }
+				bool keepBelow=false;
+				if (hi<zmin && retain)
+					for (const RetainBox& box : *retain) if (box.Contains(v,a,b,c)) { keepBelow=true; break; }
+				if (lo > zmax || (hi < zmin && !keepBelow)) { ++dropped; continue; }
+				if (keepBelow && retained) ++*retained;
 				tris.push_back(a); tris.push_back(b); tris.push_back(c);
 			}
 		}
@@ -636,6 +652,7 @@ int main(int argc, char** argv)
 {
 	std::string obj, ptsPath, linksPath, outObj, outBin, linksOut, waterDump; bool genJumps = false;
 	float zmin = -1e9f, zmax = 1e9f;
+	std::vector<RetainBox> retain;
 	float pathFrom[3] = { 0, 0, 0 }, pathTo[3] = { 0, 0, 0 };
 	bool havePathFrom = false, havePathTo = false;
 	Cfg c;
@@ -647,6 +664,14 @@ int main(int argc, char** argv)
 		if (a == "--obj") obj = nx(); else if (a == "--points") ptsPath = nx(); else if (a == "--links") linksPath = nx();
 		else if (a == "--out-obj") outObj = nx(); else if (a == "--out-bin") outBin = nx();
 		else if (a == "--zmin") zmin = std::stof(nx()); else if (a == "--zmax") zmax = std::stof(nx());
+		else if (a == "--retain-box") {
+			if (i+6>=argc) { fprintf(stderr,"--retain-box requires six Crysis bounds\n"); return 2; }
+			RetainBox box;
+			for (int k=0;k<6;++k) box.b[k]=std::stof(nx());
+			for (int k=0;k<3;++k) if (!std::isfinite(box.b[k]) || !std::isfinite(box.b[k+3]) || box.b[k]>=box.b[k+3])
+				{ fprintf(stderr,"invalid --retain-box bounds\n"); return 2; }
+			retain.push_back(box);
+		}
 		else if (a == "--water") { c.water = true; c.waterZ = std::stof(nx()); }
 		else if (a == "--water-cell") c.waterCell = std::stof(nx());
 		else if (a == "--water-dump") waterDump = nx();
@@ -670,7 +695,9 @@ int main(int argc, char** argv)
     if (obj.empty()) { fprintf(stderr, "usage: recast_bake --obj file.obj[.gz] ...\n"); return 2; }
 	std::vector<float> verts; std::vector<int> tris; int dropped = 0;
 	std::vector<int> allTris;
-	if (!LoadObj(obj, zmin, zmax, verts, tris, dropped, c.water ? &allTris : nullptr)) { fprintf(stderr, "cannot read %s\n", obj.c_str()); return 1; }
+	int retained=0;
+	if (!LoadObj(obj, zmin, zmax, verts, tris, dropped, c.water ? &allTris : nullptr, &retain, &retained)) { fprintf(stderr, "cannot read %s\n", obj.c_str()); return 1; }
+	if (!retain.empty()) fprintf(stderr,"retained_below_zmin=%d whole source triangles in %zu explicit dry boxes\n",retained,retain.size());
 	const int inputTris = (int)tris.size() / 3;
 	std::vector<unsigned char> isWater(inputTris, 0);
 	WaterStats waterStats;

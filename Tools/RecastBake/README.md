@@ -20,4 +20,14 @@ Agent defaults r 0.4, h 1.8, climb 0.5, slope 45, cell 0.2/0.1, tile 128; `--mot
 drop / +jump / +Strength; `--vh` horizontal take-off speed (4.5 run, 6.75 sprint). Level ceilings: `--zmax`
 (Steelmill 190), sea bed: `--zmin` (Armada 108).
 
+`--retain-box xmin ymin zmin xmax ymax zmax` is an explicit dry-interior exception to the global `--zmin` cutoff.
+It retains only whole original triangles whose three vertices lie inside the Crysis-space box; a large seabed triangle
+merely intersecting the box is rejected. The global `--zmax` still applies. With no box the mesh behavior is unchanged.
+The water mask always uses all original source triangles, including the seabed, independently of retention.
+This preserves a verified below-sea dry room without making submerged floors walkable across the map. Record the box
+and source geometry in the recipe; this option does not prove that a ladder or any other transition can be executed.
+
+`ctest --test-dir <build-dir> -C Release` runs the actual-loader inside/outside/crossing/upper-cutoff controls. The checks
+remain active in Release. The existing `water_selftest.ps1 -Tool <recast_bake.exe>` validates water masking separately.
+
 Verdict and numbers: `Docs/Research/SteelmillTriage/RECAST-BAKE-2026-10-24.md`.
