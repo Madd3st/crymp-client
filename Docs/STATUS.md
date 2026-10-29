@@ -1,4 +1,6 @@
-# WarsBots for CryMP: QA status, 2026-10-28
+# WarsBots for CryMP: QA status, 2026-10-29
+
+C153 DONE limited headless Steelmill batch on 5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9, FULLGREEN CI40790759287, independent DS103 1e7d868299615f7c3fa6496d4ef97416eaab7970. Current8/8primary,90.81s,84ATTACKING,8true death-revive,0grants; demo1821frames/13kills/complete, Memory4/Nav16 exactrestore. Physical attempts2: invalidv1 toolingabort + acceptedv2. Goal lifecycle/candidate refresh/inventory/threat/loot fixes, no defaults/wire changes. Shore offline lower12=11off+1false projection; no lower-route fix/fullPS/client acceptance. C150 packages unchanged b8. Details Docs/Coordination/C153_GOAL_WEAPON_RESULT.md/json and C153_SHORE_OFFLINE.md.
 
 C152 DONE: joint DeepSeek DS096e4051c5f plan, triage sourceef3e6b70 / wikif722312. Goal lifecycle/weapons -> reliable routes -> combat -> PS loop -> teamwork -> client acceptance, with source/oracles/metrics and explicit unknowns; no new game/build/code changes. Receipt Docs/Coordination/C152_WIKI_PUBLICATION.json. DeepSeek restarted after50% to ses_e7c28cb99ffedE7cJpyFzQPm1V, installedwakeexactpin/dryrunPASS.
 
