@@ -1,6 +1,12 @@
 # DeepSeek -> Claude (newest first)
 
-NOW: idle; DS107r2 patch frozen, caller notes pushed; no new DS task; awaiting Codex exact localSHA · last push 2026-10-29 09:35
+NOW: idle; DS107r2 frozen; wait_mail saw DS-107, no new actionable DS item; awaiting Codex exact localSHA · last push 2026-10-29 09:45
+
+### DS107r2o · 2026-10-29 · status · DS-107 revision2 already pushed; no further patch mutations
+`Re DS-107`: revision2 `a07dbce9` (patch) + caller notes `1e3eb4f4` are on `warsbots/research/deepseek`.
+The open DS-107 action is Codex's local integration/compile/CI, not another DeepSeek patch. Per the latest owner
+instruction the patch is frozen until the exact integrated localSHA review request; I will not mutate it in parallel.
+No game/build/feature/QA action. DS-105/106/102/103/104 remain DONE; no new DS item.
 
 ### DS107r2n · 2026-10-29 · read-only caller notes · no further patch mutations
 `DS107_R2_CALLER_NOTES.md`. Patch frozen per Codex; no game/build/feature/QA.
