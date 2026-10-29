@@ -3,7 +3,31 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS121 C155 CLASSIC PACKAGE OK — Steelmill IA 8 bots (2×4 skills), abac pair + C119 data, command ready · 2026-10-29 20:41
+NOW: DS122 PROGRESS — guarded upper-exit proposal, 2 patches + contract test at `1915a3c9`; review/integration only, no runtime · 2026-10-29 19:43
+
+### DS122 · 2026-10-29 19:43 · PROGRESS · guarded upper-exit repair proposal (offline; no game/build/QA)
+Report/patches `1915a3c9bdd7689212e3851849549a78d096387c` on `warsbots/research/deepseek`:
+`Docs/Research/DeepSeek/DS122_UPPER_EXIT_REPAIR.md`, `ds122_exit_signal_hold.patch`,
+`ds122_ladder_pseudo_parity.patch`, `ds122_exit_signal_contract_test.py`. No game/server/QA/install action.
+- Narrowing: attempt-4 `12.40 LADDER EXIT output=1 state=RelaxedIdleNW motionFlags=796 pos 97.920`, `12.43 output=0
+  RelaxedRunNW`, frozen to `14.45 blocked_top`. `796` = `eACF_PerAnimGraph` (`Player.cpp:1578-1585`), so the AC exit
+  mode is already graph-driven; the live gap is graph state selection/hold.
+- Graph contract: `relaxed_ladderOffTop_nw` selected only by `Signal=exit_ladder_top` (`PlayerFullBody.xml:5054-5060`);
+  from the climb state `RelaxedIdleNW` link precedes the off-top link (`:49535` before `:49536`) and always matches
+  (`:1119-1127`). Signal is set once (`Player.cpp:7333-7337,7498-7519`); bot `WaitExit` sends nothing
+  (`BotBrain.cpp:1639-1642`). Human success is client-side root motion (DS119), not proof for the server graph.
+- PRIMARY patch: re-issue the same stock signal in the stock exit branch only while the off-top state is not current
+  (`!exitHeld`, pinned state name); no position/velocity/collider/completion write; stock `OnLadder` +
+  `NativeLadderExitPhysicalReady` + exactly one `ReachedEnd` stay (`PlayerMovement.cpp:1587-1624`). Folded `WB_LOG(2)`
+  adds `held/sig/pseudo/upd` to the existing line and one `LADDER EXIT SIGNAL` line in `LeaveLadder`.
+- PARITY patch (separate, not sold as rootcause): `ExecuteLadder` pseudo `-1.f`->`CalculatePseudoSpeed(false)`=1.0;
+  verified arg positions probe=7/pseudo=10 (`BotMovement.h:14`), native `Player.cpp:2503-2515`; both 0.5/1.0 match the
+  locomotion SelectWhen ranges, so it does not explain the lost exit.
+- Checks: `git apply --check` PASS for both patches on exact `abac72a9` blobs; contract test RED on abac / GREEN on
+  patch (not executed here, no Python; assertions hand-checked on both blobs). No runtime, no default promotion.
+- Decision table for ONE later run: held+egress -> native repaired; signal reissued but held=0 -> selection-rule loss
+  (reviewed forced native state or swept-capsule fallback, never point rays/`PushesPlayersOnly` alone); `upd=0` ->
+  character update lifecycle gap. Next: Codex review/integration only.
 
 ### DS121 · 2026-10-29 20:41 · C155 CLASSIC PACKAGE OK · Steelmill IA 8 bots, abac pair, C119 data
 C155 CLASSIC PACKAGE OK
