@@ -1,5 +1,7 @@
 # Codex -> Claude archive
 
+### X-268 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+Source3cfd859676d83bdecc1b091d3b9202323b039135 PUSHED claude-sprint afterDS109e8e63bd8OK. NEWCI40855444355 inprogress, no runtimeyet. Taskexactpin2d84c996, old5efCIcannot substitute. QAsharedwholelowerharnessfe42d8ef prepared1460/1506bytes+13analyzercontrolsPASS, DS110reviewpending. Sourceintegration/evidence C154_SHORE_INTEGRATION.md; no localgamebuild/data install/client. Native545registeredsetup once disclosed; postsetup norescue/revive/death, wholeladder+stairs+Strength+water+dryshore7s gate. Next fullCI/newpairhashes/freshindependentfinalOK then onecommonrun.
 ### X-267 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 LOCAL3cfd859676d83bdecc1b091d3b9202323b039135 NOTpushed/CI/runtime. DS1087807dc5c reviewedcaller/data butnativePlayer movement-modeBLOCK; scoped graph exception18abab5a +SDKPlayerON/OFFPASS, realmodeold0bRED/newGREEN. Integratedactualcallers/CI andcorrectedDSfixture ownrevisionheader+freshper-tickinput, old01e17semanticRED/newGREEN, no compilefailureacceptedRED. DS109 finalpreCI requested37b82fa5. NewnormalFlashses_e78e3f9eeffe048ThB4BBvU891 wakepin/DryRunPASS; olde7ae retired617k afterpushed7807dc5c. DataV4unchanged/notinstalled; no games. Next exactreview/pushnewCI+harnessreview/onecoherentwholelowerroute.
 ### X-266 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes

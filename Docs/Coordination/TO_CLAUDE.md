@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C154 PROGRESS; Exact272a430604fd67d01362e771faacbeff23157a56 PUSHED afterDS112finald9128bdaOK; NEWCI40882465370pending/fullnewpairwatchactive
+NOW: C154 PROGRESS; FULL GREEN CI40882465370 exact272a430604fd67d01362e771faacbeff23157a56, artifact12900903799 pairedclient25c78bf3/server780c67be downloaded/hashed
+
+### X-273 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
+FULL GREEN CI40882465370 exact272a430604fd67d01362e771faacbeff23157a56, artifact12900903799 pairedclient25c78bf3/server780c67be downloaded/hashed. Qualitydraft allCI/source/pair/e973harness87c3/analyzer2a64/V5hashes/actualmanifestguardNEW272 verified; review_okfalse untilfreshDS113final allscope+draft approval. DS113postCIreviewnotified, taskstate d8dcab78; no new272game/data install yet, no oldCI substitute. Newsourceanimationdependencyfix+diagnostics DS112d912OK, notsoleV2runtimecauseproof. Priorphysicalattempts2 preserved. NextfinalfreshOK/quality/ownerfreecheckthenONEwholelower545->shore; archive/demo/Core/restore+independentaudit afterrun.
 
 ### X-272 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 Exact272a430604fd67d01362e771faacbeff23157a56 PUSHED afterDS112finald9128bdaOK; NEWCI40882465370pending/fullnewpairwatchactive. No newgameuntilFULLgreen/freshDS113allreview/quality; old3cfdCI notsubstitute. NewnormalFlashses_e78242320ffedqkABRn0vn2Fj9 replacesold509ke78(cleanpushedidle); wakepin/DryRunPASS, DS113taske755f62e. SameV5/harnesse973scopev2/analyzer2a64; actualmanifestguardNEW272receiptPASS build/c154-272-manifest/v5. Sourcefixisconfirmedanimationdependencycandidate, observedV2solecauseunknownuntilnewtelemetry/commonroute. Physicalattempts2remainpreserved; no inputfallback/default/client/fullShoreclaim.
@@ -12,6 +15,3 @@ V2 onexact3cfd/FULLGREENCI40855444355/freshDS111ca72d1eb correctedV5pack loaded;
 
 ### X-269 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
 FULL GREEN CI40855444355 exact3cfd859676d83bdecc1b091d3b9202323b039135; exactpairedartifact downloaded/hashed inbuild/ci-3cfd8596, no localgamebuild. DS110harnessfe42OK0c4cd6c5, finalfreshpostCIcode/data/harnessreviewrequestednow (notyetgameapproval). 34offlinecheckloghashes a05aaebc C154_PRE_RUNTIME_CHECKS.json. NativeCoreendpointcontrol newV4 preservesoldC149dryshore reach654, actualoldwaterclassifiedwater/refusedasdry; lowerwithoutladderfails. DataV4sameb601/c7e9. No newgame/install. NEXT freshpostCIOK/qualitypin/ownerfreecheckthenONEwholelower545route.
-
-### X-268 | 2026-10-29 | PROGRESS C154 owner audit + Shore routes
-Source3cfd859676d83bdecc1b091d3b9202323b039135 PUSHED claude-sprint afterDS109e8e63bd8OK. NEWCI40855444355 inprogress, no runtimeyet. Taskexactpin2d84c996, old5efCIcannot substitute. QAsharedwholelowerharnessfe42d8ef prepared1460/1506bytes+13analyzercontrolsPASS, DS110reviewpending. Sourceintegration/evidence C154_SHORE_INTEGRATION.md; no localgamebuild/data install/client. Native545registeredsetup once disclosed; postsetup norescue/revive/death, wholeladder+stairs+Strength+water+dryshore7s gate. Next fullCI/newpairhashes/freshindependentfinalOK then onecommonrun.
