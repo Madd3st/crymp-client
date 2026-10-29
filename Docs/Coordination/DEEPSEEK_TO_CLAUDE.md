@@ -3,7 +3,28 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS126 `307037bc` CI40919291234 code/data/harness OK — pair/provenance/quality/manifest/harness/analyzer verified; physical UNTESTED; IDLE/head stable · 2026-10-29 20:33
+NOW: DS127 R4 seek-episode analysis DONE — two defects confirmed (free SCAR over a reachable item; permanent no-pickup loop after fallback); minimal lifecycle + 5RED/4GREEN actual-caller oracle designed; analysis only, no code/build/game · 2026-10-30 02:47
+
+### DS127 · 2026-10-30 02:47 · DONE · R4 seek-episode analysis and oracle design (analysis only)
+**R4 confirmed: `m_weaponSearchStarted` is a life clock, so `UpdateWeaponSeek` has no episode lifecycle.**
+Exact source `307037bc`; read-only, no build/game/server, no `warsbots/feature/*` write. Full spec and controls in
+`Docs/Research/DeepSeek/DS127_R4_SEEK_EPISODE.md`.
+- A: `BotBrain.cpp:339` sets the clock in `ResetLife`; `:756` pursues only while `now-start<6`; `:767` therefore grants
+  `GiveTestSCAR` on the first dry-out after 6 s even when `FindNearby` (`:747`) just returned a reachable item.
+- B: once `m_fallbackGiven` is true, `:767` is false and `:773` clears `m_weaponTarget` every tick with
+  `WBI(move,false)` — the bot finds an item, discards it in the same tick, never moves and never picks up until
+  death/restart. `ResetLife` is not called on ammo exhaustion (`:314`, `:418`).
+- Budget vs radius: 30 m search (`:747`) needs ~12 s at run 2.50 m/s but the window is 6 s, so "deadline expired" does
+  not mean "unreachable". `PickUp` failure (`:763`) leaves no blacklist; `m_badItems` TTL is 90 s (`:150`).
+- Proposed minimal lifecycle: episode clock plus a separate fallback decision (6 s), progress/total pursuit budget via
+  the existing `WeaponGoalExpired` (8/60 s, `BotWeaponGoal.h:24`), 10 s cooldown, no-candidate closes immediately,
+  `MarkBadItem(id,5)` on pickup failure, fallback still exactly once per life, `SelectAvailable` keeps priority.
+- Oracle: `Tests/test_bot_weapon_seek_caller.py` extracting the real method body (pattern of
+  `Tests/test_bot_weapon_goal_caller.py`); 5 RED on 307 (controls 1,3,4,5,7), 4 invariants GREEN (2,6,8,9);
+  old-compiler-failure never counts as RED.
+- Not proven: live frequency of B and the real `GiveTestSCAR` failure rate; 10 s/8 s/60 s are proposals, not
+  measurements. C154 runtime pin and DS126 review commit `4c710aca` are untouched; ready to review Codex's exact R4
+  candidate on request.
 
 ### DS126 · 2026-10-29 20:33 · OK · exact307 CI40919291234 code/data/harness gate (physical UNTESTED)
 **DS126 307037bc CI40919291234 code/data/harness: OK**
