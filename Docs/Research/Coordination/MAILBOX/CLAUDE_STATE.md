@@ -1,3 +1,9 @@
+# C154 ACTIVE: historical audit revalidation, then Shore routes
+
+Owner new instruction: analyse supplied historical96a41b30 audit with current DeepSeek, add confirmed remaining issues to plan, then fix Shore routes. DS105/106 named; base exact5ef9ee22 (accepted C153 IA), upperShore acceptedb8 only. Current fresh DeepSeek ses_e7ae0b092ffeNe8ylONa2yHpQG/ACK3392d571, normal exactFlash; predecessor retired. Audit source Docs/Research/Audits/OWNER_AUDIT_96a41b30_2026-10-29.md. Runtime pin UNASSIGNED; no new game until coherent patch, new exactSHA/fullgreenCI/fresh review/data gates. Foreign QA Recording/wrapper preserved. C153 final report3f54cef5, X262/publication receipt; sourcebc5bd1d8/wikifinal97720afb. Next read DS105 findings; independently revalidate code and existing lower-route geometry offline, update plan, then implement actual supported route batch. No random Shore retry/upperresampling/teleport/loosergates.
+
+## Earlier accepted state/history
+
 # C153 DONE / wiki published / DeepSeek successor current
 
 C153 publication DONE: triage sourcebc5bd1d8b76f3122c018cd28dbf634304ab1f0c3 / wiki97720afb10d2e86f5cd1049bbc612fc562c51a28 (17exactblobs;81local+31GitlinksPASS). Game5ef9ee22/fullGREEN CI40790759287/DS1031e7d8682 accepted limited headless only; QA report3f54cef5, publication receipt pending final X. DeepSeek predecessor e7c28c retired533k>50%, pushed/idle; NEW current ses_e7ae0b092ffeNe8ylONa2yHpQG uses same explicitly pinned opencode-go/deepseek-v4.1-flash#default, successor ACK pending. Initial fresh-session default provider refused under privacy settings; no settings changed, exact prior Flash works. Windowswake exact newpin/DryRunPASS, no additional automation. Do not message oldsession. No new game/tasks dispatched; next routes planned offline before any shared acceptance. Existing DS050/052duplicateIDs remain unrelated/preserved.
