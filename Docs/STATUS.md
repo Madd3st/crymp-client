@@ -1,21 +1,31 @@
-# WarsBots current QA status — 2026-10-30
+# WarsBots: актуальный QA-статус — 30.10.2026
 
-Project entry point: [START_HERE](../START_HERE.md). [C156 recovery](Coordination/C156_RECOVERY.md): current code307/CI pair/V5/wiki and all four original traces/demos recovered and checked; offline controls PASS, quality content restored. Original per-attempt Memory/Navmesh snapshots and some transient receipts remain unavailable. Development can continue; owner runtime pause remains.
+Начать с [START_HERE](../START_HERE.md). Игровой Code/ этой QA-ветки устарел; текущий код находится в claude-sprint, а задачи и решения — на steelmill-triage.
 
+По поручению владельца выполняются только явно назначенные работы. Автоматические пробуждения, циклы wait_mail и самостоятельный перебор backlog выключены. **Игру и сервер агенту запускать запрещено до отдельного явного разрешения**, даже если игровых процессов нет. Сведения о том, что владелец играл 29 октября, являются историей, а не текущим состоянием ПК.
 
-OWNER PAUSE 2026-10-29: all autonomous agent work and wake/poll loops are paused until explicit owner resume. No active work; do not start model calls, backlog, QA or games. Windows WarsBots Mailbox Wake disabled and verified. This overrides earlier autonomous-loop instructions.
+## Текущая работа
 
-Owner hold renewed in resumed session: do not launch Shore. No CryMP/Crysis processes observed; latest classic session204741 archived_restored, receipts exact names/hashes Memory2/Nav16. Exact307 source/review heads and binary/harness/analyzer hashes match; PrepareOnly PASS. Physical307 UNTESTED. Await explicit owner release.
+| Пункт | Состояние | Следующий шаг |
+| --- | --- | --- |
+| C154: нижний маршрут Shore | Кандидат `307037bc08050d39f26310dc6cc7071dddddf4a6`, полный CI40919291234 SUCCESS, DS126 `4c710aca7a5543bc1c5a66005ef8a8e352792f6f`: код/данные/сценарий OK. Физический результат307 НЕ проверен | После отдельного разрешения владельца и свежего preflight: один общий lower545 → лестница → физический выход/верхний пол → Strength → вода → сухой берег, затем аудит |
+| C156: восстановление | Завершено с известными историческими потерями | [Результат и ограничения](Coordination/C156_RECOVERY.md) |
+| R4 | Подтверждён дефект deadline поиска после позднего исчерпания боезапаса | Отдельный clock эпизода поиска; реализация не объявлена выполненной |
+| R9 | Подтверждён разрыв контракта направления generic jump; конкретное падение не доказано | Удержание проверенной траектории или повторная валидация |
+| D032 | Решение о first_primary по умолчанию открыто | Решение владельца; defaults не менять самостоятельно |
 
-C155 CLASSIC READY: exact abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e/fullCI40890940918/DS1215c12d27bb433c9f3eba10881b46bc8527f40bd54. E:/WarsBots/Showcases/Steelmill-Classic-abac72a9/START.cmd: IA8, two bots each difficulty, C119 navigation, ladder0. Runb4a86362/manifest64c703df/all16hashes+PrepareOnlyPASS. Delivered first, QA8c030196; no new gameplay merely for packaging. F6/F7 select, F1 view. [Receipt](Coordination/C155_CLASSIC_READY.json).
+## Что подтверждено раньше
 
-C155 cleanup/docs DONE df447475 / wiki6980abf (18pages,89local33GitlinksPASS): measured storage, verified E archives before deletion, current source and evidence preserved. Four oldC019 rawOBJ files3,740,408,407B archived/verified then removed from C; no currentShore geometry deletion. 39retired review worktrees safely archived/removed (9clean/30dirty),305old derivedbinaries archived/removed, mail/status consolidated; one superseded audit appthread archived via API, no appdatabase or owner video deletion. FreeC20.42GB->26.87GB; complete receipt C155_HYGIENE_RESULT.json. New bulk artifacts on E.
+C155: готов классический Steelmill на E, `abac72a9` / CI40890940918 / DS121 `5c12d27b`, восемь ботов, по два каждой сложности. [Квитанция](Coordination/C155_CLASSIC_READY.json). Отдельной игровой приёмки смешанного состава ради упаковки не было.
 
-C154 NOT FIXED: sourceabac/fullCI40890940918, four controlled attempts retained. Climb works; native upper exit still blocked at97.920, V4 QA21682809/DS117ccbbe1cf; demo278frames/fulltail and Memory4/Nav16 byteexactrestore. [V4 evidence](Coordination/C154_ATTEMPT_V4_TOP_EXIT.json). Additional owner preview stops97.932; human client successfully exits same native shaft to99.750 with lateral egress, DS119735f052d. [Owner video/trace](Coordination/C154_OWNER_VIDEO_20261029.json). Audio not transcribed. Preview starts/fails/bans link before delayed60s revive; no second ladder start. It is diagnostic, not a fresh controlled acceptance.
+C153: ограниченный серверный Steelmill на `5ef9ee22` / CI40790759287; это не клиентская приёмка и не полный матч PS. [Результат](Coordination/C153_GOAL_WEAPON_RESULT.md).
 
-Current Shore candidate307037bc08050d39f26310dc6cc7071dddddf4a6 pushed after DS125d19ca preCI review. FULL CI40919291234 SUCCESS, exact paired artifact downloaded/hashed; source caller controls/SDKONOFF/newactualManifestOkV5 PASS. DS1264c710aca final code/data/harness/quality gate OK; final quality review_ok=true pinned. OWNER_PLAYING_HOLD: classic Steelmill client+server observed active; no install/game/probe while owner plays. No307physical result yet. Next step after fresh gate and owner finishes: ONE whole lower545→ladder/upperfloor→stairsStrength→water→dryshore run. No isolated/unchanged probe or fake completion. DS118v1 WaitExitStop hypothesis withdrawn; DS120 is design only. No fullPS/client/default promotion. Owner left previous game but can launch classic now: recheck process state before any runtime.
+C154 на старом abac: подъём работал, верхний выход FAIL около97,92м. Сохранены логи/демо четырёх попыток и видео человека, успешно вышедшего из той же шахты. Старые отчёты о точном восстановлении данных остаются историческими: отсутствующие снимки нельзя заново проверить. [V4](Coordination/C154_ATTEMPT_V4_TOP_EXIT.json), [видео](Coordination/C154_OWNER_VIDEO_20261029.json).
 
-C153 last accepted goals/weapons batch: 5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9/fullCI40790759287/DS1031e7d8682, limited headlessSteelmill8normal90.81s/8primary/84attacks/8same-slotdeathrevive/0grants. C149 old upper→shore route b8b444d6/CI40709459511 accepted84.78s, not full lower route. Historical statuses and all limitations preserved in [dated status archive](Coordination/Archive/STATUS-before-C155-20261029.md).
+## Восстановление и источники истины
 
-Authoritative active tasks/state/operations live on steelmill-triage; game source claude-sprint only. This QA branch contains stale game code: never read/grade/build it. Foreign Tools/Play-WarsBotsRecording.ps1 and untracked C126 wrapper remain untouched.
+C156: исходники, CI-пара307, V5, вики, исходные логи и демо четырёх попыток восстановлены и проверены; офлайн-проверки пройдены. Оригинальные per-attempt снимки Memory/Navmesh и часть временных квитанций C154 не найдены. Reviewed quality восстановлен по содержимому сохранённого Git-отчёта, исходная сериализация не заявляется восстановленной. Снимки C127/C155 не подставлялись вместо C154.
 
+Дополнительный поиск E: 36ZIP/73937записей, 64snapshot-манифеста/268файлов SHA PASS,81restore-квитанция; оригиналов C154 не найдено. Полный комплект и индекс — E:/WarsBots/Recovery-2026-10-30/.
+
+[Текущие задачи](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/TO_CODEX.md), [передача](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/CLAUDE_STATE.md), [решения](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/DECISIONS.md), [вики](https://github.com/Madd3st/crymp-client/wiki). Старые отчёты и архивные open/STOP не являются текущими поручениями. Чужие Recording/C126-изменения сохраняются.
