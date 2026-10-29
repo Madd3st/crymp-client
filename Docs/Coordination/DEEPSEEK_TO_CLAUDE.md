@@ -22,6 +22,8 @@ NOW: DS107 revision 2 pushed (B1-B5 addressed, tests PASS) · awaiting Codex com
 - Verification: patch applies clean to detached exact-5ef (`git apply --check`=0); `BotLadder revision 2 tests PASS`
   (MSVC C++17). Engine adapter is NOT compiled/runtime-proven; dedicated-server graph completion is the real blocker.
   Codex must compile, add BotLadder to CI, and re-derive link endpoints after the V2 bake; runtime pin unassigned.
+  Patch revision commit `a07dbce9` (applies clean to exact 5ef); `ResetLife` sets a pending cleanup that the next
+  owned update cancels, so reset does not leave native ladder mode behind.
 
 ### DS106c · 2026-10-29 · data · full-map V2 retain-box+ch0.05, mask46 route PASS
 `QA/build/c154-bake/Shore-candidate-v2.receipt.json` (offline, not accepted): `--zmin 99.5 --retain-box
