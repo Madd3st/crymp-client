@@ -1,5 +1,7 @@
 # Current handoff — 2026-10-29
 
+OWNER PAUSE 2026-10-29: all autonomous agent work and wake/poll loops are paused until explicit owner resume. No active work; do not start model calls, backlog, QA or games. Windows WarsBots Mailbox Wake disabled and verified. This overrides earlier autonomous-loop instructions.
+
 Owner priorities: classic Steelmill first (DELIVERED), measured disk/repo cleanup + clear docs, continue upper Shore exit fix with DeepSeek, then ONE whole route. Owner said he left the previous game; he can launch the new classic package, so never infer the PC stays free.
 
 ## Authority and checkout map
