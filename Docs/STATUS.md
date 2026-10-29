@@ -2,7 +2,7 @@
 
 Read [the current research/project status](Research/STATUS.md) and [operational handoff](Research/Coordination/MAILBOX/CLAUDE_STATE.md) first. The 24 October notes below are historical. Current game code is on `warsbots/feature/claude-sprint`; `warsbots/feature/weapon-goals` holds QA mail/reports and stale game code.
 
-C154 source `3cfd859676d83bdecc1b091d3b9202323b039135` is under new CI40855444355 and shared-route review. Lower Shore physical acceptance is pending. Accepted C153 IA evidence remains tied to `5ef9ee22`; frozen C150 showcase packages remain `b8b444d6`.
+C154 source `272a430604fd67d01362e771faacbeff23157a56` is under new CI40882465370 and shared-route review after the native ladder stall on3cfd. Lower Shore physical acceptance is pending. Accepted C153 IA evidence remains tied to `5ef9ee22`; frozen C150 showcase packages remain `b8b444d6`.
 
 # WarsBots for CryMP: historical status, 2026-10-24
 
