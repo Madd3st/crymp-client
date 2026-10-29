@@ -38,3 +38,7 @@
 **Shore playable:** естественные выходы поддерживаемых спавнов и повторяемый командный цикл до реального захвата. Принятый C149 остановился в 31.235 м от цели — захват им не подтверждён. Для заявления о полном Power Struggle потребуется ещё штатное завершение матча.
 
 [Полный инженерный план: исходники, oracles, метрики, зависимости и разделение работы](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/CS_BOT_MATURITY_PLAN.md). [Независимый разбор DeepSeek DS096](https://github.com/Madd3st/crymp-client/blob/e4051c5f/Docs/Research/DeepSeek/DS096_CS_PARITY_PLAN.md). [Текущий статус](Status-and-Roadmap) · [Метод проверки](Testing-and-Evidence).
+
+## Уточнение после исторического аудита — C154
+
+Проверили R1–R9 на5ef9ee22 вместе с DeepSeek. В Б1 остаётся подтверждённый поиск оружия после исчерпания патронов: его6-секундное окно привязано к началу жизни, а не нового поиска. В Б2 добавлен разрыв контракта направления pending/airborne прыжка; конкретное падение не доказано. Ошибку Lua bridge и лишние hit-логи уже исправляли; урон и spawn-защита исправлены в коде, сравнительная игровая матрица ещё впереди. Обычный reset раунда проходит через существующее пересоздание roster; отдельный подтверждённый баг тут не установлен. Сейчас приоритет владельца — маршруты Shore. [Таблица по каждому пункту и доказательства](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/C154_AUDIT_REVALIDATION.md).
