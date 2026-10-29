@@ -213,9 +213,9 @@ int main(){
   b.cornerLink.b[0]=0;b.cornerLink.b[1]=0;b.cornerLink.b[2]=20;b.cornerLink.kind=NavLinkLadder;
   b.m_ladder.Start(0,LVec{0,0,10},LVec{0,0,20});
   actor.ladderUsable=true; actor.grabs=0; actor.isLadderCalls=0;
-  LadderInput in; in.now=0; in.grounded=true;
   Vec3 center(0,0,11.2f);
   for(int tick=0;tick<3;++tick){
+   LadderInput in; in.now=0; in.grounded=true; // actual UpdateLadder constructs fresh input every tick
    actor.e.p=Vec3(0,0,10); in.feet=LVec{0,0,10};
    if(tick==0) in.feet=LVec{0,1.7f,10}; if(tick==1||tick==2) in.feet=LVec{0,1.1f,10};
    in.onLadder=actor.st.isOnLadder.Value(); in.exiting=actor.st.isExitingLadder;
@@ -248,6 +248,11 @@ int main(){
   MockBrain c; c.m_ladder.Start(0,LVec{0,0,10},LVec{0,0,20}); c.m_ladderNow.ref=42;
   c.CancelLadder(actor,"stop",false);
   check(c.mesh.bans==0,"cancel: stop must not ban a valid link");
+  MockBrain d; d.m_ladder.Reset(); d.m_ladderNow.ref=42;
+  d.CancelLadder(actor,"no_grab",true);
+  check(d.mesh.bans==1,"cancel: failed inactive policy still bans its actual route");
+  d.CancelLadder(actor,"no_grab",true);
+  check(d.mesh.bans==1,"cancel: duplicate cleanup must not ban twice");
  }
 
  // 4. Native exit graph: new rejects empty/0-before-egress; human legacy still leaves.
@@ -255,6 +260,9 @@ int main(){
   CPlayer p; p.st.isExitingLadder=true; p.st.ladderBottom=Vec3(0,0,10); p.st.ladderTop=Vec3(0,0,20);
   p.ac.ag=&p.ag; p.e.p=Vec3(0,0,10);
   MockMovement m(p);
+  p.ag.out=nullptr; m.ExitBlock(p); check(p.leaves==0,"exit: null output must not leave");
+  p.ac.ag=nullptr; m.ExitBlock(p); check(p.leaves==0,"exit: missing graph must not leave");p.ac.ag=&p.ag;
+  p.ag.out="invalid"; m.ExitBlock(p); check(p.leaves==0,"exit: invalid output must not leave");
   p.ag.out=""; m.ExitBlock(p); check(p.leaves==0,"exit: empty graph output must not leave");
   p.ag.out="0"; p.e.p=Vec3(0,0,10); m.ExitBlock(p); check(p.leaves==0,"exit: graph0 before physical egress must not leave");
   p.e.p=Vec3(0.6f,0.6f,19.5f); m.ExitBlock(p); check(p.leaves==1,"exit: graph0 after physical egress leaves");
