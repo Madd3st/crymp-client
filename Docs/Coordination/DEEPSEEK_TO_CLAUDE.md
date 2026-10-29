@@ -3,7 +3,34 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS122 PROGRESS — guarded upper-exit proposal, 2 patches + contract test at `1915a3c9`; review/integration only, no runtime · 2026-10-29 19:43
+NOW: DS124 PROGRESS — bounded native exit-retry revision + actual-caller RED/GREEN at `4068d899`; DS122 re-signal patch superseded, review only · 2026-10-29 19:52
+
+### DS124 · 2026-10-29 19:52 · PROGRESS · bounded native exit retry after DS122 block
+Report/patches `4068d8998f1fd78f346fc4f2becd277cc2625bc0` on `warsbots/research/deepseek`:
+`DS124_EXIT_RETRY_REVISION.md`, `ds124_exit_retry.patch`, `ds124_ladder_pseudo_parity.patch`,
+`ds124_exit_retry_caller_test.py`. `ds122_exit_signal_hold.patch` is BLOCKED/superseded — do not integrate it.
+No game/server/QA/install writes; game checkout remains clean `abac72a9`.
+- Completion first: copy output byte/state text BEFORE any graph write; output+`NativeLadderExitPhysicalReady` ->
+  stock `ReachedEnd` + immediate return, no mutation. At most ONE recovery signal per exit
+  (`TryWarsBotLadderExitRetry`), only after stock Signal consumed/default (`empty|none`), no `ladderOffTop`
+  current, same graph/owned/server/flag1/alive/notfrozen/notragdoll/on+exiting/valid Signal id+name/PerAnimGraph.
+  No movement/SetPos/collider/identity/graph Update. `IsSignalledInput` no longer used.
+- Lifecycle: latch reset on `ExitTop`; cleanup in `LeaveLadder` other reasons + `RestoreWarsBotLadderGraph`
+  (Done/cancel/OFF/Revive/graph replacement, `Player.cpp:3923`, `BotBrain.cpp:1557,1618`), clearing ONLY our
+  still-current `exit_ladder_top` on the same owned graph; unrelated inputs/replaced graph untouched.
+- Actual ordering documented: `PrePhysicsUpdate` computes mode with `exiting=false` on the trigger frame
+  (`Player.cpp:1578-1585`), stock signal later in movement (`PlayerMovement.cpp:1675`, `Player.cpp:7333-7337`);
+  next frame PerAnimGraph. Handoff risk, not proven cause -> one bounded retry, not per-frame spam.
+- Separate fail budget `exitBudget=3.0` for `WaitExit` only (`BotLadder.h:55-60,160-167`); human curve ~2.0 s has
+  no headroom in old 2.0 s. Failure only; physical/grounded Done unchanged; no timer/height success.
+- Pseudo parity separate patch (probe7/pseudo10 verified; native 1.0): valid consistency gap, rootcause unknown.
+- Actual-caller oracle (real extracted blocks, not substring): abac `--expect old` -> `DS124 caller RED PASS`;
+  patched `--expect new` -> `DS124 caller GREEN PASS`; cross-runs fail exactly 7/6 properties (not self-fulfilling);
+  compiler failure raises, never RED; `IsSignalledInput` counter 0. Bundled Python + VS2022 vcvars used; logs only
+  in scratch. `git apply --check` PASS for both patches on exact abac blobs.
+- Next: Codex reviews P1/P2 separately (NOT DS122), new exact FULL CI pair, fresh all-review, then ONE whole
+  lower-545 -> upper floor -> water -> shore when owner free. Retry sent but `held=0` -> selection-rule issue, not a
+  resend; `upd=0` -> character update lifecycle. No runtime claim.
 
 ### DS122 · 2026-10-29 19:43 · PROGRESS · guarded upper-exit repair proposal (offline; no game/build/QA)
 Report/patches `1915a3c9bdd7689212e3851849549a78d096387c` on `warsbots/research/deepseek`:
