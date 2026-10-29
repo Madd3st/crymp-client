@@ -1,3 +1,5 @@
+C154 CURRENT CANDIDATE: LOCAL307037bc08050d39f26310dc6cc7071dddddf4a6 clean, NOT pushed/CI/runtime. Corrected boundedDS124 + integratorhardening, actualcaller REDabac/GREEN307 + SDKON/OFFPASS; DS125 prepush review pending. Code source localdscode only, remoteclaude remainsabac untilreviewOK. No extra game; C155classic staysabac. 
+
 # Current handoff — 2026-10-29
 
 Owner priorities: classic Steelmill first (DELIVERED), measured disk/repo cleanup + clear docs, continue upper Shore exit fix with DeepSeek, then ONE whole route. Owner said he left the previous game; he can launch the new classic package, so never infer the PC stays free.
@@ -22,4 +24,5 @@ C019 obsolete raw geometry archived E:/WarsBots/Archive/2026-10-29/C019-geometry
 
 ## Next actions and non-negotiable gates
 C155 completed QA df447475 / wiki6980abf (18pages89local33GitlinksPASS), freeC20.42GB->26.87GB, 39retiredreviewworktrees archived/removed plus4oldOBJ/305derivedbinaries; C155_HYGIENE_RESULT.json. DS123 ownoutbox/successor then DS122 upperexit source proposal. No local game build. New code requires new exact full-green CI pair + fresh independent code/data/harness review, owner-free check, ONE whole lower545→ladder→upperfloor→water→shore acceptance. Stock ownership/physical egress/grounded-floor guards stay; no SetPos/impulse/time-only detach or fake ReachedEnd. Archive/demo/Core/currentrestore audit required. Closed history is in Archive/2026-10-29; do not rerun obsolete open labels. Remaining audit R4ammoepisode deadline/R9genericjump contract stay in maturity plan, not magically fixed by ladder work.
+
 
