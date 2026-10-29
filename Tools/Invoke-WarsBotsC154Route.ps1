@@ -50,7 +50,9 @@ foreach($name in $expectedData.Keys){if($quality.data_hashes.$name -ne $expected
 if(@(Game-Processes).Count){throw 'Owner game/server active; no test'}
 if(Get-NetUDPEndpoint -LocalPort $port -ErrorAction SilentlyContinue){throw 'Port occupied'}
 if((Test-Path $out) -or (Test-Path $preLog) -or (Test-Path $serverLog)){throw 'Duplicate acceptance refused'}
-foreach($line in Get-Content (Join-Path $ci 'sha256.txt')){$hash,$name=$line -split '\s+',2;if((Get-FileHash (Join-Path $ci $name.TrimStart('*'))).Hash -ne $hash){throw 'CI payload mismatch'}}
+$hashLines=@(Get-Content (Join-Path $ci 'sha256.txt')|Where-Object {$_.Trim()})
+$hashNames=@(foreach($line in $hashLines){$hash,$name=$line -split '\s+',2;$name=$name.TrimStart('*');if($name -notin @('CryMP-Client64.exe','CryMP-Server64.exe') -or (Get-FileHash (Join-Path $ci $name)).Hash -ne $hash){throw 'CI payload mismatch'};$name})
+if($hashNames.Count -ne 2 -or @($hashNames|Sort-Object -Unique).Count -ne 2){throw 'Exact paired client/server hashes required'}
 function Assert-ReviewFresh {
  git -C $repo fetch -q origin '+refs/heads/warsbots/research/deepseek:refs/remotes/origin/warsbots/research/deepseek'
  if($LASTEXITCODE){throw 'Review fetch failed'}
@@ -75,6 +77,8 @@ New-Item -ItemType Directory -Force $logs|Out-Null
 Snapshot-Data $out
 $state=@{source=$CodeSha;map='Shore';bots=1;phase='snapshot_complete';directory=$out;server_exe=$serverExe;server_pid=$null;server_started=$null;server_log=$preLog;client_log=$null;client_pid=$null}
 Save-Session $state
+Copy-Item -LiteralPath $qualityPath -Destination (Join-Path $out 'quality.json')
+Copy-Item -LiteralPath (Join-Path $ci 'sha256.txt') -Destination $out
 Save-Json @{logical_localappdata=$env:LOCALAPPDATA;namespace='Codex MSIX child process';targets=$targets;command_bytes=$commandBytes;setup='native registered545 once; synthetic setup death excluded';data_hashes=$expectedData} (Join-Path $out 'provenance.json')
 $passed=$false;$qualityPass=$false;$failureReason=$null;$runtimeEvidence=$null
 function Start-Phase([string]$arguments,[string]$log,[bool]$bots){
