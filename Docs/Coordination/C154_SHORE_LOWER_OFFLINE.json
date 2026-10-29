@@ -1,0 +1,21 @@
+{
+  "task": "C154",
+  "kind": "offline_existing_mesh_queries",
+  "game_source": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+  "game_runs": 0,
+  "scope": "Existing low90 dry-floor route to ladder base only; no whole-route PASS or controller traversal.",
+  "files": {
+    "E223.log": {
+      "sha256": "d84a35fb552c72641e6d76f7d636b2be7ff6d4aebd33a1eb3988fbcc748e24e0",
+      "text": "polys=46615 components=3803 links=1\nproject lower545 ok=0 xyz=0.000,0.000,0.000 dz=-90.375 floor_match=0\nproject lower530 ok=1 xyz=2115.307,1880.375,102.711 dz=12.336 floor_match=0\nproject ladder_bottom_observed ok=0 xyz=0.000,0.000,0.000 dz=-90.586 floor_match=0\nproject ladder_top_observed ok=1 xyz=2117.007,1879.700,99.811 dz=0.090 floor_match=1\nproject upper532 ok=1 xyz=2110.500,1882.500,103.211 dz=-0.239 floor_match=1\nproject pool_rim_observed ok=0 xyz=0.000,0.000,0.000 dz=-89.575 floor_match=0\nproject dive_low_observed ok=0 xyz=0.000,0.000,0.000 dz=-83.656 floor_match=0\nproject sea_surface ok=1 xyz=2083.000,1863.000,99.511 dz=0.011 floor_match=1\nlower545_to lower545 path=0 reason=start_off_mesh corners=0 links=0\nlower545_to lower530 path=0 reason=start_off_mesh corners=0 links=0\nlower545_to ladder_bottom_observed path=0 reason=start_off_mesh corners=0 links=0\nlower545_to ladder_top_observed path=0 reason=start_off_mesh corners=0 links=0\nlower545_to upper532 path=0 reason=start_off_mesh corners=0 links=0\nlower545_to pool_rim_observed path=0 reason=start_off_mesh corners=0 links=0\nlower545_to dive_low_observed path=0 reason=start_off_mesh corners=0 links=0\nlower545_to sea_surface path=0 reason=start_off_mesh corners=0 links=0\n"
+    },
+    "US-low90.log": {
+      "sha256": "d11ce7b2c3225325f5b45ee0ee5198ec42801714949b36bd94f80a49a57e3085",
+      "text": "polys=1072 components=86 links=0\nproject lower545 ok=1 xyz=2114.500,1887.875,90.168 dz=-0.207 floor_match=1\nproject lower530 ok=1 xyz=2113.625,1880.375,90.168 dz=-0.207 floor_match=1\nproject ladder_bottom_observed ok=1 xyz=2116.125,1880.625,90.168 dz=-0.418 floor_match=1\nproject ladder_top_observed ok=1 xyz=2116.700,1879.800,99.768 dz=0.047 floor_match=1\nproject upper532 ok=1 xyz=2110.500,1882.500,103.168 dz=-0.282 floor_match=1\nproject pool_rim_observed ok=1 xyz=2125.000,1883.959,90.168 dz=0.593 floor_match=1\nproject dive_low_observed ok=0 xyz=0.000,0.000,0.000 dz=-83.656 floor_match=0\nproject sea_surface ok=1 xyz=2083.000,1863.000,99.568 dz=0.068 floor_match=1\nlower545_to lower545 path=1 reason=ok corners=1 links=0\nlower545_to lower530 path=1 reason=ok corners=2 links=0\nlower545_to ladder_bottom_observed path=1 reason=ok corners=4 links=0\nlower545_to ladder_top_observed path=0 reason=other_component corners=0 links=0\nlower545_to upper532 path=0 reason=other_component corners=0 links=0\nlower545_to pool_rim_observed path=1 reason=ok corners=3 links=0\nlower545_to dive_low_observed path=0 reason=goal_off_mesh corners=0 links=0\nlower545_to sea_surface path=0 reason=other_component corners=0 links=0\n"
+    }
+  },
+  "probe": "Tools/Diagnostics/ShoreLowerRouteProbe.cpp",
+  "probe_sha256": "aff4cba3ece67b0b5fd3d282fb679990bba2f7c1ac51d45f435bcff76bed341f",
+  "local_compile_recipe": "build/c154-lower-probe.ps1 (reuses unchanged actual NavMeshCore/Detour objects from DS098; no game build)",
+  "physical_data_unchanged": true
+}
