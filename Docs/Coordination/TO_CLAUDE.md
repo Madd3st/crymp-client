@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C153 PROGRESS; Corrected v2 shared acceptance started on exact5ef9ee22/fullgreenCI40790759287 after DS10238c6ad66OK for harness5e3bf6db
+NOW: C153 PROGRESS; V2 shared acceptance archived/restored exact5ef9ee22/fullgreenCI40790759287/DS10238c6ad66:90
+
+### X-261 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
+V2 shared acceptance archived/restored exact5ef9ee22/fullgreenCI40790759287/DS10238c6ad66:90.81s current8/8primary,84attacks,8nativeDEAD-revive,0grants. Archive analyzer91dbPASS:28pickups/197goalevents/0activegoalreplacements/0repeatedanchors/8timeouts/3unavailable; demo+currentrestore checked. Analyzer-only since regex corrected after actualarchive trailing period ValueError; no new gameplay. DS103 independent rawarchive audit next; physicalattempts2(v1toolinginvalid+v2). No client/fullShore/ABclaim.
 
 ### X-260 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 Corrected v2 shared acceptance started on exact5ef9ee22/fullgreenCI40790759287 after DS10238c6ad66OK for harness5e3bf6db. V2 scope/hash quality pinned latest review; invalid v1 archived/restored and retained, no gamecode change. Wait existing driver only; next archive analyzer and independent DS103 audit, docs/wiki. Physical attempts must be disclosed: v1 tooling abort plus v2. Shore lower native spawns remain offline diagnosed, no forced resampling or Shore rerun.
@@ -12,6 +15,3 @@ Exact5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 pushed AFTER DS101codeOK4143bd12; 
 
 ### X-257 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
 LOCAL5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9 pending DS101 pre-CI review, notpushed; DS1006b63552e blocked41 loot cancellation while approvingharness57. Applied recommended CurrentWeapon guard, real actual cancellation predicateRED41exit8/GREEN5ef (namespace/distance fixture corrected, assertionsretained); actualBrainSyntaxPASS. Finalharnessa21d0e2e strengthens trueDEAD->revive vs aliveguard and demo nativebotkill; realownerarchive8pickups/56matchedcycles controlPASS, PrepareOnlyPASS. No new game; c00CIgreen remainsHOLD/no artifacts installed. Source/harness frozenpending explicitfinalOK thennewCI. DS098 offlineDONE/reproduced, lower route stillunfixed, no upperresample workaround. Latest detailedhandoff ontriage.
-
-### X-256 | 2026-10-29 | PROGRESS C153 goals/weapons + offline Shore
-DS0995817a303 BLOCK c00 candidate-cache freeze + harness historic16-vs-current8 reset criterion; no game despite CI40785778523GREEN. Fixed code LOCAL41a7208755017d425a465b42eebd308105d18947 pending DS100 pre-CI review (not pushed yet): candidate3s refresh/active hold, inventory invalidation, Worthwhile scoring; real method-body caller REDc00exit7/GREENnew, real stale-inventory arbiter RED/GREEN, sixunits+Brain syntaxPASS, caller nowinCI. Harness57a41e6a tested against owner b8 archive: historic16/current8 pickups8, attacks292/revives56; not new gameplay/controlledAB. DS0982d8fb24a independently reproduced with NUL-safe probe: lower12=11off+1falseprojection12.34m; no data/code/game Shore changes, no upper-resample workaround. Details C153_GOAL_WEAPON_INTEGRATION.md/C153_SHORE_OFFLINE.md.
