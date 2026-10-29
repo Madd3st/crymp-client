@@ -1,5 +1,7 @@
 # WarsBots current QA status — 2026-10-29
 
+2026-10-30 storage relocation: 1143 old log/demo and obsolete CI executable files (3367103515 logical bytes) copied to E:/WarsBots/Archive/2026-10-30/old-evidence-012602, all SHA256 verified before C removal; manifest.json + removed.jsonl + README restore map retained. C free after16,752,951,296 bytes (~15.60GiB). Current307 clean/source/binary hashes and V5 manifest unchanged; C154/current packages/Memory/Navmesh/videos/foreign edits preserved. No game or autonomous work resumed.
+
 OWNER PAUSE 2026-10-29: all autonomous agent work and wake/poll loops are paused until explicit owner resume. No active work; do not start model calls, backlog, QA or games. Windows WarsBots Mailbox Wake disabled and verified. This overrides earlier autonomous-loop instructions.
 
 Owner hold renewed in resumed session: do not launch Shore. No CryMP/Crysis processes observed; latest classic session204741 archived_restored, receipts exact names/hashes Memory2/Nav16. Exact307 source/review heads and binary/harness/analyzer hashes match; PrepareOnly PASS. Physical307 UNTESTED. Await explicit owner release.
