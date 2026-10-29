@@ -1,0 +1,205 @@
+{
+  "task": "C154",
+  "verdict": "OFFLINE_GRAPH_PASS_ONLY",
+  "game_source_base": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+  "baker_source_commit": "b23e85ff22f37e9a66a198036b6e8f5aff0af869",
+  "candidate_directory": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-route-data-v3",
+  "manifest_sha256": "0269f0900fd0d982985f75d55e71d83923dcbd1e90f9570a7c0052a520bdc5df",
+  "files": {
+    "navmesh": {
+      "name": "Shore.navmesh",
+      "bytes": 11329588,
+      "sha256": "b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609",
+      "fnv64": "f9e8cb2d6cc174bb"
+    },
+    "links": {
+      "name": "Shore.links.txt",
+      "bytes": 118,
+      "sha256": "e7204de31a25482fd0d6d75feb55cb7e85255dc1e72f8a9bbf4f38f3191b7c2b",
+      "fnv64": "6e03169869301531"
+    },
+    "spots": {
+      "name": "Shore.spots.txt",
+      "bytes": 62,
+      "sha256": "d95e1e11fa06194e44e1b1d3887fb00334d7f0ccc9528c9a1b439d7ba78b548b",
+      "fnv64": "9bce2faedebbca34"
+    }
+  },
+  "producer": {
+    "task": "C154",
+    "kind": "offline_candidate_NOT_ACCEPTED",
+    "command": [
+      "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-bake\\recast_bake-frozen.exe",
+      "--obj",
+      "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c072-ps-export\\a943e070\\crop\\Shore.crop.obj.gz",
+      "--points",
+      "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\coordinator-c144\\Shore.preflight.pts",
+      "--links",
+      "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-bake\\Shore-candidate-v3.links.txt",
+      "--zmin",
+      "99.5",
+      "--retain-box",
+      "2103",
+      "1877",
+      "90",
+      "2138",
+      "1892",
+      "99.5",
+      "--water",
+      "99.5",
+      "--cs",
+      "0.1",
+      "--ch",
+      "0.05",
+      "--radius",
+      "0.3",
+      "--height",
+      "1.8",
+      "--climb",
+      "0.5",
+      "--slope",
+      "45",
+      "--tile",
+      "256",
+      "--min-region",
+      "2",
+      "--out-bin",
+      "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-bake\\Shore-candidate-v3.navmesh"
+    ],
+    "exit": 0,
+    "seconds": 46.312999999994645,
+    "installed": false,
+    "game_runs": 0,
+    "retention": "Whole source triangles only in explicit dry lower-interior box. Unfiltered allTris water mask unchanged. Physical agent dimensions unchanged.",
+    "link": "one-way native longshaft to walkable floor beside the observed native exit (requires native exit plus physical settle, no snap) + unchanged accepted upper Strength link",
+    "sha256": {
+      "recast_bake-frozen.exe": "dac32ae30a7e7f8cebf91ea657c64fe9d056d8288778d4f5120d2c5363e57785",
+      "recast_bake.cpp": "91515e68c83072d01509fbe8b845ed55ef121c9a8541c0188494de5b6bdb8a03",
+      "Shore-candidate-v3.links.txt": "e7204de31a25482fd0d6d75feb55cb7e85255dc1e72f8a9bbf4f38f3191b7c2b",
+      "Shore.crop.obj.gz": "0cbe74f37e9170b49edc9e6ffae0e6a1194b09188e0f1464a60c323c0729674d",
+      "Shore-candidate-v3.navmesh": "b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609"
+    },
+    "mesh": {
+      "tiles": 2099,
+      "tiles_grid": [
+        46,
+        46
+      ],
+      "polys": 46830,
+      "max_tile_polys": 300,
+      "components": 3857,
+      "area_m2": 2380949,
+      "main_area_m2": 2110701,
+      "two_way_area_m2": 2110701,
+      "offmesh_links": 2,
+      "generated": {
+        "drop": 0,
+        "jump": 0,
+        "strength": 0
+      }
+    },
+    "water": {
+      "z": 99.5,
+      "cell": 2.0,
+      "cells": 189169,
+      "blocked_cells": 148679,
+      "unknown_cells": 2622,
+      "surface_tris": 378338,
+      "area": 4,
+      "area_cost": 4.0
+    },
+    "summary": {
+      "spawns": 124,
+      "spawns_on_mesh": 124,
+      "spawns_in_main": 100,
+      "spawns_two_way": 100,
+      "items": 4,
+      "items_on_mesh": 2,
+      "items_two_way": 2,
+      "items_reachable": 2
+    }
+  },
+  "reproduction": {
+    "v3_equals_v2_navmesh": true,
+    "note": "Original v2 producer was recompiled while wiring Release-safe loader tests. V3 uses an immutable frozen producer and reproduced the identical navmesh; v2 is historical, v3 is the frozen review candidate."
+  },
+  "grid_oracle": {
+    "matched-coarse": {
+      "points": 32,
+      "adjacent_failures": 2,
+      "failed_rows": [
+        "native_trace t=149.895 xyz=2120.737,1880.972,99.744 project=1 dz=0.024 floor_match=1 from_previous=0 reason=other_component",
+        "native_trace t=155.648 xyz=2113.942,1883.214,103.335 project=1 dz=-0.167 floor_match=1 from_previous=0 reason=other_component"
+      ],
+      "sha256": "41dfac961b61f9ffd9881c2c02d6b9400fbcce62446bffd0554f539275092c5e"
+    },
+    "fine-xy": {
+      "points": 32,
+      "adjacent_failures": 2,
+      "failed_rows": [
+        "native_trace t=149.895 xyz=2120.737,1880.972,99.744 project=1 dz=0.024 floor_match=1 from_previous=0 reason=other_component",
+        "native_trace t=155.648 xyz=2113.942,1883.214,103.335 project=1 dz=-0.167 floor_match=1 from_previous=0 reason=other_component"
+      ],
+      "sha256": "2e92491ec91c7778cfdd11e00e42bc44f613c76a0c0d0aa8e465626e3453c439"
+    },
+    "fine-z": {
+      "points": 32,
+      "adjacent_failures": 0,
+      "failed_rows": [],
+      "sha256": "50c7492b8f566357c571570bedf2b1ed31654faed494c3847392e12dcbc6cd0c"
+    },
+    "fine": {
+      "points": 32,
+      "adjacent_failures": 0,
+      "failed_rows": [],
+      "sha256": "65ea0245c3640dcab620c15d5205ca6d9dc8a80b9f2c25a2fedb4e3bddad659c"
+    }
+  },
+  "gates": {
+    "14": {
+      "lower_spawns": [
+        "lower_spawn id=539 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=524 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=525 project=1 dz=-0.114 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=534 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=536 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=543 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=506 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=517 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=530 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=527 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=562 project=1 dz=-0.114 floor_match=1 to_dryshore=0 reason=other_component links=0",
+        "lower_spawn id=545 project=1 dz=-0.214 floor_match=1 to_dryshore=0 reason=other_component links=0"
+      ],
+      "reverse_to_lower": "NO_PATH (UP-only)",
+      "upper_to_dryshore": "PASS",
+      "sha256": "5e7c7f8197c2986f33e83f9b493f34ef6514c1221bdfc2f73fe9210f3b875fde"
+    },
+    "46": {
+      "lower_spawns": [
+        "lower_spawn id=539 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=524 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=525 project=1 dz=-0.114 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=534 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=536 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=543 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=506 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=517 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=530 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=527 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=562 project=1 dz=-0.114 floor_match=1 to_dryshore=1 reason=ok links=2",
+        "lower_spawn id=545 project=1 dz=-0.214 floor_match=1 to_dryshore=1 reason=ok links=2"
+      ],
+      "reverse_to_lower": "NO_PATH (UP-only)",
+      "upper_to_dryshore": "PASS",
+      "sha256": "c2e1bf01b67899f80d06394e01ad638188c67ce6893b0edd48a19ef682288a55"
+    }
+  },
+  "probe_sha256": "59ee88aba98694806b8f631d02811f6222a24f563b3877690ceece42d3b7dcc9",
+  "points_source": "C146 Client-trace.json, client time148.644..156.393; 32 points,31 adjacent paths",
+  "points_source_sha256": "1268ec775df6b179f29e0bf2919ee4b079b33a966fa53be44662d1e0fc561604",
+  "points": "148.644 2116.211 1879.724 99.54\r\n148.896 2116.245 1879.727 99.721\r\n149.145 2116.793 1880.144 99.669\r\n149.398 2117.761 1880.63 99.671\r\n149.648 2119.263 1880.932 99.739\r\n149.895 2120.737 1880.972 99.744\r\n150.146 2122.154 1881.366 99.727\r\n150.396 2122.975 1882.547 99.75\r\n150.648 2123.929 1883.626 99.75\r\n150.895 2125.433 1883.889 99.75\r\n151.144 2126.985 1883.994 99.75\r\n151.393 2128.403 1883.458 99.75\r\n151.642 2129.638 1883.798 99.75\r\n151.895 2130.677 1883.474 99.75\r\n152.147 2131.321 1883.433 99.75\r\n152.398 2131.835 1884.557 99.75\r\n152.647 2130.657 1884.887 99.75\r\n152.894 2129.13 1884.814 99.75\r\n153.146 2127.579 1884.505 99.75\r\n153.397 2126.027 1884.168 99.75\r\n153.644 2124.509 1883.831 99.75\r\n153.897 2123.391 1882.805 99.75\r\n154.146 2122.49 1882.161 99.75\r\n154.393 2121.563 1882.641 99.75\r\n154.645 2119.703 1883.319 99.75\r\n154.898 2117.705 1883.349 101.124\r\n155.142 2115.957 1883.35 102.33\r\n155.397 2114.816 1883.35 103.117\r\n155.648 2113.942 1883.214 103.335\r\n155.895 2112.641 1883.184 103.119\r\n156.147 2111.212 1883.218 103.125\r\n156.393 2109.006 1883.262 103.125\r\n",
+  "pending": "DS107 original cdff1772 BLOCK: native top-collision/graph guards, endpoint+grounded validation, phase movement exceptions, ownership and cancellation. Revision required before integration/CI/game.",
+  "game_runs": 0,
+  "installed": false
+}
