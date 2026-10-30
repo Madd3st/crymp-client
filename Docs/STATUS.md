@@ -8,7 +8,7 @@ Owner finished C157 Steelmill and requested continuing Shore. C157 archived/rest
 
 | Пункт | Состояние | Следующий шаг |
 | --- | --- | --- |
-| C154: Shore | 307037bc first controlled run FAILED: blocked_top at15.63s, feet z97.922, nativeOn1/exiting1. DS130 preflight OK; demo/archive and exact Memory4/Nav16 restore PASS | No unchanged rerun. Investigate graph state selection; DS131 post-run audit pending. [Result](Coordination/C154_307_RUNTIME_RESULT.json) |
+| C154: Shore | Active repair on `codex/shore-ladder-exit`, candidate `ed72987c` (PR2). 307/96 failed top exit; 96 proved animationSet=1/exitClip=-1/FIFO0 empty. D2 physics trial refused unsupported assumed landing. Ed uses actual validated link b, all collision/physical/cleanup guards retained; DS134161b603a source OK conditional, CI41086406959/PR41086417565 running | Continue runtime validation after full green CI/exact pair/fresh quality; do not stop at report. Frozen307 and prior archives retained. |
 | C156: восстановление | Завершено с известными историческими потерями | [Результат и ограничения](Coordination/C156_RECOVERY.md) |
 | R4 / C157 | Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; runtime НЕ проверен, C154307 сохранён. | [Draft PR №1](https://github.com/Madd3st/crymp-client/pull/1); [результат](Coordination/C157_R4_RESULT.md) |
 | R9 | Подтверждён разрыв контракта направления generic jump; конкретное падение не доказано | Удержание проверенной траектории или повторная валидация |
