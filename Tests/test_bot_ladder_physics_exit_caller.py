@@ -47,7 +47,7 @@ enum {ent_static=1,ent_terrain=2,ent_rigid=4,ent_sleeping_rigid=8,ent_living=16,
 struct World {
  bool floor=true,edge=false;float floorZ=9.6f,normal=1,overlap=0,sweep=0;int rays=0,overlaps=0,sweeps=0;bool skipOK=true;
  int RayWorldIntersection(Vec3 origin,Vec3,int mask,int,ray_hit* hit,int,IPhysicalEntity** skip,int count){
-  ++rays;skipOK&=count==1&&skip&&skip[0]&&(mask&ent_living);if(!floor||(edge&&origin.x>1.3f))return 0;
+  ++rays;skipOK&=count==1&&skip&&skip[0]&&!(mask&ent_living);if(!floor||(edge&&origin.x>1.3f))return 0;
   hit->pt={origin.x,origin.y,floorZ};hit->n={0,0,normal};return 1;
  }
  float PrimitiveWorldIntersection(int,primitives::primitive*,Vec3 delta,int mask,geom_contact**,int,int,void*,void*,int,IPhysicalEntity** skip,int count){
@@ -68,7 +68,7 @@ struct Coherent{bool value=true;bool Value()const{return value;}};
 struct Stats {Coherent isOnLadder;bool isExitingLadder=true,isRagDoll=false;float onGround=0;Vec3 ladderTop={0,0,10},ladderBottom={0,0,0},ladderOrientation={-1,0,0};};
 struct CPlayer {
  bool bot=true,frozen=false,m_warsBotLadderExitPhysics=false,m_warsBotLadderExitSettling=false;int health=100;mutable Entity entity;Stats m_stats;AC ac;AC* m_pAnimatedCharacter=&ac;
- bool IsWarsBotActor()const{return bot;}unsigned GetEntityId()const{return 7;}int GetHealth()const{return health;}bool IsFrozen()const{return frozen;}
+ bool IsWarsBotActor()const{return bot;}unsigned GetEntityId()const{return 7;}int GetHealth()const{return health;}bool IsFrozen(){return frozen;}
  Entity* GetEntity()const{return &entity;} AC* GetAnimatedCharacter(){return m_pAnimatedCharacter;} bool WarsBotLadderExitSettling()const{return m_warsBotLadderExitSettling;}
  @NEEDS@
  @COLLIDER@
@@ -92,6 +92,7 @@ int main(){
  {reset();CPlayer p;CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);
   check(!landed&&m.m_request.type==eCMT_Fly&&m.m_request.velocity.z>0,"request real native-axis rise");check(world.rays==5&&world.overlaps==1&&world.sweeps==1&&world.skipOK,"support footprint/fullbody checks and own body skipped");check(p.ac.mode==eColliderMode_Pushable&&p.m_warsBotLadderExitPhysics,"world collider acquired");
   p.SetWarsBotLadderExitPhysics(false,false);check(p.ac.mode==eColliderMode_Undefined&&!p.m_warsBotLadderExitPhysics,"cleanup releases owned collider layer");}
+ {reset();CPlayer p;p.entity.ch.a.clip=1;CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed&&world.rays==0&&world.overlaps==0&&p.ac.calls==0&&m.m_request.velocity.x==100,"registered clip path untouched by fallback");}
  for(int fault=0;fault<7;++fault){reset();CPlayer p;CPlayerMovement m(p);bool landed=true;
   if(fault==0)world.floor=false;if(fault==1)world.edge=true;if(fault==2)world.normal=.4f;if(fault==3)world.overlap=1;if(fault==4)world.sweep=.02f;if(fault==5)p.entity.physics.dimensionsOK=false;if(fault==6)m.m_frameTime=NAN;
   m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed&&m.m_request.velocity.len()==0&&!p.m_warsBotLadderExitPhysics,"blocked/missing floor/ledge/slope/overlap/wall/dimensions/dt refuse without success or motion");}
@@ -99,6 +100,7 @@ int main(){
  {reset();CPlayer p;p.entity.pos={0,0,9.67f};CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed&&m.m_request.velocity.x>0&&m.m_request.velocity.z==0,"rise then native forward egress");}
  {reset();CPlayer p;p.entity.pos={1.1f,0,9.6f};CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed,"position alone never completes");p.m_stats.onGround=.2f;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(landed,"real upper floor plus unchanged physical egress plus grounded");}
  {reset();CPlayer p;p.entity.pos={1.1f,0,9.6f};p.m_stats.onGround=.2f;world.floor=false;CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed,"stale grounded at missing floor never completes");}
+ {reset();CPlayer p;p.entity.pos={1.1f,0,9.6f};p.m_stats.onGround=.2f;p.m_warsBotLadderExitSettling=true;p.ac.mode=0;CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed,"foreign collider override never completes from stale grounded");}
  std::printf("Actual physics exit caller: failures=%d\n",failures);return failures?1:0;
 }
 '''
@@ -114,7 +116,7 @@ def main():
     restore = method(player, 'void CPlayer::RestoreWarsBotLadderGraph()')
     assert restore.index('SetWarsBotLadderExitPhysics(false,false)') < restore.index('if (!m_warsBotLadderGraphOverride)')
     cpp = CPP.replace('@HEADER@', (root / 'Code/CryGame/Bots/BotLadder.h').as_posix())
-    for token, source, signature in [('@NEEDS@', player, 'bool CPlayer::NeedsWarsBotLadderPhysicsExit() const'),
+    for token, source, signature in [('@NEEDS@', player, 'bool CPlayer::NeedsWarsBotLadderPhysicsExit()'),
                                      ('@COLLIDER@', player, 'void CPlayer::SetWarsBotLadderExitPhysics('),
                                      ('@ADAPTER@', move, 'void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(')]:
         body = method(source, signature)

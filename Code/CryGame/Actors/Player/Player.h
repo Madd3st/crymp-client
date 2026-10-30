@@ -638,7 +638,7 @@ public:
 	// DS-124: actor-local bound for the one native ladder exit. At most one recovery signal per exit; the latch is
 	// reset on ExitTop/leave/cancel/OFF/death/revive and cleanup clears only our own still-current signal.
 	bool TryWarsBotLadderExitRetry(IAnimationGraphState* graph);
-	bool NeedsWarsBotLadderPhysicsExit() const;
+	bool NeedsWarsBotLadderPhysicsExit();
 	void SetWarsBotLadderExitPhysics(bool enable, bool settling);
 	bool WarsBotLadderExitSettling() const { return m_warsBotLadderExitSettling; }
 	void ResetWarsBotLadderExitRetry();

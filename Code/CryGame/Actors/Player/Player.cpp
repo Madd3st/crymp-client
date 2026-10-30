@@ -7462,7 +7462,7 @@ IMPLEMENT_RMI(CPlayer, ClLeaveLadder)
 //  - no movement, position, collider or completion write; completion stays with the stock output+physical guard.
 // A dedicated character may have no registered exit clip (observed exitClip=-1/FIFO0=0).
 // Keep native animation ownership whenever the asset exists; this predicate never loads or forces a graph state.
-bool CPlayer::NeedsWarsBotLadderPhysicsExit() const
+bool CPlayer::NeedsWarsBotLadderPhysicsExit()
 {
 	if (!gEnv || !gEnv->bServer || !g_pGame || !IsWarsBotActor() ||
 		!g_pGame->GetBotManager().Owns(GetEntityId()) || WarsBots::BotConfig::Get().ladder!=1 ||

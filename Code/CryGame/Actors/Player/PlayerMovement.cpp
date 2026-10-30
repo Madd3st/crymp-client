@@ -1607,11 +1607,13 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	pe_player_dimensions dimensions;
 	if (!physics->GetParams(&dimensions) || !dimensions.sizeCollider.IsValid() ||
 		!std::isfinite(dimensions.heightCollider) || !std::isfinite(dimensions.heightPivot)) return;
+	if (dimensions.bUseCapsule!=0 && dimensions.bUseCapsule!=1) return;
 	const float radius=max(dimensions.sizeCollider.x,dimensions.sizeCollider.y);
 	if (radius<0.1f || radius>0.75f || dimensions.sizeCollider.z<0.f || dimensions.sizeCollider.z>1.5f ||
 		dimensions.heightCollider-dimensions.heightPivot<0.1f || dimensions.heightCollider-dimensions.heightPivot>2.f) return;
 	IPhysicalEntity* skip[]={physics};
-	const int mask=ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_living;
+	const int floorMask=ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid;
+	const int mask=floorMask|ent_living;
 	const Vec3 landing=top+forward*1.1f;
 	float floorZ=0.f;
 	// Require support across the landing footprint, never a single ray over a ledge.
@@ -1619,19 +1621,26 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	for (int i=0;i<5;++i)
 	{
 		ray_hit floor;
-		if (!gEnv->pPhysicalWorld->RayWorldIntersection(landing+offsets[i]+Vec3(0,0,0.5f),Vec3(0,0,-2.f),mask,
-			rwi_stop_at_pierceable|(geom_colltype_player<<rwi_colltype_bit),&floor,1,skip,1) || floor.n.z<0.75f ||
-			!floor.pt.IsValid() || floor.pt.z<top.z-1.2f || floor.pt.z>top.z+0.25f) return;
+		const int hits=gEnv->pPhysicalWorld->RayWorldIntersection(landing+offsets[i]+Vec3(0,0,0.5f),Vec3(0,0,-2.f),floorMask,
+			rwi_stop_at_pierceable|(geom_colltype_player<<rwi_colltype_bit),&floor,1,skip,1);
+		if (!hits || !floor.n.IsValid() || floor.n.z<0.75f || !floor.pt.IsValid() || floor.pt.z<top.z-1.2f || floor.pt.z>top.z+0.25f)
+		{
+			WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=floor sample=%d hits=%d floor=%.3f normal=%.3f top=%.3f target=(%.3f,%.3f).",
+				player.GetEntityId(),i,hits,hits?floor.pt.z:-10000.f,hits?floor.n.z:0.f,top.z,landing.x,landing.y);
+			return;
+		}
 		if (!i) floorZ=floor.pt.z;
-		else if (fabs_tpl(floor.pt.z-floorZ)>0.12f) return;
+		else if (fabs_tpl(floor.pt.z-floorZ)>0.12f)
+		{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=uneven_floor sample=%d center=%.3f edge=%.3f.",player.GetEntityId(),i,floorZ,floor.pt.z); return; }
 	}
 	const bool egress=WarsBots::NativeLadderExitPhysicalReady(
 		WarsBots::LVec{feet.x,feet.y,feet.z},WarsBots::LVec{bottom.x,bottom.y,bottom.z},WarsBots::LVec{top.x,top.y,top.z});
-	if (egress && player.WarsBotLadderExitSettling() && m_stats.onGround>0.01f && fabs_tpl(feet.z-floorZ)<0.12f
+	if (egress && player.WarsBotLadderExitSettling() && player.GetAnimatedCharacter()
+		&& player.GetAnimatedCharacter()->GetPhysicalColliderMode()==eColliderMode_Pushable && m_stats.onGround>0.01f && fabs_tpl(feet.z-floorZ)<0.12f
 		&& Vec3(feet.x-landing.x,feet.y-landing.y,0).len()<0.15f)
 	{
 		ray_hit support;
-		landed=gEnv->pPhysicalWorld->RayWorldIntersection(feet+Vec3(0,0,0.15f),Vec3(0,0,-0.3f),mask,
+		landed=gEnv->pPhysicalWorld->RayWorldIntersection(feet+Vec3(0,0,0.15f),Vec3(0,0,-0.3f),floorMask,
 			rwi_stop_at_pierceable|(geom_colltype_player<<rwi_colltype_bit),&support,1,skip,1)>0 && support.n.z>=0.75f &&
 			fabs_tpl(support.pt.z-floorZ)<0.08f;
 		if (landed) return;
@@ -1656,13 +1665,13 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	const float overlap=gEnv->pPhysicalWorld->PrimitiveWorldIntersection(type,&body,Vec3(0,0,0),mask,&contact,
 		0,geom_colltype_player,nullptr,nullptr,0,skip,1);
 	if (!std::isfinite(overlap) || overlap>0.f)
-	{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=overlap hits=%.3f.",player.GetEntityId(),overlap); return; }
+	{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=overlap hits=%.3f radius=%.3f half=%.3f center=(%.3f,%.3f,%.3f) floor=%.3f phase=%s.",player.GetEntityId(),overlap,radius,body.hh,body.center.x,body.center.y,body.center.z,floorZ,phase); return; }
 	if (delta.len()>0.001f)
 	{
 		const float hit=gEnv->pPhysicalWorld->PrimitiveWorldIntersection(type,&body,delta,mask,&contact,
 			0,geom_colltype_player,nullptr,nullptr,0,skip,1);
 		if (!std::isfinite(hit) || hit>0.f)
-		{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=sweep hit=%.3f.",player.GetEntityId(),hit); return; }
+		{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=sweep hit=%.3f radius=%.3f half=%.3f center=(%.3f,%.3f,%.3f) delta=(%.3f,%.3f,%.3f) phase=%s.",player.GetEntityId(),hit,radius,body.hh,body.center.x,body.center.y,body.center.z,delta.x,delta.y,delta.z,phase); return; }
 	}
 	player.SetWarsBotLadderExitPhysics(true,false); // ordinary world-colliding mode; stock leave/cancel restores it
 	if (!player.GetAnimatedCharacter() || player.GetAnimatedCharacter()->GetPhysicalColliderMode()!=eColliderMode_Pushable) return;
