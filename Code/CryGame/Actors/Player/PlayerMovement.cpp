@@ -1623,6 +1623,34 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 					if (name && std::strcmp(name,"PseudoSpeed")==0) graphPseudo=pAGState->GetInputAsFloat(id);
 				}
 				ICharacterInstance* character = player.GetEntity()->GetCharacter(0);
+
+				// C154: an accepted Signal is not proof that the installed actor can select/play its clip.
+				// Read the live inputs and FIFO without forcing a state, loading an animation or changing motion.
+				char action[256]={}, stance[256]={}, item[256]={};
+				if (pAGState)
+				{
+					const auto readInput=[&](const char* key,char* value) {
+						const auto id=pAGState->GetInputId(key);
+						const char* name=pAGState->GetInputName(id);
+						if (name && std::strcmp(name,key)==0) pAGState->GetInput(id,value);
+					};
+					readInput("Action",action); readInput("Stance",stance); readInput("Item",item);
+				}
+				IAnimationSet* animationSet=character?character->GetIAnimationSet():nullptr;
+				ISkeletonAnim* skeleton=character?character->GetISkeletonAnim():nullptr;
+				const int exitClip=animationSet?animationSet->GetAnimIDByName("relaxed_ladderOffTop_nw_01"):-1;
+				const int fifo=skeleton?skeleton->GetNumAnimsInFIFO(0):0;
+				int fifoClip=-1; float fifoTime=-1.f;
+				if (fifo>0)
+				{
+					const CAnimation& animation=skeleton->GetAnimFromFIFO(0,fifo-1);
+					fifoClip=animation.m_LMG0.m_nAnimID[0]; fifoTime=animation.m_fAnimTime;
+				}
+				const char* fifoName=animationSet&&fifoClip>=0?animationSet->GetNameByAnimID(fifoClip):nullptr;
+				WB_LOG(2,"[WarsBots] LADDER EXIT INPUTS actor=%u action=%s stance=%s item=%s exitClip=%d fifo=%d fifoClip=%d fifoName=%s fifoTime=%.3f model=%s.",
+					player.GetEntityId(),action,stance,item,exitClip,fifo,fifoClip,fifoName?fifoName:"<none>",fifoTime,
+					character?character->GetFilePath():"<none>");
+
 				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d active=%d state=%s held=%d signal=%s pseudo=%.2f upd=%d motionFlags=%u pos=(%.3f,%.3f,%.3f).",
 					player.GetEntityId(),pAGState?1:0,warsBotHasOutput?int(static_cast<unsigned char>(warsBotOutput)):-1,
 					pAGState&&pAGState->GetAnimationActivation()?1:0,
