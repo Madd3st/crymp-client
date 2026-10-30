@@ -67,6 +67,9 @@ jobs:
           & python Tests/test_bot_weapon_search_caller.py *> units/BotWeaponSearchCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotWeaponSearchCaller-run.log; throw 'UNIT FAIL: real weapon-search episode caller' }
           'UNIT PASS real weapon-search episode caller'
+          & python Tests/test_bot_text_message_gate_caller.py *> units/BotTextMessageGateCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotTextMessageGateCaller-run.log; throw 'UNIT FAIL: actual text-message OFF/ON caller link gate' }
+          'UNIT PASS actual text-message OFF/ON caller link gate'
           & python Tests/test_bot_ladder_caller.py *> units/BotLadderCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLadderCaller-run.log; throw 'UNIT FAIL: real ladder caller' }
           & python Tests/test_bot_ladder_motion_mode.py *> units/BotLadderMotionMode-run.log
