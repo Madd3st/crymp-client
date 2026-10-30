@@ -43,15 +43,15 @@ struct pe_player_dimensions {Vec3 sizeCollider={.3f,.3f,.6f};float heightCollide
 struct IPhysicalEntity {bool dimensionsOK=true;pe_player_dimensions dims;int GetParams(pe_player_dimensions* p){*p=dims;return dimensionsOK;}};
 namespace primitives {struct primitive{};struct cylinder:primitive {enum{type=5};Vec3 center,axis;float r,hh;};struct capsule:cylinder {enum{type=6};};}
 struct geom_contact{};struct ray_hit{Vec3 pt,n;};
-enum {ent_static=1,ent_terrain=2,ent_rigid=4,ent_sleeping_rigid=8,ent_living=16,rwi_stop_at_pierceable=32,geom_colltype_player=64,rwi_colltype_bit=8};
+enum {ent_static=1,ent_terrain=2,ent_rigid=4,ent_sleeping_rigid=8,ent_living=16,rwi_stop_at_pierceable=32,geom_colltype0=1,geom_colltype_player=64,rwi_colltype_bit=8};
 struct World {
- bool floor=true,edge=false;float floorZ=9.6f,normal=1,overlap=0,sweep=0;int rays=0,overlaps=0,sweeps=0;bool skipOK=true;
- int RayWorldIntersection(Vec3 origin,Vec3,int mask,int,ray_hit* hit,int,IPhysicalEntity** skip,int count){
-  ++rays;skipOK&=count==1&&skip&&skip[0]&&!(mask&ent_living);if(!floor||(edge&&origin.x>1.3f))return 0;
+ bool floor=true,edge=false,staticWall=false;float floorZ=9.6f,normal=1,overlap=0,sweep=0;int rays=0,overlaps=0,sweeps=0;bool skipOK=true,flagsOK=true;
+ int RayWorldIntersection(Vec3 origin,Vec3,int mask,int flags,ray_hit* hit,int,IPhysicalEntity** skip,int count){
+  ++rays;flagsOK&=((flags>>rwi_colltype_bit)&(geom_colltype0|geom_colltype_player))==(geom_colltype0|geom_colltype_player);skipOK&=count==1&&skip&&skip[0]&&!(mask&ent_living);if(!floor||(edge&&origin.x>1.3f))return 0;
   hit->pt={origin.x,origin.y,floorZ};hit->n={0,0,normal};return 1;
  }
- float PrimitiveWorldIntersection(int,primitives::primitive*,Vec3 delta,int mask,geom_contact**,int,int,void*,void*,int,IPhysicalEntity** skip,int count){
-  skipOK&=count==1&&skip&&skip[0]&&(mask&ent_living);if(delta.len()<.0001f){++overlaps;return overlap;}++sweeps;return sweep;
+ float PrimitiveWorldIntersection(int,primitives::primitive*,Vec3 delta,int mask,geom_contact**,int,int flags,void*,void*,int,IPhysicalEntity** skip,int count){
+  flagsOK&=flags==(geom_colltype0|geom_colltype_player);skipOK&=count==1&&skip&&skip[0]&&(mask&ent_living);if(staticWall&&(flags&geom_colltype0))return delta.len()<.0001f?1.f:.02f;if(delta.len()<.0001f){++overlaps;return overlap;}++sweeps;return sweep;
  }
 } world;
 struct Env {bool bServer=true;World* pPhysicalWorld=&world;} env,*gEnv=&env;
@@ -59,7 +59,7 @@ struct Manager {bool owns=true;bool Owns(unsigned){return owns;}};
 struct Game {Manager mgr;Manager& GetBotManager(){return mgr;}} game,*g_pGame=&game;
 namespace WarsBots {struct BotConfig {int ladder=1;static BotConfig& Get(){static BotConfig c;return c;}};}
 struct Animations {int clip=-1;int GetAnimIDByName(const char*){return clip;}};
-struct Character {Animations a;Animations* GetIAnimationSet(){return &a;}};
+struct Character {Animations a;bool registry=true;Animations* GetIAnimationSet(){return registry?&a:nullptr;}};
 using ICharacterInstance=Character;using IAnimationSet=Animations;
 struct Entity {Vec3 pos={0,0,8};IPhysicalEntity physics;Character ch;Character* GetCharacter(int){return &ch;}IPhysicalEntity* GetPhysics(){return &physics;}Vec3 GetWorldPos(){return pos;}};
 enum {eColliderMode_Undefined=0,eColliderMode_Pushable=3,eColliderModeLayer_Game=1,eCMT_Fly=1,eCMT_Normal=2};
@@ -84,17 +84,18 @@ void check(bool v,const char* s){if(!v){std::printf("FAIL %s\n",s);++failures;}}
 void reset(){world=World();env=Env();game=Game();g_pGame=&game;gEnv=&env;WarsBots::BotConfig::Get().ladder=1;}
 int main(){
  {reset();CPlayer p;check(p.NeedsWarsBotLadderPhysicsExit(),"owned missing asset eligible");
+  p.entity.ch.registry=false;check(p.NeedsWarsBotLadderPhysicsExit(),"missing registry eligible without dereference");p.entity.ch.registry=true;
   p.entity.ch.a.clip=12;check(!p.NeedsWarsBotLadderPhysicsExit(),"registered asset preserves native animation");p.entity.ch.a.clip=-1;
   p.bot=false;check(!p.NeedsWarsBotLadderPhysicsExit(),"human");p.bot=true;game.mgr.owns=false;check(!p.NeedsWarsBotLadderPhysicsExit(),"foreign");game.mgr.owns=true;
   env.bServer=false;check(!p.NeedsWarsBotLadderPhysicsExit(),"replica");env.bServer=true;WarsBots::BotConfig::Get().ladder=0;check(!p.NeedsWarsBotLadderPhysicsExit(),"OFF");WarsBots::BotConfig::Get().ladder=1;
   p.health=0;check(!p.NeedsWarsBotLadderPhysicsExit(),"dead");p.health=100;p.frozen=true;check(!p.NeedsWarsBotLadderPhysicsExit(),"frozen");p.frozen=false;
   p.m_stats.isRagDoll=true;check(!p.NeedsWarsBotLadderPhysicsExit(),"ragdoll");p.m_stats.isRagDoll=false;p.m_stats.isExitingLadder=false;check(!p.NeedsWarsBotLadderPhysicsExit(),"not exit");}
  {reset();CPlayer p;CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);
-  check(!landed&&m.m_request.type==eCMT_Fly&&m.m_request.velocity.z>0,"request real native-axis rise");check(world.rays==5&&world.overlaps==1&&world.sweeps==1&&world.skipOK,"support footprint/fullbody checks and own body skipped");check(p.ac.mode==eColliderMode_Pushable&&p.m_warsBotLadderExitPhysics,"world collider acquired");
+  check(!landed&&m.m_request.type==eCMT_Fly&&m.m_request.velocity.z>0,"request real native-axis rise");check(world.rays==5&&world.overlaps==1&&world.sweeps==1&&world.skipOK&&world.flagsOK,"support footprint/fullbody checks and own body skipped");check(p.ac.mode==eColliderMode_Pushable&&p.m_warsBotLadderExitPhysics,"world collider acquired");
   p.SetWarsBotLadderExitPhysics(false,false);check(p.ac.mode==eColliderMode_Undefined&&!p.m_warsBotLadderExitPhysics,"cleanup releases owned collider layer");}
  {reset();CPlayer p;p.entity.ch.a.clip=1;CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed&&world.rays==0&&world.overlaps==0&&p.ac.calls==0&&m.m_request.velocity.x==100,"registered clip path untouched by fallback");}
- for(int fault=0;fault<7;++fault){reset();CPlayer p;CPlayerMovement m(p);bool landed=true;
-  if(fault==0)world.floor=false;if(fault==1)world.edge=true;if(fault==2)world.normal=.4f;if(fault==3)world.overlap=1;if(fault==4)world.sweep=.02f;if(fault==5)p.entity.physics.dimensionsOK=false;if(fault==6)m.m_frameTime=NAN;
+ for(int fault=0;fault<8;++fault){reset();CPlayer p;CPlayerMovement m(p);bool landed=true;
+  if(fault==0)world.floor=false;if(fault==1)world.edge=true;if(fault==2)world.normal=.4f;if(fault==3)world.overlap=1;if(fault==4)world.sweep=.02f;if(fault==5)p.entity.physics.dimensionsOK=false;if(fault==6)m.m_frameTime=NAN;if(fault==7)world.staticWall=true;
   m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed&&m.m_request.velocity.len()==0&&!p.m_warsBotLadderExitPhysics,"blocked/missing floor/ledge/slope/overlap/wall/dimensions/dt refuse without success or motion");}
  {reset();CPlayer p;CPlayerMovement m(p);m.m_frameTime=.12f;bool landed=false;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(m.m_request.velocity.len()*.12f<=1.7f*.05f+.0001f,"slow frame displacement stays inside swept interval");}
  {reset();CPlayer p;p.entity.pos={0,0,9.67f};CPlayerMovement m(p);bool landed=true;m.ProcessWarsBotLadderPhysicsExit(p,landed);check(!landed&&m.m_request.velocity.x>0&&m.m_request.velocity.z==0,"rise then native forward egress");}

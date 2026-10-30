@@ -7470,7 +7470,7 @@ bool CPlayer::NeedsWarsBotLadderPhysicsExit()
 		return false;
 	ICharacterInstance* character=GetEntity()->GetCharacter(0);
 	IAnimationSet* animations=character?character->GetIAnimationSet():nullptr;
-	return animations && animations->GetAnimIDByName("relaxed_ladderOffTop_nw_01")<0;
+	return character && (!animations || animations->GetAnimIDByName("relaxed_ladderOffTop_nw_01")<0);
 }
 
 void CPlayer::SetWarsBotLadderExitPhysics(bool enable, bool settling)

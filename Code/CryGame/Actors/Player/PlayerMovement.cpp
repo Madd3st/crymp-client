@@ -1612,6 +1612,7 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	if (radius<0.1f || radius>0.75f || dimensions.sizeCollider.z<0.f || dimensions.sizeCollider.z>1.5f ||
 		dimensions.heightCollider-dimensions.heightPivot<0.1f || dimensions.heightCollider-dimensions.heightPivot>2.f) return;
 	IPhysicalEntity* skip[]={physics};
+	const int collisionFlags=geom_colltype0|geom_colltype_player; // documented any-of part flags: static geometry AND player blockers
 	const int floorMask=ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid;
 	const int mask=floorMask|ent_living;
 	const Vec3 landing=top+forward*1.1f;
@@ -1622,7 +1623,7 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	{
 		ray_hit floor;
 		const int hits=gEnv->pPhysicalWorld->RayWorldIntersection(landing+offsets[i]+Vec3(0,0,0.5f),Vec3(0,0,-2.f),floorMask,
-			rwi_stop_at_pierceable|(geom_colltype_player<<rwi_colltype_bit),&floor,1,skip,1);
+			rwi_stop_at_pierceable|(collisionFlags<<rwi_colltype_bit),&floor,1,skip,1);
 		if (!hits || !floor.n.IsValid() || floor.n.z<0.75f || !floor.pt.IsValid() || floor.pt.z<top.z-1.2f || floor.pt.z>top.z+0.25f)
 		{
 			WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=floor sample=%d hits=%d floor=%.3f normal=%.3f top=%.3f target=(%.3f,%.3f).",
@@ -1641,7 +1642,7 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	{
 		ray_hit support;
 		landed=gEnv->pPhysicalWorld->RayWorldIntersection(feet+Vec3(0,0,0.15f),Vec3(0,0,-0.3f),floorMask,
-			rwi_stop_at_pierceable|(geom_colltype_player<<rwi_colltype_bit),&support,1,skip,1)>0 && support.n.z>=0.75f &&
+			rwi_stop_at_pierceable|(collisionFlags<<rwi_colltype_bit),&support,1,skip,1)>0 && support.n.z>=0.75f &&
 			fabs_tpl(support.pt.z-floorZ)<0.08f;
 		if (landed) return;
 	}
@@ -1663,13 +1664,13 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	geom_contact* contact=nullptr;
 	const int type=dimensions.bUseCapsule?primitives::capsule::type:primitives::cylinder::type;
 	const float overlap=gEnv->pPhysicalWorld->PrimitiveWorldIntersection(type,&body,Vec3(0,0,0),mask,&contact,
-		0,geom_colltype_player,nullptr,nullptr,0,skip,1);
+		0,collisionFlags,nullptr,nullptr,0,skip,1);
 	if (!std::isfinite(overlap) || overlap>0.f)
 	{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=overlap hits=%.3f radius=%.3f half=%.3f center=(%.3f,%.3f,%.3f) floor=%.3f phase=%s.",player.GetEntityId(),overlap,radius,body.hh,body.center.x,body.center.y,body.center.z,floorZ,phase); return; }
 	if (delta.len()>0.001f)
 	{
 		const float hit=gEnv->pPhysicalWorld->PrimitiveWorldIntersection(type,&body,delta,mask,&contact,
-			0,geom_colltype_player,nullptr,nullptr,0,skip,1);
+			0,collisionFlags,nullptr,nullptr,0,skip,1);
 		if (!std::isfinite(hit) || hit>0.f)
 		{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=sweep hit=%.3f radius=%.3f half=%.3f center=(%.3f,%.3f,%.3f) delta=(%.3f,%.3f,%.3f) phase=%s.",player.GetEntityId(),hit,radius,body.hh,body.center.x,body.center.y,body.center.z,delta.x,delta.y,delta.z,phase); return; }
 	}
@@ -1747,8 +1748,8 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 					fifoClip=animation.m_LMG0.m_nAnimID[0]; fifoTime=animation.m_fAnimTime;
 				}
 				const char* fifoName=animationSet&&fifoClip>=0?animationSet->GetNameByAnimID(fifoClip):nullptr;
-				WB_LOG(2,"[WarsBots] LADDER EXIT INPUTS actor=%u action=%s stance=%s item=%s exitClip=%d fifo=%d fifoClip=%d fifoName=%s fifoTime=%.3f model=%s.",
-					player.GetEntityId(),action,stance,item,exitClip,fifo,fifoClip,fifoName?fifoName:"<none>",fifoTime,
+				WB_LOG(2,"[WarsBots] LADDER EXIT INPUTS actor=%u action=%s stance=%s item=%s animationSet=%d exitClip=%d fifo=%d fifoClip=%d fifoName=%s fifoTime=%.3f model=%s.",
+					player.GetEntityId(),action,stance,item,animationSet?1:0,exitClip,fifo,fifoClip,fifoName?fifoName:"<none>",fifoTime,
 					character?character->GetFilePath():"<none>");
 
 				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d active=%d state=%s held=%d signal=%s pseudo=%.2f upd=%d motionFlags=%u pos=(%.3f,%.3f,%.3f).",
