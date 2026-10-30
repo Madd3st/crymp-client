@@ -119,6 +119,24 @@ int main()
 	assert(!NativeLadderExitPhysicalReady(LVec{0,0,17.6f},LVec{0,0,10},LVec{0,0,20}));
 	assert(!NativeLadderExitPhysicalReady(LVec{0,0,19.3f},LVec{0,0,10},LVec{0,0,20}));
 	assert(NativeLadderExitPhysicalReady(LVec{0,-.9f,19.3f},LVec{0,0,10},LVec{0,0,20}));
+
+	// 11. Shore US ship lower-bay multi-bot rush & bilge-fall regression:
+	//  - Single-bot ladder serialization: yield while another bot is climbing the same ref, or waiting closer to the base
+	//    (tie-broken by bot number), never when on a different ref or when this bot is closer.
+	assert(ShouldYieldLadderStart(4693115ull, 0.8f, 6, 4693115ull, true, false, 0.f, 2));
+	assert(!ShouldYieldLadderStart(4693115ull, 0.8f, 6, 9999999ull, true, false, 0.f, 2));
+	assert(ShouldYieldLadderStart(4693115ull, 3.2f, 4, 4693115ull, false, true, 1.5f, 12));
+	assert(!ShouldYieldLadderStart(4693115ull, 1.5f, 12, 4693115ull, false, true, 3.2f, 4));
+	assert(ShouldYieldLadderStart(4693115ull, 2.0f, 6, 4693115ull, false, true, 2.0f, 4));
+	assert(!ShouldYieldLadderStart(4693115ull, 2.0f, 4, 4693115ull, false, true, 2.0f, 6));
+	//  - Unattached approach/grab into bilge water or >2 m below base.z aborts as movement_state (no 25 s timeout ban).
+	assert(LadderApproachInvalid(LadderPhase::Approach, false, false, true, 87.84f, 90.16f));
+	assert(LadderApproachInvalid(LadderPhase::Approach, false, false, false, 87.84f, 90.16f));
+	assert(LadderApproachInvalid(LadderPhase::Grab, false, false, false, 87.84f, 90.16f));
+	assert(!LadderApproachInvalid(LadderPhase::Approach, false, false, false, 89.57f, 90.16f));
+	assert(!LadderApproachInvalid(LadderPhase::Climb, true, false, false, 95.00f, 90.16f));
+	assert(!LadderApproachInvalid(LadderPhase::Settle, false, false, false, 99.76f, 90.16f));
+
 	std::printf("BotLadder native-frame, exit and settle tests PASS\n");
 	return 0;
 }

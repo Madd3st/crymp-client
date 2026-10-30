@@ -90,6 +90,9 @@ jobs:
           & python Tests/test_bot_vantage_heard_caller.py *> units/BotVantageHeardCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotVantageHeardCaller-run.log; throw 'UNIT FAIL: actual vantage travel vs heard roam caller' }
           'UNIT PASS actual vantage travel vs heard roam caller'
+          & python Tests/test_bot_shore_ladder_queue_caller.py *> units/BotShoreLadderQueueCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotShoreLadderQueueCaller-run.log; throw 'UNIT FAIL: actual shore ladder queue and bilge-fall caller' }
+          'UNIT PASS actual shore ladder queue and bilge-fall caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:

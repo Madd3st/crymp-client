@@ -213,6 +213,14 @@ bool BotManager::AIEnabled(EntityId id) const
 	return bot && bot->AIEnabled();
 }
 
+bool BotManager::ShouldYieldLadder(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const
+{
+	for (const auto& entry : m_bots)
+		if (entry.second && entry.second->AIEnabled() && entry.second->Brain().YieldLadderTo(ref, a, myDist2, myNumber))
+			return true;
+	return false;
+}
+
 bool BotManager::IsCreatingActor(const char* entityName) const
 {
 	return !m_creatingName.empty() && entityName && m_creatingName == entityName;

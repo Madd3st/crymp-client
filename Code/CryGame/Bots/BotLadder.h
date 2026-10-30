@@ -31,6 +31,28 @@ inline bool NativeLadderExitPhysicalReady(const LVec& feet, const LVec& bottom, 
 enum class LadderPhase { Idle = 0, Approach, Grab, Climb, WaitExit, Settle, Done, Failed };
 enum class LadderFail { None = 0, Timeout, NoGrab, Lost, BlockedTop, WrongFloor, WrongLadder };
 
+// Before attachment, falling into water or dropping off the take-off floor (>2 m from base.z) is a movement-state
+// abort (cancel without banning the link), never a 25 s climb timeout that globally bans a valid ladder.
+inline bool LadderApproachInvalid(LadderPhase phase, bool onLadder, bool exiting, bool swimming, float feetZ, float baseZ, float maxDz = 2.0f)
+{
+	if (swimming) return true;
+	if (onLadder || exiting) return false;
+	if (phase != LadderPhase::Approach && phase != LadderPhase::Grab) return false;
+	return !std::isfinite(feetZ) || !std::isfinite(baseZ) || std::fabs(feetZ - baseZ) > maxDz;
+}
+
+// One bot owns a ladder link at a time. While a teammate is climbing `ref` (or waiting closer to its base inside
+// the 2 m gate), hold outside the grab zone instead of starting a parallel 3 s grab timer into an occupied shaft.
+inline bool ShouldYieldLadderStart(unsigned long long ref, float myDist2, int myNumber,
+	unsigned long long otherRef, bool otherActive, bool otherWaitingAtGate, float otherDist2, int otherNumber)
+{
+	if (!ref || otherRef != ref || otherNumber == myNumber) return false;
+	if (otherActive) return true;
+	if (!otherWaitingAtGate) return false;
+	if (otherDist2 + 0.01f < myDist2) return true;
+	return std::fabs(otherDist2 - myDist2) <= 0.01f && otherNumber < myNumber;
+}
+
 struct LadderInput {
 	float now = 0.f;
 	LVec feet;
