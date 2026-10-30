@@ -3,7 +3,31 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS128 R4 candidate `bd8692cd` review OK — minimal 2-statement repair closes both R4 defects for reachable items, fallback still once/life, no regression; 4 non-blocking residuals; LOCAL only, full CI not run; idle · 2026-10-30 02:53
+NOW: DS129 exact LOCAL `79c03389` OFF-link fix review OK — guards only the unguarded BotMatch::IsBot path in ScriptBind_GameRules, ON behavior unchanged, OFF links and routes stock; R4 caller still GREEN; full CI/PR matrix not run; idle · 2026-10-30 13:11
+
+### DS129 · 2026-10-30 13:11 · OK · review of exact LOCAL OFF-link fix `79c03389` (C-157/PR1)
+**Verdict OK** — accept for full CI and the 4-way PR matrix on this SHA. Review
+`Docs/Research/DeepSeek/DS129_R4_OFF_LINK_REVIEW.md`; branch head after this push is the review head.
+Candidate `79c03389a32103a674e0b60399c0e7b5c1c1e621`, parent `bd8692cd`; 3 files +94/−0; game code +4 lines.
+- Cause confirmed: `pr-failed.log` shows exactly one unresolved symbol, `WarsBots::BotMatch::IsBot` referenced
+  from `CScriptBind_GameRules::SendTextMessage`, in all four OFF configs (`pr.yml`: 32/64 × RelWithDebInfo/Debug).
+  `BotMatch.cpp` is added only under `if(WARSBOTS_EXPERIMENTAL_SPAWNER)` (`CMakeLists.txt:1224-1259`), while
+  `target_compile_definitions(Base PUBLIC …)` (`:1258`) reaches CryGame via `target_link_libraries(CryGame PUBLIC Base)`.
+- Not an R4 regression: `ScriptBind_GameRules.cpp` has the same single unguarded `IsBot` line at `307037bc` and
+  `bd8692cd`; the R4 commit never touched that file.
+- Fix: `#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)` around the include and around the existing per-client
+  suppression only; `channelId = pGameRules->GetChannelId(...)` stays outside. Same pattern as DS-050
+  (`ScriptBind_Actor.cpp:1587`) and C-126 (`GameRules.cpp:1399`, `GameRulesClientServer.cpp:300`).
+- Completeness: those are the only three guarded sites plus this one; all other `BotMatch::` uses live in
+  experimental-only TUs. No other unguarded OFF reference remains.
+- Behavior: ON identical (bot → `EndFunction`, `GetChannelId` not called; human and broadcast routed);
+  OFF routes stock (no bots can exist with the spawner off).
+- Independent check: the real extracted block (484 chars at bd8692cd, unguarded; 534 at 79c03389, guarded) is
+  verbatim in the logged caller.cpp files. `OFF-link-before` compiles then fails with the exact LNK2019/LNK1120;
+  `OFF-link-after` OFF links with no BotMatch implementation and passes, ON passes; `R4-after-link-fix` GREEN.
+- Non-blocking: the unit test does not verify CMake macro propagation (the real ON build does); the RED
+  reproduction mode is manual; `units/` is not gitignored. Not proven: full CI/PR matrix on this SHA, engine RMI
+  delivery, C154 runtime (forbidden, source stays 307). No game/server/build/feature/QA write by me.
 
 ### DS128 · 2026-10-30 02:53 · OK · independent review of exact LOCAL R4 candidate bd8692cd (C-157)
 **Verdict OK** — accept for full CI. Review `Docs/Research/DeepSeek/DS128_R4_CANDIDATE_REVIEW.md`; branch head after this
