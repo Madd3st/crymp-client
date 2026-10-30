@@ -4,9 +4,11 @@
 #include <algorithm>
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotCorners.h"
+#include "CryGame/Bots/BotSniperReach.h"
 #include <cassert>
 #include <cmath>
 #include <cstdio>
+#include <sstream>
 #include <vector>
 #include <string>
 using namespace WarsBots;
@@ -96,8 +98,22 @@ int main(int argc, char** argv)
 		const int kinds = L.LoadLinkKinds(txt.data());
 		// DS-037 #3: links.txt is filtered (flat/zero/duplicate Strength links removed) -> those links stay unknown on purpose
 		int removed = 0; for (const char* q = txt.data(); (q = std::strstr(q, " removed")) != nullptr; ++q) ++removed; // DS-048: data-disabled links
+		int tooHigh = 0;
+		{
+			std::istringstream in(txt.data()); std::string line;
+			while (std::getline(in, line))
+			{
+				std::istringstream ls(line); float ax, ay, az, bx, by, bz; int bidir = 0; std::string kind;
+				if ((ls >> ax >> ay >> az >> bx >> by >> bz >> bidir >> kind) && kind == "strength")
+				{
+					const float rise = bidir ? std::fabs(bz - az) : (bz - az);
+					if (rise > MaxStrengthLinkRise()) ++tooHigh;
+				}
+			}
+		}
 		const int lines = int(std::count(txt.begin(), txt.end(), '\n')) - removed;
-		assert(L.Links() > 100 && kinds == lines && kinds <= L.Links() && L.Links() - kinds < 100);
+		assert(tooHigh == 76);
+		assert(L.Links() > 100 && kinds == lines - tooHigh && kinds <= L.Links() && L.Links() - (kinds + tooHigh) < 100);
 		{   // T-6: a reordered links.txt still gives every link its kind (matched by end points)
 			std::string t(txt.data()); std::vector<std::string> rows; size_t p0 = 0, p1;
 			while ((p1 = t.find('\n', p0)) != std::string::npos) { rows.push_back(t.substr(p0, p1 - p0 + 1)); p0 = p1 + 1; }
@@ -125,8 +141,21 @@ int main(int argc, char** argv)
 			{
 				assert(k.corner >= 0 && size_t(k.corner + 1) < p2.size() / 3 && k.ref != 0 && k.kind >= 0 && k.kind < NavLinkKinds);
 				assert(std::fabs(p2[k.corner * 3] - k.a[0]) < 1e-3f && std::fabs(p2[(k.corner + 1) * 3] - k.b[0]) < 1e-3f);
+				if (k.kind == NavLinkStrength) assert(k.b[2] - k.a[2] <= MaxStrengthLinkRise());
 				++kindCount[k.kind];
 			}
+		}
+		// Steelmill sniper roof routes: rejecting >MaxStrengthLinkRise() links avoids the impossible +4.22 m
+		// (1354.96,1347.60,147.82)->(1351.94,1351.98,152.04) shortcut and routes via executable stairs/links.
+		{
+			const float roofCatwalk254[3] = {1299.90f, 1326.70f, 158.50f};
+			assert(L.Reachable(s289, roofCatwalk254) && L.FindPathLinks(s289, roofCatwalk254, p2, links, &why));
+			assert(links.empty());
+			const float upperRoof181[3] = {1301.72f, 1318.30f, 161.54f};
+			assert(L.Reachable(s289, upperRoof181) && L.FindPathLinks(s289, upperRoof181, p2, links, &why));
+			assert(links.size() == 1 && links[0].kind == NavLinkStrength && links[0].b[2] - links[0].a[2] <= MaxStrengthLinkRise());
+			const float impossibleLedge36[3] = {1160.89f, 1350.00f, 144.14f};
+			assert(!L.Reachable(s289, impossibleLedge36) && !L.FindPathLinks(s289, impossibleLedge36, p2, links, &why));
 		}
 		// banning a used link removes it from later paths
 		if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why) && !links.empty())
