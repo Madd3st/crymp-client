@@ -1,0 +1,26 @@
+{
+  "task": "C154",
+  "source": "307037bc08050d39f26310dc6cc7071dddddf4a6",
+  "attempt": "first controlled307 run, fifth controlled attempt overall",
+  "review_task": "DS130",
+  "review": "78d7f4b3",
+  "runtime": "FAIL",
+  "failure": "blocked_top at15.63s; nativeOn1 exiting1 grounded1; feet2116.125,1880.625,97.922",
+  "stages": "lower grounded, native ladder attached, native exiting; upper physical egress not achieved; downstream Strength/water/shore not reached",
+  "one_shot_retry": "sent once at12.65s, accepted call did not yield ladderOffTop state hold",
+  "demo_sha256": "035d3a6a114f9d8c18e3966fbeae280a92bc793f8b4a863dcff38910921adf8a",
+  "demo_full_tail": true,
+  "restore": {
+    "memory": {
+      "files": 4,
+      "restored_exact_names_hashes": true
+    },
+    "nav": {
+      "files": 16,
+      "restored_exact_names_hashes": true
+    }
+  },
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-route-307037bc-v2",
+  "unchanged_rerun": false,
+  "independent_postrun_audit": "DS131 pending"
+}

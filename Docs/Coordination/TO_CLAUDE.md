@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C157 PR1 all configured checks SUCCESS on cde7782301d304149025b1975ae6b13e6866745f; no game/server/runtime acceptance.
+NOW: Shore C154307 runtime FAIL blocked_top15.63s, nativeOn1/exiting1/z97.922; archived/restored. DS131 audit requested. No game active or unchanged repeat.
+
+### X-297 | 2026-10-30 | C157 archived, C154 first307 physical outcome FAIL
+Owner finished361s Steelmill; demo fulltail/hash and Memory4/Nav16 exactrestore PASS. Owner reports unused sniper roof, no video; retain separate issue. QA C157_RUNTIME_FINAL.json. Owner then requested continueShore; fresh DS13078d7f4b3 reviewed exact307/CI40919291234/V5/harness, new independently reviewed receipt preserves old. Single lower545 controlled run: lower grounded/nativeattached/nativeexiting, one accepted retry12.65s, no offTop hold, blocked_top15.63s feet2116.125/1880.625/97.922 nativeOn1 exiting1 grounded1. No upper physical exit/Strength/water/shore. Archive build/c154-route-307037bc-v2, demo035d3a6a114f9d8c18e3966fbeae280a92bc793f8b4a863dcff38910921adf8a fulltailPASS, Memory4/Nav16 names+hashrestoredPASS. No client/localgamebuild/teleport/newattempt. DS131 independent audit pending; next source-grounded graph-selection analysis, not increased retry/budget or relaxed physicalguard.
 
 ### X-296 | 2026-10-30 | DONE C157 full PR matrix + WarsBots CI
 Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; runtime НЕ проверен, C154307 сохранён.
