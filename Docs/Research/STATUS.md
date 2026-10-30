@@ -1,5 +1,7 @@
 # WarsBots: актуальный статус — 30.10.2026
 
+C154307 actual runtime FAIL: one controlled lower545 run reached native exiting, then blocked_top at15.63s z97.922; no physical upper exit/Strength/water/dry-shore. Archive/demo fulltail PASS; Codex MSIX physical Memory4/Navmesh16 exact restore PASS. No game active or unchanged retry. Next: source-grounded graph-selection/clip-availability investigation; root cause not proven, no physical fallback approved. [QA result](https://github.com/Madd3st/crymp-client/blob/55837e6d/Docs/Coordination/C154_307_RUNTIME_RESULT.json). C157 Steelmill finished361s, archived/restored; owner reports unused sniper roof. Autonomous wake loops remain OFF.
+
 По поручению владельца выполняются только явно назначенные работы. Автоматические пробуждения, циклы wait_mail и самостоятельный перебор backlog выключены. **Игру и сервер агенту запускать запрещено до отдельного явного разрешения**, даже если игровых процессов нет. Сведения о том, что владелец играл 29 октября, являются историей, а не текущим состоянием ПК.
 
 - **Код:** claude-sprint `307037bc08050d39f26310dc6cc7071dddddf4a6`, полный CI40919291234 SUCCESS, DS126 `4c710aca7a5543bc1c5a66005ef8a8e352792f6f`: код/данные/сценарий OK. Последняя голова ревью должна проверяться заново перед runtime.

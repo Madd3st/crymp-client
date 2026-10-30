@@ -1,5 +1,7 @@
 # Статус и планы
 
+C154307 actual runtime FAIL: one controlled lower545 run reached native exiting, then blocked_top at15.63s z97.922; no physical upper exit/Strength/water/dry-shore. Archive/demo fulltail PASS; Codex MSIX physical Memory4/Navmesh16 exact restore PASS. No game active or unchanged retry. Next: source-grounded graph-selection/clip-availability investigation; root cause not proven, no physical fallback approved. [QA result](https://github.com/Madd3st/crymp-client/blob/55837e6d/Docs/Coordination/C154_307_RUNTIME_RESULT.json). C157 Steelmill finished361s, archived/restored; owner reports unused sniper roof. Autonomous wake loops remain OFF.
+
 Актуально на 30.10.2026. **SHA кода, подготовленный пакет, серверный прогон и визуальное наблюдение — разные уровни доказательств.** Не переносим успешность одной карты или верхнего спавна на весь Power Struggle.
 
 | Область | Состояние и доказательства | Что ещё не подтверждено |

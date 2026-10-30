@@ -1,5 +1,11 @@
 # Текущая передача WarsBots — 30.10.2026
 
+## Current outcome after owner finished Steelmill and resumed Shore
+
+C154307 actual runtime FAIL: one controlled lower545 run reached native exiting, then blocked_top at15.63s z97.922; no physical upper exit/Strength/water/dry-shore. Archive/demo fulltail PASS; Codex MSIX physical Memory4/Navmesh16 exact restore PASS. No game active or unchanged retry. Next: source-grounded graph-selection/clip-availability investigation; root cause not proven, no physical fallback approved. [QA result](https://github.com/Madd3st/crymp-client/blob/55837e6d/Docs/Coordination/C154_307_RUNTIME_RESULT.json). C157 Steelmill finished361s, archived/restored; owner reports unused sniper roof. Autonomous wake loops remain OFF.
+
+Earlier live-session/hold paragraphs below are historical, superseded by this outcome.
+
 ## Активная игровая проверка C157 — новое разрешение владельца 30.10
 
 Владелец: «ну давай тестить и смотреть поведение». Запущен отдельный Steelmill на cde77823: 8ботов, по2каждойсложности, клиент и сервер активны для владельца. Не останавливать и не запускать параллельную игру. Демо/логи пишутся; launcher дождётся закрытия клиента, затем архивирует и восстановит SHA-проверенные снимки Memory/Navmesh. Срез QA9e70f494:112с,39bot pickups/652shots/218hits/22kills/18revives; текущие8/8 имели primary. Это LIVE PARTIAL, позднее ammo exhaustion R4 не подтверждено. [Квитанция](https://github.com/Madd3st/crymp-client/blob/9e70f494/Docs/Coordination/C157_RUNTIME_LIVE.json). C154 Shore pin307 и его отдельный preflight не менялись, автономные wake-циклы выключены. Старые запреты runtime ниже описывают состояние до этого разрешения; оно относится к текущему Steelmill.
