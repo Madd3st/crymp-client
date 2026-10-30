@@ -3,7 +3,39 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS131 CORRECTED — run307 audit PASS (archive complete); namespace "hygiene defect" retracted (Codex MSIX physical tree matches before/receipt exactly); firm: no offTop hold, zero motion; why the graph cannot select the exit state stays a hypothesis; no rerun, next is narrowing observations; idle · 2026-10-30 14:42
+NOW: DS132 `8ed16c78` BLOCK — diagnostics are read-only and API-correct, but full CI on this SHA is red: unit job failed (test_bot_ladder_caller.py mock lacks the new ICharacterInstance methods) and the build job was cancelled, so there is no artifact pair; 307 pin untouched; idle/frozen · 2026-10-30 15:05
+
+### DS132 · 2026-10-30 15:05 · BLOCK · pre-runtime review of `8ed16c78` read-only exit diagnostics
+**Code review OK, gate BLOCK.** Review `Docs/Research/DeepSeek/DS132_EXIT_DIAGNOSTICS_REVIEW.md`; branch head after
+this push is the review head.
+- Candidate `8ed16c780f12e3644f96f69e02aebbdf3ca9dd94`, parent `cde77823`, PR #2; 2 files +32/−1: PlayerMovement.cpp +28
+  (one `LADDER EXIT INPUTS` log block) and the exit-retry caller mock +5/−1.
+- Read-only verified: no SetInput/ClearInput/SetPos/Impulse/Play/Load/SetPseudoSpeed in the added lines; the block is
+  inside the existing owned-gated server exit under `WARSBOTS_EXPERIMENTAL_SPAWNER`, so OFF is untouched. It reads
+  Action/Stance/Item with input-name validation, `GetAnimIDByName("relaxed_ladderOffTop_nw_01")`, FIFO0 count/newest
+  clipID/name/time and the model path. Every API exists at this SHA (ICryAnimation.h:351/589/590/848/859/466,
+  CryCharAnimationParams.h:731/806) and the clip name is real: PlayerFullBody.xml:5058 inside state
+  `relaxed_ladderOffTop_nw` (allowSelect/includeInGame=1, SelectWhen Signal `exit_ladder_top`, Output OnLadder=1).
+- Inheritance checked: 307 ladder + R4 (`BotBrain.cpp:748`) + OFF guard (`ScriptBind_GameRules.cpp:18`) + exit retry
+  (`Player.cpp:7463`, called at `PlayerMovement.cpp:1689`) are all present; diff 307→8ed is exactly PR1+R4+OFF+this
+  diagnostics.
+- Data/harness compatibility unchanged and exact: V5 `b60178d7/0230a0c3/d95e1e11/a95a0503`, harness `87c3f5ee`
+  (commit e973b905), analyzer `2a642aeb`, manifest guard `9a958ea7`. The diagnostic run must still end in
+  `FAIL blocked_top` by design; the harness archives it and restores data in `finally`.
+- **Why BLOCK:** run `41051941203` on this SHA — job `124049912841` Unit tests **failure** (11:58:54→11:59:39), job
+  `124049912556` Client+server **cancelled** at "Configure and build", no artifact pair. Cause found in source:
+  `Tests/test_bot_ladder_caller.py:364` extracts the same exit block, but its mock at line 85
+  `struct ICharacterInstance { int GetFlags(){return 0;} }` lacks `GetIAnimationSet/GetISkeletonAnim/GetFilePath`,
+  so it cannot compile. Same class of miss as PR1's text-message caller. Exact failing line is in artifact
+  `unit-logs-…` id `12974244887` (14,986 B, digest `sha256:a9cb7611…`, until 2026-11-06) — Codex should read it, not guess.
+- Also: in the updated exit-retry fixture `GetInputId` returns 2u for Action/Stance/Item and `GetInputName(2u)` is
+  "PseudoSpeed", so the name check rejects them and those inputs are never actually read; the fixture does not prove
+  the new reads.
+- Before a run: update that second mock, get green full CI + full PR matrix + exact artifact pair, issue the receipt on
+  the new SHA and give the candidate its own RUNTIME_PIN; preserve the 307 failed history. RUNTIME_PIN is unchanged now.
+- Not claimed: the cause of the graph not selecting `relaxed_ladderOffTop_nw`, any predicted diagnostic value, or any
+  physical repair. DS131 causal and MSIX-namespace caveats still apply. No game/server/local build/live-data/code/quality
+  edit by me.
 
 ### DS131 · 2026-10-30 14:39 · AUDIT PASS · run307 blocked_top root cause (archive/evidence)
 **Archive audit PASS; the run itself FAIL and correctly recorded.** Review
