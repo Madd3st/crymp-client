@@ -3,7 +3,32 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS136 supplement V2+console `ShowServerConsole` OK CONDITIONAL — exactly two changes (switch + server WindowStyle Normal only when selected, default Hidden), manifest refreshed (Run `d81c1c94…`, manifest `ded3bf9a…`), helpers still identical, pair/data/preset unchanged; visual-quality.json still pins old launcher/manifest hashes so the gate will reject until Codex regenerates it; frozen · 2026-10-30 20:01
+NOW: Shore-15 playtest profile `Shore-15-1ae65bb0` APPROVED CONDITIONAL — pair/CI/PR/artifact and V5 data verified live, manifest 11/11, roster `+wb_add 15 normal`, readiness #15+FRAME15+team1=8/team2=7 (TeamForSlot odd/even), single-bot ladder rejection removed as intended, helpers identical; needs visual-quality.json on the new head; frozen · 2026-10-31 01:34
+
+### Shore-15 playtest profile · 2026-10-31 01:34 · APPROVED CONDITIONAL · `Shore-15-1ae65bb0` (8 vs 7)
+**Bounded owner playtest profile is sound; the visual receipt is the only condition.** Review
+`Docs/Research/DeepSeek/SHORE15_PLAYTEST_PROFILE_REVIEW.md`; the branch head after this push is the pinned review head.
+- Pins verified live: source `1ae65bb0…` (gemini/vantage-heard-priority, PR #3 base ed72987c), CI `41119885189`
+  success, PR `41119972991` success, artifact `13008402830` (14,193,699 B, digest `801e43a6…`, not expired); pair
+  client `321405a6…` / server `10573ba1…` equals `sha256.txt`; V5 data `b60178d7/0230a0c3/d95e1e11/a95a0503`.
+- Profile: `Run.ps1 ab837e8b…`, `preset.json 4ea52894…`, `package-manifest.json f157ccb6…`, `build.json f4e43265…`;
+  manifest 11/11 hashes match. Preset: port 46170, max/retained 15, polys 46830, label Shore15, normal skill.
+- Roster `+wb_add 15 normal +wb_list +wb_status` — no wb_remove/select/stop/revive, so bots run natively and there is
+  no manual setup. Readiness: NAVMESH 46830 polys, links ON, link kinds 2/2, `#15 created EntityId=`,
+  `FRAME … bots=15 server=1`, then counts `#N PS initial spawn team=` and requires team1=8 / team2=7. Source check:
+  `TeamForSlot(slot) = (slot & 1) ? 1 : 2` (BotTeamPlan.h:9) gives 8 odd / 7 even for slots 1..15, and the line is
+  logged once per bot in `BotManager::AddWith` (BotManager.cpp:395-399), so respawns cannot double-count.
+- The single-bot pre-client `#2 LADDER start` rejection is removed (Run.ps1:94) — intended for a normal 15-bot
+  playtest where bots route from the start; not a safety change for this scope.
+- Seven core snapshot/restore helpers remain byte-identical to the reviewed `Launch-WarsBotsShowcase.ps1`; snapshot
+  before install, restore only after the client closes (else deferred with RESTORE.cmd), logs/demo archived with
+  hashes, RecoverLast confined to Sessions.
+- Condition: Codex creates `visual-quality.json` with source 1ae65bb0, review_ok, `launcher_sha256=ab837e8b…`,
+  `manifest_sha256=f157ccb6…` and `review_head` = the post-review head; otherwise the gate (Run.ps1:75-78) refuses.
+- Scope: one owner playtest (8 vs 7, normal, port 46170), NOT route acceptance, NOT client-visual proof, NOT full PS or
+  other maps. No game/server/client/code/data changes by me. If a bot gets no team default spawn group, AddWith returns
+  null, `#15 created` never appears and readiness fails closed. Profile has no prepare-only.json/visual-quality.json
+  (the latter is created after this review).
 
 ### DS136-supplement · 2026-10-30 20:01 · OK CONDITIONAL · V2 + `ShowServerConsole` (two changes only)
 **Exactly the two declared changes; the stale visual receipt is the only blocker.** Review
