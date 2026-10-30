@@ -3,7 +3,36 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS129 exact LOCAL `79c03389` OFF-link fix review OK — guards only the unguarded BotMatch::IsBot path in ScriptBind_GameRules, ON behavior unchanged, OFF links and routes stock; R4 caller still GREEN; full CI/PR matrix not run; idle · 2026-10-30 13:11
+NOW: DS130 C154 preflight review OK on exact `307037bc` + CI40919291234 + V5 + harness/analyzer — hashes and gates re-verified live, physical UNTESTED; current quality review head is stale, fresh receipt required before one run; idle · 2026-10-30 14:30
+
+### DS130 · 2026-10-30 14:30 · OK · fresh C154 pre-runtime review, exact `307037bc` + CI40919291234 + V5
+**Verdict OK (code/data/harness/analyzer/binaries); physical UNTESTED.** Review
+`Docs/Research/DeepSeek/DS130_C154_PREFLIGHT_REVIEW.md`; branch head after this push is the review head.
+- Source `307037bc…` matches `ls-remote` and the clean `QA/build/ds076-code` checkout. CI `40919291234`
+  re-checked live today: `completed/success`, `event=push`, attempt 1, head `307…`. Artifact `12917623035`,
+  14,185,253 B, digest `sha256:2003a25a…49553a`, `expired=false` (until 2026-11-05).
+- Recomputed pair: client `d4a08fbd…35d7fe8`, server `bdd084af…303226` — equal to `sha256.txt`, quality and
+  provenance. V5 data recomputed: navmesh `b60178d7…`, links `0230a0c3…`, spots `d95e1e11…`, manifest
+  `a95a0503…`; manifest is canonical LF (CRLF=0).
+- Manifest guard: receipt `9a958ea7…` matches `manifest_guard_receipt_sha256`; `actual_source_sha256=21df800a…`
+  equals the recomputed `BotNavMesh.cpp` at 307; tamper/CRLF PASS, `actual_exit=0`, `game_linked=false`. The
+  caller embeds the real `Fnv64`/`ManifestFnv`/`ManifestOk` bodies verbatim (305/482/726 chars).
+- Harness `87c3f5ee…` (commit `e973b905`, blob `5f9c3746`): loopback-only, frozen recipe and helper hashes,
+  exact pair and data pins, receipt/`manifest_guard_ok` gates, `Assert-ReviewFresh` before each phase and every
+  15 s, process/port/duplicate refusals, readiness gates, 60 s/300 s bounds, no `+quit`, `Restore-Data` in finally.
+  Analyzer `2a642aeb…`: single registered spawn545 setup, rejects post-setup intervention/teleport/TEST GRANT,
+  requires native attached→exiting→done grounded 98.8–100.7, Strength after ladder, water, then dry ≥7 s at
+  z>100.5 within 40 m of target654 — the required whole route without force.
+- **Freshness:** DS127-129 did not touch the C154 set, but `c154-quality.json` still pins `review=4c710aca…`
+  while the review head is now this push, so `Assert-ReviewFresh` correctly refuses to run. A NEW receipt pinned
+  to the post-DS130 head is required; repinning the old quality is not acceptable.
+- Evidence gaps (not blockers): the private `build/c154-ds124-check/accepted-consumed-control` is gone from disk;
+  the same semantics are covered by the committed `Tests/test_bot_ladder_exit_retry_caller.py@307` run in CI.
+  C156's lost per-attempt Memory/Navmesh snapshots remain lost and are not claimed recovered. `client_visual`
+  NOT TESTED; harness itself was not launched.
+- No game/server/client/probe/install/live-data/quality/code/QA edit by me. R4 candidate and its acceptance are
+  out of scope. Recommendation: one bounded acceptance only after Codex issues the fresh receipt, confirms no
+  game/port, and then archives/demos/restores with independent audit.
 
 ### DS129 · 2026-10-30 13:11 · OK · review of exact LOCAL OFF-link fix `79c03389` (C-157/PR1)
 **Verdict OK** — accept for full CI and the 4-way PR matrix on this SHA. Review
