@@ -3,7 +3,31 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS130 C154 preflight review OK on exact `307037bc` + CI40919291234 + V5 + harness/analyzer — hashes and gates re-verified live, physical UNTESTED; current quality review head is stale, fresh receipt required before one run; idle · 2026-10-30 14:30
+NOW: DS131 C154 run307 audit PASS (archive complete) — run FAIL blocked_top at 15.63 s; 307 retry had zero physical effect; exit has no motion source (PerAnimGraph, no ladderOffTop, animationReady0); next step is observation then a DS112-style physical exit, not another signal; idle · 2026-10-30 14:39
+
+### DS131 · 2026-10-30 14:39 · AUDIT PASS · run307 blocked_top root cause (archive/evidence)
+**Archive audit PASS; the run itself FAIL and correctly recorded.** Review
+`Docs/Research/DeepSeek/DS131_C154_RUN307_AUDIT.md`; branch head after this push is the review head.
+- Verified: quality pins source 307 + DS130 review `78d7f4b3` (`review_ok`, fresh receipt, owner authorization);
+  three `review-checks` MATCH entries; provenance/effective (`wb_bot_ladder=1`, hz20, move trace) all pass; one
+  registered spawn545 setup and no interventions; demo `WBDM` v2, 642 records, parses exactly to EOF, last ts 17.326 s;
+  full trace tail to 17.84 s; memory 4/4 and nav 16/16 receipts internally equal to before/after.
+- Timeline: climb to 12.62 s, z 90.16→97.922 (vz 0.886); exit at 12.62 with vz 0; one retry at 12.65
+  (`state=RelaxedRunNW`, `previousSignal=none`); frozen position/velocity until 15.63; `blocked_top` exactly 3.01 s
+  after exit start (budget 3.0). Physical guard: along 7.68 vs required 8.50 (0.82 m short), side 1.10 m in band.
+- 307 changed only the retry, pseudo parity and the 2→3 s budget: retry fired once, pseudo 1.00, and the physical
+  outcome is identical to `abac72a9` (14.45 s, 97.92) and `272a4306` (14.53 s, 97.93). The change did not fix the cause.
+- Cause: the exit has no motion source. `motionFlags=796` = PerAnimGraph|ZFromPhysics|MovementProcessing|
+  ImmediateStance|UseHumanBlending, without `AlwaysPhysics`; `output=0`, `held=0`, `signal=none`,
+  `state=relaxed_walkToIdle_nw_01`; `ladderOffTop` appears in no log at all; `animationReady=0` throughout the climb
+  because `UpdateLadderAnimation` needs a manual climb clip in the client FIFO. DS112 bypasses this for the climb
+  (`authoritativeClimb`), the `isExitingLadder` branch has no equivalent and only re-signals the graph.
+- Hygiene defect: current live Memory/Navmesh differ from the archived baseline (two memory files missing, Shore.mem
+  and two Steelmill nav files differ, timestamps older). The archive after==before, so the restore was correct at
+  14:32; the drift is post-run. The next run must take a fresh snapshot and must not treat live data as the baseline.
+- Next step (proposal, not approval): first an observation run to see whether `ladderOffTop`/`animationReady=1` can
+  ever appear for the owned bot; if not, a DS112-style physical exit under the existing guard. No bigger budget, no
+  retry spam, no timer success, no teleport, no guard weakening. No game/server/build/quality/code edit by me.
 
 ### DS130 · 2026-10-30 14:30 · OK · fresh C154 pre-runtime review, exact `307037bc` + CI40919291234 + V5
 **Verdict OK (code/data/harness/analyzer/binaries); physical UNTESTED.** Review
