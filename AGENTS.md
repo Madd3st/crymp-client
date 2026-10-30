@@ -9,7 +9,7 @@
 
 ## Ветки и рабочие копии
 
-- Текущий проверенный Shore-кандидат: codex/shore-ladder-exit, E:/WarsBots/Development/r4-weapon-search-episode, ed72987c (PR2, не слит). Полный серверный маршрут и DS135 PASS; клиентская картинка не проверена. Основная claude-sprint/QA/build/ds076-code остаётся307 как история до PR.
+- Текущий проверенный Shore-кандидат: codex/shore-ladder-exit, E:/WarsBots/Development/r4-weapon-search-episode, ed72987c (PR2, не слит). Полный серверный маршрут и DS135 PASS; клиентский плейтест владельца PASS; видео отдельно не просмотрено. Основная claude-sprint/QA/build/ds076-code остаётся307 как история до PR.
 - QA-инструменты и результаты: warsbots/feature/weapon-goals, C:/Users/Magic8/WarsBotsBuild/crymp-multibot. Его Code/ устарел.
 - Задачи, решения, исходники вики: warsbots/research/steelmill-triage, QA/build/ds076-triage.
 - Предложения/ревью: warsbots/research/deepseek. Не путать предложение с интегрированным кодом.

@@ -33,3 +33,6 @@ C156: исходники, CI-пара307, V5, вики, исходные лог�
 Дополнительный поиск E: 36ZIP/73937записей, 64snapshot-манифеста/268файлов SHA PASS,81restore-квитанция; оригиналов C154 не найдено. Полный комплект и индекс — E:/WarsBots/Recovery-2026-10-30/.
 
 [Текущие задачи](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/TO_CODEX.md), [передача](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/CLAUDE_STATE.md), [решения](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/DECISIONS.md), [вики](https://github.com/Madd3st/crymp-client/wiki). Старые отчёты и архивные open/STOP не являются текущими поручениями. Чужие Recording/C126-изменения сохраняются.
+
+
+Gemini: назначено первое архитектурное/кодовое ревью и разбор цикла разработки, включая крышу Steelmill. Постоянная роль не назначена; реализация/уборка пока не поручены. [Задание](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/GEMINI_INITIAL_REVIEW.md). Codex проверяет выводы; владелец выбирает дальнейшие задачи.
