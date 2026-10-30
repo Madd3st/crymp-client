@@ -3,7 +3,30 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS136 supplement V2 `Shore-ed72987c-v2` OK CONDITIONAL — all #Lua/timers/headless removed, AI stays stopped via +wb_select 2 +wb_bot_stop, readiness refuses pre-client LADDER start, helpers byte-identical, port 46169/polys 46830, pair/V5/manifest exact; one visible attempt only if the native UI is safely targetable (not an OS terminal) and a real spectator is observed; V1 preflight failure preserved only partially (pre log not archived); frozen · 2026-10-30 19:54
+NOW: DS136 supplement V2+console `ShowServerConsole` OK CONDITIONAL — exactly two changes (switch + server WindowStyle Normal only when selected, default Hidden), manifest refreshed (Run `d81c1c94…`, manifest `ded3bf9a…`), helpers still identical, pair/data/preset unchanged; visual-quality.json still pins old launcher/manifest hashes so the gate will reject until Codex regenerates it; frozen · 2026-10-30 20:01
+
+### DS136-supplement · 2026-10-30 20:01 · OK CONDITIONAL · V2 + `ShowServerConsole` (two changes only)
+**Exactly the two declared changes; the stale visual receipt is the only blocker.** Review
+`Docs/Research/DeepSeek/DS136_SUPPLEMENT_V2_CONSOLE.md`; the branch head after this push is the pinned review head.
+- `Run.ps1:3` adds `[switch]$ShowServerConsole`; `Run.ps1:89` starts the server with
+  `-WindowStyle $(if($ShowServerConsole){'Normal'}else{'Hidden'})` — Hidden by default, Normal only when explicitly
+  selected. Nothing else changed: commands/roster/readiness/gate/cleanup identical, seven core helpers still
+  byte-identical to the reviewed `Launch-WarsBotsShowcase.ps1`, +67 bytes matches the two edits. No new CVAR/timer/
+  force/teleport; the human types the native server commands, Codex does not automate an OS terminal.
+- Hashes recomputed: `Run.ps1 d81c1c94…`, `package-manifest.json ded3bf9a…` (11/11 entries match, Run refreshed),
+  `preset.json 20291ccc…`, `build.json 3cbd7d21…`, pair `12870db9…`/`05ECB35C…`, V5
+  `b60178d7/0230a0c3/d95e1e11/a95a0503`; port 46169, polys 46830 unchanged.
+- PrepareOnly: branch unchanged and still before the visual gate; the switch does not affect it and args stay <2048.
+  The stored `prepare-only.json` predates the edit (19:51) — inert, but could be regenerated (I did not run it).
+- **Blocker for the run:** `visual-quality.json` still pins `launcher_sha256=99906075…` and
+  `manifest_sha256=8FD00090…`; the gate at line 76 compares them with the new `d81c1c94…`/`ded3bf9a…` and will
+  refuse. Codex must regenerate the receipt on the new hashes and on the post-supplement review head.
+- Context: prior session `Sessions/C154-VisualV2-20261030-195744` is `archived_restored` (client was launched,
+  logs+demo archived, no game processes now); that run used the old Hidden window, so the operator could not use the
+  native console — which explains the switch.
+- Attempt conditions unchanged: human spectator in game → one `wb_revive_at 545 2` in the native server console →
+  client `wb_watch 2`/F6 → one `wb_bot_start`; one attempt, normal client close, then archive/restore. If the UI is
+  not usable, no attempt. No code/build/runtime from me.
 
 ### DS136-supplement · 2026-10-30 19:54 · OK CONDITIONAL · visual profile V2 `Shore-ed72987c-v2`
 **V2 removes the unproven Lua-prefix and stays fail-closed; approval conditional on UI targetability and a real
