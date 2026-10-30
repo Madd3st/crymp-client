@@ -359,14 +359,14 @@ int main(int argc, char** argv) {
                 std::puts("FAIL: expected pre-fix revision to overwrite Vantage Travel goal with Heard gunshot");
                 return 11;
             }
-            std::puts("PASS [1/4]: pre-fix VantagePhase::Travel lost m_patrolGoal to Heard gunshot (RED reproduced)");
+            std::puts("PASS [1/5]: pre-fix VantagePhase::Travel lost m_patrolGoal to Heard gunshot (RED reproduced)");
             return 0;
         }
         if (!keptVantageGoal) {
             std::puts("FAIL: active VantagePhase::Travel lost m_patrolGoal to Heard gunshot");
             return 12;
         }
-        std::puts("PASS [2/4]: post-fix active VantagePhase::Travel preserved m_patrolGoal against Heard gunshot");
+        std::puts("PASS [2/5]: post-fix active VantagePhase::Travel preserved m_patrolGoal against Heard gunshot");
     }
 
     // Case 3: Without active Vantage (VantagePhase::None), Heard gunshot investigation works as before.
@@ -399,7 +399,7 @@ int main(int argc, char** argv) {
             std::puts("FAIL: Heard gunshot did not update m_patrolGoal when Vantage was inactive");
             return 21;
         }
-        std::puts("PASS [3/4]: without active Vantage, Heard gunshot investigation works normally");
+        std::puts("PASS [3/5]: without active Vantage, Heard gunshot investigation works normally");
     }
 
     // Case 4a: After Vantage is cancelled (e.g. sniper eligibility ends), Heard investigation works again.
@@ -486,7 +486,64 @@ int main(int argc, char** argv) {
             std::puts("FAIL: Heard gunshot was not investigated after Vantage Hold completion");
             return 36;
         }
-        std::puts("PASS [4/4]: after Vantage cancellation or completion, Heard investigation is active again");
+        std::puts("PASS [4/5]: after Vantage cancellation or Hold completion, Heard investigation is active again");
+    }
+
+    // Case 5: Real Travel timeout (> 40 s without reaching the spot) with no alternative reachable spot
+    // ends Travel via BotVantage::Update and restores Heard gunshot investigation in UpdateRoam.
+    {
+        g_vantageMap.Load(spotsText);
+        BotConfig::Get() = Config{};
+        BotConfig::Get().highGround = 0;
+        CPlayer actor;
+        actor.entity.pos = Vec3(0.f, 0.f, 136.f);
+        actor.item.entity.cls.name = "DSG1";
+        BotInstance bot{&actor};
+        BotBrain brain;
+        brain.m_now = 10.f;
+        brain.m_combat.hasHeard = true;
+        brain.m_combat.heardAt = 9.5f;
+        brain.m_combat.heardPos = gunshot;
+
+        // 1. Start Travel toward the only available spot at t=10; Heard is suppressed while travelling.
+        brain.UpdateRoam(bot, actor, 0.1f);
+        if (brain.m_vantage.Phase() != VantagePhase::Travel ||
+            brain.m_vantage.SpotIndex() != 0 ||
+            !Same2D(brain.m_patrolGoal, roofSpot) ||
+            !Same2D(brain.lastSteerGoal, roofSpot)) {
+            std::puts("FAIL: Case 5 failed to start Travel to roofSpot");
+            return 40;
+        }
+
+        // Still before the 40 s Travel limit (t=49.9, elapsed 39.9 s <= 40 s): Travel stays active.
+        brain.m_now = 49.9f;
+        brain.m_combat.heardAt = 49.5f;
+        brain.UpdateRoam(bot, actor, 0.1f);
+        if (brain.m_vantage.Phase() != VantagePhase::Travel ||
+            !Same2D(brain.m_patrolGoal, roofSpot) ||
+            !Same2D(brain.lastSteerGoal, roofSpot)) {
+            std::puts("FAIL: Case 5 Travel ended before the 40 s timeout");
+            return 41;
+        }
+
+        // 2 & 3. Do not reach the spot; advance time past the real 40 s Travel limit (t=50.5, elapsed 40.5 s > 40 s)
+        // with no alternative spot in VantageMap (spot 0 is banned by BotVantage::Update on timeout).
+        brain.m_now = 50.5f;
+        brain.m_combat.heardAt = 50.2f;
+        brain.UpdateRoam(bot, actor, 0.1f);
+
+        // 4 & 5. Confirm Travel ended and fresh qualifying Heard updated m_patrolGoal and Steer target.
+        if (brain.m_vantage.Phase() != VantagePhase::None || brain.m_vantage.SpotIndex() != -1) {
+            std::puts("FAIL: expected VantagePhase::None and SpotIndex -1 after 40 s Travel timeout with no alternative spot");
+            return 42;
+        }
+        if (!Same2D(brain.m_patrolGoal, gunshot) ||
+            !Same2D(brain.lastSteerGoal, gunshot) ||
+            std::fabs(brain.m_patrolUntil - 58.5f) > 1e-3f) {
+            std::puts("FAIL: fresh Heard gunshot did not update m_patrolGoal and Steer target after Travel timeout");
+            return 43;
+        }
+        std::puts("PASS [5/5]: after 40 s Travel timeout with no alternative spot, Travel ends and Heard updates m_patrolGoal and Steer");
     }
 
     return 0;
