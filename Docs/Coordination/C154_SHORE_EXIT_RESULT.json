@@ -77,8 +77,8 @@
     "verdict": "PASS",
     "report": "Docs/Research/DeepSeek/DS135_C154_PASS_AUDIT.md"
   },
-  "client_visual": "NOT TESTED",
-  "scope_limits": "One reviewed controlled lower545 route, one bot, exact V5 data. No full PS match/capture/general ladder/client visual acceptance. PR not merged; canonical307 unchanged.",
+  "client_visual": "OWNER_PLAYTEST_PASS",
+  "scope_limits": "Controlled server whole-route PASS; owner reports successful client playtest of Shore exit. Video supplied but not independently inspected. Other ladders/full PS/capture not accepted; PR not merged.",
   "visual_setup": {
     "status": "BLOCKED_NO_TARGETABLE_SERVER_UI",
     "review": "18f4680c997428a590ee0c2553ab7c633d08c7f9",
@@ -89,5 +89,20 @@
     "restore": "archived_restored",
     "game_processes": 0,
     "v1": "Preflight failed before client; primary preflight log missing, session receipt retained"
+  },
+  "owner_playtest": {
+    "archive": "E:/WarsBots/Visual/Shore-ed72987c-v2/Sessions/C154-VisualV2-20261030-200157",
+    "feedback": "все оттлично",
+    "ladder_done_seconds": [
+      94.68,
+      146.56
+    ],
+    "both_exits": "nativeOn=0 exiting=0 grounded=1",
+    "setup": "Interactive owner session: repeated native revives; not the prior single-setup whole-route proof",
+    "video": "C:/Users/Magic8/Videos/NVIDIA/Desktop/Desktop 2026.10.30 - 20.04.10.02.mp4",
+    "video_sha256": "4ad67fe3cd6ee8fe050b4ac30ed9eeb876214f9e3c3aa79a201d6d147b2e393c",
+    "video_independently_inspected": false,
+    "restore": "archived_restored; memory/nav exact_names_and_hashes=true",
+    "game_processes": 0
   }
 }
