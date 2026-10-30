@@ -82,7 +82,10 @@ struct SPlayerStats {
  int spectatorMode=0, flyMode=0;
  Vec3 ladderTop, ladderBottom, ladderOrientation;
 };
-struct ICharacterInstance { int GetFlags(){return 0;} };
+struct CAnimation { struct { int m_nAnimID[1]={0}; } m_LMG0; float m_fAnimTime=0.f; };
+struct IAnimationSet { int GetAnimIDByName(const char*) {return 1;} const char* GetNameByAnimID(int) {return "mock";} };
+struct ISkeletonAnim { int GetNumAnimsInFIFO(int) {return 0;} CAnimation& GetAnimFromFIFO(int,int) {static CAnimation a;return a;} };
+struct ICharacterInstance { int GetFlags(){return 0;} IAnimationSet* GetIAnimationSet() {return nullptr;} ISkeletonAnim* GetISkeletonAnim() {return nullptr;} const char* GetFilePath() {return "mock";} };
 struct Entity { Vec3 p; Vec3 GetWorldPos()const{return p;} ICharacterInstance* GetCharacter(int){return nullptr;} };
 struct IAnimationGraphState {
  using InputID=unsigned;const char* out=nullptr;const char* QueryOutput(const char*){return out;}
