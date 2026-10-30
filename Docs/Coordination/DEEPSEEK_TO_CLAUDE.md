@@ -3,7 +3,38 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS132 supplement `96e4a383` OK CONDITIONAL — mock blocker resolved (test-only +4/−1, game source identical to 8ed); unit job on 96 SUCCESS confirms the cause; build job and PR matrix still running, no artifact pair yet; review head pinned/frozen · 2026-10-30 15:07
+NOW: DS133 `0851e685` BLOCK — does not compile: const predicate calls non-const CActor::IsFrozen (C2662); CI build job failed, no artifact pair; second finding: PrimitiveWorldIntersection geomFlagsAny=geom_colltype_player ignores static geometry; archive96 audit PASS (exitClip=-1, FIFO0=0, US nanosuit CDF); branch head already 63eef004 (const fixed, flags open); frozen · 2026-10-30 15:34
+
+### DS133 · 2026-10-30 15:34 · BLOCK · review of `0851e685` physics-exit + audit of the 96 run archive
+**BLOCK on compile; design aligned with DS120; archive 96 audit PASS.** Review
+`Docs/Research/DeepSeek/DS133_PHYSICS_EXIT_REVIEW.md`; the branch head after this push is the pinned review head.
+- Candidate `0851e685dd1f8415bbb0933f825dda927c978512`, parent `96e4a383`, PR #2; 10 files +287/−4 (Player.cpp/.h,
+  PlayerMovement.cpp/.h, CI, five ladder callers, new physics-exit caller).
+- **Blocker 1:** `bool CPlayer::NeedsWarsBotLadderPhysicsExit() const` calls `IsFrozen()`, but `CActor::IsFrozen()` is
+  non-const (Actor.h:966, Actor.cpp:2065) → C2662. Live CI run `41055226551`: unit job `124060958357` success, but
+  client+server `124060957890` **failure** in "Configure and build" (12:25:41→12:28:58), upload skipped, no artifact
+  pair. The unit job missed it because the fixture mocked `bool IsFrozen()const` (test line 71), diverging from the real
+  class. Fix: drop `const` (all callers are non-const) and make the mock non-const too.
+- **Blocker 2 (collision filter):** both `PrimitiveWorldIntersection` calls pass `geomFlagsAny=geom_colltype_player`
+  (0x2), unlike the documented default `geom_colltype0|geom_colltype_player` and the idiom used by
+  `PlayerView.cpp:470/489` and `BotLocomotion.cpp:97-99` (`(geom_colltype_player<<rwi_colltype_bit)|rwi_stop_at_pierceable`).
+  As geometry flags it selects only colltype1 (player) and ignores static world geometry; as ray flags it means
+  pierceability 2 with an empty colltype mask. The swept clearance can therefore be a no-op; the Pushable controller
+  remains the only backstop. Fix: use the established expression and assert the flags word in the fixture.
+- Correct by design (DS120): native frame only, missing-clip-only eligibility, `AlwaysPhysics` only for that exit,
+  real `pe_player_dimensions` collider, 5-point landing footprint with slope/height/edge checks, overlap+sweep per step,
+  self-skip + `ent_living`, 1.7 m/s with `dt<=0.05`, completion only via `NativeLadderExitPhysicalReady` + support +
+  grounded + settling, unchanged 3 s budget, `RestoreWarsBotLadderGraph` releases the owned collider layer on
+  leave/cancel/death even after a graph replacement, no SetPos/impulse/timer success, no changes for humans/OFF/foreign.
+- **Archive 96 audit PASS:** quality pins source 96 + review `f35944ed` with 2 `MATCH` checks; runtime-result FAIL
+  `blocked_top` at 15.64 s (97.91); demo WBDM v2 562 records parses to EOF (24,921 B) but ends 0.36 s before the failure
+  line; 99 `LADDER EXIT INPUTS` lines all `action=idle stance=relaxed item=nw exitClip=-1 fifo=0 fifoClip=-1
+  model=…nanosuit_us_multiplayer.cdf` — the installed US nanosuit has no registered exit clip (observation, not a graph
+  parity claim). MSIX physical tree matches the receipt exactly (Memory 4/4, Nav 16/16, no rollback).
+- Branch head is already **`63eef004`** (const fixed, mock aligned, capsule/floorMask/collider-mode/diagnostic logs, two
+  new controls) — not covered by this review; the §2 flags item is still open there. It needs its own CI/pair/review.
+- Not claimed: that the physics exit works, the graph cause, or that clip registration is impossible. DS131 causal and
+  MSIX caveats apply. No game/server/local build/live-data/code/quality edit by me.
 
 ### DS132-supplement · 2026-10-30 15:07 · OK CONDITIONAL · `96e4a383` source/data/harness compatibility
 **The DS132 mock blocker is resolved; OK is conditional on the still-running gates.** Review section at the end of
