@@ -3,7 +3,37 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS133 supplement `d2dc767e` OK CONDITIONAL — both DS133 blockers fixed (non-const predicate per SDK + documented collisionFlags for PWI overlap/sweep, ray mask decoded and asserted, static-colltype0 wall control, registry-null handled with animationSet logging); CI 41056537500 unit in progress/build queued, no pair, PR pending; frozen · 2026-10-30 15:37
+NOW: DS134 `ed72987c` OK CONDITIONAL — D2 archive PASS (assumed -Y landing over a hole, sample3 hits0; real link b is +1.375 m sideways); candidate takes the validated link landing (bounded 0.6–2 m/±1.2 m), floor probe also matches landing Z±0.25, rest of guards unchanged; CI 41086406959 unit green/build running, PR 41086417565 running, no pair; frozen · 2026-10-30 19:08
+
+### DS134 · 2026-10-30 19:08 · OK CONDITIONAL · `ed72987c` link-landing exit + D2 archive audit
+**No blocker in the reviewed bytes; approval strictly conditional on the still-running gates.** Review
+`Docs/Research/DeepSeek/DS134_ED729_REVIEW.md`; the branch head after this push is the pinned review head.
+- D2 archive audit PASS: `LADDER start a=(2116.12,1880.62,90.16) b=(2117.50,1880.60,99.76)`; failure at 15.52 s is
+  `LADDER PHYSICAL blocked reason=floor sample=3 hits=0 … top=100.321 target=(2116.125,1879.525)` — the assumed −Y
+  landing was over a hole, with no motion/sweep/collider stage (exact protected refusal). `animationSet=1 exitClip=-1
+  fifo=0`. Quality pins d2 + review `3b631ace` with 2 MATCH; demo WBDM 567 records parses to EOF (25,152 B), sha256
+  `6e7a157c…` matches; MSIX physical tree Memory 4/4, Nav 16/16 exact.
+- Candidate: new bounded metadata `SetWarsBotLadderExitTarget` (owned server bot, ladder=1, onLadder; XY 0.6–2.0 m from
+  the native top, |Δz|≤1.2, finite) set from `m_ladderNow.b` only when the native frame is locked and attached; getter
+  returns metadata only, never a position; `Restore` clears it before the graph early-return. The adapter uses that
+  landing instead of `-ladderOrientation`, re-validates it, and adds `|floor.pt.z − landing.z| ≤ 0.25` to the five floor
+  probes; everything else is unchanged (capsule/cylinder from `pe_player_dimensions`, overlap+sweep with
+  `geom_colltype0|geom_colltype_player`, floorMask without ent_living, Pushable, NativeLadderExitPhysicalReady + support
+  + grounded + settling, 3 s budget).
+- Geometry checked with the real numbers: native frame is vertical at x≈2116.125 (top z 100.321); link b is 1.375 m
+  sideways and 0.561 m below it → accepted; at the trigger the lateral offset from the native axis is ≈0 → rise ~1.89 m,
+  then egress 1.375 m to b (the observed human lateral-out), floor at b ≈99.75 inside both bands.
+- Tests execute the actual brain binding block, setter/getter, cleanup prefix and adapter: locked/attached gates,
+  invalid/out-of-bounds/missing target, perpendicular landing following b, registered-clip noop, previous world
+  collision controls, faults extended to 10.
+- Live at review: run `41086406959` — unit `124168612690` success, build `124168612152` in progress; PR `41086417565` in
+  progress; no artifact pair. No success claimed for pending jobs.
+- Conditions: green full CI incl. build+upload, all PR jobs green, exact pair downloaded and re-hashed, fresh receipt on
+  ed729 with its own RUNTIME_PIN; 307/96/085/63/d2 history preserved.
+- Non-blocking: the 0.6–2.0 m / ±1.2 m bounds are Shore-specific (other ladders fail closed with `no_link_landing`); a
+  descending link has `side≈0` and is rejected; the demo tail again ends ~0.25 s before the failure line. Not proven:
+  that the physical exit works, that the egress path at b is clear, or the graph cause. DS131 causal/MSIX caveats apply.
+  No game/server/local build/live-data/code/quality edit by me.
 
 ### DS133-supplement · 2026-10-30 15:37 · OK CONDITIONAL · `d2dc767e` cumulative 085→63→d2
 **Both DS133 blockers are fixed in the reviewed bytes; approval is strictly conditional on the still-running gates.**
