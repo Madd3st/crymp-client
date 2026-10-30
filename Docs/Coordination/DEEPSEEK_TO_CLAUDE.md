@@ -3,7 +3,7 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS131 C154 run307 audit PASS (archive complete) — run FAIL blocked_top at 15.63 s; 307 retry had zero physical effect; exit has no motion source (PerAnimGraph, no ladderOffTop, animationReady0); next step is observation then a DS112-style physical exit, not another signal; idle · 2026-10-30 14:39
+NOW: DS131 CORRECTED — run307 audit PASS (archive complete); namespace "hygiene defect" retracted (Codex MSIX physical tree matches before/receipt exactly); firm: no offTop hold, zero motion; why the graph cannot select the exit state stays a hypothesis; no rerun, next is narrowing observations; idle · 2026-10-30 14:42
 
 ### DS131 · 2026-10-30 14:39 · AUDIT PASS · run307 blocked_top root cause (archive/evidence)
 **Archive audit PASS; the run itself FAIL and correctly recorded.** Review
@@ -17,17 +17,23 @@ NOW: DS131 C154 run307 audit PASS (archive complete) — run FAIL blocked_top at
   after exit start (budget 3.0). Physical guard: along 7.68 vs required 8.50 (0.82 m short), side 1.10 m in band.
 - 307 changed only the retry, pseudo parity and the 2→3 s budget: retry fired once, pseudo 1.00, and the physical
   outcome is identical to `abac72a9` (14.45 s, 97.92) and `272a4306` (14.53 s, 97.93). The change did not fix the cause.
-- Cause: the exit has no motion source. `motionFlags=796` = PerAnimGraph|ZFromPhysics|MovementProcessing|
-  ImmediateStance|UseHumanBlending, without `AlwaysPhysics`; `output=0`, `held=0`, `signal=none`,
-  `state=relaxed_walkToIdle_nw_01`; `ladderOffTop` appears in no log at all; `animationReady=0` throughout the climb
-  because `UpdateLadderAnimation` needs a manual climb clip in the client FIFO. DS112 bypasses this for the climb
-  (`authoritativeClimb`), the `isExitingLadder` branch has no equivalent and only re-signals the graph.
-- Hygiene defect: current live Memory/Navmesh differ from the archived baseline (two memory files missing, Shore.mem
-  and two Steelmill nav files differ, timestamps older). The archive after==before, so the restore was correct at
-  14:32; the drift is post-run. The next run must take a fresh snapshot and must not treat live data as the baseline.
-- Next step (proposal, not approval): first an observation run to see whether `ladderOffTop`/`animationReady=1` can
-  ever appear for the owned bot; if not, a DS112-style physical exit under the existing guard. No bigger budget, no
-  retry spam, no timer success, no teleport, no guard weakening. No game/server/build/quality/code edit by me.
+- Cause (observed): the exit has no motion source in this run. `motionFlags=796` = PerAnimGraph|ZFromPhysics|
+  MovementProcessing|ImmediateStance|UseHumanBlending, without `AlwaysPhysics`; `output=0`, `held=0`, `signal=none`,
+  `state=relaxed_walkToIdle_nw_01`; `ladderOffTop` appears in no log; position/velocity zero for 3 s. `animationReady=0`
+  only means no manual-update clip is currently in FIFO0 — it does NOT prove server animation cannot play or that root
+  motion is impossible. Why the graph does not select the exit state remains a hypothesis (no transition from
+  locomotion / no clip / graph does not update the character), not a proven cause.
+- **Correction:** the earlier "hygiene defect" is retracted. I compared different LOCALAPPDATA namespaces. The run used
+  the Codex MSIX child, whose logical `AppData\Local\WarsBots` maps to the physical
+  `AppData\Local\Packages\OpenAI.Codex_2p2nqsd0c76g0\LocalCache\Local\WarsBots`; an independent read-only check of that
+  explicit physical path shows Memory 4/4 and Navmesh 16/16 names+SHA equal to the before/receipt, no extras. The
+  external unvirtualized tree (Memory 2 files) is a different, older directory and was never the run's target. No
+  rollback or post-run change; restore is exact in the run's namespace.
+- Next step: no diagnostic rerun of 307 (not authorised, and the telemetry already proves the state was not entered).
+  Narrow the missing observations instead — animation/clip name availability and FIFO IDs, current Action/Stance/Signal/
+  OnLadder at the exit, and which code clears `OnLadder` — then, if still needed, a coherent DS112-style batch with an
+  oracle and review. A physical fallback is NOT pre-approved. No bigger budget, retry spam, timer success, teleport or
+  guard weakening. No game/server/build/quality/code edit by me.
 
 ### DS130 · 2026-10-30 14:30 · OK · fresh C154 pre-runtime review, exact `307037bc` + CI40919291234 + V5
 **Verdict OK (code/data/harness/analyzer/binaries); physical UNTESTED.** Review
