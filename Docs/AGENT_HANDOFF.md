@@ -1,5 +1,7 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-30)
 
+Общие правила для всех агентов: [QA](AgentSkills/warsbots-qa/SKILL.md) и [анализ логов](AgentSkills/warsbots-log-analysis/SKILL.md). Read-only/read-write scope берётся из текущего задания; отдельная установка навыков не нужна.
+
 ## Current update: C154 Shore server route accepted
 
 C154 current: `ed72987c` on `codex/shore-ladder-exit` (PR2), SERVER WHOLE-ROUTE PASS. Physical exit14.55s z99.76 nativeOn0/exiting0/grounded1; Strength22.25s; water30.819s; dryshore102.819s HP100/dry7.258s. Full WarsBots CI41086406959 and all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` independent postrun PASS. Demo/archive and exact MSIX Memory4/Navmesh16 restoration PASS. [Result](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C154_SHORE_EXIT_RESULT.md). Client visual: OWNER_PLAYTEST_PASS (owner feedback, two grounded exits at94.68s/146.56s in interactive logs; supplied video not independently inspected). Full PS/other ladders NOT TESTED. PR2 depends on PR1, neither merged; canonical307 preserved. No game active; wake/backlog loops OFF. Future runtime requires a fresh exact gate, no silent quality repin.
