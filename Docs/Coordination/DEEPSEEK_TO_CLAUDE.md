@@ -3,7 +3,42 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS135 C154 whole-route audit PASS on exact `ed72987c` — analyzer replayed from the archived trace (PASS; stages identical, final 104.064 s/dry 8.50 s vs live 102.819/7.26 snapshot), pair/artifact/demo/MSIX/CI/PR all exact, no interventions, ladder done 14.55 with nativeOn=0 grounded=1; client visual/full PS remain NOT TESTED; frozen · 2026-10-30 19:19
+NOW: DS136 visual Shore profile `Shore-ed72987c` OK CONDITIONAL — exact pins/pair/V5 data, helpers byte-identical to the reviewed harness, preflight marker fail-closed for the unproven `#Lua` prefix, no AI before viewer, bounded 180 s reveal with one select/revive/ChangeSpectatorMode and one start after revalidation, cleanup exact/deferred; needs visual-quality.json with the DS136 head; frozen · 2026-10-30 19:44
+
+### DS136 · 2026-10-30 19:44 · OK CONDITIONAL · QA review of the visible Shore profile on `ed72987c`
+**Profile is sound and fail-closed; approval is conditional on the visual receipt and one visible attempt.** Review
+`Docs/Research/DeepSeek/DS136_VISUAL_PROFILE_REVIEW.md`; the branch head after this push is the pinned review head.
+- Profile `E:/WarsBots/Visual/Shore-ed72987c` (standalone QA package; frozen Showcases untouched). Pins verified by
+  recomputation: client `12870db9…70BCF`, server `05ECB35C…E24234`, V5 data `b60178d7/0230a0c3/d95e1e11/a95a0503`,
+  `Run.ps1` `ace7b4ae…`, `reveal.lua` `8ee5bec5…`, `preflight.lua` `23582e55…`, `preset.json` `7d7b56a2…`,
+  `package-manifest.json` `2e595b9f…`, `build.json` `3cbd7d21…`, `prepare-only.json` `8b6f6328…`; pair matches
+  `sha256.txt`, DS135 quality and artifact `12992223176` (`1c16a1f3…`). Preset: polys 46830, port 46168, 1 retained bot,
+  ladder 1, maxbots 2, probe gate 1, wb_log 2.
+- `Run.ps1`: all seven core helpers (`Snapshot-Data`, `Restore-Data`, `Stop-OwnServer`, `Save-Session`, `Save-Json`,
+  `Game-Processes`, `Quote-Arg`) are byte-identical to the already-reviewed `Launch-WarsBotsShowcase.ps1`; manifest
+  hash check; exact source/CI gate; all three command lines <2048; PrepareOnly returns before the visual gate and does
+  not launch; loopback/lanonly only, no devmode/security bypass; server headless, client visible `-dx9`.
+- Conditional Lua-prefix gate: preflight server runs `+#Script.ReloadScript('<abs>/preflight.lua')` with zero bots and
+  readiness requires the positive `C154_VISUAL_LUA_PREFLIGHT` marker; if CE2007 does not support `#`, the run times out
+  and restores with no client launch — fail closed, never a visual pass.
+- Real phase: roster `+wb_add 2 normal +wb_remove 1 +wb_select 2 +wb_bot_stop` + reveal; readiness needs
+  `C154_VISUAL_BOOT`, `NAVMESH loaded … 46830 polys`, `links ON`, `link kinds 2/2`, `#2 created`, `#1 ENTITY_EVENT_DONE`,
+  `FRAME … bots=1 server=1`, and rejects any pre-client `#2 LADDER start`; the client starts only after readiness.
+- `reveal.lua`: logs `C154_VISUAL_BOOT`, then at most 180 one-second checks; requires exactly one channel>0 in-game
+  spectator and exactly one channel0 non-player bot; then one `wb_select 2`, one `wb_revive_at 545 2`, one native
+  `ChangeSpectatorMode(viewer,3,bot)`; after 15 s revalidates `IsPlayerInGame` + `GetSpectatorMode()==3` and does one
+  `wb_select 2` + one `wb_bot_start`, else cancels. Timers only for polling/start, never success/quit/pos/impulse.
+- API verified in SDK at ed729: `GetPlayers` returns entity script tables (with `.id`/`.actor`), `actor:GetChannel/
+  IsPlayer/GetSpectatorMode`, `game:IsPlayerInGame/ChangeSpectatorMode`; C++ routes mode 3 to Lua
+  `OnChangeSpectatorMode` → `SetSpectatorMode(3,target)`, and 3 = `eASM_Follow`.
+- Cleanup: snapshot before install, restore only when the client is closed (otherwise deferred with RESTORE.cmd), logs
+  and demo archived with hash checks, `RecoverLast` confined to `Sessions` with receipt match.
+- Conditions: Codex creates `visual-quality.json` with `source=ed72987c`, `review_ok`, `review_head` = the post-DS136
+  head and launcher/reveal/manifest hashes (the gate rejects a stale head); one visible attempt; the user must join as a
+  spectator or the reveal times out safely. No CI rerun needed — game code unchanged.
+- Minor: `build.json` still carries `review=161b603a` (informational; the gate uses visual-quality.json); `wb_debug 0`
+  is harmless because readiness lines use `wb_log=2`. Not proven: `#` prefix support, and the visual result itself.
+  No game/server/client/build/code/live-data/quality edit by me.
 
 ### DS135 · 2026-10-30 19:19 · PASS · independent audit of the successful whole C154 route on `ed72987c`
 **Archive and server physical route PASS; scope limits stated.** Review `Docs/Research/DeepSeek/DS135_C154_PASS_AUDIT.md`;
