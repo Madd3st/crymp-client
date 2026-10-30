@@ -147,6 +147,7 @@ struct CPlayer
 	CNanoSuit* suit = nullptr;
 	IAnimationGraphState* m_warsBotLadderGraph = nullptr;
 	bool m_warsBotLadderGraphOverride = false, m_warsBotLadderGraphWasActive = false;
+	bool m_warsBotLadderExitTargetValid = false;
 	bool m_warsBotLadderGraphStanceDefault = true, m_warsBotLadderExitRetryUsed = false, m_warsBotLadderExitSignalPending = false;
 	unsigned char m_warsBotLadderGraphStanceId = 0;
 	std::string m_warsBotLadderGraphStance;

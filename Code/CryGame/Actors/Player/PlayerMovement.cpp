@@ -1599,10 +1599,7 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	Vec3 axis=top-bottom;
 	if (!axis.IsValid() || axis.len()<4.f) return;
 	axis.Normalize();
-	Vec3 forward=-m_stats.ladderOrientation; forward.z=0.f;
-	if (!feet.IsValid() || !top.IsValid() || !bottom.IsValid() || !forward.IsValid() ||
-		axis.z<0.95f || forward.len()<0.5f) return;
-	forward.Normalize();
+	if (!feet.IsValid() || !top.IsValid() || !bottom.IsValid() || axis.z<0.95f) return;
 	if ((feet-bottom-axis*((feet-bottom).Dot(axis))).len()>2.5f || feet.z<top.z-3.f || feet.z>top.z+0.75f) return;
 	pe_player_dimensions dimensions;
 	if (!physics->GetParams(&dimensions) || !dimensions.sizeCollider.IsValid() ||
@@ -1615,7 +1612,11 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 	const int collisionFlags=geom_colltype0|geom_colltype_player; // documented any-of part flags: static geometry AND player blockers
 	const int floorMask=ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid;
 	const int mask=floorMask|ent_living;
-	const Vec3 landing=top+forward*1.1f;
+	Vec3 landing;
+	if (!player.GetWarsBotLadderExitTarget(landing))
+	{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=no_link_landing.",player.GetEntityId()); return; }
+	const float landingSide=Vec3(landing.x-top.x,landing.y-top.y,0).len();
+	if (!landing.IsValid() || landingSide<0.6f || landingSide>2.f || fabs_tpl(landing.z-top.z)>1.2f) return;
 	float floorZ=0.f;
 	// Require support across the landing footprint, never a single ray over a ledge.
 	const Vec3 offsets[]={Vec3(0,0,0),Vec3(radius,0,0),Vec3(-radius,0,0),Vec3(0,radius,0),Vec3(0,-radius,0)};
@@ -1624,7 +1625,7 @@ void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& lan
 		ray_hit floor;
 		const int hits=gEnv->pPhysicalWorld->RayWorldIntersection(landing+offsets[i]+Vec3(0,0,0.5f),Vec3(0,0,-2.f),floorMask,
 			rwi_stop_at_pierceable|(collisionFlags<<rwi_colltype_bit),&floor,1,skip,1);
-		if (!hits || !floor.n.IsValid() || floor.n.z<0.75f || !floor.pt.IsValid() || floor.pt.z<top.z-1.2f || floor.pt.z>top.z+0.25f)
+		if (!hits || !floor.n.IsValid() || floor.n.z<0.75f || !floor.pt.IsValid() || floor.pt.z<top.z-1.2f || floor.pt.z>top.z+0.25f || fabs_tpl(floor.pt.z-landing.z)>0.25f)
 		{
 			WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=floor sample=%d hits=%d floor=%.3f normal=%.3f top=%.3f target=(%.3f,%.3f).",
 				player.GetEntityId(),i,hits,hits?floor.pt.z:-10000.f,hits?floor.n.z:0.f,top.z,landing.x,landing.y);

@@ -639,6 +639,8 @@ public:
 	// reset on ExitTop/leave/cancel/OFF/death/revive and cleanup clears only our own still-current signal.
 	bool TryWarsBotLadderExitRetry(IAnimationGraphState* graph);
 	bool NeedsWarsBotLadderPhysicsExit();
+	void SetWarsBotLadderExitTarget(const Vec3& target);
+	bool GetWarsBotLadderExitTarget(Vec3& target) const;
 	void SetWarsBotLadderExitPhysics(bool enable, bool settling);
 	bool WarsBotLadderExitSettling() const { return m_warsBotLadderExitSettling; }
 	void ResetWarsBotLadderExitRetry();
@@ -657,6 +659,8 @@ public:
 	IAnimationGraphState* m_warsBotLadderGraph = nullptr;
 	bool m_warsBotLadderGraphOverride = false, m_warsBotLadderGraphWasActive = false;
 	bool m_warsBotLadderExitRetryUsed = false;     // one recovery signal already sent for this native exit
+	Vec3 m_warsBotLadderExitTarget = Vec3(0,0,0);
+	bool m_warsBotLadderExitTargetValid = false; // current validated navigation link, cleared with route ownership
 	bool m_warsBotLadderExitSettling = false; // at least one ordinary gravity/landing request was submitted
 	bool m_warsBotLadderExitPhysics = false; // owns the temporary game-layer collider request
 	bool m_warsBotLadderExitSignalPending = false; // cleanup marker; recheck the actual Signal before clearing it
