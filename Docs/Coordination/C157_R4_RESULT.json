@@ -1,12 +1,12 @@
 {
   "task": "C157",
-  "source": "bd8692cdfc13ff88f9622684aa25f3940e698b35",
+  "source": "cde7782301d304149025b1975ae6b13e6866745f",
   "parent": "307037bc08050d39f26310dc6cc7071dddddf4a6",
   "branch": "codex/r4-weapon-search-episode",
   "review": "58cc3efc4f96ac031e47e5b601302e391ca10fed",
   "review_task": "DS128",
   "review_verdict": "OK",
-  "ci_run": 40976171549,
+  "ci_run": 41039823887,
   "ci_success": true,
   "ci_state": "success",
   "local_checks": {
@@ -24,12 +24,21 @@
   "headers_changed": false,
   "fallback_policy": "one attempt per life, including failed attempt; unchanged",
   "evidence_directory": "E:\\WarsBots\\Development\\C157-checks",
-  "artifact_id": 12943126850,
-  "artifact_digest": "sha256:756be4643aec91bf365d338d54e37a18c095ba4f8ec7d3139976bfe9f4484e6a",
+  "artifact_id": 12970885272,
+  "artifact_digest": "sha256:1d9cf1dd9d3f5433c9161806c5517b228fc0ab78b8d65797afeac67768b1ffe2",
   "binary_hashes": {
-    "CryMP-Client64.exe": "bf875ca58f470b654ba60d216aad9eed11b78c22023cfe1673ea764f719881be",
-    "CryMP-Server64.exe": "bc785f48b5d20b435f4db348a5e564afc19c0744cc9662fb56b339f006d314b4"
+    "CryMP-Client64.exe": "a0cdda666fb78faac97bcb2a185d85dc3a88cec768e87d8255dc3859f374ff12",
+    "CryMP-Server64.exe": "e73b7ec7c48d6f1f38afc2a618f6931d7d5155bed65811b1f2e8c3b7e2d033f8"
   },
   "artifact_hashes_verified": true,
-  "pr": "https://github.com/Madd3st/crymp-client/pull/1"
+  "pr": "https://github.com/Madd3st/crymp-client/pull/1",
+  "previous_source": "bd8692cdfc13ff88f9622684aa25f3940e698b35",
+  "review_tasks": {
+    "DS128": "58cc3efc4f96ac031e47e5b601302e391ca10fed",
+    "DS129": "4fecbb8b536df498e652c5976bf8f94fbee194e4"
+  },
+  "pr_matrix_run": 41039830200,
+  "pr_matrix_success": true,
+  "review_scope": "DS128 R4 and DS129 OFF code guard; subsequent signing-key workflow change verified by complete CI, no new independent review claimed",
+  "superseded_validation": "bd8692cd experimental CI passed, OFF PR link failed; 79c03389 link fixed but signing attempted without configured key"
 }

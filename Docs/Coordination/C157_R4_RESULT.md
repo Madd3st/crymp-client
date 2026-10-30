@@ -1,5 +1,18 @@
 # C157: R4 — поиск оружия после позднего исчерпания боезапаса
 
+## Актуальный итог полной PR-проверки — 30.10.2026
+
+Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; runtime НЕ проверен, C154307 сохранён.
+
+Исправлены две дополнительные причины красного PR: без экспериментальных ботов вызов BotMatch::IsBot оставался без определения; затем подпись пыталась работать без CODE_SIGNING_API_KEY. Header и bot-only вызов защищены experimental macro, штатный lookup сохранён. Подпись запускается только с настроенным ключом, ключ доступен лишь шагу подписи; ошибки при наличии ключа не скрываются. Ни один build/test не отключён.
+
+OFF/ON actual-source caller: старый OFF успешно компилируется и даёт конкретный BotMatch LNK2019 при линковке; исправленный OFF/ON проходит линковку и routing-контроли. R4 caller остаётся GREEN. [PR matrix](https://github.com/Madd3st/crymp-client/actions/runs/41039830200), [WarsBots CI](https://github.com/Madd3st/crymp-client/actions/runs/41039823887). Полные хеши и artifact digest — в соседнем JSON. Бинарники не устанавливались.
+
+Первый кандидат bd8692cd ниже — история: его зелёный CI относился только к experimental WarsBots, обычная PR-матрица падала. 79c03389 исправил линковку, но выявил ошибку подписи. Промежуточные прогоны отменены после публикации текущего head.
+
+## История первого кандидата
+
+
 Кандидат `bd8692cdfc13ff88f9622684aa25f3940e698b35`, родитель307037bc, отдельная ветка `codex/r4-weapon-search-episode`. C154 и его runtime pin307 не менялись. Runtime запрещён владельцем; игра/сервер не запускались.
 
 ## Проблема и изменение

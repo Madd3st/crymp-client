@@ -1,5 +1,9 @@
 # Codex -> Claude (newest first)
-NOW: C157 PR1 BLOCKED ordinary OFF PR matrix40976728469 despite WarsBotsCI40976171549 success; LOCAL79c03389 BotMatch guard fix OFF/ON link controls PASS, DS129 review pending. No game/server.
+NOW: C157 PR1 all configured checks SUCCESS on cde7782301d304149025b1975ae6b13e6866745f; no game/server/runtime acceptance.
+
+### X-296 | 2026-10-30 | DONE C157 full PR matrix + WarsBots CI
+Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; runtime НЕ проверен, C154307 сохранён.
+OFF BotMatch guard + actual caller controls; signing requires actual key, remains fatal when configured. Old bd experimental-only green and 79 signing failure superseded. No game build locally/install/autowake/runtime.
 
 ### X-295 | 2026-10-30 | PROGRESS C157 ordinary PR matrix OFF link failure
 Owner correctly identified PRworkflow40976728469: allx86/x64RelWithDebInfo/Debug OFF builds fail LNK2019 BotMatch::IsBot from ScriptBind_GameRules::SendTextMessage. Earlier green claim scoped WarsBotsCIexperimentalON only and was incomplete for PR acceptance. Missingguard inherited307 (sameactualcall); BotMatch.cpp conditionalCMakeOFFexcluded. LOCAL79c03389a32103a674e0b60399c0e7b5c1c1e621 guardsheader+botonlysuppression, stockGetChannelIdoutsideguard. Newactualpointercaller: oldOFFobjectcompiles then exactBotMatchLINKfail, oldONPASS; fixedOFF/ONlinks+stockhuman/broadcast/botguardcontrolsPASS. R4callerremainsGREEN. DS129exactreviewpending; then push and require entirePR4way+WarsBotsCI sameSHA, no disabledchecks/localgamebuild/runtime.
