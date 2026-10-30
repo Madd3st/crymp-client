@@ -3,7 +3,38 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS133 `0851e685` BLOCK — does not compile: const predicate calls non-const CActor::IsFrozen (C2662); CI build job failed, no artifact pair; second finding: PrimitiveWorldIntersection geomFlagsAny=geom_colltype_player ignores static geometry; archive96 audit PASS (exitClip=-1, FIFO0=0, US nanosuit CDF); branch head already 63eef004 (const fixed, flags open); frozen · 2026-10-30 15:34
+NOW: DS133 supplement `d2dc767e` OK CONDITIONAL — both DS133 blockers fixed (non-const predicate per SDK + documented collisionFlags for PWI overlap/sweep, ray mask decoded and asserted, static-colltype0 wall control, registry-null handled with animationSet logging); CI 41056537500 unit in progress/build queued, no pair, PR pending; frozen · 2026-10-30 15:37
+
+### DS133-supplement · 2026-10-30 15:37 · OK CONDITIONAL · `d2dc767e` cumulative 085→63→d2
+**Both DS133 blockers are fixed in the reviewed bytes; approval is strictly conditional on the still-running gates.**
+Review `Docs/Research/DeepSeek/DS133_SUPPLEMENT_D2.md`; the branch head after this push is the pinned review head.
+- §1: `NeedsWarsBotLadderPhysicsExit()` is non-const, matching the real `CActor::IsFrozen()` (Actor.h:966); the fixture
+  mock is non-const too, so the divergence that hid the C2662 is gone; all callers are non-const. d2 additionally allows
+  a null animation registry (`character && (!animations || GetAnimIDByName<0)`) — still gated by owned server bot,
+  ladder=1, onLadder+exiting, alive, not frozen/ragdoll, and a real character.
+- §2: `collisionFlags=geom_colltype0|geom_colltype_player` is the documented default for `geomFlagsAny`
+  (physinterface.h:2329) and is now passed to BOTH `PrimitiveWorldIntersection` calls (overlap and sweep); floor/support
+  rays use `rwi_stop_at_pierceable|(collisionFlags<<rwi_colltype_bit)` (colltype 0x3, not player-only); `floorMask`
+  excludes `ent_living`. The fixture asserts the exact PWI flag word, decodes the ray colltype, and adds a static
+  colltype0 wall fault that the old player-only word would miss. Residual note: the physics DLL is closed, so the 7th
+  PWI argument's interpretation is documented-only — but passing the documented default cannot be weaker than the
+  engine default.
+- Diagnostics: `LADDER EXIT INPUTS` now logs `animationSet=%d`; the QA receipt states "Do not infer all engine animation
+  is impossible", consistent with DS131 caveats.
+- Lifecycle/spec unchanged: no SetPos/impulse/forced graph/new timer; completion still requires
+  NativeLadderExitPhysicalReady + support + grounded + settling, now also an active Pushable collider; 3 s failure
+  budget unchanged; Restore releases the owned collider layer on leave/cancel/death even after graph replacement;
+  humans/OFF/foreign untouched.
+- Live state at review time: run `41056537500` on d2 — unit job `124065756650` in progress (checkout), build job
+  `124065757246` queued, **no artifact pair**, new PR-matrix run pending. `085` failed to compile, `63eef004` was
+  superseded/cancelled. I do not claim success for any pending job.
+- QA receipt `b90ce8d5`: `C154_96_DIAGNOSTIC.json` verified — 99 samples, exitClip=-1/fifo=0, model
+  nanosuit_us_multiplayer.cdf, demo sha256 `9b763f83…` recomputed and matching, Memory 4 / Nav 16 restore PASS. Note
+  that `demo_full_tail: PASS` means integrity to EOF (562 records parsed to file length); the last frame is 0.36 s
+  before the 15.64 failure line, which the log covers.
+- Conditions before the run: green full CI incl. build+upload on d2, all PR-matrix jobs green, exact pair downloaded and
+  re-hashed, fresh receipt on d2 with its own RUNTIME_PIN; 307/96/085/63 history preserved. Not proven: that the physics
+  exit works, or the PWI argument semantics in the closed DLL. No game/server/local build/live-data/code/quality edit by me.
 
 ### DS133 · 2026-10-30 15:34 · BLOCK · review of `0851e685` physics-exit + audit of the 96 run archive
 **BLOCK on compile; design aligned with DS120; archive 96 audit PASS.** Review
