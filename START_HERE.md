@@ -6,10 +6,11 @@
 
 | Назначение | Ветка на origin | Рабочая папка относительно этого каталога |
 | --- | --- | --- |
-| Актуальный игровой код | `warsbots/feature/claude-sprint` | `build/ds076-code` |
+| Основная ветка до PR | `warsbots/feature/claude-sprint` | `build/ds076-code` |
 | Текущие задачи, решения, документация | `warsbots/research/steelmill-triage` | `build/ds076-triage` |
 | QA-инструменты и результаты | `warsbots/feature/weapon-goals` | этот каталог |
 | Независимые предложения и ревью | `warsbots/research/deepseek` | отдельная рабочая копия DeepSeek |
+| Current tested Shore candidate | `codex/shore-ladder-exit` / ed72987c / PR2 | `E:/WarsBots/Development/r4-weapon-search-episode` |
 
 **Code/ в этом QA-каталоге устарел.** Изменять и оценивать игровой код нужно в ds076-code.
 Восстановленные ds076-code/ds076-triage закреплены на точных коммитах (detached HEAD); перед новой работой интегратор выбирает рабочую ветку. Не переключать чужой каталог и не делать reset чужих изменений.
@@ -20,14 +21,14 @@
 
 | Пункт | Фактическое состояние | Следующий результат |
 | --- | --- | --- |
-| C154: нижний выход Shore | Кандидат `307037bc`, CI40919291234 и DS126 прошли; физический выход в игре на кандидате НЕ проверен | После восстановления всех gate-данных и явного разрешения владельца: один общий lower545 → лестница → физический верхний выход/пол → Strength → вода → сухой берег, затем независимый аудит |
-| R4 / C157 | Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; runtime НЕ проверен, C154307 сохранён. | [Draft PR №1](https://github.com/Madd3st/crymp-client/pull/1); [результат](Docs/Coordination/C157_R4_RESULT.md) |
+| C154: Shore | `ed72987c`, PR2: SERVER WHOLE-ROUTE PASS (lower545 → physical upper exit/floor → Strength → water → dry shore, HP100). Full WarsBots CI41086406959 + all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` postrun PASS. Demo/archive/Memory4/Nav16 exact restoration verified. | Client visual / full PS / other ladders remain untested. [Result](Docs/Coordination/C154_SHORE_EXIT_RESULT.md), [PR2](https://github.com/Madd3st/crymp-client/pull/2). |
+| R4 / C157 | Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; общий Steelmill361с проверен, специальный поздний ammo-exhaustion R4 пока не подтверждён. | [Draft PR №1](https://github.com/Madd3st/crymp-client/pull/1); [результат](Docs/Coordination/C157_R4_RESULT.md) |
 | R9: направление generic jump | Подтверждён разрыв контракта проверки направления; конкретное падение в игре не доказано | Удерживать проверенную траекторию или повторно валидировать её при повороте |
 | D032: first_primary по умолчанию | В решениях остаётся open; решение владельца | Не включать default автоматически |
 | Полный IA/PS и клиентская приёмка | Ограниченные серверные проверки не закрывают полный матч | Плановая общая приёмка после маршрутов; это backlog, не новая команда запускать игры |
 
 C155 (классический Steelmill) завершён. DS125/DS126 завершены. Исторические open в архивах не являются очередью работ.
-**Автономные циклы выключены, игра и сервер запрещены до отдельного разрешения.** Явно назначенная владельцем работа выполняется вручную; отсутствие игровых процессов не является разрешением на запуск.
+**Автономные циклы выключены. Владелец разрешил текущую разработку и проверку Shore; один полный серверный маршрут на ed72987c прошёл аудит.** Явно назначенная владельцем работа выполняется вручную; самостоятельный запуск новых задач из backlog не разрешён.
 
 Авторитетные задачи: [TO_CODEX](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/TO_CODEX.md).
 Подробный backlog: [план зрелости](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/CS_BOT_MATURITY_PLAN.md).

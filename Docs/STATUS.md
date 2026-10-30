@@ -1,16 +1,16 @@
 # WarsBots: актуальный QA-статус — 30.10.2026
 
-Начать с [START_HERE](../START_HERE.md). Игровой Code/ этой QA-ветки устарел; текущий код находится в claude-sprint, а задачи и решения — на steelmill-triage.
+Start at [START_HERE](../START_HERE.md). QA Code/ is stale. Current tested Shore candidate: codex/shore-ladder-exit at E:/WarsBots/Development/r4-weapon-search-episode, ed72987c (draft PR2); canonical claude-sprint remains307, tasks/docs on steelmill-triage.
 
-Owner finished C157 Steelmill and requested continuing Shore. C157 archived/restored. One fresh-reviewed C154307 run completed with blocked_top failure; no game active, no unchanged retry. Autonomous wake/wait_mail loops remain disabled.
+Owner explicitly authorised continued Shore development and testing. The reviewed whole server route now passes; no game is active. Autonomous wake/wait_mail loops remain disabled. Future runtime still requires a fresh exact review/data/harness/CI gate and a game-free machine; old quality is not silently repinned.
 
 ## Текущая работа
 
 | Пункт | Состояние | Следующий шаг |
 | --- | --- | --- |
-| C154: Shore | Active repair on `codex/shore-ladder-exit`, candidate `ed72987c` (PR2). 307/96 failed top exit; 96 proved animationSet=1/exitClip=-1/FIFO0 empty. D2 physics trial refused unsupported assumed landing. Ed uses actual validated link b, all collision/physical/cleanup guards retained; DS134161b603a source OK conditional, CI41086406959/PR41086417565 running | Continue runtime validation after full green CI/exact pair/fresh quality; do not stop at report. Frozen307 and prior archives retained. |
+| C154: Shore | `ed72987c`, PR2: SERVER WHOLE-ROUTE PASS (lower545 → physical upper exit/floor → Strength → water → dry shore, HP100). Full WarsBots CI41086406959 + all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` postrun PASS. Demo/archive/Memory4/Nav16 exact restoration verified. | Client visual / full PS / other ladders NOT TESTED. [Result](Coordination/C154_SHORE_EXIT_RESULT.md), [PR2](https://github.com/Madd3st/crymp-client/pull/2). Not merged. |
 | C156: восстановление | Завершено с известными историческими потерями | [Результат и ограничения](Coordination/C156_RECOVERY.md) |
-| R4 / C157 | Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; runtime НЕ проверен, C154307 сохранён. | [Draft PR №1](https://github.com/Madd3st/crymp-client/pull/1); [результат](Coordination/C157_R4_RESULT.md) |
+| R4 / C157 | Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; общий Steelmill361с проверен, специальный поздний ammo-exhaustion R4 пока не подтверждён. | [Draft PR №1](https://github.com/Madd3st/crymp-client/pull/1); [результат](Coordination/C157_R4_RESULT.md) |
 | R9 | Подтверждён разрыв контракта направления generic jump; конкретное падение не доказано | Удержание проверенной траектории или повторная валидация |
 | D032 | Решение о first_primary по умолчанию открыто | Решение владельца; defaults не менять самостоятельно |
 

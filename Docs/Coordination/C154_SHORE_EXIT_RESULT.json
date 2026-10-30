@@ -71,7 +71,12 @@
   "engine_script_errors": [],
   "physical_exit": "14.55s nativeOn=0 exiting=0 grounded=1 pos2117.46,1880.52,99.76",
   "strength": "22.25s at2114.62,1885.75,105.94",
-  "post_runtime_audit": "DS135 pending",
+  "post_runtime_audit": {
+    "task": "DS135",
+    "commit": "da16fa8fff382f19b9ac3c1cfdf4e2183b306449",
+    "verdict": "PASS",
+    "report": "Docs/Research/DeepSeek/DS135_C154_PASS_AUDIT.md"
+  },
   "client_visual": "NOT TESTED",
   "scope_limits": "One reviewed controlled lower545 route, one bot, exact V5 data. No full PS match/capture/general ladder/client visual acceptance. PR not merged; canonical307 unchanged."
 }
