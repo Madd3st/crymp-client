@@ -1,0 +1,92 @@
+{
+  "owner_authorization": "ну давай тестить и смотреть поведение",
+  "scope": "C157 Steelmill current CI candidate, not C154 Shore",
+  "session": "E:\\WarsBots\\Development\\C157-Steelmill-cde77823\\Sessions\\C157-Steelmill-20261030-141910",
+  "state": "LIVE_PARTIAL, client and server retained for owner",
+  "observation": {
+    "source": "cde7782301d304149025b1975ae6b13e6866745f",
+    "phase": "LIVE_PARTIAL_NOT_FINAL",
+    "header": {
+      "build": "cde7782301d304149025b1975ae6b13e6866745f",
+      "flags": {
+        "wb_bot_aim_model": 1,
+        "wb_bot_arbiter": 1,
+        "wb_bot_look": 1,
+        "wb_bot_navmesh": 1,
+        "wb_bot_pace": 1,
+        "wb_bot_perception": 1,
+        "wb_bot_turn_cap": 1,
+        "wb_bot_weapon_rank": 1,
+        "wb_demo_hz": 20,
+        "wb_demo_record": 1,
+        "wb_move_trace": 1,
+        "wb_qa_socom_only": 0,
+        "wb_reachable_goals": 0,
+        "wb_revive_guard": 1,
+        "wb_spawn_exclude195": 1,
+        "wb_trap_recovery": 1
+      },
+      "hz": 20,
+      "map": "Multiplayer/IA/Steelmill",
+      "navmesh": "none",
+      "server": "C157-Steelmill-20261030-141910",
+      "started": "2026-10-30T14:19:15"
+    },
+    "seconds": 111.727,
+    "bot_actor_ids_seen": 16,
+    "primary_armed_bot_actor_ids": 15,
+    "bot_events": {
+      "suit": 192,
+      "land": 90,
+      "pickup": 39,
+      "jump": 31,
+      "shot": 652,
+      "hit": 218,
+      "kill": 22,
+      "revive": 18
+    },
+    "metrics": {
+      "bot_still_share": 0.04,
+      "look_off_travel_gt90_share": 0.136,
+      "aim_wander_deg_s": {
+        "human": 11.2,
+        "bot": 9.8
+      },
+      "aim_wander_samples": {
+        "human": 1670,
+        "bot": 11064
+      },
+      "bot_aim_error_deg": 0.2,
+      "reaction_s": 0.6,
+      "reactions": 133,
+      "decision_flips_per_bot_min": 5.86,
+      "time_to_primary_s": 3.3,
+      "primaries": 15,
+      "kills_by_weapon": {
+        "Hurricane": 1,
+        "Shotgun": 1,
+        "SCAR": 15,
+        "SMG": 4,
+        "FY71": 1,
+        "SOCOM": 1
+      }
+    },
+    "revive_same_entity_alive_log": 18,
+    "R4_late_ammo_exhaustion": "NOT_PROVEN_BY_GENERAL_MATCH",
+    "snapshot_sha256": "5e21dda66d73ee3b5dc54a6c96d38790f9b8bd5ad9271027fb8382a38974dbcd",
+    "current_roster": {
+      "1": 130993,
+      "2": 196535,
+      "3": 131006,
+      "4": 131011,
+      "5": 196552,
+      "6": 131021,
+      "7": 196566,
+      "8": 131043
+    },
+    "current_roster_primary_armed": 8,
+    "historical_actor_note": "16 IDs include stock match reset; 8 simultaneous slots",
+    "navmesh_header_note": "Demo header precedes first bot navmesh load; confirmed loaded from trace"
+  },
+  "recovery": "Run.ps1 waits for client exit then archives logs/demo and restores verified Memory/Navmesh snapshots; no restoration while client active"
+}
