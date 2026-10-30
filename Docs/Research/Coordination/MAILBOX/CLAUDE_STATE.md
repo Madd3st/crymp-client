@@ -2,15 +2,15 @@
 
 ## Current outcome after owner finished Steelmill and resumed Shore
 
-C154307 actual runtime FAIL: one controlled lower545 run reached native exiting, then blocked_top at15.63s z97.922; no physical upper exit/Strength/water/dry-shore. Archive/demo fulltail PASS; Codex MSIX physical Memory4/Navmesh16 exact restore PASS. No game active or unchanged retry. Next: source-grounded graph-selection/clip-availability investigation; root cause not proven, no physical fallback approved. [QA result](https://github.com/Madd3st/crymp-client/blob/55837e6d/Docs/Coordination/C154_307_RUNTIME_RESULT.json). C157 Steelmill finished361s, archived/restored; owner reports unused sniper roof. Autonomous wake loops remain OFF.
+C154 current: `ed72987c` on `codex/shore-ladder-exit` (PR2), SERVER WHOLE-ROUTE PASS. Physical exit14.55s z99.76 nativeOn0/exiting0/grounded1; Strength22.25s; water30.819s; dryshore102.819s HP100/dry7.258s. Full WarsBots CI41086406959 and all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` independent postrun PASS. Demo/archive and exact MSIX Memory4/Navmesh16 restoration PASS. [Result](https://github.com/Madd3st/crymp-client/blob/b730f64a/Docs/Coordination/C154_SHORE_EXIT_RESULT.md). Client visual/full PS/other ladders NOT TESTED. PR2 depends on PR1, neither merged; canonical307 preserved. No game active; wake/backlog loops OFF. Future runtime requires a fresh exact gate, no silent quality repin.
 
 Earlier live-session/hold paragraphs below are historical, superseded by this outcome.
 
-## Активная игровая проверка C157 — новое разрешение владельца 30.10
+## History: C157 session (completed and archived)
 
-Владелец: «ну давай тестить и смотреть поведение». Запущен отдельный Steelmill на cde77823: 8ботов, по2каждойсложности, клиент и сервер активны для владельца. Не останавливать и не запускать параллельную игру. Демо/логи пишутся; launcher дождётся закрытия клиента, затем архивирует и восстановит SHA-проверенные снимки Memory/Navmesh. Срез QA9e70f494:112с,39bot pickups/652shots/218hits/22kills/18revives; текущие8/8 имели primary. Это LIVE PARTIAL, позднее ammo exhaustion R4 не подтверждено. [Квитанция](https://github.com/Madd3st/crymp-client/blob/9e70f494/Docs/Coordination/C157_RUNTIME_LIVE.json). C154 Shore pin307 и его отдельный preflight не менялись, автономные wake-циклы выключены. Старые запреты runtime ниже описывают состояние до этого разрешения; оно относится к текущему Steelmill.
+C157 completed361s, archived and exactly restored. Owner then requested continued Shore repair/testing; current accepted C154 result is above. Roof-position feedback is separate backlog.
 
-По поручению владельца выполняются только явно назначенные работы. Автоматические пробуждения, циклы wait_mail и самостоятельный перебор backlog выключены. **Игру и сервер агенту запускать запрещено до отдельного явного разрешения**, даже если игровых процессов нет. Сведения о том, что владелец играл 29 октября, являются историей, а не текущим состоянием ПК.
+Owner explicitly authorised continuing Shore development/testing. The reviewed whole server route now passes. Autonomous wake/wait_mail/backlog loops remain OFF; future runtime needs fresh code/data/harness/review/CI and a game-free machine.
 
 ## Кто и где работает
 
@@ -25,10 +25,10 @@ Earlier live-session/hold paragraphs below are historical, superseded by this ou
 
 | Пункт | Состояние |
 | --- | --- |
-| C154 | Кандидат307/fullCI40919291234/DS126 code-data-harness OK. Физический результат307 НЕ проверен. Runtime запрещён владельцем |
+| C154 | C154 current: `ed72987c` on `codex/shore-ladder-exit` (PR2), SERVER WHOLE-ROUTE PASS. Physical exit14.55s z99.76 nativeOn0/exiting0/grounded1; Strength22.25s; water30.819s; dryshore102.819s HP100/dry7.258s. Full WarsBots CI41086406959 and all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` independent postrun PASS. Demo/archive and exact MSIX Memory4/Navmesh16 restoration PASS. [Result](https://github.com/Madd3st/crymp-client/blob/b730f64a/Docs/Coordination/C154_SHORE_EXIT_RESULT.md). Client visual/full PS/other ladders NOT TESTED. PR2 depends on PR1, neither merged; canonical307 preserved. No game active; wake/backlog loops OFF. Future runtime requires a fresh exact gate, no silent quality repin. |
 | C155 | Завершён: E:/WarsBots/Showcases/Steelmill-Classic-abac72a9, IA8/2каждойсложности, abac/fullCI40890940918/DS121 |
 | C156 | Восстановление завершено с указанными ниже историческими потерями; QA35112665 и последующий поиск QAffd2d87b |
-| R4 / C157 | Кандидат `cde77823`, отдельная ветка codex/r4-weapon-search-episode: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo/Debug + server_zip), WarsBots CI41039823887 SUCCESS (units + experimental x64 Release client/server); CI-пара12970885272 SHA PASS. DS128 R4 и DS129 OFF-guard OK; последующий workflow-only signing-key фикс проверен CI. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1) не слит; runtime НЕ проверен, C154307 сохранён. |
+| R4 / C157 | Кандидат `cde77823`, отдельная ветка codex/r4-weapon-search-episode: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo/Debug + server_zip), WarsBots CI41039823887 SUCCESS (units + experimental x64 Release client/server); CI-пара12970885272 SHA PASS. DS128 R4 и DS129 OFF-guard OK; последующий workflow-only signing-key фикс проверен CI. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1) не слит; общий Steelmill361с проверен, конкретный поздний ammo-exhaustion R4 ещё не подтверждён. |
 | R9 | Подтверждён контрактный риск смены направления generic jump, конкретное падение не доказано |
 | D032 | first_primary default — открытое решение владельца |
 
@@ -44,7 +44,7 @@ C156: исходники, CI-пара307, V5, вики, исходные лог�
 
 ## Последняя выполненная разработка — C157
 
-Кандидат `cde77823`, отдельная ветка codex/r4-weapon-search-episode: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo/Debug + server_zip), WarsBots CI41039823887 SUCCESS (units + experimental x64 Release client/server); CI-пара12970885272 SHA PASS. DS128 R4 и DS129 OFF-guard OK; последующий workflow-only signing-key фикс проверен CI. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1) не слит; runtime НЕ проверен, C154307 сохранён.
+Кандидат `cde77823`, отдельная ветка codex/r4-weapon-search-episode: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo/Debug + server_zip), WarsBots CI41039823887 SUCCESS (units + experimental x64 Release client/server); CI-пара12970885272 SHA PASS. DS128 R4 и DS129 OFF-guard OK; последующий workflow-only signing-key фикс проверен CI. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1) не слит; общий Steelmill361с проверен, конкретный поздний ammo-exhaustion R4 ещё не подтверждён.
 
 R4: clock начинается при новом ограниченном поиске; доступное оружие очищает устаревшую pickup-цель. Fallback once/life сохранён. Дополнительно исправлена обычная OFF линковка: BotMatch include/call под experimental macro. Подпись запускается только при наличии ключа; при настроенном ключе ошибка остаётся fatal. Набор сборок/тестов сохранён. bd8692cd имел только experimental CI green и OFF failure; 79c03389 исправил link, затем выявилась подпись без ключа. Это история, текущий результат — cde77823.
 
@@ -52,4 +52,4 @@ R4: clock начинается при новом ограниченном пои
 
 ## Правила продолжения
 
-Не удалять build целиком: там живут worktree, данные и доказательства. Общий очиститель WarsBots уже исключает. Не возвращать устаревшие гигабайты на C без необходимости. Не подменять namespaces LOCALAPPDATA, живые Memory/Navmesh или чужие Recording/C126-файлы. Игровые сборки — только точный полный зелёный CI; никаких SetPos/импульсов/таймерного успеха/ослабления physical guards, IsPlayer/channel/defaults/wire ради C154. DS118v1 отозван, DS120 — исторический проект, текущий кандидат —307. Исторические open/STOP не новые задачи.
+Не удалять build целиком: там живут worktree, данные и доказательства. Общий очиститель WarsBots уже исключает. Не возвращать устаревшие гигабайты на C без необходимости. Не подменять namespaces LOCALAPPDATA, живые Memory/Navmesh или чужие Recording/C126-файлы. Игровые сборки — только точный полный зелёный CI; никаких SetPos/импульсов/таймерного успеха/ослабления physical guards, IsPlayer/channel/defaults/wire ради C154. DS118v1 отозван, DS120 — исторический проект, исторический кандидат307 сохранён; текущий проверенный кандидатShore — ed72987c, PR2 не слит. Исторические open/STOP не новые задачи.

@@ -1,5 +1,11 @@
 # Agent handoff — WarsBots for CryMP (updated 2026-10-30)
 
+## Current update: C154 Shore server route accepted
+
+C154 current: `ed72987c` on `codex/shore-ladder-exit` (PR2), SERVER WHOLE-ROUTE PASS. Physical exit14.55s z99.76 nativeOn0/exiting0/grounded1; Strength22.25s; water30.819s; dryshore102.819s HP100/dry7.258s. Full WarsBots CI41086406959 and all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` independent postrun PASS. Demo/archive and exact MSIX Memory4/Navmesh16 restoration PASS. [Result](https://github.com/Madd3st/crymp-client/blob/b730f64a/Docs/Coordination/C154_SHORE_EXIT_RESULT.md). Client visual/full PS/other ladders NOT TESTED. PR2 depends on PR1, neither merged; canonical307 preserved. No game active; wake/backlog loops OFF. Future runtime requires a fresh exact gate, no silent quality repin.
+
+Earlier 307/owner-pause text below records the earlier handoff. It is superseded by this result and current CLAUDE_STATE, not permission for autonomous backlog work.
+
 ## Current state, 2026-10-30 — read this first
 
 Sections below are history from 2026-10-23/24. They are not the current task and their
