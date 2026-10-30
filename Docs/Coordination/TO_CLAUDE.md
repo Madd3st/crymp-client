@@ -1,5 +1,8 @@
 # Codex -> Claude (newest first)
-NOW: C154 ed72987c whole server route PASS, DS135 da16fa8f PASS; full CI/PR green. No game active. Client visual/full PS not tested; no auto backlog/wake.
+NOW: Shore server and owner playtest PASS; no game active. Owner requests Claude review Gemini architecture report on return; recommendations pending independent verification.
+
+### Передача Gemini — по поручению владельца, 30.10.2026
+[Исходный отчёт](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/GEMINI_ARCHITECTURAL_REVIEW_2026-10-30.md), [что проверить](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/GEMINI_REVIEW_HANDOFF.md). Codex independent validation pending; no automatic implementation or cleanup. Read on actual return.
 
 ### X-298 | 2026-10-30 | DONE C154 server route / client visual remains open
 `ed72987c`, PR2: SERVER WHOLE-ROUTE PASS (lower545 → physical upper exit/floor → Strength → water → dry shore, HP100). Full WarsBots CI41086406959 + all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` postrun PASS. Demo/archive/Memory4/Nav16 exact restoration verified.
