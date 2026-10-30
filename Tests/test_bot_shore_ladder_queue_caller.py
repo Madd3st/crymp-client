@@ -340,7 +340,8 @@ int main(int argc, char** argv) {
         b6.m_now = 1.92f;
         const bool handled = b6.ApplyLadderExecutor(a6);
         check(handled, "#6 is handled by ApplyLadderExecutor at 1.92s");
-        expect(!b6.m_ladder.Active() && b6.m_ladderWaiting, "#6 waits at gate while #2 owns ref=4693115");
+        expect(!b6.m_ladder.Active() && !b6.m_intent.move && b6.m_locomotion.stops == 1 && b6.m_trap.resets == 1,
+            "#6 waits at gate while #2 owns ref=4693115");
 
         // Advance to 5.57s while #2 is still climbing.
         for (float t : {2.55f, 3.50f, 4.50f, 5.57f}) {
@@ -359,7 +360,7 @@ int main(int argc, char** argv) {
             b2.m_blackboard.position = Vec3(2117.53f, 1880.60f, 99.81f);
             b6.m_now = 12.60f;
             b6.m_intent.move = true;
-            check(b6.ApplyLadderExecutor(a6) && b6.m_ladder.Active() && !b6.m_ladderWaiting,
+            check(b6.ApplyLadderExecutor(a6) && b6.m_ladder.Active(),
                 "#6 starts ladder immediately after #2 finishes at 12.58s");
             a6.e.p = Vec3(2116.12f, 1880.62f, 90.16f);
             b6.m_blackboard.position = a6.e.p;
@@ -386,7 +387,7 @@ int main(int argc, char** argv) {
         b2.ApplyLadderExecutor(a2);
         b4.m_now = 1.15f; b4.ApplyLadderExecutor(a4);
         b12.m_now = 1.60f; b12.ApplyLadderExecutor(a12);
-        check(b4.m_ladderWaiting && b12.m_ladderWaiting, "both #4 and #12 wait while #2 climbs");
+        check(!b4.m_ladder.Active() && !b12.m_ladder.Active(), "both #4 and #12 wait while #2 climbs");
 
         // #2 finishes at the upper landing; #4's 10 Hz tick fires 20ms before #12's tick.
         b2.m_ladder.Reset();
@@ -395,11 +396,11 @@ int main(int argc, char** argv) {
         b2.m_blackboard.position = Vec3(2117.53f, 1880.60f, 99.81f);
         b4.m_now = 12.60f; b4.m_intent.move = true;
         b4.ApplyLadderExecutor(a4);
-        check(!b4.m_ladder.Active() && b4.m_ladderWaiting, "further #4 yields to closer waiting #12");
+        check(!b4.m_ladder.Active() && !b4.m_intent.move, "further #4 yields to closer waiting #12");
 
         b12.m_now = 12.62f; b12.m_intent.move = true;
         b12.ApplyLadderExecutor(a12);
-        check(b12.m_ladder.Active() && !b12.m_ladderWaiting, "closer #12 starts ladder on its tick");
+        check(b12.m_ladder.Active(), "closer #12 starts ladder on its tick");
     }
 
     // 3. Shore #4 bilge water fall (pos=(2116.99,1883.08,87.84), swim=1): immediate movement_state cancel, 0 bans.

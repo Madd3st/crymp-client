@@ -152,7 +152,6 @@ private:
 	NavPathLink m_ladderNow;
 	bool m_ladderNativeLocked = false;
 	bool m_ladderCancelPending = false; // ResetLife saw an active climb; next Update clears native mode
-	bool m_ladderWaiting = false;       // holding at the 2 m gate while another bot owns this ladder link
 	bool ApplyLadderExecutor(CPlayer& actor);
 	void UpdateLadder(CPlayer& actor, float dt);
 	void CancelLadder(CPlayer& actor, const char* why, bool ban);

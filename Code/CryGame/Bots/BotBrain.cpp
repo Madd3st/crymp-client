@@ -328,7 +328,7 @@ void BotBrain::ResetLife()
 	m_detour = false; m_blockedSince = 0; m_chaseBlockedSince = 0; m_shotBlockedSince = 0;
 	m_path.clear(); m_pathIndex = 0; m_cornerFor = size_t(-1); m_cornerSlow = false; m_nextRepath = 0; m_minRepath = 0; m_meshPathActive = false; m_pathLinks.clear(); m_link.Reset();
 	if (m_ladder.Active() || m_ladderNativeLocked) m_ladderCancelPending = true;
-	m_ladder.Reset(); m_ladderNativeLocked = false; m_ladderWaiting = false;
+	m_ladder.Reset(); m_ladderNativeLocked = false;
 	m_vantage.Reset(CurrentVantage(),m_number);
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
@@ -1541,7 +1541,7 @@ bool BotBrain::YieldLadderTo(unsigned long long ref, const Vec3& a, float myDist
 	if (!m_running || m_number == myNumber || m_blackboard.health <= 0 || m_blackboard.swimming) return false;
 	if (m_ladder.Active())
 		return ShouldYieldLadderStart(ref, myDist2, myNumber, m_ladderNow.ref, true, false, 0.f, m_number);
-	if (m_link.Active() || !m_meshPathActive || (!m_intent.move && !m_ladderWaiting) || m_intent.combat == BotCombatIntent::Fire)
+	if (m_link.Active() || !m_meshPathActive || m_intent.combat == BotCombatIntent::Fire)
 		return false;
 	const NavPathLink* l = LinkAtCorner(m_pathIndex);
 	if (!l || l->kind != NavLinkLadder) return false;
@@ -1553,19 +1553,18 @@ bool BotBrain::YieldLadderTo(unsigned long long ref, const Vec3& a, float myDist
 
 bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 {
-	if (m_ladder.Active()) { m_ladderWaiting=false; return true; }
-	if (m_link.Active()) { m_ladderWaiting=false; return false; } // an existing jump/drop keeps ownership until its own completion
+	if (m_ladder.Active()) return true;
+	if (m_link.Active()) return false; // an existing jump/drop keeps ownership until its own completion
 	NavMeshCore* mesh=CurrentNavMesh();
-	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) { m_ladderWaiting=false; return false; }
+	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return false;
 	const NavPathLink* l=LinkAtCorner(m_pathIndex);
-	if (!l || l->kind!=NavLinkLadder) { m_ladderWaiting=false; return false; }
+	if (!l || l->kind!=NavLinkLadder) return false;
 	const Vec3 a(l->a[0],l->a[1],l->a[2]);
 	const Vec3 feet=m_blackboard.position;
 	const float dist2=(a-feet).GetLengthSquared2D();
-	if (dist2>4.0f || fabs_tpl(a.z-feet.z)>2.0f) { m_ladderWaiting=false; return false; }
+	if (dist2>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return false;
 	if (l->ref && g_pGame && g_pGame->GetBotManager().ShouldYieldLadder(l->ref,a,dist2,m_number))
 	{
-		m_ladderWaiting=true;
 		m_nextRepath=max(m_nextRepath,m_now+1.0f);
 		m_trap.Reset(); m_trapStepUntil=0;
 		m_combat.StopFire();
@@ -1575,7 +1574,6 @@ bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 		actor.SetWarsBotActions(false,false,STANCE_STAND);
 		return true;
 	}
-	m_ladderWaiting=false;
 	m_ladderNow=*l;
 	m_ladder.Start(m_now,LVec{l->a[0],l->a[1],l->a[2]},LVec{l->b[0],l->b[1],l->b[2]});
 	m_ladderNativeLocked=false; m_ladderCancelPending=false;
@@ -1592,7 +1590,6 @@ void BotBrain::CancelLadder(CPlayer& actor, const char* why, bool ban)
 	const bool nativeAttached=stats && (stats->isOnLadder.Value() || stats->isExitingLadder);
 	const bool hadRoute=m_ladder.Active() || m_ladderNativeLocked || m_ladderNow.ref || m_ladderCancelPending;
 	m_ladderCancelPending=false; // also consume a reset whose native revive already cleared ladder stats
-	m_ladderWaiting=false;
 	actor.RestoreWarsBotLadderGraph();
 	if (!hadRoute && !nativeAttached) return;
 	WB_LOG(1,"[WarsBots] #%d LADDER cancel reason=%s nativeOn=%d exiting=%d pos=(%.2f,%.2f,%.2f) actor=%u.",m_number,
