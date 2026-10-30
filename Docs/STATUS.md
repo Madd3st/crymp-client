@@ -2,7 +2,7 @@
 
 Начать с [START_HERE](../START_HERE.md). Игровой Code/ этой QA-ветки устарел; текущий код находится в claude-sprint, а задачи и решения — на steelmill-triage.
 
-По поручению владельца выполняются только явно назначенные работы. Автоматические пробуждения, циклы wait_mail и самостоятельный перебор backlog выключены. Владелец явно разрешил игровую проверку C157 («ну давай тестить и смотреть поведение»): текущий Steelmill запущен на cde77823, 8 ботов 2 каждой сложности, клиент доступен владельцу. C154 Shore этим разрешением не запускался; автономные циклы остаются выключены. Сведения о том, что владелец играл 29 октября, являются историей, а не текущим состоянием ПК.
+Owner finished C157 Steelmill and requested continuing Shore. C157 session is archived/restored; no game processes remain. C154 is authorized to resume preflight and one reviewed whole-route test on frozen307. Autonomous wake/wait_mail loops remain disabled.
 
 ## Текущая работа
 
@@ -16,7 +16,7 @@
 
 ## Текущий игровой срез C157
 
-Матч активен, не завершён. За первые 111.7с серверного демо: 39bot pickups, 652shots, 218hits, 22kills, 18revives; текущий состав8/8 получал primary с патронами. Это общий бой, НЕ доказательство позднего исчерпания боезапаса R4 и не полный аудит движения. [Живая квитанция](Coordination/C157_RUNTIME_LIVE.json). После закрытия клиента launcher архивирует демо/логи и восстанавливает проверенные снимки Memory/Navmesh. Не останавливать пользовательскую игру для анализа.
+C157 completed: 361.2s server demo, 107 bot pickups / 2247 shots / 714 hits / 76 kills / 71 revives. Full demo tail and archive SHA PASS; original Memory4/Navmesh16 exact names/hashes restored and verified. Owner reports unused sniper roof positions; tracked for later diagnosis. R4 late-ammo exhaustion still not specifically proven. [Final receipt](Coordination/C157_RUNTIME_FINAL.json).
 
 ## Что подтверждено раньше
 
