@@ -285,7 +285,12 @@ Vec3 BotBrain::SteerCorners(NavMeshCore& mesh, const Vec3& feet)
 		++m_pathIndex;
 	}
 	const Vec3& c = m_path[m_pathIndex];
-	if (m_pathIndex + 1 >= m_path.size() || LinkAtCorner(m_pathIndex) || m_cornerFor != m_pathIndex) return c;
+	if (const NavPathLink* l = LinkAtCorner(m_pathIndex))
+	{
+		if (l->kind == NavLinkLadder && (c - feet).GetLength2D() < 4.0f) m_cornerSlow = true;
+		return c;
+	}
+	if (m_pathIndex + 1 >= m_path.size() || m_cornerFor != m_pathIndex) return c;
 	// A sharp turn is often split into two close corners (Steelmill stair mouth: 42 + 48 deg): count both.
 	CornerPlan turn = m_cornerPlan;
 	if (m_pathIndex + 2 < m_path.size() && (m_path[m_pathIndex + 1] - c).GetLength2D() < 1.5f)
@@ -1531,6 +1536,21 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 // Starts at a real NavLinkLadder corner. The pure policy owns approach/grab/forward-climb/native-exit/settle; the
 // native CPlayerMovement top ray and animation/OnLadder completion initiate and complete the exit. Bot logic never
 // requests eLAT_ExitTop, never steers sideways while attached, never snaps and never treats height alone as success.
+bool BotBrain::YieldLadderTo(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const
+{
+	if (!m_running || m_number == myNumber || m_blackboard.health <= 0 || m_blackboard.swimming) return false;
+	if (m_ladder.Active())
+		return ShouldYieldLadderStart(ref, myDist2, myNumber, m_ladderNow.ref, true, false, 0.f, m_number);
+	if (m_link.Active() || !m_meshPathActive || m_intent.combat == BotCombatIntent::Fire)
+		return false;
+	const NavPathLink* l = LinkAtCorner(m_pathIndex);
+	if (!l || l->kind != NavLinkLadder) return false;
+	const Vec3 feet = m_blackboard.position;
+	const float d2 = (a - feet).GetLengthSquared2D();
+	if (d2 > 4.0f || fabs_tpl(a.z - feet.z) > 2.0f) return false;
+	return ShouldYieldLadderStart(ref, myDist2, myNumber, l->ref, false, true, d2, m_number);
+}
+
 bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 {
 	if (m_ladder.Active()) return true;
@@ -1541,7 +1561,19 @@ bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 	if (!l || l->kind!=NavLinkLadder) return false;
 	const Vec3 a(l->a[0],l->a[1],l->a[2]);
 	const Vec3 feet=m_blackboard.position;
-	if ((a-feet).GetLengthSquared2D()>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return false;
+	const float dist2=(a-feet).GetLengthSquared2D();
+	if (dist2>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return false;
+	if (l->ref && g_pGame && g_pGame->GetBotManager().ShouldYieldLadder(l->ref,a,dist2,m_number))
+	{
+		m_nextRepath=max(m_nextRepath,m_now+1.0f);
+		m_trap.Reset(); m_trapStepUntil=0;
+		m_combat.StopFire();
+		m_intent=BotIntent();
+		WBI(aim,Vec3(a.x,a.y,a.z+1.2f));
+		m_locomotion.Stop(actor);
+		actor.SetWarsBotActions(false,false,STANCE_STAND);
+		return true;
+	}
 	m_ladderNow=*l;
 	m_ladder.Start(m_now,LVec{l->a[0],l->a[1],l->a[2]},LVec{l->b[0],l->b[1],l->b[2]});
 	m_ladderNativeLocked=false; m_ladderCancelPending=false;
@@ -1583,7 +1615,9 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 	SPlayerStats* stats=actor.GetPlayerStats();
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	if (!stats || actor.IsFrozen() || stats->isRagDoll || actor.GetLinkedEntity() ||
-		stats->inFreefall.Value()>0 || stats->inZeroG || stats->isGrabbed || stats->spectatorMode || stats->flyMode)
+		stats->inFreefall.Value()>0 || stats->inZeroG || stats->isGrabbed || stats->spectatorMode || stats->flyMode ||
+		LadderApproachInvalid(m_ladder.Phase(),stats->isOnLadder.Value(),stats->isExitingLadder,
+			m_blackboard.swimming || actor.ShouldSwim(),feet.z,m_ladderNow.a[2]))
 	{
 		CancelLadder(actor,"movement_state",false);
 		return;
