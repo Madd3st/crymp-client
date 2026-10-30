@@ -1578,7 +1578,7 @@ void CPlayer::PrePhysicsUpdate()
 			const bool warsBotNativeLadderExit = gEnv->bServer && g_pGame && IsWarsBotActor()
 				&& g_pGame->GetBotManager().Owns(GetEntityId()) && WarsBots::BotConfig::Get().ladder==1
 				&& m_stats.isOnLadder.Value() && m_stats.isExitingLadder;
-			if (m_warsBotPose && !warsBotNativeLadderExit)
+			if (m_warsBotPose && (!warsBotNativeLadderExit || NeedsWarsBotLadderPhysicsExit()))
 			{
 				params.flags &= ~eACF_PerAnimGraph;
 				params.flags |= eACF_AlwaysPhysics;
@@ -7460,6 +7460,53 @@ IMPLEMENT_RMI(CPlayer, ClLeaveLadder)
 //  - never while an off-top clip is current;
 //  - once per exit (actor latch), same graph/ownership/gate/state, valid Signal input id+name;
 //  - no movement, position, collider or completion write; completion stays with the stock output+physical guard.
+// A dedicated character may have no registered exit clip (observed exitClip=-1/FIFO0=0).
+// Keep native animation ownership whenever the asset exists; this predicate never loads or forces a graph state.
+bool CPlayer::NeedsWarsBotLadderPhysicsExit()
+{
+	if (!gEnv || !gEnv->bServer || !g_pGame || !IsWarsBotActor() ||
+		!g_pGame->GetBotManager().Owns(GetEntityId()) || WarsBots::BotConfig::Get().ladder!=1 ||
+		!m_stats.isOnLadder.Value() || !m_stats.isExitingLadder || GetHealth()<=0 || IsFrozen() || m_stats.isRagDoll)
+		return false;
+	ICharacterInstance* character=GetEntity()->GetCharacter(0);
+	IAnimationSet* animations=character?character->GetIAnimationSet():nullptr;
+	return character && (!animations || animations->GetAnimIDByName("relaxed_ladderOffTop_nw_01")<0);
+}
+
+// Metadata from the locked, validated native ladder route; never an actor position write.
+void CPlayer::SetWarsBotLadderExitTarget(const Vec3& target)
+{
+	if (!gEnv || !gEnv->bServer || !g_pGame || !IsWarsBotActor() ||
+		!g_pGame->GetBotManager().Owns(GetEntityId()) || WarsBots::BotConfig::Get().ladder!=1 ||
+		!m_stats.isOnLadder.Value()) return;
+	m_warsBotLadderExitTargetValid=false;
+	const Vec3& top=m_stats.ladderTop;
+	const float side=Vec3(target.x-top.x,target.y-top.y,0).len();
+	if (!target.IsValid() || !top.IsValid() || side<0.6f || side>2.f || fabs_tpl(target.z-top.z)>1.2f) return;
+	m_warsBotLadderExitTarget=target;
+	m_warsBotLadderExitTargetValid=true;
+}
+
+bool CPlayer::GetWarsBotLadderExitTarget(Vec3& target) const
+{
+	if (!m_warsBotLadderExitTargetValid) return false;
+	target=m_warsBotLadderExitTarget;
+	return true;
+}
+
+void CPlayer::SetWarsBotLadderExitPhysics(bool enable, bool settling)
+{
+	if (!enable && !m_warsBotLadderExitPhysics) { m_warsBotLadderExitSettling=false; return; }
+	if (enable && !NeedsWarsBotLadderPhysicsExit()) return;
+	const bool owned=gEnv && gEnv->bServer && g_pGame && IsWarsBotActor() &&
+		g_pGame->GetBotManager().Owns(GetEntityId());
+	m_warsBotLadderExitPhysics=enable && owned;
+	m_warsBotLadderExitSettling=m_warsBotLadderExitPhysics && (m_warsBotLadderExitSettling || settling);
+	if (owned && m_pAnimatedCharacter)
+		m_pAnimatedCharacter->RequestPhysicalColliderMode(enable?eColliderMode_Pushable:eColliderMode_Undefined,
+			eColliderModeLayer_Game,"WarsBot native-frame exit");
+}
+
 bool CPlayer::TryWarsBotLadderExitRetry(IAnimationGraphState* graph)
 {
 	if (!graph || !m_warsBotLadderGraphOverride || graph!=m_warsBotLadderGraph) return false;
@@ -7554,6 +7601,8 @@ bool CPlayer::PrepareWarsBotLadderGraph()
 
 void CPlayer::RestoreWarsBotLadderGraph()
 {
+	m_warsBotLadderExitTargetValid=false;
+	SetWarsBotLadderExitPhysics(false,false); // release our collider layer even if the graph was replaced
 	ClearWarsBotLadderExitRetry(); // also consume orphan latches before the early return
 	if (!m_warsBotLadderGraphOverride) return;
 	m_warsBotLadderGraphOverride=false; // consume even if teardown has replaced the graph or entity ownership

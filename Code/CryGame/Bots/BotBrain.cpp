@@ -1617,6 +1617,11 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 		m_ladderNativeLocked=stats && stats->isOnLadder.Value();
 		in.onLadder=m_ladderNativeLocked;
 	}
+	// The executor needs the actual validated landing, not an assumed distance in front of the ladder.
+	if (m_ladderNativeLocked && in.onLadder)
+	{
+		actor.SetWarsBotLadderExitTarget(Vec3(m_ladderNow.b[0],m_ladderNow.b[1],m_ladderNow.b[2]));
+	}
 	if (o.phase==LadderPhase::Done)
 	{
 		actor.RestoreWarsBotLadderGraph();

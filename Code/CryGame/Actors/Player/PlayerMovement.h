@@ -33,6 +33,9 @@ private:
 
 	void ProcessFlyMode();
 	void ProcessMovementOnLadder(CPlayer& player);
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	void ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& landed);
+#endif
 	void ProcessFlyingZeroG();
 	void ProcessSwimming();
 	void ProcessOnGroundOrJumping( CPlayer& player );

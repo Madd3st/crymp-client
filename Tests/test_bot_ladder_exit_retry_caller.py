@@ -106,7 +106,10 @@ struct IAnimationGraphState
 	bool IsSignalledInput(InputID) const { ++const_cast<IAnimationGraphState*>(this)->signalledQueries; return true; }
 };
 
-struct ICharacterInstance { virtual int GetFlags() = 0; };
+struct CAnimation { struct { int m_nAnimID[1]={0}; } m_LMG0; float m_fAnimTime=0.f; };
+struct IAnimationSet { int GetAnimIDByName(const char*) {return 1;} const char* GetNameByAnimID(int) {return "mock";} };
+struct ISkeletonAnim { int GetNumAnimsInFIFO(int) {return 0;} CAnimation& GetAnimFromFIFO(int,int) {static CAnimation a;return a;} };
+struct ICharacterInstance { virtual int GetFlags() = 0; IAnimationSet* GetIAnimationSet() {return nullptr;} ISkeletonAnim* GetISkeletonAnim() {return nullptr;} const char* GetFilePath() {return "mock";} };
 struct MockChar : ICharacterInstance { int flags = CS_FLAG_UPDATE_ALWAYS; int GetFlags() override { return flags; } };
 struct SAnimatedCharacterParams { unsigned flags = eACF_PerAnimGraph; };
 struct Entity { Vec3 p; MockChar ch; Vec3 GetWorldPos() const { return p; } MockChar* GetCharacter(int) { return &ch; } };
@@ -130,6 +133,8 @@ namespace WarsBots { struct BotConfig { int ladder=1; static BotConfig& Get(){ s
 
 struct CPlayer
 {
+ bool NeedsWarsBotLadderPhysicsExit() const {return false;}
+ void SetWarsBotLadderExitPhysics(bool,bool) {}
 	enum ELadderActionType { eLAT_None, eLAT_ReachedEnd, eLAT_ExitTop, eLAT_Jump, eLAT_StrafeLeft, eLAT_StrafeRight, eLAT_Use, eLAT_Die };
 	enum ELadderState { eLS_Exit = 0, eLS_ExitTop, eLS_Climb };
 	enum ELadderDirection { eLDIR_Stationary = 0, eLDIR_Up, eLDIR_Down };
@@ -142,6 +147,7 @@ struct CPlayer
 	CNanoSuit* suit = nullptr;
 	IAnimationGraphState* m_warsBotLadderGraph = nullptr;
 	bool m_warsBotLadderGraphOverride = false, m_warsBotLadderGraphWasActive = false;
+	bool m_warsBotLadderExitTargetValid = false;
 	bool m_warsBotLadderGraphStanceDefault = true, m_warsBotLadderExitRetryUsed = false, m_warsBotLadderExitSignalPending = false;
 	unsigned char m_warsBotLadderGraphStanceId = 0;
 	std::string m_warsBotLadderGraphStance;
@@ -172,6 +178,7 @@ struct CPlayer
 
 struct MockMovement
 {
+ void ProcessWarsBotLadderPhysicsExit(CPlayer&,bool& landed){landed=false;}
 	SPlayerStats& m_stats;
 	CPlayer& m_player;
 	MockMovement(CPlayer& p) : m_stats(p.st), m_player(p) {}
