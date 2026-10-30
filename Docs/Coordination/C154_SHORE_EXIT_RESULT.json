@@ -1,0 +1,77 @@
+{
+  "task": "C154",
+  "source": "ed72987c0c9fecb0c14e1cafdd3cc4162e7a13dd",
+  "branch": "codex/shore-ladder-exit",
+  "pr": "https://github.com/Madd3st/crymp-client/pull/2",
+  "runtime": "SERVER_WHOLE_ROUTE_PASS",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-route-ed72987c-v2",
+  "CI": {
+    "warsbots": 41086406959,
+    "pr_matrix": 41086417565,
+    "all_success": true
+  },
+  "pre_runtime_review": "161b603ad36e35a51ee95f7ecbe2f61035e38d46",
+  "artifact_id": 12992223176,
+  "binary_sha256": {
+    "client": "12870db9117d63054068ad18289f901801d7dae2c87db44366595fe698570bcf",
+    "server": "05ecb35c3eee779aa1149c2fed492e69108461807b273722433607d650e24234"
+  },
+  "demo": {
+    "name": "Multiplayer_PS_Shore-20261030-191457-1.wbdemo",
+    "sha256": "6090285a47ac2b725061a11a1cb9f5b9e6d7acf55ed81d21e57f94bdd85292be",
+    "full_tail": "PASS"
+  },
+  "replayed_archive_analyzer": {
+    "status": "PASS",
+    "failure": null,
+    "stages": {
+      "setup_revive": 36,
+      "lower_grounded": {
+        "t": 1.055,
+        "pos": [
+          2114.193,
+          1887.166,
+          90.102
+        ]
+      },
+      "ladder_start": 93,
+      "native_attached": 124,
+      "native_exiting": 538,
+      "ladder_done": 754,
+      "strength_done": 838,
+      "water": 30.819
+    },
+    "actor": 65481,
+    "trace_rows": 416,
+    "setup": "one explicit native registered spawn545; setup death excluded",
+    "client_visual": "NOT TESTED",
+    "final": {
+      "t": 104.064,
+      "pos": [
+        1821.329,
+        1695.787,
+        101.159
+      ],
+      "health": 100,
+      "native_goal": 654,
+      "distance_to_goal": 27.32581581581781,
+      "dry_seconds": 8.502999999999986
+    }
+  },
+  "restore": {
+    "memory": {
+      "files": 4,
+      "snapshot_and_receipt_and_current_MSIX_physical_names_SHA": "PASS"
+    },
+    "nav": {
+      "files": 16,
+      "snapshot_and_receipt_and_current_MSIX_physical_names_SHA": "PASS"
+    }
+  },
+  "engine_script_errors": [],
+  "physical_exit": "14.55s nativeOn=0 exiting=0 grounded=1 pos2117.46,1880.52,99.76",
+  "strength": "22.25s at2114.62,1885.75,105.94",
+  "post_runtime_audit": "DS135 pending",
+  "client_visual": "NOT TESTED",
+  "scope_limits": "One reviewed controlled lower545 route, one bot, exact V5 data. No full PS match/capture/general ladder/client visual acceptance. PR not merged; canonical307 unchanged."
+}
