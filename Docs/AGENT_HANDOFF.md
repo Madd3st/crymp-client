@@ -2,7 +2,7 @@
 
 ## Current update: C154 Shore server route accepted
 
-C154 current: `ed72987c` on `codex/shore-ladder-exit` (PR2), SERVER WHOLE-ROUTE PASS. Physical exit14.55s z99.76 nativeOn0/exiting0/grounded1; Strength22.25s; water30.819s; dryshore102.819s HP100/dry7.258s. Full WarsBots CI41086406959 and all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` independent postrun PASS. Demo/archive and exact MSIX Memory4/Navmesh16 restoration PASS. [Result](https://github.com/Madd3st/crymp-client/blob/b730f64a/Docs/Coordination/C154_SHORE_EXIT_RESULT.md). Client visual/full PS/other ladders NOT TESTED. PR2 depends on PR1, neither merged; canonical307 preserved. No game active; wake/backlog loops OFF. Future runtime requires a fresh exact gate, no silent quality repin.
+C154 current: `ed72987c` on `codex/shore-ladder-exit` (PR2), SERVER WHOLE-ROUTE PASS. Physical exit14.55s z99.76 nativeOn0/exiting0/grounded1; Strength22.25s; water30.819s; dryshore102.819s HP100/dry7.258s. Full WarsBots CI41086406959 and all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` independent postrun PASS. Demo/archive and exact MSIX Memory4/Navmesh16 restoration PASS. [Result](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C154_SHORE_EXIT_RESULT.md). Client visual: OWNER_PLAYTEST_PASS (owner feedback, two grounded exits at94.68s/146.56s in interactive logs; supplied video not independently inspected). Full PS/other ladders NOT TESTED. PR2 depends on PR1, neither merged; canonical307 preserved. No game active; wake/backlog loops OFF. Future runtime requires a fresh exact gate, no silent quality repin.
 
 Earlier 307/owner-pause text below records the earlier handoff. It is superseded by this result and current CLAUDE_STATE, not permission for autonomous backlog work.
 
@@ -331,3 +331,6 @@ the owner's port-64110 session. `Tools/wb_log_report.py <log>` → summary + M3 
    baseline in §0, check `NAV ready` node/edge counts and frame cost at 15 bots.
 2. Owner playtest of the same build (navigation, cover, 15-bot load).
 3. Then: jump links in BotNav (Strength jump to roofs), cover selection, target switching, damage reaction.
+
+
+Gemini: назначено первое архитектурное/кодовое ревью и разбор цикла разработки, включая крышу Steelmill. Постоянная роль не назначена; реализация/уборка пока не поручены. [Задание](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/GEMINI_INITIAL_REVIEW.md). Codex проверяет выводы; владелец выбирает дальнейшие задачи.
