@@ -98,6 +98,8 @@ struct IAnimatedCharacter { IAnimationGraphState* ag=nullptr; IAnimationGraphSta
 struct CPlayer;
 struct CActor { CPlayer* p=nullptr; };
 struct CPlayer : CActor {
+ bool NeedsWarsBotLadderPhysicsExit() const {return false;}
+ void SetWarsBotLadderExitPhysics(bool,bool) {}
  void RestoreWarsBotLadderGraph(){}
  bool TryWarsBotLadderExitRetry(IAnimationGraphState*){return false;} // isolated route tests; real retry has a dedicated caller
  enum ELadderActionType { eLAT_None, eLAT_ReachedEnd, eLAT_ExitTop, eLAT_Jump, eLAT_StrafeLeft, eLAT_StrafeRight, eLAT_Use, eLAT_Die };
@@ -377,7 +379,7 @@ def build_harness(repo: Path, rev: str, out: Path) -> Path:
              ' const LadderPhase phase=m_ladder.Phase();\n' + probe + '\n}\n')
     grab = ('void GrabBlock(CPlayer& actor,const LadderOutput& o,LadderInput& in){\n'
             ' SPlayerStats* stats=actor.GetPlayerStats();\n' + grab + '\n}\n')
-    exit_block = ('void ExitBlock(CPlayer& player){\n' + exit_block + '\n}\n')
+    exit_block = ('void ProcessWarsBotLadderPhysicsExit(CPlayer&,bool& landed){landed=false;}\nvoid ExitBlock(CPlayer& player){\n' + exit_block + '\n}\n')
 
     cpp = CPP.replace('@WARSBOT_HELPER@', helper)
     cpp = cpp.replace('@EXECUTE_LADDER@', execute)

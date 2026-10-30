@@ -133,6 +133,8 @@ namespace WarsBots { struct BotConfig { int ladder=1; static BotConfig& Get(){ s
 
 struct CPlayer
 {
+ bool NeedsWarsBotLadderPhysicsExit() const {return false;}
+ void SetWarsBotLadderExitPhysics(bool,bool) {}
 	enum ELadderActionType { eLAT_None, eLAT_ReachedEnd, eLAT_ExitTop, eLAT_Jump, eLAT_StrafeLeft, eLAT_StrafeRight, eLAT_Use, eLAT_Die };
 	enum ELadderState { eLS_Exit = 0, eLS_ExitTop, eLS_Climb };
 	enum ELadderDirection { eLDIR_Stationary = 0, eLDIR_Up, eLDIR_Down };
@@ -175,6 +177,7 @@ struct CPlayer
 
 struct MockMovement
 {
+ void ProcessWarsBotLadderPhysicsExit(CPlayer&,bool& landed){landed=false;}
 	SPlayerStats& m_stats;
 	CPlayer& m_player;
 	MockMovement(CPlayer& p) : m_stats(p.st), m_player(p) {}

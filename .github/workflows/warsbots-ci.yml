@@ -84,6 +84,9 @@ jobs:
           & python Tests/test_bot_ladder_exit_retry_caller.py *> units/BotLadderExitRetryCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLadderExitRetryCaller-run.log; throw 'UNIT FAIL: native ladder exit retry caller' }
           'UNIT PASS bounded native ladder exit retry caller'
+          & python Tests/test_bot_ladder_physics_exit_caller.py *> units/BotLadderPhysicsExit-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotLadderPhysicsExit-run.log; throw 'UNIT FAIL: actual missing-clip ladder exit caller' }
+          'UNIT PASS actual missing-clip ladder exit caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:

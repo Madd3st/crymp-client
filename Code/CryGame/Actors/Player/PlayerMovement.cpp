@@ -15,6 +15,7 @@
 #include "CryGame/Bots/BotLog.h"
 #include "CryCommon/CryAnimation/ICryAnimation.h"
 #include <cstring>
+#include <cmath>
 #endif
 #include "CryCommon/CryGame/GameUtils.h"
 #include "CryGame/Game.h"
@@ -1583,6 +1584,96 @@ void CPlayerMovement::ProcessTurning()
 //-----------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------
 
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+// Server authority for a missing animation asset, not an animation/position emulation. Native ladder frame,
+// full current collider clearance, a real upper-floor landing and ordinary physics requests only.
+void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& landed)
+{
+	landed=false;
+	if (!player.NeedsWarsBotLadderPhysicsExit()) return;
+	m_request.type=eCMT_Fly; m_request.velocity.zero(); // a refused step holds; never reuse old climb velocity
+	IPhysicalEntity* physics=player.GetEntity()->GetPhysics();
+	if (!physics || !gEnv->pPhysicalWorld || !std::isfinite(m_frameTime) || m_frameTime<=0.f) return;
+	const Vec3 feet=player.GetEntity()->GetWorldPos();
+	const Vec3 top=m_stats.ladderTop, bottom=m_stats.ladderBottom;
+	Vec3 axis=top-bottom;
+	if (!axis.IsValid() || axis.len()<4.f) return;
+	axis.Normalize();
+	Vec3 forward=-m_stats.ladderOrientation; forward.z=0.f;
+	if (!feet.IsValid() || !top.IsValid() || !bottom.IsValid() || !forward.IsValid() ||
+		axis.z<0.95f || forward.len()<0.5f) return;
+	forward.Normalize();
+	if ((feet-bottom-axis*((feet-bottom).Dot(axis))).len()>2.5f || feet.z<top.z-3.f || feet.z>top.z+0.75f) return;
+	pe_player_dimensions dimensions;
+	if (!physics->GetParams(&dimensions) || !dimensions.sizeCollider.IsValid() ||
+		!std::isfinite(dimensions.heightCollider) || !std::isfinite(dimensions.heightPivot)) return;
+	const float radius=max(dimensions.sizeCollider.x,dimensions.sizeCollider.y);
+	if (radius<0.1f || radius>0.75f || dimensions.sizeCollider.z<0.f || dimensions.sizeCollider.z>1.5f ||
+		dimensions.heightCollider-dimensions.heightPivot<0.1f || dimensions.heightCollider-dimensions.heightPivot>2.f) return;
+	IPhysicalEntity* skip[]={physics};
+	const int mask=ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid|ent_living;
+	const Vec3 landing=top+forward*1.1f;
+	float floorZ=0.f;
+	// Require support across the landing footprint, never a single ray over a ledge.
+	const Vec3 offsets[]={Vec3(0,0,0),Vec3(radius,0,0),Vec3(-radius,0,0),Vec3(0,radius,0),Vec3(0,-radius,0)};
+	for (int i=0;i<5;++i)
+	{
+		ray_hit floor;
+		if (!gEnv->pPhysicalWorld->RayWorldIntersection(landing+offsets[i]+Vec3(0,0,0.5f),Vec3(0,0,-2.f),mask,
+			rwi_stop_at_pierceable|(geom_colltype_player<<rwi_colltype_bit),&floor,1,skip,1) || floor.n.z<0.75f ||
+			!floor.pt.IsValid() || floor.pt.z<top.z-1.2f || floor.pt.z>top.z+0.25f) return;
+		if (!i) floorZ=floor.pt.z;
+		else if (fabs_tpl(floor.pt.z-floorZ)>0.12f) return;
+	}
+	const bool egress=WarsBots::NativeLadderExitPhysicalReady(
+		WarsBots::LVec{feet.x,feet.y,feet.z},WarsBots::LVec{bottom.x,bottom.y,bottom.z},WarsBots::LVec{top.x,top.y,top.z});
+	if (egress && player.WarsBotLadderExitSettling() && m_stats.onGround>0.01f && fabs_tpl(feet.z-floorZ)<0.12f
+		&& Vec3(feet.x-landing.x,feet.y-landing.y,0).len()<0.15f)
+	{
+		ray_hit support;
+		landed=gEnv->pPhysicalWorld->RayWorldIntersection(feet+Vec3(0,0,0.15f),Vec3(0,0,-0.3f),mask,
+			rwi_stop_at_pierceable|(geom_colltype_player<<rwi_colltype_bit),&support,1,skip,1)>0 && support.n.z>=0.75f &&
+			fabs_tpl(support.pt.z-floorZ)<0.08f;
+		if (landed) return;
+	}
+	Vec3 delta;
+	const char* phase;
+	if (feet.z<floorZ+0.04f && (feet-bottom-axis*((feet-bottom).Dot(axis))).len()<0.35f)
+	{
+		phase="rise"; delta=axis*((floorZ+0.06f-feet.z)/axis.z);
+	}
+	else
+	{
+		phase="egress"; delta=Vec3(landing.x-feet.x,landing.y-feet.y,0.f);
+	}
+	const float dt=min(m_frameTime,0.05f), speed=1.7f;
+	if (delta.len()>speed*dt) delta=delta.GetNormalized()*speed*dt;
+	primitives::capsule body;
+	body.axis=Vec3(0,0,1); body.r=radius; body.hh=dimensions.sizeCollider.z;
+	body.center=feet+Vec3(0,0,dimensions.heightCollider-dimensions.heightPivot);
+	geom_contact* contact=nullptr;
+	const int type=dimensions.bUseCapsule?primitives::capsule::type:primitives::cylinder::type;
+	const float overlap=gEnv->pPhysicalWorld->PrimitiveWorldIntersection(type,&body,Vec3(0,0,0),mask,&contact,
+		0,geom_colltype_player,nullptr,nullptr,0,skip,1);
+	if (!std::isfinite(overlap) || overlap>0.f)
+	{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=overlap hits=%.3f.",player.GetEntityId(),overlap); return; }
+	if (delta.len()>0.001f)
+	{
+		const float hit=gEnv->pPhysicalWorld->PrimitiveWorldIntersection(type,&body,delta,mask,&contact,
+			0,geom_colltype_player,nullptr,nullptr,0,skip,1);
+		if (!std::isfinite(hit) || hit>0.f)
+		{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=sweep hit=%.3f.",player.GetEntityId(),hit); return; }
+	}
+	player.SetWarsBotLadderExitPhysics(true,false); // ordinary world-colliding mode; stock leave/cancel restores it
+	if (!player.GetAnimatedCharacter() || player.GetAnimatedCharacter()->GetPhysicalColliderMode()!=eColliderMode_Pushable) return;
+	m_request.velocity=delta/m_frameTime; // swept displacement matches the full real frame, including a slow frame
+	if (phase[0]=='e' && delta.len()<0.04f)
+	{ m_request.type=eCMT_Normal; player.SetWarsBotLadderExitPhysics(true,true); } // let gravity settle onto verified floor
+	WB_LOG(2,"[WarsBots] LADDER PHYSICAL actor=%u phase=%s floor=%.3f target=(%.3f,%.3f) radius=%.3f half=%.3f velocity=(%.3f,%.3f,%.3f).",
+		player.GetEntityId(),phase,floorZ,landing.x,landing.y,radius,body.hh,m_request.velocity.x,m_request.velocity.y,m_request.velocity.z);
+}
+#endif
+
 void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 {
 
@@ -1671,6 +1762,13 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 				// The stock graph has OnLadder=1 only in ladder states; completion may return its empty default.
 				// Empty is never completion by itself: require the same real physical egress as literal 0.
 				if (warsBotOutput && warsBotOutput!='0' && warsBotOutput!='1') return;
+				if (player.NeedsWarsBotLadderPhysicsExit())
+				{
+					bool landed=false;
+					ProcessWarsBotLadderPhysicsExit(player,landed);
+					if (landed) player.RequestLeaveLadder(CPlayer::eLAT_ReachedEnd);
+					return;
+				}
 				if (warsBotOutput!='1')
 				{
 					const Vec3 feet=player.GetEntity()->GetWorldPos();
