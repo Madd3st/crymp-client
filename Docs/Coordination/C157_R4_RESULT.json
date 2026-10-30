@@ -1,0 +1,35 @@
+{
+  "task": "C157",
+  "source": "bd8692cdfc13ff88f9622684aa25f3940e698b35",
+  "parent": "307037bc08050d39f26310dc6cc7071dddddf4a6",
+  "branch": "codex/r4-weapon-search-episode",
+  "review": "58cc3efc4f96ac031e47e5b601302e391ca10fed",
+  "review_task": "DS128",
+  "review_verdict": "OK",
+  "ci_run": 40976171549,
+  "ci_success": true,
+  "ci_state": "success",
+  "local_checks": {
+    "old_actual_caller": "EXPECTED_SEMANTIC_RED_9_FAILURES_0_INVARIANT_FAILURES",
+    "new_actual_caller": "GREEN_0_FAILURES",
+    "existing_weapon_goal_caller": "PASS",
+    "BotWeaponGoal": "PASS",
+    "BotAuditFixes": "PASS"
+  },
+  "oracle_scope": "Actual UpdateWeaponSeek body plus actual weapon-related ResetLife assignments; engine boundary calls mocked. Not a physics/pickup/fire proof.",
+  "game_launched": false,
+  "runtime_verified": false,
+  "C154_runtime_pin_unchanged": "307037bc08050d39f26310dc6cc7071dddddf4a6",
+  "cvars_added": 0,
+  "headers_changed": false,
+  "fallback_policy": "one attempt per life, including failed attempt; unchanged",
+  "evidence_directory": "E:\\WarsBots\\Development\\C157-checks",
+  "artifact_id": 12943126850,
+  "artifact_digest": "sha256:756be4643aec91bf365d338d54e37a18c095ba4f8ec7d3139976bfe9f4484e6a",
+  "binary_hashes": {
+    "CryMP-Client64.exe": "bf875ca58f470b654ba60d216aad9eed11b78c22023cfe1673ea764f719881be",
+    "CryMP-Server64.exe": "bc785f48b5d20b435f4db348a5e564afc19c0744cc9662fb56b339f006d314b4"
+  },
+  "artifact_hashes_verified": true,
+  "pr": "https://github.com/Madd3st/crymp-client/pull/1"
+}
