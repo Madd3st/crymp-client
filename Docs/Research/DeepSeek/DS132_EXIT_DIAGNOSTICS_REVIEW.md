@@ -137,3 +137,69 @@ success and artifactpair»). Причина падения найдена и к�
   DS131 в силе, включая namespace-оговорку MSIX.
 - Что диагностика покажет `exitClip>=0`, непустой FIFO0 или конкретные `Action/Stance` — неизвестно.
 - Физический ремонт выхода не предложен, не одобрен и не начат; этот отчёт — только про диагностику.
+
+---
+
+# DS-132 supplement — `96e4a383`: мок-блокер снят, OK условно
+
+Кандидат `96e4a38313c6a768a94864c4ed3b6677df627eb7`, та же ветка `codex/shore-ladder-exit`, PR #2.
+Отчёт выше (BLOCK на `8ed16c78`) сохраняется как история; ниже — проверка исправления.
+
+## Дельта `8ed16c78 → 96e4a383`
+
+`git diff --stat`: **один файл**, `Tests/test_bot_ladder_caller.py`, +4/−1. Под `Code/` изменений **ноль** —
+игровой исходник байт-в-байт тот же, что в `8ed16c78`, который я уже отревьюил (read-only диагностика,
+API, отсутствие записи). Значит весь код-скоуп `96` = `8ed` по игровому коду; новизна только в тесте.
+
+Дельта добавляет в мок ровно те же четыре границы, что уже были в exit-retry фикстуре:
+
+```
+struct CAnimation { struct { int m_nAnimID[1]={0}; } m_LMG0; float m_fAnimTime=0.f; };
+struct IAnimationSet { int GetAnimIDByName(const char*) {return 1;} const char* GetNameByAnimID(int) {return "mock";} };
+struct ISkeletonAnim { int GetNumAnimsInFIFO(int) {return 0;} CAnimation& GetAnimFromFIFO(int,int) {static CAnimation a;return a;} };
+struct ICharacterInstance { int GetFlags(){return 0;} IAnimationSet* GetIAnimationSet() {return nullptr;} ISkeletonAnim* GetISkeletonAnim() {return nullptr;} const char* GetFilePath() {return "mock";} };
+```
+
+Отличие от exit-retry мока только в `GetFlags()` (конкретный метод вместо чистого виртуального) —
+это соответствует стилю этого файла. Методы и типы совпадают, компиляционная причина падения устранена.
+
+## Что подтверждено живым API (и что нет)
+
+| Объект | Состояние на момент ревью |
+| --- | --- |
+| run `41052281760` (WarsBots CI), head `96e4a383` | unit job `124051505690` — **completed/success** (12:02:50→12:03:35) |
+| тот же run, job `124051505180` Client + server | **in_progress** («Configure and build»), upload pending |
+| artifact pair | **ещё нет** |
+| PR-матрица `41052289278` (PR #2, head `96e4a383`) | **in_progress** |
+| прогоны на `8ed16c78` | отменены (история) |
+
+Зелёный unit-job на `96` — прямое подтверждение причины из DS132: падал именно `test_bot_ladder_caller.py`,
+и добавление мока его починило. **Успех build-job и PR-матрицы я не заявляю** — они ещё идут, пары
+артефактов нет.
+
+## Вердикт supplement
+
+**OK условно (source/data/harness compatibility) для `96e4a383`.** Условия, без которых прогон не
+начинается:
+
+1. полный WarsBots CI на `96` зелёный, включая client+server job и upload;
+2. все задания PR-матрицы на `96` зелёные;
+3. точная пара артефактов скачана и хеши пересчитаны независимо;
+4. receipt выпущен на `96`, кандидату выдан собственный `RUNTIME_PIN`; история провала `307` сохранена.
+
+Хеши данных и инструментов не менялись (пересчитано сейчас): harness `87c3f5ee…` (коммит `e973b905`),
+analyzer `2a642aeb…`, V5 `b60178d7…` / `0230a0c3…` / `d95e1e11…` / `a95a0503…`,
+manifest guard `9a958ea7…`.
+
+## Что остаётся в силе
+
+- Диагностический прогон по-прежнему обязан закончиться `FAIL blocked_top` (если причина не устранена);
+  ценность — поля `LADDER EXIT INPUTS`, а не PASS.
+- Оговорка по фикстуре: в exit-retry моке `GetInputId` для `Action/Stance/Item` возвращает `2u`, а
+  `GetInputName(2u)` = `"PseudoSpeed"`, поэтому эти чтения фикстурой не исполняются; в ladder-моке
+  `GetCharacter` вообще возвращает `nullptr`. Компиляция и null-защита проверены, фактическое чтение
+  новых входов — нет. Это не блокер, но не надо считать фикстуру доказательством чтения.
+- Причина, по которой граф не выбирает `relaxed_ladderOffTop_nw`, не доказана; каузальные и
+  MSIX-namespace оговорки DS131 в силе. Физический ремонт не предложен и не одобрен.
+- Owner-директива «продолжать разработку и тестирование» активна; старый провал `307` сохранён.
+
