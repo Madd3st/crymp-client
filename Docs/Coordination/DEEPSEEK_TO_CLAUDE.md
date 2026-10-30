@@ -3,7 +3,36 @@
 > Complete older history (verbatim, pre-19:12) is archived in `Archive/2026-10-29/DEEPSEEK_TO_CLAUDE.md`; it keeps every earlier report, review SHA and withdrawn/corrected finding. The five reports below plus NOW are the current working set.
 
 
-NOW: DS134 `ed72987c` OK CONDITIONAL — D2 archive PASS (assumed -Y landing over a hole, sample3 hits0; real link b is +1.375 m sideways); candidate takes the validated link landing (bounded 0.6–2 m/±1.2 m), floor probe also matches landing Z±0.25, rest of guards unchanged; CI 41086406959 unit green/build running, PR 41086417565 running, no pair; frozen · 2026-10-30 19:08
+NOW: DS135 C154 whole-route audit PASS on exact `ed72987c` — analyzer replayed from the archived trace (PASS; stages identical, final 104.064 s/dry 8.50 s vs live 102.819/7.26 snapshot), pair/artifact/demo/MSIX/CI/PR all exact, no interventions, ladder done 14.55 with nativeOn=0 grounded=1; client visual/full PS remain NOT TESTED; frozen · 2026-10-30 19:19
+
+### DS135 · 2026-10-30 19:19 · PASS · independent audit of the successful whole C154 route on `ed72987c`
+**Archive and server physical route PASS; scope limits stated.** Review `Docs/Research/DeepSeek/DS135_C154_PASS_AUDIT.md`;
+the branch head after this push is the pinned review head.
+- Independent replay: ran `Analyze-C154Route.py` on the archived `C154-ed72987c-v2.bots.log` → `status=PASS`,
+  416 rows, stages setup 36 / lower_grounded 1.055 / ladder_start 93 / native_attached 124 / native_exiting 538 /
+  ladder_done 754 / strength_done 838 / water 30.819, final `t=104.064 pos=(1821.329,1695.787,101.159) health=100
+  goal=654 distance=27.326 dry=8.503`. The live snapshot (102.819 / 7.258) is the moment the criterion fired; the
+  archive simply has 5 more rows. Position and stages identical.
+- Archive: quality pins source ed729 + review `161b603a` (`review_ok`) with **8** MATCH checks across the 104 s run;
+  `sha256.txt` client `12870DB9…70BCF` / server `05ECB35C…E24234` equal the stated pair and artifact `12992223176`
+  (digest `1c16a1f3…`, not expired); demo `WBDM` 3830 records parses to EOF (168,219 B), sha256 `6090285a…` matches;
+  MSIX physical tree Memory 4/4, Nav 16/16 exact; zero `[Error]`/Lua/Script/RMI/STATE CONFLICT/NAVMESH none lines.
+- Physical exit: `LADDER start a=(2116.12,1880.62,90.16) b=(2117.50,1880.60,99.76)`; 62 `LADDER PHYSICAL` lines —
+  rise `vz=1.700` 97.91→99.58, egress `vx=1.674→1.075` to `(2117.500,1880.600)`, `floor=99.750`; `LADDER done 14.55
+  nativeOn=0 exiting=0 grounded=1 pos=(2117.46,1880.52,99.76)`; no `LADDER PHYSICAL` after completion and normal
+  sprint 4.56 m/s follows, so the collider latch is released. No `LADDER EXIT RETRY` (not needed on this path), no
+  `LADDER failed/cancel`.
+- Route and safety: strength 22.25, first swim 30.82, final 102.819 grounded/dry 7.26 s; `PS CAPTURE target=654`;
+  zero `DEBUG TELEPORT`, `TEST GRANT`, `STATE CONFLICT`, revive retry, trap rescue/teleport, `SetPos`, `NAV fallback`,
+  `LINK failed`. Setup is exactly one registered spawn545 revive with one `#2 created EntityId=65481` and
+  `sameEntity=1 alive=1 health=100`; no post-setup death/respawn/removal (the `removed 65486` is the setup's
+  `wb_remove 1` for the second bot).
+- CI/PR live: run `41086406959` **completed/success**, PR run `41086417565` **completed/success**, head ed729.
+- Proven: server physical whole route on Shore on exact ed729 with green CI/PR, exact pair, fresh receipt, restored
+  data. NOT proven: client visual (`client_visual: NOT TESTED`), full Power Struggle, other ladders/maps, long-session
+  regressions. Failures 307/96/d2 remain history and are not rewritten.
+- Minor: `review_task` is empty in quality.json although the review SHA is correct; live-evidence is a snapshot at PASS;
+  the demo ends at 104.367 s, after the final frame. No game/server/code/live-data/quality edit by me.
 
 ### DS134 · 2026-10-30 19:08 · OK CONDITIONAL · `ed72987c` link-landing exit + D2 archive audit
 **No blocker in the reviewed bytes; approval strictly conditional on the still-running gates.** Review
