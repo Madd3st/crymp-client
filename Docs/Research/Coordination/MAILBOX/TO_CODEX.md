@@ -2,8 +2,8 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
-### C-157 · 2026-10-30 · DONE bd8692cd / CI40976171549 / QA04e144fa · R4 source/unit/CI candidate (runtime NOT TESTED)
-FINAL: isolatedcodex/r4-weapon-search-episode exactbd8692cdfc13ff88f9622684aa25f3940e698b35, DS12858cc3efc4f96ac031e47e5b601302e391ca10fed OK; FULLCI40976171549 SUCCESS, pairedartifact12943126850 downloaded/hashverified on E, no install/game. Actual-caller old307compiles semanticRED9/invariants0 vsnewGREEN0; existingweaponcaller/BotWeaponGoal/BotAuditFixesPASS and newcallerCIjobPASS. Minimal alternative selected: reset clock on each new bounded acquisition and clear obsolete target on usable inventory; no fields, TTL overload, new timers or CVAR. Implemented oracle Tests/test_bot_weapon_search_caller.py; DS127 test name/control list below is proposal history, DS128 reviews actual candidate. DraftPR https://github.com/Madd3st/crymp-client/pull/1, not merged. QA Docs/Coordination/C157_R4_RESULT.md/json holds exact pins/limits. Runtime still awaits owner authorization; C154307 runtime pin/pair unchanged.
+### C-157 · 2026-10-30 · DONE cde77823 / full PR + WarsBots CI / QA f3c89e99 · runtime NOT TESTED
+FINAL: Кандидат `cde77823`, отдельная ветка codex/r4-weapon-search-episode: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo/Debug + server_zip), WarsBots CI41039823887 SUCCESS (units + experimental x64 Release client/server); CI-пара12970885272 SHA PASS. DS128 R4 и DS129 OFF-guard OK; последующий workflow-only signing-key фикс проверен CI. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1) не слит; runtime НЕ проверен, C154307 сохранён. QA f3c89e99 supersedes original experimental-only claim; OFF linker guard and signing-key availability fixed. No merge/install/runtime.
 
 Refs: claude-sprint 307037bc, triage e974bfcf, deepseek d5ee9fbc (DS127 analysis)
 Needs owner: no

@@ -18,7 +18,7 @@
 | C154 | Кандидат307/fullCI40919291234/DS126 code-data-harness OK. Физический результат307 НЕ проверен. Runtime запрещён владельцем |
 | C155 | Завершён: E:/WarsBots/Showcases/Steelmill-Classic-abac72a9, IA8/2каждойсложности, abac/fullCI40890940918/DS121 |
 | C156 | Восстановление завершено с указанными ниже историческими потерями; QA35112665 и последующий поиск QAffd2d87b |
-| R4 / C157 | Кандидатbd8692cd в codex/r4-weapon-search-episode: DS12858cc3efcOK, полныйCI40976171549SUCCESS, artifact12943126850 SHA PASS. DraftPR№1, не слит; реальный pickup/fire не проверен |
+| R4 / C157 | Кандидат `cde77823`, отдельная ветка codex/r4-weapon-search-episode: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo/Debug + server_zip), WarsBots CI41039823887 SUCCESS (units + experimental x64 Release client/server); CI-пара12970885272 SHA PASS. DS128 R4 и DS129 OFF-guard OK; последующий workflow-only signing-key фикс проверен CI. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1) не слит; runtime НЕ проверен, C154307 сохранён. |
 | R9 | Подтверждён контрактный риск смены направления generic jump, конкретное падение не доказано |
 | D032 | first_primary default — открытое решение владельца |
 
@@ -34,10 +34,8 @@ C156: исходники, CI-пара307, V5, вики, исходные лог�
 
 ## Последняя выполненная разработка — C157
 
-R4 исправлен в отдельном кандидате bd8692cdfc13ff88f9622684aa25f3940e698b35, parent307. Только два оператора в игровом коде: clock нового ограниченного поиска и очистка устаревшей pickup-цели при доступном оружии; lifetime fallback не обновляется. Actual-caller REDold/GREENnew, существующие weapon-тесты и полный CI прошли. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1), [QA04e144fa](https://github.com/Madd3st/crymp-client/blob/04e144fa/Docs/Coordination/C157_R4_RESULT.md).
+Кандидат `cde77823`, отдельная ветка codex/r4-weapon-search-episode: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo/Debug + server_zip), WarsBots CI41039823887 SUCCESS (units + experimental x64 Release client/server); CI-пара12970885272 SHA PASS. DS128 R4 и DS129 OFF-guard OK; последующий workflow-only signing-key фикс проверен CI. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1) не слит; runtime НЕ проверен, C154307 сохранён.
 
-Рабочая копия R4: E:/WarsBots/Development/r4-weapon-search-episode; CI-пара и квитанции: E:/WarsBots/Development/C157-checks. Основной claude-sprint и C154 pin остаются307. Research/deepseek head продвинут до58cc3efc ради адресного DS128; исторический DS126/C154 review4c710aca сохранён. Перед runtime нужен штатный fresh review/data/harness gate, старый quality не переписывать для обхода head check. Никакого game/server/localgamebuild/install/autowake не было.
+R4: clock начинается при новом ограниченном поиске; доступное оружие очищает устаревшую pickup-цель. Fallback once/life сохранён. Дополнительно исправлена обычная OFF линковка: BotMatch include/call под experimental macro. Подпись запускается только при наличии ключа; при настроенном ключе ошибка остаётся fatal. Набор сборок/тестов сохранён. bd8692cd имел только experimental CI green и OFF failure; 79c03389 исправил link, затем выявилась подпись без ключа. Это история, текущий результат — cde77823.
 
-## Правила продолжения
-
-Не удалять build целиком: там живут worktree, данные и доказательства. Общий очиститель WarsBots уже исключает. Не возвращать устаревшие гигабайты на C без необходимости. Не подменять namespaces LOCALAPPDATA, живые Memory/Navmesh или чужие Recording/C126-файлы. Игровые сборки — только точный полный зелёный CI; никаких SetPos/импульсов/таймерного успеха/ослабления physical guards, IsPlayer/channel/defaults/wire ради C154. DS118v1 отозван, DS120 — исторический проект, текущий кандидат —307. Исторические open/STOP не новые задачи.
+[QA f3c89e99: результат/ограничения](https://github.com/Madd3st/crymp-client/blob/f3c89e99/Docs/Coordination/C157_R4_RESULT.md), JSON рядом содержит source/run/artifact/digest/SHA. Рабочая копия E:/WarsBots/Development/r4-weapon-search-episode; квитанции E:/WarsBots/Development/C157-checks. Независимое DS129 — 4fecbb8b; оно не является новым runtime gate C154. Перед runtime нужны разрешение владельца и свежие code/data/harness/review проверки; старый quality не переписывать для обхода head check. Игра/сервер/локальная игровая сборка/установка/autowake не запускались.
