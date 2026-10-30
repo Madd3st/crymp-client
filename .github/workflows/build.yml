@@ -29,7 +29,7 @@ jobs:
     runs-on: windows-2022
     env:
       BUILD_DIR: ${{ github.workspace }}\Build${{ inputs.bits }}
-      CODE_SIGNING_API_KEY: ${{ secrets.CODE_SIGNING_API_KEY }}
+      HAS_CODE_SIGNING_KEY: ${{ secrets.CODE_SIGNING_API_KEY != '' }}
     outputs:
       artifact_name: ${{ steps.build.outputs.artifact_name }}
     steps:
@@ -57,7 +57,9 @@ jobs:
 
       - name: Sign
         # Signing is available only when this repository supplies the signing key.
-        if: env.CODE_SIGNING_API_KEY != ''
+        if: env.HAS_CODE_SIGNING_KEY == 'true'
+        env:
+          CODE_SIGNING_API_KEY: ${{ secrets.CODE_SIGNING_API_KEY }}
         run: |
           Get-ChildItem -Path '${{ env.BUILD_DIR }}' | Where-Object { $_.Extension -eq '.exe' } | ForEach-Object {
             $checksum = (Get-FileHash -Path $_.FullName -Algorithm SHA256).Hash.ToLower()
