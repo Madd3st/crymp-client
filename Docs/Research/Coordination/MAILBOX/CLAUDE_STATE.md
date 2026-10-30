@@ -18,7 +18,7 @@
 | C154 | Кандидат307/fullCI40919291234/DS126 code-data-harness OK. Физический результат307 НЕ проверен. Runtime запрещён владельцем |
 | C155 | Завершён: E:/WarsBots/Showcases/Steelmill-Classic-abac72a9, IA8/2каждойсложности, abac/fullCI40890940918/DS121 |
 | C156 | Восстановление завершено с указанными ниже историческими потерями; QA35112665 и последующий поиск QAffd2d87b |
-| R4 | Подтверждён deadline старого эпизода поиска боезапаса, исправление впереди |
+| R4 / C157 | Кандидатbd8692cd в codex/r4-weapon-search-episode: DS12858cc3efcOK, полныйCI40976171549SUCCESS, artifact12943126850 SHA PASS. DraftPR№1, не слит; реальный pickup/fire не проверен |
 | R9 | Подтверждён контрактный риск смены направления generic jump, конкретное падение не доказано |
 | D032 | first_primary default — открытое решение владельца |
 
@@ -31,6 +31,12 @@ C156: исходники, CI-пара307, V5, вики, исходные лог�
 Заново пройдены oldsemanticRED/newGREEN, accepted-consumed/no-resend, route/climb/graph/motion, BotLadder/BotConfig. Результат actualManifestOk имеет тот же SHA256, что исходная квитанция. Новые офлайн-результаты не являются игровым доказательством.
 
 Полный комплект: E:/WarsBots/Recovery-2026-10-30, проверенный bundle/restart-kit, CI-логи, геометрия Shore/Plantation на E. Дополнительный поиск:36ZIP/73937members и1368originalJSON,64snapshot-манифеста/268payloadSHA PASS,81restore-квитанция; шестьC155 receipt/before совпали. C127/C155 reference-снимки изолированы, оригиналов C154 не найдено. [C156](https://github.com/Madd3st/crymp-client/blob/warsbots/feature/weapon-goals/Docs/Coordination/C156_RECOVERY.md).
+
+## Последняя выполненная разработка — C157
+
+R4 исправлен в отдельном кандидате bd8692cdfc13ff88f9622684aa25f3940e698b35, parent307. Только два оператора в игровом коде: clock нового ограниченного поиска и очистка устаревшей pickup-цели при доступном оружии; lifetime fallback не обновляется. Actual-caller REDold/GREENnew, существующие weapon-тесты и полный CI прошли. [Draft PR№1](https://github.com/Madd3st/crymp-client/pull/1), [QA04e144fa](https://github.com/Madd3st/crymp-client/blob/04e144fa/Docs/Coordination/C157_R4_RESULT.md).
+
+Рабочая копия R4: E:/WarsBots/Development/r4-weapon-search-episode; CI-пара и квитанции: E:/WarsBots/Development/C157-checks. Основной claude-sprint и C154 pin остаются307. Research/deepseek head продвинут до58cc3efc ради адресного DS128; исторический DS126/C154 review4c710aca сохранён. Перед runtime нужен штатный fresh review/data/harness gate, старый quality не переписывать для обхода head check. Никакого game/server/localgamebuild/install/autowake не было.
 
 ## Правила продолжения
 
