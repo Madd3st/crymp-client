@@ -22,5 +22,8 @@
   },
   "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-route-307037bc-v2",
   "unchanged_rerun": false,
-  "independent_postrun_audit": "DS131 pending"
+  "independent_postrun_audit": "DS131 ef819799 archive PASS / runtime FAIL; correction requested for namespace and unproven causal claims",
+  "restore_namespace": "Codex MSIX physical C:/Users/Magic8/AppData/Local/Packages/OpenAI.Codex_2p2nqsd0c76g0/LocalCache/Local/WarsBots",
+  "namespace_verified": "explicit physical Memory4/Navmesh16 exact names+SHA PASS; external unvirtualized namespace must not be compared",
+  "next_step": "Determine why graph does not select offTop: actual graph Action/Stance, animation availability and FIFO. No unchanged rerun, fallback approval, timer expansion or completion guard change."
 }
