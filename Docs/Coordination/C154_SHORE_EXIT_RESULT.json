@@ -78,5 +78,16 @@
     "report": "Docs/Research/DeepSeek/DS135_C154_PASS_AUDIT.md"
   },
   "client_visual": "NOT TESTED",
-  "scope_limits": "One reviewed controlled lower545 route, one bot, exact V5 data. No full PS match/capture/general ladder/client visual acceptance. PR not merged; canonical307 unchanged."
+  "scope_limits": "One reviewed controlled lower545 route, one bot, exact V5 data. No full PS match/capture/general ladder/client visual acceptance. PR not merged; canonical307 unchanged.",
+  "visual_setup": {
+    "status": "BLOCKED_NO_TARGETABLE_SERVER_UI",
+    "review": "18f4680c997428a590ee0c2553ab7c633d08c7f9",
+    "archive": "E:/WarsBots/Visual/Shore-ed72987c-v2/Sessions/C154-VisualV2-20261030-195744",
+    "client": "Connected spectator on Shore, port46169",
+    "ladder_attempts": 0,
+    "ai": "stopped",
+    "restore": "archived_restored",
+    "game_processes": 0,
+    "v1": "Preflight failed before client; primary preflight log missing, session receipt retained"
+  }
 }
