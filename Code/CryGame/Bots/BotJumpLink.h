@@ -49,6 +49,7 @@ struct LinkParams {
 	bool blockedFailFast = false;      // DS-048 (wb_bot_link_failfast): blocked short of / at the take-off fails in 0.6-0.8 s
 	float landRadius = 3.0f;           // m from b counts as landed (a running Strength jump carries past b)
 	float landDz = 1.5f;
+	float landDzStrength = 2.5f;       // DS-046: landing on multi-tier roofs/catwalks (e.g. Steelmill z=151.9 vs 150.04) allows 2.5 m
 	float prepareMax = 6.f;            // DS-036: 90 energy after a 2 s cooldown needs more than 4 s            // s waiting for the suit / energy (regen ~10/s: c061 failed at 62..69 energy)
 	float total = 12.f;                // DS-039: prepare 6 + take-off 3.5 + air must fit                 // s for the whole link
 	float noTakeoff = 3.5f;            // s in Act without leaving the ground (includes the run-up; DS-033: 2 s = suit cooldown)
@@ -69,7 +70,7 @@ public:
 
 	void Start(float now, LinkMove move, const JVec& a, const JVec& b)
 	{
-		m_move = move; m_a = a; m_b = b; m_start = now; m_phase = LinkPhase::Approach; m_phaseAt = now; m_wasAir = false; m_stillSince = -1.f; m_blockedSince = -1.f;
+		m_move = move; m_a = a; m_b = b; m_start = now; m_phase = LinkPhase::Approach; m_phaseAt = now; m_wasAir = false; m_stillSince = -1.f; m_blockedSince = -1.f; m_landedSince = -1.f;
 	}
 
 	// Phase changes Approach -> Prepare -> Act can chain within one tick.
@@ -157,9 +158,15 @@ private:
 			o.moveTo = m_b;
 			if (in.grounded && in.now - m_phaseAt > 0.1f)
 			{
-				if (db <= m_p.landRadius && std::fabs(in.feet.z - m_b.z) < m_p.landDz) { m_phase = LinkPhase::Done; o.phase = m_phase; return o; }
+				const float dzLimit = (m_move == LinkMove::Strength) ? m_p.landDzStrength : m_p.landDz;
+				if (db <= m_p.landRadius && std::fabs(in.feet.z - m_b.z) < dzLimit) { m_phase = LinkPhase::Done; o.phase = m_phase; return o; }
+				if (m_landedSince < 0.f) m_landedSince = in.now;
 				// rolled on after landing toward b: give it a short moment, then judge
-				if (in.now - m_phaseAt > 0.6f) return Fail(o, LinkFail::MissedLanding);
+				if (in.now - m_landedSince > 0.6f) return Fail(o, LinkFail::MissedLanding);
+			}
+			else
+			{
+				m_landedSince = -1.f;
 			}
 			break;
 		default: break;
@@ -172,7 +179,7 @@ public:
 	static float Dist2D(const JVec& a, const JVec& b) { return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)); }
 
 private:
-	void Enter(LinkPhase p, float now) { m_phase = p; m_phaseAt = now; if (p != LinkPhase::Act) m_blockedSince = -1.f; }
+	void Enter(LinkPhase p, float now) { m_phase = p; m_phaseAt = now; if (p != LinkPhase::Act) m_blockedSince = -1.f; if (p != LinkPhase::Air) m_landedSince = -1.f; }
 	bool Ready(const LinkInput& in) const
 	{
 		if (m_move == LinkMove::Strength) return in.strengthActive && in.energy >= m_p.strengthEnergy;
@@ -192,7 +199,7 @@ private:
 	JVec m_a, m_b;
 	float m_start = 0.f, m_phaseAt = 0.f;
 	bool m_wasAir = false;
-	float m_stillSince = -1.f, m_blockedSince = -1.f;
+	float m_stillSince = -1.f, m_blockedSince = -1.f, m_landedSince = -1.f;
 };
 
 } // namespace WarsBots
