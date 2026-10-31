@@ -90,6 +90,9 @@ jobs:
           & python Tests/test_bot_vantage_heard_caller.py *> units/BotVantageHeardCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotVantageHeardCaller-run.log; throw 'UNIT FAIL: actual vantage travel vs heard roam caller' }
           'UNIT PASS actual vantage travel vs heard roam caller'
+          & python Tests/test_bot_jumplink_roof_landing_caller.py *> units/BotJumpLinkRoofLandingCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotJumpLinkRoofLandingCaller-run.log; throw 'UNIT FAIL: actual jumplink roof landing caller' }
+          'UNIT PASS actual jumplink roof landing caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:
