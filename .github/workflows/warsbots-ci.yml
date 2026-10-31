@@ -93,6 +93,9 @@ jobs:
           & python Tests/test_bot_jumplink_roof_landing_caller.py *> units/BotJumpLinkRoofLandingCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotJumpLinkRoofLandingCaller-run.log; throw 'UNIT FAIL: actual jumplink roof landing caller' }
           'UNIT PASS actual jumplink roof landing caller'
+          & python Tests/test_bot_vantage_combat_hold_caller.py *> units/BotVantageCombatHoldCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotVantageCombatHoldCaller-run.log; throw 'UNIT FAIL: actual vantage combat hold caller' }
+          'UNIT PASS actual vantage combat hold caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:
