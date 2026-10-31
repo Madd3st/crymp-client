@@ -543,7 +543,47 @@ int main(int argc, char** argv) {
             std::puts("FAIL: fresh Heard gunshot did not update m_patrolGoal and Steer target after Travel timeout");
             return 43;
         }
-        std::puts("PASS [5/5]: after 40 s Travel timeout with no alternative spot, Travel ends and Heard updates m_patrolGoal and Steer");
+        std::puts("PASS [5/6]: after 40 s Travel timeout with no alternative spot, Travel ends and Heard updates m_patrolGoal and Steer");
+    }
+
+    // Case 6: Bot in VantagePhase::Travel approaching within 2.0 m horizontally of the spot
+    // (e.g. stairs underneath at |dz| >= 1.5 m, or entering the 1.2..2.0 m ring around spot).
+    // The random spawn/hotspot roam picker ((m_patrolGoal-feet).GetLengthSquared2D() < 4.0f)
+    // must NOT overwrite m_patrolGoal while in VantagePhase::Travel.
+    {
+        g_vantageMap.Load(spotsText);
+        BotConfig::Get() = Config{};
+        BotConfig::Get().highGround = 0;
+        CPlayer actor;
+        // Start away at (0, 0, 136)
+        actor.entity.pos = Vec3(0.f, 0.f, 136.f);
+        actor.item.entity.cls.name = "DSG1";
+        BotInstance bot{&actor};
+        BotBrain brain;
+        brain.m_now = 10.f;
+
+        // Tick 1: start Travel toward roofSpot (40, 0, 145)
+        brain.UpdateRoam(bot, actor, 0.1f);
+        if (brain.m_vantage.Phase() != VantagePhase::Travel || !Same2D(brain.m_patrolGoal, roofSpot)) {
+            std::puts("FAIL: Case 6 did not start Vantage Travel");
+            return 50;
+        }
+
+        // Tick 2: bot climbs stairs underneath roofSpot at (38.5, 0, 139) -> 1.5 m 2D (< 2.0 m, len2D^2 = 2.25 < 4.0)
+        // and dz = 6.0 m (> 1.5 m, so BotVantage::Update remains in Travel, not Hold).
+        actor.entity.pos = Vec3(38.5f, 0.f, 139.f);
+        brain.m_now = 12.f;
+        brain.UpdateRoam(bot, actor, 0.1f);
+
+        if (brain.m_vantage.Phase() != VantagePhase::Travel) {
+            std::puts("FAIL: expected VantagePhase::Travel to remain active while under roofSpot");
+            return 51;
+        }
+        if (!Same2D(brain.m_patrolGoal, roofSpot) || !Same2D(brain.lastSteerGoal, roofSpot)) {
+            std::puts("FAIL: m_patrolGoal was overwritten by roam picker while approaching vantage spot in Travel phase");
+            return 52;
+        }
+        std::puts("PASS [6/6]: VantagePhase::Travel preserved m_patrolGoal within 2m 2D approach radius of spot");
     }
 
     return 0;
