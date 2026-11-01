@@ -62,7 +62,7 @@ try{
   $commands=''
   foreach($b in $c.bots){
    $xyz=(@($b.position)|ForEach-Object {([double]$_).ToString('R',[Globalization.CultureInfo]::InvariantCulture)}) -join ' '
-   $commands+=" +wb_probe_spawn $xyz +wb_bot_start"
+   $commands+=" +wb_probe_spawn $xyz normal universal +wb_bot_start"
   }
   if($c.kind -eq 'jump'){$commands+=" +wb_select 1 +wb_bot_jump $($c.jump_mode) 2"}
   $password=[guid]::NewGuid().ToString('N')

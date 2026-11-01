@@ -104,7 +104,10 @@ def analyze(path, case):
         mode = 1 if case['jump_mode']=='strength' else 0
         jump = next((e for e in d['events'] if e['kind']=='jump' and e['actor']==actor
                      and 1.5 <= e['t']-start <= 3.5 and e['value']==mode), None)
-        land = next((e for e in d['events'] if jump and e['kind'] == 'land' and e['actor'] == jump['actor'] and e['t'] > jump['t']), None)
+        # A death or revive ends this jump, so a later landing belongs to another life.
+        ended = min((e['t'] for e in d['events'] if jump and e['t'] > jump['t'] and
+                     e['actor'] == actor and e['kind'] in ('kill', 'revive')), default=math.inf)
+        land = next((e for e in d['events'] if jump and e['kind'] == 'land' and e['actor'] == jump['actor'] and jump['t'] < e['t'] < ended), None)
         result['outcome'] = 'landed' if land else 'not_completed'
         result['jump_mode'] = case['jump_mode']; result['scope'] = 'native vertical jump; not an off-mesh link test'
         result['requested_jump_observed'] = jump is not None
