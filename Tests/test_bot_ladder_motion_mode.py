@@ -26,7 +26,8 @@ struct Manager {bool owns=true;bool Owns(unsigned){return owns;}};
 struct Game {Manager mgr;Manager& GetBotManager(){return mgr;}} game,*g_pGame=&game;
 namespace WarsBots {struct BotConfig {int ladder=1;static BotConfig& Get(){static BotConfig c;return c;}};}
 struct Player {
- bool m_warsBotPose=true,bot=true;
+ bool m_warsBotPose=true,bot=true,missing=false;
+ bool NeedsWarsBotLadderPhysicsExit(){return missing;}
  struct Stats {Coherent isOnLadder;bool isExitingLadder=true;} m_stats;
  bool IsWarsBotActor(){return bot;} unsigned GetEntityId(){return 7;}
  int Mode(){struct {int flags=eACF_PerAnimGraph;} params;
@@ -36,6 +37,7 @@ struct Player {
 int main(){
  Player p;
  if(p.Mode()!=eACF_PerAnimGraph){std::puts("FAIL: owned native exit lost graph motion");return 1;}
+ p.missing=true;if(p.Mode()!=eACF_AlwaysPhysics)return 10;p.missing=false;
  p.m_stats.isExitingLadder=false;if(p.Mode()!=eACF_AlwaysPhysics)return 2;
  p.m_stats.isExitingLadder=true;p.m_stats.isOnLadder.v=false;if(p.Mode()!=eACF_AlwaysPhysics)return 3;
  p.m_stats.isOnLadder.v=true;WarsBots::BotConfig::Get().ladder=0;if(p.Mode()!=eACF_AlwaysPhysics)return 4;

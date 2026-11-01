@@ -15,6 +15,7 @@
 #include "CryGame/Bots/BotLog.h"
 #include "CryCommon/CryAnimation/ICryAnimation.h"
 #include <cstring>
+#include <cmath>
 #endif
 #include "CryCommon/CryGame/GameUtils.h"
 #include "CryGame/Game.h"
@@ -1583,6 +1584,107 @@ void CPlayerMovement::ProcessTurning()
 //-----------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------
 
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+// Server authority for a missing animation asset, not an animation/position emulation. Native ladder frame,
+// full current collider clearance, a real upper-floor landing and ordinary physics requests only.
+void CPlayerMovement::ProcessWarsBotLadderPhysicsExit(CPlayer& player, bool& landed)
+{
+	landed=false;
+	if (!player.NeedsWarsBotLadderPhysicsExit()) return;
+	m_request.type=eCMT_Fly; m_request.velocity.zero(); // a refused step holds; never reuse old climb velocity
+	IPhysicalEntity* physics=player.GetEntity()->GetPhysics();
+	if (!physics || !gEnv->pPhysicalWorld || !std::isfinite(m_frameTime) || m_frameTime<=0.f) return;
+	const Vec3 feet=player.GetEntity()->GetWorldPos();
+	const Vec3 top=m_stats.ladderTop, bottom=m_stats.ladderBottom;
+	Vec3 axis=top-bottom;
+	if (!axis.IsValid() || axis.len()<4.f) return;
+	axis.Normalize();
+	if (!feet.IsValid() || !top.IsValid() || !bottom.IsValid() || axis.z<0.95f) return;
+	if ((feet-bottom-axis*((feet-bottom).Dot(axis))).len()>2.5f || feet.z<top.z-3.f || feet.z>top.z+0.75f) return;
+	pe_player_dimensions dimensions;
+	if (!physics->GetParams(&dimensions) || !dimensions.sizeCollider.IsValid() ||
+		!std::isfinite(dimensions.heightCollider) || !std::isfinite(dimensions.heightPivot)) return;
+	if (dimensions.bUseCapsule!=0 && dimensions.bUseCapsule!=1) return;
+	const float radius=max(dimensions.sizeCollider.x,dimensions.sizeCollider.y);
+	if (radius<0.1f || radius>0.75f || dimensions.sizeCollider.z<0.f || dimensions.sizeCollider.z>1.5f ||
+		dimensions.heightCollider-dimensions.heightPivot<0.1f || dimensions.heightCollider-dimensions.heightPivot>2.f) return;
+	IPhysicalEntity* skip[]={physics};
+	const int collisionFlags=geom_colltype0|geom_colltype_player; // documented any-of part flags: static geometry AND player blockers
+	const int floorMask=ent_static|ent_terrain|ent_rigid|ent_sleeping_rigid;
+	const int mask=floorMask|ent_living;
+	Vec3 landing;
+	if (!player.GetWarsBotLadderExitTarget(landing))
+	{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=no_link_landing.",player.GetEntityId()); return; }
+	const float landingSide=Vec3(landing.x-top.x,landing.y-top.y,0).len();
+	if (!landing.IsValid() || landingSide<0.6f || landingSide>2.f || fabs_tpl(landing.z-top.z)>1.2f) return;
+	float floorZ=0.f;
+	// Require support across the landing footprint, never a single ray over a ledge.
+	const Vec3 offsets[]={Vec3(0,0,0),Vec3(radius,0,0),Vec3(-radius,0,0),Vec3(0,radius,0),Vec3(0,-radius,0)};
+	for (int i=0;i<5;++i)
+	{
+		ray_hit floor;
+		const int hits=gEnv->pPhysicalWorld->RayWorldIntersection(landing+offsets[i]+Vec3(0,0,0.5f),Vec3(0,0,-2.f),floorMask,
+			rwi_stop_at_pierceable|(collisionFlags<<rwi_colltype_bit),&floor,1,skip,1);
+		if (!hits || !floor.n.IsValid() || floor.n.z<0.75f || !floor.pt.IsValid() || floor.pt.z<top.z-1.2f || floor.pt.z>top.z+0.25f || fabs_tpl(floor.pt.z-landing.z)>0.25f)
+		{
+			WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=floor sample=%d hits=%d floor=%.3f normal=%.3f top=%.3f target=(%.3f,%.3f).",
+				player.GetEntityId(),i,hits,hits?floor.pt.z:-10000.f,hits?floor.n.z:0.f,top.z,landing.x,landing.y);
+			return;
+		}
+		if (!i) floorZ=floor.pt.z;
+		else if (fabs_tpl(floor.pt.z-floorZ)>0.12f)
+		{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=uneven_floor sample=%d center=%.3f edge=%.3f.",player.GetEntityId(),i,floorZ,floor.pt.z); return; }
+	}
+	const bool egress=WarsBots::NativeLadderExitPhysicalReady(
+		WarsBots::LVec{feet.x,feet.y,feet.z},WarsBots::LVec{bottom.x,bottom.y,bottom.z},WarsBots::LVec{top.x,top.y,top.z});
+	if (egress && player.WarsBotLadderExitSettling() && player.GetAnimatedCharacter()
+		&& player.GetAnimatedCharacter()->GetPhysicalColliderMode()==eColliderMode_Pushable && m_stats.onGround>0.01f && fabs_tpl(feet.z-floorZ)<0.12f
+		&& Vec3(feet.x-landing.x,feet.y-landing.y,0).len()<0.15f)
+	{
+		ray_hit support;
+		landed=gEnv->pPhysicalWorld->RayWorldIntersection(feet+Vec3(0,0,0.15f),Vec3(0,0,-0.3f),floorMask,
+			rwi_stop_at_pierceable|(collisionFlags<<rwi_colltype_bit),&support,1,skip,1)>0 && support.n.z>=0.75f &&
+			fabs_tpl(support.pt.z-floorZ)<0.08f;
+		if (landed) return;
+	}
+	Vec3 delta;
+	const char* phase;
+	if (feet.z<floorZ+0.04f && (feet-bottom-axis*((feet-bottom).Dot(axis))).len()<0.35f)
+	{
+		phase="rise"; delta=axis*((floorZ+0.06f-feet.z)/axis.z);
+	}
+	else
+	{
+		phase="egress"; delta=Vec3(landing.x-feet.x,landing.y-feet.y,0.f);
+	}
+	const float dt=min(m_frameTime,0.05f), speed=1.7f;
+	if (delta.len()>speed*dt) delta=delta.GetNormalized()*speed*dt;
+	primitives::capsule body;
+	body.axis=Vec3(0,0,1); body.r=radius; body.hh=dimensions.sizeCollider.z;
+	body.center=feet+Vec3(0,0,dimensions.heightCollider-dimensions.heightPivot);
+	geom_contact* contact=nullptr;
+	const int type=dimensions.bUseCapsule?primitives::capsule::type:primitives::cylinder::type;
+	const float overlap=gEnv->pPhysicalWorld->PrimitiveWorldIntersection(type,&body,Vec3(0,0,0),mask,&contact,
+		0,collisionFlags,nullptr,nullptr,0,skip,1);
+	if (!std::isfinite(overlap) || overlap>0.f)
+	{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=overlap hits=%.3f radius=%.3f half=%.3f center=(%.3f,%.3f,%.3f) floor=%.3f phase=%s.",player.GetEntityId(),overlap,radius,body.hh,body.center.x,body.center.y,body.center.z,floorZ,phase); return; }
+	if (delta.len()>0.001f)
+	{
+		const float hit=gEnv->pPhysicalWorld->PrimitiveWorldIntersection(type,&body,delta,mask,&contact,
+			0,collisionFlags,nullptr,nullptr,0,skip,1);
+		if (!std::isfinite(hit) || hit>0.f)
+		{ WB_LOG(2,"[WarsBots] LADDER PHYSICAL blocked actor=%u reason=sweep hit=%.3f radius=%.3f half=%.3f center=(%.3f,%.3f,%.3f) delta=(%.3f,%.3f,%.3f) phase=%s.",player.GetEntityId(),hit,radius,body.hh,body.center.x,body.center.y,body.center.z,delta.x,delta.y,delta.z,phase); return; }
+	}
+	player.SetWarsBotLadderExitPhysics(true,false); // ordinary world-colliding mode; stock leave/cancel restores it
+	if (!player.GetAnimatedCharacter() || player.GetAnimatedCharacter()->GetPhysicalColliderMode()!=eColliderMode_Pushable) return;
+	m_request.velocity=delta/m_frameTime; // swept displacement matches the full real frame, including a slow frame
+	if (phase[0]=='e' && delta.len()<0.04f)
+	{ m_request.type=eCMT_Normal; player.SetWarsBotLadderExitPhysics(true,true); } // let gravity settle onto verified floor
+	WB_LOG(2,"[WarsBots] LADDER PHYSICAL actor=%u phase=%s floor=%.3f target=(%.3f,%.3f) radius=%.3f half=%.3f velocity=(%.3f,%.3f,%.3f).",
+		player.GetEntityId(),phase,floorZ,landing.x,landing.y,radius,body.hh,m_request.velocity.x,m_request.velocity.y,m_request.velocity.z);
+}
+#endif
+
 void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 {
 
@@ -1623,6 +1725,34 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 					if (name && std::strcmp(name,"PseudoSpeed")==0) graphPseudo=pAGState->GetInputAsFloat(id);
 				}
 				ICharacterInstance* character = player.GetEntity()->GetCharacter(0);
+
+				// C154: an accepted Signal is not proof that the installed actor can select/play its clip.
+				// Read the live inputs and FIFO without forcing a state, loading an animation or changing motion.
+				char action[256]={}, stance[256]={}, item[256]={};
+				if (pAGState)
+				{
+					const auto readInput=[&](const char* key,char* value) {
+						const auto id=pAGState->GetInputId(key);
+						const char* name=pAGState->GetInputName(id);
+						if (name && std::strcmp(name,key)==0) pAGState->GetInput(id,value);
+					};
+					readInput("Action",action); readInput("Stance",stance); readInput("Item",item);
+				}
+				IAnimationSet* animationSet=character?character->GetIAnimationSet():nullptr;
+				ISkeletonAnim* skeleton=character?character->GetISkeletonAnim():nullptr;
+				const int exitClip=animationSet?animationSet->GetAnimIDByName("relaxed_ladderOffTop_nw_01"):-1;
+				const int fifo=skeleton?skeleton->GetNumAnimsInFIFO(0):0;
+				int fifoClip=-1; float fifoTime=-1.f;
+				if (fifo>0)
+				{
+					const CAnimation& animation=skeleton->GetAnimFromFIFO(0,fifo-1);
+					fifoClip=animation.m_LMG0.m_nAnimID[0]; fifoTime=animation.m_fAnimTime;
+				}
+				const char* fifoName=animationSet&&fifoClip>=0?animationSet->GetNameByAnimID(fifoClip):nullptr;
+				WB_LOG(2,"[WarsBots] LADDER EXIT INPUTS actor=%u action=%s stance=%s item=%s animationSet=%d exitClip=%d fifo=%d fifoClip=%d fifoName=%s fifoTime=%.3f model=%s.",
+					player.GetEntityId(),action,stance,item,animationSet?1:0,exitClip,fifo,fifoClip,fifoName?fifoName:"<none>",fifoTime,
+					character?character->GetFilePath():"<none>");
+
 				WB_LOG(2,"[WarsBots] LADDER EXIT actor=%u graph=%d output=%d active=%d state=%s held=%d signal=%s pseudo=%.2f upd=%d motionFlags=%u pos=(%.3f,%.3f,%.3f).",
 					player.GetEntityId(),pAGState?1:0,warsBotHasOutput?int(static_cast<unsigned char>(warsBotOutput)):-1,
 					pAGState&&pAGState->GetAnimationActivation()?1:0,
@@ -1643,6 +1773,13 @@ void CPlayerMovement::ProcessMovementOnLadder(CPlayer& player)
 				// The stock graph has OnLadder=1 only in ladder states; completion may return its empty default.
 				// Empty is never completion by itself: require the same real physical egress as literal 0.
 				if (warsBotOutput && warsBotOutput!='0' && warsBotOutput!='1') return;
+				if (player.NeedsWarsBotLadderPhysicsExit())
+				{
+					bool landed=false;
+					ProcessWarsBotLadderPhysicsExit(player,landed);
+					if (landed) player.RequestLeaveLadder(CPlayer::eLAT_ReachedEnd);
+					return;
+				}
 				if (warsBotOutput!='1')
 				{
 					const Vec3 feet=player.GetEntity()->GetWorldPos();
