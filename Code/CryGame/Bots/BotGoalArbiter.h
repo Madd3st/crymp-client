@@ -30,7 +30,7 @@ struct ArbiterInput {
 	bool  damagedRecently = false; // took damage within the last ~0.5 s
 	bool  weaponGoalAvailable = false; // a reachable weapon worth taking exists
 	float weaponGoalDistance = 1e9f;   // m
-	float weaponGoalValue = 0.f;   // 0..1, tier of the best reachable weapon (SCAR = 1)
+	float weaponGoalValue = 0.f;   // 0..1, tier of the best reachable weapon (FY71 = 1)
 	float heldWeaponValue = 0.f;   // 0..1, tier of the held weapon (pistol ~0.1)
 };
 

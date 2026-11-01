@@ -1,4 +1,4 @@
-// DS-049 #3: PS-2 revive buying. Engine-free chooser: one primary by style/skill/range preference, then cheap ammo.
+// DS-049 #3: PS-2 revive buying. Engine-free chooser: FY71 when affordable, else one cheaper primary by style/range, then cheap ammo.
 // Prices/ids are the stock PowerStruggleBuying buyList (SCAR 150, FY71 125, shotgun 50, DSG1 200, Gauss 600;
 // ammo 5/10, Gauss 50). The engine adapter calls the server-side Lua `WarsBotsBuy` only, never SvBuy/RMI.
 #pragma once
@@ -18,7 +18,7 @@ struct PsBuyInput
 
 struct PsBuyPlan
 {
-    const char* primary = nullptr;   // buyList id: shotgun / smg
+    const char* primary = nullptr;   // buyList id: fy71 / smg / shotgun
     int primaryPrice = 0;
     const char* laser = nullptr;     // "lam" (LAMRifle attachment)
     int laserPrice = 0;
@@ -30,15 +30,17 @@ struct PsBuyPlan
     bool armorMode = true;           // PS has no armor item; the free suit mode is set on revive
 };
 
-// C-136 (owner, ESL experience 27.10): the first money always goes to a shotgun or an SMG with a laser, plus ammo;
-// nobody stays with the pistol. Shotgun for close/aggressive styles (assault, flanker, hunter) or short preferred
-// range, SMG otherwise; SMG falls back to the shotgun when PP is short. Laser if 25 PP remain, ammo with the rest.
+// Owner D-032 (01.11): the FY71 is every style's first choice once 125 PP are there. Below that C-136 (owner, ESL
+// experience 27.10) still applies, so nobody stays with the pistol: shotgun for close/aggressive styles (assault,
+// flanker, hunter) or short preferred range, SMG otherwise; SMG falls back to the shotgun when PP is short. The stock
+// START of 100 PP lands here: the FY71 comes on a later life. Laser if 25 PP remain, ammo with the rest.
 inline PsBuyPlan ChoosePsBuy(const PsBuyInput& in)
 {
     PsBuyPlan p;
     if (in.hasPrimary || in.pp < 50) return p;   // one primary per life; C-139: alive in a buy zone too
     const bool close = in.style == 1 || in.style == 3 || in.style == 5 || in.preferredRange < 12.f;
-    if (!close && in.pp >= 75) { p.primary = "smg"; p.primaryPrice = 75; p.ammo = "smgbullet"; p.ammoPrice = 5; }
+    if (in.pp >= 125) { p.primary = "fy71"; p.primaryPrice = 125; p.ammo = "fybullet"; p.ammoPrice = 5; }
+    else if (!close && in.pp >= 75) { p.primary = "smg"; p.primaryPrice = 75; p.ammo = "smgbullet"; p.ammoPrice = 5; }
     else { p.primary = "shotgun"; p.primaryPrice = 50; p.ammo = "shotgunshell"; p.ammoPrice = 5; }
     p.buyPrimary = in.pp >= p.primaryPrice;
     int left = in.pp - (p.buyPrimary ? p.primaryPrice : 0);
