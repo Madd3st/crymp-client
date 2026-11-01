@@ -940,7 +940,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 		if (BotConfig::Get().psVehicles==1 && UpdatePSInteract(bot,actor,decisionTime)) return;
 		// C-037 hearing: a gunshot 6..50 m away that nobody can see is worth a look - roam toward it for a while.
 		Vec3 heard;
-		if (BotConfig::Get().botPerception==1 && m_combat.Heard(m_now,4.0f,heard) &&
+		if (BotConfig::Get().botPerception==1 && m_vantage.Phase()!=VantagePhase::Travel && m_combat.Heard(m_now,4.0f,heard) &&
 			(heard-feet).GetLengthSquared2D()>36.0f && (heard-feet).GetLengthSquared2D()<2500.0f &&
 			(heard-m_patrolGoal).GetLengthSquared2D()>25.0f)
 		{
