@@ -68,6 +68,45 @@ int main()
 		in = At(2.5f, -1, 0, 0, true, 0); in.energy = 200; in.strengthActive = true; o = L.Update(in);
 		assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::NoTakeoff);
 	}
+	// 8. Steelmill roof landing: multi-tier roof/catwalk landing within landDzStrength (e.g. z=151.91 vs 150.04, dz=1.87 m)
+	// succeeds for Strength jumps, and long air flights (> 0.6 s) do not prematurely trigger MissedLanding on touchdown.
+	{
+		const JVec roofA{1340.64f, 1351.55f, 151.84f}, roofB{1332.83f, 1346.08f, 150.04f};
+		BotJumpLink L; L.Start(0, LinkMove::Strength, roofA, roofB);
+		LinkInput in = At(0, 1340.f, 1351.f, 151.84f, true, 4.f); in.energy = 180; in.strengthActive = true;
+		LinkOutput o = L.Update(in);
+		assert(o.phase == LinkPhase::Act);
+		// Air flight of 1.9s (t = 0.2 to 2.1)
+		o = L.Update(At(0.2f, 1338.f, 1349.f, 154.5f, false)); assert(o.phase == LinkPhase::Air);
+		o = L.Update(At(1.5f, 1336.f, 1348.f, 153.5f, false)); assert(o.phase == LinkPhase::Air);
+		// Touchdown at t=2.1s (1.9s after entering Air): landed on roof deck z=151.91, 1.58 m from B in 2D
+		in = At(2.1f, 1334.28f, 1346.72f, 151.91f, true); in.speed = 3.5f;
+		o = L.Update(in);
+		assert(o.phase == LinkPhase::Done && !L.Active()); // dz=1.87 m <= 2.5 m -> Done
+
+		// Roll-in after touchdown: landing just outside landRadius (3.4 m) gives 0.6 s window to roll to B
+		BotJumpLink M; M.Start(0, LinkMove::Strength, roofA, roofB);
+		in = At(0, 1340.f, 1351.f, 151.84f, true, 4.f); in.energy = 180; in.strengthActive = true;
+		M.Update(in);
+		M.Update(At(0.2f, 1338.f, 1349.f, 154.5f, false));
+		// Touchdown at t=2.0s: landed 3.4 m away (outside 3.0 m radius)
+		in = At(2.0f, 1332.83f + 3.4f, 1346.08f, 150.04f, true);
+		o = M.Update(in);
+		assert(o.phase == LinkPhase::Air); // Still Air, waiting for roll or timeout
+		// At t=2.3s (0.3s after touchdown), rolled within 1.5 m of B
+		in = At(2.3f, 1332.83f + 1.5f, 1346.08f, 150.04f, true);
+		o = M.Update(in);
+		assert(o.phase == LinkPhase::Done && !M.Active());
+
+		// But if bot stays > 3.0 m away for > 0.6 s after touchdown, fails MissedLanding
+		BotJumpLink N; N.Start(0, LinkMove::Strength, roofA, roofB);
+		in = At(0, 1340.f, 1351.f, 151.84f, true, 4.f); in.energy = 180; in.strengthActive = true;
+		N.Update(in);
+		N.Update(At(0.2f, 1338.f, 1349.f, 154.5f, false));
+		N.Update(At(2.0f, 1332.83f + 3.4f, 1346.08f, 150.04f, true));
+		o = N.Update(At(2.7f, 1332.83f + 3.4f, 1346.08f, 150.04f, true)); // 0.7s after landing
+		assert(o.phase == LinkPhase::Failed && o.fail == LinkFail::MissedLanding);
+	}
 	std::puts("BotJumpLinkTests OK");
 	return 0;
 }
