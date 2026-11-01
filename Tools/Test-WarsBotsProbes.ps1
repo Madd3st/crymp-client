@@ -14,7 +14,9 @@ param(
 $ErrorActionPreference='Stop'
 $repo=Split-Path $PSScriptRoot -Parent
 $build=(Resolve-Path ([IO.Path]::Combine($repo,$BuildDirectory))).Path
-$m=Get-Content (Join-Path $build 'claude-build.json') -Raw|ConvertFrom-Json
+$manifestPath=Join-Path $build 'claude-build.json'
+if(-not(Test-Path $manifestPath)){$manifestPath=Join-Path $build 'ci-build.json'}
+$m=Get-Content $manifestPath -Raw|ConvertFrom-Json
 $exe=Join-Path $build 'CryMP-Server64.exe'
 if($m.data_layout -ne 'local-v1' -or -not $m.sha.StartsWith($ExpectedSource) -or (Get-FileHash $exe).Hash -ne $m.server){throw 'Frozen source/EXE mismatch'}
 function GameActive {Get-Process CryMP-Server64,CryMP-Client64 -ErrorAction SilentlyContinue}
