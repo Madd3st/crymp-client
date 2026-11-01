@@ -1,4 +1,5 @@
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotSniperReach.h"
 #include "DetourNavMesh.h"
 #include "DetourNavMeshQuery.h"
 #include "DetourCommon.h"
@@ -313,6 +314,9 @@ int NavMeshCore::LoadLinkKinds(const char* text)
 				for (const L& l : lines)   // DS-005: a bidirectional link may be stored b->a
 					if (l.kind > -2 && ((close(l.a, a) && close(l.b, b)) || (close(l.a, b) && close(l.b, a)))) { k = l.kind; break; }
 			}
+			// DS-046: align planner with BotJumpLink executor (links above MaxStrengthLinkRise() cannot land -> keep disabled).
+			const float rise = (con.flags & DT_OFFMESH_CON_BIDIR) ? std::fabs(b[2] - a[2]) : (b[2] - a[2]);
+			if (k == NavLinkStrength && rise > MaxStrengthLinkRise()) k = -1;
 			// links without a known kind (Armada lift/ladder movers from the scene) get a flag no mask ever includes
 			m_mesh->setPolyFlags(base | dtPolyRef(con.poly), k < 0 ? (unsigned short)0x4000 : NavLinkFlag(k));
 			if (k >= 0) ++set;
