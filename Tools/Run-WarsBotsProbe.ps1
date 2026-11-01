@@ -66,10 +66,11 @@ function Invoke-ProbeProcess([string]$tag,[bool]$withSetup) {
  if((Get-FileHash -LiteralPath $exe).Hash -ne $manifest.server){throw 'Frozen EXE changed'}
  ${unique}='Probe-'+$spec.id+'-'+[guid]::NewGuid().ToString('N').Substring(0,8)+'-'+$tag
  $log=Join-Path $out ($unique+'.log');$trace=$log -replace '\.log$','.bots.log';$traceSource=Join-Path (Join-Path $env:LOCALAPPDATA 'WarsBots/Logs') ($unique+'.bots.log');$p=$null;$joined=$false
+ $password=[guid]::NewGuid().ToString('N')
  # CryEngine serializes +map before subsequent console commands, as Test-WarsBotsTactics does.
  # Wait for the loaded-level marker before timing; settings were validated in a separate no-actor process.
  $commands=$sets+$queries;if($withSetup){$commands+=$setup}
- $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_port $Port +sv_gamerules InstantAction +map $($spec.map)$commands"
+ $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_password $password +sv_port $Port +g_minplayerlimit 0 +sv_gamerules InstantAction +map $($spec.map)$commands"
  [IO.File]::WriteAllText((Join-Path $out ($tag+'-arguments.txt')),$args)
  try{
   $p=Start-Process -FilePath $exe -ArgumentList $args -WorkingDirectory $GameDirectory -WindowStyle Hidden -PassThru
