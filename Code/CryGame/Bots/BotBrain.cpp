@@ -959,7 +959,8 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 				WB_LOG(2, "[WarsBots] #%d HEARD gunshot at (%.1f,%.1f,%.1f), investigating.", m_number, heard.x, heard.y, heard.z);
 			}
 		}
-		if (m_now >= m_patrolUntil || (m_patrolGoal-feet).GetLengthSquared2D() < 4.0f)
+		if (m_vantage.Phase() != VantagePhase::Travel &&
+			(m_now >= m_patrolUntil || (m_patrolGoal-feet).GetLengthSquared2D() < 4.0f))
 		{
 			// Roam between the map's IA spawn points (public map knowledge, like a human's),
 			// in a per-bot order. After a blocked leg, one short local detour leg; SafeStep gates every move.
