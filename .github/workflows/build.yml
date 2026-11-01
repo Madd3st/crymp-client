@@ -29,6 +29,7 @@ jobs:
     runs-on: windows-2022
     env:
       BUILD_DIR: ${{ github.workspace }}\Build${{ inputs.bits }}
+      HAS_CODE_SIGNING_KEY: ${{ secrets.CODE_SIGNING_API_KEY != '' }}
     outputs:
       artifact_name: ${{ steps.build.outputs.artifact_name }}
     steps:
@@ -55,14 +56,16 @@ jobs:
           'artifact_name=CryMP-Client${{ inputs.bits }}-' + $version + '${{ inputs.suffix }}' >> $env:GITHUB_OUTPUT
 
       - name: Sign
-        # skip code signing in PRs from forked repositories due to missing secrets
-        if: github.secret_source == 'Actions'
+        # Signing is available only when this repository supplies the signing key.
+        if: env.HAS_CODE_SIGNING_KEY == 'true'
+        env:
+          CODE_SIGNING_API_KEY: ${{ secrets.CODE_SIGNING_API_KEY }}
         run: |
           Get-ChildItem -Path '${{ env.BUILD_DIR }}' | Where-Object { $_.Extension -eq '.exe' } | ForEach-Object {
             $checksum = (Get-FileHash -Path $_.FullName -Algorithm SHA256).Hash.ToLower()
             $timestamp = [DateTimeOffset]::Now.ToUnixTimeSeconds()
             $hmac = New-Object System.Security.Cryptography.HMACSHA256
-            $hmac.key = [Text.Encoding]::ASCII.GetBytes('${{ secrets.CODE_SIGNING_API_KEY }}')
+            $hmac.key = [Text.Encoding]::ASCII.GetBytes($env:CODE_SIGNING_API_KEY)
             $token = $hmac.ComputeHash([Text.Encoding]::ASCII.GetBytes("${checksum}:${timestamp}"))
             $uri = 'https://prophet.comrade.one/api/v1/sign'
             $form = @{

@@ -744,6 +744,8 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 		if (m_now >= m_nextSearch && !m_weaponTarget)
 		{
 			Change(State::SEEKING_WEAPON);
+			// R4: each new bounded map search owns its budget, independent of life age.
+			m_weaponSearchStarted = m_now;
 			m_weaponTarget = BotWeapons::FindNearby(actor, 30.0f, m_previousWeaponClass, m_life, false, nullptr, 0, 20.f, BotConfig::Get().firstPrimary==1);
 			m_nextSearch = m_now + 2.0f;
 		}
@@ -776,6 +778,8 @@ bool BotBrain::UpdateWeaponSeek(CPlayer& actor,float decisionTime,bool socomQA)
 	}
 
 
+	// A usable weapon (including an external rearm) ends the previous pickup search.
+	m_weaponTarget = 0;
     return false;
 }
 
