@@ -46,6 +46,7 @@ public:
 	const char* StateName() const;
 	int PSBuys() const { return m_psBuys; }
 	EntityId Target() const { return m_combat.Target(); }
+	bool YieldLadderTo(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const;
     // Read-only diagnostic snapshot, consumed after this instance's decision tick.
     unsigned DecisionSerial()const{return m_decisionSerial;}
     const BotIntent& Intent()const{return m_intent;}

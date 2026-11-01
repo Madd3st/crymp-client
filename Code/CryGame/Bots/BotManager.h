@@ -41,6 +41,7 @@ public:
 	bool Owns(EntityId id) const;
 	BotInstance* Find(EntityId id) const;
 	bool AIEnabled(EntityId id) const;
+	bool ShouldYieldLadder(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const;
 	bool IsCreatingActor(const char* entityName) const;
 	bool IsOwnedProjectileHit(const HitInfo& hit) const;
 	void TraceHit(const char* phase, const HitInfo& hit);
