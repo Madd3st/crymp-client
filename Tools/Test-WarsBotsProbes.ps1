@@ -66,7 +66,7 @@ try{
   }
   if($c.kind -eq 'jump'){$commands+=" +wb_select 1 +wb_bot_jump $($c.jump_mode) 2"}
   $password=[guid]::NewGuid().ToString('N')
-  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_password $password +sv_port $Port +sv_gamerules InstantAction +map multiplayer/ia/$($c.map) +wb_probe_local_test 1 +wb_demo_record 1 +wb_demo_hz 20 +wb_bot_pace 1 +wb_spawn_exclude195 1 +wb_revive_guard 1 +wb_reachable_goals 0 +wb_trap_recovery 1 +wb_physics_diagnostics 1 +wb_move_trace 1 +wb_debug 1 +wb_maxbots 2$commands +wb_list"
+  $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_password $password +sv_port $Port +g_minplayerlimit 64 +sv_gamerules InstantAction +map multiplayer/ia/$($c.map) +wb_probe_local_test 1 +wb_demo_record 1 +wb_demo_hz 20 +wb_bot_pace 1 +wb_spawn_exclude195 1 +wb_revive_guard 1 +wb_reachable_goals 0 +wb_trap_recovery 1 +wb_physics_diagnostics 1 +wb_move_trace 1 +wb_debug 1 +wb_maxbots 2$commands +wb_list"
   Write-Host "PROBE START $($c.id) sha=$($m.sha)"
   $p=Start-Process $exe -ArgumentList $args -WorkingDirectory $GameDirectory -WindowStyle Hidden -PassThru
   $deadline=[DateTime]::UtcNow.AddSeconds(60);$text='';$ready=$false
@@ -86,6 +86,7 @@ try{
   if(-not $p.HasExited){Stop-Process -Id $p.Id};$null=$p.WaitForExit(15000);$p.Dispose();$p=$null
   $text=Get-Content $trace -Raw;$engine=Get-Content $log -Raw
   Copy-Item $log (Join-Path $caseDir 'server.log');Copy-Item $trace (Join-Path $caseDir 'server.bots.log')
+  if($text -match 'Game reset:'){throw 'Match restart discarded the probe setup'}
   $match=[regex]::Match($text,'DEMO START path=(.+?) version=2 hz=20')
   if(-not $match.Success){throw 'Expected demo path missing'}
   $demoPath=$match.Groups[1].Value

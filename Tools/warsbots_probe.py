@@ -96,7 +96,8 @@ def analyze(path, case):
                    and d['strings'].get(int(e['value'])) == wanted['class']]
         result['expected_item'] = wanted
         result['outcome'] = 'reached' if pickups else 'not_reached'
-        result['first_expected_pickup_s'] = pickups[0]['t'] if pickups else None
+        start = min((b['t'] for b in d['brain'] if pickups and b['id'] == pickups[0]['actor']), default=d['frames'][0][0])
+        result['first_expected_pickup_s'] = pickups[0]['t'] - start if pickups else None
     if case['kind'] == 'jump':
         # Match the explicitly queued2s jump, not an unrelated later travel jump.
         actor = next(a for a,v in d['actors'].items() if v['kind']=='bot')

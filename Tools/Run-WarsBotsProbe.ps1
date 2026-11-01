@@ -70,7 +70,7 @@ function Invoke-ProbeProcess([string]$tag,[bool]$withSetup) {
  # CryEngine serializes +map before subsequent console commands, as Test-WarsBotsTactics does.
  # Wait for the loaded-level marker before timing; settings were validated in a separate no-actor process.
  $commands=$sets+$queries;if($withSetup){$commands+=$setup}
- $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_password $password +sv_port $Port +g_minplayerlimit 0 +sv_gamerules InstantAction +map $($spec.map)$commands"
+ $args="-dir `"$GameDirectory`" -headless -logfile `"$log`" +sv_bind 127.0.0.1 +sv_lanonly 1 +sv_password $password +sv_port $Port +g_minplayerlimit 64 +sv_gamerules InstantAction +map $($spec.map)$commands"
  [IO.File]::WriteAllText((Join-Path $out ($tag+'-arguments.txt')),$args)
  try{
   $p=Start-Process -FilePath $exe -ArgumentList $args -WorkingDirectory $GameDirectory -WindowStyle Hidden -PassThru
@@ -111,6 +111,7 @@ function Metrics-FromTrace([string]$file){
  foreach($match in [regex]::Matches($text,'PROBE ITEM (\w+) id=(\d+)')){$ids[[int]$match.Groups[2].Value]=$match.Groups[1].Value}
  foreach($match in [regex]::Matches($text,'(?m)^([\d.]+).*REAL PICKUP actor=\d+ item=(\d+) acquired=1')){$class=$ids[[int]$match.Groups[2].Value];if($class -and -not $m.Contains('pickup:'+$class)){$m['pickup:'+$class]=[double]$match.Groups[1].Value-$t0}}
  foreach($match in [regex]::Matches($text,'#(\d+) combat kill')){$key='kills:'+$match.Groups[1].Value;if(-not $m.Contains($key)){$m[$key]=0};$m[$key]++}
+ if($text -match 'Game reset:'){throw 'Match restart discarded the probe setup'}
  if($text -match 'PROBE ITEM refused|PROBE ITEM \w+ id=0 |Teleport refused|AI start refused|Unknown command|Usage: wb_probe_item'){throw 'Setup refused/unsupported'}
  return $m
 }
