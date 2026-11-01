@@ -11,6 +11,16 @@ on:
   push:
     branches:
       - 'warsbots/feature/**'
+      - 'warsbots/dev'
+    paths:
+      - 'Code/**'
+      - 'Tests/**'
+      - 'ThirdParty/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/warsbots-ci.yml'
+  pull_request:
+    branches:
+      - 'warsbots/dev'
     paths:
       - 'Code/**'
       - 'Tests/**'
