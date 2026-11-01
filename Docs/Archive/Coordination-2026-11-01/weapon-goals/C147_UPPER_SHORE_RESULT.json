@@ -1,0 +1,192 @@
+{
+  "schema": "warsbots-run-summary/1",
+  "task": "C147",
+  "source": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "ci": 40649771503,
+  "code_review": "dd68f2ce",
+  "harness_review": "45d78996",
+  "data_sha256": "e2235993ce72eb4549788ad7bd1a171ab415c8e8b4c6da69fdb49ed941ef30de",
+  "trace_samples": 1199,
+  "first": {
+    "actor": 65481.0,
+    "t": 0.275,
+    "speed": 0.0,
+    "vz": -1.192,
+    "mode": 3.0,
+    "energy": 200.0,
+    "grounded": 1.0,
+    "flying": 1.0,
+    "jump": 0.0,
+    "land": 0.0,
+    "health": 100.0,
+    "swim": 0.0,
+    "waterZ": 99.5,
+    "relativeWater": 5.0,
+    "underwater": -0.21,
+    "pos": [
+      2111.875,
+      1882.5,
+      103.367
+    ]
+  },
+  "last": {
+    "actor": 65481.0,
+    "t": 299.791,
+    "speed": 1.076,
+    "vz": 0.055,
+    "mode": 0.0,
+    "energy": 200.0,
+    "grounded": 1.0,
+    "flying": 1.0,
+    "jump": 0.0,
+    "land": 0.0,
+    "health": 100.0,
+    "swim": 1.0,
+    "waterZ": 99.53,
+    "relativeWater": -0.0,
+    "underwater": -229.46,
+    "pos": [
+      2115.825,
+      1615.31,
+      98.101
+    ]
+  },
+  "link_events": [
+    "0.93 [WarsBots] #2 LINK start kind=strength a=(2110.56,1885.58,103.21) b=(2113.98,1885.51,106.04) energy=191 actor=65481.",
+    "5.55 [WarsBots] #2 LINK done kind=strength at=(2114.53,1885.63,105.92) actor=65481."
+  ],
+  "capture_goals": [
+    "0.28 [WarsBots] #2 PS CAPTURE target=654 pos=(1794.5,1690.6,101.5) team=2 hold=0 actor=65481."
+  ],
+  "nav_fallback_count": 142,
+  "nav_fallback_reasons": {
+    "start_unprojected": 127,
+    "no_route": 14,
+    "other_component": 0,
+    "search_exhausted": 0
+  },
+  "water_samples": 1136,
+  "first_water": {
+    "actor": 65481.0,
+    "t": 14.027,
+    "speed": 4.83,
+    "vz": -2.189,
+    "mode": 3.0,
+    "energy": 100.6,
+    "grounded": 1.0,
+    "flying": 1.0,
+    "jump": 0.0,
+    "land": 0.0,
+    "health": 100.0,
+    "swim": 1.0,
+    "waterZ": 99.45,
+    "relativeWater": -0.45,
+    "underwater": -13.96,
+    "pos": [
+      2054.337,
+      1880.289,
+      97.566
+    ]
+  },
+  "dry_land_candidate": null,
+  "minimum_health": 100.0,
+  "restoration": {
+    "memory": {
+      "exact_names_and_hashes": true,
+      "expected": {
+        "Multiplayer_IA_Steelmill.mem": "e1b92da29b6c8fb74dc6412447161c126684cacba287035b8447ae8078233095",
+        "Multiplayer_IA_Steelmill.nav.json": "97f6f29357b12d0a675af083c45717406977c8d8a0a773f173e1dd57d7b3efde",
+        "Multiplayer_PS_Plantation.mem": "7c804b285a675426cd05daf2e67cf8f03f1f383b89d281b7defa963930b3f1f9",
+        "Multiplayer_PS_Shore.mem": "b3bff8dfb0930c0a78d84c2a85709705dfb08e14d6e202c98568cb298083ff39"
+      },
+      "actual": {
+        "Multiplayer_IA_Steelmill.mem": "e1b92da29b6c8fb74dc6412447161c126684cacba287035b8447ae8078233095",
+        "Multiplayer_IA_Steelmill.nav.json": "97f6f29357b12d0a675af083c45717406977c8d8a0a773f173e1dd57d7b3efde",
+        "Multiplayer_PS_Plantation.mem": "7c804b285a675426cd05daf2e67cf8f03f1f383b89d281b7defa963930b3f1f9",
+        "Multiplayer_PS_Shore.mem": "b3bff8dfb0930c0a78d84c2a85709705dfb08e14d6e202c98568cb298083ff39"
+      }
+    },
+    "nav": {
+      "exact_names_and_hashes": true,
+      "expected": {
+        "Armada.links.txt": "ce3326caf751661cf43f820560a390cc2ee5ee008c2d56e9e67d11cee7f34247",
+        "Armada.manifest.json": "5ed27f25f015095bd9ad11d9fe5888f61a7411f9dc17b17ad3722cc8c37fb861",
+        "Armada.navmesh": "87f0438cca0b531f6f227f83d640916afb93667802973e763333f73d78957590",
+        "Armada.spots.txt": "71ac48ed80c2068f6273868966362d1aefbebc0db5d34599cf0e121da53c1293",
+        "Outpost.links.txt": "0e6651a3da7536b5a20d3f1e9f81bc8ee588d0366d84e196c1e1b6dad0dc4d23",
+        "Outpost.manifest.json": "fa57ed4f696ce19334c2d447826e1b9d63de9a7425ef35927a547f7c43eef0e6",
+        "Outpost.navmesh": "944297ac9d51e5614b05401350df107a436b7606ff8174905057ba973468d18a",
+        "Outpost.spots.txt": "f041dbab3924403df302bdaf6169c180257cad8c49822bef044f6a980225e681",
+        "Quarry.links.txt": "2daa4f3ad189b0e90ffdb11312156c1b229cab67d6f49a20e642608e00d053e1",
+        "Quarry.manifest.json": "39bedf0452d93ca4982feb3434ba4c3c4342df3ba0c7ad42e6c1408725fdda2a",
+        "Quarry.navmesh": "3a2f6d50ffadf13238d80429e2269193857cc93eb9d7735574a131c4c7dc98e7",
+        "Quarry.spots.txt": "2a4e9c01df4f8653ab576c2695f1ffc3a2e72a9dbf7e5e355e1a3f0727a4addb",
+        "Steelmill.links.txt": "554072102e6e39797a4dd67754384106a2e297ff863f88ab8833d67f3c3d7c1b",
+        "Steelmill.manifest.json": "d0bedbaba64f76d43761205c22567790dd22f78039116af12df2fc8297bae2da",
+        "Steelmill.navmesh": "cfc11810626c6fa0859a055592e6c5ab12d12777f40f52aeb8c6208eefaf503b",
+        "Steelmill.spots.txt": "25c3eecf0699b9795bb214b322e9155b6bf5f207bc5e29e41479655a25cef4b5"
+      },
+      "actual": {
+        "Armada.links.txt": "ce3326caf751661cf43f820560a390cc2ee5ee008c2d56e9e67d11cee7f34247",
+        "Armada.manifest.json": "5ed27f25f015095bd9ad11d9fe5888f61a7411f9dc17b17ad3722cc8c37fb861",
+        "Armada.navmesh": "87f0438cca0b531f6f227f83d640916afb93667802973e763333f73d78957590",
+        "Armada.spots.txt": "71ac48ed80c2068f6273868966362d1aefbebc0db5d34599cf0e121da53c1293",
+        "Outpost.links.txt": "0e6651a3da7536b5a20d3f1e9f81bc8ee588d0366d84e196c1e1b6dad0dc4d23",
+        "Outpost.manifest.json": "fa57ed4f696ce19334c2d447826e1b9d63de9a7425ef35927a547f7c43eef0e6",
+        "Outpost.navmesh": "944297ac9d51e5614b05401350df107a436b7606ff8174905057ba973468d18a",
+        "Outpost.spots.txt": "f041dbab3924403df302bdaf6169c180257cad8c49822bef044f6a980225e681",
+        "Quarry.links.txt": "2daa4f3ad189b0e90ffdb11312156c1b229cab67d6f49a20e642608e00d053e1",
+        "Quarry.manifest.json": "39bedf0452d93ca4982feb3434ba4c3c4342df3ba0c7ad42e6c1408725fdda2a",
+        "Quarry.navmesh": "3a2f6d50ffadf13238d80429e2269193857cc93eb9d7735574a131c4c7dc98e7",
+        "Quarry.spots.txt": "2a4e9c01df4f8653ab576c2695f1ffc3a2e72a9dbf7e5e355e1a3f0727a4addb",
+        "Steelmill.links.txt": "554072102e6e39797a4dd67754384106a2e297ff863f88ab8833d67f3c3d7c1b",
+        "Steelmill.manifest.json": "d0bedbaba64f76d43761205c22567790dd22f78039116af12df2fc8297bae2da",
+        "Steelmill.navmesh": "cfc11810626c6fa0859a055592e6c5ab12d12777f40f52aeb8c6208eefaf503b",
+        "Steelmill.spots.txt": "25c3eecf0699b9795bb214b322e9155b6bf5f207bc5e29e41479655a25cef4b5"
+      }
+    }
+  },
+  "harness_error": null,
+  "verdict": "PARTIAL: upper Strength exit and sea entry PASS; dry shore FAIL at300s; water navigation fallback",
+  "errors": [],
+  "demo": {
+    "file": "Multiplayer_PS_Shore-20261028-155951-1.wbdemo",
+    "sha256": "4dbfcb6f9e787955609bbfe92ddfb1b586e79f28bd4204094a5b117434c74203",
+    "version": 2,
+    "frames": 5984,
+    "actors": {
+      "65481": {
+        "id": 65481,
+        "kind": "bot",
+        "name": "WarsBot_02 [Normal/Assault]",
+        "profile": "normal/assault"
+      }
+    },
+    "header": {
+      "build": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+      "flags": {
+        "wb_bot_aim_model": 1,
+        "wb_bot_arbiter": 1,
+        "wb_bot_look": 1,
+        "wb_bot_navmesh": 1,
+        "wb_bot_pace": 1,
+        "wb_bot_perception": 1,
+        "wb_bot_turn_cap": 1,
+        "wb_bot_weapon_rank": 1,
+        "wb_demo_hz": 20,
+        "wb_demo_record": 1,
+        "wb_move_trace": 1,
+        "wb_qa_socom_only": 0,
+        "wb_reachable_goals": 0,
+        "wb_revive_guard": 1,
+        "wb_spawn_exclude195": 1,
+        "wb_trap_recovery": 1
+      },
+      "hz": 20,
+      "map": "Multiplayer/PS/Shore",
+      "navmesh": "none",
+      "server": "c147-upper-shore-b06681ea-v1",
+      "started": "2026-10-28T15:59:51"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "task": "C154",
+  "source": "abac72a9a1eb02793a2f4ab2b1a72f7c243dd72e",
+  "ci": 40890940918,
+  "review": "ccbbe1cf402ba61f7c6c05b79b5553e55d9c3a56",
+  "package": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Preview-abac72a9",
+  "launcher_sha256": "b9f0672b81b99a54abba440779c1e4bcd901ff2db51e3544351067bdcff500d8",
+  "manifest_sha256": "ae018f394d657fbc68a1e5adc1a8e06a39137e2101ac183a721b4fee46af8526",
+  "scope": "DIAGNOSTIC OWNER VIEW ONLY",
+  "whole_route": "FAIL blocked_top14.45 feet97.920",
+  "physical_attempts_in_task": 4,
+  "client_visual": "NOT TESTED",
+  "runtime_launch": "OWNER ONLY; not automatically started",
+  "old_b8_package": "UNCHANGED",
+  "recovery": "same-process namespace snapshots, owned PID/start time, archive and restore on client exit"
+}

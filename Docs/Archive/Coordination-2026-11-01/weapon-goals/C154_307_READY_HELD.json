@@ -1,0 +1,43 @@
+{
+  "source": "307037bc08050d39f26310dc6cc7071dddddf4a6",
+  "ci": 40919291234,
+  "review": "4c710aca7a5543bc1c5a66005ef8a8e352792f6f",
+  "quality": {
+    "source": "307037bc08050d39f26310dc6cc7071dddddf4a6",
+    "ci": 40919291234,
+    "ci_success": true,
+    "ci_source_match": true,
+    "artifact_id": 12917623035,
+    "client_sha256": "d4a08fbd3216088a21125127a4cc87d4a4ab4d0f7347c98ce259abe2a35d7fe8",
+    "server_sha256": "bdd084af320a7bd5892f521a895742c1f0c2b07421ac468e1dff21d110303226",
+    "task": "C154",
+    "harness_scope": "c154-lower-route-v2",
+    "harness": "e973b90518daa58e83d4811952c0c8bd83f8217e",
+    "harness_sha256": "87c3f5ee79c5507e1952367edbf5b53d3ee3c211eb8de5614b67fef2ae24fbf4",
+    "analyzer_sha256": "2a642aebcfff2d10e119746b42f8e50f48a004d732f7aee106602b3e6fff88f7",
+    "data_hashes": {
+      "Shore.links.txt": "0230a0c3e59bb818888684012291ee39efaddb542917ac0bc5e02c8e13d32dcb",
+      "Shore.manifest.json": "a95a0503813e394161bf961f6556e26db672b46041a03079baac99d8191b13e2",
+      "Shore.navmesh": "b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609",
+      "Shore.spots.txt": "d95e1e11fa06194e44e1b1d3887fb00334d7f0ccc9528c9a1b439d7ba78b548b"
+    },
+    "review": "4c710aca7a5543bc1c5a66005ef8a8e352792f6f",
+    "review_branch_head": "4c710aca7a5543bc1c5a66005ef8a8e352792f6f",
+    "review_ok": true,
+    "manifest_guard_ok": true,
+    "manifest_guard_receipt_sha256": "9a958ea78289d0c7ccd38aa9e1f9ee7931eb5d25f0feae1e3a208041657660d8",
+    "client_visual": "NOT TESTED",
+    "prior_physical_attempts": 4,
+    "prior_controlled_attempts": 4,
+    "prior_owner_previews": 1
+  },
+  "quality_sha256": "d05b688aa13742e3b0a428d101c55d9698eeb022e2bf47738da4de014da2ccc4",
+  "runtime": "NOT RUN - OWNER_PLAYING_HOLD",
+  "owner_session": "C155-SteelmillClassic-20261029-195133",
+  "prior_controlled_attempts": 4,
+  "prior_owner_previews": 1,
+  "next": "one whole lower545-to-shore after owner finished and fresh gate/head/source/process check",
+  "wake_normal_context_config": "DeepSeek DS126 confirmed current e778 pin; no active config split found; no mutation",
+  "no_local_game_build": true,
+  "no_game_install_or_launch": true
+}

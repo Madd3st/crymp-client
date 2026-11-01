@@ -1,0 +1,11 @@
+{
+  "unchanged_config_fields_verified": true,
+  "sha256": "1808FBB72A18A12798388B0FD81DA27E075D9DF652730F5C44864F9E906F2CDF",
+  "old_backup": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c141-wake-before",
+  "ast": "PASS",
+  "archive_terminal_states": "read full archived outbox, no repeated model context",
+  "idle_min": 20,
+  "host_thread_file": "C:/Users/Magic8/.codex/sessions/2026/10/27/rollout-2026-10-27T18-18-53-01a17df1-6065-7bd2-9716-50cf78f78b92.jsonl",
+  "dry_run": "all: game/build active, skip before fetch or worker\r\n",
+  "role": "D031 conditional promptA; otherwise D013"
+}

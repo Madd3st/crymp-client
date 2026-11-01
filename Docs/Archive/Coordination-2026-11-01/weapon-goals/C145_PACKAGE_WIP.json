@@ -1,0 +1,27 @@
+{
+  "base_game_sha": "2e0a66414305b163848c6d5f18bb5812df4462a9",
+  "state": "OWN C145 uncommitted WIP, awaiting DS072 capture destination/hold patch",
+  "backup_patch_sha256": "03f97f6989b264f4363b47fe1f2c4062be20effb9af9315537a0814cdb764e60",
+  "worktree": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-coordinator-sprint",
+  "deepseek_water_patch": "3bd2604243eed3f532be27047516617dbf7ad241",
+  "codex_water_amendments": [
+    "ready-mesh policy + negative test",
+    "server-owned check",
+    "clear stale land-jump carry in water, no fake grounded event",
+    "explicit no-sprint/native swim stance, never bypass all rays while swimming"
+  ],
+  "checks": {
+    "water_policy_unit": "PASS",
+    "water_cost_unit": "PASS (old coreRED/newGREEN)",
+    "real_Steelmill_core_unit": "PASS",
+    "BotWaterPolicy_BotBlackboard_BotLocomotion_BotMovement_BotBrain_Syntax": "PASS",
+    "BotMoveTrace_Syntax": "PASS",
+    "Player_ON_Syntax": "PASS",
+    "Player_OFF_Syntax": "PASS"
+  },
+  "local_game_build": false,
+  "game_runs": 0,
+  "map_accepted": false,
+  "Shore_candidate_sha256": "653f5e1e130e4cc4ca70aba63fbde545c3b19d487f55b41140b1d36be02ad87e",
+  "owner_confirmed_free": true
+}

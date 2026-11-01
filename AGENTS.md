@@ -1,29 +1,42 @@
-# WarsBots for CryMP
+# WarsBots: инструкции для агента
 
-Start with [Docs/STATUS.md](Docs/STATUS.md), [port provenance](Docs/WARSBOTS_PORT.md),
-and `git status --short`. This fork is the main WarsBots development platform.
-`upstream/master` is CryMP; `origin/master` preserves it. Integrate through
-`warsbots/main`; use `warsbots/feature/*` for implementation. Never push upstream
-or force-push. Preserve uncommitted user changes and the original WarsBots repo.
+Проект: боты для Crysis через CryMP. Процесс разработки: [Docs/PROCESS.md](Docs/PROCESS.md). Он главнее старых передач и квитанций.
 
-Bots live in `Code/CryGame/Bots`. Player integration is in `Actors/Player`;
-GameRules and ShotValidator changes are scoped to owned bot entities.
-Do not replace upstream gameplay files with Crysis Wars versions.
+## Начало работы
+1. `git status --short`, ветка, HEAD. Чужие изменения сохраняй.
+2. Прочитай `Docs/STATUS.md` (одна таблица) и спеку своей задачи в `Docs/specs/`.
+3. Сначала `rg`, потом нужные функции. Архивы не перечитывай.
+4. Скиллы процесса лежат в `.claude/skills/wb-*/SKILL.md`. Агенты без поддержки скиллов читают эти файлы напрямую.
 
-- Experimental CMake option defaults OFF. Runtime opt-in defaults 0. Only local
-  loopback LAN InstantAction is allowed; spawn is an explicit console command.
-- No fake INetChannel, OnClientConnect(0), global IsPlayer change or anti-cheat bypass.
-- Keep ownership/EntityId identity guards, map cleanup, and native weapons/physics.
-- Spawn metadata arrives BEFORE Init: store marker only, never access GameObject there.
-- Experimental serialization changes require matching client/server builds;
-  keep native CryMP input serialization and optional groups intact.
-- No new engine binary patches without evidence and exact target verification.
-- Read functions selectively. No agents unless the user requests delegation.
-  One integrator owns shared Player/GameRules/CMake/network changes.
-- Do not stop a user's game without permission. Do not use +quit or short game timers.
-- BUILD PASS, server log evidence, user observations and visual QA are separate results.
-  Crysis Wars results do not establish CryMP compatibility.
-- Build: `Tools/Build-WarsBots.ps1` (OFF), add `-Experimental` for the port.
-  MSVC x64 only. Read Docs/AI_TESTS.md before gameplay tests.
+## Ветки
+- `warsbots/dev` — интеграционная ветка ботов. Все PR идут в неё.
+- `master` — базовый CryMP. Не push в upstream, не force-push.
+- Не больше 2 открытых PR. Стеки глубже 2 запрещены.
+- Ветка задачи: `<агент>/<spec-NNN>-<имя>`. После мержа ветка удаляется (с архивным тегом).
 
-Update STATUS and AGENT_HANDOFF once per completed task; do not rewrite all docs.
+## Работа
+- Новая фича начинается со спеки (скилл `wb-spec`). Багфикс меньше 20 строк с репро — без спеки.
+- Сценарии пишутся до кода и сначала падают (скилл `wb-scenario-run`).
+- Один агент пишет код в одной области. Параллельных агентов не запускать без запроса владельца.
+- Коммит с трейлером `Agent: claude|codex|gemini|deepseek`.
+- В конце задачи — отчёт по `Docs/templates/REPORT.md` (скилл `wb-report`), не больше 10 строк.
+  JSON-квитанции для человека не создавать.
+
+## Флаги
+- Новое поведение — под флагом `wb_bot_*`, default OFF. Учёт в `Docs/FLAGS.md`.
+- Не больше 5 флагов в статусе `trial`. Default меняет только владелец.
+- Лаунчер плейтеста включает только флаги со статусом `accepted` или `trial`.
+
+## Инварианты (без изменений)
+- Не менять defaults без решения владельца. Сохранять opt-in; наличие кода Power Struggle не означает его приёмки.
+- Никаких fake INetChannel/OnClientConnect(0), глобальных IsPlayer/channel изменений или обходов anti-cheat.
+- Сохранять ownership/EntityId guards, очистку уровня, штатное оружие/физику. В spawn metadata до Init — только marker.
+- Согласованные клиент/сервер, штатная сериализация CryMP и optional groups. Нет новых engine binary patches без доказательств.
+- Не заменять CryMP gameplay старой реализацией Crysis Wars. Сохранять лицензии.
+- Не ослаблять физические критерии ради зелёного теста: без SetPos/импульса/успеха по таймеру.
+- Unit, CI, серверный прогон и визуальная приёмка — разные доказательства. Не смешивать в отчёте.
+- Игру локально не собирать: только полный зелёный CI точного SHA и согласованная пара EXE. Engine-free тесты допустимы.
+- Не удалять `build/` целиком. Не подменять живые Memory/Navmesh и не смешивать namespaces LOCALAPPDATA. Чужую игру не останавливать, `+quit` и короткие игровые таймеры не использовать.
+- Один интегратор общих изменений Player/GameRules/CMake/network.
+- В QA-копии сохранять чужие `Tools/Play-WarsBotsRecording.ps1` и `Tools/Invoke-WarsBotsC126Probes.ps1`.
+- Автономные wake/wait_mail-циклы выключены.

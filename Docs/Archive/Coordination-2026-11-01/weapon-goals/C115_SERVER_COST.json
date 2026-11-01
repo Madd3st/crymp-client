@@ -1,0 +1,69 @@
+{
+  "schema": "warsbots-server-cost/1",
+  "rows": [
+    {
+      "bots": 0,
+      "source_sha": "2fee59c2a6d2d8531ba51aafbb33b0024cf8db39",
+      "cpu_samples": 60,
+      "sampled_wall_seconds": 60.427160799999996,
+      "logical_processors": 8,
+      "cpu_one_core_pct_avg": 0.025296947305252605,
+      "cpu_one_core_pct_p95": 0,
+      "cpu_machine_pct_avg": 0.0031621184131565756,
+      "cpu_machine_pct_p95": 0,
+      "native_server_frame_ms_avg": null,
+      "native_server_frame_ms_p95": null,
+      "bot_ai_profile_window_mean_ms_per_frame": null,
+      "bot_ai_profile_window_means_p95_ms": null,
+      "bot_ai_profile_worst_frame_ms": null,
+      "profile_windows": 0,
+      "recipe": "C106+navmesh/jump_links/state_commit1; vantage0/threat0; SkillMix, maxbots15; same1BEC/97F6initialmemory; warmup2s+60swindows",
+      "root": "build\\c115-cost-v3-2fee59c2\\n0"
+    },
+    {
+      "bots": 8,
+      "source_sha": "2fee59c2a6d2d8531ba51aafbb33b0024cf8db39",
+      "cpu_samples": 60,
+      "sampled_wall_seconds": 60.4220755,
+      "logical_processors": 8,
+      "cpu_one_core_pct_avg": 0.1822386569253265,
+      "cpu_one_core_pct_p95": 0,
+      "cpu_machine_pct_avg": 0.022779832115665814,
+      "cpu_machine_pct_p95": 0,
+      "native_server_frame_ms_avg": null,
+      "native_server_frame_ms_p95": null,
+      "bot_ai_profile_window_mean_ms_per_frame": 0.12,
+      "bot_ai_profile_window_means_p95_ms": 0.139,
+      "bot_ai_profile_worst_frame_ms": 3.63,
+      "profile_windows": 6,
+      "recipe": "C106+navmesh/jump_links/state_commit1; vantage0/threat0; SkillMix, maxbots15; same1BEC/97F6initialmemory; warmup2s+60swindows",
+      "root": "build\\c115-cost-v3-2fee59c2\\n8"
+    },
+    {
+      "bots": 15,
+      "source_sha": "2fee59c2a6d2d8531ba51aafbb33b0024cf8db39",
+      "cpu_samples": 60,
+      "sampled_wall_seconds": 60.5306223,
+      "logical_processors": 8,
+      "cpu_one_core_pct_avg": 0.2578755900792426,
+      "cpu_one_core_pct_p95": 1.5600773558740635,
+      "cpu_machine_pct_avg": 0.032234448759905325,
+      "cpu_machine_pct_p95": 0.19500966948425794,
+      "native_server_frame_ms_avg": null,
+      "native_server_frame_ms_p95": null,
+      "bot_ai_profile_window_mean_ms_per_frame": 0.24266666666666667,
+      "bot_ai_profile_window_means_p95_ms": 0.3,
+      "bot_ai_profile_worst_frame_ms": 3.48,
+      "profile_windows": 6,
+      "recipe": "C106+navmesh/jump_links/state_commit1; vantage0/threat0; SkillMix, maxbots15; same1BEC/97F6initialmemory; warmup2s+60swindows",
+      "root": "build\\c115-cost-v3-2fee59c2\\n15"
+    }
+  ],
+  "notes": [
+    "One-core CPU may exceed100%; machine CPU divided by logical processors. OS process user+kernel CPU deltas at1Hz.",
+    "PROFILE reports bot AI time, not full engine/physics/network per-frame elapsed time. Native full-server frame avg/p95 unavailable; request Claude read-only frame timer hook.",
+    "Demo20Hz FRAME cadence is not relabelled native engine frame time.",
+    "Only v3 has measured CPU windows. v1 startup lacked runtime local-test gate; v2 live-log read sharing failed; both are invalid bootstrap attempts, not cost results or repeated successful samples.",
+    "PROFILE aggregates at native log t<2s startup were excluded; they contain spawn/navmesh setup and can exceed later frame maxima. CPU percent is unweighted mean of 60 roughly1s OS samples; coarse Windows CPU accounting produces many zero deltas, raw samples preserved."
+  ]
+}

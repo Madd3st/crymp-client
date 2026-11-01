@@ -1,0 +1,390 @@
+{
+    "root":  "build\\c137-Shore-815bcb7e",
+    "complete":  true,
+    "frames":  6026,
+    "duration_s":  301.308,
+    "events":  {
+                   "suit":  358,
+                   "land":  23,
+                   "jump":  7
+               },
+    "kills":  0,
+    "stalls":  59,
+    "traps":  1,
+    "aba":  0,
+    "reversals":  0,
+    "first_primary_p50":  null,
+    "first_primary_p90":  null,
+    "primary_observed":  0,
+    "primary_eligible":  6,
+    "primary_lives":  [
+                          {
+                              "actor":  65461,
+                              "birth":  0.223,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65466,
+                              "birth":  0.223,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65471,
+                              "birth":  0.223,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65476,
+                              "birth":  0.223,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65481,
+                              "birth":  0.223,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65486,
+                              "birth":  0.223,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  130993,
+                              "birth":  31.514,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  130998,
+                              "birth":  31.514,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  131003,
+                              "birth":  31.514,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  131008,
+                              "birth":  31.514,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  131013,
+                              "birth":  31.514,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  131018,
+                              "birth":  31.514,
+                              "end":  301.531,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          }
+                      ],
+    "buy_attempts":  [
+
+                     ],
+    "successful_items":  0,
+    "successful_primary_bots":  [
+
+                                ],
+    "lua_episodes":  0,
+    "error_stack_lines":  0,
+    "channel_errors":  0,
+    "crash":  false,
+    "deaths":  0,
+    "wave_seen":  0,
+    "ps_summary_lines":  [
+                             "0.06 [WarsBots] PS SUMMARY points=5 team1_held=0 team2_held=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=1 id=65486 team=1 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=2 id=65481 team=2 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=3 id=65476 team=1 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=4 id=65471 team=2 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=5 id=65466 team=1 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=6 id=65461 team=2 pp=100 rank=1 buys=0."
+                         ],
+    "memory":  [
+                   {
+                       "sha256":  "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+                       "name":  "Multiplayer_IA_Steelmill.mem"
+                   },
+                   {
+                       "sha256":  "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+                       "name":  "Multiplayer_IA_Steelmill.nav.json"
+                   },
+                   {
+                       "sha256":  "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D",
+                       "name":  "Multiplayer_PS_Shore.mem"
+                   }
+               ],
+    "native_rng":  "independent, not seeded or paired",
+    "first_primary_definition":  "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+    "hashes":  {
+                   "analysis.log":  "05001bc940159be3cd461ebf13066dff4536dc0e72e4efe5adf1370416fe09e9",
+                   "c137-815bcb7e-preflight.bots.log":  "478f374cee26c2619c57c0e870fb79a6244575784ca29b3d9aae4f8c520a7b02",
+                   "c137-815bcb7e-preflight.log":  "9600919fcf2d6d3966e3c8c0c94cf47f363f7091d173138e329435d53f03fdf9",
+                   "c137-815bcb7e-run.bots.log":  "12877bb6ccec8ace8ce36261388f44c028296832c289c66ecc0f7ecdf3317b0d",
+                   "c137-815bcb7e-run.log":  "6058e5783dd28866721898b2db58673e8c412700c3c1237f92d8c596abdec444",
+                   "errors.log":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                   "flips.json":  "ef24ebf491710b18f27743ae0cf778127d7efd8f4da02f62a22883a3a500d2ff",
+                   "memory-restored.json":  "9d488f42f3142d87e64a287333cad188caec57aeacb633dc24aa90aa1d37007a",
+                   "Multiplayer_PS_Shore-20261027-202046-1.wbdemo":  "7ff6923bb7ae1803997048501ae539079ec1d4b052f9c218c71f763f47f3f5e1",
+                   "preflight-arguments.txt":  "b76b7def4cbe7c8525aabf626f2c23b49307696263ea29e4b5008a9893f64120",
+                   "preflight-effective.json":  "6688ce8daafa3b86feea96551517a177c0b354cf8dbe5029d11081abdc6d7efa",
+                   "preflight-pid.txt":  "ec6409eea93a5251b01f17af5a3ec83c54c75675a6e67ced61c3e8025f7b1941",
+                   "ps-evidence.log":  "dee6731a19dbea880f26dcebf7dce3c2a903f339bed973fe44923d1e2df7a3fb",
+                   "recipe.json":  "5d24db98e1ce2c962fff8053f9344a0b7a9e932532a8f63c7cdfafee1ddcb120",
+                   "run-arguments.txt":  "c3e578919a78270d60ab0592fed783d279caca4813056cc1b9ab58c1b43fbd74",
+                   "run-complete.json":  "2b0ddb69e261a58d642f3588ae4f4e0c90280e355cf5a15937cbd1769db95e68",
+                   "run-effective.json":  "6688ce8daafa3b86feea96551517a177c0b354cf8dbe5029d11081abdc6d7efa",
+                   "run-pid.txt":  "56e20a528d3420dda4da43787d6c511c06948c8f60b69705b4631a2c12f3df2d",
+                   "summary.json":  "05001bc940159be3cd461ebf13066dff4536dc0e72e4efe5adf1370416fe09e9"
+               },
+    "successful_laser_bots":  [
+
+                              ],
+    "buy_skips":  [
+
+                  ],
+    "initial_spawns":  [
+                           {
+                               "bot":  1,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  150
+                           },
+                           {
+                               "bot":  2,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  544
+                           },
+                           {
+                               "bot":  3,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  124
+                           },
+                           {
+                               "bot":  4,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  562
+                           },
+                           {
+                               "bot":  5,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  133
+                           },
+                           {
+                               "bot":  6,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  510
+                           },
+                           {
+                               "bot":  6,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  507
+                           },
+                           {
+                               "bot":  5,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  134
+                           },
+                           {
+                               "bot":  4,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  535
+                           },
+                           {
+                               "bot":  3,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  117
+                           },
+                           {
+                               "bot":  2,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  510
+                           },
+                           {
+                               "bot":  1,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  124
+                           }
+                       ],
+    "positions":  [
+                      {
+                          "bot":  1,
+                          "actor":  65486,
+                          "position":  [
+                                           1841.572,
+                                           1240.764,
+                                           111.545
+                                       ]
+                      },
+                      {
+                          "bot":  2,
+                          "actor":  65481,
+                          "position":  [
+                                           2121.875,
+                                           1883.0,
+                                           100.075
+                                       ]
+                      },
+                      {
+                          "bot":  3,
+                          "actor":  65476,
+                          "position":  [
+                                           1843.069,
+                                           1234.181,
+                                           114.764
+                                       ]
+                      },
+                      {
+                          "bot":  4,
+                          "actor":  65471,
+                          "position":  [
+                                           2131.625,
+                                           1885.375,
+                                           90.575
+                                       ]
+                      },
+                      {
+                          "bot":  5,
+                          "actor":  65466,
+                          "position":  [
+                                           1843.889,
+                                           1237.841,
+                                           111.545
+                                       ]
+                      },
+                      {
+                          "bot":  6,
+                          "actor":  65461,
+                          "position":  [
+                                           2111.875,
+                                           1882.5,
+                                           103.45
+                                       ]
+                      },
+                      {
+                          "bot":  6,
+                          "actor":  131018,
+                          "position":  [
+                                           2106.0,
+                                           1882.5,
+                                           103.45
+                                       ]
+                      },
+                      {
+                          "bot":  5,
+                          "actor":  131013,
+                          "position":  [
+                                           1839.669,
+                                           1239.997,
+                                           114.764
+                                       ]
+                      },
+                      {
+                          "bot":  4,
+                          "actor":  131008,
+                          "position":  [
+                                           2109.875,
+                                           1885.875,
+                                           103.45
+                                       ]
+                      },
+                      {
+                          "bot":  3,
+                          "actor":  131003,
+                          "position":  [
+                                           1839.218,
+                                           1241.809,
+                                           111.545
+                                       ]
+                      },
+                      {
+                          "bot":  2,
+                          "actor":  130998,
+                          "position":  [
+                                           2111.875,
+                                           1882.5,
+                                           103.45
+                                       ]
+                      },
+                      {
+                          "bot":  1,
+                          "actor":  130993,
+                          "position":  [
+                                           1843.069,
+                                           1234.181,
+                                           114.764
+                                       ]
+                      }
+                  ],
+    "revive_evidence":  [
+
+                        ],
+    "lua_error_lines":  [
+
+                        ],
+    "initial_spawn_groups_pass":  true,
+    "purchase_gate_pass":  false,
+    "revive_own_base_gate":  "UNKNOWN pending explicit positions/group evidence",
+    "ci":  {
+               "run":  40546394540,
+               "files":  [
+                             {
+                                 "sha256":  "0E49ED276A28BD278B84B3FC52DD300F67F29EF55844DB0483D9D073D2585CBF",
+                                 "file":  "CryMP-Client64.exe"
+                             },
+                             {
+                                 "sha256":  "259F4D39C7D6A825EE520EA6DDA5F2F58DFF3F87A25C903C2C1FC6036F158469",
+                                 "file":  "CryMP-Server64.exe"
+                             }
+                         ],
+               "sha":  "815bcb7e0594fcfdddb5ed1310db635bfa2e1b12"
+           },
+    "memory_actual_hashes":  {
+                                 "Multiplayer_IA_Steelmill.mem":  "42A59A6C755CB6FDA5987EE6AECBBF4A81CE0E20FE4E748D665DFA1C54E9128F",
+                                 "Multiplayer_IA_Steelmill.nav.json":  "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+                                 "Multiplayer_PS_Shore.mem":  "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D"
+                             },
+    "memory_hashes_restored":  true,
+    "c126_recovery":  {
+                          "verified":  true,
+                          "note":  "C137 restored its immediate pre-run snapshot first; then recovered original C126 pre-fixture memory/nav after archiving intermediate files.",
+                          "original_memory_manifest":  "build/c126-probe-wrapper-493f2cab/memory-restored.json",
+                          "original_nav_manifest":  "build/c126-probe-wrapper-493f2cab/nav-restored.json"
+                      }
+}

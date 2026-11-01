@@ -1,0 +1,440 @@
+{
+  "raw_log": "build\\c145-US-b06681ea-v4\\c145-US-b06681ea-v4.bots.log",
+  "log_sha256": "d6a1d8178aa3683dfa1c5140e331fe9ac65d0266cf103ac3477123b4dbf5f3ae",
+  "overall": {
+    "samples": 715,
+    "t_first": 0.248,
+    "t_last": 178.778,
+    "pos_first": [
+      2109.875,
+      1885.875,
+      103.367
+    ],
+    "pos_last": [
+      2116.408,
+      1883.089,
+      102.019
+    ],
+    "bounds": [
+      [
+        2105.033,
+        2121.43
+      ],
+      [
+        1882.627,
+        1886.217
+      ],
+      [
+        99.705,
+        103.375
+      ]
+    ],
+    "max_distance2d_from_first": 11.741425850381054,
+    "swim_samples": 0,
+    "no_water_sentinel_samples": 479,
+    "max_swim_speed": null,
+    "min_health": 100.0,
+    "first_swim": null,
+    "first_no_water": {
+      "actor": 65481.0,
+      "t": 1.525,
+      "speed": 5.755,
+      "vz": -1.163,
+      "grounded": 1.0,
+      "flying": 0.0,
+      "health": 100.0,
+      "stance": 0.0,
+      "swim": 0.0,
+      "waterZ": -1000000.0,
+      "relativeWater": 5.0,
+      "bottomDepth": -1000103.25,
+      "underwater": -1.46,
+      "pos": [
+        2114.657,
+        1883.007,
+        103.045
+      ]
+    },
+    "last_samples": [
+      {
+        "actor": 65481.0,
+        "t": 178.002,
+        "speed": 0.0,
+        "vz": 0.0,
+        "grounded": 1.0,
+        "flying": 0.0,
+        "health": 100.0,
+        "stance": 0.0,
+        "swim": 0.0,
+        "waterZ": -1000000.0,
+        "relativeWater": 5.0,
+        "bottomDepth": -1000102.0,
+        "underwater": -177.94,
+        "pos": [
+          2116.408,
+          1883.089,
+          102.019
+        ]
+      },
+      {
+        "actor": 65481.0,
+        "t": 178.264,
+        "speed": 0.0,
+        "vz": 0.0,
+        "grounded": 1.0,
+        "flying": 0.0,
+        "health": 100.0,
+        "stance": 0.0,
+        "swim": 0.0,
+        "waterZ": -1000000.0,
+        "relativeWater": 5.0,
+        "bottomDepth": -1000102.0,
+        "underwater": -178.2,
+        "pos": [
+          2116.408,
+          1883.089,
+          102.019
+        ]
+      },
+      {
+        "actor": 65481.0,
+        "t": 178.501,
+        "speed": 0.0,
+        "vz": 0.0,
+        "grounded": 1.0,
+        "flying": 0.0,
+        "health": 100.0,
+        "stance": 0.0,
+        "swim": 0.0,
+        "waterZ": -1000000.0,
+        "relativeWater": 5.0,
+        "bottomDepth": -1000102.0,
+        "underwater": -178.44,
+        "pos": [
+          2116.408,
+          1883.089,
+          102.019
+        ]
+      },
+      {
+        "actor": 65481.0,
+        "t": 178.778,
+        "speed": 0.0,
+        "vz": 0.0,
+        "grounded": 1.0,
+        "flying": 0.0,
+        "health": 100.0,
+        "stance": 0.0,
+        "swim": 0.0,
+        "waterZ": -1000000.0,
+        "relativeWater": 5.0,
+        "bottomDepth": -1000102.0,
+        "underwater": -178.71,
+        "pos": [
+          2116.408,
+          1883.089,
+          102.019
+        ]
+      }
+    ]
+  },
+  "actors": {
+    "65481": {
+      "samples": 715,
+      "t_first": 0.248,
+      "t_last": 178.778,
+      "pos_first": [
+        2109.875,
+        1885.875,
+        103.367
+      ],
+      "pos_last": [
+        2116.408,
+        1883.089,
+        102.019
+      ],
+      "bounds": [
+        [
+          2105.033,
+          2121.43
+        ],
+        [
+          1882.627,
+          1886.217
+        ],
+        [
+          99.705,
+          103.375
+        ]
+      ],
+      "max_distance2d_from_first": 11.741425850381054,
+      "swim_samples": 0,
+      "no_water_sentinel_samples": 479,
+      "max_swim_speed": null,
+      "min_health": 100.0,
+      "first_swim": null,
+      "first_no_water": {
+        "actor": 65481.0,
+        "t": 1.525,
+        "speed": 5.755,
+        "vz": -1.163,
+        "grounded": 1.0,
+        "flying": 0.0,
+        "health": 100.0,
+        "stance": 0.0,
+        "swim": 0.0,
+        "waterZ": -1000000.0,
+        "relativeWater": 5.0,
+        "bottomDepth": -1000103.25,
+        "underwater": -1.46,
+        "pos": [
+          2114.657,
+          1883.007,
+          103.045
+        ]
+      },
+      "last_samples": [
+        {
+          "actor": 65481.0,
+          "t": 178.002,
+          "speed": 0.0,
+          "vz": 0.0,
+          "grounded": 1.0,
+          "flying": 0.0,
+          "health": 100.0,
+          "stance": 0.0,
+          "swim": 0.0,
+          "waterZ": -1000000.0,
+          "relativeWater": 5.0,
+          "bottomDepth": -1000102.0,
+          "underwater": -177.94,
+          "pos": [
+            2116.408,
+            1883.089,
+            102.019
+          ]
+        },
+        {
+          "actor": 65481.0,
+          "t": 178.264,
+          "speed": 0.0,
+          "vz": 0.0,
+          "grounded": 1.0,
+          "flying": 0.0,
+          "health": 100.0,
+          "stance": 0.0,
+          "swim": 0.0,
+          "waterZ": -1000000.0,
+          "relativeWater": 5.0,
+          "bottomDepth": -1000102.0,
+          "underwater": -178.2,
+          "pos": [
+            2116.408,
+            1883.089,
+            102.019
+          ]
+        },
+        {
+          "actor": 65481.0,
+          "t": 178.501,
+          "speed": 0.0,
+          "vz": 0.0,
+          "grounded": 1.0,
+          "flying": 0.0,
+          "health": 100.0,
+          "stance": 0.0,
+          "swim": 0.0,
+          "waterZ": -1000000.0,
+          "relativeWater": 5.0,
+          "bottomDepth": -1000102.0,
+          "underwater": -178.44,
+          "pos": [
+            2116.408,
+            1883.089,
+            102.019
+          ]
+        },
+        {
+          "actor": 65481.0,
+          "t": 178.778,
+          "speed": 0.0,
+          "vz": 0.0,
+          "grounded": 1.0,
+          "flying": 0.0,
+          "health": 100.0,
+          "stance": 0.0,
+          "swim": 0.0,
+          "waterZ": -1000000.0,
+          "relativeWater": 5.0,
+          "bottomDepth": -1000102.0,
+          "underwater": -178.71,
+          "pos": [
+            2116.408,
+            1883.089,
+            102.019
+          ]
+        }
+      ]
+    }
+  },
+  "native_US_spawns": [
+    [
+      "537",
+      "535"
+    ]
+  ],
+  "native_US_creation_positions": [
+    [
+      "65481",
+      "2109.875, 1885.875, 103.450"
+    ]
+  ],
+  "explicit_NK_done_count": 1,
+  "unwanted_NK_restore_count": 0,
+  "NK_created_count": 1,
+  "capture_destination_lines": [
+    "0.25 [WarsBots] PS CAPTURE dest id=64 area=1 shape=39 pos=(1960.98,1387.64,110.31).",
+    "0.25 [WarsBots] PS CAPTURE dest id=316 area=1 shape=291 pos=(2082.12,1284.04,124.56).",
+    "0.25 [WarsBots] PS CAPTURE dest id=344 area=1 shape=330 pos=(2133.21,1482.51,111.11).",
+    "0.25 [WarsBots] PS CAPTURE dest id=579 area=1 shape=569 pos=(2216.32,1334.99,124.51).",
+    "0.25 [WarsBots] PS CAPTURE dest id=654 area=1 shape=629 pos=(1794.54,1690.64,101.53)."
+  ],
+  "door_request_lines": [],
+  "capture_native_event_lines": [],
+  "exit": "UNKNOWN without verified hull boundary/physical exterior evidence",
+  "door_crossing": "UNKNOWN",
+  "capture_completion": "UNKNOWN unless native event above",
+  "sample_rows_first": [
+    {
+      "actor": 65481.0,
+      "t": 0.248,
+      "speed": 0.0,
+      "vz": -1.192,
+      "grounded": 1.0,
+      "flying": 1.0,
+      "health": 100.0,
+      "stance": -1.0,
+      "swim": 0.0,
+      "waterZ": 99.5,
+      "relativeWater": 5.0,
+      "bottomDepth": -3.62,
+      "underwater": -0.18,
+      "pos": [
+        2109.875,
+        1885.875,
+        103.367
+      ]
+    },
+    {
+      "actor": 65481.0,
+      "t": 0.52,
+      "speed": 0.155,
+      "vz": -2.106,
+      "grounded": 0.0,
+      "flying": 1.0,
+      "health": 100.0,
+      "stance": 0.0,
+      "swim": 0.0,
+      "waterZ": 99.58,
+      "relativeWater": 5.0,
+      "bottomDepth": -3.55,
+      "underwater": -0.46,
+      "pos": [
+        2109.88,
+        1885.88,
+        103.193
+      ]
+    },
+    {
+      "actor": 65481.0,
+      "t": 0.749,
+      "speed": 4.776,
+      "vz": 0.0,
+      "grounded": 1.0,
+      "flying": 0.0,
+      "health": 100.0,
+      "stance": 0.0,
+      "swim": 0.0,
+      "waterZ": 99.51,
+      "relativeWater": 5.0,
+      "bottomDepth": -3.61,
+      "underwater": -0.68,
+      "pos": [
+        2110.162,
+        1885.701,
+        103.111
+      ]
+    },
+    {
+      "actor": 65481.0,
+      "t": 1.028,
+      "speed": 6.728,
+      "vz": 0.0,
+      "grounded": 1.0,
+      "flying": 0.0,
+      "health": 100.0,
+      "stance": 0.0,
+      "swim": 0.0,
+      "waterZ": 99.48,
+      "relativeWater": 5.0,
+      "bottomDepth": -3.65,
+      "underwater": -0.96,
+      "pos": [
+        2111.903,
+        1884.39,
+        103.123
+      ]
+    }
+  ],
+  "task": "C145",
+  "source": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "ci": 40649771503,
+  "review": "DS081 OKdd68f2ce",
+  "seconds_wall_cap": 180,
+  "trace_end_seconds": 178.778,
+  "diagnostic": "PASS",
+  "explicit_removal": "PASS one initialNK actor, oneDONE, zero unwanted restores, no game reset occurred",
+  "base_exit": "FAIL observed upper-spawn run stayed within dry sub compartment; general/lower-spawn exit UNKNOWN",
+  "swim": "NOT EXERCISED swim0/715",
+  "capture_destinations": "5 native destinations resolved; no target/native capture completion",
+  "capture": "NOT EXERCISED",
+  "door": "NOT EXERCISED",
+  "nav_fallback_reasons": {
+    "no_route": 3,
+    "goal_unprojected": 1
+  },
+  "nav_stuck_reports": 4,
+  "runtime_errors": {
+    "lua_script": 0,
+    "channel_rmi": 0
+  },
+  "restore": {
+    "memory": {
+      "hashes_match": true,
+      "absent_state_match": true,
+      "files": 4
+    },
+    "nav": {
+      "hashes_match": true,
+      "absent_state_match": true,
+      "files": 16
+    }
+  },
+  "demo_archive": [
+    {
+      "sha256": "84FF2A112FDB3E1CF90C7875BB5A0536299F86A0187106EB361735ECDB992780",
+      "name": "Multiplayer_PS_Shore-20261028-103733-1.wbdemo",
+      "bytes": 292309
+    }
+  ],
+  "map": "653f5e1e temporary diagnostic candidate, original restored; NOT playable accepted",
+  "next": "DS082 full joint diagnosis, offline geometry/topology/goal boundaries; no unchanged game repeat",
+  "offline_trace_projection": {
+    "rows": 715,
+    "projected": 715,
+    "from_US": 715,
+    "from_NK": 0,
+    "projected_z_min": 99.811295,
+    "raw": "build/c145-US-b06681ea-v4/trace-mesh.tsv"
+  }
+}

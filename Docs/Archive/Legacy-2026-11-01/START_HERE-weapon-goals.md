@@ -1,0 +1,76 @@
+# WarsBots: с чего начать
+
+Актуально на 30.10.2026. Проект — боты для Crysis 2007 через CryMP. Старый Crysis Wars сохранён как история.
+
+## Где работать
+
+| Назначение | Ветка на origin | Рабочая папка относительно этого каталога |
+| --- | --- | --- |
+| Основная ветка до PR | `warsbots/feature/claude-sprint` | `build/ds076-code` |
+| Текущие задачи, решения, документация | `warsbots/research/steelmill-triage` | `build/ds076-triage` |
+| QA-инструменты и результаты | `warsbots/feature/weapon-goals` | этот каталог |
+| Независимые предложения и ревью | `warsbots/research/deepseek` | отдельная рабочая копия DeepSeek |
+| Current tested Shore candidate | `codex/shore-ladder-exit` / ed72987c / PR2 | `E:/WarsBots/Development/r4-weapon-search-episode` |
+
+**Code/ в этом QA-каталоге устарел.** Изменять и оценивать игровой код нужно в ds076-code.
+Восстановленные ds076-code/ds076-triage закреплены на точных коммитах (detached HEAD); перед новой работой интегратор выбирает рабочую ветку. Не переключать чужой каталог и не делать reset чужих изменений.
+
+`master` — базовый CryMP. Локальная `warsbots/main` пока указывает на тот же старый upstream-коммит: это НЕ актуальный выпуск ботов. Не сливать в неё всё автоматически.
+
+## Что открыто
+
+| Пункт | Фактическое состояние | Следующий результат |
+| --- | --- | --- |
+| C154: Shore | `ed72987c`, PR2: SERVER WHOLE-ROUTE PASS (lower545 → physical upper exit/floor → Strength → water → dry shore, HP100). Full WarsBots CI41086406959 + all PR matrix41086417565 SUCCESS; exact pair12992223176 SHA PASS; DS134 preflight and DS135 `da16fa8f` postrun PASS. Demo/archive/Memory4/Nav16 exact restoration verified. | Client visual: OWNER_PLAYTEST_PASS (owner feedback, two grounded exits at94.68s/146.56s in interactive logs; supplied video not independently inspected). Full PS/other ladders NOT TESTED. [Result](Docs/Coordination/C154_SHORE_EXIT_RESULT.md), [PR2](https://github.com/Madd3st/crymp-client/pull/2). |
+| R4 / C157 | Кандидат `cde77823`: PR41039830200 SUCCESS (x86/x64 RelWithDebInfo и Debug + server_zip); WarsBots CI41039823887 SUCCESS (MSVC units + experimental x64 Release client/server). DS128 R4 и DS129 OFF-guard OK; последующий workflow фикс проверен CI. CI-пара12970885272 скачана, SHA-256 PASS. PR№1 не слит; общий Steelmill361с проверен, специальный поздний ammo-exhaustion R4 пока не подтверждён. | [Draft PR №1](https://github.com/Madd3st/crymp-client/pull/1); [результат](Docs/Coordination/C157_R4_RESULT.md) |
+| R9: направление generic jump | Подтверждён разрыв контракта проверки направления; конкретное падение в игре не доказано | Удерживать проверенную траекторию или повторно валидировать её при повороте |
+| D032: first_primary по умолчанию | В решениях остаётся open; решение владельца | Не включать default автоматически |
+| Полный IA/PS и клиентская приёмка | Ограниченные серверные проверки не закрывают полный матч | Плановая общая приёмка после маршрутов; это backlog, не новая команда запускать игры |
+
+C155 (классический Steelmill) завершён. DS125/DS126 завершены. Исторические open в архивах не являются очередью работ.
+**Автономные циклы выключены. Владелец разрешил текущую разработку и проверку Shore; один полный серверный маршрут на ed72987c прошёл аудит.** Явно назначенная владельцем работа выполняется вручную; самостоятельный запуск новых задач из backlog не разрешён.
+
+Авторитетные задачи: [TO_CODEX](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/TO_CODEX.md).
+Подробный backlog: [план зрелости](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/CS_BOT_MATURITY_PLAN.md).
+Решения владельца: [DECISIONS](https://github.com/Madd3st/crymp-client/blob/warsbots/research/steelmill-triage/Docs/Research/Coordination/MAILBOX/DECISIONS.md).
+
+## Какие ветки нужны
+
+Четыре рабочие ветки из первой таблицы нужны: у каждой своя ответственность. Они не обязаны быть предками ветки кода.
+
+- `feature/combat-port`, `feature/locomotion`: завершённые этапы, входят в историю текущего кода; локальные ветки убраны, сохранены архивные теги.
+- `codex/c070-msvc-zero`, `codex/c071-msvc-zero`: эквивалентные патчи уже есть в текущем коде (`git cherry`); архивированы.
+- `feature/multibot`: старый включённый этап, но ветка занята отдельной рабочей копией. Не удалять до проверки её состояния.
+- `feature/ia-participants`: старый этап, но есть уникальный коммит с prompt, рабочая копия занята. Кандидат на дальнейшую архивацию, не актуальный игровой код.
+- `research/movement-params`, `research/claude-modules`: старые исследования/предложения. Есть уникальные коммиты; закрывать после сверки, какие предложения приняты или отклонены.
+- `codex/c055-policy-bypasses`: уникальный патч по `git cherry`; нельзя объявить мусором только из-за возраста.
+- Остальные ветки CryMP/upstream не являются заданиями WarsBots. Не чистить их как ветки ботов.
+
+Локальные одноимённые claude-sprint/steelmill-triage синхронизированы с origin; прежние указатели сохранены тегами `archive/2026-10-30/...`.
+
+## Что читать, а что считать историей
+
+1. Этот документ: назначение каталогов и веток.
+2. Текущий state и TO_CODEX на triage: что делать сейчас.
+3. Только относящиеся к задаче ревью и код.
+
+[Архив старых обзорных документов](Docs/Archive/Legacy-2026-10-30/README.md) не задаёт текущую очередь.
+Старые headshot/навигация/спавн-гипотезы из раннего ревью не становятся действующими багами без сверки с текущим кодом.
+DS118 содержит отозванные/исправленные гипотезы; для текущего C154 читать DS124/125/126 и state, а не исполнять DS118 как план.
+Ревью DeepSeek не удаляются пачкой по номеру: последние документы являются доказательствами C154, а часть старых нужна для R4/R9. Из активного входа исключается история, а не уникальная информация.
+
+## Как пользоваться проектом
+
+**Поиграть:** `E:/WarsBots/Showcases/Steelmill-Classic-abac72a9/START.cmd`. `CHECK.cmd` — проверка пакета; `RESTORE.cmd` — восстановление после прерванного запуска. Не закрывать окно управляющего PowerShell во время игры. Shore остаётся диагностикой.
+
+R4 разрабатывался отдельно: `codex/r4-weapon-search-episode`, `E:/WarsBots/Development/r4-weapon-search-episode`; точная CI-пара и квитанции — `E:/WarsBots/Development/C157-checks/`. Это кандидат, не уже слитый релиз.
+
+**Продолжить разработку:** проверить status/ветку → прочитать текущую задачу → работать в актуальном коде → осмысленный offline-тест → независимое ревью → полный CI точного SHA → точная пара EXE → разрешённый общий сценарий → аудит результата. Не собирать игру локально и не менять defaults без решения владельца.
+
+**Уборка:** имя build НЕ означает, что всё внутри воспроизводимо. Здесь живут Git-worktrees, данные и уникальные доказательства. Не удалять build целиком. Удалять только конкретный проверенный список; архивы и инструкции восстановления держать рядом с данными на E, без отчётов о каждом освобождённом гигабайте в проекте.
+
+## Состояние восстановления
+
+[C156: результат восстановления и ограничения](Docs/Coordination/C156_RECOVERY.md). Актуальный код307, CI-пара, данные V5, документы, вики, исходные логи и демо четырёх попыток восстановлены и проверены. Офлайн-проверки пройдены, содержимое reviewed quality восстановлено из Git и сверено с действующими пинами.
+
+Оригинальные снимки Memory/Navmesh старых попыток и часть временных квитанций не восстановлены; их исторические проверки не выдаются за повторно доказанные. Для продолжения разработки необходимых файлов хватает. Игровая приёмка307 ещё не выполнена и остаётся на паузе владельца; перед ней нужен свежий preflight и новый snapshot живых данных.

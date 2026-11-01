@@ -1,0 +1,12 @@
+{
+  "old_session": "ses_e80789d84ffdSuUF8Qoe3qVVeQ",
+  "old_interrupted": true,
+  "old_clean_pushed": "dd68f2ce",
+  "last_input_cache": 578560,
+  "new_session": "ses_e7e92b3f0ffe50v1xeO4hz6pra",
+  "model": "opencode-go/deepseek-v4.1-flash#default",
+  "permissions": "unchanged; no auto",
+  "wake_config_previous_anchor": "ses_e8cd3a331ffe4diNAe07HImXlu",
+  "wake_config_updated": true,
+  "wake_selection": "Exact configured session in both scripts; --latest incorrectly excludes fresh headless UI-suspended session"
+}

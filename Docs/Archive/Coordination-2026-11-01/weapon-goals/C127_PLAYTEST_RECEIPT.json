@@ -1,0 +1,89 @@
+{
+  "ci_run": 40526830694,
+  "capture": 1,
+  "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+  "pass": true,
+  "errors": [],
+  "buy": 1,
+  "wave_seen": 4,
+  "jump_links": 0,
+  "navmesh": 0,
+  "hashes": {
+    "server": "6AD1FD97A0FB89B567A2F3421140C8AE25D9FC61678B2C3613B361E72B976120",
+    "client": "F991D7DF54F47FDACCA5B1FA7900D7B96D8636E734E0A77B5E6C6D68635D144E"
+  },
+  "seconds": 120,
+  "recipe_sha256": "cdfcd0c2425ef21a4a7fee9a5bd67d42504e0caf4dc6823a0714beeb6c107476",
+  "deaths": 4,
+  "demo": {
+    "frames": 2409,
+    "duration_s": 120.46600000000001
+  },
+  "summary": {
+    "schema": "warsbots-run-summary/1",
+    "label": "C127-20261027-184633-Server.bots",
+    "log": "C127-20261027-184633-Server.bots.log",
+    "log_sha256": "80fda20965624c8fdee8b70c7fd4d7ab51a908c4febae5bd4641559cba1ae02d",
+    "build": "v26-201-g4f3a1d72",
+    "bots": 6,
+    "seconds": 120.4,
+    "live_bot_minutes": 10.6,
+    "spawn195": {
+      "revives": 0,
+      "frozen": 0
+    },
+    "revives": {
+      "total": 0,
+      "frozen": 0,
+      "frozen_spawns": {}
+    },
+    "watchdog": {
+      "episodes": 1,
+      "at_spawn195": 0,
+      "reached_level": {
+        "1": 1,
+        "2": 1
+      },
+      "self_kills": 0
+    },
+    "pinned_live_percent": 0.0,
+    "traps_ge60s": 0,
+    "stalls": 36,
+    "nav_fallback": {
+      "total": 242,
+      "per_bot_minute": 22.76,
+      "reasons": {
+        "no_route": 222,
+        "start_unprojected": 20
+      },
+      "no_route_percent": 91.7
+    },
+    "unreachable_weapon_skips": 0,
+    "goal_skips": {},
+    "pickups": {
+      "total": 0,
+      "lives": 0,
+      "lives_with_pickup": 0,
+      "lives_with_pickup_percent": null
+    },
+    "movement": {
+      "moving_samples": 320,
+      "over_4ms_percent": 29.6,
+      "native_sprint_percent": 94.4,
+      "median_speed_by_state_max": 4.08
+    },
+    "graph": null
+  },
+  "launcher_sha256": "13128e9d125e68060b9d0481aeccacd8f42817dbeb24b146b866749f9b369df3",
+  "raw": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c127-smoke-4f3a1d72",
+  "client_visuals": "NOT TESTED; owner launches next",
+  "relaxed_gate": "C133: purchases/capture not required; navmesh0/jump_links0 accepted",
+  "hashes_raw": {
+    "C127-20261027-184633-preflight.bots.log": "8e1411fc3fd0dc5eb9dc6d23560ad442450b54850ebe1163ed26af5a5895e8b0",
+    "C127-20261027-184633-preflight.log": "21c20b9aafba1064efc9ccf5c4a88752ef7d73285f58b94c1f03bcc1eaafee7e",
+    "C127-20261027-184633-Server.bots.log": "80fda20965624c8fdee8b70c7fd4d7ab51a908c4febae5bd4641559cba1ae02d",
+    "C127-20261027-184633-Server.log": "bc313f311dedd187652274844ee2a28b4114a5d0587a6e5029cfa168521a143c",
+    "Multiplayer_PS_Shore-20261027-184637-1.wbdemo": "b5a41703f08a822329489813a0a6d0c62160e129ea6c8ed853e30108b7e79fc8"
+  },
+  "memory_restored_verified": true
+}

@@ -1,0 +1,31 @@
+{
+  "source": "cde7782301d304149025b1975ae6b13e6866745f",
+  "state": "ARCHIVED_RESTORED",
+  "session": "E:\\WarsBots\\Development\\C157-Steelmill-cde77823\\Sessions\\C157-Steelmill-20261030-141910",
+  "demo_sha256": "007e3bc77f7a0f49026a4a5aa300e543f09519587d3867f2458449bc3a66f78f",
+  "full_demo_tail": "PASS",
+  "seconds": 361.211,
+  "bot_events": {
+    "suit": 514,
+    "land": 291,
+    "pickup": 107,
+    "jump": 113,
+    "shot": 2247,
+    "hit": 714,
+    "kill": 76,
+    "revive": 71
+  },
+  "restore": {
+    "memory": {
+      "hashes_and_names": "PASS",
+      "files": 4
+    },
+    "nav": {
+      "hashes_and_names": "PASS",
+      "files": 16
+    }
+  },
+  "owner_feedback": "Bots play fairly well; sniper positions, specifically the roof, remain unused. No owner video recorded.",
+  "R4_late_ammo_exhaustion": "NOT_PROVEN",
+  "roof_issue": "OWNER_OBSERVATION; cause not investigated, not a confirmed regression"
+}

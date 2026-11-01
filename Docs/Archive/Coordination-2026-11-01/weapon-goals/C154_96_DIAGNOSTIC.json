@@ -1,0 +1,25 @@
+{
+  "source": "96e4a38313c6a768a94864c4ed3b6677df627eb7",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-route-96e4a383-v2",
+  "runtime": "FAIL blocked_top15.64s z97.91",
+  "purpose": "New informative read-only diagnosis, not physical repair",
+  "exit_input_samples": 99,
+  "exit_inputs": {
+    "idle stance=relaxed item=nw exitClip=-1 fifo=0 fifoClip=-1 fifoName=<none> fifoTime=-1.000": 99
+  },
+  "model": "nanosuit_us_multiplayer.cdf",
+  "conclusion": "Exit clip absent from server character registry. Do not infer all engine animation is impossible.",
+  "demo_sha256": "9b763f83ad519f388c1d91dde90e1e5e25c0147f5a877368afa48bfde0c898eb",
+  "demo_full_tail": "PASS",
+  "restore": {
+    "memory": {
+      "files": 4,
+      "explicit_MSIX_physical_names_and_SHA": "PASS"
+    },
+    "nav": {
+      "files": 16,
+      "explicit_MSIX_physical_names_and_SHA": "PASS"
+    }
+  },
+  "next_candidate": "0851e685 physics adapter in DS133 review/CI, not runtime approved"
+}

@@ -1,0 +1,424 @@
+{
+    "root":  "build\\c138-Shore-96f7f624",
+    "complete":  true,
+    "frames":  6042,
+    "duration_s":  302.11,
+    "events":  {
+                   "suit":  274,
+                   "land":  27
+               },
+    "kills":  0,
+    "stalls":  73,
+    "traps":  2,
+    "aba":  0,
+    "reversals":  0,
+    "first_primary_p50":  null,
+    "first_primary_p90":  null,
+    "primary_observed":  0,
+    "primary_eligible":  6,
+    "primary_lives":  [
+                          {
+                              "actor":  65461,
+                              "birth":  0.214,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65466,
+                              "birth":  0.214,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65471,
+                              "birth":  0.214,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65476,
+                              "birth":  0.214,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65481,
+                              "birth":  0.214,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  65486,
+                              "birth":  0.214,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  true
+                          },
+                          {
+                              "actor":  130993,
+                              "birth":  31.571,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  130998,
+                              "birth":  31.571,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  131003,
+                              "birth":  31.571,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  131008,
+                              "birth":  31.571,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  131013,
+                              "birth":  31.571,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          },
+                          {
+                              "actor":  131018,
+                              "birth":  31.571,
+                              "end":  302.324,
+                              "first_primary":  null,
+                              "censored_birth":  false
+                          }
+                      ],
+    "buy_attempts":  [
+
+                     ],
+    "successful_items":  0,
+    "successful_primary_bots":  [
+
+                                ],
+    "lua_episodes":  2,
+    "error_stack_lines":  6,
+    "channel_errors":  0,
+    "crash":  false,
+    "deaths":  0,
+    "wave_seen":  0,
+    "ps_summary_lines":  [
+                             "0.06 [WarsBots] PS SUMMARY points=5 team1_held=0 team2_held=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=1 id=65486 team=1 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=2 id=65481 team=2 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=3 id=65476 team=1 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=4 id=65471 team=2 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=5 id=65466 team=1 pp=100 rank=1 buys=0.",
+                             "0.06 [WarsBots] PS SUMMARY bot=6 id=65461 team=2 pp=100 rank=1 buys=0."
+                         ],
+    "memory":  [
+                   {
+                       "sha256":  "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+                       "name":  "Multiplayer_IA_Steelmill.mem"
+                   },
+                   {
+                       "sha256":  "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D",
+                       "name":  "Multiplayer_PS_Shore.mem"
+                   }
+               ],
+    "native_rng":  "independent, not seeded or paired",
+    "first_primary_definition":  "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+    "hashes":  {
+                   "analysis.log":  "809235d49b83012857e2f91be031ba641d577eee7395db56f2360708ba54b863",
+                   "c138-96f7f624-preflight.bots.log":  "7d1fded3f55827b55e3ca917c7baf2cfeafffb4c9b0ab60a595947a2ec971747",
+                   "c138-96f7f624-preflight.log":  "fb5a370f50e73eaa2fab1aad71e4555015b14492e3bae04ae680398835f4c311",
+                   "c138-96f7f624-run.bots.log":  "653a40e71d4af32edf6135034e07b12c8b3d54b5f402c468f2ba377f68c988be",
+                   "c138-96f7f624-run.log":  "6d4f2205ef01401ebe9be2fe1c503a7e165ba02448bcdf6cdb13a6cef169a390",
+                   "errors.log":  "9d88cc87a4758d11492c3efa78b140b7bc86a9a58cd4dc804e35f77f97811ca9",
+                   "flips.json":  "401977ffd4404b00bd5b41c66a998651cd7884ecddaa3130d04a503284cdb9e5",
+                   "memory-restored.json":  "18c5f990a63594e59cc8e94ac3226f2930dea65f805f877614e49fa5e2a5d002",
+                   "Multiplayer_PS_Shore-20261027-203831-1.wbdemo":  "c44394ea3e507912743b505017c39702c3c489dc27a4b4c7eb6f38a9232abd4d",
+                   "preflight-arguments.txt":  "f76feefa4e496d661d44ae8161e7fc3c10e5dc5118eb4055c544e6eeaf0301ea",
+                   "preflight-effective.json":  "e94fd85e1e2a9d28c3fb77ee95438a50f84b5f3614a93084c47554517667abe0",
+                   "preflight-pid.txt":  "70fe9f774c94caa0f36d8ea9abee9ed480ad6966e6bf3f9911b974e0a8e8c0e8",
+                   "ps-evidence.log":  "388fbd3cc541903dbe4ef5cb52341fe626be5f144174524799b803edfb27b67c",
+                   "recipe.json":  "289283a4fa81d8a3fdfe35773fc917a323c5b3b52b14e7056930d9b26060eca6",
+                   "run-arguments.txt":  "0810d828db2ae3cf8e5f2250d063d8b93cb2599527e8228cf5c1498c4484fc25",
+                   "run-complete.json":  "5dd85e5728987fe787748390819b02c526db2c80c4cc3f550de61964e680d037",
+                   "run-effective.json":  "e94fd85e1e2a9d28c3fb77ee95438a50f84b5f3614a93084c47554517667abe0",
+                   "run-pid.txt":  "7c563cabb4db1b3eb2b804d6831b56f3f06b19342f7b0822d9d5b2fbc053ca2c",
+                   "summary.json":  "809235d49b83012857e2f91be031ba641d577eee7395db56f2360708ba54b863"
+               },
+    "successful_laser_bots":  [
+
+                              ],
+    "buy_skips":  [
+
+                  ],
+    "initial_spawns":  [
+                           {
+                               "bot":  1,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  131
+                           },
+                           {
+                               "bot":  2,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  507
+                           },
+                           {
+                               "bot":  3,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  124
+                           },
+                           {
+                               "bot":  4,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  506
+                           },
+                           {
+                               "bot":  5,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  133
+                           },
+                           {
+                               "bot":  6,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  543
+                           },
+                           {
+                               "bot":  6,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  530
+                           },
+                           {
+                               "bot":  5,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  127
+                           },
+                           {
+                               "bot":  4,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  539
+                           },
+                           {
+                               "bot":  3,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  131
+                           },
+                           {
+                               "bot":  2,
+                               "team":  2,
+                               "group":  537,
+                               "spawn":  522
+                           },
+                           {
+                               "bot":  1,
+                               "team":  1,
+                               "group":  120,
+                               "spawn":  111
+                           }
+                       ],
+    "positions":  [
+                      {
+                          "bot":  1,
+                          "actor":  65486,
+                          "position":  [
+                                           1841.316,
+                                           1245.005,
+                                           111.545
+                                       ]
+                      },
+                      {
+                          "bot":  2,
+                          "actor":  65481,
+                          "position":  [
+                                           2106.0,
+                                           1882.5,
+                                           103.45
+                                       ]
+                      },
+                      {
+                          "bot":  3,
+                          "actor":  65476,
+                          "position":  [
+                                           1843.069,
+                                           1234.181,
+                                           114.764
+                                       ]
+                      },
+                      {
+                          "bot":  4,
+                          "actor":  65471,
+                          "position":  [
+                                           2122.0,
+                                           1880.625,
+                                           90.575
+                                       ]
+                      },
+                      {
+                          "bot":  5,
+                          "actor":  65466,
+                          "position":  [
+                                           1843.889,
+                                           1237.841,
+                                           111.545
+                                       ]
+                      },
+                      {
+                          "bot":  6,
+                          "actor":  65461,
+                          "position":  [
+                                           2116.875,
+                                           1887.875,
+                                           90.575
+                                       ]
+                      },
+                      {
+                          "bot":  6,
+                          "actor":  131018,
+                          "position":  [
+                                           2113.625,
+                                           1880.375,
+                                           90.575
+                                       ]
+                      },
+                      {
+                          "bot":  5,
+                          "actor":  131013,
+                          "position":  [
+                                           1838.97,
+                                           1241.761,
+                                           114.764
+                                       ]
+                      },
+                      {
+                          "bot":  4,
+                          "actor":  131008,
+                          "position":  [
+                                           2119.5,
+                                           1880.625,
+                                           90.575
+                                       ]
+                      },
+                      {
+                          "bot":  3,
+                          "actor":  131003,
+                          "position":  [
+                                           1841.316,
+                                           1245.005,
+                                           111.545
+                                       ]
+                      },
+                      {
+                          "bot":  2,
+                          "actor":  130998,
+                          "position":  [
+                                           2122.125,
+                                           1884.375,
+                                           100.2
+                                       ]
+                      },
+                      {
+                          "bot":  1,
+                          "actor":  130993,
+                          "position":  [
+                                           1841.511,
+                                           1236.985,
+                                           111.545
+                                       ]
+                      }
+                  ],
+    "revive_evidence":  [
+
+                        ],
+    "lua_error_lines":  [
+                            "[Error] [Script] RMI via client (to server) requested but we are not a client",
+                            "[Error]     [C]:-1 C method SvRequestOpen",
+                            "[Error]     [string \"Scripts/Entities/Doors/Door.lua\"]:356 Lua  (null)",
+                            "[Error] [Script] RMI via client (to server) requested but we are not a client",
+                            "[Error]     [C]:-1 C method SvRequestOpen",
+                            "[Error]     [string \"Scripts/Entities/Doors/Door.lua\"]:356 Lua  (null)"
+                        ],
+    "initial_spawn_groups_pass":  true,
+    "purchase_gate_pass":  false,
+    "revive_own_base_gate":  "UNKNOWN pending explicit positions/group evidence",
+    "ci":  {
+               "run":  40550812670,
+               "files":  [
+                             {
+                                 "sha256":  "E831A49EDBE11392F96952D015057DDE688F8CB946870F27217F9C45CC0C96D1",
+                                 "file":  "CryMP-Client64.exe"
+                             },
+                             {
+                                 "sha256":  "E0B14AAC42016C3B5B4B1A95F0A4115D4DB3D1C3E2177F262011AE357DB8045E",
+                                 "file":  "CryMP-Server64.exe"
+                             }
+                         ],
+               "sha":  "96f7f62432765a0e05cf658ae5665053575b7a99"
+           },
+    "memory_actual_hashes":  {
+                                 "Multiplayer_IA_Steelmill.mem":  "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+                                 "Multiplayer_PS_Shore.mem":  "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D"
+                             },
+    "memory_hashes_restored":  true,
+    "ps_events":  [
+
+                  ],
+    "ps_event_counts":  {
+
+                        },
+    "ps_event_lines_parse":  false,
+    "doors":  [
+                  {
+                      "bot":  1,
+                      "entity":  104,
+                      "actor":  65486
+                  },
+                  {
+                      "bot":  3,
+                      "entity":  104,
+                      "actor":  65476
+                  }
+              ],
+    "doors_left_closed":  "UNKNOWN: PS DOOR use records OnUsed invocation without resulting open/closed state",
+    "vehicles":  {
+                     "actions":  [
+
+                                 ],
+                     "pairs":  0,
+                     "unmatched_enters":  0,
+                     "unmatched_exits":  0,
+                     "within_reach":  "UNKNOWN: no candidate distance telemetry"
+                 },
+    "stalls_traps_gate":  {
+                              "baseline_stalls":  59,
+                              "baseline_traps":  1,
+                              "max_stalls":  73.75,
+                              "max_traps":  1.25,
+                              "pass_":  false
+                          },
+    "door_gate_pass":  true,
+    "stability_pass":  false,
+    "buy_null_lua_episodes":  0,
+    "door_rmi_episodes":  2,
+    "baseline_memory_limit":  "C137 inherited interrupted sniper fixture seed42A59/97F6; C138 used recovered owner E1B92 memory with fixture nav absent. Comparison is requested observed threshold only, not matched-memory causal evidence."
+}

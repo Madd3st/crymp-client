@@ -1,0 +1,23 @@
+{
+  "task": "C154",
+  "source": "d2dc767ebc626cbbfd8bd86305b9f8ec0bf37873",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c154-route-d2dc767e-v2",
+  "runtime": "FAIL blocked_top15.52s z97.92",
+  "new_observation": "World support guard rejects sample3 at assumed native-forward landing (2116.125,1879.525), top100.321; no physics movement requested",
+  "refusals": {
+    "floor sample=3 hits=0 floor=-10000.000 normal=0.000 top=100.321 target=(2116.125,1879.525).": 97
+  },
+  "restore": {
+    "memory": {
+      "files": 4,
+      "exact_MSIX_physical_names_SHA": "PASS"
+    },
+    "nav": {
+      "files": 16,
+      "exact_MSIX_physical_names_SHA": "PASS"
+    }
+  },
+  "demo_sha256": "6e7a157c36120897233e0c55c9ee0804d46dfa61d452870cd51e0751a385c37a",
+  "demo_full_tail": "PASS",
+  "next_candidate": "ed72987c uses validated current ladder-link b as landing; bounds, world checks and physical completion retained; CI/DS134 pending"
+}
