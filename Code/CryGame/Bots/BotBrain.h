@@ -70,6 +70,7 @@ private:
 	bool UpdatePSInteract(BotInstance& bot,CPlayer& actor,float decisionTime); // DS-052: vehicles only
 	bool PSTryBuy(BotInstance& bot,CPlayer& actor); // DS-049 #3; C-139: true when the primary was bought
     void UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime);
+    bool TryVantageCombat(BotInstance& bot,CPlayer& actor,const Vec3& aim,float distance,bool visible,float decisionTime);
     void UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,float desiredRange);
     void UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& aim,float distance,bool visible);
     void UpdateCombatPost(BotInstance& bot,CPlayer& actor,float decisionTime);

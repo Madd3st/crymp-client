@@ -1197,17 +1197,7 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 		{ WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_SPEED); m_intent.combat=BotCombatIntent::None; }
 		ExecuteIntent(actor,decisionTime); return;
 	}
-	if ((BotConfig::Get().vantage==1 || BotConfig::Get().highGround==1) && m_vantage.Phase()==VantagePhase::Hold && visible && distance>12.0f && !m_combat.ShotBlocked())
-	{
-		// owner 25.10: a sniper on its spot fights from there (elite marksmen lying down: spread x0.33) instead of
-		// running off the roof toward the target
-		Change(State::ATTACKING);
-		WBI(move,false); WBI(aim,aim);
-		if (m_traits.prone>0.5f) m_intent.stance=STANCE_PRONE;
-		m_intent.combat=m_now>=std::max(m_stateTime,m_combat.SelectedAt())+m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim; // DS-035: one clock, not 2x reaction
-		UpdateCombatPost(bot,actor,decisionTime);
-		return;
-	}
+	if (TryVantageCombat(bot,actor,aim,distance,visible,decisionTime)) return;
 	m_lastFightTarget=m_combat.Target(); m_lastFightPos=destination;
 	if (BotConfig::Get().tactics==1)
 	{
@@ -1259,6 +1249,23 @@ bool BotBrain::UpdateHoldAngle(BotInstance& bot,CPlayer& actor,const Vec3& threa
 	}
 	else { WBI(move,false); WBI(aim,aim); }
 	m_intent.combat=BotCombatIntent::Aim;
+	UpdateCombatPost(bot,actor,decisionTime);
+	return true;
+}
+
+bool BotBrain::TryVantageCombat(BotInstance& bot,CPlayer& actor,const Vec3& aim,float distance,bool visible,float decisionTime)
+{
+	if ((BotConfig::Get().vantage!=1 && BotConfig::Get().highGround!=1) || m_vantage.Phase()!=VantagePhase::Hold || distance<=12.0f)
+		return false;
+	// owner 25.10: a sniper on its spot fights from there (elite marksmen lying down: spread x0.33) instead of
+	// running off the roof toward the target
+	Change(visible ? State::ATTACKING : State::SEARCHING_ENEMY);
+	WBI(move,false); WBI(aim,aim);
+	if (m_traits.prone>0.5f) m_intent.stance=STANCE_PRONE;
+	if (visible && !m_combat.ShotBlocked())
+		m_intent.combat=m_now>=std::max(m_stateTime,m_combat.SelectedAt())+m_profile.reaction?BotCombatIntent::Fire:BotCombatIntent::Aim; // DS-035: one clock, not 2x reaction
+	else
+		m_intent.combat=BotCombatIntent::Aim; // hold angle on last seen position from the sniper spot
 	UpdateCombatPost(bot,actor,decisionTime);
 	return true;
 }
