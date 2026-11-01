@@ -1,0 +1,423 @@
+{
+  "schema": "warsbots-build-scorecard/1",
+  "source_sha": "fd12a5ebd786942c1ad5cc205b98b390d96de1bd",
+  "run_root": "build\\c116-on15-fd12a5eb",
+  "kills": 287,
+  "stalls": 29,
+  "traps": 0,
+  "flips": {
+    "reversals": 3540,
+    "reversals_per_bot_min": 21.45,
+    "state_changes": 5184,
+    "state_changes_per_bot_min": 31.42,
+    "state_ab_a_2s": 1299,
+    "state_ab_a_2s_per_bot_min": 7.87,
+    "state_conflicts": 0,
+    "state_conflicts_per_bot_min": 0,
+    "goal_ab_a_2s": 277,
+    "goal_ab_a_2s_per_bot_min": 1.68,
+    "target_ab_a_2s": 0,
+    "target_ab_a_2s_per_bot_min": 0,
+    "target_switches": 976,
+    "attacking_chasing": 2094,
+    "attacking_chasing_per_bot_min": 12.69,
+    "per_bot": [
+      {
+        "number": 1,
+        "reversals": 122,
+        "state_changes": 309,
+        "state_flips": 34
+      },
+      {
+        "number": 2,
+        "reversals": 218,
+        "state_changes": 324,
+        "state_flips": 64
+      },
+      {
+        "number": 3,
+        "reversals": 332,
+        "state_changes": 454,
+        "state_flips": 157
+      },
+      {
+        "number": 4,
+        "reversals": 308,
+        "state_changes": 333,
+        "state_flips": 98
+      },
+      {
+        "number": 5,
+        "reversals": 129,
+        "state_changes": 334,
+        "state_flips": 86
+      },
+      {
+        "number": 6,
+        "reversals": 207,
+        "state_changes": 337,
+        "state_flips": 77
+      },
+      {
+        "number": 7,
+        "reversals": 276,
+        "state_changes": 357,
+        "state_flips": 86
+      },
+      {
+        "number": 8,
+        "reversals": 251,
+        "state_changes": 408,
+        "state_flips": 114
+      },
+      {
+        "number": 9,
+        "reversals": 137,
+        "state_changes": 307,
+        "state_flips": 57
+      },
+      {
+        "number": 10,
+        "reversals": 256,
+        "state_changes": 314,
+        "state_flips": 42
+      },
+      {
+        "number": 11,
+        "reversals": 296,
+        "state_changes": 374,
+        "state_flips": 104
+      },
+      {
+        "number": 12,
+        "reversals": 271,
+        "state_changes": 400,
+        "state_flips": 121
+      },
+      {
+        "number": 13,
+        "reversals": 196,
+        "state_changes": 240,
+        "state_flips": 38
+      },
+      {
+        "number": 14,
+        "reversals": 180,
+        "state_changes": 273,
+        "state_flips": 42
+      },
+      {
+        "number": 15,
+        "reversals": 361,
+        "state_changes": 420,
+        "state_flips": 179
+      }
+    ]
+  },
+  "flip_denominator": "DeepSeek wall minutes * botcount",
+  "duels": {
+    "beginner": {
+      "kills": 24,
+      "deaths": 92,
+      "shots": 1352,
+      "hits": 359,
+      "hit_rate": 0.266,
+      "headshots": 11,
+      "headshot_share": 0.031,
+      "first_shot_delay_median_s": 1.05,
+      "first_shot_delay_samples": 123,
+      "burst_median": 2,
+      "moving_shot_share": 0.43,
+      "hits_by_band": {
+        "0-10": 146,
+        "10-20": 200,
+        "20-30": 13,
+        "30-50": 0,
+        "50+": 0
+      },
+      "hits_20m_share": 0.036
+    },
+    "normal": {
+      "kills": 83,
+      "deaths": 82,
+      "shots": 2450,
+      "hits": 820,
+      "hit_rate": 0.335,
+      "headshots": 31,
+      "headshot_share": 0.038,
+      "first_shot_delay_median_s": 0.65,
+      "first_shot_delay_samples": 192,
+      "burst_median": 2,
+      "moving_shot_share": 1,
+      "hits_by_band": {
+        "0-10": 297,
+        "10-20": 443,
+        "20-30": 65,
+        "30-50": 15,
+        "50+": 0
+      },
+      "hits_20m_share": 0.098
+    },
+    "veteran": {
+      "kills": 97,
+      "deaths": 68,
+      "shots": 3535,
+      "hits": 994,
+      "hit_rate": 0.281,
+      "headshots": 55,
+      "headshot_share": 0.055,
+      "first_shot_delay_median_s": 0.41,
+      "first_shot_delay_samples": 183,
+      "burst_median": 3,
+      "moving_shot_share": 1,
+      "hits_by_band": {
+        "0-10": 224,
+        "10-20": 581,
+        "20-30": 153,
+        "30-50": 36,
+        "50+": 0
+      },
+      "hits_20m_share": 0.19
+    },
+    "elite": {
+      "kills": 83,
+      "deaths": 45,
+      "shots": 2997,
+      "hits": 889,
+      "hit_rate": 0.297,
+      "headshots": 92,
+      "headshot_share": 0.103,
+      "first_shot_delay_median_s": 0.28,
+      "first_shot_delay_samples": 154,
+      "burst_median": 4,
+      "moving_shot_share": 1,
+      "hits_by_band": {
+        "0-10": 251,
+        "10-20": 526,
+        "20-30": 89,
+        "30-50": 21,
+        "50+": 2
+      },
+      "hits_20m_share": 0.126
+    }
+  },
+  "detectors": {
+    "ignore_visible": {
+      "events": 432,
+      "events_per10min": 392.72727272727275
+    },
+    "oscillation": {
+      "events": 22,
+      "events_per10min": 20.0
+    },
+    "shoot_cover": {
+      "events": 20,
+      "events_per10min": 18.181818181818183
+    },
+    "open_under_fire": {
+      "events": 19,
+      "events_per10min": 17.272727272727273
+    },
+    "freeze": {
+      "events": 17,
+      "events_per10min": 15.454545454545453
+    }
+  },
+  "detectors_events_per10min": 463.64,
+  "gates": {
+    "no_crash": true,
+    "kills_ge90pct": true,
+    "stalls_le130pct": true,
+    "traps_le1": true,
+    "elite_no_fire_lower": true,
+    "glance_normal_plus": true,
+    "high_ground_each_elite": true
+  },
+  "all_gates_pass": true,
+  "control": "build/c113-on15-2fee59c2",
+  "rng": "native independent random_device; same initial memory/nav and roster, no matched RNG",
+  "extras": {
+    "per_skill": {
+      "beginner": {
+        "alive_seconds": 2181.379999999869,
+        "visible_in100m_seconds": 936.7859999999828,
+        "shots": 1352,
+        "shots_while_visible_in100m": 1335,
+        "no_fire_ge0_7": 535,
+        "no_fire_gap_seconds": 676.7060000000001,
+        "high_ground_starts": 0,
+        "vantage_travel": 0,
+        "vantage_hold": 0,
+        "glances": 0,
+        "kills_from_3m_above": 0,
+        "world_z_seconds_by_1m": {
+          "138": 666.1929999999998,
+          "136": 763.6989999999914,
+          "135": 44.322999999999965,
+          "146": 35.656999999999975,
+          "145": 7.45000000000012,
+          "144": 12.066999999999823,
+          "143": 89.38800000000005,
+          "142": 169.62599999999978,
+          "141": 143.55399999999992,
+          "140": 111.16600000000028,
+          "139": 59.32500000000019,
+          "137": 43.503999999999905,
+          "150": 3.570999999999927,
+          "149": 5.304999999999964,
+          "151": 9.027000000000044,
+          "148": 1.3480000000000416,
+          "147": 16.177000000000007
+        },
+        "seconds_above_local_floor_3m": null,
+        "shots_per_visible_alive_in100m_minute": 85.50512069992664,
+        "no_fire_ge0_7_per_visible_in100m_minute": 34.26609705952116,
+        "no_fire_ge0_7_per_alive_minute": 14.715455353951135
+      },
+      "normal": {
+        "alive_seconds": 2234.4449999998506,
+        "visible_in100m_seconds": 1084.2509999999672,
+        "shots": 2450,
+        "shots_while_visible_in100m": 2413,
+        "no_fire_ge0_7": 239,
+        "no_fire_gap_seconds": 338.8870000000003,
+        "high_ground_starts": 0,
+        "vantage_travel": 0,
+        "vantage_hold": 0,
+        "glances": 135,
+        "kills_from_3m_above": 0,
+        "world_z_seconds_by_1m": {
+          "138": 721.9919999999992,
+          "136": 955.4599999999779,
+          "135": 58.613000000000326,
+          "137": 43.28100000000009,
+          "139": 63.04200000000011,
+          "140": 25.01599999999989,
+          "141": 73.42300000000029,
+          "142": 135.8479999999998,
+          "143": 90.74099999999993,
+          "144": 8.903000000000063,
+          "145": 8.046999999999912,
+          "146": 11.388000000000034,
+          "147": 20.796999999999983,
+          "150": 3.7069999999999084,
+          "149": 6.476000000000084,
+          "151": 6.750000000000028,
+          "148": 0.9609999999999275
+        },
+        "seconds_above_local_floor_3m": null,
+        "shots_per_visible_alive_in100m_minute": 133.52996676969113,
+        "no_fire_ge0_7_per_visible_in100m_minute": 13.225719874826432,
+        "no_fire_ge0_7_per_alive_minute": 6.417701039855963
+      },
+      "veteran": {
+        "alive_seconds": 2301.0719999998546,
+        "visible_in100m_seconds": 1319.0749999999514,
+        "shots": 3535,
+        "shots_while_visible_in100m": 3484,
+        "no_fire_ge0_7": 291,
+        "no_fire_gap_seconds": 432.26300000000026,
+        "high_ground_starts": 14,
+        "vantage_travel": 302,
+        "vantage_hold": 0,
+        "glances": 187,
+        "kills_from_3m_above": 2,
+        "world_z_seconds_by_1m": {
+          "138": 695.298,
+          "136": 1103.977999999959,
+          "135": 66.97700000000006,
+          "139": 55.86100000000012,
+          "137": 26.305999999999962,
+          "142": 120.1049999999999,
+          "141": 104.6809999999996,
+          "143": 39.08700000000027,
+          "144": 4.688000000000002,
+          "145": 4.87000000000009,
+          "140": 21.168000000000106,
+          "150": 1.7770000000001005,
+          "149": 6.921999999999997,
+          "151": 14.249000000000052,
+          "148": 1.0660000000000025,
+          "147": 13.31099999999995,
+          "146": 14.903999999999883,
+          "152": 2.9869999999998527,
+          "153": 0.6539999999999964,
+          "154": 1.085999999999899,
+          "155": 1.0970000000000937
+        },
+        "seconds_above_local_floor_3m": null,
+        "shots_per_visible_alive_in100m_minute": 158.47468870231617,
+        "no_fire_ge0_7_per_visible_in100m_minute": 13.236548338798508,
+        "no_fire_ge0_7_per_alive_minute": 7.587767788231356
+      },
+      "elite": {
+        "alive_seconds": 1754.1639999999172,
+        "visible_in100m_seconds": 965.2459999999792,
+        "shots": 2997,
+        "shots_while_visible_in100m": 2960,
+        "no_fire_ge0_7": 225,
+        "no_fire_gap_seconds": 299.8259999999999,
+        "high_ground_starts": 21,
+        "vantage_travel": 413,
+        "vantage_hold": 0,
+        "glances": 200,
+        "kills_from_3m_above": 4,
+        "world_z_seconds_by_1m": {
+          "138": 622.7440000000012,
+          "136": 565.053,
+          "147": 19.27400000000007,
+          "139": 61.73100000000011,
+          "135": 44.025999999999925,
+          "137": 26.532999999999745,
+          "140": 55.10400000000026,
+          "141": 120.70299999999997,
+          "146": 24.00499999999995,
+          "145": 9.752999999999957,
+          "144": 22.64100000000014,
+          "143": 46.159000000000106,
+          "142": 96.34099999999961,
+          "152": 1.8610000000001037,
+          "151": 12.18099999999987,
+          "150": 2.181000000000097,
+          "149": 10.058999999999969,
+          "148": 10.976999999999975,
+          "153": 0.660000000000025,
+          "154": 0.9350000000000023,
+          "155": 1.242999999999995
+        },
+        "seconds_above_local_floor_3m": null,
+        "shots_per_visible_alive_in100m_minute": 183.994546467951,
+        "no_fire_ge0_7_per_visible_in100m_minute": 13.986071944354384,
+        "no_fire_ge0_7_per_alive_minute": 7.695973694592203
+      }
+    },
+    "high_ground_by_slot": {
+      "4": 8,
+      "11": 5,
+      "8": 5,
+      "12": 8,
+      "7": 3,
+      "3": 3,
+      "15": 3
+    },
+    "elite_slots": [
+      4,
+      8,
+      12
+    ],
+    "kill_height_unobservable": 0,
+    "definitions": {
+      "eligible": "alive shooter+alive current target, BRAIN visible lastdecision<=0.3s, actual 3Ddistance(0,100]m; fixed sameproxy bothbuilds, not a muzzle-clear or per-weapon shoot-permission assertion",
+      "no_fire": "continuous same eligible target gap >=0.7s between FIRE SHOT records, includes legal reload/reaction windows; per eligible-minute and allalive-minute both supplied",
+      "height": "kills use nearest preceding FRAME <=0.15s; local floorheight absent so requested time-above-floor is null, world-Z histogram supplied"
+    }
+  },
+  "native_server_frame_ms": null,
+  "cpu_pct": null,
+  "owner_reference": "build/owner-playtests/C112-2fee59c2-20261026-225932; no owner FIRE diagnostics, not a controlled comparison",
+  "telemetry_notes": [
+    "Local ground/floor height unavailable; requested seconds above floor+3m null, world-Z histogram retained",
+    "No-fire eligibility uses observed cached BRAIN visible+aliveframe target within100m and BRAINage<=.3s; not guaranteed muzzle-clear. Both builds same meter. Legal reload/reaction gaps included.",
+    "Server demo kills287 vs GameRules skillkills287 here; retain raw separately"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+    "native_water":  "NOT OBSERVED",
+    "restore":  {
+                    "memory":  {
+                                   "verified":  true,
+                                   "absent_state_restored":  true,
+                                   "files":  2
+                               },
+                    "nav":  {
+                                "verified":  true,
+                                "absent_state_restored":  true,
+                                "files":  16
+                            }
+                },
+    "map":  "653f5e1e temporary diagnostic install only, restored; NOT playable accepted",
+    "source_evidence":  [
+                            "BotManager.cpp:887-893",
+                            "BotLog.cpp:35-56",
+                            "BotConfig.cpp wb_log registration"
+                        ],
+    "source":  "f66406d29f91e1950710907b02ad67aa9ec3825a",
+    "exit":  "NOT OBSERVED",
+    "cause":  "Mailbox wb_debug2 is invalid: wb_debug is a command accepting only0/1, not a CVar; Usage line, no effective value. Remaining44 CVars pass.",
+    "game_active":  false,
+    "door":  "NOT OBSERVED",
+    "bots_spawned":  0,
+    "observation_runs":  0,
+    "ci_result":  "GREEN exact SHA",
+    "failed_checks":  [
+                          {
+                              "expected":  2,
+                              "pass":  false,
+                              "name":  "wb_debug",
+                              "actual":  null
+                          }
+                      ],
+    "task":  "C145",
+    "review":  "DS077 OK2425fd94",
+    "next":  "DS078 independent recipe review; propose wb_debug1 validated via wb_status defaultVerbose1, separate wb_log2 if main-log telemetry desired. No source change/default promotion or rerun this phase.",
+    "harness_sha256":  "81CDC848246C778B8F68232E74CE3D9A7800AB52F8AFC5EE17CE8CF5B78A2B79",
+    "state":  "BLOCKED actorless recipe preflight",
+    "ci":  40643217305,
+    "capture":  "NOT OBSERVED",
+    "actorless_launches":  1,
+    "raw":  "build/c145-US-f66406d2/",
+    "units":  35
+}

@@ -1,0 +1,73 @@
+{
+  "task": "C153",
+  "attempt": "v1",
+  "classification": "INVALID_TOOLING_FAILURE",
+  "source": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+  "ci": 40790759287,
+  "review": "207bb951de7f4d3dd17f6e6400f8a4be0a51b39b",
+  "harness": "a21d0e2e147a2c613a5d39332128969a5d45dd91",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c153-batch-5ef9ee22",
+  "result": {
+    "quality_pass": false,
+    "source": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+    "failure": "Exception calling \"Substring\" with \"1\" argument(s): \"startIndex cannot be larger than length of string.\r\nParameter name: startIndex\"",
+    "client_visual": "NOT TESTED",
+    "runtime_criteria_pass": false,
+    "evidence": {
+      "observation_seconds": 24.437548,
+      "attacking_states": 19,
+      "current_real_primary_pickup_ids": [
+        "65466",
+        "65476",
+        "65481",
+        "65486",
+        "65491",
+        "65496",
+        "65501"
+      ],
+      "current_roster_ids": [
+        "65466",
+        "65471",
+        "65476",
+        "65481",
+        "65486",
+        "65491",
+        "65496",
+        "65501"
+      ],
+      "client_visual": "NOT TESTED",
+      "historic_pickup_actor_ids": [
+        "65466",
+        "65476",
+        "65481",
+        "65486",
+        "65491",
+        "65496",
+        "65501"
+      ],
+      "native_death_revive_cycles": 3,
+      "test_grants": 0,
+      "revive_log_events": 3
+    },
+    "task": "C153"
+  },
+  "restore": {
+    "memory": "snapshot bytes + receipt + CURRENT names/hash PASS",
+    "nav": "snapshot bytes + receipt + CURRENT names/hash PASS"
+  },
+  "client_started": false,
+  "source_game_code_changed_after_failure": false,
+  "root_cause_evidence": "Actual entry type not captured. Archived scalar parser passes; same text as two fragments reproduces identical Substring error; normalized scalar reader passes empty/single/multi controls. Likely Get-Content live-fragment array, not directly observed at failure.",
+  "driver_sha256": "eb4f0ac909aa25aa2f0da87e068791ae8daebf6ca64bd8d1dc6b3dd929411833",
+  "trace_sha256": "55742c277775a4d36dc4f3d43db9b722016a360ba9ae95ae058ac8fc7b45cc09",
+  "reader_control": {
+    "chunks": 2,
+    "archived_pickup_actors": 7,
+    "old_fragmented_parser": "RED same Substring error",
+    "new_actual_reader": "GREEN exact scalar",
+    "empty_and_single_fragment": "PASS",
+    "current_roster": 8,
+    "game_started": false
+  },
+  "next": "DS102 review of corrected v2 harness required before a separately recorded corrected shared acceptance. Preserve v1 and disclose physical attempt count."
+}

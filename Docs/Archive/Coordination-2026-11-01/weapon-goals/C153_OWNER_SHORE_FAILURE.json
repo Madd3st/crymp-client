@@ -1,0 +1,37 @@
+{
+  "task": "C153",
+  "source": "b8b444d6c858f27a1fdde0d93b25a318cafc6937",
+  "owner_archive": "C:\\Users\\Magic8\\WarsBotsBuild\\WarsBots-Showcase-b8b444d6\\Shore\\Sessions\\S150S-20261028-222902",
+  "outcome": "C150_SHORE_UPPER_ROUTE_GATE_REFUSED_LOWER_SPAWN",
+  "native_us_actor": 65481,
+  "native_us_group": 537,
+  "native_us_position": [
+    2114.5,
+    1887.875,
+    90.575
+  ],
+  "gate_min_z": 99.5,
+  "client_started": false,
+  "session_phase": "archived_restored",
+  "restore": {
+    "memory": {
+      "historical_restore_receipt": "PASS",
+      "snapshot_payload_hashes": "PASS",
+      "files": 2,
+      "current_live_data": "NOT COMPARED OR CHANGED"
+    },
+    "nav": {
+      "historical_restore_receipt": "PASS",
+      "snapshot_payload_hashes": "PASS",
+      "files": 16,
+      "current_live_data": "NOT COMPARED OR CHANGED"
+    }
+  },
+  "logs_sha256": {
+    "S150S-20261028-222902-pre.bots.log": "83970acf4e3baf1730189f49ffc2d5d1f0b9e9ff61e656ddfd49d9aa3f03813f",
+    "S150S-20261028-222902-pre.log": "b12948abefb3f10d4493cf5ef25b23e1f2c098b55eed3d7d32297796b191da21",
+    "S150S-20261028-222902.bots.log": "0a9ceeea89cd60e9260500a1a06597976ddd2b3cbfb0b2aa9b0639eba6009f9d",
+    "S150S-20261028-222902.log": "b0a2498186a899181eab3cd33a98122dff59e75a3d25e15cd7ea46f0d45cfc37"
+  },
+  "new_game_runs": 0
+}

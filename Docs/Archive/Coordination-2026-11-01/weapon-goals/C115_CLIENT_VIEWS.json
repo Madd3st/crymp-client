@@ -1,0 +1,377 @@
+{
+  "schema": "warsbots-owner-client-review/1",
+  "sessions": [
+    {
+      "session": "C091-40bd9f60-20261026-115617",
+      "client_logs": [
+        "build\\owner-playtests\\C091-40bd9f60-20261026-115617\\C091-40bd9f60-20261026-115617-Client.bots.log",
+        "build\\owner-playtests\\C091-40bd9f60-20261026-115617\\C091-40bd9f60-20261026-115617-Client.log"
+      ],
+      "motion_replica_activations": 16,
+      "motion_replica_distinct_entities": 16,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [],
+      "malformed_lines": [
+        "[net 09:03:24.259] Disconnect 193.165.100.242:11522; profid=0; cause=1; msg='Malformed packet'",
+        "[CryMP] Disconnect: 1 Malformed packet"
+      ],
+      "disconnect_lines": [
+        "[net 09:02:41.621] Disconnect Magic8-PC:46050; profid=0; cause=19; msg='User left the game'",
+        "[CryMP] Disconnect: 19 User left the game",
+        "[net 09:02:52.393] Disconnect 193.165.100.242:11502; profid=0; cause=7; msg='SetAspectProfile - object not found'",
+        "[CryMP] Disconnect: 7 SetAspectProfile - object not found",
+        "[net 09:03:24.259] Disconnect 193.165.100.242:11522; profid=0; cause=1; msg='Malformed packet'",
+        "[CryMP] Disconnect: 1 Malformed packet"
+      ],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "C106-757f3ddc-20261026-162613",
+      "client_logs": [
+        "build\\owner-playtests\\C106-757f3ddc-20261026-162613\\C106-757f3ddc-20261026-162613-Client.bots.log",
+        "build\\owner-playtests\\C106-757f3ddc-20261026-162613\\C106-757f3ddc-20261026-162613-Client.log"
+      ],
+      "motion_replica_activations": 16,
+      "motion_replica_distinct_entities": 16,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [
+        "[WarsBots] NET wire extensions ON (wb_net_ext 1, server Magic8-PC:46050)"
+      ],
+      "malformed_lines": [],
+      "disconnect_lines": [],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "C112-2fee59c2-20261026-225932",
+      "client_logs": [
+        "build\\owner-playtests\\C112-2fee59c2-20261026-225932\\C112-2fee59c2-20261026-225932-Client.bots.log",
+        "build\\owner-playtests\\C112-2fee59c2-20261026-225932\\C112-2fee59c2-20261026-225932-Client.log"
+      ],
+      "motion_replica_activations": 16,
+      "motion_replica_distinct_entities": 16,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [
+        196581
+      ],
+      "net_wire_lines": [
+        "[WarsBots] NET wire extensions ON (wb_net_ext 1, server Magic8-PC:46050)"
+      ],
+      "malformed_lines": [],
+      "disconnect_lines": [],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "elite11-20261024",
+      "client_logs": [
+        "build\\owner-playtests\\elite11-20261024\\WarsBots-Play11Elite-20261024-023225-Client.bots.log",
+        "build\\owner-playtests\\elite11-20261024\\WarsBots-Play11Elite-20261024-023225-Client.log"
+      ],
+      "motion_replica_activations": 11,
+      "motion_replica_distinct_entities": 11,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [],
+      "malformed_lines": [],
+      "disconnect_lines": [],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "normal6-20261023",
+      "client_logs": [
+        "build\\owner-playtests\\normal6-20261023\\WarsBots-Play6-20261023-230958-Client.bots.log",
+        "build\\owner-playtests\\normal6-20261023\\WarsBots-Play6-20261023-230958-Client.log"
+      ],
+      "motion_replica_activations": 6,
+      "motion_replica_distinct_entities": 6,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [],
+      "malformed_lines": [],
+      "disconnect_lines": [
+        "    disconnect (Command)",
+        "[net 20:23:30.434] Disconnect Magic8-PC:64150; profid=0; cause=19; msg='User left the game'",
+        "[CryMP] Disconnect: 19 User left the game"
+      ],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "record6-20261024-140812",
+      "client_logs": [
+        "build\\owner-playtests\\record6-20261024-140812\\final\\WarsBots-Record6-20261024-140812-Client.bots.log",
+        "build\\owner-playtests\\record6-20261024-140812\\final\\WarsBots-Record6-20261024-140812-Client.log"
+      ],
+      "motion_replica_activations": 12,
+      "motion_replica_distinct_entities": 12,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [],
+      "malformed_lines": [],
+      "disconnect_lines": [],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "recovery6-20261024-045803",
+      "client_logs": [
+        "build\\owner-playtests\\recovery6-20261024-045803\\final\\WarsBots-Recovery6-20261024-045803-Client.log",
+        "build\\owner-playtests\\recovery6-20261024-045803\\owner-finished-snapshot\\WarsBots-Recovery6-20261024-045803-Client.log"
+      ],
+      "motion_replica_activations": 0,
+      "motion_replica_distinct_entities": 0,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [],
+      "malformed_lines": [],
+      "disconnect_lines": [
+        "[net 02:12:50.183] Disconnect Magic8-PC:64150; profid=0; cause=14; msg='Unreachable address Magic8-PC:64150'",
+        "[CryMP] Disconnect: 14 Unreachable address Magic8-PC:64150"
+      ],
+      "system_quit": false,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "spectator6-20261024-041505",
+      "client_logs": [
+        "build\\owner-playtests\\spectator6-20261024-041505\\feedback-snapshot\\WarsBots-Spectator6-20261024-041505-Client.log",
+        "build\\owner-playtests\\spectator6-20261024-041505\\final\\WarsBots-Spectator6-20261024-041505-Client.bots.log",
+        "build\\owner-playtests\\spectator6-20261024-041505\\final\\WarsBots-Spectator6-20261024-041505-Client.log"
+      ],
+      "motion_replica_activations": 12,
+      "motion_replica_distinct_entities": 12,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [],
+      "malformed_lines": [],
+      "disconnect_lines": [],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "Sprint-91a01bbc-20261025-194805",
+      "client_logs": [
+        "build\\owner-playtests\\Sprint-91a01bbc-20261025-194805\\Sprint-91a01bbc-20261025-194805-Client.bots.log",
+        "build\\owner-playtests\\Sprint-91a01bbc-20261025-194805\\Sprint-91a01bbc-20261025-194805-Client.log"
+      ],
+      "motion_replica_activations": 16,
+      "motion_replica_distinct_entities": 16,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [],
+      "malformed_lines": [],
+      "disconnect_lines": [],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "Sprint-b521feeb-20261025-233851",
+      "client_logs": [
+        "build\\owner-playtests\\Sprint-b521feeb-20261025-233851\\Sprint-b521feeb-20261025-233851-Client.bots.log",
+        "build\\owner-playtests\\Sprint-b521feeb-20261025-233851\\Sprint-b521feeb-20261025-233851-Client.log"
+      ],
+      "motion_replica_activations": 16,
+      "motion_replica_distinct_entities": 16,
+      "remote_bot_move_samples": 0,
+      "position_snaps_gt0_5m": null,
+      "position_velocity_residual_gt0_5m_proxy": null,
+      "largest_residuals": [],
+      "ClReload_explicit_client_lines": 0,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null,
+      "spectator_target_observed": [],
+      "net_wire_lines": [],
+      "malformed_lines": [],
+      "disconnect_lines": [],
+      "system_quit": true,
+      "notes": [
+        "Replica activation proves bot motion aspect only, not accurate FP pose/position",
+        "Raw displacement >0.5m is not a snap: ordinary movement can exceed it; residual proxy uses prior velocity, contains legitimate acceleration/steps/network interpolation",
+        "No explicit ClReload log or camera mode means delivery/FP view cannot be confirmed from absence; spectator target ID proves following only"
+      ]
+    },
+    {
+      "session": "C083-A8-20261026-002055",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "C083-B4-20261026-004934",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "C106-757f3ddc-20261026-152729",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "C106-757f3ddc-20261026-152737",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "C106-757f3ddc-20261026-152742",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "C106-757f3ddc-20261026-152805",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "Owner717-20261025-143230",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "OwnerPace7-20261024-191733",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "OwnerRecord7-20261024-233350",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "OwnerTrace-20261024-154328",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    },
+    {
+      "session": "OwnerTrace-20261024-155135",
+      "status": "unavailable: no archived Client-named engine/trace log",
+      "client_logs": [],
+      "position_snaps_gt0_5m": null,
+      "ClReload_delivery_confirmed": null,
+      "fp_spectator_confirmed": null
+    }
+  ]
+}

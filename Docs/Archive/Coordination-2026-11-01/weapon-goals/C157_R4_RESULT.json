@@ -1,0 +1,44 @@
+{
+  "task": "C157",
+  "source": "cde7782301d304149025b1975ae6b13e6866745f",
+  "parent": "307037bc08050d39f26310dc6cc7071dddddf4a6",
+  "branch": "codex/r4-weapon-search-episode",
+  "review": "58cc3efc4f96ac031e47e5b601302e391ca10fed",
+  "review_task": "DS128",
+  "review_verdict": "OK",
+  "ci_run": 41039823887,
+  "ci_success": true,
+  "ci_state": "success",
+  "local_checks": {
+    "old_actual_caller": "EXPECTED_SEMANTIC_RED_9_FAILURES_0_INVARIANT_FAILURES",
+    "new_actual_caller": "GREEN_0_FAILURES",
+    "existing_weapon_goal_caller": "PASS",
+    "BotWeaponGoal": "PASS",
+    "BotAuditFixes": "PASS"
+  },
+  "oracle_scope": "Actual UpdateWeaponSeek body plus actual weapon-related ResetLife assignments; engine boundary calls mocked. Not a physics/pickup/fire proof.",
+  "game_launched": false,
+  "runtime_verified": false,
+  "C154_runtime_pin_unchanged": "307037bc08050d39f26310dc6cc7071dddddf4a6",
+  "cvars_added": 0,
+  "headers_changed": false,
+  "fallback_policy": "one attempt per life, including failed attempt; unchanged",
+  "evidence_directory": "E:\\WarsBots\\Development\\C157-checks",
+  "artifact_id": 12970885272,
+  "artifact_digest": "sha256:1d9cf1dd9d3f5433c9161806c5517b228fc0ab78b8d65797afeac67768b1ffe2",
+  "binary_hashes": {
+    "CryMP-Client64.exe": "a0cdda666fb78faac97bcb2a185d85dc3a88cec768e87d8255dc3859f374ff12",
+    "CryMP-Server64.exe": "e73b7ec7c48d6f1f38afc2a618f6931d7d5155bed65811b1f2e8c3b7e2d033f8"
+  },
+  "artifact_hashes_verified": true,
+  "pr": "https://github.com/Madd3st/crymp-client/pull/1",
+  "previous_source": "bd8692cdfc13ff88f9622684aa25f3940e698b35",
+  "review_tasks": {
+    "DS128": "58cc3efc4f96ac031e47e5b601302e391ca10fed",
+    "DS129": "4fecbb8b536df498e652c5976bf8f94fbee194e4"
+  },
+  "pr_matrix_run": 41039830200,
+  "pr_matrix_success": true,
+  "review_scope": "DS128 R4 and DS129 OFF code guard; subsequent signing-key workflow change verified by complete CI, no new independent review claimed",
+  "superseded_validation": "bd8692cd experimental CI passed, OFF PR link failed; 79c03389 link fixed but signing attempted without configured key"
+}

@@ -1,0 +1,37 @@
+{
+  "task": "C154307",
+  "source_commit": "124a41f1a8b730e0df185c8e489ef1abb74c96d5",
+  "wiki_commit": "f78000be676a4f6034e8f4872076e54c23f1f6d1",
+  "wiki_url": "https://github.com/Madd3st/crymp-client/wiki",
+  "pages": 18,
+  "published_blob_hashes_match": true,
+  "sha256": {
+    "Artifacts-and-Storage.md": "45459ad47311625f98e16930ee0db530bcb7409573ba7ce284cd2e07697c8729",
+    "Bot-Architecture.md": "72c8fce1d7cca5bd380c65eebc41167518f8d1a4df0ead46d3aa44ce9a333d48",
+    "CS-Maturity-Plan.md": "1f0787a4379d1ca50532da5a87efc50f1bff0fe398bac458b0487b33a37eb967",
+    "Console-Commands.md": "a979a9faf8a9e5716e7f6f6924947fbb8bfc093ec865952af5f66ce7b0a993b0",
+    "Demos.md": "f2bd08544befcb37e5f45cac83864824a73d96d5fff6130ddb89aa8a2965a5af",
+    "Engineering-Guide.md": "8db0108d6f2db8450d88a6cf7f73fe91dce643bf4c02e4a7df84e56b8ed7b354",
+    "Getting-Started.md": "6258a99d98cfc3a06659aeef8b0d0a52897410a514fd39c5cfa2ff9dbadc814d",
+    "Glossary.md": "4e495cab63ea1913c168aae553955178926853530bffa824d5ebc6d1a5b3d45e",
+    "Home.md": "b753aa70b177b6b7a33e651e472f78d6b4159c1199ed680be59da48fb159f603",
+    "Navigation.md": "b64e0b089809e67d163b7b5ede494170b35577313d4fb9737f4dc59f5b35b379",
+    "Repository-Map.md": "be8dd5683312cda70006f89aa9ad2b3ea7ce837867ac5cce20a0b8e0fb1f3e35",
+    "Research-and-Ideas.md": "e6c8483a654cd38b30d068fae89c3f54266581bc3cac71c37c62f050dfe09396",
+    "Running-and-Playing.md": "b1b74b5de0126caec25ab0957054d5d188004dcf3002f16d40320b83c601edb0",
+    "Status-and-Roadmap.md": "1cc360869ae5ff6dbc784918cbf51c54b15f122863c8f060ca4c6511478c1017",
+    "Team-and-Process.md": "cd40dbdaa5697e77a2089ed2a485c2db796b683bf439bfbc2a9cfc4532bde156",
+    "Testing-and-Evidence.md": "9cf7f22a1b826f8937588a41240bffc0633513760365cf6c17860156a865f713",
+    "Troubleshooting.md": "e997ba94328c90caa85f3fc00a1efefc8d239611ec7b3e100818f24831e0cf66",
+    "_Sidebar.md": "737099ffd06d8be0f7dbe54963a12bf96922cbf56d35bec1e8f0d1cda8dc01ac"
+  },
+  "checks": {
+    "task": "C154307",
+    "wiki_pages": 18,
+    "local_links_checked": 89,
+    "github_source_links_checked": 33,
+    "errors": [],
+    "result": "PASS"
+  },
+  "note": "Pre-existing mailbox duplicate DS-050 and DS-052 detected; unrelated IDs preserved."
+}

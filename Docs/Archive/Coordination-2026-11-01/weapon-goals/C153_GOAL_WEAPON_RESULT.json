@@ -1,0 +1,287 @@
+{
+  "task": "C153",
+  "verdict": "PASS_LIMITED_HEADLESS_BATCH",
+  "source": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+  "ci": 40790759287,
+  "independent_archive_review": "1e7d868299615f7c3fa6496d4ef97416eaab7970",
+  "quality": {
+    "task": "C153",
+    "source": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+    "ci": 40790759287,
+    "ci_success": true,
+    "ci_source_match": true,
+    "review": "38c6ad6680959c6187c77e5036cebb0adfba564e",
+    "review_branch_head": "38c6ad6680959c6187c77e5036cebb0adfba564e",
+    "review_ok": true,
+    "harness": "5e3bf6db7368b6c9398d6eafb8f016a02ebcd7f5",
+    "harness_sha256": "821f8ff18a9df56c658ffd7360cb651d9fea04e0434cb48fe848124694f6e1f3",
+    "client_sha256": "b823a3efae59a0006a00415ed51ad3fbf241fd817c5c00d6c99ec0bfd2a71ef6",
+    "server_sha256": "5966af7d6f1c9dd748164bc77e2fb5a0c6a931c54c49982c80421e7c08aae48c",
+    "artifact_id": 12861269082,
+    "client_visual": "NOT TESTED",
+    "harness_scope": "c153-live-reader-v2"
+  },
+  "physical_gameplay_attempts": 2,
+  "attempts": [
+    {
+      "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c153-batch-5ef9ee22",
+      "verdict": "INVALID_TOOLING_FAILURE",
+      "details": "Live-log parser Substring exception; partial only; archived and restored. See C153_ATTEMPT_V1_INVALID.json."
+    },
+    {
+      "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c153-batch-5ef9ee22-v2",
+      "verdict": "PASS",
+      "summary": {
+        "schema": "warsbots-run-summary/1",
+        "task": "C153",
+        "source": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+        "verdict": "PASS",
+        "client_visual": "NOT TESTED",
+        "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\c153-batch-5ef9ee22-v2",
+        "created": {
+          "1": 131002,
+          "2": 131007,
+          "3": 131012,
+          "4": 131018,
+          "5": 196559,
+          "6": 196565,
+          "7": 196570,
+          "8": 131041
+        },
+        "first_real_primary": [
+          {
+            "t": 3.54,
+            "actor": 65466,
+            "item": 287,
+            "class": "SCAR"
+          },
+          {
+            "t": 4.04,
+            "actor": 65491,
+            "item": 253,
+            "class": "Shotgun"
+          },
+          {
+            "t": 4.75,
+            "actor": 65496,
+            "item": 133,
+            "class": "FY71"
+          },
+          {
+            "t": 5.24,
+            "actor": 65481,
+            "item": 109,
+            "class": "FY71"
+          },
+          {
+            "t": 5.72,
+            "actor": 65476,
+            "item": 196,
+            "class": "Hurricane"
+          },
+          {
+            "t": 9.51,
+            "actor": 65486,
+            "item": 187,
+            "class": "SCAR"
+          },
+          {
+            "t": 15.48,
+            "actor": 65501,
+            "item": 116,
+            "class": "SCAR"
+          },
+          {
+            "t": 32.46,
+            "actor": 131007,
+            "item": 273,
+            "class": "Shotgun"
+          },
+          {
+            "t": 33.37,
+            "actor": 196565,
+            "item": 212,
+            "class": "SMG"
+          },
+          {
+            "t": 34.62,
+            "actor": 131002,
+            "item": 163,
+            "class": "SMG"
+          },
+          {
+            "t": 40.76,
+            "actor": 131041,
+            "item": 109,
+            "class": "FY71"
+          },
+          {
+            "t": 44.72,
+            "actor": 196570,
+            "item": 213,
+            "class": "FY71"
+          },
+          {
+            "t": 46.9,
+            "actor": 131012,
+            "item": 130,
+            "class": "FY71"
+          },
+          {
+            "t": 53.9,
+            "actor": 196559,
+            "item": 181,
+            "class": "SCAR"
+          },
+          {
+            "t": 56.08,
+            "actor": 131018,
+            "item": 212,
+            "class": "SMG"
+          }
+        ],
+        "real_primary_pickups": 28,
+        "weapon_goal_events": 197,
+        "mid_goal_replacements": [],
+        "repeated_pursuit_anchors": [],
+        "timeout_events": 8,
+        "unavailable_cancels": 3,
+        "runtime": {
+          "quality_pass": true,
+          "source": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+          "failure": null,
+          "client_visual": "NOT TESTED",
+          "runtime_criteria_pass": true,
+          "evidence": {
+            "observation_seconds": 90.81080779999999,
+            "attacking_states": 84,
+            "current_real_primary_pickup_ids": [
+              "131002",
+              "131007",
+              "131012",
+              "131018",
+              "131041",
+              "196559",
+              "196565",
+              "196570"
+            ],
+            "current_roster_ids": [
+              "131002",
+              "131007",
+              "131012",
+              "131018",
+              "131041",
+              "196559",
+              "196565",
+              "196570"
+            ],
+            "client_visual": "NOT TESTED",
+            "historic_pickup_actor_ids": [
+              "131002",
+              "131007",
+              "131012",
+              "131018",
+              "131041",
+              "196559",
+              "196565",
+              "196570",
+              "65466",
+              "65476",
+              "65481",
+              "65486",
+              "65491",
+              "65496",
+              "65501"
+            ],
+            "native_death_revive_cycles": 8,
+            "test_grants": 0,
+            "revive_log_events": 8
+          },
+          "task": "C153"
+        },
+        "restore": {
+          "memory": {
+            "snapshot_and_receipt": "PASS",
+            "current_names_and_hashes": "PASS",
+            "files": 4
+          },
+          "nav": {
+            "snapshot_and_receipt": "PASS",
+            "current_names_and_hashes": "PASS",
+            "files": 16
+          }
+        },
+        "demos": [
+          {
+            "name": "Multiplayer_IA_Steelmill-20261029-033412-1.wbdemo",
+            "sha256": "966a69f2b44a749790f945e771d8aafd6e6b73ff0d1ffd57bfaab2ae596d53fa",
+            "frames": 1821,
+            "tail_complete": true,
+            "header": {
+              "build": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+              "flags": {
+                "wb_bot_aim_model": 1,
+                "wb_bot_arbiter": 1,
+                "wb_bot_look": 1,
+                "wb_bot_navmesh": 1,
+                "wb_bot_pace": 1,
+                "wb_bot_perception": 1,
+                "wb_bot_turn_cap": 1,
+                "wb_bot_weapon_rank": 1,
+                "wb_demo_hz": 20,
+                "wb_demo_record": 1,
+                "wb_move_trace": 1,
+                "wb_qa_socom_only": 0,
+                "wb_reachable_goals": 0,
+                "wb_revive_guard": 1,
+                "wb_spawn_exclude195": 1,
+                "wb_trap_recovery": 1
+              },
+              "hz": 20,
+              "map": "Multiplayer/IA/Steelmill",
+              "navmesh": "none",
+              "server": "C153-5ef9ee22-v2",
+              "started": "2026-10-29T03:34:12"
+            },
+            "bots": 16,
+            "event_counts": {
+              "pickup": 28,
+              "kill": 13,
+              "revive": 12,
+              "shot": 448,
+              "hit": 166
+            }
+          }
+        ],
+        "trace_sha256": "10d37295a8aa5a332bbdd7519e2af28433af30f8dddf4e6009af39254873bf0a",
+        "limits": "Headless shared batch only. Timeout/stolen/urgent controls have offline evidence; absent runtime events are not claimed exercised. No cross-build performance or full-Shore/client claim."
+      }
+    }
+  ],
+  "archive_sha256": {
+    "C153-5ef9ee22-v2-pre.bots.log": "6c385358b9c79160a61f39eb1fe7d7969bff8398f9faa51c141c5324e51bda11",
+    "C153-5ef9ee22-v2-pre.log": "9c5b5f102b4d4f2123e6d313cd256b00736987448bfaa99b55b8dd44aae59ea7",
+    "C153-5ef9ee22-v2.bots.log": "10d37295a8aa5a332bbdd7519e2af28433af30f8dddf4e6009af39254873bf0a",
+    "C153-5ef9ee22-v2.log": "52c7dbfc6f40f1786369ed9683cbae0149a99c85ed79b2851afba441cf4df7d7",
+    "demo-archive.json": "e4dff9fceac3c781e363288bfbea7ea5039c2778c9bcbe7a69466acee192d97a",
+    "effective.json": "57c1b9fc4173393065d225465db9e0275319f773721b87ab77dd122c69211513",
+    "live-reader-audit.jsonl": "5df76249b2b3e68e44629dfb6627b580eaeae2c707ac092a8579ac3480b6f541",
+    "memory-restored.json": "ef1d66c319b19d882908991642f27bdd409033755c69986bd0b26e9ff603feea",
+    "Multiplayer_IA_Steelmill-20261029-033412-1.wbdemo": "966a69f2b44a749790f945e771d8aafd6e6b73ff0d1ffd57bfaab2ae596d53fa",
+    "nav-restored.json": "bb0282c38f1695898fe639235c3ae38a66e32fb8d52a447d1a580b47802e3624",
+    "preflight-arguments.txt": "8efeaf12613bec377b220b73b78af9610e4689accb197cd77d8859e6cf85778e",
+    "preflight-effective.json": "57c1b9fc4173393065d225465db9e0275319f773721b87ab77dd122c69211513",
+    "review-checks.jsonl": "e0e00def08887868590ae717bb8c571e21961379d627adb8f00aeb5341a45e46",
+    "runtime-result.json": "90ebbe7b4deecd47ee1e4d07e2152eed82e186433c82d184973e72b31048b22e",
+    "server-arguments.txt": "adb9086f8f490f658171e6320bc8640c044250ae3b76f3f4594075f066f584cc",
+    "session.json": "e8877de1aa1aa2ab0f51437d908ff5e9f3e650a33c94324c065c9a02ad022093",
+    "summary.json": "e077927a498edffcf1f94580aeec5ea1b06d5cb51ebb3f92825e7449aba2d65c",
+    "weapon-goals.json": "97692a73f303ff6eac3161ff5294f6bacfe015074888fb43dc30d5ea7b810b6e"
+  },
+  "limits": "Headless IA batch, not controlled A/B, not client visual acceptance, not full Shore/PS. Old C150 showcase packages remain b8.",
+  "data_namespace": {
+    "logical": "%LOCALAPPDATA%/WarsBots in Codex desktop process",
+    "physical": "C:/Users/Magic8/AppData/Local/Packages/OpenAI.Codex_2p2nqsd0c76g0/LocalCache/Local/WarsBots",
+    "note": "MSIX AppData redirection. Ordinary external PowerShell LOCALAPPDATA/WarsBots is a different data tree; compare the physical redirected location for this QA run."
+  }
+}

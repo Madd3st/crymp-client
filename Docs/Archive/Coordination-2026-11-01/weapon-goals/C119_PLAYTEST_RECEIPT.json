@@ -1,0 +1,125 @@
+{
+  "source": "6e2713f9762cb3771e8652397c9cda5d9008c9c7",
+  "state_commit": 1,
+  "pass_all": true,
+  "gates": {
+    "no_crash": true,
+    "traps": true,
+    "navmesh": true,
+    "high_ground": true,
+    "frame": true
+  },
+  "kills": 10,
+  "stalls": 8,
+  "traps": 0,
+  "navmesh_loaded": [
+    "NAVMESH loaded Multiplayer/IA/Steelmill: 9333 polys, 924 parts, 1133 links, 2135456 bytes."
+  ],
+  "high_ground_starts": 3,
+  "frame_windows": [
+    {
+      "avg": 179.93,
+      "p95": 179.93,
+      "max": 179.93,
+      "bot_ai": 17.965
+    },
+    {
+      "avg": 30.68,
+      "p95": 31.39,
+      "max": 46.63,
+      "bot_ai": 0.089
+    },
+    {
+      "avg": 31.34,
+      "p95": 31.55,
+      "max": 54.64,
+      "bot_ai": 0.08
+    },
+    {
+      "avg": 31.24,
+      "p95": 31.54,
+      "max": 46.72,
+      "bot_ai": 0.07
+    },
+    {
+      "avg": 30.94,
+      "p95": 31.35,
+      "max": 46.11,
+      "bot_ai": 0.093
+    },
+    {
+      "avg": 30.95,
+      "p95": 31.42,
+      "max": 45.95,
+      "bot_ai": 0.085
+    },
+    {
+      "avg": 31.19,
+      "p95": 31.48,
+      "max": 46.34,
+      "bot_ai": 0.095
+    },
+    {
+      "avg": 31.31,
+      "p95": 31.46,
+      "max": 46.87,
+      "bot_ai": 0.121
+    },
+    {
+      "avg": 30.97,
+      "p95": 31.43,
+      "max": 46.12,
+      "bot_ai": 0.089
+    },
+    {
+      "avg": 31.09,
+      "p95": 31.44,
+      "max": 46.09,
+      "bot_ai": 0.114
+    },
+    {
+      "avg": 31.32,
+      "p95": 31.52,
+      "max": 46.28,
+      "bot_ai": 0.088
+    },
+    {
+      "avg": 31.24,
+      "p95": 31.45,
+      "max": 46.13,
+      "bot_ai": 0.095
+    }
+  ],
+  "client_reload_seen": null,
+  "spectator_fp_usage": null,
+  "notes": "Server-only smoke; client fields UNKNOWN, not zero. Native FRAME windows are not demo frame intervals.",
+  "pass": true,
+  "server_cost_smoke": {
+    "bots": 6,
+    "startup_window_excluded": {
+      "avg": 179.93,
+      "p95": 179.93,
+      "max": 179.93,
+      "bot_ai": 17.965
+    },
+    "steady_windows": 11,
+    "mean_window_avg_ms": 31.115454545454543,
+    "mean_window_p95_ms": 31.457272727272727,
+    "max_ms": 54.64,
+    "mean_bot_ai_ms_per_frame": 0.09263636363636364,
+    "note": "Mean of native window metrics, not a pooled per-frame percentile. Client corrections/ClReload/FP unknown, no GUI."
+  },
+  "launcher_checks": {
+    "+wb_bot_state_commit": true,
+    "+wb_bot_pro_fire": true,
+    "+wb_bot_high_ground": true,
+    "+wb_bot_threat_scan": true,
+    "+wb_bot_vantage": true,
+    "+wb_net_ext": true,
+    "+wb_bot_jump_links": true,
+    "f8": true,
+    "canonical": true,
+    "navmesh_gate": true
+  },
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\Tools\\Play-WarsBotsC119.ps1\""
+}

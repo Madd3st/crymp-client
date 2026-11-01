@@ -1,0 +1,343 @@
+{
+  "schema": "warsbots-owner-archive/1",
+  "source": "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+  "label": "C127-4f3a1d72-20261027-185023",
+  "archive": "C:\\Users\\Magic8\\WarsBotsBuild\\crymp-multibot\\build\\owner-playtests\\C127-4f3a1d72-20261027-185023",
+  "ci_run": 40526830694,
+  "demo_frames": 9820,
+  "demo_duration_s": 493.69100000000003,
+  "demo_events": {
+    "suit": 552,
+    "land": 104,
+    "kill": 7,
+    "hit": 58,
+    "revive": 2,
+    "jump": 33,
+    "shot": 52
+  },
+  "demo_metrics": {
+    "aim_wander_deg_s": {
+      "human": 8.4,
+      "bot": 37.7
+    },
+    "aim_wander_samples": {
+      "human": 6426,
+      "bot": 57059
+    },
+    "bot_aim_error_deg": 3.0,
+    "bot_aim_error_samples": 475,
+    "bot_aim_error_reference": "alive target FRAME XY; yaw only",
+    "bot_brain_aim_error_deg": 1.0,
+    "reaction_s": 0.6,
+    "reactions": 9,
+    "decision_flips_per_bot_min": 0.32,
+    "time_to_primary_s": null,
+    "primaries": 0,
+    "kills_by_weapon": {
+      "SOCOM": 5,
+      "?": 2
+    }
+  },
+  "owner_frame_presence_window": [
+    14.414,
+    407.106
+  ],
+  "owner_window_actor_stats": [
+    {
+      "id": 65486,
+      "kind": "bot",
+      "name": "WarsBot_01 [Normal/Universal]",
+      "profile": "normal/universal",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 65481,
+      "kind": "bot",
+      "name": "WarsBot_02 [Normal/Assault]",
+      "profile": "normal/assault",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 65476,
+      "kind": "bot",
+      "name": "WarsBot_03 [Normal/Marksman]",
+      "profile": "normal/marksman",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 65471,
+      "kind": "bot",
+      "name": "WarsBot_04 [Normal/Flanker]",
+      "profile": "normal/flanker",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 65466,
+      "kind": "bot",
+      "name": "WarsBot_05 [Normal/Defender]",
+      "profile": "normal/defender",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 65461,
+      "kind": "bot",
+      "name": "WarsBot_06 [Normal/Hunter]",
+      "profile": "normal/hunter",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 130999,
+      "kind": "human",
+      "name": "Nomad",
+      "profile": "human",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 131013,
+      "kind": "bot",
+      "name": "WarsBot_05 [Normal/Defender]",
+      "profile": "normal/defender",
+      "kills": 0,
+      "deaths": 1,
+      "shots": 0,
+      "hit_events": 1
+    },
+    {
+      "id": 131020,
+      "kind": "bot",
+      "name": "WarsBot_06 [Normal/Hunter]",
+      "profile": "normal/hunter",
+      "kills": 0,
+      "deaths": 1,
+      "shots": 0,
+      "hit_events": 1
+    },
+    {
+      "id": 130993,
+      "kind": "bot",
+      "name": "WarsBot_01 [Normal/Universal]",
+      "profile": "normal/universal",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 130998,
+      "kind": "bot",
+      "name": "WarsBot_02 [Normal/Assault]",
+      "profile": "normal/assault",
+      "kills": 0,
+      "deaths": 1,
+      "shots": 0,
+      "hit_events": 1
+    },
+    {
+      "id": 131003,
+      "kind": "bot",
+      "name": "WarsBot_03 [Normal/Marksman]",
+      "profile": "normal/marksman",
+      "kills": 0,
+      "deaths": 1,
+      "shots": 16,
+      "hit_events": 14
+    },
+    {
+      "id": 131008,
+      "kind": "bot",
+      "name": "WarsBot_04 [Normal/Flanker]",
+      "profile": "normal/flanker",
+      "kills": 0,
+      "deaths": 0,
+      "shots": 0,
+      "hit_events": 0
+    },
+    {
+      "id": 131042,
+      "kind": "human",
+      "name": "Nomad",
+      "profile": "human",
+      "kills": 3,
+      "deaths": 1,
+      "shots": 36,
+      "hit_events": 10
+    }
+  ],
+  "owner_window_note": "All human FRAME presence including dead/spectator. Native hit events per shots are not unique-bullet accuracy. Whole-server summary includes prejoin/postexit.",
+  "whole_server_summary": {
+    "schema": "warsbots-run-summary/1",
+    "label": "C127-20261027-185023-Server.bots",
+    "log": "C127-20261027-185023-Server.bots.log",
+    "log_sha256": "51a1aa06605009af4f3253e77a92ac478e34c603671ebd5d4d344b4f06ba07aa",
+    "build": "v26-201-g4f3a1d72",
+    "bots": 6,
+    "seconds": 493.7,
+    "live_bot_minutes": 47.6,
+    "spawn195": {
+      "revives": 0,
+      "frozen": 0
+    },
+    "revives": {
+      "total": 0,
+      "frozen": 0,
+      "frozen_spawns": {}
+    },
+    "watchdog": {
+      "episodes": 22,
+      "at_spawn195": 0,
+      "reached_level": {
+        "1": 22,
+        "2": 17
+      },
+      "self_kills": 0
+    },
+    "pinned_live_percent": 0.0,
+    "traps_ge60s": 1,
+    "stalls": 126,
+    "nav_fallback": {
+      "total": 1170,
+      "per_bot_minute": 24.59,
+      "reasons": {
+        "no_route": 717,
+        "start_unprojected": 227,
+        "budget": 1,
+        "goal_unprojected": 225
+      },
+      "no_route_percent": 61.3
+    },
+    "unreachable_weapon_skips": 0,
+    "goal_skips": {},
+    "pickups": {
+      "total": 0,
+      "lives": 0,
+      "lives_with_pickup": 0,
+      "lives_with_pickup_percent": null
+    },
+    "movement": {
+      "moving_samples": 1424,
+      "over_4ms_percent": 27.6,
+      "native_sprint_percent": 68.1,
+      "median_speed_by_state_max": 4.0
+    },
+    "graph": null
+  },
+  "ps": {
+    "bot_deaths_observed": 6,
+    "wave_seen": 6,
+    "buys": [
+      {
+        "pp": 100,
+        "primary": "shotgun",
+        "price": 50,
+        "primary_ok": 0,
+        "ammo": "shotgunshell",
+        "ammo_ok": 0,
+        "actor": 131013
+      },
+      {
+        "pp": 100,
+        "primary": "shotgun",
+        "price": 50,
+        "primary_ok": 0,
+        "ammo": "shotgunshell",
+        "ammo_ok": 0,
+        "actor": 131003
+      },
+      {
+        "pp": 200,
+        "primary": "macs",
+        "price": 150,
+        "primary_ok": 0,
+        "ammo": "bullet",
+        "ammo_ok": 0,
+        "actor": 131020
+      }
+    ],
+    "buy_skip_count": 3,
+    "successful_items": 0,
+    "captures_completed_by_team": null,
+    "pp_spent_total": null,
+    "note": "Target plans do not prove captures; no complete PP/capture telemetry. Actual buy attempts with PP>0 are logged and fail with adjacent Lua stack."
+  },
+  "errors": {
+    "server_script_type_episodes": 3,
+    "server_error_lines": 12,
+    "server_channel_errors": 0,
+    "client_error_lines": [],
+    "server_crash": false,
+    "client_crash": false,
+    "signature": "CheckVirtualInventoryRestrictions(inventory, itemClassName): parameter 2 String expected, Null supplied",
+    "context_file": "PS-error-context.log"
+  },
+  "client": {
+    "reload_seen": 0,
+    "spectator_fp_on": 15,
+    "spectator_fp_off": 14,
+    "net_wire_lines": [
+      "[WarsBots] NET wire extensions ON (wb_net_ext 1, server Magic8-PC:46050)"
+    ],
+    "owner_marks_client": 0,
+    "demo_marks": 0,
+    "correction_snaps_gt0_5m": null,
+    "visual_assessment": "NOT CLAIMED; no owner feedback recorded beyond finished"
+  },
+  "frame_all_steady": {
+    "windows": 49,
+    "mean_window_avg_ms": 31.882244897959183,
+    "mean_window_p95_ms": 47.32714285714286,
+    "max_ms": 169.26,
+    "mean_botAI_ms_frame": 0.11373469387755102,
+    "definition": "Native 10s window aggregates; mean of window p95 is not pooled frame p95."
+  },
+  "frame_owner_window": {
+    "windows": 38,
+    "mean_window_avg_ms": 31.64815789473684,
+    "mean_window_p95_ms": 46.25394736842105,
+    "max_ms": 169.26,
+    "mean_botAI_ms_frame": 0.111,
+    "definition": "Native 10s window aggregates; mean of window p95 is not pooled frame p95."
+  },
+  "memory_restored": [
+    {
+      "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+      "name": "Multiplayer_IA_Steelmill.mem"
+    }
+  ],
+  "files_absent_from_snapshot_retained": [
+    {
+      "sha256": "97F6F29357B12D0A675AF083C45717406977C8D8A0A773F173E1DD57D7B3EFDE",
+      "name": "Multiplayer_IA_Steelmill.nav.json"
+    },
+    {
+      "sha256": "7C804B285A675426CD05DAF2E67CF8F03F1F383B89D281B7DEFA963930B3F1F9",
+      "name": "Multiplayer_PS_Plantation.mem"
+    },
+    {
+      "sha256": "B3BFF8DFB0930C0A78D84C2A85709705DFB08E14D6E202C98568CB298083FF39",
+      "name": "Multiplayer_PS_Shore.mem"
+    }
+  ],
+  "no_new_game_run": true,
+  "processes": "recorded client already closed; only recorded server stopped after owner DONE"
+}

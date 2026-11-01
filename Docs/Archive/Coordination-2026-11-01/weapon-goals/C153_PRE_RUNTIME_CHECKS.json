@@ -1,0 +1,63 @@
+{
+  "task": "C153",
+  "source": "5ef9ee22dd2a84896f8ed33cc6c32e6e1261ccb9",
+  "patch_author": "21d730b5",
+  "code_review": "4143bd12",
+  "final_code_and_harness_review": "207bb951de7f4d3dd17f6e6400f8a4be0a51b39b",
+  "harness_commit": "a21d0e2e147a2c613a5d39332128969a5d45dd91",
+  "ci_run": 40790759287,
+  "ci_state_when_recorded": "units SUCCESS, full client/server pending",
+  "local_game_build": false,
+  "new_game_runs": 0,
+  "offline_checks": {
+    "local_policy_units": [
+      "BotWeaponGoal",
+      "BotUpgradeGate",
+      "BotGoalArbiter",
+      "BotDecisionCommit",
+      "BotAuditFixes",
+      "BotWeaponRank"
+    ],
+    "actual_Brain_syntax": "MSVC C++20 /Zs PASS",
+    "actual_source_contract": "b8 RED3 / integrated GREEN",
+    "first_damage_actual_arbiter": "old RED / fixed GREEN",
+    "candidate_cache_actual_methods": "c00 RED exit7 / corrected GREEN",
+    "stale_inventory_actual_arbiter": "c00 RED / corrected GREEN",
+    "loot_actual_cancellation_predicate": "41a RED exit8 / final5ef GREEN",
+    "real_caller_CI_oracle": "committed and local PASS, CI units job SUCCESS",
+    "harness_prepare_only": "PASS",
+    "harness_owner_archive_control": {
+      "historic_pickup_ids": 16,
+      "current_pickup_ids": 8,
+      "native_matched_death_revive_cycles": 56
+    }
+  },
+  "log_sha256": {
+    "build\\ds097-integration\\arbiter-first-damage-GREEN.log": "aaf9e5ade74de6bf538a4c9dcedc33ee21101a0f9adc6d6d38b603d4c07dc157",
+    "build\\ds097-integration\\arbiter-first-damage-RED.log": "a2becb2c2fb30acc6a7fa86239b9dfe90d18aa2af7a708a1238cb9e495c00cbd",
+    "build\\ds097-integration\\BotAuditFixes-compile.log": "5f9b8b12ce62d43710ab0a437201c3260733425ac4a99e89126975dbb0d9866c",
+    "build\\ds097-integration\\BotAuditFixes-run.log": "6d3cb645d7da6e478e5dbf4bb166919bc276be42879f82223335a3fa7af308f1",
+    "build\\ds097-integration\\BotBrain-syntax.log": "be21f4c61c4c7ba4ae5ad8adeb3e953d080ca7842f40b38f35de7d2ef66e789f",
+    "build\\ds097-integration\\BotDecisionCommit-compile.log": "2121e0240b815ab1ddff2f43aafd77ba17b8e00c8aaa005fadaab91657d0963f",
+    "build\\ds097-integration\\BotDecisionCommit-run.log": "39ca751f8f3e2e544afa611453db755479f1677c9f751eea6a778481626f996e",
+    "build\\ds097-integration\\BotGoalArbiter-compile.log": "31dc65a2c05f8e5036ea85d3f6c42e53553efcd7f72a5b77c066f03fe6b7c0fe",
+    "build\\ds097-integration\\BotGoalArbiter-run.log": "aaf9e5ade74de6bf538a4c9dcedc33ee21101a0f9adc6d6d38b603d4c07dc157",
+    "build\\ds097-integration\\BotUpgradeGate-compile.log": "75618e8a61845943abcd6ff93c93ef4681dea6486b529220384d3adcf41301d7",
+    "build\\ds097-integration\\BotUpgradeGate-run.log": "93da53efcc74fffaf6d5789403fbb812986e99ee6e609068e2988a0ab19ce499",
+    "build\\ds097-integration\\BotWeaponGoal-compile.log": "c757c00abb8bcda3400c30129cdb038527c6ee8e606c7f6128bfb9c81c2eaeee",
+    "build\\ds097-integration\\BotWeaponGoal-run.log": "7d9a60a68fc21223bb72ec6b7a9d3a251b82b0c7681d93b8b1a43be4cb20d324",
+    "build\\ds097-integration\\BotWeaponRank-compile.log": "deed02bc656eb9a12bd92a87b5b07e4abc8df5aa7c9b6265a83cddc0aec83970",
+    "build\\ds097-integration\\BotWeaponRank-run.log": "dd529df0098e20dc142d581db01c7ca4d6b0c451942dd52e312b2d542ee80e85",
+    "build\\ds097-integration\\c153-candidate-cache-GREEN.log": "19b8da94bbd02bde7a30bbdb6cd3db9cf65278ea8a252af3261d842b06872522",
+    "build\\ds097-integration\\c153-candidate-cache-RED.log": "be79ce9888340c25a44aa86ec1171104c290ae69e293fae53f53dd6e476e78e7",
+    "build\\ds097-integration\\c153-real-caller-compile.log": "67f7737e193e63eb898e955c2d98097d9e96bf6a06c6c190055294544dc08de6",
+    "build\\ds097-integration\\c153-real-caller-run.log": "19b8da94bbd02bde7a30bbdb6cd3db9cf65278ea8a252af3261d842b06872522",
+    "build\\ds097-integration\\c153-stale-inventory-GREEN.log": "aaf9e5ade74de6bf538a4c9dcedc33ee21101a0f9adc6d6d38b603d4c07dc157",
+    "build\\ds097-integration\\c153-stale-inventory-RED.log": "d7096da9cca0e7e41d9d07cc0028a487ce3216b73aaff1e07e03baf3780e4520",
+    "build\\ds097-integration\\caller-old.log": "243e16e538ed43ef4018a57472ae94ed4b3fe5ae12c6c52390698309f9407bd2",
+    "build\\ds097-integration\\caller-patched.log": "d58f3eb27d6e02c8896d4e7e479fb0292c3e5001eb9df19e35c7050ae547d8ca",
+    "build\\ds076-code\\build\\c153-caller-loot-RED.log": "e23d52dd4dcc3d3d81e9f5bd4a6d9da140d71dc25b0525853d46e32e026adbf9",
+    "build\\ds076-code\\build\\c153-caller-loot-GREEN.log": "47515ae69007a600eb039b594698891550fd71ffd3be49e4e7a9ebfbe58f1437"
+  },
+  "limits": "Engine-free source/method/policy checks; no complete Brain in engine exercised yet. Archive owner b8 is a reference, not controlled A/B."
+}

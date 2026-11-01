@@ -1,0 +1,1139 @@
+{
+  "schema": "warsbots-c131-equivalence/1",
+  "sources": [
+    "4f3a1d72e1269a644c3e602701ca170b5b59d044",
+    "493f2cab2e58f814db4065148da423b691a711c3"
+  ],
+  "ci": [
+    40526830694,
+    40528417384
+  ],
+  "rows": [
+    {
+      "root": "build\\c131-ia-Steelmill-4f3a1d72",
+      "complete": true,
+      "frames": 6033,
+      "duration_s": 301.71,
+      "events": {
+        "suit": 323,
+        "land": 136,
+        "pickup": 53,
+        "jump": 30,
+        "shot": 1800,
+        "hit": 442,
+        "kill": 39,
+        "revive": 38
+      },
+      "kills": 39,
+      "stalls": 5,
+      "traps": 0,
+      "aba": 9.69,
+      "reversals": 21.94,
+      "first_primary_p50": 4.043,
+      "first_primary_p90": 12.172,
+      "primary_observed": 33,
+      "primary_eligible": 44,
+      "primary_lives": [
+        {
+          "actor": 65476,
+          "birth": 0.232,
+          "end": 301.942,
+          "first_primary": 6.006,
+          "censored_birth": true
+        },
+        {
+          "actor": 65481,
+          "birth": 0.232,
+          "end": 31.281,
+          "first_primary": 2.544,
+          "censored_birth": true
+        },
+        {
+          "actor": 65486,
+          "birth": 0.232,
+          "end": 26.046,
+          "first_primary": 9.3,
+          "censored_birth": true
+        },
+        {
+          "actor": 65491,
+          "birth": 0.232,
+          "end": 20.34,
+          "first_primary": 6.006,
+          "censored_birth": true
+        },
+        {
+          "actor": 65496,
+          "birth": 0.232,
+          "end": 301.942,
+          "first_primary": 4.685,
+          "censored_birth": true
+        },
+        {
+          "actor": 65501,
+          "birth": 0.232,
+          "end": 22.334,
+          "first_primary": 4.685,
+          "censored_birth": true
+        },
+        {
+          "actor": 65491,
+          "birth": 25.328,
+          "end": 301.942,
+          "first_primary": 27.323,
+          "censored_birth": false
+        },
+        {
+          "actor": 65501,
+          "birth": 27.323,
+          "end": 301.942,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 65486,
+          "birth": 31.029,
+          "end": 301.942,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131008,
+          "birth": 31.486,
+          "end": 97.789,
+          "first_primary": 34.628,
+          "censored_birth": false
+        },
+        {
+          "actor": 131017,
+          "birth": 31.486,
+          "end": 104.836,
+          "first_primary": 34.719,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 31.486,
+          "end": 74.565,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131027,
+          "birth": 31.486,
+          "end": 77.54,
+          "first_primary": 41.266,
+          "censored_birth": false
+        },
+        {
+          "actor": 131032,
+          "birth": 31.486,
+          "end": 87.992,
+          "first_primary": 33.629,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 31.486,
+          "end": 51.828,
+          "first_primary": 33.731,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 56.816,
+          "end": 151.98,
+          "first_primary": 59.628,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 79.564,
+          "end": 97.728,
+          "first_primary": 80.933,
+          "censored_birth": false
+        },
+        {
+          "actor": 131027,
+          "birth": 82.534,
+          "end": 102.079,
+          "first_primary": 85.542,
+          "censored_birth": false
+        },
+        {
+          "actor": 131032,
+          "birth": 92.982,
+          "end": 114.891,
+          "first_primary": 95.614,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 102.719,
+          "end": 129.878,
+          "first_primary": 103.784,
+          "censored_birth": false
+        },
+        {
+          "actor": 131008,
+          "birth": 102.78,
+          "end": 157.092,
+          "first_primary": 114.952,
+          "censored_birth": false
+        },
+        {
+          "actor": 131027,
+          "birth": 107.024,
+          "end": 123.736,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131017,
+          "birth": 109.792,
+          "end": 132.178,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131032,
+          "birth": 119.877,
+          "end": 160.399,
+          "first_primary": 133.885,
+          "censored_birth": false
+        },
+        {
+          "actor": 131027,
+          "birth": 128.69,
+          "end": 145.769,
+          "first_primary": 134.502,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 134.897,
+          "end": 173.954,
+          "first_primary": 149.506,
+          "censored_birth": false
+        },
+        {
+          "actor": 131017,
+          "birth": 137.119,
+          "end": 146.594,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131027,
+          "birth": 150.797,
+          "end": 196.004,
+          "first_primary": 151.95,
+          "censored_birth": false
+        },
+        {
+          "actor": 131017,
+          "birth": 151.585,
+          "end": 217.399,
+          "first_primary": 156.666,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 156.939,
+          "end": 170.697,
+          "first_primary": 161.311,
+          "censored_birth": false
+        },
+        {
+          "actor": 131008,
+          "birth": 162.083,
+          "end": 201.378,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131032,
+          "birth": 165.394,
+          "end": 219.309,
+          "first_primary": 173.488,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 175.691,
+          "end": 224.129,
+          "first_primary": 181.339,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 178.939,
+          "end": 218.35,
+          "first_primary": 183.471,
+          "censored_birth": false
+        },
+        {
+          "actor": 131027,
+          "birth": 200.985,
+          "end": 296.544,
+          "first_primary": 205.753,
+          "censored_birth": false
+        },
+        {
+          "actor": 131008,
+          "birth": 206.39,
+          "end": 238.727,
+          "first_primary": 209.223,
+          "censored_birth": false
+        },
+        {
+          "actor": 131017,
+          "birth": 222.333,
+          "end": 276.889,
+          "first_primary": 229.557,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 223.336,
+          "end": 245.476,
+          "first_primary": 226.427,
+          "censored_birth": false
+        },
+        {
+          "actor": 131032,
+          "birth": 224.288,
+          "end": 256.09,
+          "first_primary": 234.988,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 229.104,
+          "end": 252.597,
+          "first_primary": 241.916,
+          "censored_birth": false
+        },
+        {
+          "actor": 131008,
+          "birth": 243.75,
+          "end": 261.749,
+          "first_primary": 246.145,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 250.49,
+          "end": 259.95,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 257.554,
+          "end": 273.55,
+          "first_primary": 261.597,
+          "censored_birth": false
+        },
+        {
+          "actor": 131032,
+          "birth": 261.078,
+          "end": 301.942,
+          "first_primary": 262.114,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 264.93,
+          "end": 276.432,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131008,
+          "birth": 266.745,
+          "end": 301.942,
+          "first_primary": 272.488,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 278.521,
+          "end": 301.942,
+          "first_primary": 279.707,
+          "censored_birth": false
+        },
+        {
+          "actor": 131022,
+          "birth": 281.42,
+          "end": 301.942,
+          "first_primary": 287.525,
+          "censored_birth": false
+        },
+        {
+          "actor": 131017,
+          "birth": 281.877,
+          "end": 301.942,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131027,
+          "birth": 301.514,
+          "end": 301.942,
+          "first_primary": null,
+          "censored_birth": false
+        }
+      ],
+      "buy_attempts": [],
+      "successful_items": 0,
+      "successful_primary_bots": [],
+      "lua_episodes": 0,
+      "error_stack_lines": 0,
+      "channel_errors": 0,
+      "crash": false,
+      "deaths": 39,
+      "wave_seen": 0,
+      "ps_summary_lines": [],
+      "memory": [
+        {
+          "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "sha256": "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D",
+          "name": "Multiplayer_PS_Shore.mem"
+        }
+      ],
+      "native_rng": "independent, not seeded or paired",
+      "first_primary_definition": "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+      "hashes": {
+        "analysis.log": "d969417845f47af783c5c105bc18573a4d342cf4c129f0008b5129c90a636576",
+        "c131-ia-4f3a1d72-preflight.bots.log": "e832119a7b0428cb1962d3c4c3043c6791c3b3bc9bf72901a70936bc0d95f18c",
+        "c131-ia-4f3a1d72-preflight.log": "2a6bb0e00554905acfb1a6dd0911e3cdcddaa4ea9ffbba3b20769144196bae0c",
+        "c131-ia-4f3a1d72-run.bots.log": "07bf63f1352940ed4297b2cb2793ae7fd8d78b90ffcb451d4f021887733c1d13",
+        "c131-ia-4f3a1d72-run.log": "9c07523ff33cbe448e7078cb6fc84a33bde843135ba603256009cf1012633645",
+        "errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "flips.json": "4fc600882d00bcfda93a347b0ae77630877a2410084b106841e7b0ba8fe3c261",
+        "memory-restored.json": "18c5f990a63594e59cc8e94ac3226f2930dea65f805f877614e49fa5e2a5d002",
+        "Multiplayer_IA_Steelmill-20261027-193732-1.wbdemo": "65dfdbcf170e3c9afeb6f396581a2eb5f9166322240ec0def5798d7206452bee",
+        "preflight-arguments.txt": "8e5fda8722d58a4086b48a5baae783a93f3086df5a26a76a790917322daf7885",
+        "preflight-effective.json": "0582c6365c49a714210c9760f87794cd9b6779b8004de40d52b2518904fd987f",
+        "preflight-pid.txt": "f32155e6a0d680207184e76531d138877366e93112875b2ffe3cea05071b49b3",
+        "ps-evidence.log": "ee7a57210e385be738fc2b8cab02fab83a59c2d9491723350e63b9dfd54e2831",
+        "recipe.json": "94eee2cfda84acb12bfea06fad11882ee44e7a5ed599b5d8a6a12f8d525b1e68",
+        "run-arguments.txt": "35eb1af0941eb7af41038a70cbf2a04b29bc584f0124ac1afef5ced958d36a9d",
+        "run-complete.json": "44cd20d797e95f4d35a25cef373d6a1c04f63fc79b56627ee795fd7b4d0ec282",
+        "run-effective.json": "0582c6365c49a714210c9760f87794cd9b6779b8004de40d52b2518904fd987f",
+        "run-pid.txt": "29bfd4981a93a374d7a668c70c3960edcdd81bfa341deaf00c92fa8fcab6e72e",
+        "summary.json": "d969417845f47af783c5c105bc18573a4d342cf4c129f0008b5129c90a636576"
+      }
+    },
+    {
+      "root": "build\\c131-ia-Steelmill-493f2cab",
+      "complete": true,
+      "frames": 6034,
+      "duration_s": 301.746,
+      "events": {
+        "suit": 348,
+        "land": 123,
+        "pickup": 59,
+        "jump": 28,
+        "shot": 1589,
+        "hit": 411,
+        "kill": 44,
+        "revive": 42
+      },
+      "kills": 44,
+      "stalls": 5,
+      "traps": 0,
+      "aba": 7.01,
+      "reversals": 19.32,
+      "first_primary_p50": 3.744,
+      "first_primary_p90": 14.408,
+      "primary_observed": 36,
+      "primary_eligible": 48,
+      "primary_lives": [
+        {
+          "actor": 65476,
+          "birth": 0.225,
+          "end": 301.971,
+          "first_primary": 5.803,
+          "censored_birth": true
+        },
+        {
+          "actor": 65481,
+          "birth": 0.225,
+          "end": 301.971,
+          "first_primary": 2.647,
+          "censored_birth": true
+        },
+        {
+          "actor": 65486,
+          "birth": 0.225,
+          "end": 23.682,
+          "first_primary": 9.369,
+          "censored_birth": true
+        },
+        {
+          "actor": 65491,
+          "birth": 0.225,
+          "end": 19.895,
+          "first_primary": 5.926,
+          "censored_birth": true
+        },
+        {
+          "actor": 65496,
+          "birth": 0.225,
+          "end": 28.245,
+          "first_primary": 4.86,
+          "censored_birth": true
+        },
+        {
+          "actor": 65501,
+          "birth": 0.225,
+          "end": 15.187,
+          "first_primary": 4.983,
+          "censored_birth": true
+        },
+        {
+          "actor": 65501,
+          "birth": 20.139,
+          "end": 301.971,
+          "first_primary": 23.318,
+          "censored_birth": false
+        },
+        {
+          "actor": 65491,
+          "birth": 24.882,
+          "end": 301.971,
+          "first_primary": 29.463,
+          "censored_birth": false
+        },
+        {
+          "actor": 65486,
+          "birth": 28.689,
+          "end": 301.971,
+          "first_primary": 30.379,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 31.539,
+          "end": 43.033,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131016,
+          "birth": 31.539,
+          "end": 75.523,
+          "first_primary": 62.199,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 31.539,
+          "end": 88.134,
+          "first_primary": 39.012,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 31.539,
+          "end": 52.032,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 31.539,
+          "end": 51.18,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 196571,
+          "birth": 31.539,
+          "end": 62.626,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 48.016,
+          "end": 69.419,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 56.173,
+          "end": 85.24,
+          "first_primary": 59.48,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 56.988,
+          "end": 95.531,
+          "first_primary": 57.56,
+          "censored_birth": false
+        },
+        {
+          "actor": 196571,
+          "birth": 67.578,
+          "end": 115.918,
+          "first_primary": 84.402,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 74.414,
+          "end": 125.59,
+          "first_primary": 76.346,
+          "censored_birth": false
+        },
+        {
+          "actor": 131016,
+          "birth": 80.543,
+          "end": 173.997,
+          "first_primary": 84.433,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 90.178,
+          "end": 103.02,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 93.139,
+          "end": 140.67,
+          "first_primary": 101.161,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 100.538,
+          "end": 146.292,
+          "first_primary": 103.758,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 108.02,
+          "end": 118.519,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 196571,
+          "birth": 120.937,
+          "end": 153.537,
+          "first_primary": 135.345,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 123.534,
+          "end": 229.029,
+          "first_primary": 198.294,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 130.579,
+          "end": 161.578,
+          "first_primary": 133.316,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 145.683,
+          "end": 184.3,
+          "first_primary": 147.645,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 151.279,
+          "end": 164.641,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 196571,
+          "birth": 158.52,
+          "end": 178.946,
+          "first_primary": 166.146,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 166.573,
+          "end": 205.451,
+          "first_primary": 171.023,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 169.623,
+          "end": 194.284,
+          "first_primary": 170.78,
+          "censored_birth": false
+        },
+        {
+          "actor": 131016,
+          "birth": 178.976,
+          "end": 203.281,
+          "first_primary": 181.785,
+          "censored_birth": false
+        },
+        {
+          "actor": 196571,
+          "birth": 183.934,
+          "end": 220.688,
+          "first_primary": 194.497,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 189.247,
+          "end": 220.2,
+          "first_primary": 193.493,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 199.274,
+          "end": 245.084,
+          "first_primary": 208.238,
+          "censored_birth": false
+        },
+        {
+          "actor": 131016,
+          "birth": 208.298,
+          "end": 237.482,
+          "first_primary": 211.104,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 210.44,
+          "end": 240.385,
+          "first_primary": 212.936,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 225.149,
+          "end": 280.281,
+          "first_primary": 232.347,
+          "censored_birth": false
+        },
+        {
+          "actor": 196571,
+          "birth": 225.649,
+          "end": 301.971,
+          "first_primary": 228.862,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 234.035,
+          "end": 253.683,
+          "first_primary": 241.927,
+          "censored_birth": false
+        },
+        {
+          "actor": 131016,
+          "birth": 242.475,
+          "end": 251.08,
+          "first_primary": 246.792,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 245.329,
+          "end": 276.901,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 250.077,
+          "end": 263.884,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131016,
+          "birth": 256.094,
+          "end": 301.22,
+          "first_primary": 259.315,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 258.69,
+          "end": 272.133,
+          "first_primary": 262.434,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 268.833,
+          "end": 284.499,
+          "first_primary": 276.078,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 277.129,
+          "end": 290.9,
+          "first_primary": 279.856,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 281.879,
+          "end": 290.22,
+          "first_primary": 283.065,
+          "censored_birth": false
+        },
+        {
+          "actor": 131040,
+          "birth": 285.226,
+          "end": 301.971,
+          "first_primary": 288.14,
+          "censored_birth": false
+        },
+        {
+          "actor": 196559,
+          "birth": 289.488,
+          "end": 301.971,
+          "first_primary": 293.191,
+          "censored_birth": false
+        },
+        {
+          "actor": 131011,
+          "birth": 295.24,
+          "end": 301.971,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 196566,
+          "birth": 295.873,
+          "end": 301.971,
+          "first_primary": null,
+          "censored_birth": false
+        }
+      ],
+      "buy_attempts": [],
+      "successful_items": 0,
+      "successful_primary_bots": [],
+      "lua_episodes": 0,
+      "error_stack_lines": 0,
+      "channel_errors": 0,
+      "crash": false,
+      "deaths": 44,
+      "wave_seen": 0,
+      "ps_summary_lines": [],
+      "memory": [
+        {
+          "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "sha256": "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D",
+          "name": "Multiplayer_PS_Shore.mem"
+        }
+      ],
+      "native_rng": "independent, not seeded or paired",
+      "first_primary_definition": "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+      "hashes": {
+        "analysis.log": "539180d4c2ce37aca1d556113337666eaad76d3f638c84aa1065ec847efe5133",
+        "c131-ia-493f2cab-preflight.bots.log": "2da8a7169912cbf5a5ad67d3839694234d596ffc9505e298a3b242dcf11d595f",
+        "c131-ia-493f2cab-preflight.log": "c4a440d2caf37b72c4e9516caa557bd5637a4f3d94d55fd034874c16dc6f8c58",
+        "c131-ia-493f2cab-run.bots.log": "9fee9fbd586e7a631df380cc1e10a4d5cd6a9e58ca855a585eacd8ffd7a9c491",
+        "c131-ia-493f2cab-run.log": "baa8442d388f415c8d9690182123df18a4b5f47350330dd7616d5a62e8b11701",
+        "errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "flips.json": "fc38ddf3af392d04f3fbece2bedd8589c4a2e2be3bdfe66a6a9597663e3070b7",
+        "memory-restored.json": "18c5f990a63594e59cc8e94ac3226f2930dea65f805f877614e49fa5e2a5d002",
+        "Multiplayer_IA_Steelmill-20261027-194238-1.wbdemo": "629fd9f07ef60e5c64486769a0c83f4139cc7cc9cb71f5827b8e01fb0e3a2e3a",
+        "preflight-arguments.txt": "6c4fa0fa954422cee9d9c4f4bd983241de446670fb38a3fac9fa4403891c6bb0",
+        "preflight-effective.json": "0582c6365c49a714210c9760f87794cd9b6779b8004de40d52b2518904fd987f",
+        "preflight-pid.txt": "7b053c2f1f9bd3ee99e88a2c931dfb1993e5e8ee1b75222d3b7ae98f14309acc",
+        "ps-evidence.log": "8e7d9d381ed538202e75f54b4d184fbd217d7bf989e7c3d8089adda93cf5ef08",
+        "recipe.json": "94eee2cfda84acb12bfea06fad11882ee44e7a5ed599b5d8a6a12f8d525b1e68",
+        "run-arguments.txt": "95a4b8857d6b71d377cf05f6b7de690c5394024ceb6d6764bcf6e237789ec181",
+        "run-complete.json": "a600772b5ee6db02456f82fd3e5bcbfbeebbecfccb7905e3b0577c00669e78eb",
+        "run-effective.json": "0582c6365c49a714210c9760f87794cd9b6779b8004de40d52b2518904fd987f",
+        "run-pid.txt": "389f4d201c95318c3e0d468ee466a39b319b0dc77b9d31b277637e84f2556b07",
+        "summary.json": "539180d4c2ce37aca1d556113337666eaad76d3f638c84aa1065ec847efe5133"
+      }
+    },
+    {
+      "root": "build\\c131-ps-Shore-493f2cab",
+      "complete": true,
+      "frames": 6035,
+      "duration_s": 301.765,
+      "events": {
+        "suit": 381,
+        "land": 25,
+        "shot": 4,
+        "kill": 4,
+        "hit": 7,
+        "jump": 1
+      },
+      "kills": 4,
+      "stalls": 89,
+      "traps": 0,
+      "aba": 0.1,
+      "reversals": 0,
+      "first_primary_p50": null,
+      "first_primary_p90": null,
+      "primary_observed": 0,
+      "primary_eligible": 10,
+      "primary_lives": [
+        {
+          "actor": 65461,
+          "birth": 0.218,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": true
+        },
+        {
+          "actor": 65466,
+          "birth": 0.218,
+          "end": 3.137,
+          "first_primary": null,
+          "censored_birth": true
+        },
+        {
+          "actor": 65471,
+          "birth": 0.218,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": true
+        },
+        {
+          "actor": 65476,
+          "birth": 0.218,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": true
+        },
+        {
+          "actor": 65481,
+          "birth": 0.218,
+          "end": 3.137,
+          "first_primary": null,
+          "censored_birth": true
+        },
+        {
+          "actor": 65486,
+          "birth": 0.218,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": true
+        },
+        {
+          "actor": 65466,
+          "birth": 20.344,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 65481,
+          "birth": 20.344,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 130993,
+          "birth": 31.524,
+          "end": 34.567,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 130998,
+          "birth": 31.524,
+          "end": 34.567,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131003,
+          "birth": 31.524,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131008,
+          "birth": 31.524,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131013,
+          "birth": 31.524,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 131019,
+          "birth": 31.524,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 130993,
+          "birth": 51.774,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": false
+        },
+        {
+          "actor": 130998,
+          "birth": 51.774,
+          "end": 301.983,
+          "first_primary": null,
+          "censored_birth": false
+        }
+      ],
+      "buy_attempts": [],
+      "successful_items": 0,
+      "successful_primary_bots": [],
+      "lua_episodes": 0,
+      "error_stack_lines": 0,
+      "channel_errors": 0,
+      "crash": false,
+      "deaths": 4,
+      "wave_seen": 4,
+      "ps_summary_lines": [
+        "0.06 [WarsBots] PS SUMMARY points=5 team1_held=0 team2_held=0.",
+        "0.06 [WarsBots] PS SUMMARY bot=1 id=65486 team=1 pp=0 rank=1 buys=0.",
+        "0.06 [WarsBots] PS SUMMARY bot=2 id=65481 team=2 pp=0 rank=1 buys=0.",
+        "0.06 [WarsBots] PS SUMMARY bot=3 id=65476 team=1 pp=0 rank=1 buys=0.",
+        "0.06 [WarsBots] PS SUMMARY bot=4 id=65471 team=2 pp=0 rank=1 buys=0.",
+        "0.06 [WarsBots] PS SUMMARY bot=5 id=65466 team=1 pp=0 rank=1 buys=0.",
+        "0.06 [WarsBots] PS SUMMARY bot=6 id=65461 team=2 pp=0 rank=1 buys=0."
+      ],
+      "memory": [
+        {
+          "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+          "name": "Multiplayer_IA_Steelmill.mem"
+        },
+        {
+          "sha256": "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D",
+          "name": "Multiplayer_PS_Shore.mem"
+        }
+      ],
+      "native_rng": "independent, not seeded or paired",
+      "first_primary_definition": "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+      "hashes": {
+        "analysis.log": "164b3f51995da65a5ef07c0672e60102a758415102d67946da66609193eed9a8",
+        "c131-ps-493f2cab-preflight.bots.log": "944c9a044e1a2dfea95e1b30c50d174deb06c41069b0b9d24a9e6c8b59f22030",
+        "c131-ps-493f2cab-preflight.log": "8a8c44da8c8df0ee38ef8d03faac5c258b4dde03176d236a4128a283582cf075",
+        "c131-ps-493f2cab-run.bots.log": "045b095587095a9b8ae9df000f8ac0bff7bc820ce17e6583532b9245183f5c17",
+        "c131-ps-493f2cab-run.log": "f4921fd34de192810cdd66b9634ee0c93cb7eab1b593cfbec96b6fc9547ef6cd",
+        "errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "flips.json": "bd7be853e997e222ccb7068151ce10549ed6781d37d2f76a1cfd30cfd1e20bb5",
+        "memory-restored.json": "18c5f990a63594e59cc8e94ac3226f2930dea65f805f877614e49fa5e2a5d002",
+        "Multiplayer_PS_Shore-20261027-194746-1.wbdemo": "7002528485b66cb63e39391d8aeb8f00c86fa334a109ad363cd6df01a9b391a5",
+        "preflight-arguments.txt": "fe88c15bb6d4d5656a4b0226d8410e2999b7cad0abe635f0b53a491243ff455f",
+        "preflight-effective.json": "6688ce8daafa3b86feea96551517a177c0b354cf8dbe5029d11081abdc6d7efa",
+        "preflight-pid.txt": "fec40cd2375acf8d7f6f27c18fe31e6cef9d1f280d3b39303b22eeae8a2d4a4b",
+        "ps-evidence.log": "6769281fb48ea3048cbf57d89faed6eb2876a4c7964f184140827d36a0783073",
+        "recipe.json": "5d24db98e1ce2c962fff8053f9344a0b7a9e932532a8f63c7cdfafee1ddcb120",
+        "run-arguments.txt": "6f31a6bb9d8b29d0eb5bf889424ac2890e766fd0cd0b9e38de924f25b792053e",
+        "run-complete.json": "65a37c8fbb45f70ef6c3d0191fb177e199b1fecc8f6b28004d346a9d766a69f1",
+        "run-effective.json": "6688ce8daafa3b86feea96551517a177c0b354cf8dbe5029d11081abdc6d7efa",
+        "run-pid.txt": "f89ea2138ffceee3a1b5b2d4ffa0315e416a45bf90a1eee1614dd657873974ca",
+        "summary.json": "164b3f51995da65a5ef07c0672e60102a758415102d67946da66609193eed9a8"
+      }
+    }
+  ],
+  "same_ia_memory_manifest": true,
+  "same_roster": "six Normal, Universal/Assault/Marksman/Flanker/Defender/Hunter",
+  "nav_restored": [
+    {
+      "sha256": "CE3326CAF751661CF43F820560A390CC2EE5EE008C2D56E9E67D11CEE7F34247",
+      "name": "Armada.links.txt"
+    },
+    {
+      "sha256": "5ED27F25F015095BD9AD11D9FE5888F61A7411F9DC17B17AD3722CC8C37FB861",
+      "name": "Armada.manifest.json"
+    },
+    {
+      "sha256": "87F0438CCA0B531F6F227F83D640916AFB93667802973E763333F73D78957590",
+      "name": "Armada.navmesh"
+    },
+    {
+      "sha256": "71AC48ED80C2068F6273868966362D1AEFBEBC0DB5D34599CF0E121DA53C1293",
+      "name": "Armada.spots.txt"
+    },
+    {
+      "sha256": "0E6651A3DA7536B5A20D3F1E9F81BC8EE588D0366D84E196C1E1B6DAD0DC4D23",
+      "name": "Outpost.links.txt"
+    },
+    {
+      "sha256": "FA57ED4F696CE19334C2D447826E1B9D63DE9A7425EF35927A547F7C43EEF0E6",
+      "name": "Outpost.manifest.json"
+    },
+    {
+      "sha256": "944297AC9D51E5614B05401350DF107A436B7606FF8174905057BA973468D18A",
+      "name": "Outpost.navmesh"
+    },
+    {
+      "sha256": "F041DBAB3924403DF302BDAF6169C180257CAD8C49822BEF044F6A980225E681",
+      "name": "Outpost.spots.txt"
+    },
+    {
+      "sha256": "2DAA4F3AD189B0E90FFDB11312156C1B229CAB67D6F49A20E642608E00D053E1",
+      "name": "Quarry.links.txt"
+    },
+    {
+      "sha256": "39BEDF0452D93CA4982FEB3434BA4C3C4342DF3BA0C7AD42E6C1408725FDDA2A",
+      "name": "Quarry.manifest.json"
+    },
+    {
+      "sha256": "3A2F6D50FFADF13238D80429E2269193857CC93EB9D7735574A131C4C7DC98E7",
+      "name": "Quarry.navmesh"
+    },
+    {
+      "sha256": "2A4E9C01DF4F8653AB576C2695F1FFC3A2E72A9DBF7E5E355E1A3F0727A4ADDB",
+      "name": "Quarry.spots.txt"
+    },
+    {
+      "sha256": "7C384D12FF693BCED574015A0E0067F8CB5C1A4A9A81881C1AFF9088EC6B67E4",
+      "name": "Steelmill.links.txt"
+    },
+    {
+      "sha256": "546ABE5829DDE03B8057BC7FD9406D8791EAC6E8858F4FA37A857EDC25BF9241",
+      "name": "Steelmill.manifest.json"
+    },
+    {
+      "sha256": "CFC11810626C6FA0859A055592E6C5AB12D12777F40F52AEB8C6208EEFAF503B",
+      "name": "Steelmill.navmesh"
+    },
+    {
+      "sha256": "25C3EECF0699B9795BB214B322E9155B6BF5F207BC5E29E41479655A25CEF4B5",
+      "name": "Steelmill.spots.txt"
+    }
+  ],
+  "assessment": "No evident IA regression in the one authorized pair; all runtime stability gates passed. This is descriptive within-noise evidence, not a statistical equivalence proof. PS purchase/capture success still unproved; known pre-C134 pp0 retained.",
+  "use_493f2cab_for_remaining_c126": true
+}

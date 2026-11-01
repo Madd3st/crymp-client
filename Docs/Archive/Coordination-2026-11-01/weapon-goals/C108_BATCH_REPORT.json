@@ -1,0 +1,184 @@
+{
+  "source": "2ffc95fa6431ae8fa6ba18d1f1ccad71eaf29d88",
+  "per_skill": {
+    "beginner": {
+      "kills": 25,
+      "deaths": 86,
+      "hits": 304,
+      "headshots": 17,
+      "shots": 1331,
+      "headshot_share": 0.05592105263157895,
+      "hit_distance_median": 10.96,
+      "hit_distance_p90": 15.9,
+      "hits_gt40m": 1,
+      "aim_yaw_error_median": 3.5582673046942546,
+      "aim_samples": 9504,
+      "glances": 0,
+      "tactical_reload_decisions": 0,
+      "normal_fight_jumps": 0,
+      "cloak_mode_seconds": 0.0,
+      "server_reload_starts": 10,
+      "client_ClReload": null
+    },
+    "normal": {
+      "kills": 87,
+      "deaths": 75,
+      "hits": 998,
+      "headshots": 35,
+      "shots": 2862,
+      "headshot_share": 0.03507014028056112,
+      "hit_distance_median": 11.03,
+      "hit_distance_p90": 16.82,
+      "hits_gt40m": 3,
+      "aim_yaw_error_median": 1.947320863725082,
+      "aim_samples": 10697,
+      "glances": 0,
+      "tactical_reload_decisions": 0,
+      "normal_fight_jumps": 1,
+      "cloak_mode_seconds": 0.0,
+      "server_reload_starts": 50,
+      "client_ClReload": null
+    },
+    "veteran": {
+      "kills": 93,
+      "deaths": 66,
+      "hits": 1098,
+      "headshots": 61,
+      "shots": 3554,
+      "headshot_share": 0.05555555555555555,
+      "hit_distance_median": 13.62,
+      "hit_distance_p90": 21.04,
+      "hits_gt40m": 10,
+      "aim_yaw_error_median": 1.2517388848079634,
+      "aim_samples": 11921,
+      "glances": 0,
+      "tactical_reload_decisions": 0,
+      "normal_fight_jumps": 87,
+      "cloak_mode_seconds": 0.0,
+      "server_reload_starts": 77,
+      "client_ClReload": null
+    },
+    "elite": {
+      "kills": 70,
+      "deaths": 48,
+      "hits": 753,
+      "headshots": 63,
+      "shots": 2319,
+      "headshot_share": 0.08366533864541832,
+      "hit_distance_median": 11.56,
+      "hit_distance_p90": 18.01,
+      "hits_gt40m": 7,
+      "aim_yaw_error_median": 1.3086690858233396,
+      "aim_samples": 8153,
+      "glances": 0,
+      "tactical_reload_decisions": 0,
+      "normal_fight_jumps": 155,
+      "cloak_mode_seconds": 20.586,
+      "server_reload_starts": 51,
+      "client_ClReload": null
+    }
+  },
+  "total_kills": 275,
+  "stalls": 19,
+  "traps": 0,
+  "switches_old_nonzero": 462,
+  "switches_from_previously_damaged": 416,
+  "notes": [
+    "hits/headshots/distances from before-Lua FIRE HIT, not duplicate after-Lua",
+    "aim median is recorded actor body yaw vs BRAIN aim point proxy, not muzzle 3D aim error",
+    "damaged-target switch means target damaged earlier in run; no unlogged memory-window inference",
+    "No GUI/client tonight: ClReload delivery unobserved(null), fallback server count is alive IWeapon::IsReloading demo flag rising edges. Tactical reload decisions separate.",
+    "Fight jumps: normal demo jump event with latest BRAIN state ATTACKING. Cloak seconds: alive server demo mode2, not a visual invisibility assertion.",
+    "Control C093 did not explicitly request/query trap recovery; candidate explicitly uses1. Vantage0/threatscan1/names1 differ as requested. Do not claim fully matched effective ancillary settings or matched RNG."
+  ],
+  "actors_with_skill": 30,
+  "gates": {
+    "no_crash": true,
+    "kills_min248_4": true,
+    "stalls_max29": true,
+    "traps_zero": true,
+    "elite_headshot_min15pct": false,
+    "elite_KD_ge_veteran": true,
+    "glances_nonbeginner": false,
+    "glances_beginner_zero": true,
+    "beginner_fight_jumps_zero": true
+  },
+  "all_gates_pass": false,
+  "per_bot_reload": {
+    "15": {
+      "skill": "veteran",
+      "server_reload_starts": 15,
+      "client_ClReload": null
+    },
+    "14": {
+      "skill": "normal",
+      "server_reload_starts": 16,
+      "client_ClReload": null
+    },
+    "13": {
+      "skill": "beginner",
+      "server_reload_starts": 2,
+      "client_ClReload": null
+    },
+    "12": {
+      "skill": "elite",
+      "server_reload_starts": 16,
+      "client_ClReload": null
+    },
+    "11": {
+      "skill": "veteran",
+      "server_reload_starts": 21,
+      "client_ClReload": null
+    },
+    "10": {
+      "skill": "normal",
+      "server_reload_starts": 9,
+      "client_ClReload": null
+    },
+    "9": {
+      "skill": "beginner",
+      "server_reload_starts": 1,
+      "client_ClReload": null
+    },
+    "8": {
+      "skill": "elite",
+      "server_reload_starts": 17,
+      "client_ClReload": null
+    },
+    "7": {
+      "skill": "veteran",
+      "server_reload_starts": 24,
+      "client_ClReload": null
+    },
+    "6": {
+      "skill": "normal",
+      "server_reload_starts": 8,
+      "client_ClReload": null
+    },
+    "5": {
+      "skill": "beginner",
+      "server_reload_starts": 4,
+      "client_ClReload": null
+    },
+    "4": {
+      "skill": "elite",
+      "server_reload_starts": 18,
+      "client_ClReload": null
+    },
+    "3": {
+      "skill": "veteran",
+      "server_reload_starts": 17,
+      "client_ClReload": null
+    },
+    "2": {
+      "skill": "normal",
+      "server_reload_starts": 17,
+      "client_ClReload": null
+    },
+    "1": {
+      "skill": "beginner",
+      "server_reload_starts": 3,
+      "client_ClReload": null
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "task": "C145",
+  "code_sha": "90cb4148de477f4a8cadde5d31d7150c67a6e989",
+  "preflight": "BLOCKED before game launch",
+  "blocker": "MOVE TRACE Update accepts only InstantAction; PowerStruggle returns before emitting native water fields",
+  "source": "Code/CryGame/Bots/BotMoveTrace.cpp:16-19",
+  "logical_check": {
+    "flag1_InstantAction_mode_clause": true,
+    "flag1_PowerStruggle_mode_clause": false
+  },
+  "existing_gate": "BotManager::CanRunLocalIA passes allowPowerStruggle=true to LocalIAGate, so extra trace-only mode comparison is the blocker",
+  "required_fix": "diagnostic eligibility should include supported bot modes via existing BotMatch policy, preserving opt-in/local/server/client/rate limits",
+  "required_after_fix": [
+    "new exact SHA from coordinator",
+    "green CI and independent review",
+    "limited temporary candidate QA installation with byte-hash and full restore",
+    "one predeclared native US observation; missing evidence UNKNOWN, no blind repeat"
+  ],
+  "code_changed": false,
+  "game_runs": 0,
+  "map_installed": false
+}

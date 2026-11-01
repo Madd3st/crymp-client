@@ -1,0 +1,361 @@
+{
+  "root": "build\\c135-Shore-1a7ec84e",
+  "complete": true,
+  "frames": 6014,
+  "duration_s": 300.724,
+  "events": {
+    "suit": 356,
+    "land": 18,
+    "kill": 4,
+    "hit": 4,
+    "shot": 2
+  },
+  "kills": 4,
+  "stalls": 102,
+  "traps": 1,
+  "aba": 0.1,
+  "reversals": 0,
+  "first_primary_p50": 0.0,
+  "first_primary_p90": 0.0,
+  "primary_observed": 4,
+  "primary_eligible": 10,
+  "primary_lives": [
+    {
+      "actor": 65461,
+      "birth": 0.219,
+      "end": 300.943,
+      "first_primary": null,
+      "censored_birth": true
+    },
+    {
+      "actor": 65466,
+      "birth": 0.219,
+      "end": 3.136,
+      "first_primary": null,
+      "censored_birth": true
+    },
+    {
+      "actor": 65471,
+      "birth": 0.219,
+      "end": 300.943,
+      "first_primary": null,
+      "censored_birth": true
+    },
+    {
+      "actor": 65476,
+      "birth": 0.219,
+      "end": 300.943,
+      "first_primary": null,
+      "censored_birth": true
+    },
+    {
+      "actor": 65481,
+      "birth": 0.219,
+      "end": 3.136,
+      "first_primary": null,
+      "censored_birth": true
+    },
+    {
+      "actor": 65486,
+      "birth": 0.219,
+      "end": 300.943,
+      "first_primary": null,
+      "censored_birth": true
+    },
+    {
+      "actor": 65466,
+      "birth": 20.344,
+      "end": 300.943,
+      "first_primary": 20.344,
+      "censored_birth": false
+    },
+    {
+      "actor": 65481,
+      "birth": 20.344,
+      "end": 300.943,
+      "first_primary": 20.344,
+      "censored_birth": false
+    },
+    {
+      "actor": 130993,
+      "birth": 31.566,
+      "end": 300.943,
+      "first_primary": null,
+      "censored_birth": false
+    },
+    {
+      "actor": 130998,
+      "birth": 31.566,
+      "end": 300.943,
+      "first_primary": null,
+      "censored_birth": false
+    },
+    {
+      "actor": 131003,
+      "birth": 31.566,
+      "end": 34.618,
+      "first_primary": null,
+      "censored_birth": false
+    },
+    {
+      "actor": 131008,
+      "birth": 31.566,
+      "end": 34.618,
+      "first_primary": null,
+      "censored_birth": false
+    },
+    {
+      "actor": 131013,
+      "birth": 31.566,
+      "end": 300.943,
+      "first_primary": null,
+      "censored_birth": false
+    },
+    {
+      "actor": 131020,
+      "birth": 31.566,
+      "end": 300.943,
+      "first_primary": null,
+      "censored_birth": false
+    },
+    {
+      "actor": 131003,
+      "birth": 51.77,
+      "end": 300.943,
+      "first_primary": 51.77,
+      "censored_birth": false
+    },
+    {
+      "actor": 131008,
+      "birth": 51.77,
+      "end": 300.943,
+      "first_primary": 51.77,
+      "censored_birth": false
+    }
+  ],
+  "buy_attempts": [
+    {
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 65481
+    },
+    {
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 65466
+    },
+    {
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 131003
+    },
+    {
+      "pp": 100,
+      "primary": "shotgun",
+      "price": 50,
+      "primary_ok": 0,
+      "ammo": "shotgunshell",
+      "ammo_ok": 0,
+      "actor": 131008
+    }
+  ],
+  "successful_items": 0,
+  "successful_primary_bots": [],
+  "lua_episodes": 4,
+  "error_stack_lines": 16,
+  "channel_errors": 0,
+  "crash": false,
+  "deaths": 4,
+  "wave_seen": 4,
+  "ps_summary_lines": [
+    "0.06 [WarsBots] PS SUMMARY points=5 team1_held=0 team2_held=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=1 id=65486 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=2 id=65481 team=2 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=3 id=65476 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=4 id=65471 team=2 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=5 id=65466 team=1 pp=100 rank=1 buys=0.",
+    "0.06 [WarsBots] PS SUMMARY bot=6 id=65461 team=2 pp=100 rank=1 buys=0."
+  ],
+  "memory": [
+    {
+      "sha256": "E1B92DA29B6C8FB74DC6412447161C126684CACBA287035B8447AE8078233095",
+      "name": "Multiplayer_IA_Steelmill.mem"
+    },
+    {
+      "sha256": "375E83702053F39FC7E41860CB70F89797ACB8CC454E6C2B2931E9DBBEF1174D",
+      "name": "Multiplayer_PS_Shore.mem"
+    }
+  ],
+  "native_rng": "independent, not seeded or paired",
+  "first_primary_definition": "First owned primary per observed life from selected frames/pickups/inventory; censored initial alive lives excluded; unobserved primary lives retained in denominator.",
+  "hashes": {
+    "analysis.log": "e6ea3e64e5e1edd5cae92424c1674da911b13ef8379d5cf947e001bd5c5cccc8",
+    "c135-1a7ec84e-preflight.bots.log": "c65746296184ea81829354e6ddf7bf3dd252ddfa88596cf18110f2ace0251a1d",
+    "c135-1a7ec84e-preflight.log": "508f2a2dcc6d6a4e4d2dae092a216d494f5e7341f382cebb4aa15e9ef46868ee",
+    "c135-1a7ec84e-run.bots.log": "73e2278a87220b49403c456e69474bee75fb28331df54e0320a6fb90fb887247",
+    "c135-1a7ec84e-run.log": "4aaff350e2142b53fd5fe073bcae4777d0ebe5e9d00f51bd1ada5e7d9d908a77",
+    "errors.log": "2e1278545962e3bfc4a87c14a69dcd89264d3c98fd90cd896cb5b5e9620d0a47",
+    "flips.json": "41dd013332436334b8342e231a95fbba0443fc14f72d00958d93f630370002a5",
+    "memory-restored.json": "18c5f990a63594e59cc8e94ac3226f2930dea65f805f877614e49fa5e2a5d002",
+    "Multiplayer_PS_Shore-20261027-193116-1.wbdemo": "2008bb143cd66f9490aeea66a1a2906559cb6c8a9031bd54526cca23e8445764",
+    "preflight-arguments.txt": "932752cfa3196d59ee166b3aa663bc3c0183e548e177c21764527d14cb8814ed",
+    "preflight-effective.json": "6688ce8daafa3b86feea96551517a177c0b354cf8dbe5029d11081abdc6d7efa",
+    "preflight-pid.txt": "be613a9cb54b7807eaab25be1480d34523ead68df562983f01a3336cb19e8354",
+    "ps-evidence.log": "7a13efdd8fb67f228bb79a2c96e63531bb04811f26653e34efc1d2f41821fe91",
+    "recipe.json": "5d24db98e1ce2c962fff8053f9344a0b7a9e932532a8f63c7cdfafee1ddcb120",
+    "run-arguments.txt": "87bda46d3ebbfe01e31d3ca1c7fee53c5863306a33d2d39200a08ad097a7549c",
+    "run-complete.json": "533f9bf784c8d0015c7ba8aa1ce585274e5c5744978f8551e9a2d46ac7ff96aa",
+    "run-effective.json": "6688ce8daafa3b86feea96551517a177c0b354cf8dbe5029d11081abdc6d7efa",
+    "run-pid.txt": "d0efcf7eb09736e1fe17596706aabc55bafab26548257e7ad08eb8168978d684",
+    "summary.json": "e6ea3e64e5e1edd5cae92424c1674da911b13ef8379d5cf947e001bd5c5cccc8"
+  },
+  "source": "1a7ec84e8ed1f73d9f457e1b7e7e599e41507948",
+  "ci": 40537292508,
+  "initial_and_reset_creation_positions": [
+    {
+      "bot": 1,
+      "actor": 65486,
+      "team": 1,
+      "position": [
+        1965.939,
+        1536.152,
+        100.928
+      ]
+    },
+    {
+      "bot": 2,
+      "actor": 65481,
+      "team": 2,
+      "position": [
+        1844.291,
+        1235.465,
+        111.545
+      ]
+    },
+    {
+      "bot": 3,
+      "actor": 65476,
+      "team": 1,
+      "position": [
+        1841.316,
+        1245.005,
+        111.545
+      ]
+    },
+    {
+      "bot": 4,
+      "actor": 65471,
+      "team": 2,
+      "position": [
+        2111.25,
+        1885.875,
+        103.45
+      ]
+    },
+    {
+      "bot": 5,
+      "actor": 65466,
+      "team": 1,
+      "position": [
+        2122.125,
+        1884.375,
+        100.2
+      ]
+    },
+    {
+      "bot": 6,
+      "actor": 65461,
+      "team": 2,
+      "position": [
+        1963.064,
+        1313.429,
+        118.495
+      ]
+    },
+    {
+      "bot": 6,
+      "actor": 131020,
+      "team": 2,
+      "position": [
+        1968.286,
+        1539.633,
+        101.322
+      ]
+    },
+    {
+      "bot": 5,
+      "actor": 131013,
+      "team": 1,
+      "position": [
+        1844.291,
+        1235.465,
+        111.545
+      ]
+    },
+    {
+      "bot": 4,
+      "actor": 131008,
+      "team": 2,
+      "position": [
+        1841.316,
+        1245.005,
+        111.545
+      ]
+    },
+    {
+      "bot": 3,
+      "actor": 131003,
+      "team": 1,
+      "position": [
+        2111.25,
+        1885.875,
+        103.45
+      ]
+    },
+    {
+      "bot": 2,
+      "actor": 130998,
+      "team": 2,
+      "position": [
+        2122.125,
+        1884.375,
+        100.2
+      ]
+    },
+    {
+      "bot": 1,
+      "actor": 130993,
+      "team": 1,
+      "position": [
+        1963.064,
+        1313.429,
+        118.495
+      ]
+    }
+  ],
+  "ps_spawn_group_lines": [],
+  "gates": {
+    "all_spawns_own_base": false,
+    "purchase_per_bot": false,
+    "no_lua": false,
+    "no_channel_errors": true,
+    "no_crash": true,
+    "wave_revive": true
+  },
+  "passed": false,
+  "total_pp_spent": null,
+  "captures_completed": null,
+  "foreign_recording_sha256": "c08cf236bb4fec9b30a73775d11cba0ba26766e1dc5fd30d8851b16ebcecd710"
+}

@@ -1,0 +1,20 @@
+{
+  "task": "C145 B1 preparation",
+  "base": "b06681eaa4365afe5bf7309994012dce13a7ac83",
+  "patch_commit": "0b39bdb6",
+  "state": "Prepared and staged ONLY, not integrated/pushed/run",
+  "files": 4,
+  "msvc_unit": "BotRoamFallback PASS",
+  "engine_syntax": "BotBrain C++20 /Zs PASS",
+  "observed_oracle": "actual NavMeshCore/mesh653f5e1e + four recorded failed local goals: old selected unreachable4/4 exit4; new helper0/4 exit0, fractions0/.75/0/0",
+  "raw": "build/ds082b-check/",
+  "backup": "build/coordinator-c145/DS082B-prepared-code.patch",
+  "backup_sha256": "05209e2985141c53fb9990ca2d59cde7ecf29075242039dc054d38741532ff6e",
+  "source_worktree": "build/ds076-code",
+  "ci_registered": true,
+  "new_ci": false,
+  "runtime": false,
+  "default_changes": false,
+  "not_exit_fix": true,
+  "next": "DS083 native upper-ladder route/design; keep B1 in coherent exit batch, no game for guard alone"
+}
