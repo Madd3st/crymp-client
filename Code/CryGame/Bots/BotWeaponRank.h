@@ -1,5 +1,5 @@
 // Weapon ranking (C-022, D-010 Claude module): which weapon to HOLD for a fight at a given distance and which
-// pickup is WORTH the walk. Owner (playtest 19:25): "SCAR is the best, the pistol only for close fights". Today
+// pickup is WORTH the walk. Owner D-032 (01.11): FY71 is the main bot weapon; the pistol only for close fights. Today
 // pickups go to the nearest suitable item regardless of class (BotWeapons.cpp:109 `score = sqrt(distance) + ...`)
 // and SOCOM made 61 % of kills in the 21:02 baseline demo.
 // Values are a first table to tune with demos (kills by weapon, time to primary); class names as in Crysis Wars.
@@ -22,8 +22,8 @@ struct WeaponSpec {
 inline const WeaponSpec* WeaponTable(int& n)
 {
 	static const WeaponSpec t[] = {
-		{"SCAR",       1.00f, 0.f,  5.f,  45.f,  90.f, true},
-		{"FY71",       0.95f, 0.f,  5.f,  40.f,  80.f, true},
+		{"FY71",       1.00f, 0.f,  5.f,  40.f,  80.f, true},   // owner D-032: main weapon
+		{"SCAR",       0.95f, 0.f,  5.f,  45.f,  90.f, true},
 		{"Hurricane",  0.80f, 0.f,  3.f,  20.f,  45.f, true},   // owner 25.10: 8 kills in 50 s, too strong as a pick
 		{"GaussRifle", 1.00f, 8.f, 30.f, 200.f, 300.f, true},
 		{"DSG1",       0.90f, 8.f, 35.f, 200.f, 300.f, true},

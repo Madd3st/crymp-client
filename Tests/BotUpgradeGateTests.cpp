@@ -17,7 +17,7 @@ int main()
     assert(!ShouldSearchUpgrade(true, true, true, false, true));   // visible enemy
     assert(ShouldSearchUpgrade(true, true, true, true, true));     // arbiter forced it
 
-    // Choice: at 60 m an FY71 is worth .546, DSG1 .900, SCAR .717. DSG1 is 24 m away, SCAR 41.7 m.
+    // Choice: at 60 m an FY71 is worth .575, DSG1 .900, SCAR .681. DSG1 is 24 m away, SCAR 41.7 m.
     HeldWeapon held[] = {{"FY71", true}};
     const float dsg = PickupValue("DSG1", held, 1, 60.f);
     const float scar = PickupValue("SCAR", held, 1, 60.f);

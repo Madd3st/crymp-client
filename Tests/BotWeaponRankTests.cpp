@@ -21,10 +21,17 @@ int main()
 		HeldWeapon none[] = {{"SCAR", false}};
 		assert(BestToHold(none, 1, 15.f) == -1);
 	}
-	// 4. No marginal switching: holding FY71 at 20 m, SCAR is barely better -> keep FY71.
+	// 4. D-032: FY71 is the best at fight range and worth picking up over a SCAR; no marginal switching: holding the
+	//    SCAR at 20 m, the FY71 is barely better -> keep the SCAR. Beyond 42.4 m the SCAR's longer range wins.
 	{
 		HeldWeapon inv[] = {{"FY71", true}, {"SCAR", true}};
-		assert(BestToHold(inv, 2, 20.f, 0) == 0);
+		assert(BestToHold(inv, 2, 20.f) == 0);
+		assert(BestToHold(inv, 2, 20.f, 1) == 1);
+		assert(BestToHold(inv, 2, 60.f) == 1);
+		HeldWeapon scar[] = {{"SCAR", true}};
+		assert(PickupValue("FY71", scar, 1) > 0.01f);
+		HeldWeapon fy[] = {{"FY71", true}};
+		assert(PickupValue("SCAR", fy, 1) < 0.01f);
 	}
 	// 5. Pickups: with only a pistol a SCAR 25 m away beats a SOCOM 5 m away; with a SCAR in hand another SMG is not
 	//    worth a detour.
