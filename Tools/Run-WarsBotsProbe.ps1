@@ -4,7 +4,6 @@ param(
  [Parameter(Mandatory)][Alias('Build')][string]$BuildDirectory,
  [string]$GameDirectory='E:/Steam/steamapps/common/Crysis',
  [string]$OutputDirectory='',
- [string]$FirstTrace='',
  [ValidateRange(1024,49151)][int]$Port=46120
 )
 $ErrorActionPreference='Stop'
@@ -20,6 +19,7 @@ $exe=Join-Path $build 'CryMP-Server64.exe'
 $manifestPath=Join-Path $build 'claude-build.json'
 if(-not(Test-Path $manifestPath)){$manifestPath=Join-Path $build 'ci-build.json'}
 $manifest=Get-Content -LiteralPath $manifestPath -Raw|ConvertFrom-Json
+if($manifest.data_layout -ne 'local-v1'){throw 'Local-data build required'}
 if((Get-FileHash -LiteralPath $exe).Hash -ne $manifest.server){throw 'Frozen server hash mismatch'}
 if($OutputDirectory){$out=[IO.Path]::GetFullPath($OutputDirectory)}else{$out=Join-Path $repo ('build/probes/'+$spec.id+'-'+(Get-Date -Format yyyyMMdd-HHmmss))}
 if(Test-Path $out){throw 'Fresh output directory required'}
@@ -57,11 +57,15 @@ function Restore-ProbeMemory {
  if(Get-Process CryMP-Client64,CryMP-Server64 -ErrorAction SilentlyContinue|Where-Object{-not $_.HasExited}){throw 'Live process: memory restore deferred'}
  foreach($f in $memoryManifest){$dest=Join-Path $memory $f.name;Copy-Item -LiteralPath (Join-Path $snapshot $f.name) -Destination $dest -Force;if((Get-FileHash $dest).Hash -ne $f.sha256){throw 'Memory hash restore failed'}}
 }
+function Test-ClientJoined([string[]]$files) {
+ foreach($file in $files){if((Test-Path -LiteralPath $file) -and (Get-Content -LiteralPath $file -Raw) -match 'clients=[1-9]'){return $true}}
+ return $false
+}
 function Invoke-ProbeProcess([string]$tag,[bool]$withSetup) {
  Restore-ProbeMemory
  if((Get-FileHash -LiteralPath $exe).Hash -ne $manifest.server){throw 'Frozen EXE changed'}
  ${unique}='Probe-'+$spec.id+'-'+[guid]::NewGuid().ToString('N').Substring(0,8)+'-'+$tag
- $log=Join-Path $out ($unique+'.log');$trace=$log -replace '\.log$','.bots.log';$traceSource=Join-Path (Join-Path $env:LOCALAPPDATA 'WarsBots/Logs') ($unique+'.bots.log');$p=$null
+ $log=Join-Path $out ($unique+'.log');$trace=$log -replace '\.log$','.bots.log';$traceSource=Join-Path (Join-Path $env:LOCALAPPDATA 'WarsBots/Logs') ($unique+'.bots.log');$p=$null;$joined=$false
  # CryEngine serializes +map before subsequent console commands, as Test-WarsBotsTactics does.
  # Wait for the loaded-level marker before timing; settings were validated in a separate no-actor process.
  $commands=$sets+$queries;if($withSetup){$commands+=$setup}
@@ -83,12 +87,14 @@ function Invoke-ProbeProcess([string]$tag,[bool]$withSetup) {
   if(@($checks|Where-Object{-not $_.pass}).Count){throw 'Effective recipe mismatch'}
   if($withSetup){
    $end=[DateTime]::UtcNow.AddSeconds([int]$spec.duration_s)
-   while([DateTime]::UtcNow -lt $end){if($p.HasExited){throw 'Unexpected process exit'};Start-Sleep -Seconds 1}
+   while([DateTime]::UtcNow -lt $end -and -not $joined){if($p.HasExited){throw 'Unexpected process exit'};$joined=Test-ClientJoined @($traceSource,$log);Start-Sleep -Seconds 1}
   }
  }finally{
-  if($p -and -not $p.HasExited){$actual=Get-Process -Id $p.Id -ErrorAction SilentlyContinue;if($actual.Path -ne $exe){throw 'PID/path mismatch'};Stop-Process -Id $p.Id;if(-not $p.WaitForExit(10000)){throw 'Server did not exit'};Start-Sleep -Milliseconds 200}
-  Restore-ProbeMemory
+  $joined=$joined -or (Test-ClientJoined @($traceSource,$log))
+  if(-not $joined -and $p -and -not $p.HasExited){$actual=Get-Process -Id $p.Id -ErrorAction SilentlyContinue;if($actual.Path -ne $exe){throw 'PID/path mismatch'};Stop-Process -Id $p.Id;if(-not $p.WaitForExit(10000)){throw 'Server did not exit'};Start-Sleep -Milliseconds 200}
+  if(-not $joined){Restore-ProbeMemory}
  }
+ if($joined){throw 'Human joined; leaving this server running, memory restore deferred'}
  if(Test-Path -LiteralPath $traceSource){Copy-Item -LiteralPath $traceSource -Destination $trace}
  return $trace
 }
@@ -112,7 +118,7 @@ try{
  # Same exact settings, no setup: effective CVars must pass before any bot is added.
  $null=Invoke-ProbeProcess 'preflight' $false
  for($repeat=1;$repeat -le $spec.repeat;$repeat++){
-  if($repeat -eq 1 -and $FirstTrace){$trace=(Resolve-Path -LiteralPath $FirstTrace).Path}else{$trace=Invoke-ProbeProcess ('repeat-'+$repeat) $true}
+  $trace=Invoke-ProbeProcess ('repeat-'+$repeat) $true
   $m=Metrics-FromTrace $trace;$assertions=@()
   foreach($a in $spec.assert){foreach($key in @($a.metric,$a.other)){if($key -like 'kills:*' -and -not $m.Contains($key)){$m[$key]=0}}}
 
@@ -135,7 +141,7 @@ try{
  foreach($key in $keys){$v=@($results|ForEach-Object{if($_.metrics.Contains($key)){$_.metrics[$key]}}|Sort-Object);if($v.Count){$mid=[int][math]::Floor($v.Count/2);$medians[$key]=if($v.Count%2){$v[$mid]}else{([double]$v[$mid-1]+[double]$v[$mid])/2}}}
  $pass=($null -eq $failure -and $results.Count -eq $spec.repeat -and @($results|Where-Object{-not $_.pass}).Count -eq 0)
  $restoredHashes=@($memoryManifest|ForEach-Object{@{name=$_.name;sha256=(Get-FileHash (Join-Path $memory $_.name)).Hash;expected=$_.sha256}})
- @{memory_after=$restoredHashes;schema='warsbots-probe-result/1';id=$spec.id;source=$manifest.sha;server_sha256=$manifest.server;recipe=$expected;results=$results;reused_first_trace=$FirstTrace;medians=$medians;pass=$pass;error=$failure;memory_restored=$true;seed='native random_device, setup only is fixed'}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $out 'probe-result.json')
+ @{memory_after=$restoredHashes;schema='warsbots-probe-result/1';id=$spec.id;source=$manifest.sha;server_sha256=$manifest.server;recipe=$expected;results=$results;medians=$medians;pass=$pass;error=$failure;memory_restored=$true;seed='native random_device, setup only is fixed'}|ConvertTo-Json -Depth 12|Set-Content (Join-Path $out 'probe-result.json')
 }
 if(-not $pass){Write-Error "Probe FAIL: $failure";exit 1}
 Write-Host "Probe PASS: $out";exit 0

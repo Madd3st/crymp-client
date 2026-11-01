@@ -13,7 +13,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 $repo=Split-Path $PSScriptRoot -Parent
-$build=(Resolve-Path (Join-Path $repo $BuildDirectory)).Path
+$build=(Resolve-Path ([IO.Path]::Combine($repo,$BuildDirectory))).Path
 $m=Get-Content (Join-Path $build 'claude-build.json') -Raw|ConvertFrom-Json
 $exe=Join-Path $build 'CryMP-Server64.exe'
 if($m.data_layout -ne 'local-v1' -or -not $m.sha.StartsWith($ExpectedSource) -or (Get-FileHash $exe).Hash -ne $m.server){throw 'Frozen source/EXE mismatch'}
@@ -26,7 +26,7 @@ $fixture=Get-Content $Manifest -Raw|ConvertFrom-Json
 foreach($id in $Cases){if($id -notin $fixture.cases.id){throw "Unknown scenario $id"}}
 $selected=@($fixture.cases|Where-Object {$_.map -in $Maps -and (-not $Cases.Count -or $_.id -in $Cases)})
 if(-not $selected.Count){throw 'No scenarios selected'}
-$out=[IO.Path]::GetFullPath((Join-Path $repo $OutputDirectory))
+$out=[IO.Path]::GetFullPath([IO.Path]::Combine($repo,$OutputDirectory))
 if(Test-Path $out){throw 'Fresh output directory required'}
 New-Item -ItemType Directory $out|Out-Null
 Copy-Item $Manifest (Join-Path $out 'manifest.json')
