@@ -403,7 +403,20 @@ BotInstance* BotManager::AddWith(const Vec3* position, const BotProfile& profile
 				const int team = TeamForSlot(number);
 				const EntityId group = rules->GetTeamDefaultSpawnGroup(team);
 				float zOff = 0.f;
-				groupSpawn = group ? rules->GetSpawnLocation(0, true, false, group, 0.f, Vec3(0,0,0), &zOff, 0) : 0;
+				// Shore playtest 02.11: bots created in one frame drew the same spawn point and stayed stuck in each other.
+				const auto occupied = [this](EntityId spawnId) {
+					const IEntity* spawn = gEnv->pEntitySystem->GetEntity(spawnId);
+					if (!spawn) return false;
+					for (const BotInstance* other : Ordered())
+						if (const IEntity* entity = gEnv->pEntitySystem->GetEntity(other->GetEntityId()))
+							if ((entity->GetWorldPos() - spawn->GetWorldPos()).GetLengthSquared2D() < 1.0f) return true;
+					return false;
+				};
+				for (int attempt = 0; attempt < 8; ++attempt)
+				{
+					groupSpawn = group ? rules->GetSpawnLocation(0, true, false, group, 0.f, Vec3(0,0,0), &zOff, 0) : 0;
+					if (!groupSpawn || !occupied(groupSpawn)) break;
+				}
 				WB_LOG(1, "[WarsBots] #%d PS initial spawn team=%d group=%u spawn=%u.", number, team, group, groupSpawn);
 				if (!groupSpawn) return nullptr;   // never the IA picker in PS
 			}
