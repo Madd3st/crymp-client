@@ -15,6 +15,7 @@
 #include "CryGame/Bots/BotWeapons.h"
 #include "CryGame/Bots/BotWeaponRank.h"
 #include "CryGame/Bots/BotUpgradeGate.h"
+#include "CryGame/Bots/BotDoorPath.h"
 #include "CryGame/Bots/BotWeaponGoal.h"
 #include "CryGame/Bots/BotAuditFixes.h"
 #include "CryGame/Bots/BotNavMesh.h"
@@ -611,6 +612,20 @@ bool BotBrain::UpdatePSDoors(BotInstance& bot,CPlayer& actor,float decisionTime)
 		{
 			const Vec3 seg=m_path[m_pathIndex]-feet; const float len2=seg.GetLengthSquared2D();
 			if (len2>0.01f) { const float t=clamp_tpl(to.Dot(seg)/len2,0.f,1.f); const Vec3 on=feet+seg*t; ahead=t>0.1f && (e->GetWorldPos()-on).GetLength2D()<=3.0f; }
+			AABB box; e->GetLocalBounds(box);
+			if (ahead && box.min.x<box.max.x && box.min.y<box.max.y)
+			{
+				const Matrix34 toDoor=e->GetWorldTM().GetInverted();
+				Vec3 from=toDoor*feet;
+				bool through=false;
+				for (size_t k=m_pathIndex;k<m_path.size() && k<m_pathIndex+3 && !through;++k)
+				{
+					const Vec3 next=toDoor*m_path[k];
+					through=WarsBots::SegmentCrossesDoor(from.x,from.y,next.x,next.y,box.min.x,box.min.y,box.max.x,box.max.y);
+					from=next;
+				}
+				ahead=through;
+			}
 		}
 		else { const Vec3 fwd=actor.GetEntity()->GetWorldRotation().GetColumn1(); ahead=fwd.Dot(to.GetNormalizedSafe(fwd))>=0.2f; }
 		if(!ahead) { WB_LOG(2,"[WarsBots] #%d PS DOOR skip entity=%u actor=%u reason=ahead dist=%.2f.",m_number,e->GetId(),id,to.GetLength()); continue; }
