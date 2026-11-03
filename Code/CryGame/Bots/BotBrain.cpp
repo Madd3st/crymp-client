@@ -16,6 +16,7 @@
 #include "CryGame/Bots/BotWeaponRank.h"
 #include "CryGame/Bots/BotUpgradeGate.h"
 #include "CryGame/Bots/BotDoorPath.h"
+#include "CryGame/Bots/BotLootClaim.h"
 #include "CryGame/Bots/BotWeaponGoal.h"
 #include "CryGame/Bots/BotAuditFixes.h"
 #include "CryGame/Bots/BotNavMesh.h"
@@ -31,6 +32,7 @@
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Actors/Player/Player.h"
 #include "CryCommon/CryAction/IWeapon.h"
+#include "CryCommon/CrySystem/ITimer.h"
 #include <cmath>
 // T-1 step 1 (DeepSeek review): every write to a control channel records its source line in BotIntent::why*, so the
 // INTENT WHY log shows which rule decided suit/jump/gait/aim/move this tick. No behaviour change: same writes, same order.
@@ -937,7 +939,11 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			// fragmovies: take the dead enemy's gun/ammo before moving on
 			const EntityId drop=BotWeapons::FindDrop(actor,m_lootPos,6.0f);
 			m_lootUntil=0;
-			if (drop)
+			// Shore 03.11: up to 4 shooters of one victim went for the same drop; the first one claims it
+			static BotLootClaims claims;
+			if (drop && !claims.TryClaim(drop,actor.GetEntityId(),gEnv->pTimer->GetCurrTime()))
+				WB_LOG(2,"[WarsBots] #%d LOOT skip item=%u reason=claimed actor=%u.",m_number,drop,actor.GetEntityId());
+			else if (drop)
 			{
 				SetUpgradeTarget(drop); // DS-097: the budget starts in UpdateUpgrade when the bot actually walks to it
 				WB_LOG(2,"[WarsBots] #%d LOOT item=%u at (%.1f,%.1f,%.1f) actor=%u.",m_number,drop,m_lootPos.x,m_lootPos.y,m_lootPos.z,actor.GetEntityId());

@@ -7,6 +7,7 @@
 #include "CryGame/Bots/BotAimControl.h"
 #include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotTargeting.h"
+#include "CryGame/Bots/BotFireLane.h"
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Actors/Player/Player.h"
 #include "CryGame/Bots/BotConfig.h"
@@ -76,6 +77,21 @@ bool Sight(CActor& actor, IActor& target, EntityId& obstruction)
 	if (!gEnv->pPhysicalWorld) return false;
 	return ClearRay(actor, target, Eyes(actor), BotCombat::AimPoint(target), obstruction) ||
 		ClearRay(actor, target, Eyes(actor), Eyes(target), obstruction);
+}
+EntityId AllyInLane(CActor& actor, const Vec3& muzzle, const Vec3& fireDirection, float range)
+{
+	if (!muzzle.IsValid() || !fireDirection.IsValid()) return 0;
+	const Vec3 dir = fireDirection.GetNormalizedSafe(FORWARD_DIRECTION);
+	IActorIteratorPtr iterator = g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
+	while (IActor* other = iterator->Next())
+	{
+		if (BotTargeting::Classify(actor, other) != Relation::Ally) continue;
+		const Vec3 feet = other->GetEntity()->GetWorldPos(), head = Eyes(*other);
+		if (FriendlyInLane(LaneVec{muzzle.x,muzzle.y,muzzle.z}, LaneVec{dir.x,dir.y,dir.z}, range,
+			LaneVec{feet.x,feet.y,feet.z}, LaneVec{head.x,head.y,head.z}))
+			return other->GetEntityId();
+	}
+	return 0;
 }
 }
 Vec3 BotCombat::AimPoint(IActor& target)
@@ -317,6 +333,15 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=aim distance=%.2f tol=%.1f dot=%.3f.",actor.GetEntityId(),target.GetEntityId(),(shotPoint-state.weaponPosition).GetLength(),tolDeg,direction.Dot(state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION))); }
 		StopFire(); return false;
 	}
+	// Shore 03.11 (WarsBot_10 killed WarsBot_12): no burst while an ally stands near the real fire line; the brain
+	// steps aside as for a blocked barrel.
+	if (BotConfig::Get().proFire==1)
+		if (const EntityId ally=AllyInLane(actor,state.weaponPosition,state.fireDirection,(shotPoint-state.weaponPosition).GetLength()))
+		{
+			m_shotBlocked=true;
+			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly ally=%u.",actor.GetEntityId(),target.GetEntityId(),ally); }
+			StopFire(); return false;
+		}
 	IFireMode* mode=weapon->GetFireMode(weapon->GetCurrentFireMode());
     auto fire=BotFireControl::Plan(mode?mode->GetType():nullptr,mode?mode->GetFireRate():0,
         m_profile.reaction,m_burst,m_burstGap,mode?mode->GetSpinUpTime():0);
