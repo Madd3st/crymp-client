@@ -32,6 +32,7 @@ CPP = r"""
 #include "CryGame/Bots/BotRoamFallback.h"
 #include "CryGame/Bots/BotSniperReach.h"
 #include "CryGame/Bots/BotWeaponRank.h"
+#include "CryGame/Bots/BotLootClaim.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -178,9 +179,15 @@ struct EntitySystem {
     IEntity* GetEntity(EntityId) { return nullptr; }
 };
 
+struct Timer {
+    float GetCurrTime() const { return 0.f; }
+};
+
 struct SystemEnv {
     EntitySystem entities;
     EntitySystem* pEntitySystem = &entities;
+    Timer timer;
+    Timer* pTimer = &timer;
 };
 
 static CGame g_gameInstance;
@@ -247,6 +254,7 @@ struct IntentStub {
 #define WBI(field, value) (m_intent.field = (value))
 #define WBI_MOVETO(goal, look) do { m_intent.move = true; m_intent.destination = (goal); m_intent.aim = (look); } while (0)
 
+using WarsBots::BotLootClaims;
 using WarsBots::VantageMap;
 using WarsBots::VantageOutput;
 using WarsBots::VantagePhase;

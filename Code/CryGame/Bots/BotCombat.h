@@ -36,6 +36,8 @@ public:
 	{ if (m_heardAt>0 && now-m_heardAt<=maxAge) { pos=m_heardPos; return true; } return false; }
 	// Last Attack had LOS from the eyes but the barrel was blocked by cover.
 	bool ShotBlocked() const { return m_shotBlocked; }
+	// wb_bot_pro_fire: an ally stood in the fire line within the last 0.5 s (expires: allies move, walls do not).
+	bool FriendlyBlocked(float now) const { return now < m_friendlyUntil; }
 	// Profiling counters across all bots (main thread only), reset on read.
 	static unsigned TakeRayCount();
 	static unsigned TakeScanCount();
@@ -62,6 +64,7 @@ private:
 	EntityId m_dmgTarget = 0; float m_dmgDealt = 0, m_dmgLastHp = 0, m_dmgAt = -100.0f, m_finishStart = -100.0f;
 	float m_nextBurst = 0;
 	float m_nextNoFireLog = 0;
+	float m_friendlyUntil = -100.0f;
 	float m_burstEnd = 0;
 	float m_burst = 0.2f, m_burstGap = 0.65f;
 };

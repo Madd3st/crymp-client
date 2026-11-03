@@ -1331,7 +1331,10 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
             travel.NormalizeSafe(lateral);
             // Eyes see the target but the barrel is blocked by cover: step out (forward and to
             // the current strafe side) instead of standing and staring; flip side if it persists.
-            if (m_combat.ShotBlocked())
+            // wb_bot_pro_fire: an ally in the fire line - step sideways, not forward into it
+            const bool friendly=m_combat.FriendlyBlocked(m_now);
+            if (friendly) travel=lateral*float(m_strafeSide);
+            else if (m_combat.ShotBlocked())
             {
                 if (m_shotBlockedSince<=0) m_shotBlockedSince=m_now;
                 if (m_now-m_shotBlockedSince>0.4f)
@@ -1341,7 +1344,7 @@ void BotBrain::UpdateAttacking(CPlayer& actor,const Vec3& destination,const Vec3
                 }
             }
             else m_shotBlockedSince=0;
-            if (plant && m_shotBlockedSince<=0) { WBI(move,false); WBI(aim,aim); }
+            if (plant && m_shotBlockedSince<=0 && !friendly) { WBI(move,false); WBI(aim,aim); }
             else WBI_MOVETO(actor.GetEntity()->GetWorldPos()+travel*4.0f,aim);
             m_intent.strafe=true;
             // fragmovies: duels are strafe + hop, never standing in the open (normal jump: Armor only)

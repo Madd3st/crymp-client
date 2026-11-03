@@ -34,7 +34,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_heardAt = 0; m_heardPos.zero(); m_perception.Reset(); m_dmgTarget = 0; m_dmgDealt = m_dmgLastHp = 0; m_dmgAt = m_finishStart = -100.0f; }
+void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_heardAt = 0; m_heardPos.zero(); m_perception.Reset(); m_dmgTarget = 0; m_dmgDealt = m_dmgLastHp = 0; m_dmgAt = m_finishStart = -100.0f; m_friendlyUntil = -100.0f; }
 
 void BotCombat::StopFire()
 {
@@ -334,11 +334,11 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 		StopFire(); return false;
 	}
 	// Shore 03.11 (WarsBot_10 killed WarsBot_12): no burst while an ally stands near the real fire line; the brain
-	// steps aside as for a blocked barrel.
+	// steps sideways for a moment. Not m_shotBlocked: a sniper on its spot only calls Attack when that flag is clear.
 	if (BotConfig::Get().proFire==1)
 		if (const EntityId ally=AllyInLane(actor,state.weaponPosition,state.fireDirection,(shotPoint-state.weaponPosition).GetLength()))
 		{
-			m_shotBlocked=true;
+			m_friendlyUntil=now+0.5f;
 			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly ally=%u.",actor.GetEntityId(),target.GetEntityId(),ally); }
 			StopFire(); return false;
 		}

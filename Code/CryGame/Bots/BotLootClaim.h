@@ -2,6 +2,7 @@
 // another, all on the slope where the fight was. The first bot to pick a drop claims it for a while; the others skip it.
 // Ids and time are plain numbers (EntityId, game timer seconds). Pure logic; Tests/BotLootClaimTests.cpp.
 #pragma once
+#include <cstddef>
 #include <vector>
 
 namespace WarsBots {
