@@ -15,6 +15,9 @@ int main()
 	// Ally 0.6 m to the side at 10 m: inside the lane widened by spread (0.5 + 0.3 m).
 	a = body(10.f, 0.6f);
 	assert(FriendlyInLane(muzzle, east, 20.f, a.first, a.second));
+	// Ally 1 m ahead, 0.6 m beside the line: the shoulder is hit (Shore server run, 0.52 m from the axis).
+	a = body(1.f, 0.6f);
+	assert(FriendlyInLane(muzzle, east, 16.f, a.first, a.second));
 	// Ally 2 m to the side: clear.
 	a = body(10.f, 2.f);
 	assert(!FriendlyInLane(muzzle, east, 20.f, a.first, a.second));

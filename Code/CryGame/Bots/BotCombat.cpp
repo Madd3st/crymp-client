@@ -124,7 +124,7 @@ void BotCombat::TraceFriendlyHit(CActor& shooter, IActor& ally, EntityId target,
 	const Vec3 bullet = hitDir.GetNormalizedSafe(lineDir), off = hitPos-muzzle;
 	const float angle = RAD2DEG(acosf(clamp_tpl(bullet.Dot(lineDir), -1.0f, 1.0f)));
 	WB_LOG(2,"[WarsBots] FRIENDLY HIT shooter=%u ally=%u target=%u lane=%.2f allowed=%.2f along=%.2f range=%.2f inLane=%d laneOld=%.2f inLaneOld=%d muzzleShift=%.2f bulletAngle=%.1f hitOffLine=%.2f muzzle=(%.2f,%.2f,%.2f) view=(%.2f,%.2f,%.2f) fire=(%.3f,%.3f,%.3f) feet=(%.2f,%.2f,%.2f) head=(%.2f,%.2f,%.2f) hit=(%.2f,%.2f,%.2f).",
-		shooter.GetEntityId(), ally.GetEntityId(), target, lane, 0.5f + 0.03f*s*range, s, range,
+		shooter.GetEntityId(), ally.GetEntityId(), target, lane, 0.7f + 0.03f*s*range, s, range,
 		FriendlyInLane(m, LaneVec{lineDir.x,lineDir.y,lineDir.z}, range, f, h) ? 1 : 0,
 		laneOld, FriendlyInLane(v, LaneVec{dir.x,dir.y,dir.z}, viewRange, f, h) ? 1 : 0, (muzzle-view).GetLength(),
 		angle, (off-lineDir*off.Dot(lineDir)).GetLength(), muzzle.x, muzzle.y, muzzle.z, view.x, view.y, view.z, dir.x, dir.y, dir.z,
@@ -374,6 +374,13 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 	// The bullet flies from the muzzle helper to the point the view aims at, range away along the fire direction.
 	if (BotConfig::Get().proFire==1)
 	{
+		// Shore server run: an ally 0.6 m from the muzzle slipped out of the lane for a frame and took a head shot
+		// 0.38 s after the hold. Once held, wait out the 0.5 s before the next burst.
+		if (now < m_friendlyUntil)
+		{
+			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly_hold.",actor.GetEntityId(),target.GetEntityId()); }
+			StopFire(); return false;
+		}
 		const Vec3 aimEnd = state.weaponPosition + state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)*(shotPoint-state.weaponPosition).GetLength();
 		const Vec3 firingPos = FiringPos(*weapon,aimEnd,state.weaponPosition);
 		if (const EntityId ally=AllyInLane(actor,firingPos,aimEnd-firingPos,(aimEnd-firingPos).GetLength()))

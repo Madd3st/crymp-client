@@ -41,8 +41,9 @@ inline float SegmentDistance(const LaneVec& p1, const LaneVec& q1, const LaneVec
 }
 
 // dir is normalised, range is the distance to the target. The lane widens with distance for aim noise and spread.
+// radius 0.7: Shore server run, a bullet 0.52 m from the ally's feet-to-head axis still hit the shoulder.
 inline bool FriendlyInLane(const LaneVec& muzzle, const LaneVec& dir, float range, const LaneVec& feet, const LaneVec& head,
-	float radius = 0.5f, float spread = 0.03f)
+	float radius = 0.7f, float spread = 0.03f)
 {
 	if (!(range > 0.f)) return false;
 	// an ally beside or behind the shooter is not in the lane, even within the radius of the muzzle
