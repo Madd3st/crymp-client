@@ -38,6 +38,8 @@ public:
 	bool ShotBlocked() const { return m_shotBlocked; }
 	// wb_bot_pro_fire: an ally stood in the fire line within the last 0.5 s (expires: allies move, walls do not).
 	bool FriendlyBlocked(float now) const { return now < m_friendlyUntil; }
+	// wb_bot_pro_fire: a bot hit an ally - log the fire lane test numbers against the real bullet (FRIENDLY HIT).
+	static void TraceFriendlyHit(CActor& shooter, IActor& ally, EntityId target, const Vec3& hitPos, const Vec3& hitDir);
 	// Profiling counters across all bots (main thread only), reset on read.
 	static unsigned TakeRayCount();
 	static unsigned TakeScanCount();

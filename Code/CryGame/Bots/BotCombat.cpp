@@ -94,6 +94,29 @@ EntityId AllyInLane(CActor& actor, const Vec3& muzzle, const Vec3& fireDirection
 	return 0;
 }
 }
+void BotCombat::TraceFriendlyHit(CActor& shooter, IActor& ally, EntityId target, const Vec3& hitPos, const Vec3& hitDir)
+{
+	if (BotTargeting::Classify(shooter, &ally) != Relation::Ally) return;
+	SMovementState state;
+	shooter.GetMovementController()->GetMovementState(state);
+	const Vec3 muzzle = state.weaponPosition, dir = state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION);
+	IActor* enemy = target ? g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(target) : nullptr;
+	const float range = enemy ? (AimPoint(*enemy)-muzzle).GetLength() : -1.0f;
+	const Vec3 feet = ally.GetEntity()->GetWorldPos(), head = Eyes(ally);
+	float s = 0.f, lane = -1.f;
+	if (range > 0.f)
+		lane = SegmentDistance(LaneVec{muzzle.x,muzzle.y,muzzle.z}, LaneVec{muzzle.x+dir.x*range,muzzle.y+dir.y*range,muzzle.z+dir.z*range},
+			LaneVec{feet.x,feet.y,feet.z}, LaneVec{head.x,head.y,head.z}, s);
+	const float ahead = ((feet+head)*0.5f-muzzle).Dot(dir);
+	const Vec3 bullet = hitDir.GetNormalizedSafe(dir);
+	const float angle = RAD2DEG(acosf(clamp_tpl(bullet.Dot(dir), -1.0f, 1.0f)));
+	const Vec3 off = hitPos-muzzle;
+	WB_LOG(2,"[WarsBots] FRIENDLY HIT shooter=%u ally=%u target=%u lane=%.2f allowed=%.2f along=%.2f range=%.2f ahead=%.2f inLane=%d bulletAngle=%.1f hitOffLine=%.2f muzzle=(%.2f,%.2f,%.2f) fire=(%.3f,%.3f,%.3f) feet=(%.2f,%.2f,%.2f) head=(%.2f,%.2f,%.2f) hit=(%.2f,%.2f,%.2f).",
+		shooter.GetEntityId(), ally.GetEntityId(), target, lane, range > 0.f ? 0.5f + 0.03f*s*range : -1.f, s, range, ahead,
+		range > 0.f && FriendlyInLane(LaneVec{muzzle.x,muzzle.y,muzzle.z}, LaneVec{dir.x,dir.y,dir.z}, range, LaneVec{feet.x,feet.y,feet.z}, LaneVec{head.x,head.y,head.z}) ? 1 : 0,
+		angle, (off-dir*off.Dot(dir)).GetLength(), muzzle.x, muzzle.y, muzzle.z, dir.x, dir.y, dir.z,
+		feet.x, feet.y, feet.z, head.x, head.y, head.z, hitPos.x, hitPos.y, hitPos.z);
+}
 Vec3 BotCombat::AimPoint(IActor& target)
 {
 	const Vec3 feet = target.GetEntity()->GetWorldPos();
