@@ -61,6 +61,7 @@ def main():
      float PickupRange(){return 20;}
      EntityId UpgradeCandidate(CPlayer&,bool,bool,bool){++scans;return candidate;}
      void SetUpgradeTarget(EntityId);
+     void ReleaseClaims(){}
      bool TryAcquireUpgradeGoal(CPlayer&);
     };
     ''' + method('void BotBrain::SetUpgradeTarget(') + '\n' + method('bool BotBrain::TryAcquireUpgradeGoal(') + '\n' + \

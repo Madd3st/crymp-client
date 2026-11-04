@@ -5,6 +5,7 @@
 #pragma once
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 namespace WarsBots {
 
@@ -52,6 +53,31 @@ inline bool FriendlyInLane(const LaneVec& muzzle, const LaneVec& dir, float rang
 	float s = 0.f;
 	const float distance = SegmentDistance(muzzle, LaneAt(muzzle, dir, range), feet, head, s);
 	return distance < radius + spread * s * range;
+}
+
+// An ally inside a vehicle: the shot hits the vehicle's box (min/max in the vehicle's local frame), grown by margin,
+// before range. The caller never passes the shooter's own linked vehicle. A muzzle inside the bare box of an ally's
+// vehicle always blocks (fail closed: the bullet starts in the hull with the ally, whatever its direction - PR #17
+// Codex review); a muzzle only within the margin tests the bare box, so a shot away from the hull is free.
+inline bool LaneHitsBox(const LaneVec& muzzle, const LaneVec& dir, float range, const LaneVec& lo, const LaneVec& hi,
+	float margin = 0.3f)
+{
+	if (!(range > 0.f)) return false;
+	const float p[3] = {muzzle.x, muzzle.y, muzzle.z}, d[3] = {dir.x, dir.y, dir.z};
+	const float a[3] = {lo.x, lo.y, lo.z}, b[3] = {hi.x, hi.y, hi.z};
+	auto inside = [&](float m) { for (int i = 0; i < 3; ++i) if (p[i] < a[i] - m || p[i] > b[i] + m) return false; return true; };
+	if (inside(0.f)) return true;
+	const float m = inside(margin) ? 0.f : margin;
+	float tmin = 0.f, tmax = range;
+	for (int i = 0; i < 3; ++i)
+	{
+		if (std::fabs(d[i]) < 1e-6f) { if (p[i] < a[i] - m || p[i] > b[i] + m) return false; continue; }
+		float t1 = (a[i] - m - p[i]) / d[i], t2 = (b[i] + m - p[i]) / d[i];
+		if (t1 > t2) std::swap(t1, t2);
+		tmin = std::max(tmin, t1); tmax = std::min(tmax, t2);
+		if (tmin > tmax) return false;
+	}
+	return true;
 }
 
 } // namespace WarsBots

@@ -35,6 +35,19 @@ int main()
 	// Downhill shot through a standing ally's head.
 	const LaneVec down{0.995f, 0.f, -0.0995f};
 	assert(FriendlyInLane(muzzle, down, 20.f, LaneVec{5.f, 0.f, -0.5f}, LaneVec{5.f, 0.f, 1.2f}));
+	// Ally in a vehicle 8-12 m ahead (box 4 x 3 x 2.5 m).
+	const LaneVec lo{8.f, -1.5f, 0.f}, hi{12.f, 1.5f, 2.5f};
+	assert(LaneHitsBox(muzzle, east, 20.f, lo, hi));
+	assert(!LaneHitsBox(muzzle, east, 5.f, lo, hi));                          // target before the vehicle
+	assert(!LaneHitsBox(LaneVec{0.f, 2.f, 1.5f}, east, 20.f, lo, hi));        // passes 0.5 m beside the box
+	assert(LaneHitsBox(LaneVec{0.f, 1.7f, 1.5f}, east, 20.f, lo, hi));        // inside the 0.3 m margin
+	// Muzzle inside an ally's vehicle box (on foot on the flatbed, or under a wing): fail closed in any direction.
+	// The shooter's own vehicle never reaches LaneHitsBox (AllyInLane skips it).
+	assert(LaneHitsBox(LaneVec{10.f, 0.f, 1.f}, east, 20.f, lo, hi));
+	assert(LaneHitsBox(LaneVec{10.f, 0.f, 1.f}, LaneVec{-1.f, 0.f, 0.f}, 20.f, lo, hi));
+	assert(!LaneHitsBox(LaneVec{10.f, 0.f, 1.f}, east, 0.f, lo, hi));         // zero range still never blocks
+	assert(LaneHitsBox(LaneVec{7.9f, 0.f, 1.f}, east, 20.f, lo, hi));         // next to it, shooting through it
+	assert(!LaneHitsBox(LaneVec{7.9f, 0.f, 1.f}, LaneVec{-1.f, 0.f, 0.f}, 20.f, lo, hi)); // next to it, shooting away
 	// Zero range never blocks.
 	a = body(1.f, 0.f);
 	assert(!FriendlyInLane(muzzle, east, 0.f, a.first, a.second));

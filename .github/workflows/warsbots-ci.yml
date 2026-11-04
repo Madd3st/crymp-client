@@ -100,6 +100,12 @@ jobs:
           & python Tests/test_bot_vantage_heard_caller.py *> units/BotVantageHeardCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotVantageHeardCaller-run.log; throw 'UNIT FAIL: actual vantage travel vs heard roam caller' }
           'UNIT PASS actual vantage travel vs heard roam caller'
+          & python Tests/test_bot_loot_claim_caller.py *> units/BotLootClaimCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotLootClaimCaller-run.log; throw 'UNIT FAIL: actual loot claim callers and lifecycle wiring' }
+          'UNIT PASS actual loot claim callers and lifecycle wiring'
+          & python Tests/test_bot_fire_lane_caller.py *> units/BotFireLaneCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotFireLaneCaller-run.log; throw 'UNIT FAIL: actual fire lane callers' }
+          'UNIT PASS actual fire lane callers'
           & python Tests/test_bot_shore_ladder_queue_caller.py *> units/BotShoreLadderQueueCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotShoreLadderQueueCaller-run.log; throw 'UNIT FAIL: actual shore ladder queue and bilge-fall caller' }
           'UNIT PASS actual shore ladder queue and bilge-fall caller'
