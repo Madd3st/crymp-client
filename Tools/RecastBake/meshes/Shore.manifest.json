@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "map": "Shore",
+  "mode": "PS",
+  "source": "C154 V5 canonical LF text / actual ManifestOk contract; native lower route acceptance pending",
+  "files": {
+    "navmesh": {
+      "name": "Shore.navmesh",
+      "bytes": 11329588,
+      "sha256": "b60178d7090fd8403b4ba0f4407d6a722c0057afd559a0024148ef0645930609",
+      "fnv64": "f9e8cb2d6cc174bb"
+    },
+    "links": {
+      "name": "Shore.links.txt",
+      "bytes": 116,
+      "sha256": "0230a0c3e59bb818888684012291ee39efaddb542917ac0bc5e02c8e13d32dcb",
+      "fnv64": "ece81253207f6be5"
+    },
+    "spots": {
+      "name": "Shore.spots.txt",
+      "bytes": 62,
+      "sha256": "d95e1e11fa06194e44e1b1d3887fb00334d7f0ccc9528c9a1b439d7ba78b548b",
+      "fnv64": "9bce2faedebbca34"
+    }
+  },
+  "bake": "b23e85ff --zmin99.5 --retain-box2103,1877,90,2138,1892,99.5 --water99.5 cs0.1 ch0.05 radius0.3 height1.8 climb0.5 slope45 tile256 min-region2",
+  "requires": {
+    "wb_bot_navmesh": 1,
+    "wb_bot_jump_links": 1,
+    "wb_bot_ladder": 1,
+    "wb_ps_capture": 1
+  },
+  "limits": "UP-only exit; no underwater dive/capture/full-match/client acceptance. Candidate data is not installed.",
+  "manifest_fnv_contract": "navmesh raw bytes; links/spots remove CR before FNV, matching exact3cfd BotNavMesh.cpp ManifestOk",
+  "supersedes": "V4 preserved INVALID_DATA_PACKAGING: raw CRLF FNV incompatible with runtime text normalization; navmesh/route semantics unchanged"
+}

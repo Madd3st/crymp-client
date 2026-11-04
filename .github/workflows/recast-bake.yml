@@ -1,0 +1,72 @@
+################################################################################
+# Offline navmesh baker (Tools/RecastBake): build recast_bake.exe with MSVC, run its loader test and the water
+# self-test, publish the exe + zlib1.dll + sha256 as an artifact of the exact SHA. Not part of the game build.
+# The bake itself runs on the owner PC: its source geometry (*.crop.obj.gz) is large data outside git (D-021).
+################################################################################
+
+name: RecastBake
+
+on:
+  push:
+    branches:
+      - 'claude/recastbake-**'
+      - 'warsbots/dev'
+    paths:
+      - 'Tools/RecastBake/**'
+      - '.github/workflows/recast-bake.yml'
+  pull_request:
+    branches:
+      - 'warsbots/dev'
+    paths:
+      - 'Tools/RecastBake/**'
+      - '.github/workflows/recast-bake.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: zlib (vcpkg)
+        shell: pwsh
+        run: |
+          & "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe" install zlib:x64-windows
+          if ($LASTEXITCODE) { throw 'vcpkg zlib failed' }
+
+      - name: Configure and build
+        shell: pwsh
+        run: |
+          cmake -S Tools/RecastBake -B build-recast -A x64 `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows
+          if ($LASTEXITCODE) { throw 'cmake configure failed' }
+          cmake --build build-recast --config Release
+          if ($LASTEXITCODE) { throw 'cmake build failed' }
+
+      - name: Tests (retain-box loader, water self-test)
+        shell: pwsh
+        run: |
+          ctest --test-dir build-recast -C Release --output-on-failure
+          if ($LASTEXITCODE) { throw 'ctest failed' }
+          $tool = (Resolve-Path build-recast/Release/recast_bake.exe).Path
+          & Tools/RecastBake/water_selftest.ps1 -Tool $tool
+          if ($LASTEXITCODE) { throw 'water self-test failed' }
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force out | Out-Null
+          Copy-Item build-recast/Release/recast_bake.exe out/
+          Copy-Item build-recast/Release/zlib1.dll out/ -ErrorAction SilentlyContinue
+          if (-not (Test-Path out/zlib1.dll)) { Copy-Item "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows/bin/zlib1.dll" out/ }
+          "commit $env:GITHUB_SHA" | Set-Content out/sha256.txt -Encoding utf8
+          Get-ChildItem out -File | Where-Object Name -ne 'sha256.txt' | ForEach-Object {
+            "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)" } | Add-Content out/sha256.txt -Encoding utf8
+          Get-Content out/sha256.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recast-bake-${{ github.sha }}
+          path: out/
+          retention-days: 30
