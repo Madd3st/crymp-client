@@ -376,6 +376,7 @@ bool BotBrain::Start(BotInstance& bot)
 
 void BotBrain::Stop(BotInstance& bot)
 {
+	ReleaseClaims(); // stop/removal: before the running check, a stopped bot must never keep an item (PR #17 review)
 	if (!m_running) return;
 	m_running = false; // Cancel respawn/re-entry before any native ladder, entity or weapon callback.
 	m_trap.Reset(); m_trapStepUntil=0;
@@ -518,6 +519,7 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
 		m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
 		if (m_state != State::DEAD)
 		{
+			ReleaseClaims(); // a dead bot walks to nothing: the item is free for the others now, not at revive
 			Change(State::DEAD); m_deadTime=0; m_intent=BotIntent();
 			m_blackboard.nextJump=m_blackboard.nextSuitChange=0; m_suit.Reset();
 		}
@@ -848,7 +850,10 @@ bool BotBrain::ClaimUpgrade(EntityId id)
 	WB_LOG(2,"[WarsBots] #%d LOOT skip item=%u reason=claimed.",m_number,id);
 	return false;
 }
-void BotBrain::ReleaseClaims() { if (BotConfig::Get().tactics==1) LootClaims().Release(unsigned(m_number)); }
+// Unconditional: wb_bot_tactics may be switched off while a claim is held; releasing an empty registry changes nothing.
+void BotBrain::ReleaseClaims() { LootClaims().Release(unsigned(m_number)); }
+// Level boundary (BotManager::EndLevel): the game timer may not go back, so an old claim could block a reused item id.
+void BotBrain::ClearAllClaims() { LootClaims().Clear(); }
 
 // DS-097: the only place that creates a weapon goal (was BotBrain.cpp:788-792 unconditional + :1761-1762 in the arbiter).
 // Active pursuit is held; unchosen candidates refresh on the same throttle. Empty scans are throttled too.

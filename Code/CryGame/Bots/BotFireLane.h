@@ -55,8 +55,10 @@ inline bool FriendlyInLane(const LaneVec& muzzle, const LaneVec& dir, float rang
 	return distance < radius + spread * s * range;
 }
 
-// An ally inside a vehicle: the shot hits the vehicle's world box (min/max), grown by margin, before range.
-// A shooter inside the box (its own vehicle) never blocks; one next to it tests the bare box.
+// An ally inside a vehicle: the shot hits the vehicle's box (min/max in the vehicle's local frame), grown by margin,
+// before range. The caller never passes the shooter's own linked vehicle. A muzzle inside the bare box of an ally's
+// vehicle always blocks (fail closed: the bullet starts in the hull with the ally, whatever its direction - PR #17
+// Codex review); a muzzle only within the margin tests the bare box, so a shot away from the hull is free.
 inline bool LaneHitsBox(const LaneVec& muzzle, const LaneVec& dir, float range, const LaneVec& lo, const LaneVec& hi,
 	float margin = 0.3f)
 {
@@ -64,7 +66,7 @@ inline bool LaneHitsBox(const LaneVec& muzzle, const LaneVec& dir, float range, 
 	const float p[3] = {muzzle.x, muzzle.y, muzzle.z}, d[3] = {dir.x, dir.y, dir.z};
 	const float a[3] = {lo.x, lo.y, lo.z}, b[3] = {hi.x, hi.y, hi.z};
 	auto inside = [&](float m) { for (int i = 0; i < 3; ++i) if (p[i] < a[i] - m || p[i] > b[i] + m) return false; return true; };
-	if (inside(0.f)) return false;
+	if (inside(0.f)) return true;
 	const float m = inside(margin) ? 0.f : margin;
 	float tmin = 0.f, tmax = range;
 	for (int i = 0; i < 3; ++i)

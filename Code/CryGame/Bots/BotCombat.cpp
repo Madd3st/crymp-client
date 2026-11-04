@@ -345,6 +345,28 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 	return best;
 }
 
+// wb_bot_pro_fire: true while an ally is in the real fire line or during the 0.5 s hold after one was seen there.
+// Shore server run: an ally 0.6 m from the muzzle slipped out of the lane for a frame and took a head shot 0.38 s
+// after the hold, so once held the bot waits the 0.5 s out. Tests/test_bot_fire_lane_caller.py runs this method.
+bool BotCombat::FriendlyHold(CActor& actor, IActor& target, IWeapon& weapon, const Vec3& viewPos, const Vec3& fireDir,
+	const Vec3& shotPoint, float now)
+{
+	if (now < m_friendlyUntil)
+	{
+		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly_hold.",actor.GetEntityId(),target.GetEntityId()); }
+		return true;
+	}
+	const Vec3 aimEnd = viewPos + fireDir.GetNormalizedSafe(FORWARD_DIRECTION)*(shotPoint-viewPos).GetLength();
+	const Vec3 firingPos = FiringPos(weapon,aimEnd,viewPos);
+	if (const EntityId ally=AllyInLane(actor,firingPos,aimEnd-firingPos,(aimEnd-firingPos).GetLength()))
+	{
+		m_friendlyUntil=now+0.5f;
+		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly ally=%u.",actor.GetEntityId(),target.GetEntityId(),ally); }
+		return true;
+	}
+	return false;
+}
+
 bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 {
 	IWeapon* weapon = BotWeapons::Current(actor);
@@ -393,24 +415,8 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 	// Shore 03.11 (WarsBot_10 killed WarsBot_12): no burst while an ally stands near the real fire line; the brain
 	// steps sideways for a moment. Not m_shotBlocked: a sniper on its spot only calls Attack when that flag is clear.
 	// The bullet flies from the muzzle helper to the point the view aims at, range away along the fire direction.
-	if (BotConfig::Get().proFire==1)
-	{
-		// Shore server run: an ally 0.6 m from the muzzle slipped out of the lane for a frame and took a head shot
-		// 0.38 s after the hold. Once held, wait out the 0.5 s before the next burst.
-		if (now < m_friendlyUntil)
-		{
-			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly_hold.",actor.GetEntityId(),target.GetEntityId()); }
-			StopFire(); return false;
-		}
-		const Vec3 aimEnd = state.weaponPosition + state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)*(shotPoint-state.weaponPosition).GetLength();
-		const Vec3 firingPos = FiringPos(*weapon,aimEnd,state.weaponPosition);
-		if (const EntityId ally=AllyInLane(actor,firingPos,aimEnd-firingPos,(aimEnd-firingPos).GetLength()))
-		{
-			m_friendlyUntil=now+0.5f;
-			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly ally=%u.",actor.GetEntityId(),target.GetEntityId(),ally); }
-			StopFire(); return false;
-		}
-	}
+	if (BotConfig::Get().proFire==1 && FriendlyHold(actor,target,*weapon,state.weaponPosition,state.fireDirection,shotPoint,now))
+	{ StopFire(); return false; }
 	IFireMode* mode=weapon->GetFireMode(weapon->GetCurrentFireMode());
     auto fire=BotFireControl::Plan(mode?mode->GetType():nullptr,mode?mode->GetFireRate():0,
         m_profile.reaction,m_burst,m_burstGap,mode?mode->GetSpinUpTime():0);

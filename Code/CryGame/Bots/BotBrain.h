@@ -53,6 +53,8 @@ public:
     const BotCombat& Combat()const{return m_combat;}
     Vec3 NextCorner()const{return m_pathIndex<m_path.size()?m_path[m_pathIndex]:m_intent.destination;}
     const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
+	// wb_bot_tactics level boundary: drop every bot's loot claim (BotManager::EndLevel; the game timer may not go back).
+	static void ClearAllClaims();
 
 private:
     unsigned m_lookDiagnostics=0;float m_nextLookDiagnostic=0; // <=128 rows per instance, opt-in MOVE TRACE only
