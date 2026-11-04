@@ -42,6 +42,9 @@ public:
 	BotInstance* Find(EntityId id) const;
 	bool AIEnabled(EntityId id) const;
 	bool ShouldYieldLadder(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const;
+	// SPEC-004: other live bots within `radius` of p (same team in team modes). Returns how many are stuck now; fills
+	// `standing` with the positions of those stuck or standing while asking to move.
+	int UnstickAllies(const Vec3& p, float radius, EntityId me, std::vector<Vec3>* standing) const;
 	bool IsCreatingActor(const char* entityName) const;
 	bool IsOwnedProjectileHit(const HitInfo& hit) const;
 	void TraceHit(const char* phase, const HitInfo& hit);

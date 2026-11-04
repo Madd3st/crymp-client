@@ -215,7 +215,18 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 			// fails closed on a missing/non-water ref (no dry/seabed/stacked fallback).
 			NavQueryBounds water;
 			const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water); // DS-089: sized from the native plane
+			// SPEC-004 (wb_bot_unstick): climb/memory/trodden/noise cost and this bot's blocks for this one query.
+			NavCostContext cost;
+			const bool layered = BotConfig::Get().unstick == 1;
+			if (layered)
+			{
+				cost.botSeed = unsigned(m_number) * 2654435761u; cost.trodden = CurrentTrodden(); cost.now = gEnv->pTimer->GetCurrTime(); cost.blockNow = m_now;
+				cost.blocks = m_unstickBlocks.empty() ? nullptr : m_unstickBlocks.data(); cost.blockCount = int(m_unstickBlocks.size());
+				if (m_now < m_unstickPointsUntil && !m_unstickPoints.empty()) { cost.points = m_unstickPoints.data(); cost.pointCount = int(m_unstickPoints.size()); }
+				mesh->SetCostContext(&cost);
+			}
 			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why, waterStart ? &water : nullptr);
+			if (layered) mesh->SetCostContext(nullptr);
 			if (!found) m_pathLinks.clear();
 			m_meshPathActive = found;
 			m_path.clear();
@@ -324,6 +335,8 @@ void BotBrain::Configure(const BotProfile& profile, int number)
 void BotBrain::ResetLife()
 {
 	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
+	m_unstickSensor.Reset(); m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickPoints.clear(); m_unstickPointsUntil=0;   // SPEC-004
+	m_unstickBlocks.erase(std::remove_if(m_unstickBlocks.begin(),m_unstickBlocks.end(),[this](const NavCostBlock& b){return b.until>=0.f && m_now>=b.until;}),m_unstickBlocks.end());
 	m_locomotion.Reset();
 	m_suit.Reset(); m_blackboard=BotBlackboard(); m_intent=BotIntent();
 	m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
@@ -900,13 +913,10 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 			// after 8 s (owner playtest 25.10: bot #3 x4; C-080: 7 times, 0 bots ever held a sniper rifle).
 			if (BotConfig::Get().pathProgress==1 && m_meshPathActive && !m_path.empty() && (m_pathGoal-goal->GetWorldPos()).GetLength2D()<2.0f)
 			{
-				float rem=(m_path[min(m_pathIndex,m_path.size()-1)]-feet).GetLength();
-				for (size_t k=m_pathIndex+1;k<m_path.size();++k) rem+=(m_path[k]-m_path[k-1]).GetLength();
-				d=rem;
+				d=PathRemaining(m_path,m_pathIndex,feet);   // SPEC-004: shared helper (BotUnstick.h), same sum as before
 				// DS-S1 #1: Steer repaths every 5 s; a longer new path must not age the old best into a false timeout.
 				// New path -> restart progress from its own length (the 60 s cap still bounds endless repaths).
-				const float sig=m_path.front().x*0.37f+m_path.front().y*1.13f+(float)m_path.size()*7.0f;
-				if (fabsf(sig-m_upgradePathSig)>0.01f) { m_upgradePathSig=sig; if (d>m_upgradeBest) { m_upgradeBest=d; m_upgradeBestAt=m_now; } }
+				ApplyPathSignature(m_upgradePathSig,m_upgradeBest,m_upgradeBestAt,PathSignature(m_path),d,m_now);
 			}
 			if (d < m_upgradeBest-1.0f) { m_upgradeBest=d; m_upgradeBestAt=m_now; }
 		}
@@ -1445,7 +1455,11 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
     const Vec3 p=actor.GetEntity()->GetWorldPos();
     // DS-070: a gated swimmer making no progress is not a land trap; the same policy disables the watchdog here.
     const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove && !m_blackboard.waterMovement,false);
-    if (level)
+    // SPEC-004: with wb_bot_unstick the exit steps replace levels 1-3; the native self-kill (level 4) stays the last resort.
+    const bool unstickOwns=BotConfig::Get().unstick==1 && level>0 && level<4;
+    if (unstickOwns)
+        WB_LOG(2,"[WarsBots] TRAP RECOVERY level=%d actor=%u skipped=unstick.",level,actor.GetEntityId());
+    if (level && !unstickOwns)
     {
         WB_LOG(1,"[WarsBots] TRAP RECOVERY level=%d actor=%u age=%.2f pos=(%.2f,%.2f,%.2f) blocked=%d speed=%.2f grounded=%d sink=%d.",
             level,actor.GetEntityId(),m_trap.Age(m_now),p.x,p.y,p.z,m_blackboard.blocked?1:0,m_blackboard.velocity.GetLength2D(),m_blackboard.grounded?1:0,0);
@@ -1484,6 +1498,143 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
     return false;
 }
 
+// SPEC-004 (wb_bot_unstick): stuck = the best remaining navmesh path did not drop by 1 m in 4 s (BotUnstick.h). Exit
+// steps are movement requests only (gait, jump, Strength, suit mode, destination): no SetPos, no impulse, and success is
+// progress of the remaining path, never a timer. Muted while a link/ladder owns the bot, in combat, holding, in water.
+void BotBrain::UpdateUnstick(CPlayer& actor)
+{
+	BotManager& manager=g_pGame->GetBotManager();
+	if (BotConfig::Get().unstick!=1 || !gEnv->bServer || !manager.Owns(actor.GetEntityId()) || !manager.CanRunLocalIA())
+	{ m_unstickSteps.Reset(); m_unstickSensor.Reset(); m_unstickStuck=false; return; }
+	const Vec3 feet=actor.GetEntity()->GetWorldPos();
+	const float world=gEnv->pTimer->GetCurrTime();
+	NavMeshCore* mesh=CurrentNavMesh();
+	const char* hash=CurrentNavMeshHash();
+	if (m_unstickHash!=hash) { m_unstickHash=hash; m_unstickBlocks.clear(); m_unstickSteps=UnstickSteps(); m_unstickSensor.Reset(); }
+	// Skipped ticks mean something else owned the bot (ladder, waiting at a ladder, link, test, death): settle first.
+	if (m_now-m_unstickLast>0.75f) m_unstickMuteUntil=max(m_unstickMuteUntil,m_now+1.5f);
+	m_unstickLast=m_now;
+	if (m_link.Active() || m_ladder.Active() || m_ladderNativeLocked) m_unstickMuteUntil=max(m_unstickMuteUntil,m_now+2.0f);
+	const bool combat=m_blackboard.visible || m_state==State::ATTACKING || m_intent.combat!=BotCombatIntent::None;
+	const bool water=m_blackboard.waterMovement || m_blackboard.swimming;
+	const bool muted=!mesh || !m_meshPathActive || m_path.empty() || !m_intent.move || combat || water || !m_blackboard.canMove || m_now<m_unstickMuteUntil;
+	const float rem=m_path.empty()?0.f:PathRemaining(m_path,m_pathIndex,feet);
+	m_unstickStuck=m_unstickSensor.Update(rem,PathSignature(m_path),m_now,muted);
+	// trodden passes (shared spread layer): once a second while walking a navmesh path
+	if (mesh && m_meshPathActive && m_now>=m_unstickNextTrodden && m_blackboard.velocity.GetLength2D()>1.0f)
+	{
+		m_unstickNextTrodden=m_now+1.0f;
+		const float p[3]={feet.x,feet.y,feet.z};
+		if (TroddenMap* trodden=CurrentTrodden()) if (const unsigned long long ref=mesh->PolyAt(p)) trodden->Pass(ref,world);
+	}
+	if (muted)
+	{
+		if (m_unstickSteps.Step()!=UnstickStep::None)
+			WB_LOG(2,"[WarsBots] #%d UNSTICK abort step=%s reason=muted actor=%u.",m_number,UnstickStepName(m_unstickSteps.Step()),actor.GetEntityId());
+		m_unstickSteps.Reset(); m_unstickStuck=false;
+		return;
+	}
+	std::vector<Vec3> standing;
+	const int stuckNear=manager.UnstickAllies(feet,5.0f,actor.GetEntityId(),nullptr);
+	// A standing or stuck ally on the next 30 m: replan once with +50 % cost around it (a detour under 1.5x wins).
+	if (m_unstickSteps.Step()==UnstickStep::None && m_now>=m_unstickNextAlly)
+	{
+		m_unstickNextAlly=m_now+1.0f;
+		manager.UnstickAllies(feet,34.0f,actor.GetEntityId(),&standing);
+		bool ahead=false;
+		for (const Vec3& a:standing) if ((a-feet).GetLength2D()>1.0f && AllyNearPathAhead(m_path,m_pathIndex,feet,a)) { ahead=true; break; }
+		if (ahead)
+		{
+			m_unstickPoints.clear();
+			for (const Vec3& a:standing) { NavCostPoint pt; pt.p[0]=a.x; pt.p[1]=a.y; pt.p[2]=a.z; m_unstickPoints.push_back(pt); if (m_unstickPoints.size()>=8) break; }
+			m_unstickPointsUntil=m_now+5.0f; m_unstickNextAlly=m_now+3.0f; m_nextRepath=m_minRepath=0;
+			WB_LOG(2,"[WarsBots] #%d UNSTICK spread allies=%u actor=%u.",m_number,unsigned(m_unstickPoints.size()),actor.GetEntityId());
+		}
+	}
+	const Vec3 corner=m_path[min(m_pathIndex,m_path.size()-1)];
+	const bool chain=m_unstickSteps.Step()!=UnstickStep::None;
+	const Vec3 from=chain?m_unstickFrom:feet, to=chain?m_unstickTo:corner;
+	Vec3 forward=corner-feet; forward.z=0; forward.NormalizeSafe(actor.GetBaseQuat().GetColumn1());
+	if (standing.empty()) manager.UnstickAllies(feet,3.0f,actor.GetEntityId(),&standing);
+	bool crowdAhead=false;
+	for (const Vec3& a:standing) { const Vec3 d=a-feet; if (d.GetLength2D()<2.5f && d.x*forward.x+d.y*forward.y>0.f) crowdAhead=true; }
+	UnstickInput in;
+	in.stuck=m_unstickStuck; in.progressed=m_unstickSensor.Progressed(); in.grounded=m_blackboard.grounded;
+	in.canJump=true;                                            // the jump executor still checks the head room
+	in.canStrength=m_blackboard.energy>=130.0f && !crowdAhead;  // a Strength jump into a crowd lands somewhere worse
+	in.transition=TransitionKey(from.x,from.y,to.x,to.y);
+	const UnstickStep step=m_unstickSteps.Update(m_now,in);
+	switch (m_unstickSteps.Event())
+	{
+	case UnstickEvent::Started:
+		if (!chain) { m_unstickFrom=feet; m_unstickTo=corner; }
+		m_unstickJumped=false;
+		WB_LOG(1,"[WarsBots] #%d UNSTICK step=%s pos=(%.1f,%.1f,%.1f) corner=(%.1f,%.1f,%.1f) remaining=%.1f stuckFor=%.1f energy=%.0f allies5m=%d actor=%u.",
+			m_number,UnstickStepName(step),feet.x,feet.y,feet.z,m_unstickTo.x,m_unstickTo.y,m_unstickTo.z,rem,m_unstickSensor.StuckFor(m_now),
+			m_blackboard.energy,stuckNear,actor.GetEntityId());
+		if (step==UnstickStep::Backoff)
+		{
+			NavCostBlock b;
+			b.from[0]=m_unstickFrom.x; b.from[1]=m_unstickFrom.y; b.from[2]=m_unstickFrom.z;
+			b.to[0]=m_unstickTo.x; b.to[1]=m_unstickTo.y; b.to[2]=m_unstickTo.z;
+			b.until=m_unstickSteps.ClosedSet().count(in.transition)?-1.f:m_now+m_unstickSteps.banTime;
+			if (m_unstickBlocks.size()>=16) m_unstickBlocks.erase(m_unstickBlocks.begin());
+			m_unstickBlocks.push_back(b);
+		}
+		break;
+	case UnstickEvent::Exited:
+	{
+		const bool strength=m_unstickSteps.LastExitByStrength();
+		WB_LOG(1,"[WarsBots] #%d UNSTICK exit strength=%d pos=(%.1f,%.1f,%.1f) remaining=%.1f actor=%u.",m_number,strength?1:0,feet.x,feet.y,feet.z,rem,actor.GetEntityId());
+		if (UnstickShouldRecord(strength,stuckNear,combat))
+		{ const float f[3]={m_unstickFrom.x,m_unstickFrom.y,m_unstickFrom.z}, t[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z}; UnstickRecord(f,t,world); }
+		break;
+	}
+	case UnstickEvent::Failed:
+	{
+		WB_LOG(1,"[WarsBots] #%d UNSTICK failed next=%s pos=(%.1f,%.1f,%.1f) allies5m=%d actor=%u.",m_number,UnstickStepName(step),feet.x,feet.y,feet.z,stuckNear,actor.GetEntityId());
+		if (UnstickShouldRecord(true,stuckNear,combat))
+		{ const float f[3]={m_unstickFrom.x,m_unstickFrom.y,m_unstickFrom.z}, t[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z}; UnstickRecord(f,t,world); }
+		m_nextRepath=m_minRepath=0;   // replan now: the cost context carries this bot's new block
+		m_unstickSensor.Reset();
+		if (step==UnstickStep::Wait) m_unstickWait=feet+Vec3(-forward.y,forward.x,0)*(m_number%2?2.0f:-2.0f);   // wait aside, not in the lane
+		break;
+	}
+	default: break;
+	}
+	switch (step)
+	{
+	case UnstickStep::Sprint:
+		WBI(gait,BotGait::Sprint); m_cornerSlow=false;
+		if (m_blackboard.energy>50.0f) WBI(suitMode,NANOMODE_SPEED);
+		break;
+	case UnstickStep::Jump:
+		WBI(gait,BotGait::Run);
+		if (!m_unstickJumped && m_blackboard.grounded && m_now>=m_blackboard.nextJump)
+		{ WBI(jump,BotJump::Normal); WBI(suitMode,NANOMODE_DEFENSE); m_unstickJumped=true; }
+		break;
+	case UnstickStep::Strength:
+		WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_STRENGTH); m_cornerSlow=false;
+		if (!m_unstickJumped && m_blackboard.grounded && m_now>=m_blackboard.nextJump)
+		{ WBI(jump,BotJump::Strength); m_intent.linkJump=true; m_unstickJumped=true; }   // linkJump: never downgraded
+		break;
+	case UnstickStep::Backoff:
+	{
+		// back along the path (previous corner or the path start), otherwise straight back 5 m
+		Vec3 back=m_pathIndex>0 && m_pathIndex-1<m_path.size()?m_path[m_pathIndex-1]:m_pathStart;
+		if ((back-feet).GetLength2D()<2.0f) back=feet-forward*5.0f;
+		WBI_MOVETO(back,back+Vec3(0,0,1.2f)); WBI(gait,BotGait::Run); WBI(jump,BotJump::None);
+		break;
+	}
+	case UnstickStep::Wait:
+	{
+		WBI_MOVETO(m_unstickWait,corner+Vec3(0,0,1.2f)); WBI(gait,BotGait::Walk); WBI(jump,BotJump::None);
+		break;
+	}
+	default: break;
+	}
+}
+
 void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 {
     if (RecoverTrap(actor)) return;
@@ -1516,11 +1667,12 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
 	if (BotConfig::Get().ladder==1 && ApplyLadderExecutor(actor)) return; // DS-107: immediate/exclusive ownership
 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
+	UpdateUnstick(actor); // SPEC-004, wb_bot_unstick (default OFF)
 	// wb_bot_jump_sanity: on a navmesh path the mesh already proved the way (jumps come from baked links); the low
 	// obstacle rays read stair steps as a wall and asked for Strength jumps at every staircase (149 of 364, owner
 	// playtest 25.10). Trap recovery still jumps (level 3) when stuck.
 	const bool obstacleJumps=!(BotConfig::Get().jumpSanity==1 && m_intent.meshPath && m_trap.Level()<2);
-	if (obstacleJumps && !m_link.Active() && m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
+	if (obstacleJumps && !m_link.Active() && m_unstickSteps.Step()==UnstickStep::None && m_intent.move && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_now>=m_testUntil &&
         !(m_trap.Level()>=2 && m_now<m_trapStepUntil))
 	{
 		const Vec3 direction=(m_intent.destination-m_blackboard.position).GetNormalizedSafe(FORWARD_DIRECTION);

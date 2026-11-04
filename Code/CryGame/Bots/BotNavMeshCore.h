@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 #include <cstddef>
+#include "CryGame/Bots/BotUnstick.h"
 
 class dtNavMesh;
 class dtNavMeshQuery;
@@ -47,6 +48,20 @@ inline NavQueryBounds WaterQueryBounds(float lift = 0.f)
 	}
 	return b;
 }
+
+// SPEC-004 (wb_bot_unstick) cost layer for one path query of one bot. Multiplies the Detour segment cost; never
+// forbids a polygon, so a route without an alternative is still found (the exit steps handle it).
+struct NavCostBlock { float from[3], to[3]; float mult = 10.f; float until = -1.f; };   // per-bot uphill block (<0: no expiry)
+struct NavCostPoint { float p[3]; float radius = 2.f; float mult = 1.5f; };            // ally standing/stuck: detour if < 1.5x
+struct NavCostContext {
+	bool climb = true;                     // uphill above 38 deg costs more, downhill never
+	unsigned botSeed = 0; float noise = 0.15f;
+	const TroddenMap* trodden = nullptr;
+	float now = 0.f;                       // trodden clock (world time, shared by all bots)
+	float blockNow = 0.f;                  // the bot's own clock for its block expiry
+	const NavCostBlock* blocks = nullptr; int blockCount = 0;
+	const NavCostPoint* points = nullptr; int pointCount = 0;
+};
 
 class NavMeshCore {
 public:
@@ -101,6 +116,19 @@ public:
 	bool FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,
 		const char** reason = nullptr, const NavQueryBounds* startBounds = nullptr) const;
 
+	// SPEC-004: true only when Detour was built with DT_VIRTUAL_QUERYFILTER (CMake/CI); otherwise the cost layer is inert.
+	static bool CostLayerAvailable();
+	// Applies to the next path queries until reset with nullptr (the caller sets it around its own FindPathLinks).
+	void SetCostContext(const NavCostContext* ctx) { m_cost = ctx; }
+	const NavCostContext* CostContext() const { return m_cost; }
+	// Remembered directed transitions, resolved to the polygons at their start, middle and end. `clock` decays them.
+	void SetTransitionMemory(const TransitionMemory& memory, float clock);
+	size_t PenaltyPolys() const { return m_penalty.size(); }
+	// Cost factor of walking a -> b (Crysis frame) inside polygon `cur` under the current context (1 without one).
+	float SegmentCostMultiplier(const float* a, const float* b, unsigned long long cur, bool offMesh = false) const;
+	// Polygon under p (+-1 m), 0 when off the mesh. Used for trodden passes.
+	unsigned long long PolyAt(const float* p) const { return Nearest(p, nullptr, 1.0f, 1.0f, 2.0f); }
+
 private:
 	unsigned long long Nearest(const float* p, float* snapped, float side, float up, float down) const;
 	bool IsWaterPoly(unsigned long long ref) const;
@@ -119,6 +147,9 @@ private:
 	int m_links = 0;
 	std::unordered_map<unsigned long long, int> m_linkFails;
 	int m_linkMismatch = 0;
+	const NavCostContext* m_cost = nullptr;
+	struct PolyPenalty { TransitionPenalty t; float value; };
+	std::unordered_map<unsigned long long, std::vector<PolyPenalty>> m_penalty;
 };
 
 } // namespace WarsBots

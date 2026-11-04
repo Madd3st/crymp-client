@@ -5,6 +5,15 @@
 namespace WarsBots {
 class NavMeshCore;
 NavMeshCore* CurrentNavMesh();
+// SPEC-004 runtime of the current level (wb_bot_unstick): navmesh hash, remembered directed transitions with their file
+// %LOCALAPPDATA%/WarsBots/Memory/<Level>.unstick.txt (bound to the navmesh hash), and the trodden map (no file).
+class TroddenMap;
+const char* CurrentNavMeshHash();
+TroddenMap* CurrentTrodden();
+// Game-seconds clock of the transition memory: stored with the file, so the half-life spans matches.
+float UnstickClock(float now);
+// A lone bot failed (or needed Strength) on from -> to: remember it, save the file, refresh the Detour penalties.
+void UnstickRecord(const float* from, const float* to, float now);
 class VantageMap;
 // Baked sniper spots for the current level (<Level>.spots.txt next to the navmesh), nullptr if missing/disabled.
 VantageMap* CurrentVantage();

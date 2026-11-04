@@ -221,6 +221,27 @@ bool BotManager::ShouldYieldLadder(unsigned long long ref, const Vec3& a, float 
 	return false;
 }
 
+int BotManager::UnstickAllies(const Vec3& p, float radius, EntityId me, std::vector<Vec3>* standing) const
+{
+	CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
+	const int myTeam = rules ? rules->GetTeam(me) : 0;
+	int stuck = 0;
+	for (const auto& entry : m_bots)
+	{
+		const BotInstance* bot = entry.second.get();
+		if (!bot || !bot->AIEnabled()) continue;
+		CActor* actor = bot->GetActor();
+		if (!actor || actor->GetEntityId() == me || actor->GetHealth() <= 0) continue;
+		if (myTeam && rules->GetTeam(actor->GetEntityId()) != myTeam) continue;
+		const BotBrain& brain = bot->Brain();
+		const Vec3 q = brain.FeetPosition();
+		if ((q - p).GetLengthSquared() > radius * radius) continue;
+		if (brain.UnstickStuck()) ++stuck;
+		if (standing && (brain.UnstickStuck() || brain.UnstickStanding())) standing->push_back(q);
+	}
+	return stuck;
+}
+
 bool BotManager::IsCreatingActor(const char* entityName) const
 {
 	return !m_creatingName.empty() && entityName && m_creatingName == entityName;

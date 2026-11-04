@@ -23,6 +23,95 @@ struct TileHeader { dtTileRef tileRef; int dataSize; };
 const int kMsetMagic = 'M' << 24 | 'S' << 16 | 'E' << 8 | 'T';
 const unsigned char kWaterArea = 4; // DS-062: keep in sync with Tools/RecastBake/recast_bake.cpp
 const float kWaterCost = 4.0f;      // navigable, but a land route is cheaper
+
+float SegPointDist2D(const float* a, const float* b, const float* p)
+{
+	const float vx = b[0] - a[0], vy = b[1] - a[1], l2 = vx * vx + vy * vy;
+	float t = l2 > 1e-6f ? ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / l2 : 0.f;
+	t = t < 0.f ? 0.f : (t > 1.f ? 1.f : t);
+	const float dx = a[0] + vx * t - p[0], dy = a[1] + vy * t - p[1];
+	return std::sqrt(dx * dx + dy * dy);
+}
+}
+
+// SPEC-004 (D-042): the derived filter. With DT_VIRTUAL_QUERYFILTER Detour calls this getCost; without a context it
+// returns the plain cost, so wb_bot_unstick 0 paths are the old paths.
+class NavCostFilter : public dtQueryFilter {
+public:
+	const NavMeshCore* core = nullptr;
+#ifdef DT_VIRTUAL_QUERYFILTER
+	float getCost(const float* pa, const float* pb,
+		const dtPolyRef prevRef, const dtMeshTile* prevTile, const dtPoly* prevPoly,
+		const dtPolyRef curRef, const dtMeshTile* curTile, const dtPoly* curPoly,
+		const dtPolyRef nextRef, const dtMeshTile* nextTile, const dtPoly* nextPoly) const override
+	{
+		const float base = dtQueryFilter::getCost(pa, pb, prevRef, prevTile, prevPoly, curRef, curTile, curPoly, nextRef, nextTile, nextPoly);
+		if (!core || !core->CostContext()) return base;
+		float a[3], b[3]; ToCrysis(pa, a); ToCrysis(pb, b);
+		return base * core->SegmentCostMultiplier(a, b, curRef, curPoly && curPoly->getType() == DT_POLYTYPE_OFFMESH_CONNECTION);
+	}
+#endif
+};
+
+bool NavMeshCore::CostLayerAvailable()
+{
+#ifdef DT_VIRTUAL_QUERYFILTER
+	return true;
+#else
+	return false;
+#endif
+}
+
+float NavMeshCore::SegmentCostMultiplier(const float* a, const float* b, unsigned long long cur, bool offMesh) const
+{
+	const NavCostContext* c = m_cost;
+	if (!c) return 1.f;
+	float m = 1.f;
+	if (!offMesh)   // links (jump/Strength/ladder) have their own executors: no climb or memory cost on them
+	{
+		if (c->climb) m *= ClimbCostMultiplier(a[0], a[1], a[2], b[0], b[1], b[2]);
+		if (!m_penalty.empty())
+		{
+			auto it = m_penalty.find(cur);
+			if (it != m_penalty.end())
+				for (const PolyPenalty& p : it->second)
+					if (SameDirectedTransition(p.t, a[0], a[1], a[2], b[0], b[1], b[2])) { m *= 1.f + p.value; break; }
+		}
+		for (int i = 0; i < c->blockCount; ++i)
+		{
+			const NavCostBlock& k = c->blocks[i];
+			if (k.until >= 0.f && c->blockNow >= k.until) continue;
+			if (SegPointDist2D(a, b, k.to) > 3.f) continue;
+			const TransitionPenalty t{k.from[0], k.from[1], k.from[2], k.to[0], k.to[1], k.to[2], 0.f, 0.f};
+			if (SameDirectedTransition(t, a[0], a[1], a[2], b[0], b[1], b[2])) m *= k.mult;
+		}
+	}
+	for (int i = 0; i < c->pointCount; ++i)
+		if (SegPointDist2D(a, b, c->points[i].p) <= c->points[i].radius) m *= c->points[i].mult;
+	if (c->trodden) m *= 1.f + c->trodden->Extra(cur, c->now);
+	if (c->noise > 0.f) m *= BotCostNoise(c->botSeed, cur, c->noise);
+	return m;
+}
+
+void NavMeshCore::SetTransitionMemory(const TransitionMemory& memory, float clock)
+{
+	m_penalty.clear();
+	if (!m_query) return;
+	for (const auto& kv : memory.Items())
+	{
+		const TransitionPenalty& t = kv.second;
+		const float value = memory.Decayed(t, clock);
+		if (value < 0.02f) continue;
+		const float pts[3][3] = {{t.fx, t.fy, t.fz}, {(t.fx + t.tx) * 0.5f, (t.fy + t.ty) * 0.5f, (t.fz + t.tz) * 0.5f}, {t.tx, t.ty, t.tz}};
+		unsigned long long done[3] = {0, 0, 0};
+		for (int i = 0; i < 3; ++i)
+		{
+			const unsigned long long ref = Nearest(pts[i], nullptr, 1.5f, 1.5f, 2.5f);
+			if (!ref || ref == done[0] || ref == done[1]) continue;
+			done[i] = ref;
+			m_penalty[ref].push_back(PolyPenalty{t, value});
+		}
+	}
 }
 
 NavMeshCore::NavMeshCore() {}
@@ -32,7 +121,7 @@ void NavMeshCore::Reset()
 {
 	if (m_query) { dtFreeNavMeshQuery(m_query); m_query = nullptr; }
 	if (m_mesh) { dtFreeNavMesh(m_mesh); m_mesh = nullptr; }
-	delete m_filter; m_filter = nullptr;
+	delete static_cast<NavCostFilter*>(m_filter); m_filter = nullptr; m_penalty.clear(); m_cost = nullptr;
 	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0; m_linkFails.clear(); m_linkMismatch = 0;
 }
 
@@ -60,7 +149,9 @@ bool NavMeshCore::LoadMemory(const unsigned char* data, size_t size, std::string
 	// C145: 4096/8192 nodes exhausted on connected Shore routes; 16384 reached all three energy objectives.
 	m_query = dtAllocNavMeshQuery();
 	if (!m_query || dtStatusFailed(m_query->init(m_mesh, 16384))) return fail("query init failed");
-	m_filter = new dtQueryFilter();
+	NavCostFilter* filter = new NavCostFilter();
+	filter->core = this;
+	m_filter = filter;
 	m_filter->setExcludeFlags(0);
 	m_filter->setAreaCost(kWaterArea, kWaterCost);
 	for (int ti = 0; ti < m_mesh->getMaxTiles(); ++ti)

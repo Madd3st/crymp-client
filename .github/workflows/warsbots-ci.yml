@@ -51,7 +51,7 @@ jobs:
           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotWeaponGoal','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotDoorPath','BotFireLane','BotLootClaim','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy','BotRoamFallback',
-                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan')
+                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotUnstick')
           $failed = @()
           foreach ($t in $tests) {
             $src = "Tests/${t}Tests.cpp"
@@ -59,7 +59,8 @@ jobs:
             $more = @()
             if ($t -eq 'BotPerception') { $more = @('/Dnear=') }
             if ($t -in @('BotNavMeshCore','BotNavMeshWater')) {
-              $more = @('/I','ThirdParty/recastnavigation/Detour/Include','Code/CryGame/Bots/BotNavMeshCore.cpp') +
+              # SPEC-004: same Detour build flag as the game (CMakeLists.txt, D-042)
+              $more = @('/DDT_VIRTUAL_QUERYFILTER','/I','ThirdParty/recastnavigation/Detour/Include','Code/CryGame/Bots/BotNavMeshCore.cpp') +
                       @(Get-ChildItem ThirdParty/recastnavigation/Detour/Source/*.cpp | ForEach-Object { $_.FullName })
             }
             & cl /nologo /std:c++17 /EHsc /I . /I Code $src @more /Fo:units/ "/Fe:units/$t.exe" *> "units/$t-compile.log"

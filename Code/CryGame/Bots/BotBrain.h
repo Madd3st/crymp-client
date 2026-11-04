@@ -16,6 +16,8 @@
 #include "CryGame/Bots/BotTactics.h"
 #include "CryGame/Bots/BotTraits.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotUnstick.h"
+#include <string>
 #include "CryGame/Bots/BotCorners.h"
 #include "CryGame/Bots/BotDecisionCommit.h"
 #include "CryGame/Bots/BotPSCapture.h"
@@ -52,7 +54,11 @@ public:
     const BotIntent& Intent()const{return m_intent;}
     const BotCombat& Combat()const{return m_combat;}
     Vec3 NextCorner()const{return m_pathIndex<m_path.size()?m_path[m_pathIndex]:m_intent.destination;}
-    const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
+    // SPEC-004: read by the other bots (crowd rule of the memory, spread around a standing ally)
+    bool UnstickStuck()const{return m_running && m_unstickStuck;}
+    bool UnstickStanding()const{return m_running && m_intent.move && m_blackboard.velocity.GetLength2D()<0.5f;}
+    Vec3 FeetPosition()const{return m_blackboard.position;}
+    const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_unstickSteps.Step()!=UnstickStep::None?"unstick":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
 	// wb_bot_tactics level boundary: drop every bot's loot claim (BotManager::EndLevel; the game timer may not go back).
 	static void ClearAllClaims();
 
@@ -115,6 +121,16 @@ private:
     Vec3 m_trapDirection=Vec3(0,1,0);
     float m_trapStepUntil=0;
     bool m_trapJumpAttempted=false;
+    // SPEC-004 (wb_bot_unstick, BotUnstick.h)
+    void UpdateUnstick(CPlayer& actor);
+    UnstickSensor m_unstickSensor;
+    UnstickSteps m_unstickSteps;
+    std::vector<NavCostBlock> m_unstickBlocks;   // this bot's uphill blocks (back-off 30 s, failed Strength: permanent)
+    std::vector<NavCostPoint> m_unstickPoints;   // standing/stuck allies on the path ahead, for the next repath
+    Vec3 m_unstickFrom=Vec3(0,0,0), m_unstickTo=Vec3(0,0,0), m_unstickWait=Vec3(0,0,0);
+    float m_unstickLast=-100.f, m_unstickMuteUntil=0, m_unstickNextTrodden=0, m_unstickNextAlly=0, m_unstickPointsUntil=0;
+    bool m_unstickJumped=false, m_unstickStuck=false;
+    std::string m_unstickHash;
 	float m_escapeUntil=0;
 	BotBlackboard m_blackboard;
 	BotIntent m_intent;

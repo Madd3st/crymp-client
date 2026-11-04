@@ -1,6 +1,7 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotUnstick.h"
 #include "CryGame/Bots/BotVantage.h"
 #include "CryGame/Bots/BotTactics.h"
 #include "CryGame/Bots/BotConfig.h"
@@ -13,10 +14,16 @@
 #include <vector>
 #include <cstdio>
 #include <cstring>
+#include <cctype>
 
 namespace WarsBots {
 namespace {
-struct State { NavMeshCore mesh; std::string level; bool tried = false; int kinds = 0; };
+struct State {
+	NavMeshCore mesh; std::string level; bool tried = false; int kinds = 0;
+	// SPEC-004 (wb_bot_unstick)
+	std::string leaf, hash; TransitionMemory memory; TroddenMap trodden; bool memoryLoaded = false;
+	float clockBase = 0.f, clockAt = -1.f, clockLast = 0.f;
+};
 State& S() { static State s; return s; }
 
 // T-6: <leaf>.manifest.json (Tools/RecastBake/make_manifest.py) records FNV-1a 64 of each data file; a file that does
@@ -54,6 +61,33 @@ bool ManifestOk(const std::string& leaf, const char* kind, const std::string& da
 	WB_LOG(0, "[WarsBots] NAVMESH data %s for %s does not match its manifest (%s, manifest %s).", kind, leaf.c_str(), got.c_str(), want.c_str());
 	return false;
 }
+
+std::filesystem::path UnstickPath(const State& s)
+{
+	std::string safe;
+	for (char c : s.leaf) safe += (isalnum((unsigned char)c) ? c : '_');
+	const std::filesystem::path dir = DataDirectory(L"Memory");
+	std::error_code ec; std::filesystem::create_directories(dir, ec);
+	return dir / std::filesystem::u8path(safe + ".unstick.txt");
+}
+
+// SPEC-004: <Level>.unstick.txt of this bake (navmesh hash), resolved to Detour polygons once per level.
+void LoadUnstickMemory(State& s)
+{
+	s.memoryLoaded = true;
+	if (s.leaf.empty() || s.hash.empty()) return;
+	std::string text;
+	const std::filesystem::path path = UnstickPath(s);
+	if (FILE* f = _wfopen(path.c_str(), L"rb")) { char c[4096]; size_t n; while ((n = fread(c, 1, sizeof c, f)) > 0) text.append(c, n); fclose(f); }
+	const float clock = text.empty() ? -1.f : s.memory.Load(text, s.hash);
+	s.clockBase = clock > 0.f ? clock : 0.f; s.clockAt = -1.f;
+	s.mesh.SetTransitionMemory(s.memory, s.clockBase);
+	if (!text.empty() && clock < 0.f)
+		WB_LOG(0, "[WarsBots] UNSTICK MEMORY %ls belongs to another navmesh (want %s); starting fresh.", path.c_str(), s.hash.c_str());
+	else
+		WB_LOG(0, "[WarsBots] UNSTICK MEMORY %s: %u transitions, %u polygons, clock %.0f s, filter %s.", s.leaf.c_str(),
+			unsigned(s.memory.Size()), unsigned(s.mesh.PenaltyPolys()), s.clockBase, NavMeshCore::CostLayerAvailable() ? "virtual" : "UNAVAILABLE");
+}
 }
 
 NavMeshCore* CurrentNavMesh()
@@ -63,7 +97,12 @@ NavMeshCore* CurrentNavMesh()
 	if (!level || !level->GetLevelInfo()) return nullptr;
 	const std::string name = level->GetLevelInfo()->GetName();
 	State& s = S();
-	if (name != s.level) { s.mesh.Reset(); s.level = name; s.tried = false; }
+	if (name != s.level)
+	{
+		s.mesh.Reset(); s.level = name; s.tried = false;
+		s.leaf.clear(); s.hash.clear(); s.memory.Clear(); s.trodden = TroddenMap(); s.memoryLoaded = false;
+		s.clockBase = 0.f; s.clockAt = -1.f; s.clockLast = 0.f;
+	}
 	if (!s.tried)
 	{
 		s.tried = true; s.kinds = 0;
@@ -86,6 +125,7 @@ NavMeshCore* CurrentNavMesh()
 		else
 		{
 			WB_LOG(0, "[WarsBots] NAVMESH loaded %s: %d polys, %d parts, %d links, %u bytes.", name.c_str(), s.mesh.Polys(), s.mesh.Components(), s.mesh.Links(), unsigned(data.size()));
+			s.leaf = leaf; s.hash = Fnv64(data.data(), data.size());   // SPEC-004: the transition memory is bound to this bake
 			s.kinds = 0;
 			if (s.mesh.Links() > 0)
 			{
@@ -122,7 +162,35 @@ NavMeshCore* CurrentNavMesh()
 			WB_LOG(0, "[WarsBots] NAVMESH links %s: %d links, %d parts.", want ? "ON" : "OFF", s.mesh.Links(), s.mesh.Components());
 		}
 	}
+	if (s.mesh.Ready() && BotConfig::Get().unstick == 1 && !s.memoryLoaded) LoadUnstickMemory(s);
 	return s.mesh.Ready() ? &s.mesh : nullptr;
+}
+
+const char* CurrentNavMeshHash() { return S().hash.c_str(); }
+TroddenMap* CurrentTrodden() { return S().mesh.Ready() ? &S().trodden : nullptr; }
+
+float UnstickClock(float now)
+{
+	State& s = S();
+	if (s.clockAt < 0.f) s.clockAt = now;
+	else if (now < s.clockAt) { s.clockBase += s.clockLast - s.clockAt; s.clockAt = now; }   // timer restarted: keep the total
+	s.clockLast = now;
+	return s.clockBase + (now - s.clockAt);
+}
+
+void UnstickRecord(const float* from, const float* to, float now)
+{
+	State& s = S();
+	if (!s.mesh.Ready() || s.hash.empty()) return;
+	const float clock = UnstickClock(now);
+	s.memory.Record(from[0], from[1], from[2], to[0], to[1], to[2], clock);
+	s.memory.Prune(clock);
+	s.mesh.SetTransitionMemory(s.memory, clock);
+	const std::string text = s.memory.Save(s.hash, clock);
+	const std::filesystem::path path = UnstickPath(s);
+	if (FILE* f = _wfopen(path.c_str(), L"wb")) { fwrite(text.data(), 1, text.size(), f); fclose(f); }
+	WB_LOG(1, "[WarsBots] UNSTICK MEMORY record from=(%.1f,%.1f,%.1f) to=(%.1f,%.1f,%.1f) transitions=%u polygons=%u clock=%.0f.",
+		from[0], from[1], from[2], to[0], to[1], to[2], unsigned(s.memory.Size()), unsigned(s.mesh.PenaltyPolys()), clock);
 }
 
 const CoverCandidate* CurrentCover(int& count)
