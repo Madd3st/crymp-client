@@ -36,8 +36,8 @@ Verdict and numbers: `Docs/Research/SteelmillTriage/RECAST-BAKE-2026-10-24.md`.
 
 Бейк идёт на ПК владельца: исходная геометрия (`*.crop.obj.gz`, сотни МБ) лежит вне git (D-021).
 `recast_bake.exe` не собирается локально, его собирает CI. Workflow `RecastBake`
-(`.github/workflows/recast-bake.yml`) выкладывает artifact `recast-bake-<SHA>` с `recast_bake.exe`,
-`zlib1.dll` и `sha256.txt`. Скачать можно один раз, для точного SHA; хэш сверить с `sha256.txt`.
+(`.github/workflows/recast-bake.yml`) выкладывает artifact `recast-bake-<SHA>` с `recast_bake.exe` (zlib статически)
+и `sha256.txt`. Скачать можно один раз, для точного SHA; хэш сверить с `sha256.txt`.
 
 1. **Экспорт геометрии.** Локальный сервер IA без актёров, или PowerStruggle без игроков. В консоли:
    `wb_geom_export [path.obj] [x0 y0 x1 y1]`. Прямоугольник — игровая зона, остальное обрезается.
