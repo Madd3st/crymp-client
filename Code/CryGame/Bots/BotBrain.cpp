@@ -814,8 +814,15 @@ float BotBrain::PickupRange() const
 EntityId BotBrain::UpgradeCandidate(CPlayer& actor,bool anyHeld,bool pathCost,bool sniperOnly)
 {
 	(void)anyHeld; // with wb_bot_weapon_rank FindNearby keeps only real upgrades over what is held
-	EntityId skip[8]; int skipCount = 0;
+	EntityId skip[16]; int skipCount = 0;
 	for (const BadItem& b : m_badItems) if (b.id && m_now < b.until) skip[skipCount++] = b.id;
+	// wb_bot_tactics: an item another bot walks to is not a candidate - its second-best gun is (PR #17 review)
+	if (BotConfig::Get().tactics==1)
+	{
+		unsigned held[8];
+		const size_t n=LootClaims().HeldByOthers(unsigned(m_number),gEnv->pTimer->GetCurrTime(),held,8);
+		for (size_t i=0;i<n;++i) skip[skipCount++]=held[i];
+	}
 	// owner 25.10 (wb_bot_vantage): Marksmen judge pickups at sniper range, so DSG1/Gauss become real upgrades
 	const float typical=PickupRange();
 	// c066: no bot ever reached DSG1 (22 m up) / Gauss (tower) within 45 m -> snipers look across the map
@@ -827,6 +834,7 @@ void BotBrain::SetUpgradeTarget(EntityId id)
 {
 	if (m_upgradeTarget!=id)
 		WB_LOG(2,"[WarsBots] #%d WEAPON GOAL previous=%u target=%u event=%s.",m_number,m_upgradeTarget,id,id?"acquire":"clear");
+	if (m_upgradeTarget && !id) ReleaseClaims(); // given up, picked up or worthless: free it for the others now
 	m_upgradeTarget = id;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = 0; m_upgradePathSig = 0;
 	m_upgradeSince = 0; // re-anchored on the first tick that actually pursues the goal

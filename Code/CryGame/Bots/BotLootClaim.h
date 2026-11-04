@@ -30,6 +30,14 @@ public:
 			if (c.actor != actor) m_claims[keep++] = c;
 		m_claims.resize(keep);
 	}
+	// Items another bot holds now, for the weapon search to skip; returns how many were written (at most max).
+	size_t HeldByOthers(unsigned actor, float now, unsigned* out, size_t max) const
+	{
+		size_t n = 0;
+		for (const Claim& c : m_claims)
+			if (n < max && c.actor != actor && now >= c.at && now < c.at + c.ttl) out[n++] = c.item;
+		return n;
+	}
 	void Clear() { m_claims.clear(); }
 	size_t Size() const { return m_claims.size(); }
 

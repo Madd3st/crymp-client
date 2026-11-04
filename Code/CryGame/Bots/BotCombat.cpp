@@ -102,9 +102,14 @@ EntityId AllyInLane(CActor& actor, const Vec3& muzzle, const Vec3& fireDirection
 		if (vehicle && team != 0 && other->GetEntityId() != actor.GetEntityId() && other->GetHealth() > 0 && vehicle != actor.GetLinkedVehicle() &&
 			BotTargeting::Kind(other) != ParticipantKind::None && rules->GetTeam(other->GetEntityId()) == team)
 		{
+			// Local bounds in the vehicle frame (a world AABB of a turned tank or a VTOL is far too big); the lane stops
+			// 1 m short of the target, so an enemy at the vehicle (C4, hijack) can still be shot (PR #17 review).
 			AABB box;
-			vehicle->GetEntity()->GetWorldBounds(box);
-			if (LaneHitsBox(LaneVec{muzzle.x,muzzle.y,muzzle.z}, LaneVec{dir.x,dir.y,dir.z}, range,
+			IEntity* hull = vehicle->GetEntity();
+			hull->GetLocalBounds(box);
+			const Matrix34 toLocal = hull->GetWorldTM().GetInverted();
+			const Vec3 p = toLocal*muzzle, d = toLocal.TransformVector(dir).GetNormalizedSafe(FORWARD_DIRECTION);
+			if (box.min.x < box.max.x && LaneHitsBox(LaneVec{p.x,p.y,p.z}, LaneVec{d.x,d.y,d.z}, range-1.0f,
 				LaneVec{box.min.x,box.min.y,box.min.z}, LaneVec{box.max.x,box.max.y,box.max.z}))
 				return other->GetEntityId();
 			continue;
