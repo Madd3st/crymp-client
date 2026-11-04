@@ -7,6 +7,7 @@
 #include "CryGame/Bots/BotAimControl.h"
 #include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotTargeting.h"
+#include "CryGame/Bots/BotFireLane.h"
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Actors/Player/Player.h"
 #include "CryGame/Bots/BotConfig.h"
@@ -33,7 +34,7 @@ bool Enemy(IActor* target, CActor& self)
 unsigned BotCombat::TakeRayCount() { const unsigned n = g_rayCount; g_rayCount = 0; return n; }
 unsigned BotCombat::TakeScanCount() { const unsigned n = g_scanCount; g_scanCount = 0; return n; }
 
-void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_heardAt = 0; m_heardPos.zero(); m_perception.Reset(); m_dmgTarget = 0; m_dmgDealt = m_dmgLastHp = 0; m_dmgAt = m_finishStart = -100.0f; }
+void BotCombat::Reset() { StopFire(); m_nextAimChoice=0; m_preferHead=false; m_avoid=0; m_avoidUntil=0; m_lastBurstRequest=-100.0f; m_retaliator=0; m_retaliatorUntil=m_selectedAt=m_nextScan=0; m_visibleEnemies=0; m_shotBlocked = false; m_target = 0; m_visible = false; m_sampleTime = m_nextDiagnostic = 0; m_lastPosition.zero(); m_lastAim.zero(); m_lastSeen = 0; m_nextBurst = 0; m_heardAt = 0; m_heardPos.zero(); m_perception.Reset(); m_dmgTarget = 0; m_dmgDealt = m_dmgLastHp = 0; m_dmgAt = m_finishStart = -100.0f; m_friendlyUntil = -100.0f; }
 
 void BotCombat::StopFire()
 {
@@ -77,6 +78,57 @@ bool Sight(CActor& actor, IActor& target, EntityId& obstruction)
 	return ClearRay(actor, target, Eyes(actor), BotCombat::AimPoint(target), obstruction) ||
 		ClearRay(actor, target, Eyes(actor), Eyes(target), obstruction);
 }
+// Where the bullet really starts: the third-person muzzle helper (CSingle::GetFiringPos), not the movement state's
+// weaponPosition - Shore server run: every teammate hit was ~1 m beside the weaponPosition line, bullets aim at the hit.
+Vec3 FiringPos(IWeapon& weapon, const Vec3& probableHit, const Vec3& fallback)
+{
+	IFireMode* mode = weapon.GetFireMode(weapon.GetCurrentFireMode());
+	const Vec3 pos = mode ? mode->GetFiringPos(probableHit) : Vec3(0,0,0);
+	return pos.IsValid() && !pos.IsZero() ? pos : fallback;
+}
+EntityId AllyInLane(CActor& actor, const Vec3& muzzle, const Vec3& fireDirection, float range)
+{
+	if (!muzzle.IsValid() || !fireDirection.IsValid()) return 0;
+	const Vec3 dir = fireDirection.GetNormalizedSafe(FORWARD_DIRECTION);
+	IActorIteratorPtr iterator = g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
+	while (IActor* other = iterator->Next())
+	{
+		if (BotTargeting::Classify(actor, other) != Relation::Ally) continue;
+		const Vec3 feet = other->GetEntity()->GetWorldPos(), head = Eyes(*other);
+		if (FriendlyInLane(LaneVec{muzzle.x,muzzle.y,muzzle.z}, LaneVec{dir.x,dir.y,dir.z}, range,
+			LaneVec{feet.x,feet.y,feet.z}, LaneVec{head.x,head.y,head.z}))
+			return other->GetEntityId();
+	}
+	return 0;
+}
+}
+void BotCombat::TraceFriendlyHit(CActor& shooter, IActor& ally, EntityId target, const Vec3& hitPos, const Vec3& hitDir)
+{
+	if (BotTargeting::Classify(shooter, &ally) != Relation::Ally) return;
+	SMovementState state;
+	shooter.GetMovementController()->GetMovementState(state);
+	const Vec3 view = state.weaponPosition, dir = state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION);
+	IActor* enemy = target ? g_pGame->GetIGameFramework()->GetIActorSystem()->GetActor(target) : nullptr;
+	const float viewRange = enemy ? (AimPoint(*enemy)-view).GetLength() : -1.0f;
+	if (!(viewRange > 0.f)) return;
+	// same geometry as Attack: muzzle helper to the view's aim point; old = the weaponPosition line before the fix
+	const Vec3 aimEnd = view + dir*viewRange;
+	IWeapon* weapon = BotWeapons::Current(shooter);
+	const Vec3 muzzle = weapon ? FiringPos(*weapon,aimEnd,view) : view, lineDir = (aimEnd-muzzle).GetNormalizedSafe(dir);
+	const float range = (aimEnd-muzzle).GetLength();
+	const Vec3 feet = ally.GetEntity()->GetWorldPos(), head = Eyes(ally);
+	const LaneVec f{feet.x,feet.y,feet.z}, h{head.x,head.y,head.z}, m{muzzle.x,muzzle.y,muzzle.z}, v{view.x,view.y,view.z};
+	float s = 0.f, sOld = 0.f;
+	const float lane = SegmentDistance(m, LaneVec{aimEnd.x,aimEnd.y,aimEnd.z}, f, h, s);
+	const float laneOld = SegmentDistance(v, LaneVec{aimEnd.x,aimEnd.y,aimEnd.z}, f, h, sOld);
+	const Vec3 bullet = hitDir.GetNormalizedSafe(lineDir), off = hitPos-muzzle;
+	const float angle = RAD2DEG(acosf(clamp_tpl(bullet.Dot(lineDir), -1.0f, 1.0f)));
+	WB_LOG(2,"[WarsBots] FRIENDLY HIT shooter=%u ally=%u target=%u lane=%.2f allowed=%.2f along=%.2f range=%.2f inLane=%d laneOld=%.2f inLaneOld=%d muzzleShift=%.2f bulletAngle=%.1f hitOffLine=%.2f muzzle=(%.2f,%.2f,%.2f) view=(%.2f,%.2f,%.2f) fire=(%.3f,%.3f,%.3f) feet=(%.2f,%.2f,%.2f) head=(%.2f,%.2f,%.2f) hit=(%.2f,%.2f,%.2f).",
+		shooter.GetEntityId(), ally.GetEntityId(), target, lane, 0.7f + 0.03f*s*range, s, range,
+		FriendlyInLane(m, LaneVec{lineDir.x,lineDir.y,lineDir.z}, range, f, h) ? 1 : 0,
+		laneOld, FriendlyInLane(v, LaneVec{dir.x,dir.y,dir.z}, viewRange, f, h) ? 1 : 0, (muzzle-view).GetLength(),
+		angle, (off-lineDir*off.Dot(lineDir)).GetLength(), muzzle.x, muzzle.y, muzzle.z, view.x, view.y, view.z, dir.x, dir.y, dir.z,
+		feet.x, feet.y, feet.z, head.x, head.y, head.z, hitPos.x, hitPos.y, hitPos.z);
 }
 Vec3 BotCombat::AimPoint(IActor& target)
 {
@@ -316,6 +368,27 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 	{
 		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=aim distance=%.2f tol=%.1f dot=%.3f.",actor.GetEntityId(),target.GetEntityId(),(shotPoint-state.weaponPosition).GetLength(),tolDeg,direction.Dot(state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION))); }
 		StopFire(); return false;
+	}
+	// Shore 03.11 (WarsBot_10 killed WarsBot_12): no burst while an ally stands near the real fire line; the brain
+	// steps sideways for a moment. Not m_shotBlocked: a sniper on its spot only calls Attack when that flag is clear.
+	// The bullet flies from the muzzle helper to the point the view aims at, range away along the fire direction.
+	if (BotConfig::Get().proFire==1)
+	{
+		// Shore server run: an ally 0.6 m from the muzzle slipped out of the lane for a frame and took a head shot
+		// 0.38 s after the hold. Once held, wait out the 0.5 s before the next burst.
+		if (now < m_friendlyUntil)
+		{
+			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly_hold.",actor.GetEntityId(),target.GetEntityId()); }
+			StopFire(); return false;
+		}
+		const Vec3 aimEnd = state.weaponPosition + state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)*(shotPoint-state.weaponPosition).GetLength();
+		const Vec3 firingPos = FiringPos(*weapon,aimEnd,state.weaponPosition);
+		if (const EntityId ally=AllyInLane(actor,firingPos,aimEnd-firingPos,(aimEnd-firingPos).GetLength()))
+		{
+			m_friendlyUntil=now+0.5f;
+			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly ally=%u.",actor.GetEntityId(),target.GetEntityId(),ally); }
+			StopFire(); return false;
+		}
 	}
 	IFireMode* mode=weapon->GetFireMode(weapon->GetCurrentFireMode());
     auto fire=BotFireControl::Plan(mode?mode->GetType():nullptr,mode?mode->GetFireRate():0,

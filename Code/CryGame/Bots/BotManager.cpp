@@ -258,6 +258,9 @@ void BotManager::TraceHit(const char* phase, const HitInfo& hit)
             human?1:0,actor->GetHealth(),suit?int(suit->GetMode()):-1,suit?suit->GetSuitEnergy():-1,
             suit && suit->IsInvulnerable()?1:0,distance,hit.material,material && std::strstr(material,"head")?1:0,hit.partId,hit.damage);
     }
+    // wb_bot_pro_fire: teammate hits are rare, so the fire lane numbers are logged without the FireTrace budget
+    if (actor && shooter && shooter->GetActor() && BotConfig::Get().proFire==1 && !std::strcmp(phase,"before-Lua"))
+        BotCombat::TraceFriendlyHit(*shooter->GetActor(),*actor,shooter->Brain().Target(),hit.pos,hit.dir);
 }
 
 void BotManager::TraceShot(EntityId weaponId, EntityId shooter, EntityId projectile)
