@@ -481,6 +481,7 @@ void BotManager::EndLevel()
 	// After a level ends no entity can still be ours: drop every slot unconditionally.
 	m_bots.clear();
 	m_spawning = nullptr;
+	BotBrain::ClearAllClaims(); // wb_bot_tactics: no loot claim survives the level (item ids are reused)
 }
 
 void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)

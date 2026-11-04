@@ -5,6 +5,7 @@
 #include "CryGame/Bots/BotPerception.h"
 class CActor;
 struct IActor;
+struct IWeapon;
 namespace WarsBots
 {
 class BotCombat
@@ -53,6 +54,9 @@ private:
 	float m_retaliatorUntil=0, m_selectedAt=0, m_nextScan=0;
 	int m_visibleEnemies=0;
 	bool Observe(CActor& actor, IActor& target, float now, bool verbose);
+	// wb_bot_pro_fire: ally in the fire line now or within the 0.5 s hold (Attack stops the burst when true).
+	bool FriendlyHold(CActor& actor, IActor& target, IWeapon& weapon, const Vec3& viewPos, const Vec3& fireDir,
+		const Vec3& shotPoint, float now);
 	bool m_visible = false;
 	bool m_shotBlocked = false;
 	Vec3 m_lastPosition = Vec3(0,0,0), m_lastAim = Vec3(0,0,0);

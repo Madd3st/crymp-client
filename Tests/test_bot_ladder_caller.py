@@ -197,6 +197,7 @@ struct MockBrain {
  const NavPathLink* LinkAtCorner(size_t c){return c==0?&cornerLink:nullptr;}
  @CANCEL_LADDER@
  void CancelLadder(CPlayer& a,const char* w,bool b){cancelRunningSeen=m_running?1:0;lastCancelBan=b;++cancels;CancelLadderBody(a,w,b);}
+ void ReleaseClaims(){} // Stop releases the loot claim first (PR #17); covered by test_bot_loot_claim_caller.py
  @PROBE_BLOCK@
  @GRAB_BLOCK@
  @APPLY_LINK@
