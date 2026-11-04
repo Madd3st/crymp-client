@@ -16,6 +16,8 @@
 #include "CryCommon/CryAction/IItemSystem.h"
 #include "CryCommon/CryAction/IWeapon.h"
 #include "CryCommon/CryAction/IMovementController.h"
+#include "CryCommon/CryAction/IVehicleSystem.h"
+#include "CryGame/GameRules.h"
 
 namespace WarsBots
 {
@@ -91,8 +93,22 @@ EntityId AllyInLane(CActor& actor, const Vec3& muzzle, const Vec3& fireDirection
 	if (!muzzle.IsValid() || !fireDirection.IsValid()) return 0;
 	const Vec3 dir = fireDirection.GetNormalizedSafe(FORWARD_DIRECTION);
 	IActorIteratorPtr iterator = g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
+	CGameRules* rules = g_pGame->GetGameRules();
+	const int team = rules ? rules->GetTeam(actor.GetEntityId()) : 0;
 	while (IActor* other = iterator->Next())
 	{
+		// Classify keeps passengers out of targeting (Invalid); for the fire line an ally in a vehicle is the vehicle box.
+		IVehicle* vehicle = other->GetLinkedVehicle();
+		if (vehicle && team != 0 && other->GetEntityId() != actor.GetEntityId() && other->GetHealth() > 0 && vehicle != actor.GetLinkedVehicle() &&
+			BotTargeting::Kind(other) != ParticipantKind::None && rules->GetTeam(other->GetEntityId()) == team)
+		{
+			AABB box;
+			vehicle->GetEntity()->GetWorldBounds(box);
+			if (LaneHitsBox(LaneVec{muzzle.x,muzzle.y,muzzle.z}, LaneVec{dir.x,dir.y,dir.z}, range,
+				LaneVec{box.min.x,box.min.y,box.min.z}, LaneVec{box.max.x,box.max.y,box.max.z}))
+				return other->GetEntityId();
+			continue;
+		}
 		if (BotTargeting::Classify(actor, other) != Relation::Ally) continue;
 		const Vec3 feet = other->GetEntity()->GetWorldPos(), head = Eyes(*other);
 		if (FriendlyInLane(LaneVec{muzzle.x,muzzle.y,muzzle.z}, LaneVec{dir.x,dir.y,dir.z}, range,

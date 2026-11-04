@@ -89,6 +89,9 @@ private:
 	// DS-097: the single writer of the weapon goal. The pure rules live in BotWeaponGoal.h; both callers only ask here.
 	bool TryAcquireUpgradeGoal(CPlayer& actor);
 	void SetUpgradeTarget(EntityId id);
+	// wb_bot_tactics: one bot per item (BotLootClaim.h); false when another bot holds it. Always true when OFF.
+	bool ClaimUpgrade(EntityId id);
+	void ReleaseClaims();
 	BotLookPolicy m_look;
 	Vec3 m_lookDir = Vec3(0,1,0);
 	bool m_lookValid = false;

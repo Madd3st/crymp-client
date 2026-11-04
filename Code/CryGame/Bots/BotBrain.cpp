@@ -44,6 +44,8 @@ namespace WarsBots
 {
 namespace
 {
+// Shared by every bot on this server (main thread only), keyed by bot number.
+BotLootClaims& LootClaims() { static BotLootClaims claims; return claims; }
 const char* NameOf(BotBrain::State state)
 {
 	switch (state)
@@ -339,6 +341,7 @@ void BotBrain::ResetLife()
 	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_lifeStartedAt=m_now; m_nextAliveBuy=0; m_doorUsed.clear();
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
+	ReleaseClaims(); // death or a new level: the item is free for the others at once
 	++m_life;
 	m_testStrafe=0; m_strafeSide=((m_life+unsigned(m_number))&1)?1:-1; m_nextStrafe=m_now+0.37f*float(m_number%5);
 	m_fallbackGiven = false;
@@ -829,6 +832,16 @@ void BotBrain::SetUpgradeTarget(EntityId id)
 	m_upgradeSince = 0; // re-anchored on the first tick that actually pursues the goal
 }
 
+// Shore 03.11: up to 4 shooters of one victim went for the same drop. Game timer, not m_now: m_now is per bot.
+bool BotBrain::ClaimUpgrade(EntityId id)
+{
+	if (BotConfig::Get().tactics!=1 || !id) return true;
+	if (LootClaims().TryClaim(id,unsigned(m_number),gEnv->pTimer->GetCurrTime())) return true;
+	WB_LOG(2,"[WarsBots] #%d LOOT skip item=%u reason=claimed.",m_number,id);
+	return false;
+}
+void BotBrain::ReleaseClaims() { if (BotConfig::Get().tactics==1) LootClaims().Release(unsigned(m_number)); }
+
 // DS-097: the only place that creates a weapon goal (was BotBrain.cpp:788-792 unconditional + :1761-1762 in the arbiter).
 // Active pursuit is held; unchosen candidates refresh on the same throttle. Empty scans are throttled too.
 bool BotBrain::TryAcquireUpgradeGoal(CPlayer& actor)
@@ -900,6 +913,8 @@ bool BotBrain::UpdateUpgrade(BotInstance& bot,CPlayer& actor,IActor* enemy,float
 			WB_LOG(2, "[WarsBots] #%d weapon goal cancelled item=%u reason=unavailable.", m_number, m_upgradeTarget);
 			SetUpgradeTarget(0);
 		}
+		// claim on the walk, renewed every tick (10 s each), not on a mere candidate look; held by another bot -> drop it
+		if (m_upgradeTarget && !ClaimUpgrade(m_upgradeTarget)) SetUpgradeTarget(0);
 		IEntity* item = m_upgradeTarget ? gEnv->pEntitySystem->GetEntity(m_upgradeTarget) : nullptr;
 		if (item)
 		{
@@ -940,10 +955,7 @@ void BotBrain::UpdateRoam(BotInstance& bot,CPlayer& actor,float decisionTime)
 			const EntityId drop=BotWeapons::FindDrop(actor,m_lootPos,6.0f);
 			m_lootUntil=0;
 			// Shore 03.11: up to 4 shooters of one victim went for the same drop; the first one claims it
-			static BotLootClaims claims;
-			if (drop && !claims.TryClaim(drop,actor.GetEntityId(),gEnv->pTimer->GetCurrTime()))
-				WB_LOG(2,"[WarsBots] #%d LOOT skip item=%u reason=claimed actor=%u.",m_number,drop,actor.GetEntityId());
-			else if (drop)
+			if (drop && ClaimUpgrade(drop))
 			{
 				SetUpgradeTarget(drop); // DS-097: the budget starts in UpdateUpgrade when the bot actually walks to it
 				WB_LOG(2,"[WarsBots] #%d LOOT item=%u at (%.1f,%.1f,%.1f) actor=%u.",m_number,drop,m_lootPos.x,m_lootPos.y,m_lootPos.z,actor.GetEntityId());

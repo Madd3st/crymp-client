@@ -19,6 +19,15 @@ int main()
 	assert(claims.TryClaim(130919, 10, 115.1f));
 	// Game timer back (new level, reused id): the old claim does not block.
 	assert(claims.TryClaim(130933, 14, 3.f));
+	// One claim per bot: a new item frees the old one, death frees it at once.
+	claims.Clear();
+	assert(claims.TryClaim(500, 3, 10.f));
+	assert(claims.TryClaim(501, 3, 11.f));
+	assert(claims.TryClaim(500, 5, 11.f));
+	assert(!claims.TryClaim(501, 5, 12.f));
+	claims.Release(3);
+	assert(claims.TryClaim(501, 5, 12.f));
+	assert(claims.Size() == 1);
 	// Expired claims are pruned when new items come in.
 	claims.Clear();
 	for (unsigned i = 0; i < 50; ++i) assert(claims.TryClaim(1000 + i, 1, float(i) * 20.f));
