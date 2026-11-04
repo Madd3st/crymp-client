@@ -303,6 +303,7 @@ public:
 
     void Change(State s) { m_state = s; }
     void SetUpgradeTarget(EntityId id) { m_upgradeTarget = id; }
+    bool ClaimUpgrade(EntityId) { return true; }
     bool UpdateUpgrade(BotInstance&, CPlayer&, void*, float, bool, bool) { return false; }
     bool PSTryBuy(BotInstance&, CPlayer&) { return false; }
     bool UpdatePSDoors(BotInstance&, CPlayer&, float) { return false; }

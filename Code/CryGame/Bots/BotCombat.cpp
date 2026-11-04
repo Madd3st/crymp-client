@@ -16,6 +16,8 @@
 #include "CryCommon/CryAction/IItemSystem.h"
 #include "CryCommon/CryAction/IWeapon.h"
 #include "CryCommon/CryAction/IMovementController.h"
+#include "CryCommon/CryAction/IVehicleSystem.h"
+#include "CryGame/GameRules.h"
 
 namespace WarsBots
 {
@@ -91,8 +93,27 @@ EntityId AllyInLane(CActor& actor, const Vec3& muzzle, const Vec3& fireDirection
 	if (!muzzle.IsValid() || !fireDirection.IsValid()) return 0;
 	const Vec3 dir = fireDirection.GetNormalizedSafe(FORWARD_DIRECTION);
 	IActorIteratorPtr iterator = g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
+	CGameRules* rules = g_pGame->GetGameRules();
+	const int team = rules ? rules->GetTeam(actor.GetEntityId()) : 0;
 	while (IActor* other = iterator->Next())
 	{
+		// Classify keeps passengers out of targeting (Invalid); for the fire line an ally in a vehicle is the vehicle box.
+		IVehicle* vehicle = other->GetLinkedVehicle();
+		if (vehicle && team != 0 && other->GetEntityId() != actor.GetEntityId() && other->GetHealth() > 0 && vehicle != actor.GetLinkedVehicle() &&
+			BotTargeting::Kind(other) != ParticipantKind::None && rules->GetTeam(other->GetEntityId()) == team)
+		{
+			// Local bounds in the vehicle frame (a world AABB of a turned tank or a VTOL is far too big); the lane stops
+			// 1 m short of the target, so an enemy at the vehicle (C4, hijack) can still be shot (PR #17 review).
+			AABB box;
+			IEntity* hull = vehicle->GetEntity();
+			hull->GetLocalBounds(box);
+			const Matrix34 toLocal = hull->GetWorldTM().GetInverted();
+			const Vec3 p = toLocal*muzzle, d = toLocal.TransformVector(dir).GetNormalizedSafe(FORWARD_DIRECTION);
+			if (box.min.x < box.max.x && LaneHitsBox(LaneVec{p.x,p.y,p.z}, LaneVec{d.x,d.y,d.z}, range-1.0f,
+				LaneVec{box.min.x,box.min.y,box.min.z}, LaneVec{box.max.x,box.max.y,box.max.z}))
+				return other->GetEntityId();
+			continue;
+		}
 		if (BotTargeting::Classify(actor, other) != Relation::Ally) continue;
 		const Vec3 feet = other->GetEntity()->GetWorldPos(), head = Eyes(*other);
 		if (FriendlyInLane(LaneVec{muzzle.x,muzzle.y,muzzle.z}, LaneVec{dir.x,dir.y,dir.z}, range,
@@ -324,6 +345,28 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 	return best;
 }
 
+// wb_bot_pro_fire: true while an ally is in the real fire line or during the 0.5 s hold after one was seen there.
+// Shore server run: an ally 0.6 m from the muzzle slipped out of the lane for a frame and took a head shot 0.38 s
+// after the hold, so once held the bot waits the 0.5 s out. Tests/test_bot_fire_lane_caller.py runs this method.
+bool BotCombat::FriendlyHold(CActor& actor, IActor& target, IWeapon& weapon, const Vec3& viewPos, const Vec3& fireDir,
+	const Vec3& shotPoint, float now)
+{
+	if (now < m_friendlyUntil)
+	{
+		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly_hold.",actor.GetEntityId(),target.GetEntityId()); }
+		return true;
+	}
+	const Vec3 aimEnd = viewPos + fireDir.GetNormalizedSafe(FORWARD_DIRECTION)*(shotPoint-viewPos).GetLength();
+	const Vec3 firingPos = FiringPos(weapon,aimEnd,viewPos);
+	if (const EntityId ally=AllyInLane(actor,firingPos,aimEnd-firingPos,(aimEnd-firingPos).GetLength()))
+	{
+		m_friendlyUntil=now+0.5f;
+		if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly ally=%u.",actor.GetEntityId(),target.GetEntityId(),ally); }
+		return true;
+	}
+	return false;
+}
+
 bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 {
 	IWeapon* weapon = BotWeapons::Current(actor);
@@ -372,24 +415,8 @@ bool BotCombat::Attack(CActor& actor, IActor& target, float now, bool verbose)
 	// Shore 03.11 (WarsBot_10 killed WarsBot_12): no burst while an ally stands near the real fire line; the brain
 	// steps sideways for a moment. Not m_shotBlocked: a sniper on its spot only calls Attack when that flag is clear.
 	// The bullet flies from the muzzle helper to the point the view aims at, range away along the fire direction.
-	if (BotConfig::Get().proFire==1)
-	{
-		// Shore server run: an ally 0.6 m from the muzzle slipped out of the lane for a frame and took a head shot
-		// 0.38 s after the hold. Once held, wait out the 0.5 s before the next burst.
-		if (now < m_friendlyUntil)
-		{
-			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly_hold.",actor.GetEntityId(),target.GetEntityId()); }
-			StopFire(); return false;
-		}
-		const Vec3 aimEnd = state.weaponPosition + state.fireDirection.GetNormalizedSafe(FORWARD_DIRECTION)*(shotPoint-state.weaponPosition).GetLength();
-		const Vec3 firingPos = FiringPos(*weapon,aimEnd,state.weaponPosition);
-		if (const EntityId ally=AllyInLane(actor,firingPos,aimEnd-firingPos,(aimEnd-firingPos).GetLength()))
-		{
-			m_friendlyUntil=now+0.5f;
-			if (now>=m_nextNoFireLog) { m_nextNoFireLog=now+0.5f; WB_LOG(2,"[WarsBots] NOFIRE actor=%u target=%u reason=friendly ally=%u.",actor.GetEntityId(),target.GetEntityId(),ally); }
-			StopFire(); return false;
-		}
-	}
+	if (BotConfig::Get().proFire==1 && FriendlyHold(actor,target,*weapon,state.weaponPosition,state.fireDirection,shotPoint,now))
+	{ StopFire(); return false; }
 	IFireMode* mode=weapon->GetFireMode(weapon->GetCurrentFireMode());
     auto fire=BotFireControl::Plan(mode?mode->GetType():nullptr,mode?mode->GetFireRate():0,
         m_profile.reaction,m_burst,m_burstGap,mode?mode->GetSpinUpTime():0);

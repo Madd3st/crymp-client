@@ -33,7 +33,7 @@
 | `wb_bot_spectator_aim` | DS-013 / owner 25.10 (bot aim late and crooked in first-person spectator): the spectator c… | OFF | accepted | accepted | Во всех лаунчерах, аудит советует включить |
 | `wb_bot_difficulty` | DS-014 / owner 25.10 (difficulties felt the same): one table per skill sets reaction (0.9/… | OFF | accepted | accepted | Плейтест владельца прошёл, аудит советует включить |
 | `wb_bot_finish` | DS-015 / owner 25.10 (left an enemy at 4 HP): a target this bot has visibly damaged (>= 30… | OFF | accepted | accepted | Плейтест владельца прошёл, аудит советует включить |
-| `wb_bot_first_primary` | DS-044 #1 (audit: first primary p50 33.5 s, SOCOM held 35.7 %): on spawn go for the neares… | OFF | accepted | trial | Данные сильные, но решение владельца ещё открыто |
+| `wb_bot_first_primary` | DS-044 #1 (audit: first primary p50 33.5 s, SOCOM held 35.7 %): on spawn go for the neares… | OFF | accepted | trial | 01.11: данные сильные, решение было открыто; решено D-036 (accepted) |
 | `wb_bot_withdraw_cover` | DS-044 #2 (audit: 80 % of withdraws die within 2.5 s): low HP backs off to the nearest cov… | OFF | keep-debug | keep-debug | Включён в Shore, данные смешанные, пользы не доказано |
 | `wb_bot_finish_lock` | DS-044 #3 (audit: 22.4 % of target choices switch away from <=25 HP): keep a target at <=2… | OFF | drop | drop | Дублирует wb_bot_finish, случаев в прогонах не было |
 | `wb_bot_sniper_reach` | DS-046 (C-117 X-157: 0/3 DSG1, 0/3 Gauss): a sniper-minded marksman searches the roof with… | OFF | trial | trial | Снайперки на крышах, нужен плейтест на dev |
