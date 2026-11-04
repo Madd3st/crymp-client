@@ -30,33 +30,40 @@ and source geometry in the recipe; this option does not prove that a ladder or a
 `ctest --test-dir <build-dir> -C Release` runs the actual-loader inside/outside/crossing/upper-cutoff controls. The checks
 remain active in Release. The existing `water_selftest.ps1 -Tool <recast_bake.exe>` validates water masking separately.
 
-Verdict and numbers: `Docs/Research/SteelmillTriage/RECAST-BAKE-2026-10-24.md`.
+Verdict and numbers (archive): [RECAST-BAKE-2026-10-24.md](https://github.com/Madd3st/crymp-client/blob/4e847f363715eca3225a35ed60392888733a2dfe/Docs/Research/SteelmillTriage/RECAST-BAKE-2026-10-24.md).
 
 ## Новая карта с нуля, по шагам
 
-Бейк идёт на ПК владельца: исходная геометрия (`*.crop.obj.gz`, сотни МБ) лежит вне git (D-021).
+Бейк идёт на ПК владельца: исходная геометрия (`*.obj`, сотни МБ) лежит вне git (D-021).
 `recast_bake.exe` не собирается локально, его собирает CI. Workflow `RecastBake`
 (`.github/workflows/recast-bake.yml`) выкладывает artifact `recast-bake-<SHA>` с `recast_bake.exe` (zlib статически)
 и `sha256.txt`. Скачать можно один раз, для точного SHA; хэш сверить с `sha256.txt`.
 
 1. **Экспорт геометрии.** Локальный сервер IA без актёров, или PowerStruggle без игроков. В консоли:
    `wb_geom_export [path.obj] [x0 y0 x1 y1]`. Прямоугольник — игровая зона, остальное обрезается.
-   Получаются `<Map>.crop.obj.gz`, `<Map>.spawns.json` и `<Map>.items.json`. Положить их рядом и записать SHA сборки экспорта.
+   Получаются ровно четыре файла (`BotGeometryExport.cpp`): `<Map>.obj`, `<Map>.spawns.json`, `<Map>.items.json` и
+   `<Map>.geometry.json` (пишется последним — признак законченного экспорта; в нём SHA сборки). Сжатия нет:
+   бейкер читает и обычный `.obj`, и `.obj.gz` (`gzopen` открывает оба). Отдельная обрезка
+   `Tools/Crop-WarsBotsGeometry.py` не нужна, если задан прямоугольник; у неё свой CLI с `exports.json`.
 2. **Точки.** Из `spawns.json`/`items.json` сделать файл `<Map>.pts`: строки `spawn|item|probe id x y z`.
    Добавить `probe` для мест, которые обязаны быть достижимы: точки захвата, заводы, выходы.
 3. **Бейк.** Начать с параметров соседней карты и подобрать срезы по высоте:
-   `recast_bake --obj <Map>.crop.obj.gz --points <Map>.pts --cs 0.1 --ch 0.05 --radius 0.3 --height 1.8 --climb 0.5
-   --slope 38 --tile 256 --min-region 2 [--zmin Z] [--zmax Z] [--water 99.5] [--retain-box ...] [--jumps]
+   `recast_bake --obj <Map>.obj --points <Map>.pts --cs 0.1 --ch 0.05 --radius 0.3 --height 1.8 --climb 0.5
+   --slope 45 --tile 256 --min-region 2 [--zmin Z] [--zmax Z] [--water 99.5] [--retain-box ...] [--jumps]
    [--links extra.links.txt] --links-out <Map>.links.txt --out-obj <Map>.recast.obj --out-bin <Map>.navmesh > <Map>.json`.
-   - `--slope 38`: физика игрока начинает скользить с 45° (`BasicActor.lua` `min_slide_angle`, `Actor.cpp`). На Shore
-     боты застревали на путях со средним уклоном около 41° (04.11), поэтому порог бейка берётся с запасом ниже.
+   - `--slope 45`: физика игрока начинает скользить с 45° (`BasicActor.lua` `min_slide_angle`, `Actor.cpp`). Ниже не
+     опускать ради застреваний: на Shore `slope 38` отрезал 4 бункера (80 спавнов), а 40–43 не убирали точки застревания
+     (04.11). Застревания на крутых участках лечит поведение бота (SPEC-004), не навмеш.
    - `--retain-box` нужен только для сухих помещений ниже среза `--zmin`, например подлодки Shore.
 4. **Проверка.** В `<Map>.json` смотреть `summary`: сколько спавнов и предметов на главной части и сколько частей
    (`mesh.components`). Сравнить с прошлым бейком таблицей «было/стало». Каждая важная точка (спавны, точки
-   захвата, выходы) должна быть достижима. Если что-то отвалилось, уклон для всей карты не поднимать: прикрыть
-   место данными (ручной линк в `--links`, исключающий или удерживающий бокс). Картинка:
+   захвата, выходы) должна быть на главной части. Если хоть одна отвалилась — **стоп**: бейк не принимается,
+   таблица «было/стало» идёт владельцу. Исключающих боксов в бейкере нет (неизвестный аргумент — выход с кодом 2), ручная
+   разметка мест запрещена (решение 04.11). `--retain-box` — только сухие помещения ниже `--zmin`, не ремонт связности;
+   ручной линк в `--links` не доказывает, что переход выполним физикой. Картинка:
    `python Tools/RecastBake/render_mesh.py <Map>.recast.obj <Map>.json <Map>.links.txt <Map>.png [x0,y0,x1,y1]`.
-5. **Тактические точки** (если нужны снайперские/укрытия): `tactical_spots` → `<Map>.spots.txt`.
+5. **Тактические точки** (если нужны снайперские/укрытия): `tactical_spots` → `<Map>.spots.txt`. Пока не обеспечено:
+   исходник `tactical_spots.cpp` есть, но цели в этом CMake и файла в artifact CI нет. Без него шаг пропускается.
 6. **Манифест.** `python Tools/RecastBake/make_manifest.py Tools/RecastBake/meshes <Map> --mode PS|IA --source "<SHA экспорта>"
    --bake "<вся командная строка бейка>"`. Игра откажется от файлов, если хэши не совпали.
 7. **Установка для прогона.** Живые данные Navmesh не подменять. Для серверного прогона запускать сервер с
@@ -64,4 +71,4 @@ Verdict and numbers: `Docs/Research/SteelmillTriage/RECAST-BAKE-2026-10-24.md`.
    CI-сборке, меняться должен только навмеш. Установка в живые данные (`Tools/Install-WarsBotsNavmesh.ps1`) — только после
    приёмки и по решению владельца.
 8. **В git.** `meshes/<Map>.{navmesh,links.txt,spots.txt,manifest.json}` и строка в `Docs/STATUS.md`. Исходный
-   `crop.obj.gz` в git не кладётся, в манифесте — ссылка на него (путь и SHA экспорта).
+   `.obj` в git не кладётся, в манифесте — ссылка на него (путь и SHA экспорта).
