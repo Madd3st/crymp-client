@@ -22,7 +22,7 @@ struct State {
 	NavMeshCore mesh; std::string level; bool tried = false; int kinds = 0;
 	// SPEC-004 (wb_bot_unstick)
 	std::string leaf, hash; TransitionMemory memory; TroddenMap trodden; bool memoryLoaded = false;
-	float clockBase = 0.f, clockAt = -1.f, clockLast = 0.f;
+	UnstickClockState clock;
 };
 State& S() { static State s; return s; }
 
@@ -80,13 +80,23 @@ void LoadUnstickMemory(State& s)
 	const std::filesystem::path path = UnstickPath(s);
 	if (FILE* f = _wfopen(path.c_str(), L"rb")) { char c[4096]; size_t n; while ((n = fread(c, 1, sizeof c, f)) > 0) text.append(c, n); fclose(f); }
 	const float clock = text.empty() ? -1.f : s.memory.Load(text, s.hash);
-	s.clockBase = clock > 0.f ? clock : 0.f; s.clockAt = -1.f;
-	s.mesh.SetTransitionMemory(s.memory, s.clockBase);
+	s.clock.Start(clock > 0.f ? clock : 0.f);
+	s.mesh.SetTransitionMemory(s.memory, s.clock.Last());
 	if (!text.empty() && clock < 0.f)
 		WB_LOG(0, "[WarsBots] UNSTICK MEMORY %ls belongs to another navmesh (want %s); starting fresh.", path.c_str(), s.hash.c_str());
 	else
 		WB_LOG(0, "[WarsBots] UNSTICK MEMORY %s: %u transitions, %u polygons, clock %.0f s, filter %s.", s.leaf.c_str(),
-			unsigned(s.memory.Size()), unsigned(s.mesh.PenaltyPolys()), s.clockBase, NavMeshCore::CostLayerAvailable() ? "virtual" : "UNAVAILABLE");
+			unsigned(s.memory.Size()), unsigned(s.mesh.PenaltyPolys()), s.clock.Last(), NavMeshCore::CostLayerAvailable() ? "virtual" : "UNAVAILABLE");
+}
+
+// The clock is saved with the memory, so a match without new records still ages it (Codex review of 96a09959).
+void SaveUnstickMemory(State& s, float clock)
+{
+	if (!s.memoryLoaded || s.hash.empty() || !s.memory.Size()) return;
+	s.memory.Prune(clock);
+	const std::string text = s.memory.Save(s.hash, clock);
+	const std::filesystem::path path = UnstickPath(s);
+	if (FILE* f = _wfopen(path.c_str(), L"wb")) { fwrite(text.data(), 1, text.size(), f); fclose(f); }
 }
 }
 
@@ -99,9 +109,10 @@ NavMeshCore* CurrentNavMesh()
 	State& s = S();
 	if (name != s.level)
 	{
+		SaveUnstickMemory(s, s.clock.Last());   // the old level's memory keeps the time it was played
 		s.mesh.Reset(); s.level = name; s.tried = false;
 		s.leaf.clear(); s.hash.clear(); s.memory.Clear(); s.trodden = TroddenMap(); s.memoryLoaded = false;
-		s.clockBase = 0.f; s.clockAt = -1.f; s.clockLast = 0.f;
+		s.clock.Start(0.f);
 	}
 	if (!s.tried)
 	{
@@ -172,10 +183,9 @@ TroddenMap* CurrentTrodden() { return S().mesh.Ready() ? &S().trodden : nullptr;
 float UnstickClock(float now)
 {
 	State& s = S();
-	if (s.clockAt < 0.f) s.clockAt = now;
-	else if (now < s.clockAt) { s.clockBase += s.clockLast - s.clockAt; s.clockAt = now; }   // timer restarted: keep the total
-	s.clockLast = now;
-	return s.clockBase + (now - s.clockAt);
+	const float clock = s.clock.Now(now);
+	if (s.clock.Due(now)) SaveUnstickMemory(s, clock);   // every 60 s while there is something to age
+	return clock;
 }
 
 void UnstickRecord(const float* from, const float* to, float now)
@@ -184,11 +194,8 @@ void UnstickRecord(const float* from, const float* to, float now)
 	if (!s.mesh.Ready() || s.hash.empty()) return;
 	const float clock = UnstickClock(now);
 	s.memory.Record(from[0], from[1], from[2], to[0], to[1], to[2], clock);
-	s.memory.Prune(clock);
+	SaveUnstickMemory(s, clock);
 	s.mesh.SetTransitionMemory(s.memory, clock);
-	const std::string text = s.memory.Save(s.hash, clock);
-	const std::filesystem::path path = UnstickPath(s);
-	if (FILE* f = _wfopen(path.c_str(), L"wb")) { fwrite(text.data(), 1, text.size(), f); fclose(f); }
 	WB_LOG(1, "[WarsBots] UNSTICK MEMORY record from=(%.1f,%.1f,%.1f) to=(%.1f,%.1f,%.1f) transitions=%u polygons=%u clock=%.0f.",
 		from[0], from[1], from[2], to[0], to[1], to[2], unsigned(s.memory.Size()), unsigned(s.mesh.PenaltyPolys()), clock);
 }

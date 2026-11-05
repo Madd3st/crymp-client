@@ -116,6 +116,9 @@ jobs:
           & python Tests/test_bot_vantage_combat_hold_caller.py *> units/BotVantageCombatHoldCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotVantageCombatHoldCaller-run.log; throw 'UNIT FAIL: actual vantage combat hold caller' }
           'UNIT PASS actual vantage combat hold caller'
+          & python Tests/test_bot_unstick_wiring.py *> units/BotUnstickWiring-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotUnstickWiring-run.log; throw 'UNIT FAIL: SPEC-004 unstick wiring guard' }
+          'UNIT PASS SPEC-004 unstick wiring guard'
       - if: always()
         uses: actions/upload-artifact@v7
         with:

@@ -225,6 +225,7 @@ int BotManager::UnstickAllies(const Vec3& p, float radius, EntityId me, std::vec
 {
 	CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
 	const int myTeam = rules ? rules->GetTeam(me) : 0;
+	if (myTeam <= 0) return 0;   // Instant Action: everyone is an enemy, nobody is an ally (Codex review of 96a09959)
 	int stuck = 0;
 	for (const auto& entry : m_bots)
 	{
@@ -232,7 +233,7 @@ int BotManager::UnstickAllies(const Vec3& p, float radius, EntityId me, std::vec
 		if (!bot || !bot->AIEnabled()) continue;
 		CActor* actor = bot->GetActor();
 		if (!actor || actor->GetEntityId() == me || actor->GetHealth() <= 0) continue;
-		if (myTeam && rules->GetTeam(actor->GetEntityId()) != myTeam) continue;
+		if (!UnstickAlly(myTeam, rules->GetTeam(actor->GetEntityId()))) continue;
 		const BotBrain& brain = bot->Brain();
 		const Vec3 q = brain.FeetPosition();
 		if ((q - p).GetLengthSquared() > radius * radius) continue;

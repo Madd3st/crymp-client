@@ -23,6 +23,7 @@ struct BotIntent
 	ENanoMode suitMode = NANOMODE_DEFENSE;
 	BotCombatIntent combat = BotCombatIntent::None;
 	bool linkJump = false; // C-036: jump on a baked navmesh link (arc checked offline) - skip the local JumpSpace probe
+	bool unstickStrength = false; // SPEC-004 Strength exit step: keep the Strength suit (no policy override); JumpSpace still checked
 	bool meshPath = false;
 	float arrive = 0.8f; // BotMovement stops this close to destination; corner following (wb_bot_corners) owns arrival
 	// T-1: source line (BotBrain.cpp) of the last write per channel this tick; 0 = default

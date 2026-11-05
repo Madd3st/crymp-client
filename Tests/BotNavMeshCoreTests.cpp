@@ -206,6 +206,19 @@ int main(int argc, char** argv)
 		TransitionMemory mem; mem.Record(s289[0], s289[1], s289[2], s289[0] - 3.f, s289[1], s289[2], 0.f);
 		m.SetTransitionMemory(mem, 0.f); assert(m.PenaltyPolys() >= 1);
 		m.SetTransitionMemory(mem, 1800.f * 10); assert(m.PenaltyPolys() == 0);   // decayed below 2 %
+		{   // Codex review 96a09959: the penalty decays per query by the memory clock, without a new record or a rebuild
+			TransitionMemory up; up.Record(s289[0], s289[1], s289[2], s289[0] - 3.f, s289[1], s289[2] + 1.f, 0.f);
+			m.SetTransitionMemory(up, 0.f);
+			NavCostContext mc; mc.climb = false; mc.noise = 0.f; mc.memoryClock = 0.f;
+			m.SetCostContext(&mc);
+			const unsigned long long cur = m.PolyAt(s289);
+			const float b2[3] = {s289[0] - 2.f, s289[1], s289[2] + 0.5f};
+			assert(cur && std::fabs(m.SegmentCostMultiplier(s289, b2, cur) - 2.f) < 0.01f);
+			mc.memoryClock = 1800.f; assert(std::fabs(m.SegmentCostMultiplier(s289, b2, cur) - 1.5f) < 0.01f);
+			mc.memoryClock = 3600.f; assert(std::fabs(m.SegmentCostMultiplier(s289, b2, cur) - 1.25f) < 0.01f);
+			assert(m.SegmentCostMultiplier(b2, s289, cur) == 1.f);                 // downhill: no penalty
+			m.SetCostContext(nullptr);
+		}
 		m.SetCostContext(nullptr);
 		std::printf("cost layer: plain %.3f ms, layered %.3f ms per FindPathLinks\n",
 			std::chrono::duration<double, std::milli>(t1 - t0).count() / 100, std::chrono::duration<double, std::milli>(t2 - t1).count() / 100);

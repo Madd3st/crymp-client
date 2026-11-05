@@ -221,6 +221,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 			if (layered)
 			{
 				cost.botSeed = unsigned(m_number) * 2654435761u; cost.trodden = CurrentTrodden(); cost.now = gEnv->pTimer->GetCurrTime(); cost.blockNow = m_now;
+				cost.memoryClock = UnstickClock(cost.now);
 				cost.blocks = m_unstickBlocks.empty() ? nullptr : m_unstickBlocks.data(); cost.blockCount = int(m_unstickBlocks.size());
 				if (m_now < m_unstickPointsUntil && !m_unstickPoints.empty()) { cost.points = m_unstickPoints.data(); cost.pointCount = int(m_unstickPoints.size()); }
 				mesh->SetCostContext(&cost);
@@ -1560,8 +1561,11 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	for (const Vec3& a:standing) { const Vec3 d=a-feet; if (d.GetLength2D()<2.5f && d.x*forward.x+d.y*forward.y>0.f) crowdAhead=true; }
 	UnstickInput in;
 	in.stuck=m_unstickStuck; in.progressed=m_unstickSensor.Progressed(); in.grounded=m_blackboard.grounded;
-	in.canJump=true;                                            // the jump executor still checks the head room
-	in.canStrength=m_blackboard.energy>=130.0f && !crowdAhead;  // a Strength jump into a crowd lands somewhere worse
+	// Real head room and landing (the executor's own JumpSpace probe), asked only when a step may need it. A step that
+	// cannot jump is skipped and a Strength attempt is not spent (Codex review of 96a09959).
+	const bool needJump=m_unstickStuck || chain;
+	in.canJump=needJump && m_locomotion.CanJump(actor,forward,false);
+	in.canStrength=needJump && m_blackboard.energy>=130.0f && !crowdAhead && m_locomotion.CanJump(actor,forward,true);
 	in.transition=TransitionKey(from.x,from.y,to.x,to.y);
 	const UnstickStep step=m_unstickSteps.Update(m_now,in);
 	switch (m_unstickSteps.Event())
@@ -1609,14 +1613,15 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 		if (m_blackboard.energy>50.0f) WBI(suitMode,NANOMODE_SPEED);
 		break;
 	case UnstickStep::Jump:
-		WBI(gait,BotGait::Run);
-		if (!m_unstickJumped && m_blackboard.grounded && m_now>=m_blackboard.nextJump)
-		{ WBI(jump,BotJump::Normal); WBI(suitMode,NANOMODE_DEFENSE); m_unstickJumped=true; }
+		WBI(gait,BotGait::Run); WBI(suitMode,NANOMODE_DEFENSE);
+		if (!m_unstickJumped && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_blackboard.mode!=NANOMODE_STRENGTH)
+		{ WBI(jump,BotJump::Normal); m_unstickJumped=true; }
 		break;
 	case UnstickStep::Strength:
-		WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_STRENGTH); m_cornerSlow=false;
-		if (!m_unstickJumped && m_blackboard.grounded && m_now>=m_blackboard.nextJump)
-		{ WBI(jump,BotJump::Strength); m_intent.linkJump=true; m_unstickJumped=true; }   // linkJump: never downgraded
+		WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_STRENGTH); m_cornerSlow=false; m_intent.unstickStrength=true;
+		// the jump only once the suit is in Strength; the executor checks JumpSpace again (no linkJump bypass)
+		if (!m_unstickJumped && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_blackboard.mode==NANOMODE_STRENGTH)
+		{ WBI(jump,BotJump::Strength); m_unstickJumped=true; }
 		break;
 	case UnstickStep::Backoff:
 	{
@@ -1663,7 +1668,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
 		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
 	m_blackboard.obstacleJump=BotJump::None;
-	m_intent.linkJump=false;
+	m_intent.linkJump=false; m_intent.unstickStrength=false;
 	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
 	if (BotConfig::Get().ladder==1 && ApplyLadderExecutor(actor)) return; // DS-107: immediate/exclusive ownership
 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
@@ -1691,7 +1696,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	{ WBI(suitMode,NANOMODE_DEFENSE); if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run); }
 	if(BotPaceEnabled() && m_intent.jump==BotJump::Strength)m_speedTravel=false;
     if(!m_link.Active() && BotPaceEnabled() && m_intent.jump!=BotJump::Strength && (m_now<m_blackboard.damagedUntil || m_intent.combat==BotCombatIntent::Fire)){WBI(suitMode,NANOMODE_DEFENSE);m_speedTravel=false;}
-    if (BotConfig::Get().suitPolicy==1 && !m_link.Active()) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
+    if (BotConfig::Get().suitPolicy==1 && !m_link.Active() && !m_intent.unstickStrength) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     // DS-040 (wb_bot_pro_fire): a visible enemy inside the hold range must not sprint. Native fire is blocked while
     // sprinting; C-112 had 12 visible combat gaps / 116.5 s at 60-89 % sprint. After the suit policy on purpose.
     if (BotConfig::Get().proFire==1 && m_blackboard.visible && m_blackboard.distance<=m_profile.holdRange && m_intent.jump==BotJump::None && m_intent.gait==BotGait::Sprint)
@@ -1701,7 +1706,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
         if (m_intent.gait==BotGait::Sprint) WBI(gait,BotGait::Run);
         if (m_intent.suitMode==NANOMODE_SPEED) { WBI(suitMode,NANOMODE_DEFENSE); m_speedTravel=false; }
     }
-    const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now,m_profile.cloakApproach,m_intent.linkJump && m_intent.suitMode==NANOMODE_STRENGTH);
+    const bool suitReady=m_suit.Apply(actor,m_intent.suitMode,m_blackboard,m_now,m_profile.cloakApproach,(m_intent.linkJump || m_intent.unstickStrength) && m_intent.suitMode==NANOMODE_STRENGTH);
 	if(!suitReady && m_intent.gait==BotGait::Sprint){
         if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;WBI(suitMode,NANOMODE_DEFENSE);m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
         else WBI(gait,BotGait::Run);

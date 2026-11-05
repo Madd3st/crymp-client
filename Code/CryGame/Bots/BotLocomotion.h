@@ -17,6 +17,8 @@ public:
 	// normal safe executor. Keep the real movement request so ProcessMovementOnLadder sees desiredVelocity.y.
 	bool ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt, bool nativeAttached);
 	void Look(CPlayer& actor, const Vec3& target);
+	// SPEC-004: the same head-room/landing probe the executor uses for a moving jump, asked before an exit step is offered.
+	bool CanJump(CPlayer& actor, const Vec3& direction, bool strength) const { return JumpSpace(actor, direction, true, strength); }
 private:
 	bool JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength) const;
 	void Refused(CPlayer& actor, const char* reason, float now);

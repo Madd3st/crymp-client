@@ -75,7 +75,12 @@ float NavMeshCore::SegmentCostMultiplier(const float* a, const float* b, unsigne
 			auto it = m_penalty.find(cur);
 			if (it != m_penalty.end())
 				for (const PolyPenalty& p : it->second)
-					if (SameDirectedTransition(p.t, a[0], a[1], a[2], b[0], b[1], b[2])) { m *= 1.f + p.value; break; }
+					if (SameDirectedTransition(p.t, a[0], a[1], a[2], b[0], b[1], b[2]))
+					{   // decays with the memory clock on every query, not only when the cache is rebuilt
+						const float v = c->memoryClock < 0.f ? p.value : (c->memoryClock <= p.t.at ? p.t.value :
+							p.t.value * std::pow(0.5f, (c->memoryClock - p.t.at) / m_penaltyHalfLife));
+						m *= 1.f + v; break;
+					}
 		}
 		for (int i = 0; i < c->blockCount; ++i)
 		{
@@ -96,6 +101,7 @@ float NavMeshCore::SegmentCostMultiplier(const float* a, const float* b, unsigne
 void NavMeshCore::SetTransitionMemory(const TransitionMemory& memory, float clock)
 {
 	m_penalty.clear();
+	m_penaltyHalfLife = memory.halfLife;
 	if (!m_query) return;
 	for (const auto& kv : memory.Items())
 	{

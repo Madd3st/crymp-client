@@ -49,7 +49,6 @@ struct UnstickTuning {
 	float window = 4.f;     // no 1 m of remaining-path progress for this long -> stuck
 	float minDrop = 1.f;
 	float armAbove = 2.5f;  // jitter at the goal never arms
-	float hardFactor = 3.f; // repath churn guard: no real progress for window*hardFactor -> stuck regardless of new paths
 };
 
 class UnstickSensor {
@@ -57,14 +56,18 @@ public:
 	void Reset() { m_armed = false; }
 	// muted: link/ladder (incl. waiting at a ladder), hold without move, combat, water. While muted nothing accumulates.
 	// Returns true while the bot is stuck.
+	// Progress is counted only along one path: a new path (other signature) starts its own baseline at its own remaining
+	// length but keeps the clock, so a walking bot progresses on the new path within a second while a bot that only gets
+	// alternating long/short replans (Codex review of 96a09959: 20/22 m every 3 s) is never credited with progress.
+	// The weapon goal keeps its own legacy rule (ApplyPathSignature).
 	bool Update(float rem, float sig, float now, bool muted, const UnstickTuning& t = UnstickTuning())
 	{
 		m_progressed = false;
 		if (muted || rem <= t.armAbove || (m_armed && now < m_bestAt)) { m_armed = false; return false; }
-		if (!m_armed) { m_armed = true; m_sig = sig; m_best = rem; m_bestAt = now; m_realAt = now; return false; }
-		ApplyPathSignature(m_sig, m_best, m_bestAt, sig, rem, now);
-		if (rem < m_best - t.minDrop) { m_best = rem; m_bestAt = now; m_realAt = now; m_progressed = true; }
-		return now - m_bestAt >= t.window || now - m_realAt >= t.window * t.hardFactor;
+		if (!m_armed) { m_armed = true; m_sig = sig; m_best = rem; m_bestAt = now; return false; }
+		if (std::fabs(sig - m_sig) > 0.01f) { m_sig = sig; m_best = rem; }   // new path: new baseline, same clock
+		else if (rem < m_best - t.minDrop) { m_best = rem; m_bestAt = now; m_progressed = true; }
+		return now - m_bestAt >= t.window;
 	}
 	bool Armed() const { return m_armed; }
 	bool Progressed() const { return m_progressed; }  // this update dropped the best remaining by minDrop
@@ -72,7 +75,7 @@ public:
 	float StuckFor(float now) const { return m_armed ? now - m_bestAt : 0.f; }
 private:
 	bool m_armed = false, m_progressed = false;
-	float m_sig = 0.f, m_best = 0.f, m_bestAt = 0.f, m_realAt = 0.f;
+	float m_sig = 0.f, m_best = 0.f, m_bestAt = 0.f;
 };
 
 // ---------- 3. exit steps ----------
@@ -261,6 +264,28 @@ inline bool SameDirectedTransition(const TransitionPenalty& p, float ax, float a
 	if (lu < 1e-3f || lv < 1e-3f) return false;
 	return (ux * vx + uy * vy) / (lu * lv) >= 0.7071f;
 }
+
+// Game-seconds clock of the memory across matches: base from the file plus the engine timer since the level started;
+// a restarted timer keeps the total. Due() asks for a periodic save so a match without new records still ages it.
+class UnstickClockState {
+public:
+	float saveEvery = 60.f;
+	void Start(float base) { m_base = base; m_at = -1.f; m_last = 0.f; m_nextSave = 0.f; }
+	float Now(float t)
+	{
+		if (m_at < 0.f) { m_at = t; m_nextSave = t + saveEvery; }
+		else if (t < m_at) { m_base += m_last - m_at; m_at = t; m_nextSave = t + saveEvery; }
+		m_last = t;
+		return m_base + (t - m_at);
+	}
+	float Last() const { return m_at < 0.f ? m_base : m_base + (m_last - m_at); }
+	bool Due(float t) { if (m_at < 0.f || t < m_nextSave) return false; m_nextSave = t + saveEvery; return true; }
+private:
+	float m_base = 0.f, m_at = -1.f, m_last = 0.f, m_nextSave = 0.f;
+};
+
+// Allies for the crowd rule and the spread: same non-zero team only. Instant Action (team 0) has no allies.
+inline bool UnstickAlly(int myTeam, int otherTeam) { return myTeam > 0 && otherTeam == myTeam; }
 
 // ---------- 6. spread ----------
 // Trodden transitions: every pass adds a little temporary cost that decays within minutes (no file).

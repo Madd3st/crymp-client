@@ -1,0 +1,70 @@
+"""SPEC-004 wiring guard (pure Python, reads the real sources). Not a runtime caller: it pins the four fixes from the
+Codex review of 96a09959 so a later edit cannot silently undo them.
+  1. the sensor counts progress only along one path (no ApplyPathSignature inside UnstickSensor);
+  2. the Strength step never sets linkJump (which skips JumpSpace) and both jump steps are offered only after the
+     executor's own clearance probe (CanJump -> JumpSpace);
+  3. Detour penalties decay per query by the memory clock, and the clock is saved without new records;
+  4. allies are the same non-zero team only (Instant Action has none).
+"""
+from pathlib import Path
+import re
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+BOTS = ROOT / 'Code/CryGame/Bots'
+
+
+def code(text):
+    return re.sub(r'//[^\n]*', '', text)   # comments may name what the code must not do
+
+
+def body(text, signature):
+    start = text.index(signature)
+    left = text.index('{', start)
+    depth = 0
+    for i in range(left, len(text)):
+        depth += text[i] == '{'
+        depth -= text[i] == '}'
+        if not depth:
+            return text[start:i + 1]
+    raise ValueError(signature)
+
+
+def main():
+    fails = []
+    def check(ok, what):
+        print(('PASS ' if ok else 'FAIL ') + what)
+        if not ok:
+            fails.append(what)
+
+    unstick = (BOTS / 'BotUnstick.h').read_text(encoding='utf-8-sig')
+    sensor = code(body(unstick, 'class UnstickSensor'))
+    check('ApplyPathSignature' not in sensor, 'sensor: no legacy restart rule (alternating replans give no progress)')
+    check(re.search(r'm_sig\s*=\s*sig;\s*m_best\s*=\s*rem;\s*\}', sensor) is not None, 'sensor: new path = new baseline, same clock')
+
+    brain = (BOTS / 'BotBrain.cpp').read_text(encoding='utf-8-sig')
+    upd = code(body(brain, 'void BotBrain::UpdateUnstick('))
+    check('linkJump' not in upd, 'steps: Strength never sets linkJump (JumpSpace stays on)')
+    check(re.search(r'in\.canJump=needJump && m_locomotion\.CanJump\(actor,forward,false\)', upd) is not None, 'steps: normal jump needs the real probe')
+    check(re.search(r'in\.canStrength=.*m_locomotion\.CanJump\(actor,forward,true\)', upd) is not None, 'steps: Strength needs the real probe')
+    check('m_blackboard.mode==NANOMODE_STRENGTH' in upd, 'steps: Strength jump only once the suit is in Strength')
+    loco_h = (BOTS / 'BotLocomotion.h').read_text(encoding='utf-8-sig')
+    check('return JumpSpace(actor, direction, true, strength);' in loco_h, 'CanJump is the executor JumpSpace probe')
+    loco = (BOTS / 'BotLocomotion.cpp').read_text(encoding='utf-8-sig')
+    check('!intent.linkJump && !JumpSpace(' in loco and 'unstickStrength' not in loco, 'executor: only baked links skip JumpSpace')
+
+    core = (BOTS / 'BotNavMeshCore.cpp').read_text(encoding='utf-8-sig')
+    check('c->memoryClock' in body(core, 'float NavMeshCore::SegmentCostMultiplier('), 'Detour: penalty decays per query')
+    check('cost.memoryClock = UnstickClock(' in brain, 'path query passes the memory clock')
+    nav = (BOTS / 'BotNavMesh.cpp').read_text(encoding='utf-8-sig')
+    check('if (s.clock.Due(now)) SaveUnstickMemory(' in body(nav, 'float UnstickClock('), 'clock saved every 60 s without records')
+
+    mgr = (BOTS / 'BotManager.cpp').read_text(encoding='utf-8-sig')
+    allies = body(mgr, 'int BotManager::UnstickAllies(')
+    check('if (myTeam <= 0) return 0;' in allies and 'UnstickAlly(myTeam' in allies, 'allies: same non-zero team, none in IA')
+    check(re.search(r'GetEntityId\(\)\s*==\s*me', allies) is not None and 'bot->GetActor()' in allies, 'allies: own actor skipped, owned actors only')
+    return 1 if fails else 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

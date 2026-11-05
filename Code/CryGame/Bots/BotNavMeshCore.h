@@ -59,6 +59,7 @@ struct NavCostContext {
 	const TroddenMap* trodden = nullptr;
 	float now = 0.f;                       // trodden clock (world time, shared by all bots)
 	float blockNow = 0.f;                  // the bot's own clock for its block expiry
+	float memoryClock = -1.f;              // memory clock (UnstickClock): penalties decay per query; <0 = value at resolve
 	const NavCostBlock* blocks = nullptr; int blockCount = 0;
 	const NavCostPoint* points = nullptr; int pointCount = 0;
 };
@@ -148,7 +149,8 @@ private:
 	std::unordered_map<unsigned long long, int> m_linkFails;
 	int m_linkMismatch = 0;
 	const NavCostContext* m_cost = nullptr;
-	struct PolyPenalty { TransitionPenalty t; float value; };
+	struct PolyPenalty { TransitionPenalty t; float value; };   // value: decayed at resolve time (fallback)
+	float m_penaltyHalfLife = 1800.f;
 	std::unordered_map<unsigned long long, std::vector<PolyPenalty>> m_penalty;
 };
 

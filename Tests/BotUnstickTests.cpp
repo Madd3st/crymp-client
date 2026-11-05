@@ -34,21 +34,45 @@ int main()
 		assert(!s.Update(18.4f, 1, 4.5f, false) && s.Progressed());
 		assert(!s.Update(18.4f, 1, 8.4f, false) && s.Update(18.4f, 1, 8.5f, false));
 	}
-	{   // row 13: replanned onto a longer path is not stuck (restart from its own length)
-		UnstickSensor s;
-		s.Update(20, 1, 0, false); s.Update(20, 1, 3, false);
-		assert(!s.Update(40, 2, 3.5f, false));
-		assert(!s.Update(39.5f, 2, 7.4f, false));
-		assert(s.Update(39.5f, 2, 7.5f, false));
-	}
-	{   // repath churn: a new longer path every 3 s never reaches the 4 s window; the 12 s guard still fires
-		UnstickSensor s; float rem = 20; int sig = 1; bool fired = false; float when = 0;
-		for (float t = 0; t <= 14.f && !fired; t += 0.25f)
+	{   // row 13: a walking bot replanned onto a longer path is never stuck (progress along the new path)
+		UnstickSensor s; float rem = 30; int sig = 1;
+		for (float t = 0; t <= 30.f; t += 0.25f)
 		{
-			if (std::fmod(t, 3.f) < 0.01f && t > 0) { rem += 1.f; ++sig; }
-			if (s.Update(rem, float(sig), t, false)) { fired = true; when = t; }
+			if (std::fmod(t, 5.f) < 0.01f && t > 0) { rem += 20.f; ++sig; }   // Steer repath every 5 s, +20 m each
+			assert(!s.Update(rem, float(sig), t, false));
+			rem -= 0.75f;                                                    // 3 m/s
 		}
-		assert(fired && when >= 12.f && when < 12.3f);
+	}
+	{   // a shorter new path is not progress by itself: the clock keeps running
+		UnstickSensor s;
+		s.Update(20, 1, 0, false);
+		assert(!s.Update(15, 2, 2, false) && !s.Progressed());
+		assert(s.Update(15, 2, 4, false));
+	}
+	{   // Codex review 96a09959: standing still, alternating 20/22 m replans every 3 s -> stuck at 4 s, no false progress
+		UnstickSensor s; int falseProgress = 0; float firstStuck = -1;
+		for (float t = 0; t <= 120.f; t += 0.25f)
+		{
+			const int k = int(t / 3.f);
+			const bool stuck = s.Update(k % 2 ? 22.f : 20.f, float(k + 1), t, false);
+			falseProgress += s.Progressed();
+			if (stuck && firstStuck < 0) firstStuck = t;
+			if (t >= 4.f) assert(stuck);
+		}
+		assert(falseProgress == 0 && firstStuck == 4.f);
+	}
+	{   // the same churn through the steps: a chain runs, never "exits" without real progress
+		UnstickSensor s; UnstickSteps st; int exits = 0, starts = 0;
+		for (float t = 0; t <= 60.f; t += 0.25f)
+		{
+			const int k = int(t / 3.f);
+			UnstickInput in; in.stuck = s.Update(k % 2 ? 22.f : 20.f, float(k + 1), t, false); in.progressed = s.Progressed();
+			in.canStrength = true; in.transition = 77;
+			st.Update(t, in);
+			exits += st.Event() == UnstickEvent::Exited; starts += st.Event() == UnstickEvent::Started;
+			if (st.Event() == UnstickEvent::Failed) s.Reset();
+		}
+		assert(exits == 0 && starts > 3);
 	}
 	{   // row 14: remaining under 2.5 m never arms
 		UnstickSensor s;
@@ -106,6 +130,22 @@ int main()
 		UnstickSteps st; UnstickInput in; assert(st.Update(0, in) == UnstickStep::None);
 		in.stuck = true; in.grounded = false; assert(st.Update(1, in) == UnstickStep::None);
 	}
+
+	// --- memory clock across matches: ages without new records, survives a timer restart ---
+	{
+		UnstickClockState c; c.Start(100.f);
+		assert(c.Now(50.f) == 100.f && !c.Due(50.f));
+		assert(c.Now(110.f) == 160.f && c.Due(110.f) && !c.Due(111.f));   // periodic save every 60 s
+		assert(c.Now(5.f) == 160.f && c.Now(15.f) == 170.f);                 // timer restarted: total kept
+		assert(c.Last() == 170.f);
+		TransitionMemory m; m.Record(0, 0, 0, 0, 6, 3, 100.f);
+		const std::string file = m.Save("h", c.Last());                         // saved by the clock, no new record
+		TransitionMemory next; UnstickClockState c2; c2.Start(next.Load(file, "h"));
+		const float later = c2.Now(0.f) + 1800.f - 70.f;                      // next match: 30 min after the record
+		assert(Near(next.Penalty(TransitionKey(0, 0, 0, 6), later), 0.5f, 0.01f));
+	}
+	// --- allies: same non-zero team only; Instant Action has none ---
+	assert(UnstickAlly(1, 1) && UnstickAlly(2, 2) && !UnstickAlly(1, 2) && !UnstickAlly(0, 0) && !UnstickAlly(0, 1));
 
 	// --- row 5: memory only for a lone bot without combat ---
 	assert(UnstickShouldRecord(true, 0, false));
