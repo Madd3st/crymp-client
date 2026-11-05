@@ -1564,8 +1564,9 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	// Real head room and landing (the executor's own JumpSpace probe), asked only when a step may need it. A step that
 	// cannot jump is skipped and a Strength attempt is not spent (Codex review of 96a09959).
 	const bool needJump=m_unstickStuck || chain;
-	in.canJump=needJump && m_locomotion.CanJump(actor,forward,false);
-	in.canStrength=needJump && m_blackboard.energy>=130.0f && !crowdAhead && m_locomotion.CanJump(actor,forward,true);
+	const UnstickJumpAbility ability=UnstickJumpInput(needJump,needJump && m_locomotion.CanJump(actor,forward,false),
+		needJump && m_locomotion.CanJump(actor,forward,true),m_blackboard.energy,crowdAhead);
+	in.canJump=ability.canJump; in.canStrength=ability.canStrength;
 	in.transition=TransitionKey(from.x,from.y,to.x,to.y);
 	const UnstickStep step=m_unstickSteps.Update(m_now,in);
 	switch (m_unstickSteps.Event())

@@ -118,6 +118,38 @@ int main()
 		assert(st.Update(2.5f, in) == UnstickStep::Backoff && !st.StrengthUsed(7));
 		assert(st.Closed(7, 3.f) && !st.Closed(7, 33.f));         // back-off ban is 30 s
 	}
+	{   // Codex review of 3834ac64: each jump step stands on its own probe. Matrix (normal probe, strength probe):
+		struct Row { bool normal, strength; UnstickStep at25, at50; };
+		const Row rows[] = {
+			{false, true,  UnstickStep::Strength, UnstickStep::Backoff},   // normal landing bad, strength landing safe
+			{false, false, UnstickStep::Backoff,  UnstickStep::Backoff},   // ceiling for both
+			{true,  false, UnstickStep::Jump,     UnstickStep::Backoff},   // normal only, no strength
+			{true,  true,  UnstickStep::Jump,     UnstickStep::Strength}};
+		for (const Row& r : rows)
+		{
+			UnstickSteps st; UnstickInput in; in.stuck = true; in.transition = 77;
+			const UnstickJumpAbility a = UnstickJumpInput(true, r.normal, r.strength, 200.f, false);
+			in.canJump = a.canJump; in.canStrength = a.canStrength;
+			assert(st.Update(0, in) == UnstickStep::Sprint);
+			assert(st.Update(2.5f, in) == r.at25);
+			if (r.at25 != UnstickStep::Backoff) assert(st.Update(5.f, in) == r.at50);
+			const bool spent = r.strength;
+			assert(st.StrengthUsed(77) == spent);
+			if (spent)
+			{   // no second strength on the same transition, even with a safe probe
+				in.progressed = true; assert(st.Update(6.f, in) == UnstickStep::None && st.Event() == UnstickEvent::Exited);
+				in.progressed = false;
+				assert(st.Update(10.f, in) == UnstickStep::Sprint);
+				st.Update(12.5f, in); st.Update(15.f, in);
+				assert(st.Step() != UnstickStep::Strength);
+			}
+		}
+		// the caller's gates on the strength probe: energy, crowd, and no probe at all when not needed
+		assert(!UnstickJumpInput(true, false, true, 129.f, false).canStrength);
+		assert(!UnstickJumpInput(true, false, true, 200.f, true).canStrength);
+		const UnstickJumpAbility idle = UnstickJumpInput(false, true, true, 200.f, false);
+		assert(!idle.canJump && !idle.canStrength);
+	}
 	{   // success by progress, whatever the step; strength exit is reported for the memory
 		UnstickSteps st; UnstickInput in; in.stuck = true; in.canStrength = true; in.transition = 9;
 		st.Update(0, in); st.Update(2.5f, in); st.Update(5.f, in);

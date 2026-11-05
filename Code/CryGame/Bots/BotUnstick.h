@@ -94,10 +94,16 @@ struct UnstickInput {
 	bool stuck = false;        // sensor says stuck
 	bool progressed = false;   // sensor saw real progress this tick
 	bool grounded = true;
-	bool canJump = true;       // no ceiling / free space ahead
-	bool canStrength = false;  // enough suit energy and free space ahead (no crowd in front)
+	bool canJump = true;       // the NORMAL jump's own probe passed (head room 2.5 m, landing 2 m ahead)
+	bool canStrength = false;  // the STRENGTH jump's own probe passed (head room 7 m, landing 3 m + 5.5 m), energy, no crowd
 	uint64_t transition = 0;
 };
+
+// The caller's jump abilities, each from its own executor probe (BotLocomotion::JumpSpace with strength=false/true).
+// The two probes check different landings, so one may pass while the other fails (Codex review of 3834ac64).
+struct UnstickJumpAbility { bool canJump, canStrength; };
+inline UnstickJumpAbility UnstickJumpInput(bool needJump, bool normalProbe, bool strengthProbe, float energy, bool crowdAhead)
+{ return { needJump && normalProbe, needJump && strengthProbe && energy >= 130.f && !crowdAhead }; }
 enum class UnstickEvent { None = 0, Started, Exited, Failed };
 
 class UnstickSteps {
@@ -160,7 +166,8 @@ private:
 	{
 		// skip what cannot work (ceiling, no energy, crowd, strength already spent on this transition)
 		if (s == UnstickStep::Jump && !in.canJump) s = UnstickStep::Strength;
-		if (s == UnstickStep::Strength && (!in.canJump || !in.canStrength || StrengthUsed(in.transition))) s = UnstickStep::Backoff;
+		// Strength stands on its own probe: a failed normal landing must not veto a safe strength one (review of 3834ac64)
+		if (s == UnstickStep::Strength && (!in.canStrength || StrengthUsed(in.transition))) s = UnstickStep::Backoff;
 		if (m_step == UnstickStep::Strength) m_closed.insert(m_transition);  // strength did not help: closed uphill
 		if (s == UnstickStep::Strength) m_strengthUsed.insert(in.transition);
 		if (s == UnstickStep::Backoff) m_banned[in.transition] = now + banTime;
