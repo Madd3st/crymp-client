@@ -115,6 +115,9 @@ jobs:
           & python Tests/test_bot_vantage_combat_hold_caller.py *> units/BotVantageCombatHoldCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotVantageCombatHoldCaller-run.log; throw 'UNIT FAIL: actual vantage combat hold caller' }
           'UNIT PASS actual vantage combat hold caller'
+          & python Tests/test_bot_lan_gate_caller.py *> units/BotLanGateCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotLanGateCaller-run.log; throw 'UNIT FAIL: actual LAN gate caller' }
+          'UNIT PASS actual LAN gate caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:

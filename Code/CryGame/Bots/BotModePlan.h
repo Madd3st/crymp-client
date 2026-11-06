@@ -19,7 +19,8 @@ inline bool GateBindOk(bool allowPublic, bool localBind)
     return allowPublic || localBind;
 }
 // Owner 06.11 (vanilla CryMP client over the home LAN): a dotted IPv4 literal in a private range only -
-// 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16. Not loopback, not 0.0.0.0, not a host name, no spaces.
+// 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16. Not loopback, not 0.0.0.0, not a host name, no spaces. No leading zero in a
+// multi-digit octet: WinSock inet_addr reads "010.0.0.1" as octal 8.0.0.1 and "172.016.0.1" as 172.14.0.1 (Codex 06.11).
 inline bool IsPrivateIPv4(const char* s)
 {
     if (!s) return false;
@@ -28,6 +29,7 @@ inline bool IsPrivateIPv4(const char* s)
     {
         if (*c >= '0' && *c <= '9')
         {
+            if (digits > 0 && part[n] == 0) return false;   // "0" followed by a digit: ambiguous (octal) form
             if (++digits > 3) return false;
             part[n] = part[n] * 10 + (*c - '0');
             if (part[n] > 255) return false;

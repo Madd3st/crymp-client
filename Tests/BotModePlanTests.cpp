@@ -22,6 +22,11 @@ int main()
     assert(!IsPrivateIPv4("0.0.0.0") && !IsPrivateIPv4("") && !IsPrivateIPv4(nullptr) && !IsPrivateIPv4("192.168.1"));
     assert(!IsPrivateIPv4("192.168.1.300") && !IsPrivateIPv4(" 192.168.1.1") && !IsPrivateIPv4("192.168.1.1 ") && !IsPrivateIPv4("192.168..1"));
     assert(!IsPrivateIPv4("192.168.1.1.5") && !IsPrivateIPv4("192.168.0001.1") && !IsPrivateIPv4("lan.local") && !IsPrivateIPv4("192.168.1.1:64087"));
+    // leading zeros (Codex 06.11: inet_addr parses them as octal -> 8.0.0.1, 172.14.0.1); a single 0 octet stays valid
+    assert(!IsPrivateIPv4("010.0.0.1") && !IsPrivateIPv4("172.016.0.1") && !IsPrivateIPv4("192.168.01.1") && !IsPrivateIPv4("192.168.1.00"));
+    assert(!IsPrivateIPv4("10.0.0.09") && !IsPrivateIPv4("00.0.0.1"));
+    assert(IsPrivateIPv4("10.0.0.0") && IsPrivateIPv4("192.168.0.1") && IsPrivateIPv4("172.20.100.200") && IsPrivateIPv4("10.250.0.10"));
+    assert(!LocalBindOk("010.0.0.1", 1, 1) && !LocalBindOk("172.016.0.1", 1, 1));
     assert(LocalBindOk("127.0.0.1", 1, 0) && LocalBindOk("127.0.0.1", 1, 1));          // loopback as before
     assert(!LocalBindOk("192.168.77.114", 1, 0));                                       // LAN needs the opt-in
     assert(LocalBindOk("192.168.77.114", 1, 1));

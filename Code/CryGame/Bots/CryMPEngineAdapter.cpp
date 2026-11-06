@@ -8,7 +8,7 @@
 #include <cmath>
 #include <cstring>
 namespace WarsBots {
-bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle, bool allowPublic)
+bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady, int optIn, bool diagnostic, bool allowPowerStruggle, bool allowPublic, bool allowLan)
 {
     if (!gEnv || !gEnv->pConsole) return false;
     ICVar* bind = gEnv->pConsole->GetCVar("sv_bind");
@@ -18,7 +18,8 @@ bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady,
     const bool rules = framework && framework->GetIGameRulesSystem()->GetCurrentGameRules();
     // DS-037 PS-0 #1: a public server cannot use sv_bind=127.0.0.1/sv_lanonly=1. The owner opts in explicitly.
     // Owner 06.11: wb_lan_test 1 also accepts a private LAN bind (10/8, 172.16/12, 192.168/16), still with sv_lanonly=1.
-    const bool localBind = LocalBindOk(bind ? bind->GetString() : nullptr, lan ? lan->GetIVal() : 0, BotConfig::Get().lanTest);
+    // Not for the export gate (allowLan=false): its contract is offline loopback.
+    const bool localBind = LocalBindOk(bind ? bind->GetString() : nullptr, lan ? lan->GetIVal() : 0, allowLan ? BotConfig::Get().lanTest : 0);
     const bool bindOk = GateBindOk(allowPublic, localBind);
     const bool allowed = framework && gEnv->bServer && gEnv->bMultiplayer && !gEnv->bEditor &&
         levelReady && loaded && rules && optIn==1 && bindOk && mode && (!strcmp(mode->GetString(),"InstantAction") ||
