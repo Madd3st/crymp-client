@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include <algorithm>
+#include <chrono>
 #include "BotConfig.h"
 #include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotThreatScan.h"
@@ -226,7 +227,10 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 				if (m_now < m_unstickPointsUntil && !m_unstickPoints.empty()) { cost.points = m_unstickPoints.data(); cost.pointCount = int(m_unstickPoints.size()); }
 				mesh->SetCostContext(&cost);
 			}
+			const auto queryStart = std::chrono::steady_clock::now();
 			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why, waterStart ? &water : nullptr);
+			PathQueryTimed(std::chrono::duration<float, std::milli>(std::chrono::steady_clock::now() - queryStart).count(),
+				gEnv->pTimer->GetCurrTime());   // D-042 gate: measured with the layer ON and OFF alike
 			if (layered) mesh->SetCostContext(nullptr);
 			if (!found) m_pathLinks.clear();
 			m_meshPathActive = found;

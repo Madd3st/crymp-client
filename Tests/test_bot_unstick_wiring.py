@@ -65,6 +65,12 @@ def main():
     allies = body(mgr, 'int BotManager::UnstickAllies(')
     check('if (myTeam <= 0) return 0;' in allies and 'UnstickAlly(myTeam' in allies, 'allies: same non-zero team, none in IA')
     check(re.search(r'GetEntityId\(\)\s*==\s*me', allies) is not None and 'bot->GetActor()' in allies, 'allies: own actor skipped, owned actors only')
+    check(re.search(r'queryStart = std::chrono::steady_clock::now\(\);\s*found = mesh->FindPathLinks\(.*?\);\s*PathQueryTimed\(', brain, re.S) is not None,
+          'D-042: every FindPathLinks of the brain is timed')
+    check(brain.count('mesh->FindPathLinks(') == 1, 'D-042: no untimed FindPathLinks in the brain')
+    timed = code(body(nav, 'void PathQueryTimed('))
+    check('BotConfig::Get().unstick' not in timed, 'D-042: timing does not depend on wb_bot_unstick (control run measured too)')
+    check('LogPathTimes(s, "level-end"' in nav, 'D-042: level-end report before the reset')
     return 1 if fails else 0
 
 

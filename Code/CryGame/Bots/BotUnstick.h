@@ -9,6 +9,7 @@
 //  6. spread: trodden transitions (decay in minutes) and a fixed per-bot cost noise (+-15 %).
 // No CryEngine types: the Brain adapts Vec3, the Detour filter calls the cost functions (Tests/BotUnstickTests.cpp).
 #pragma once
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <cstddef>
@@ -271,6 +272,40 @@ inline bool SameDirectedTransition(const TransitionPenalty& p, float ax, float a
 	if (lu < 1e-3f || lv < 1e-3f) return false;
 	return (ux * vx + uy * vy) / (lu * lv) >= 0.7071f;
 }
+
+// ---------- path query timing (D-042 gate: p95 FindPathLinks <= 2 ms) ----------
+// Wall-clock milliseconds of each FindPathLinks, measured with the cost layer ON and OFF alike (the control run needs the
+// same numbers). Nearest-rank percentiles over the last window and over the whole level (capped sample count).
+struct PathTimeReport { size_t n = 0; float p50 = 0.f, p95 = 0.f, max = 0.f; };
+inline PathTimeReport PathTimePercentiles(std::vector<float> v)
+{
+	PathTimeReport r; r.n = v.size();
+	if (v.empty()) return r;
+	std::sort(v.begin(), v.end());
+	const auto rank = [&](float p) { size_t k = size_t(std::ceil(p * float(v.size()))); return v[(k ? k : 1) - 1]; };
+	r.p50 = rank(0.50f); r.p95 = rank(0.95f); r.max = v.back();
+	return r;
+}
+class PathQueryTiming {
+public:
+	float period = 60.f;
+	size_t levelCap = 200000;   // ~0.8 MB; later samples count only in the window report
+	void Add(float ms) { m_window.push_back(ms); if (m_level.size() < levelCap) m_level.push_back(ms); else ++m_dropped; }
+	bool Due(float now)
+	{
+		if (m_at < 0.f || now < m_at) { m_at = now; return false; }   // first call or restarted timer
+		if (now - m_at < period) return false;
+		m_at = now; return true;
+	}
+	PathTimeReport TakeWindow() { PathTimeReport r = PathTimePercentiles(m_window); m_window.clear(); return r; }
+	PathTimeReport Level() const { return PathTimePercentiles(m_level); }
+	size_t Dropped() const { return m_dropped; }
+	void Clear() { m_window.clear(); m_level.clear(); m_dropped = 0; m_at = -1.f; }
+private:
+	std::vector<float> m_window, m_level;
+	size_t m_dropped = 0;
+	float m_at = -1.f;
+};
 
 // Game-seconds clock of the memory across matches: base from the file plus the engine timer since the level started;
 // a restarted timer keeps the total. Due() asks for a periodic save so a match without new records still ages it.

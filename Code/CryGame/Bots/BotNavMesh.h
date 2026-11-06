@@ -12,6 +12,8 @@ const char* CurrentNavMeshHash();
 TroddenMap* CurrentTrodden();
 // Game-seconds clock of the transition memory: stored with the file, so the half-life spans matches.
 float UnstickClock(float now);
+// D-042: one FindPathLinks took `ms` wall-clock milliseconds; logs PATHTIME percentiles every 60 s and at level end.
+void PathQueryTimed(float ms, float now);
 // A lone bot failed (or needed Strength) on from -> to: remember it, save the file, refresh the Detour penalties.
 void UnstickRecord(const float* from, const float* to, float now);
 class VantageMap;

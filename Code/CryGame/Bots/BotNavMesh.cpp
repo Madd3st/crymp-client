@@ -23,6 +23,7 @@ struct State {
 	// SPEC-004 (wb_bot_unstick)
 	std::string leaf, hash; TransitionMemory memory; TroddenMap trodden; bool memoryLoaded = false;
 	UnstickClockState clock;
+	PathQueryTiming timing;
 };
 State& S() { static State s; return s; }
 
@@ -100,6 +101,15 @@ void SaveUnstickMemory(State& s, float clock)
 }
 }
 
+// D-042 gate evidence: "PATHTIME <scope> n=.. p50=.. p95=.. max=.. ms unstick=.. filter=..". Level 2: trace file only.
+static void LogPathTimes(const State& s, const char* scope, const PathTimeReport& r)
+{
+	if (!r.n) return;
+	WB_LOG(2, "[WarsBots] PATHTIME %s level=%s n=%u p50=%.3f p95=%.3f max=%.3f ms dropped=%u unstick=%d filter=%s.",
+		scope, s.level.c_str(), unsigned(r.n), r.p50, r.p95, r.max, unsigned(s.timing.Dropped()), BotConfig::Get().unstick,
+		NavMeshCore::CostLayerAvailable() ? "virtual" : "UNAVAILABLE");
+}
+
 NavMeshCore* CurrentNavMesh()
 {
 	if (BotConfig::Get().botNavmesh != 1 || !g_pGame) return nullptr;
@@ -110,6 +120,8 @@ NavMeshCore* CurrentNavMesh()
 	if (name != s.level)
 	{
 		SaveUnstickMemory(s, s.clock.Last());   // the old level's memory keeps the time it was played
+		LogPathTimes(s, "level-end", s.timing.Level());
+		s.timing.Clear();
 		s.mesh.Reset(); s.level = name; s.tried = false;
 		s.leaf.clear(); s.hash.clear(); s.memory.Clear(); s.trodden = TroddenMap(); s.memoryLoaded = false;
 		s.clock.Start(0.f);
@@ -179,6 +191,15 @@ NavMeshCore* CurrentNavMesh()
 
 const char* CurrentNavMeshHash() { return S().hash.c_str(); }
 TroddenMap* CurrentTrodden() { return S().mesh.Ready() ? &S().trodden : nullptr; }
+
+void PathQueryTimed(float ms, float now)
+{
+	State& s = S();
+	s.timing.Add(ms);
+	if (!s.timing.Due(now)) return;
+	LogPathTimes(s, "window", s.timing.TakeWindow());
+	LogPathTimes(s, "level", s.timing.Level());
+}
 
 float UnstickClock(float now)
 {

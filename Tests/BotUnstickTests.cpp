@@ -241,6 +241,22 @@ int main()
 		assert(!AllyNearPathAhead(p, 0, f, V{38, 1, 0}));                  // beyond the 30 m horizon
 		assert(AllyNearPathAhead(p, 0, f, V{25, 1, 0}));
 	}
+	{   // D-042 path timing: nearest-rank percentiles, window vs level, period, timer restart, cap
+		PathQueryTiming t; t.levelCap = 150;
+		assert(t.TakeWindow().n == 0 && t.Level().n == 0);
+		for (int i = 1; i <= 100; ++i) t.Add(float(i) * 0.01f);       // 0.01 .. 1.00 ms
+		PathTimeReport w = t.TakeWindow();
+		assert(w.n == 100 && std::fabs(w.p50 - 0.50f) < 1e-4f && std::fabs(w.p95 - 0.95f) < 1e-4f && std::fabs(w.max - 1.f) < 1e-4f);
+		assert(t.TakeWindow().n == 0 && t.Level().n == 100);           // the window empties, the level keeps all
+		for (int i = 0; i < 99; ++i) t.Add(0.1f);
+		t.Add(9.f);                                                    // one slow query among 100: p95 stays low, max shows it
+		w = t.TakeWindow(); assert(w.n == 100 && w.p95 < 0.2f && w.max == 9.f);
+		assert(t.Level().n == 150 && t.Dropped() == 50);               // capped level sample, drops are counted
+		assert(!t.Due(10.f) && !t.Due(69.9f) && t.Due(70.f) && !t.Due(71.f));
+		assert(!t.Due(5.f) && t.Due(65.f));                            // a restarted timer starts a new period
+		const PathTimeReport one = PathTimePercentiles({3.f}); assert(one.n == 1 && one.p50 == 3.f && one.p95 == 3.f);
+		t.Clear(); assert(t.Level().n == 0 && t.Dropped() == 0);
+	}
 	std::puts("BotUnstick OK");
 	return 0;
 }
