@@ -121,6 +121,7 @@ NavMeshCore* CurrentNavMesh()
 	{
 		SaveUnstickMemory(s, s.clock.Last());   // the old level's memory keeps the time it was played
 		LogPathTimes(s, "level-end", s.timing.Level());   // no-op if EndLevel already reported it
+		::WarsBots::FlushTrace();
 		s.timing.Clear();
 		s.mesh.Reset(); s.level = name; s.tried = false;
 		s.leaf.clear(); s.hash.clear(); s.memory.Clear(); s.trodden = TroddenMap(); s.memoryLoaded = false;

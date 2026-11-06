@@ -1461,7 +1461,10 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
     // DS-070: a gated swimmer making no progress is not a land trap; the same policy disables the watchdog here.
     const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove && !m_blackboard.waterMovement,false);
     // SPEC-004: with wb_bot_unstick the exit steps replace levels 1-3; the native self-kill (level 4) stays the last resort.
-    const bool unstickOwns=BotConfig::Get().unstick==1 && level>0 && level<4;
+    // Only while the layer actually watches the bot (armed sensor or a running chain): server run f9d33a47, actor 131018
+    // stood 24 s 2.1 m short of its goal, the sensor was not armed and level 1 was skipped anyway.
+    const bool unstickOwns=BotConfig::Get().unstick==1 && level>0 && level<4 &&
+        (m_unstickSensor.Armed() || m_unstickSteps.Step()!=UnstickStep::None);
     if (unstickOwns)
         WB_LOG(2,"[WarsBots] TRAP RECOVERY level=%d actor=%u skipped=unstick.",level,actor.GetEntityId());
     if (level && !unstickOwns)
@@ -1566,7 +1569,11 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	for (const Vec3& a:standing) { const Vec3 d=a-feet; if (d.GetLength2D()<2.5f && d.x*forward.x+d.y*forward.y>0.f) crowdAhead=true; }
 	UnstickInput in;
 	in.stuck=m_unstickStuck; in.grounded=m_blackboard.grounded;
-	in.escaped=chain && UnstickEscaped(m_unstickFrom.x,m_unstickFrom.y,m_unstickTo.x,m_unstickTo.y,feet.x,feet.y);
+	{
+		const float s3[3]={m_unstickFrom.x,m_unstickFrom.y,m_unstickFrom.z}, c3[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z};
+		const float n3[3]={m_unstickNext.x,m_unstickNext.y,m_unstickNext.z}, f3[3]={feet.x,feet.y,feet.z};
+		in.escaped=chain && UnstickEscaped(s3,c3,m_unstickHasNext?n3:nullptr,f3);
+	}
 	// Real head room and landing (the executor's own JumpSpace probe), asked only when a step may need it. A step that
 	// cannot jump is skipped and a Strength attempt is not spent (Codex review of 96a09959).
 	const bool needJump=m_unstickStuck || chain;
@@ -1578,7 +1585,12 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	switch (m_unstickSteps.Event())
 	{
 	case UnstickEvent::Started:
-		if (!chain) { m_unstickFrom=feet; m_unstickTo=corner; }
+		if (!chain)
+		{
+			m_unstickFrom=feet; m_unstickTo=corner;
+			const size_t ni=min(m_pathIndex,m_path.size()-1)+1;
+			m_unstickHasNext=ni<m_path.size(); m_unstickNext=m_unstickHasNext?m_path[ni]:corner;
+		}
 		m_unstickJumped=false;
 		WB_LOG(1,"[WarsBots] #%d UNSTICK step=%s pos=(%.1f,%.1f,%.1f) corner=(%.1f,%.1f,%.1f) remaining=%.1f stuckFor=%.1f energy=%.0f allies5m=%d actor=%u.",
 			m_number,UnstickStepName(step),feet.x,feet.y,feet.z,m_unstickTo.x,m_unstickTo.y,m_unstickTo.z,rem,m_unstickSensor.StuckFor(m_now),

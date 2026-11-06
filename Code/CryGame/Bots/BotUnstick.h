@@ -49,7 +49,9 @@ inline bool ApplyPathSignature(float& lastSig, float& best, float& bestAt, float
 struct UnstickTuning {
 	float window = 4.f;     // no 1 m of remaining-path progress for this long -> stuck
 	float minDrop = 1.f;
-	float armAbove = 2.5f;  // jitter at the goal never arms
+	// jitter at the goal never arms: the corner path arrives within 0.2 m, the plain path within 0.8 m. Server run f9d33a47
+	// (Codex 06.11): with 2.5 m a bot that stood 2.1 m short of an unreachable goal for 24 s was never armed.
+	float armAbove = 1.0f;
 	float placeRadius = 2.5f; // server acceptance metric (stops.awk): within 2.5 m of an anchor -> standing
 	float placeWindow = 3.f;  // standing this long within placeRadius -> stuck (leaves room for the steps before 10 s)
 };
@@ -135,17 +137,35 @@ inline UnstickJumpAbility UnstickJumpInput(bool needJump, bool normalProbe, bool
 { return { needJump && normalProbe, needJump && strengthProbe && energy >= 130.f && !crowdAhead }; }
 enum class UnstickEvent { None = 0, Started, Exited, Failed };
 
-// The physical exit criterion (server run 3ba5119c: exits on 0.4-1.3 m of remaining-path jitter, and inside back-off,
-// while the bot stayed in its 2.5 m stall circle). Escaped = the feet moved at least `advance` from the stuck point
-// toward the corner it could not reach, or reached that corner. Sliding back or sideways never counts.
-inline bool UnstickEscaped(float ax, float ay, float cx, float cy, float fx, float fy, float advance = 2.5f, float reach = 1.f)
+// The physical exit criterion: real new movement since the attempt began, never a position the bot already had.
+// s = feet when the chain started, c = the corner it could not reach, next = the path point after it (or null), f = feet now.
+// Server run 3ba5119c: exits on 0.4-1.3 m of remaining-path jitter while the bot stayed in its stall circle.
+// Server run f9d33a47 (Codex 06.11): the corner was already 0.6-0.9 m away at the start, so "within reach of the corner"
+// held at once and the steps exited with no movement at all (310 exits, actor 130953 at (2117,1880), 131018 at (2108,1384)).
+// So: target = the corner, or the next point when the corner was in reach at the start (no next: no exit, the chain runs
+// on to back-off); at least minMove of XY displacement from s; height within maxDz of the straight line s -> target
+// (close XY on another floor or under a ledge does not count); then the target reached or `advance` made toward it.
+inline bool UnstickEscaped(const float s[3], const float c[3], const float* next, const float f[3],
+	float advance = 2.5f, float reach = 1.f, float minMove = 1.f, float maxDz = 1.f)
 {
-	if ((fx - cx) * (fx - cx) + (fy - cy) * (fy - cy) <= reach * reach) return true;
-	float dx = cx - ax, dy = cy - ay;
+	auto d2 = [](const float* a, const float* b) { return (a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]); };
+	const float* target = c;
+	if (d2(s, c) <= reach * reach)
+	{
+		if (!next || d2(s, next) <= reach * reach) return false;
+		target = next;
+	}
+	const float mx = f[0] - s[0], my = f[1] - s[1];
+	if (mx * mx + my * my < minMove * minMove) return false;
+	float dx = target[0] - s[0], dy = target[1] - s[1];
 	const float len = std::sqrt(dx * dx + dy * dy);
-	if (len < 1e-3f) return false;
 	dx /= len; dy /= len;
-	return (fx - ax) * dx + (fy - ay) * dy >= (advance < len ? advance : len - reach);
+	const float along = mx * dx + my * dy;
+	const float k = along <= 0.f ? 0.f : along >= len ? 1.f : along / len;
+	const float zLine = s[2] + (target[2] - s[2]) * k;
+	if (std::fabs(f[2] - zLine) > maxDz) return false;
+	if (d2(f, target) <= reach * reach) return true;
+	return along >= (advance < len - reach ? advance : len - reach);
 }
 
 // Back-off target: of the candidates (previous corner, both sides, straight back) the one farthest from allies within

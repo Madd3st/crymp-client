@@ -76,9 +76,9 @@ int main()
 		}
 		assert(exits == 0 && starts > 3);
 	}
-	{   // row 14: remaining under 2.5 m never arms
+	{   // row 14: remaining under 1.0 m never arms (2.5 m before f9d33a47)
 		UnstickSensor s;
-		for (float t = 0; t < 20; t += 0.5f) assert(!s.Update(2.4f, 1, t, false));
+		for (float t = 0; t < 20; t += 0.5f) assert(!s.Update(0.9f, 1, t, false));
 		assert(!s.Armed());
 	}
 	{   // rows 6-9, 22, 23: muted (link, ladder, hold, combat, water) does not accumulate
@@ -287,7 +287,8 @@ int main()
 					in.stuck = s.Update(rem, float(1 + int(q.t / 1.5f)), q.t, false, xy);
 					if (in.stuck && firstStuck < 0) firstStuck = q.t;
 					in.canJump = probes == 1; in.canStrength = probes == 1; in.transition = 5;
-					in.escaped = st.Step() != UnstickStep::None && UnstickEscaped(ax, ay, e.cx, e.cy, q.x, q.y);
+					const float s3[3] = {ax, ay, 0}, c3[3] = {e.cx, e.cy, 0}, f3[3] = {q.x, q.y, 0};
+					in.escaped = st.Step() != UnstickStep::None && UnstickEscaped(s3, c3, nullptr, f3);
 					const UnstickStep was = st.Step();
 					st.Update(q.t, in);
 					if (was == UnstickStep::None && st.Step() != UnstickStep::None) { ax = q.x; ay = q.y; }
@@ -303,17 +304,96 @@ int main()
 		}
 	}
 	{   // escape criterion: 2.5 m toward the corner or reaching it; sliding back, sideways or 1.3 m never count
-		assert(!UnstickEscaped(0, 0, 10, 0, 1.3f, 0));
-		assert(!UnstickEscaped(0, 0, 10, 0, -3.f, 0));
-		assert(!UnstickEscaped(0, 0, 10, 0, 0, 3.f));
-		assert(UnstickEscaped(0, 0, 10, 0, 2.5f, 0.5f));
-		assert(UnstickEscaped(0, 0, 2, 0, 1.2f, 0));                 // short leg: within 1 m of the corner
+		auto esc = [](float sx, float sy, float cx, float cy, float fx, float fy)
+		{ const float s[3] = {sx, sy, 0}, c[3] = {cx, cy, 0}, f[3] = {fx, fy, 0}; return UnstickEscaped(s, c, nullptr, f); };
+		assert(!esc(0, 0, 10, 0, 1.3f, 0));
+		assert(!esc(0, 0, 10, 0, -3.f, 0));
+		assert(!esc(0, 0, 10, 0, 0, 3.f));
+		assert(esc(0, 0, 10, 0, 2.5f, 0.5f));
+		assert(esc(0, 0, 2.2f, 0, 1.2f, 0));                          // short leg: within 1 m of the corner after 1.2 m
+		// Codex 06.11 (f9d33a47): the corner already in reach at the start is no exit; zero movement is no exit
+		assert(!esc(0, 0, .5f, 0, 0, 0));
+		assert(!esc(0, 0, 10, 0, 0, 0));
+		assert(!esc(0, 0, .5f, 0, .3f, .2f));
+		{   // corner in reach at the start: the point after it is the target
+			const float s[3] = {0, 0, 0}, c[3] = {.6f, 0, 0}, n[3] = {6, 0, 0};
+			const float f1[3] = {.9f, .1f, 0}, f2[3] = {2.6f, .2f, 0}, back[3] = {-2.6f, 0, 0};
+			assert(!UnstickEscaped(s, c, n, f1) && UnstickEscaped(s, c, n, f2) && !UnstickEscaped(s, c, n, back));
+			const float n2[3] = {.3f, .4f, 0};                         // next also in reach: nothing to escape toward
+			assert(!UnstickEscaped(s, c, n2, f2));
+		}
+		{   // height: close XY at another height is not an exit (fell under the ledge / other floor); uphill on the line is
+			const float s[3] = {0, 0, 0}, c[3] = {3, 0, 2.6f}, under[3] = {3, 0, -0.5f}, up[3] = {2.6f, 0, 2.3f};
+			assert(!UnstickEscaped(s, c, nullptr, under) && UnstickEscaped(s, c, nullptr, up));
+		}
+		{   // oscillation +-0.9 m around the start toward the corner for 6 s never exits
+			UnstickSteps os; UnstickInput oi; oi.stuck = true; oi.canJump = true; oi.canStrength = true; oi.transition = 9;
+			const float s[3] = {0, 0, 0}, c[3] = {10, 0, 0}; int ex = 0;
+			for (float t = 0; t < 6.f; t += 0.125f)
+			{
+				const float f[3] = {std::fmod(t, 0.5f) < 0.25f ? 0.9f : -0.9f, 0.4f, 0};
+				oi.escaped = os.Step() != UnstickStep::None && UnstickEscaped(s, c, nullptr, f);
+				os.Update(t, oi); ex += os.Event() == UnstickEvent::Exited;
+			}
+			assert(ex == 0 && os.Step() == UnstickStep::Backoff);
+		}
 		UnstickSteps st; UnstickInput in; in.stuck = true; in.canJump = false; in.canStrength = false; in.transition = 3;
 		st.Update(0, in); st.Update(1.5f, in); assert(st.Step() == UnstickStep::Backoff);
 		in.escaped = true; assert(st.Update(2.f, in) == UnstickStep::Backoff && st.Event() != UnstickEvent::Exited);   // no exit in back-off
 		UnstickSteps ok; UnstickInput go; go.stuck = true; go.canStrength = true; go.transition = 4;
 		ok.Update(0, go); ok.Update(1.5f, go); ok.Update(3.f, go); assert(ok.Step() == UnstickStep::Strength);
 		go.escaped = true; assert(ok.Update(3.5f, go) == UnstickStep::None && ok.Event() == UnstickEvent::Exited && ok.LastExitByStrength());
+	}
+	// --- server run f9d33a47 (Codex 06.11, E:/WarsBots/QA/PR20-f9d33a47/Runs/Shore-ON-01): near-corner false exits ---
+	// Each UNSTICK step line (start pos, corner) with the exit line of that same step (feet at the exit). The old rule
+	// exited on all of them; `real` marks the one exit that was genuine (remaining 10.1 -> 7.8 m, the next corner taken).
+	{
+		struct Q { float sx, sy, sz, cx, cy, cz, fx, fy, fz; bool real; const char* who; };
+		const Q eps[] = {
+			{2117.1f, 1880.3f, 90.1f, 2116.5f, 1879.7f, 90.2f, 2117.1f, 1880.2f, 90.1f, false, "131013 t44.04"},
+			{2116.8f, 1880.1f, 90.1f, 2116.5f, 1879.7f, 90.2f, 2117.0f, 1879.7f, 90.1f, false, "130953 t161.75"},
+			{2117.0f, 1879.7f, 90.1f, 2116.5f, 1879.7f, 90.2f, 2117.1f, 1879.8f, 90.1f, false, "130953 t162.01"},
+			{2117.1f, 1880.2f, 90.1f, 2116.5f, 1879.7f, 90.2f, 2116.9f, 1880.6f, 90.1f, false, "130953 t162.26"},
+			{2116.6f, 1880.9f, 90.1f, 2116.5f, 1879.7f, 90.2f, 2116.7f, 1880.6f, 90.1f, false, "130953 t162.52"},
+			{2116.4f, 1880.9f, 90.1f, 2114.6f, 1880.7f, 90.2f, 2114.7f, 1881.3f, 89.9f, true,  "130953 t162.89"},
+			{2108.4f, 1385.2f, 111.9f, 2107.7f, 1384.1f, 113.1f, 2108.7f, 1384.6f, 112.1f, false, "131018 t191.00"},
+			{2108.7f, 1383.9f, 112.3f, 2107.7f, 1384.1f, 113.1f, 2108.4f, 1383.5f, 112.5f, false, "131018 t191.25"},
+			{2108.0f, 1383.8f, 112.8f, 2107.7f, 1384.1f, 113.1f, 2107.8f, 1384.2f, 112.8f, false, "131018 t191.50"},
+			{2107.6f, 1384.4f, 112.8f, 2107.3f, 1383.7f, 113.6f, 2107.7f, 1384.1f, 112.9f, false, "131018 t191.75"},
+			// 4 m along the slope at the same height while the corner is 6.5 m up: slid along, back at the stall at 197.6
+			{2107.2f, 1383.7f, 113.6f, 2099.9f, 1376.3f, 120.1f, 2107.9f, 1379.3f, 113.3f, false, "131018 t192.24"},
+			{2107.5f, 1384.4f, 112.8f, 2107.3f, 1383.7f, 113.6f, 2107.6f, 1384.0f, 113.0f, false, "131018 t197.60"},
+			// the "exit" before the 24 s stall at (2107.9,1381.3): 4 m sideways, 1.2 m below the line to the corner
+			{2107.6f, 1383.5f, 113.3f, 2099.9f, 1376.3f, 120.1f, 2107.6f, 1379.5f, 113.9f, false, "131018 t197.84"},
+		};
+		for (const Q& e : eps)
+		{
+			const float s[3] = {e.sx, e.sy, e.sz}, c[3] = {e.cx, e.cy, e.cz}, f[3] = {e.fx, e.fy, e.fz};
+			const bool got = UnstickEscaped(s, c, nullptr, f);
+			if (got != e.real) { std::printf("f9d33a47 episode %s: escaped=%d expected %d\n", e.who, got, e.real); fflush(stdout); }
+			assert(got == e.real);
+		}
+		// the whole chain for 130953: standing at the corner with the jump probes failing ends in a back-off, not an exit
+		UnstickSteps st; UnstickInput in; in.stuck = true; in.canJump = false; in.canStrength = false; in.transition = 11;
+		const float s[3] = {2116.8f, 1880.1f, 90.1f}, c[3] = {2116.5f, 1879.7f, 90.2f}; int ex = 0;
+		for (float t = 0; t < 2.f; t += 0.125f)
+		{
+			const float f[3] = {2116.8f + 0.2f * std::sin(t * 7.f), 1880.1f + 0.4f * std::cos(t * 5.f), 90.1f};
+			in.escaped = st.Step() != UnstickStep::None && UnstickEscaped(s, c, nullptr, f);
+			st.Update(t, in); ex += st.Event() == UnstickEvent::Exited;
+		}
+		assert(ex == 0 && st.Step() == UnstickStep::Backoff);
+	}
+	{   // 131018 t198.8-222 (f9d33a47): stood 2.1 m short of its goal; the sensor arms above 1 m and notices it in 3 s,
+		// while a bot standing 0.5 m from the goal (arrival jitter) is never stuck
+		UnstickSensor shortGoal, at; float first = -1;
+		for (float t = 0; t < 10.f; t += 0.25f)
+		{
+			const float xy[2] = {2106.9f + 0.1f * std::sin(t), 1381.15f};
+			if (shortGoal.Update(2.1f, 1, t, false, xy) && first < 0) first = t;
+			assert(!at.Update(0.5f, 1, t, false, xy));
+		}
+		assert(first >= 3.f && first <= 3.25f);
 	}
 	{   // place rule: walking normally never trips it; 1-2 m oscillation does at 4 s even with "progress" on new paths
 		UnstickSensor walk;

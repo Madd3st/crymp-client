@@ -71,7 +71,13 @@ def main():
     check('BotConfig::Get().unstick' not in timed, 'D-042: timing does not depend on wb_bot_unstick (control run measured too)')
     check('LogPathTimes(s, "level-end"' in nav, 'D-042: level-end report before the reset')
     # Server run 3ba5119c (Codex 06.11): stalls 16/17/10 s, crowd of 4
-    check('in.progressed' not in upd and 'in.escaped=chain && UnstickEscaped(m_unstickFrom.x,m_unstickFrom.y,m_unstickTo.x,m_unstickTo.y,feet.x,feet.y);' in upd, 'exit = physical escape toward the corner, not remaining-path jitter')
+    check('in.progressed' not in upd and 'in.escaped=chain && UnstickEscaped(s3,c3,m_unstickHasNext?n3:nullptr,f3);' in upd, 'exit = physical escape toward the corner, not remaining-path jitter')
+    # Server run f9d33a47 (Codex 06.11): exits with no movement when the corner was already in reach; 24 s unarmed stall
+    check('m_unstickFrom=feet; m_unstickTo=corner;' in upd and 'm_unstickHasNext=ni<m_path.size();' in upd, 'start point, corner and the next point are taken when the chain starts')
+    esc = code(body(unstick, 'inline bool UnstickEscaped('))
+    check('minMove' in esc and 'maxDz' in esc and 'target = next;' in esc, 'escape needs new movement, the height of the line and skips a corner already in reach')
+    trap = code(body(brain, 'bool BotBrain::RecoverTrap('))
+    check('m_unstickSensor.Armed() || m_unstickSteps.Step()!=UnstickStep::None' in trap, 'old trap levels 1-3 are skipped only while the unstick layer watches the bot')
     check('m_unstickSensor.Update(rem,PathSignature(m_path),m_now,muted,xy);' in upd, 'sensor gets the position (place rule)')
     steps = code(body(unstick, 'class UnstickSteps'))
     check('trying && in.escaped' in steps, 'no exit inside back-off or wait')
@@ -81,6 +87,7 @@ def main():
 
     mgr_end = code(body(mgr, 'void BotManager::EndLevel('))
     check('PathTimesLevelEnd();' in mgr_end, 'D-042: PATHTIME level-end written whenever the level ends (unload, shutdown, map change)')
+    check(mgr_end.index('PathTimesLevelEnd();') < mgr_end.index('::WarsBots::FlushTrace();'), 'the trace is flushed after the level-end line (OFF level-end lost in f9d33a47)')
     return 1 if fails else 0
 
 
