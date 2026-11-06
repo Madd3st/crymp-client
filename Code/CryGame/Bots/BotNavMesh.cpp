@@ -120,7 +120,7 @@ NavMeshCore* CurrentNavMesh()
 	if (name != s.level)
 	{
 		SaveUnstickMemory(s, s.clock.Last());   // the old level's memory keeps the time it was played
-		LogPathTimes(s, "level-end", s.timing.Level());
+		LogPathTimes(s, "level-end", s.timing.Level());   // no-op if EndLevel already reported it
 		s.timing.Clear();
 		s.mesh.Reset(); s.level = name; s.tried = false;
 		s.leaf.clear(); s.hash.clear(); s.memory.Clear(); s.trodden = TroddenMap(); s.memoryLoaded = false;
@@ -191,6 +191,13 @@ NavMeshCore* CurrentNavMesh()
 
 const char* CurrentNavMeshHash() { return S().hash.c_str(); }
 TroddenMap* CurrentTrodden() { return S().mesh.Ready() ? &S().trodden : nullptr; }
+
+void PathTimesLevelEnd()
+{
+	State& s = S();
+	LogPathTimes(s, "level-end", s.timing.Level());
+	s.timing.Clear();
+}
 
 void PathQueryTimed(float ms, float now)
 {

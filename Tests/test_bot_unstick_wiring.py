@@ -79,6 +79,8 @@ def main():
     check('JumpSpace(actor,direction,intent.move,strength,intent.unstickClimb)' in loco and 'm_intent.unstickClimb=true' in upd, 'exit jumps use the slope-aware probe in the executor too')
     check('return JumpSpace(actor, direction, true, strength, true);' in loco_h, 'CanJump asks the same climb probe')
 
+    mgr_end = code(body(mgr, 'void BotManager::EndLevel('))
+    check('PathTimesLevelEnd();' in mgr_end, 'D-042: PATHTIME level-end written whenever the level ends (unload, shutdown, map change)')
     return 1 if fails else 0
 
 

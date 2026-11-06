@@ -14,6 +14,7 @@
 #include "CryGame/Bots/BotMatch.h"
 #include "CryGame/Bots/BotRemovalPolicy.h"
 #include "CryGame/Bots/BotTeamPlan.h"
+#include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotSpectator.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
 #include "CryGame/Game.h"
@@ -497,6 +498,7 @@ void BotManager::Sweep()
 void BotManager::EndLevel()
 {
     m_demo.EndLevel();
+	PathTimesLevelEnd(); // D-042 gate evidence: "PATHTIME level-end" for the level that just ended
 	m_probe.Stop(); // DS-047: a scenario cannot outlive its level
     if(m_qaTimeScale!=1.f){gEnv->pTimer->SetTimeScale(1.f);m_qaTimeScale=1.f;}
 	m_levelReady = false;
