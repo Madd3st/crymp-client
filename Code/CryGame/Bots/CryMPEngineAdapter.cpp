@@ -2,6 +2,7 @@
 #include "CryGame/Bots/BotLog.h"
 #include "CryMPEngineAdapter.h"
 #include "CryGame/Bots/BotModePlan.h"
+#include "CryGame/Bots/BotConfig.h"
 #include "CryCommon/CryAction/ILevelSystem.h"
 #include "CryCommon/CryAction/IGameRulesSystem.h"
 #include <cmath>
@@ -16,7 +17,8 @@ bool CryMPEngineAdapter::LocalIAGate(IGameFramework* framework, bool levelReady,
     const bool loaded = framework && framework->GetILevelSystem()->IsLevelLoaded();
     const bool rules = framework && framework->GetIGameRulesSystem()->GetCurrentGameRules();
     // DS-037 PS-0 #1: a public server cannot use sv_bind=127.0.0.1/sv_lanonly=1. The owner opts in explicitly.
-    const bool localBind = bind && !strcmp(bind->GetString(),"127.0.0.1") && lan && lan->GetIVal()==1;
+    // Owner 06.11: wb_lan_test 1 also accepts a private LAN bind (10/8, 172.16/12, 192.168/16), still with sv_lanonly=1.
+    const bool localBind = LocalBindOk(bind ? bind->GetString() : nullptr, lan ? lan->GetIVal() : 0, BotConfig::Get().lanTest);
     const bool bindOk = GateBindOk(allowPublic, localBind);
     const bool allowed = framework && gEnv->bServer && gEnv->bMultiplayer && !gEnv->bEditor &&
         levelReady && loaded && rules && optIn==1 && bindOk && mode && (!strcmp(mode->GetString(),"InstantAction") ||
