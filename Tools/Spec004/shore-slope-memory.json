@@ -1,0 +1,49 @@
+{
+  "schema": "warsbots.spec004/offline-v1",
+  "launch_allowed": false,
+  "block_reason": "3ba5119c functional acceptance FAIL; new source review/CI and owner-free-PC gate required",
+  "source_sha": "3ba5119c49cda679d46b8d972e4e496e9bf18bb9",
+  "duration_s": 300,
+  "repeats": 6,
+  "clock": "observed game trace after readiness, not process launch",
+  "ci_pair_required": true,
+  "bind": "127.0.0.1",
+  "lan_only": true,
+  "localappdata": "<QA>/<scenario>/<phase>/<repeat>/LocalAppData",
+  "live_data_write": false,
+  "gates": {
+    "PATHTIME_scope": "level-end",
+    "p95_ms_max": 2.0,
+    "modes_required": [
+      1,
+      0
+    ],
+    "dropped_max": 0,
+    "missing_is_pass": false,
+    "stop_on_failure": "D-015/D-042"
+  },
+  "instrumentation": {
+    "wb_bot_navmesh": 1,
+    "wb_move_trace": 1,
+    "wb_log": 2
+  },
+  "preset_source": "<frozen preset plus effective cvar receipt, same for ON/OFF>",
+  "name": "shore-slope-memory",
+  "map": "Shore",
+  "mode": "PS",
+  "bots": 15,
+  "phases": [
+    {
+      "name": "learn",
+      "wb_bot_unstick": 1
+    },
+    {
+      "name": "reuse",
+      "wb_bot_unstick": 1
+    }
+  ],
+  "namespace_rule": "fresh isolated namespace for learn, reuse only its *.unstick.txt and clock for reuse; no live copying-back",
+  "memory_navmesh_hash_required": true,
+  "required_log": "UNSTICK MEMORY ... filter virtual",
+  "pass_rule": "reuse zone entries fewer than learn, zero >=10s stalls; solo-memory and combat guards separately observed"
+}

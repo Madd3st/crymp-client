@@ -1,0 +1,47 @@
+{
+  "schema": "warsbots.spec004/offline-v1",
+  "launch_allowed": false,
+  "block_reason": "3ba5119c functional acceptance FAIL; new source review/CI and owner-free-PC gate required",
+  "source_sha": "3ba5119c49cda679d46b8d972e4e496e9bf18bb9",
+  "duration_s": 300,
+  "repeats": 6,
+  "clock": "observed game trace after readiness, not process launch",
+  "ci_pair_required": true,
+  "bind": "127.0.0.1",
+  "lan_only": true,
+  "localappdata": "<QA>/<scenario>/<phase>/<repeat>/LocalAppData",
+  "live_data_write": false,
+  "gates": {
+    "PATHTIME_scope": "level-end",
+    "p95_ms_max": 2.0,
+    "modes_required": [
+      1,
+      0
+    ],
+    "dropped_max": 0,
+    "missing_is_pass": false,
+    "stop_on_failure": "D-015/D-042"
+  },
+  "instrumentation": {
+    "wb_bot_navmesh": 1,
+    "wb_move_trace": 1,
+    "wb_log": 2
+  },
+  "preset_source": "Steelmill-01d04657 server preset; two each elite marksman/veteran defender/normal assault/normal flanker",
+  "name": "steelmill-unstick-control",
+  "map": "Steelmill",
+  "mode": "IA",
+  "bots": 8,
+  "phases": [
+    {
+      "name": "ON",
+      "wb_bot_unstick": 1
+    },
+    {
+      "name": "OFF",
+      "wb_bot_unstick": 0
+    }
+  ],
+  "noise_rule": "UNRESOLVED: owner must freeze numerical kill/stall tolerance before grading; no invented statistical PASS",
+  "trap4_rule": "ON selfkill events <= OFF; diagnostic and nativeSelfKill lines are one episode"
+}
