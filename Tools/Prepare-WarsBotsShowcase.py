@@ -62,7 +62,7 @@ def main():
             write_json(manifest_path, manifest)
         flags = dict(base)
         flags.update(wb_maxbots=maximum, wb_bot_navmesh=1, wb_bot_jump_links=1,
-                     wb_log=2, wb_move_trace=1, wb_ps_capture=int(map_name == 'Shore'),
+                     wb_log=1, wb_move_trace=1, wb_ps_capture=int(map_name == 'Shore'),
                      wb_ps_buy=int(map_name == 'Shore'), wb_ps_events=int(map_name == 'Shore'),
                      wb_ps_doors=0, wb_ps_vehicles=0)
         # Promoted defaults are checked, not overridden.

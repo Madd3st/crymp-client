@@ -25,7 +25,7 @@
   "instrumentation": {
     "wb_bot_navmesh": 1,
     "wb_move_trace": 1,
-    "wb_log": 2
+    "wb_log": 1
   },
   "preset_source": "Steelmill-01d04657 server preset; two each elite marksman/veteran defender/normal assault/normal flanker",
   "name": "steelmill-unstick-control",
