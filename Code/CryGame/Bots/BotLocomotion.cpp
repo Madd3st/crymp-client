@@ -69,7 +69,7 @@ BotJump BotLocomotion::Obstacle(CPlayer& actor, const Vec3& direction) const
 	if (!JumpSpace(actor,direction,true,strength)) return BotJump::None;
 	return strength?BotJump::Strength:BotJump::Normal;
 }
-bool BotLocomotion::JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength) const
+bool BotLocomotion::JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength, bool climb) const
 {
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	ray_hit hit;
@@ -77,18 +77,28 @@ bool BotLocomotion::JumpSpace(CPlayer& actor, const Vec3& direction, bool moving
 	for (float side : {-0.3f,0.0f,0.3f})
 		if (Ray(actor,feet+Vec3(-direction.y*side,direction.x*side,1.65f),Vec3(0,0,strength?7.0f:2.5f),hit)) return false;
 	Vec3 landing=feet+direction*(moving?(strength?3.0f:2.0f):0.0f);
-	if (!Ray(actor,landing+Vec3(0,0,strength?3.0f:1.0f),Vec3(0,0,strength?-4.0f:-2.0f),hit) || hit.n.z<0.75f) return false;
+	// SPEC-004 climb (wb_bot_unstick exit step only): the landing may be uphill on a slope - higher start of the down ray,
+	// rise up to 1.0 m (normal) / 2.8 m (Strength), a walkable normal down to 0.6 (~53 deg) like the far touchdown below.
+	// Every other jump keeps the flat-ground rule.
+	const float rayUp=climb?(strength?3.5f:1.5f):(strength?3.0f:1.0f);
+	if (!Ray(actor,landing+Vec3(0,0,rayUp),Vec3(0,0,-(rayUp+1.0f)),hit) || hit.n.z<(climb?0.6f:0.75f)) return false;
 	landing=hit.pt;
-	if (fabs_tpl(landing.z-feet.z)>(strength?1.5f:0.6f)) return false;
+	const Vec3 normal=hit.n;
+	const float rise=landing.z-feet.z;
+	if (climb ? (rise>(strength?2.8f:1.0f) || rise<-(strength?1.5f:0.6f)) : fabs_tpl(rise)>(strength?1.5f:0.6f)) return false;
+	// the arc check runs parallel to feet->landing at head height, so it also clears an uphill landing
 	if (moving && Ray(actor,feet+Vec3(0,0,strength?2.5f:1.3f),landing-feet,hit)) return false;
 	// A moving Strength jump carries ~5-6 m: the far touchdown must not be a ledge drop either.
 	if (moving && strength)
 	{
 		ray_hit far;
 		const Vec3 farPoint=feet+direction*5.5f;
-		if (!Ray(actor,farPoint+Vec3(0,0,3.0f),Vec3(0,0,-6.0f),far) || far.n.z<0.6f || far.pt.z<feet.z-2.5f) return false;
+		// climb: 5.5 m up a 41 deg slope is ~4.8 m higher - start the probe above it, not inside the hill
+		const float farUp=climb?6.0f:3.0f;
+		if (!Ray(actor,farPoint+Vec3(0,0,farUp),Vec3(0,0,-(farUp+3.0f)),far) || far.n.z<0.6f || far.pt.z<feet.z-2.5f) return false;
 	}
-	primitives::sphere body; body.r=0.35f; body.center=landing+Vec3(0,0,0.4f);
+	// climb: on a slope the body stands off the surface along its normal (0.4 m straight up is inside a 41 deg slope)
+	primitives::sphere body; body.r=0.35f; body.center=climb?landing+normal*0.45f:landing+Vec3(0,0,0.4f);
 	IPhysicalEntity* skip[2]; int skipCount=0;
 	if (IPhysicalEntity* bodyPhysics=actor.GetEntity()->GetPhysics()) skip[skipCount++]=bodyPhysics;
 	IItem* held=actor.GetCurrentItem();
@@ -114,7 +124,7 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 		else if (now<state.nextJump) Refused(actor,"jump_cooldown",now);
 		else if (strength && (!state.suitActive || state.mode!=NANOMODE_STRENGTH || state.energy<(pace?70.f:90.f))) Refused(actor,"jump_strength_mode_or_energy",now);
 		else if (!strength && state.mode==NANOMODE_STRENGTH) Refused(actor,"normal_jump_waiting_for_defense",now);
-		else if (!intent.linkJump && !JumpSpace(actor,direction,intent.move,strength)) Refused(actor,"jump_clearance_or_landing",now);
+		else if (!intent.linkJump && !JumpSpace(actor,direction,intent.move,strength,intent.unstickClimb)) Refused(actor,"jump_clearance_or_landing",now);
 		else
 		{
 			jump=true; m_pending=true; m_strength=strength; m_requested=now;

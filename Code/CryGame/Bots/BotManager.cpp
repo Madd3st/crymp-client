@@ -221,7 +221,7 @@ bool BotManager::ShouldYieldLadder(unsigned long long ref, const Vec3& a, float 
 	return false;
 }
 
-int BotManager::UnstickAllies(const Vec3& p, float radius, EntityId me, std::vector<Vec3>* standing) const
+int BotManager::UnstickAllies(const Vec3& p, float radius, EntityId me, std::vector<Vec3>* standing, std::vector<Vec3>* all) const
 {
 	CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
 	const int myTeam = rules ? rules->GetTeam(me) : 0;
@@ -237,6 +237,7 @@ int BotManager::UnstickAllies(const Vec3& p, float radius, EntityId me, std::vec
 		const BotBrain& brain = bot->Brain();
 		const Vec3 q = brain.FeetPosition();
 		if ((q - p).GetLengthSquared() > radius * radius) continue;
+		if (all) all->push_back(q);
 		if (brain.UnstickStuck()) ++stuck;
 		if (standing && (brain.UnstickStuck() || brain.UnstickStanding())) standing->push_back(q);
 	}

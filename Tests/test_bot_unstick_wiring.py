@@ -51,7 +51,6 @@ def main():
     check('!in.canStrength || StrengthUsed' in begin and '!in.canJump || !in.canStrength' not in begin, 'steps: a failed normal probe does not veto Strength')
     check('m_blackboard.mode==NANOMODE_STRENGTH' in upd, 'steps: Strength jump only once the suit is in Strength')
     loco_h = (BOTS / 'BotLocomotion.h').read_text(encoding='utf-8-sig')
-    check('return JumpSpace(actor, direction, true, strength);' in loco_h, 'CanJump is the executor JumpSpace probe')
     loco = (BOTS / 'BotLocomotion.cpp').read_text(encoding='utf-8-sig')
     check('!intent.linkJump && !JumpSpace(' in loco and 'unstickStrength' not in loco, 'executor: only baked links skip JumpSpace')
 
@@ -71,6 +70,15 @@ def main():
     timed = code(body(nav, 'void PathQueryTimed('))
     check('BotConfig::Get().unstick' not in timed, 'D-042: timing does not depend on wb_bot_unstick (control run measured too)')
     check('LogPathTimes(s, "level-end"' in nav, 'D-042: level-end report before the reset')
+    # Server run 3ba5119c (Codex 06.11): stalls 16/17/10 s, crowd of 4
+    check('in.progressed' not in upd and 'in.escaped=chain && UnstickEscaped(m_unstickFrom.x,m_unstickFrom.y,m_unstickTo.x,m_unstickTo.y,feet.x,feet.y);' in upd, 'exit = physical escape toward the corner, not remaining-path jitter')
+    check('m_unstickSensor.Update(rem,PathSignature(m_path),m_now,muted,xy);' in upd, 'sensor gets the position (place rule)')
+    steps = code(body(unstick, 'class UnstickSteps'))
+    check('trying && in.escaped' in steps, 'no exit inside back-off or wait')
+    check('UnstickPickBackoff(' in upd and 'WBI_MOVETO(m_unstickBack' in upd, 'back-off target picked away from allies')
+    check('JumpSpace(actor,direction,intent.move,strength,intent.unstickClimb)' in loco and 'm_intent.unstickClimb=true' in upd, 'exit jumps use the slope-aware probe in the executor too')
+    check('return JumpSpace(actor, direction, true, strength, true);' in loco_h, 'CanJump asks the same climb probe')
+
     return 1 if fails else 0
 
 

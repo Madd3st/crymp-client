@@ -50,6 +50,8 @@ struct UnstickTuning {
 	float window = 4.f;     // no 1 m of remaining-path progress for this long -> stuck
 	float minDrop = 1.f;
 	float armAbove = 2.5f;  // jitter at the goal never arms
+	float placeRadius = 2.5f; // server acceptance metric (stops.awk): within 2.5 m of an anchor -> standing
+	float placeWindow = 3.f;  // standing this long within placeRadius -> stuck (leaves room for the steps before 10 s)
 };
 
 class UnstickSensor {
@@ -62,21 +64,47 @@ public:
 	// alternating long/short replans (Codex review of 96a09959: 20/22 m every 3 s) is never credited with progress.
 	// The weapon goal keeps its own legacy rule (ApplyPathSignature).
 	bool Update(float rem, float sig, float now, bool muted, const UnstickTuning& t = UnstickTuning())
+	{ return Update(rem, sig, now, muted, nullptr, t); }
+	// With the bot's XY position: also stuck when it has stayed within placeRadius of one anchor for the window, whatever
+	// the remaining length does. Server run 3ba5119c: on the slope a bot sliding 1-2 m got a fresh path baseline at every
+	// replan and "progressed" by 1 m on it, so the path rule alone restarted the clock (stalls 16/17 s, Codex 06.11).
+	bool Update(float rem, float sig, float now, bool muted, const float* xy, const UnstickTuning& t = UnstickTuning())
 	{
 		m_progressed = false;
 		if (muted || rem <= t.armAbove || (m_armed && now < m_bestAt)) { m_armed = false; return false; }
-		if (!m_armed) { m_armed = true; m_sig = sig; m_best = rem; m_bestAt = now; return false; }
+		const bool place = xy != nullptr;
+		if (!m_armed)
+		{
+			m_armed = true; m_sig = sig; m_best = rem; m_bestAt = now;
+			m_hasAnchor = place; if (place) { m_ax = xy[0]; m_ay = xy[1]; } m_anchorAt = now;
+			return false;
+		}
 		if (std::fabs(sig - m_sig) > 0.01f) { m_sig = sig; m_best = rem; }   // new path: new baseline, same clock
 		else if (rem < m_best - t.minDrop) { m_best = rem; m_bestAt = now; m_progressed = true; }
-		return now - m_bestAt >= t.window;
+		bool standing = false;
+		if (place)
+		{
+			const float dx = xy[0] - m_ax, dy = xy[1] - m_ay;
+			if (!m_hasAnchor || dx * dx + dy * dy > t.placeRadius * t.placeRadius)
+			{ m_hasAnchor = true; m_ax = xy[0]; m_ay = xy[1]; m_anchorAt = now; }
+			standing = now - m_anchorAt >= t.placeWindow;
+		}
+		return standing || now - m_bestAt >= t.window;
 	}
 	bool Armed() const { return m_armed; }
 	bool Progressed() const { return m_progressed; }  // this update dropped the best remaining by minDrop
 	float Best() const { return m_best; }
-	float StuckFor(float now) const { return m_armed ? now - m_bestAt : 0.f; }
+	float StuckFor(float now) const
+	{
+		if (!m_armed) return 0.f;
+		const float path = now - m_bestAt, place = m_hasAnchor ? now - m_anchorAt : 0.f;
+		return path > place ? path : place;
+	}
 private:
 	bool m_armed = false, m_progressed = false;
 	float m_sig = 0.f, m_best = 0.f, m_bestAt = 0.f;
+	bool m_hasAnchor = false;
+	float m_ax = 0.f, m_ay = 0.f, m_anchorAt = 0.f;
 };
 
 // ---------- 3. exit steps ----------
@@ -93,7 +121,7 @@ inline uint64_t TransitionKey(float fx, float fy, float tx, float ty, float cell
 
 struct UnstickInput {
 	bool stuck = false;        // sensor says stuck
-	bool progressed = false;   // sensor saw real progress this tick
+	bool escaped = false;      // physical exit: moved >= 2.5 m from the stuck point toward the corner (UnstickEscaped)
 	bool grounded = true;
 	bool canJump = true;       // the NORMAL jump's own probe passed (head room 2.5 m, landing 2 m ahead)
 	bool canStrength = false;  // the STRENGTH jump's own probe passed (head room 7 m, landing 3 m + 5.5 m), energy, no crowd
@@ -107,9 +135,44 @@ inline UnstickJumpAbility UnstickJumpInput(bool needJump, bool normalProbe, bool
 { return { needJump && normalProbe, needJump && strengthProbe && energy >= 130.f && !crowdAhead }; }
 enum class UnstickEvent { None = 0, Started, Exited, Failed };
 
+// The physical exit criterion (server run 3ba5119c: exits on 0.4-1.3 m of remaining-path jitter, and inside back-off,
+// while the bot stayed in its 2.5 m stall circle). Escaped = the feet moved at least `advance` from the stuck point
+// toward the corner it could not reach, or reached that corner. Sliding back or sideways never counts.
+inline bool UnstickEscaped(float ax, float ay, float cx, float cy, float fx, float fy, float advance = 2.5f, float reach = 1.f)
+{
+	if ((fx - cx) * (fx - cx) + (fy - cy) * (fy - cy) <= reach * reach) return true;
+	float dx = cx - ax, dy = cy - ay;
+	const float len = std::sqrt(dx * dx + dy * dy);
+	if (len < 1e-3f) return false;
+	dx /= len; dy /= len;
+	return (fx - ax) * dx + (fy - ay) * dy >= (advance < len ? advance : len - reach);
+}
+
+// Back-off target: of the candidates (previous corner, both sides, straight back) the one farthest from allies within
+// 12 m; on a tie the first. Server run 3ba5119c: backing off to the previous corner walked into the allies coming up
+// the same path (4 bots within 5 m at 133-138 s).
+template <class P>
+int UnstickPickBackoff(const P* c, int n, const P* allies, int allyCount)
+{
+	int best = -1; float bestScore = -1.f;
+	for (int i = 0; i < n; ++i)
+	{
+		float nearest = 12.f;
+		for (int j = 0; j < allyCount; ++j)
+		{
+			const float d = std::sqrt((c[i].x - allies[j].x) * (c[i].x - allies[j].x) + (c[i].y - allies[j].y) * (c[i].y - allies[j].y));
+			if (d < nearest) nearest = d;
+		}
+		if (nearest > bestScore + 0.25f) { bestScore = nearest; best = i; }
+	}
+	return best;
+}
+
 class UnstickSteps {
 public:
-	float stepTime = 2.5f, backoffTime = 3.0f, waitTime = 5.f, banTime = 30.f;
+	// 4 s to notice + 1.5 + 1.5 + 2 s of attempts: the back-off starts before the 10 s stall limit (server run 3ba5119c:
+	// with 2.5 s steps the chain alone ran past 10 s)
+	float sprintTime = 1.5f, jumpTime = 1.5f, strengthTime = 2.0f, backoffTime = 3.0f, waitTime = 5.f, banTime = 30.f;
 	int backoffsBeforeWait = 2;
 
 	void Reset() { m_step = UnstickStep::None; m_backoffs = 0; m_lastExitByStrength = false; }
@@ -129,8 +192,9 @@ public:
 	UnstickStep Update(float now, const UnstickInput& in)
 	{
 		m_event = UnstickEvent::None;
-		if (m_step != UnstickStep::None && in.progressed)
-		{   // success is progress of the remaining path, whatever step got it
+		const bool trying = m_step == UnstickStep::Sprint || m_step == UnstickStep::Jump || m_step == UnstickStep::Strength;
+		if (trying && in.escaped)
+		{   // success is a physical exit during an attempt; back-off and wait end as Failed / None
 			m_lastExitByStrength = m_step == UnstickStep::Strength;
 			m_step = UnstickStep::None; m_backoffs = 0; m_event = UnstickEvent::Exited;
 			return m_step;
@@ -142,7 +206,8 @@ public:
 			Begin(UnstickStep::Sprint, now, in);
 			return m_step;
 		}
-		const float dur = m_step == UnstickStep::Backoff ? backoffTime : m_step == UnstickStep::Wait ? waitTime : stepTime;
+		const float dur = m_step == UnstickStep::Backoff ? backoffTime : m_step == UnstickStep::Wait ? waitTime :
+			m_step == UnstickStep::Sprint ? sprintTime : m_step == UnstickStep::Jump ? jumpTime : strengthTime;
 		if (now - m_since < dur || !in.grounded) return m_step;   // the next step only on the ground
 		switch (m_step)
 		{

@@ -7,6 +7,8 @@
 using namespace WarsBots;
 struct V { float x, y, z; };
 static bool Near(float a, float b, float e = 1e-3f) { return std::fabs(a - b) <= e; }
+// The step tests below were written for 2.5 s attempts; the server fix of 06.11 shortened them (see Episodes()).
+static UnstickSteps Legacy() { UnstickSteps s; s.sprintTime = s.jumpTime = s.strengthTime = 2.5f; return s; }
 
 int main()
 {
@@ -62,11 +64,11 @@ int main()
 		assert(falseProgress == 0 && firstStuck == 4.f);
 	}
 	{   // the same churn through the steps: a chain runs, never "exits" without real progress
-		UnstickSensor s; UnstickSteps st; int exits = 0, starts = 0;
+		UnstickSensor s; UnstickSteps st = Legacy(); int exits = 0, starts = 0;
 		for (float t = 0; t <= 60.f; t += 0.25f)
 		{
 			const int k = int(t / 3.f);
-			UnstickInput in; in.stuck = s.Update(k % 2 ? 22.f : 20.f, float(k + 1), t, false); in.progressed = s.Progressed();
+			UnstickInput in; in.stuck = s.Update(k % 2 ? 22.f : 20.f, float(k + 1), t, false); in.escaped = s.Progressed();
 			in.canStrength = true; in.transition = 77;
 			st.Update(t, in);
 			exits += st.Event() == UnstickEvent::Exited; starts += st.Event() == UnstickEvent::Started;
@@ -92,7 +94,7 @@ int main()
 
 	// --- steps ---
 	{
-		UnstickSteps st; UnstickInput in; in.stuck = true; in.canStrength = true; in.transition = 42;
+		UnstickSteps st = Legacy(); UnstickInput in; in.stuck = true; in.canStrength = true; in.transition = 42;
 		assert(st.Update(0, in) == UnstickStep::Sprint && st.Event() == UnstickEvent::Started);
 		assert(st.Update(2.4f, in) == UnstickStep::Sprint);
 		assert(st.Update(2.5f, in) == UnstickStep::Jump);
@@ -113,7 +115,7 @@ int main()
 		assert(st.Closed(42, 1000.f));                          // strength-closed stays closed
 	}
 	{   // row 12: ceiling and no energy -> straight to back off, without repeats
-		UnstickSteps st; UnstickInput in; in.stuck = true; in.canJump = false; in.canStrength = false; in.transition = 7;
+		UnstickSteps st = Legacy(); UnstickInput in; in.stuck = true; in.canJump = false; in.canStrength = false; in.transition = 7;
 		assert(st.Update(0, in) == UnstickStep::Sprint);
 		assert(st.Update(2.5f, in) == UnstickStep::Backoff && !st.StrengthUsed(7));
 		assert(st.Closed(7, 3.f) && !st.Closed(7, 33.f));         // back-off ban is 30 s
@@ -127,7 +129,7 @@ int main()
 			{true,  true,  UnstickStep::Jump,     UnstickStep::Strength}};
 		for (const Row& r : rows)
 		{
-			UnstickSteps st; UnstickInput in; in.stuck = true; in.transition = 77;
+			UnstickSteps st = Legacy(); UnstickInput in; in.stuck = true; in.transition = 77;
 			const UnstickJumpAbility a = UnstickJumpInput(true, r.normal, r.strength, 200.f, false);
 			in.canJump = a.canJump; in.canStrength = a.canStrength;
 			assert(st.Update(0, in) == UnstickStep::Sprint);
@@ -137,8 +139,9 @@ int main()
 			assert(st.StrengthUsed(77) == spent);
 			if (spent)
 			{   // no second strength on the same transition, even with a safe probe
-				in.progressed = true; assert(st.Update(6.f, in) == UnstickStep::None && st.Event() == UnstickEvent::Exited);
-				in.progressed = false;
+				if (st.Step() == UnstickStep::Strength)
+				{ in.escaped = true; assert(st.Update(6.f, in) == UnstickStep::None && st.Event() == UnstickEvent::Exited); in.escaped = false; }
+				else { assert(st.Step() == UnstickStep::Backoff); assert(st.Update(8.f, in) == UnstickStep::None && st.Event() == UnstickEvent::Failed); }   // no exit inside back-off
 				assert(st.Update(10.f, in) == UnstickStep::Sprint);
 				st.Update(12.5f, in); st.Update(15.f, in);
 				assert(st.Step() != UnstickStep::Strength);
@@ -151,15 +154,15 @@ int main()
 		assert(!idle.canJump && !idle.canStrength);
 	}
 	{   // success by progress, whatever the step; strength exit is reported for the memory
-		UnstickSteps st; UnstickInput in; in.stuck = true; in.canStrength = true; in.transition = 9;
+		UnstickSteps st = Legacy(); UnstickInput in; in.stuck = true; in.canStrength = true; in.transition = 9;
 		st.Update(0, in); st.Update(2.5f, in); st.Update(5.f, in);
 		assert(st.Step() == UnstickStep::Strength);
-		in.progressed = true;
+		in.escaped = true;
 		assert(st.Update(5.5f, in) == UnstickStep::None && st.Event() == UnstickEvent::Exited && st.LastExitByStrength());
 		assert(!st.Closed(9, 6.f));
 	}
 	{   // not stuck -> nothing; stuck in the air -> waits for the ground
-		UnstickSteps st; UnstickInput in; assert(st.Update(0, in) == UnstickStep::None);
+		UnstickSteps st = Legacy(); UnstickInput in; assert(st.Update(0, in) == UnstickStep::None);
 		in.stuck = true; in.grounded = false; assert(st.Update(1, in) == UnstickStep::None);
 	}
 
@@ -256,6 +259,80 @@ int main()
 		assert(!t.Due(5.f) && t.Due(65.f));                            // a restarted timer starts a new period
 		const PathTimeReport one = PathTimePercentiles({3.f}); assert(one.n == 1 && one.p50 == 3.f && one.p95 == 3.f);
 		t.Clear(); assert(t.Level().n == 0 && t.Dropped() == 0);
+	}
+	// --- server run 3ba5119c (Codex 06.11, E:/WarsBots/QA/PR20-3ba5119c/Runs/Shore-ON-01): the three stalls >= 10 s ---
+	// MOVE TRACE positions (s from the stall start, x, y) and the corner each bot could not reach. On the server the bot
+	// got a new path every ~1.5-5 s and "progressed" 0.4-1.3 m on it while sliding: the old sensor restarted its clock
+	// and the steps took that for an exit. Replay: same positions, a new path signature every 1.5 s, the remaining
+	// length = distance to the corner + 120 m (so sliding toward the corner looks like progress, as on the server).
+	{
+		struct P { float t, x, y; };
+		struct Episode { const char* who; float cx, cy; std::vector<P> p; };
+		const Episode eps[] = {
+			{"131018 slope (2111,1376) 229-245 s", 2107.9f, 1374.3f, {{0.04f,2114.3f,1377.3f},{0.27f,2114.1f,1377.3f},{0.52f,2114.4f,1376.9f},{0.79f,2114.1f,1377.8f},{1.02f,2114.4f,1377.3f},{1.29f,2114.3f,1377.1f},{1.51f,2113.5f,1377.8f},{1.79f,2113.7f,1377.1f},{2.03f,2113.9f,1376.6f},{2.27f,2113.6f,1377.3f},{2.52f,2113.3f,1377.9f},{2.77f,2113.6f,1377.1f},{3.03f,2113.8f,1376.5f},{3.3f,2113.5f,1377.3f},{3.53f,2113.6f,1377.3f},{3.78f,2113.8f,1376.7f},{4.04f,2113.7f,1377.1f},{4.28f,2113.6f,1377.2f},{4.55f,2113.7f,1377.1f},{4.77f,2113.4f,1377.6f},{5.03f,2113.1f,1378.4f},{5.26f,2113.1f,1377.7f},{5.52f,2113.0f,1377.8f},{5.77f,2112.8f,1378.1f},{6.03f,2112.9f,1377.1f},{6.27f,2112.9f,1377.3f},{6.53f,2112.6f,1377.9f},{6.77f,2112.8f,1377.6f},{7.03f,2113.0f,1377.3f},{7.27f,2112.6f,1378.0f},{7.55f,2112.5f,1377.7f},{7.77f,2112.8f,1377.0f},{8.04f,2112.4f,1377.7f},{8.28f,2112.4f,1377.7f},{8.52f,2112.8f,1377.1f},{8.79f,2113.3f,1376.4f},{9.02f,2113.4f,1376.0f},{9.28f,2113.2f,1376.7f},{9.54f,2113.1f,1377.0f},{9.77f,2113.4f,1376.5f},{10.03f,2113.3f,1376.8f},{10.28f,2113.1f,1377.2f},{10.53f,2113.4f,1376.4f},{10.77f,2113.3f,1376.7f},{11.04f,2113.2f,1377.4f},{11.27f,2113.5f,1376.8f},{11.53f,2113.6f,1376.5f},{11.79f,2113.5f,1377.1f},{12.03f,2113.5f,1376.8f},{12.29f,2113.7f,1376.3f},{12.52f,2113.4f,1377.1f},{12.78f,2113.1f,1377.7f},{13.04f,2113.6f,1378.3f},{13.27f,2114.3f,1378.8f},{13.52f,2114.2f,1378.8f},{13.77f,2113.7f,1377.8f},{14.03f,2113.9f,1376.7f},{14.29f,2114.0f,1375.7f},{14.52f,2113.9f,1375.8f},{14.77f,2113.7f,1376.7f},{15.02f,2113.6f,1376.6f},{15.27f,2113.7f,1375.5f},{15.53f,2113.5f,1375.7f},{15.77f,2113.5f,1376.5f}}},
+			{"130988 throat (1985,1241) 123-141 s", 1985.9f, 1234.1f, {{0.02f,1985.2f,1241.9f},{0.28f,1984.3f,1241.8f},{0.51f,1985.0f,1241.7f},{0.77f,1985.4f,1241.7f},{1.02f,1984.9f,1241.6f},{1.29f,1984.4f,1241.4f},{1.54f,1985.3f,1241.2f},{1.78f,1985.3f,1241.2f},{2.03f,1984.5f,1241.2f},{2.28f,1985.2f,1240.9f},{2.52f,1985.3f,1240.7f},{2.79f,1984.3f,1240.6f},{3.04f,1983.5f,1240.5f},{3.29f,1982.6f,1240.3f},{3.53f,1983.5f,1240.1f},{3.78f,1984.0f,1240.2f},{4.02f,1983.3f,1239.9f},{4.27f,1982.9f,1239.8f},{4.53f,1983.7f,1240.1f},{4.77f,1984.1f,1240.3f},{5.03f,1983.5f,1240.1f},{5.28f,1982.7f,1239.9f},{5.53f,1983.3f,1240.1f},{5.78f,1984.1f,1240.3f},{6.03f,1983.5f,1240.2f},{6.28f,1982.8f,1240.0f},{6.53f,1983.3f,1240.2f},{6.8f,1983.4f,1240.4f},{7.03f,1982.9f,1240.2f},{7.28f,1983.3f,1240.3f},{7.54f,1983.6f,1240.6f},{7.79f,1983.0f,1240.4f},{8.04f,1983.5f,1240.3f},{8.29f,1983.9f,1240.3f},{8.53f,1983.2f,1240.2f},{8.78f,1982.8f,1240.1f},{9.03f,1983.7f,1240.0f},{9.28f,1984.0f,1240.3f},{9.52f,1983.7f,1241.0f},{9.77f,1983.4f,1241.8f},{10.03f,1983.0f,1242.7f},{10.29f,1982.7f,1243.4f},{10.52f,1983.1f,1242.9f},{10.78f,1983.3f,1242.0f},{11.04f,1983.3f,1242.6f},{11.28f,1983.0f,1243.4f},{11.53f,1983.3f,1242.8f},{11.78f,1983.5f,1241.8f},{12.03f,1983.5f,1242.6f},{12.3f,1983.4f,1242.9f},{12.52f,1983.5f,1242.9f},{12.77f,1983.6f,1242.9f},{13.04f,1983.7f,1242.8f},{13.29f,1983.8f,1242.8f},{13.53f,1984.0f,1242.8f},{13.78f,1984.1f,1242.7f},{14.03f,1984.2f,1242.7f},{14.27f,1984.3f,1242.7f},{14.53f,1984.3f,1242.7f},{14.79f,1984.5f,1242.7f},{15.02f,1984.6f,1242.7f},{15.27f,1984.7f,1242.7f},{15.54f,1984.9f,1242.7f},{15.79f,1985.0f,1242.7f},{16.04f,1985.1f,1242.8f},{16.29f,1985.3f,1242.8f},{16.55f,1985.3f,1242.9f},{16.77f,1985.4f,1242.9f},{17.02f,1985.4f,1242.9f}}},
+			{"131008 throat (1985,1241) 155-165 s", 1985.9f, 1238.2f, {{0.04f,1985.0f,1242.0f},{0.29f,1985.8f,1241.9f},{0.53f,1985.1f,1241.8f},{0.78f,1984.4f,1241.7f},{1.03f,1985.3f,1241.5f},{1.28f,1984.7f,1241.4f},{1.52f,1984.2f,1241.2f},{1.77f,1985.4f,1240.9f},{2.04f,1985.4f,1240.8f},{2.29f,1985.7f,1240.8f},{2.54f,1986.3f,1240.9f},{2.79f,1985.5f,1241.0f},{3.02f,1984.8f,1241.0f},{3.27f,1984.4f,1240.8f},{3.54f,1985.6f,1240.6f},{3.78f,1986.2f,1240.8f},{4.03f,1985.6f,1240.8f},{4.27f,1985.1f,1240.9f},{4.52f,1985.8f,1241.0f},{4.77f,1985.5f,1241.0f},{5.02f,1984.7f,1241.0f},{5.27f,1985.2f,1240.9f},{5.54f,1986.0f,1241.0f},{5.77f,1986.5f,1241.0f},{6.03f,1987.4f,1240.8f},{6.28f,1986.6f,1240.8f},{6.53f,1986.4f,1240.9f},{6.78f,1987.2f,1240.8f},{7.02f,1986.4f,1240.7f},{7.28f,1986.2f,1240.8f},{7.52f,1987.0f,1240.7f},{7.79f,1987.0f,1240.7f},{8.02f,1986.1f,1240.6f},{8.27f,1986.5f,1240.6f}}},
+		};
+		for (const Episode& e : eps)
+		{
+			for (int probes = 0; probes < 2; ++probes)   // 0: both jump probes fail (as on the server), 1: both pass
+			{
+				UnstickSensor s; UnstickSteps st; float firstStuck = -1.f, backoffAt = -1.f; int exits = 0;
+				float ax = 0, ay = 0;
+				for (const P& q : e.p)
+				{
+					const float rem = 120.f + std::sqrt((q.x - e.cx) * (q.x - e.cx) + (q.y - e.cy) * (q.y - e.cy));
+					const float xy[2] = {q.x, q.y};
+					UnstickInput in;
+					in.stuck = s.Update(rem, float(1 + int(q.t / 1.5f)), q.t, false, xy);
+					if (in.stuck && firstStuck < 0) firstStuck = q.t;
+					in.canJump = probes == 1; in.canStrength = probes == 1; in.transition = 5;
+					in.escaped = st.Step() != UnstickStep::None && UnstickEscaped(ax, ay, e.cx, e.cy, q.x, q.y);
+					const UnstickStep was = st.Step();
+					st.Update(q.t, in);
+					if (was == UnstickStep::None && st.Step() != UnstickStep::None) { ax = q.x; ay = q.y; }
+					if (st.Step() == UnstickStep::Backoff && backoffAt < 0) backoffAt = q.t;
+					exits += st.Event() == UnstickEvent::Exited;
+				}
+				std::printf("episode %s probes=%d: stuck %.2f s, back-off %.2f s, exits %d\n", e.who, probes, firstStuck, backoffAt, exits);
+				fflush(stdout); assert(firstStuck >= 0.f && firstStuck <= 3.3f);       // noticed by the place rule within 3 s
+				assert(exits == 0);                                     // never moved 2.5 m toward the corner: no exit
+				const float limit = probes ? 9.0f : 5.1f;                // 3 s + attempts (+1 sample at 4 Hz), well before 10 s
+				assert(e.p.back().t < limit || (backoffAt >= 0.f && backoffAt <= limit));
+			}
+		}
+	}
+	{   // escape criterion: 2.5 m toward the corner or reaching it; sliding back, sideways or 1.3 m never count
+		assert(!UnstickEscaped(0, 0, 10, 0, 1.3f, 0));
+		assert(!UnstickEscaped(0, 0, 10, 0, -3.f, 0));
+		assert(!UnstickEscaped(0, 0, 10, 0, 0, 3.f));
+		assert(UnstickEscaped(0, 0, 10, 0, 2.5f, 0.5f));
+		assert(UnstickEscaped(0, 0, 2, 0, 1.2f, 0));                 // short leg: within 1 m of the corner
+		UnstickSteps st; UnstickInput in; in.stuck = true; in.canJump = false; in.canStrength = false; in.transition = 3;
+		st.Update(0, in); st.Update(1.5f, in); assert(st.Step() == UnstickStep::Backoff);
+		in.escaped = true; assert(st.Update(2.f, in) == UnstickStep::Backoff && st.Event() != UnstickEvent::Exited);   // no exit in back-off
+		UnstickSteps ok; UnstickInput go; go.stuck = true; go.canStrength = true; go.transition = 4;
+		ok.Update(0, go); ok.Update(1.5f, go); ok.Update(3.f, go); assert(ok.Step() == UnstickStep::Strength);
+		go.escaped = true; assert(ok.Update(3.5f, go) == UnstickStep::None && ok.Event() == UnstickEvent::Exited && ok.LastExitByStrength());
+	}
+	{   // place rule: walking normally never trips it; 1-2 m oscillation does at 4 s even with "progress" on new paths
+		UnstickSensor walk;
+		for (float t = 0; t < 30.f; t += 0.25f) { const float xy[2] = {t * 3.f, 0}; assert(!walk.Update(100.f - t * 3.f, 1, t, false, xy)); }
+		UnstickSensor osc; float first = -1;
+		for (float t = 0; t < 12.f; t += 0.25f)
+		{
+			const float xy[2] = {std::fmod(t, 1.f) < 0.5f ? 0.f : 1.8f, 0};
+			const bool st = osc.Update(130.f - (std::fmod(t, 1.5f) < 0.75f ? 0.f : 1.3f), float(1 + int(t / 1.5f)), t, false, xy);
+			if (st && first < 0) first = t;
+		}
+		assert(first >= 3.f && first <= 3.25f);
+	}
+	{   // back-off target away from allies (server: 4 bots within 5 m at 133-138 s after backing into the followers)
+		struct Q { float x, y; };
+		const Q c[4] = {{-6, 0}, {0, 4}, {0, -4}, {-5, 0}};             // previous corner, left, right, straight back
+		const Q allies[3] = {{-6, 1}, {-5, -1}, {-1, -4}};             // two coming up the path, one on the right
+		assert(UnstickPickBackoff(c, 4, allies, 3) == 1);              // the left side is free
+		assert(UnstickPickBackoff(c, 4, (const Q*)nullptr, 0) == 0);   // no allies: the previous corner, as before
 	}
 	std::puts("BotUnstick OK");
 	return 0;

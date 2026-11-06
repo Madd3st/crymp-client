@@ -1524,7 +1524,8 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	const bool water=m_blackboard.waterMovement || m_blackboard.swimming;
 	const bool muted=!mesh || !m_meshPathActive || m_path.empty() || !m_intent.move || combat || water || !m_blackboard.canMove || m_now<m_unstickMuteUntil;
 	const float rem=m_path.empty()?0.f:PathRemaining(m_path,m_pathIndex,feet);
-	m_unstickStuck=m_unstickSensor.Update(rem,PathSignature(m_path),m_now,muted);
+	const float xy[2]={feet.x,feet.y};
+	m_unstickStuck=m_unstickSensor.Update(rem,PathSignature(m_path),m_now,muted,xy);
 	// trodden passes (shared spread layer): once a second while walking a navmesh path
 	if (mesh && m_meshPathActive && m_now>=m_unstickNextTrodden && m_blackboard.velocity.GetLength2D()>1.0f)
 	{
@@ -1564,7 +1565,8 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	bool crowdAhead=false;
 	for (const Vec3& a:standing) { const Vec3 d=a-feet; if (d.GetLength2D()<2.5f && d.x*forward.x+d.y*forward.y>0.f) crowdAhead=true; }
 	UnstickInput in;
-	in.stuck=m_unstickStuck; in.progressed=m_unstickSensor.Progressed(); in.grounded=m_blackboard.grounded;
+	in.stuck=m_unstickStuck; in.grounded=m_blackboard.grounded;
+	in.escaped=chain && UnstickEscaped(m_unstickFrom.x,m_unstickFrom.y,m_unstickTo.x,m_unstickTo.y,feet.x,feet.y);
 	// Real head room and landing (the executor's own JumpSpace probe), asked only when a step may need it. A step that
 	// cannot jump is skipped and a Strength attempt is not spent (Codex review of 96a09959).
 	const bool needJump=m_unstickStuck || chain;
@@ -1583,6 +1585,23 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 			m_blackboard.energy,stuckNear,actor.GetEntityId());
 		if (step==UnstickStep::Backoff)
 		{
+			// back off where the allies are not: previous corner, either side, straight back (on the mesh only)
+			Vec3 c[4]; int n=0;
+			const Vec3 side(-forward.y,forward.x,0);
+			const Vec3 prev=m_pathIndex>0 && m_pathIndex-1<m_path.size()?m_path[m_pathIndex-1]:m_pathStart;
+			const Vec3 opts[4]={prev,feet+side*4.0f,feet-side*4.0f,feet-forward*5.0f};
+			for (const Vec3& o:opts)
+			{
+				if ((o-feet).GetLength2D()<2.0f) continue;
+				const float q[3]={o.x,o.y,o.z};
+				if (mesh->PolyAt(q)) c[n++]=o;
+			}
+			std::vector<Vec3> alliesNear;
+			manager.UnstickAllies(feet,12.0f,actor.GetEntityId(),nullptr,&alliesNear);
+			const int pick=n?UnstickPickBackoff(c,n,alliesNear.empty()?nullptr:alliesNear.data(),int(alliesNear.size())):-1;
+			m_unstickBack=pick>=0?c[pick]:feet-forward*5.0f;
+			WB_LOG(2,"[WarsBots] #%d UNSTICK backoff to=(%.1f,%.1f,%.1f) choices=%d allies12m=%u actor=%u.",m_number,
+				m_unstickBack.x,m_unstickBack.y,m_unstickBack.z,n,unsigned(alliesNear.size()),actor.GetEntityId());
 			NavCostBlock b;
 			b.from[0]=m_unstickFrom.x; b.from[1]=m_unstickFrom.y; b.from[2]=m_unstickFrom.z;
 			b.to[0]=m_unstickTo.x; b.to[1]=m_unstickTo.y; b.to[2]=m_unstickTo.z;
@@ -1618,22 +1637,20 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 		if (m_blackboard.energy>50.0f) WBI(suitMode,NANOMODE_SPEED);
 		break;
 	case UnstickStep::Jump:
-		WBI(gait,BotGait::Run); WBI(suitMode,NANOMODE_DEFENSE);
+		WBI(gait,BotGait::Run); WBI(suitMode,NANOMODE_DEFENSE); m_intent.unstickClimb=true;
 		if (!m_unstickJumped && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_blackboard.mode!=NANOMODE_STRENGTH)
 		{ WBI(jump,BotJump::Normal); m_unstickJumped=true; }
 		break;
 	case UnstickStep::Strength:
-		WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_STRENGTH); m_cornerSlow=false; m_intent.unstickStrength=true;
+		WBI(gait,BotGait::Sprint); WBI(suitMode,NANOMODE_STRENGTH); m_cornerSlow=false; m_intent.unstickStrength=true; m_intent.unstickClimb=true;
 		// the jump only once the suit is in Strength; the executor checks JumpSpace again (no linkJump bypass)
 		if (!m_unstickJumped && m_blackboard.grounded && m_now>=m_blackboard.nextJump && m_blackboard.mode==NANOMODE_STRENGTH)
 		{ WBI(jump,BotJump::Strength); m_unstickJumped=true; }
 		break;
 	case UnstickStep::Backoff:
 	{
-		// back along the path (previous corner or the path start), otherwise straight back 5 m
-		Vec3 back=m_pathIndex>0 && m_pathIndex-1<m_path.size()?m_path[m_pathIndex-1]:m_pathStart;
-		if ((back-feet).GetLength2D()<2.0f) back=feet-forward*5.0f;
-		WBI_MOVETO(back,back+Vec3(0,0,1.2f)); WBI(gait,BotGait::Run); WBI(jump,BotJump::None);
+		// to the point picked when the back-off started (away from allies)
+		WBI_MOVETO(m_unstickBack,m_unstickBack+Vec3(0,0,1.2f)); WBI(gait,BotGait::Run); WBI(jump,BotJump::None);
 		break;
 	}
 	case UnstickStep::Wait:
@@ -1673,7 +1690,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	if (m_now<m_testModeUntil && m_testMode>=0 && m_intent.combat==BotCombatIntent::None && m_intent.jump==BotJump::None)
 		WBI(suitMode,static_cast<ENanoMode>(m_testMode));
 	m_blackboard.obstacleJump=BotJump::None;
-	m_intent.linkJump=false; m_intent.unstickStrength=false;
+	m_intent.linkJump=false; m_intent.unstickStrength=false; m_intent.unstickClimb=false;
 	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
 	if (BotConfig::Get().ladder==1 && ApplyLadderExecutor(actor)) return; // DS-107: immediate/exclusive ownership
 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
