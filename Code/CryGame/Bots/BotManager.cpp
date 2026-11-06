@@ -566,6 +566,10 @@ void BotManager::OnPostUpdate(float dt)
 		WB_LOG(1, "[WarsBots] FRAME avg=%.2fms p95=%.2fms max=%.2fms botAI=%.3fms/frame bots=%d server=%d.",
 			1000.f * sum / f.size(), 1000.f * f[size_t(0.95f * (f.size() - 1))], 1000.f * f.back(),
 			m_aiFrames ? 1000.f * m_aiSeconds / m_aiFrames : 0.f, Count(), gEnv->bServer ? 1 : 0);
+		const LogCost lc = TakeLogCost();   // SPEC-007: what logging cost in the same window (A/B of the frame)
+		const int frames = m_aiFrames;
+		WB_LOG(1, "[WarsBots] LOGCOST lines=%u main=%u flushes=%u ms=%.3f msPerFrame=%.4f frames=%d.",
+			lc.lines, lc.main, lc.flushes, lc.ms, frames ? lc.ms / frames : 0.f, frames);
 		m_frameCount = 0; m_frameNext = 0; m_aiSeconds = 0; m_aiFrames = 0;
 	}
 	if (m_defaultVerbose && m_clock >= m_nextProfileLog)
