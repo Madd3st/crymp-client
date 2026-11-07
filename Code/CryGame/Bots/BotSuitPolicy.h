@@ -25,7 +25,7 @@ struct SuitInput {
 	bool moving = false;
 	bool firing = false;            // the bot fires this tick (cloak breaks, Speed burns energy for nothing)
 	bool stealthStyle = false;      // Flanker / Hunter profiles
-	bool cloakAllowed = false;      // wb_bot_cloak_experimental
+	bool cloakAllowed = false;      // Elite cloakApproach (difficulty ladder)
 	bool canUseSpeed = true;        // beginner gate (BotProfile::useSpeed)
 };
 

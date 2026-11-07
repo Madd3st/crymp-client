@@ -314,20 +314,6 @@ IActor* BotCombat::FindEnemy(CActor& actor, float now, bool verbose)
 		const bool threatened=best->GetEntityId()==m_retaliator && now<m_retaliatorUntil && actor.GetHealth()<40;
 		if ((finishing || blink) && !threatened) best=old;
 	}
-	// DS-044 #3: a target at <=25 HP is worth the last burst. Keep it until dead or lost > 1 s, unless a new enemy
-	// within 8 m is the one hitting us (then the threat wins). Works with or without wb_bot_finish.
-	if (oldValid && best && best!=old)
-	{
-		const float newDistance=(best->GetEntity()->GetWorldPos()-origin).GetLength();
-		const bool keep=KeepLowHpTarget(BotConfig::Get().finishLock==1,true,true,old->GetHealth(),now-m_lastSeen,
-			newDistance,best->GetEntityId()==m_retaliator,now<m_retaliatorUntil);
-		if (keep)
-		{
-			best=old;
-			if (verbose) WB_LOG(2,"[WarsBots] FINISH LOCK actor=%u keep=%u new=%u health=%d newDistance=%.1f.",
-				actor.GetEntityId(),old->GetEntityId(),m_retaliator,old->GetHealth(),newDistance);
-		}
-	}
 	if (!best && remembered) return old;
 	if (!best) { StopFire(); m_target=0; m_visible=false; return nullptr; }
 	const EntityId previous=m_target;
