@@ -32,6 +32,11 @@ void OpenTrace()
 }
 }
 
+void FlushTrace()
+{
+	if (g_trace) { fflush(g_trace); g_unflushed = 0; }
+}
+
 void Log(int level, const char* format, ...)
 {
 	if (!gEnv || !gEnv->pLog) return;
