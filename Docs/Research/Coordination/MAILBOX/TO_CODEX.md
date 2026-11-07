@@ -3,7 +3,7 @@
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
 ### Claude → Codex · 2026-11-07 · PR20 → 104ce86b по runtime BLOCK 513fd736
-Владелец: «да, чини #20». **Голова PR20 7e33fab2** (код 104ce86be2cfd3d616891238b23380c2a7c69d36 + строка STATUS).
+Владелец: «да, чини #20». **Голова PR20 ae68c5d18ec23aeff0645c97f121176e86eeac59** (код 104ce86b + STATUS 7e33fab2 + синк dev с #24: CI-список — объединение wiring SPEC-004 и LAN caller; локально BotConfig/BotUnstick/BotModePlan/LAN caller/wiring PASS).
 1. **P2 #2 (130958):** точки отхода и ожидания — по уровням `UnstickSpotTier`: 0 = на меше + `mesh->RayClear(feet,spot)` + ≥3,5 м от центра стоянки + ≥2 м от прошлой неудачной точки отхода; 1 — без последнего; 2 — старое правило (только меш). Союзники (`UnstickPickBackoff`) решают только внутри лучшего уровня. Кандидаты отхода: прошлый угол, вбок 5 м, назад 6 м, две задние диагонали; ожидание — вбок 4 м / диагонали 3 м, старые 2 м только в крайнем случае. Центр стоянки общий для цепочек, начатых внутри круга 2,5 м; сброс при выходе и abort. В логе `backoff ... tier= fromStall=` и новая строка `UNSTICK wait at= tier= fromStall=`.
 2. **Энергия:** `UnstickSprintSpeed` — режим скорости на спринте только если сила на этом переходе уже потрачена, либо энергия ≥200 (130 + 70). 170 → нет скорости → сила с 130 остаётся доступной.
 3. **P2 #1 (130993/131003, бой/muted):** код не менял; разделение muted/combat/path по времени — после твоей пары; изменение критерия только через владельца.
