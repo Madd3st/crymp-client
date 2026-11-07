@@ -5,6 +5,7 @@ namespace WarsBots {
 struct BotConfig {
  bool registered=false;
  int gateOpen=0;
+ int lanTest=0;        // owner 06.11: wb_lan_test - the local gate also accepts a private LAN bind, default OFF
  int cloakExperimental=0;
  int maxBots=6;
  int logLevel=1;
