@@ -58,6 +58,8 @@ public:
 	const BotNav& Nav() const { return m_nav; }
 	BotNav& Nav() { return m_nav; }
 	int Count() const { return int(m_bots.size()); }
+	// SPEC-005 commander (BotPSCapture.cpp): read-only walk over the bot instances.
+	template<class F> void ForEachBot(F f) const { for (const auto& e : m_bots) if (e.second) f(*e.second); }
 	int MaxBots() const;
 
 	// Spawn point selection shared by initial spawn and revive: safe from other Player
