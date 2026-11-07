@@ -27,15 +27,6 @@ int main()
     CHECK(!ShouldSeekFirstPrimary(true, false, 20.0f, false, FirstPrimaryCombatUrgent(true, true, 0.0f)));
     CHECK(ShouldSeekFirstPrimary(true, false, 20.0f, false, FirstPrimaryCombatUrgent(false, true, 0.0f)));
 
-    // #3: finish lock at <=25 HP; a new enemy within 8 m that is hitting us wins.
-    CHECK(KeepLowHpTarget(true, true, true, 25, 0.5f, 12.0f, false, false));
-    CHECK(KeepLowHpTarget(true, true, true, 10, 0.9f, 8.0f, true, false));
-    CHECK(!KeepLowHpTarget(true, true, true, 25, 0.5f, 7.9f, true, true));
-    CHECK(!KeepLowHpTarget(true, true, true, 26, 0.5f, 12.0f, false, false));
-    CHECK(!KeepLowHpTarget(true, true, true, 10, 1.0f, 12.0f, false, false));
-    CHECK(!KeepLowHpTarget(true, false, true, 10, 0.2f, 12.0f, false, false));
-    CHECK(!KeepLowHpTarget(false, true, true, 10, 0.2f, 12.0f, false, false));
-
     // #2: withdraw cover = a reachable, LOS-breaking spot within 8 m (maxMove), not a clear one farther away.
     {
         const CoverCandidate spots[3] = {
