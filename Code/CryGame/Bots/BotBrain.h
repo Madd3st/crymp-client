@@ -49,6 +49,9 @@ public:
 	int PSBuys() const { return m_psBuys; }
 	EntityId Target() const { return m_combat.Target(); }
 	bool YieldLadderTo(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const;
+	bool LadderQueuedAhead(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const; // SPEC-006a
+	bool LadderQueued() const { return m_subQueueRef != 0; }
+	bool UnstickAtSlowLadder(const NavMeshCore* mesh) const; // SPEC-006a
     // Read-only diagnostic snapshot, consumed after this instance's decision tick.
     unsigned DecisionSerial()const{return m_decisionSerial;}
     const BotIntent& Intent()const{return m_intent;}
@@ -177,6 +180,8 @@ private:
 	bool m_ladderNativeLocked = false;
 	bool m_ladderCancelPending = false; // ResetLife saw an active climb; next Update clears native mode
 	bool ApplyLadderExecutor(CPlayer& actor);
+	bool UpdateLadderQueue(CPlayer& actor,const NavPathLink& l,const Vec3& a,const Vec3& feet,float dist2); // SPEC-006a
+	unsigned long long m_subQueueRef=0; float m_subQueueSince=0, m_subQueueCooldown=0; int m_subQueueSlot=-1; bool m_subQueueStanding=false;
 	void UpdateLadder(CPlayer& actor, float dt);
 	void CancelLadder(CPlayer& actor, const char* why, bool ban);
 	BotVantage m_vantage;            // owner 25.10 sniper spots (wb_bot_vantage)

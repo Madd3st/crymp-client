@@ -1,5 +1,6 @@
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotSniperReach.h"
+#include "CryGame/Bots/BotLadder.h"
 #include "DetourNavMesh.h"
 #include "DetourNavMeshQuery.h"
 #include "DetourCommon.h"
@@ -108,6 +109,8 @@ void NavMeshCore::SetTransitionMemory(const TransitionMemory& memory, float cloc
 		const TransitionPenalty& t = kv.second;
 		const float value = memory.Decayed(t, clock);
 		if (value < 0.02f) continue;
+		const float to[3] = {t.tx, t.ty, t.tz};
+		if (m_ladderMemoryFilter && NearSlowLadderStart(to)) continue;   // SPEC-006a: a ladder queue is not the place's fault
 		const float pts[3][3] = {{t.fx, t.fy, t.fz}, {(t.fx + t.tx) * 0.5f, (t.fy + t.ty) * 0.5f, (t.fz + t.tz) * 0.5f}, {t.tx, t.ty, t.tz}};
 		unsigned long long done[3] = {0, 0, 0};
 		for (int i = 0; i < 3; ++i)
@@ -391,7 +394,7 @@ int NavMeshCore::LoadLinkKinds(const char* text)
 		lines.push_back(l);
 	}
 	auto close = [](const float* p, const float* q) { return (p[0] - q[0]) * (p[0] - q[0]) + (p[1] - q[1]) * (p[1] - q[1]) + (p[2] - q[2]) * (p[2] - q[2]) < 0.36f; };
-	int set = 0; m_linkMismatch = 0;
+	int set = 0; m_linkMismatch = 0; m_slowLadderStarts.clear();
 	for (int ti = 0; ti < m_mesh->getMaxTiles(); ++ti)
 	{
 		const dtMeshTile* tile = static_cast<const dtNavMesh*>(m_mesh)->getTile(ti);
@@ -417,10 +420,18 @@ int NavMeshCore::LoadLinkKinds(const char* text)
 			// links without a known kind (Armada lift/ladder movers from the scene) get a flag no mask ever includes
 			m_mesh->setPolyFlags(base | dtPolyRef(con.poly), k < 0 ? (unsigned short)0x4000 : NavLinkFlag(k));
 			if (k >= 0) ++set;
+			if (SlowLadderLink(k == NavLinkLadder, a, b)) { m_slowLadderStarts.push_back(a[0]); m_slowLadderStarts.push_back(a[1]); m_slowLadderStarts.push_back(a[2]); }
 		}
 	}
 	SetLinkMask(m_linkMask);
 	return set;
+}
+
+bool NavMeshCore::NearSlowLadderStart(const float* p, float r) const
+{
+	for (size_t i = 0; i + 2 < m_slowLadderStarts.size(); i += 3)
+		if (NearLinkStart(p, &m_slowLadderStarts[i], r)) return true;
+	return false;
 }
 
 void NavMeshCore::SetLinkMask(unsigned short mask)
