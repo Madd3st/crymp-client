@@ -21,7 +21,7 @@ _T = re.compile(r"^([\d.]+) ")
 _REVIVE = re.compile(r"revive requested EntityId=(\d+) spawnId=(\d+)")
 _TELE = re.compile(r"AI telemetry EntityId=(\d+) state=(\w+) pos=\(([-\d.]+), ([-\d.]+), ([-\d.]+)\)")
 _TRAP = re.compile(r"TRAP RECOVERY level=(\d) actor=(\d+)(?: age=[\d.]+ pos=\(([-\d.]+),([-\d.]+),[-\d.]+\))?")
-_REASON = re.compile(r"NAV fallback .*reason=(\w+)")
+_REASON = re.compile(r"NAV fallback .*\breason=(\w+)")
 
 
 def _pct(a, b):
