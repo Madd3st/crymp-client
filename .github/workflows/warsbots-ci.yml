@@ -51,7 +51,7 @@ jobs:
           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotWeaponGoal','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotDoorPath','BotFireLane','BotLootClaim','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy','BotRoamFallback',
-                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotUnstick')
+                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotLog','BotUnstick')
           $failed = @()
           foreach ($t in $tests) {
             $src = "Tests/${t}Tests.cpp"
@@ -122,6 +122,9 @@ jobs:
           & python Tests/test_bot_nav_fallback_reason.py *> units/BotNavFallbackReason-run.log
           if ($LASTEXITCODE) { Get-Content units/BotNavFallbackReason-run.log; throw 'UNIT FAIL: SPEC-006a NAV fallback reasons' }
           'UNIT PASS SPEC-006a NAV fallback reasons'
+          & python Tests/test_bot_log_cost.py *> units/BotLogCost-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotLogCost-run.log; throw 'UNIT FAIL: SPEC-007 log cost wiring guard' }
+          'UNIT PASS SPEC-007 log cost wiring guard'
           & python Tests/test_bot_sub_exit_wiring.py *> units/BotSubExitWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotSubExitWiring-run.log; throw 'UNIT FAIL: SPEC-006a sub exit wiring guard' }
           'UNIT PASS SPEC-006a sub exit wiring guard'
