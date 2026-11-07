@@ -14,6 +14,7 @@
 #include "CryGame/Bots/BotMatch.h"
 #include "CryGame/Bots/BotRemovalPolicy.h"
 #include "CryGame/Bots/BotTeamPlan.h"
+#include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotSpectator.h"
 #include "CryGame/Bots/CryMPEngineAdapter.h"
 #include "CryGame/Game.h"
@@ -219,6 +220,29 @@ bool BotManager::ShouldYieldLadder(unsigned long long ref, const Vec3& a, float 
 		if (entry.second && entry.second->AIEnabled() && entry.second->Brain().YieldLadderTo(ref, a, myDist2, myNumber))
 			return true;
 	return false;
+}
+
+int BotManager::UnstickAllies(const Vec3& p, float radius, EntityId me, std::vector<Vec3>* standing, std::vector<Vec3>* all) const
+{
+	CGameRules* rules = g_pGame ? g_pGame->GetGameRules() : nullptr;
+	const int myTeam = rules ? rules->GetTeam(me) : 0;
+	if (myTeam <= 0) return 0;   // Instant Action: everyone is an enemy, nobody is an ally (Codex review of 96a09959)
+	int stuck = 0;
+	for (const auto& entry : m_bots)
+	{
+		const BotInstance* bot = entry.second.get();
+		if (!bot || !bot->AIEnabled()) continue;
+		CActor* actor = bot->GetActor();
+		if (!actor || actor->GetEntityId() == me || actor->GetHealth() <= 0) continue;
+		if (!UnstickAlly(myTeam, rules->GetTeam(actor->GetEntityId()))) continue;
+		const BotBrain& brain = bot->Brain();
+		const Vec3 q = brain.FeetPosition();
+		if ((q - p).GetLengthSquared() > radius * radius) continue;
+		if (all) all->push_back(q);
+		if (brain.UnstickStuck()) ++stuck;
+		if (standing && (brain.UnstickStuck() || brain.UnstickStanding())) standing->push_back(q);
+	}
+	return stuck;
 }
 
 bool BotManager::IsCreatingActor(const char* entityName) const
@@ -474,6 +498,7 @@ void BotManager::Sweep()
 void BotManager::EndLevel()
 {
     m_demo.EndLevel();
+	PathTimesLevelEnd(); // D-042 gate evidence: "PATHTIME level-end" for the level that just ended
 	m_probe.Stop(); // DS-047: a scenario cannot outlive its level
     if(m_qaTimeScale!=1.f){gEnv->pTimer->SetTimeScale(1.f);m_qaTimeScale=1.f;}
 	m_levelReady = false;
@@ -482,6 +507,7 @@ void BotManager::EndLevel()
 	m_bots.clear();
 	m_spawning = nullptr;
 	BotBrain::ClearAllClaims(); // wb_bot_tactics: no loot claim survives the level (item ids are reused)
+	::WarsBots::FlushTrace(); // the level's last trace lines (PATHTIME level-end) reach the file even if no bot logs again
 }
 
 void BotManager::OnEvent(IEntity* entity, SEntityEvent& event)
