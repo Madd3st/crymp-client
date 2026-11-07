@@ -10,3 +10,7 @@
 
 To switch one feature off, set its line to 0 or delete it. The full list "how to switch off one by one" goes into the
 shared playtest package.
+
+The `.cfg` has no comment lines: CrySystem is the original binary, and how it reads comments is not confirmed in this
+repository. Lines to add once their code PR is merged: `wb_bot_ps_squads 1` (SPEC-005 stage 1), `wb_bot_sub_exit 1`
+(SPEC-006a).
