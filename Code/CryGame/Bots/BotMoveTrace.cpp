@@ -25,7 +25,7 @@ void BotMoveTrace::Update(IGameFramework* framework,const BotManager& manager)
  const bool enabled=framework && rules && MoveTraceEligible(flag,gEnv->bServer,manager.CanRunLocalIA(),gEnv->bMultiplayer,mode);
  if(!enabled){if(m_clock.active)Reset();return;}
  const float now=gEnv->pTimer->GetCurrTime();// C-084: the owner's client trace at wb_move_trace_hz (circle/wall jumps need >= 20 Hz); server and bots stay 4 Hz
- const bool due=m_clock.Poll(now,true,gEnv->bServer?4.f:float(BotConfig::Get().moveTraceHz));++m_frame;
+ const bool due=m_clock.Poll(now,true,gEnv->bServer?float(MoveTraceServerHz(BotConfig::Get().moveTraceServerHz)):float(BotConfig::Get().moveTraceHz));++m_frame;
  if(gEnv->bServer){
   IActorIteratorPtr actors=framework->GetIActorSystem()->CreateActorIterator();
   while(IActor* actor=actors->Next()){
