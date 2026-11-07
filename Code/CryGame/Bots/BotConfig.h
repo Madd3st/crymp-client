@@ -42,6 +42,7 @@ struct BotConfig {
  int tactics=0;        // fragmovie patterns: hold angles from cover, jump-strafe, loot after kills (BotTactics.h), default OFF
  int pathProgress=0;   // weapon-goal progress by remaining navmesh path, not straight distance (snipers), default OFF
  int jumpSanity=1;     // no random travel Strength hops, no obstacle jumps on navmesh paths (owner 25.10), default ON (D-016)
+ int moveTraceServerHz=4; // SPEC-007 log cost: server MOVE TRACE rows/s for every bot and player (1..4), default 4 = unchanged
  int moveTraceHz=4;    // C-084 client MOVE TRACE rate for the local human (1..30), default 4
  int threatScan=0;    // owner 25.10 roof campers: short glances at high sniper spots ahead (BotThreatScan.h), default OFF
  int spectatorAim=0;   // DS-013 FP spectator of a bot: camera uses the same aim as the tracer, no second smoothing, default OFF
