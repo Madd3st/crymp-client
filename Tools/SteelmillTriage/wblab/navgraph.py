@@ -437,7 +437,7 @@ class NavGraph:
         sid, kind = self._scc
         st = Counter(); gl = Counter(); pr = Counter(); reasons = Counter()
         for line in lines:
-            m = re.search(r"NAV fallback .*reason=(\w+)(?: from=(-?\d+) to=(-?\d+))?", line)
+            m = re.search(r"NAV fallback .*\breason=(\w+)(?: from=(-?\d+) to=(-?\d+))?", line)
             if not m: continue
             reasons[m.group(1)] += 1
             if m.group(1) != "no_route" or m.group(2) is None: continue

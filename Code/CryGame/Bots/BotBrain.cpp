@@ -208,6 +208,9 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		BotNav::PathTrace trace;
 		bool found = false;
 		m_meshPathActive = false;
+		// SPEC-006a (Codex b2a0a02 p. 5): the sparse-graph fallback resets trace, so keep the Detour cause separately.
+		const char* detourReason = "none";   // no navmesh on this level
+		const char* fallbackReason = "not_run";
 		if (mesh)
 		{
 			std::vector<float> xyz; const char* why = "navmesh";
@@ -238,18 +241,19 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 			m_path.clear();
 			for (size_t i = 0; i + 2 < xyz.size(); i += 3) m_path.push_back(Vec3(xyz[i], xyz[i + 1], xyz[i + 2]));
 			trace.reason = why;
+			detourReason = why;
 		}
 		if (!found) m_pathLinks.clear();
-		if (!found && nav.Ready()) found = nav.FindPath(feet, goal, m_path, &trace);
+		if (!found && nav.Ready()) { found = nav.FindPath(feet, goal, m_path, &trace); fallbackReason = trace.reason; }
 		m_pathIndex = 0; m_cornerFor = size_t(-1); m_pathStart = feet;
 		m_pathGoal = goal;
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
 		if (!found)
 		{
 			m_path.clear();
-			WB_LOG(2, "[WarsBots] #%d NAV fallback start=(%.2f,%.2f,%.2f) goal=(%.2f,%.2f,%.2f) retry=2.0. actor=%u reason=%s from=%d to=%d expanded=%d",
+			WB_LOG(2, "[WarsBots] #%d NAV fallback start=(%.2f,%.2f,%.2f) goal=(%.2f,%.2f,%.2f) retry=2.0. actor=%u reason=%s from=%d to=%d expanded=%d detour_reason=%s fallback_reason=%s",
 				m_number, feet.x, feet.y, feet.z, goal.x, goal.y, goal.z,
-                m_actorId,trace.reason,trace.from,trace.to,trace.expanded);
+                m_actorId,trace.reason,trace.from,trace.to,trace.expanded,detourReason,fallbackReason);
 		}
 	}
 	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
