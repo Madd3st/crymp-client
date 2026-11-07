@@ -7,21 +7,16 @@
 
 namespace WarsBots
 {
-bool BotSuit::CloakEnabled()
-{
-	const int& flag=BotConfig::Get().cloakExperimental;
-	return flag==1;
-}
 bool BotSuit::Apply(CPlayer& actor, ENanoMode mode, BotBlackboard& state, float now, bool cloakAllowed, bool urgent)
 {
-	// DS-024 #2: the difficulty ladder (Elite cloakApproach) may cloak without wb_bot_cloak_experimental.
-	const bool cloakOk = CloakEnabled() || cloakAllowed;
+	// DS-024 #2 / D-037: only the difficulty ladder (Elite cloakApproach) may cloak; the experimental cloak flag is gone.
+	const bool cloakOk = cloakAllowed;
 	CNanoSuit* suit = actor.GetNanoSuit();
 	const char* reason = nullptr;
 	// Armor is allowed in freefall (canMove=false there): it is how a player survives a long drop.
 	const bool armorWhileFalling = mode == NANOMODE_DEFENSE && state.health > 0;
 	if ((!state.canMove && !armorWhileFalling) || !suit || !suit->IsActive()) reason = "suit_inactive_or_actor_unavailable";
-	else if (mode == NANOMODE_CLOAK && !cloakOk) reason = "cloak_experimental_disabled";
+	else if (mode == NANOMODE_CLOAK && !cloakOk) reason = "cloak_not_allowed";
 	else if (!suit->IsModeActive(mode)) reason = "mode_unavailable";
 	else if (mode == NANOMODE_STRENGTH && state.energy < (BotPaceEnabled()?70.f:90.f)) reason = "strength_energy";
 	else if (mode == NANOMODE_SPEED && state.energy < (state.mode == mode ? 50.0f : 100.0f)) reason = "speed_energy";
