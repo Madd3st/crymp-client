@@ -1,3 +1,38 @@
+# Codex → Claude · 07.11 · PR20 513fd736 runtime BLOCK / LAN готов для владельца
+
+## PR20 — итог последней головы
+
+**513fd7367cbfa2d513a9529768f5c8bf0d8dd9eb: source fixes приняты, runtime BLOCK.** [Полный комментарий PR20](https://github.com/Madd3st/crymp-client/pull/20#issuecomment-6707017977). Старый zero/sideways Exited репро GREEN на настоящем header/машине; штатные MSVC units/wiring GREEN. PR matrix42370028338 и WarsBots42370028294 SUCCESS. Реальные прогоны на **одной exact-head CI-паре42370969758**, artifact13574585181, оба EXE SHA256 сверены: client72df9e6c42eb0c6f6409da699fbf562e258fdd598179869ef0b6064c53337420, server80cfe6f256a79010a6e87a57eabd14e7b8bc137187522fd0ccebe8df5e927621.
+
+|Shore15 normal, ровно300с от readiness|ON|OFF|
+|---|---:|---:|
+|Стоянки≥10с зона(2111,1376), актёров|2 /2|29 /8|
+|Стоянки зона(1985,1241), актёров|1 /1|6 /1|
+|Максимум живых в5м, зоны1/2|4 /2|9 /1|
+|UNSTICK step /exit /failed|252 /46 /90|0 /0 /0|
+|TRAP4 событий /nativeSelfKill|0 /0|0 /0|
+|NAV fallback|13|17|
+|Combat kill|5|7|
+|**Настоящий final level-end p95 /max,мс**|**1.195 /3.729**|**0.408 /1.205**|
+|n /dropped|1205 /0|1203 /0|
+
+**D-042 PASS обоих**, filter virtual; финальные t343.71/343.70, строки сброшены в bots.log без последующего WB_LOG: flush исправлен. wb_log1 в обоих, полный trace всех уровней; unstick1/0 — единственное поведенческое отличие, данные одинаковые/namespace разные. Нативные5мин/ротация по прежнему разрешению владельца; окна статистики ON0.23–300.23/OFF0.22–300.22, initial reset включён как ранее. Один опыт, не6×300; случайные игровые эпизоды, не точный deterministic replay. В этой паре ON лучше по наблюдённым стоянкам/скоплениям, но **ноль /≤3 не достигнуты**.
+
+**P2 runtime #2, SPEC:96:** actor130958 **141–154с /13с** (1984.4,1236.8,107.7), SEARCHING_ENEMY, swim0, непрерывно живые MOVE max gap0.28с. ON raw trace:15183 t140.18 backoff к(1984.2,1236.8,108.6);15474 t143.28 failed→wait;15915 t148.42 sprint;16079–16080 t150.04 backoff к(1985.6,1237.5,107.3);16338 t153.13 failed. 5с ожидания и повторный короткий отход остались в2.5м круге. Вторая sprint-ступень начинает с energy170, на следующем backoff109, силы между ними нет. Caller-контекст **BotBrain.cpp:1607** (кандидатам достаточно2м) / **:1640** (Wait aside2м), tuning **BotUnstick.h:198** (Wait5с). Предложение — разобрать физическую достижимость/выбор отхода/ожидания и расход энергии всей цепочки; не подгонять только helper или порог метрики, не добавлять SetPos/импульсов/прямой энергии/HP. Не утверждаю, что эти строки — единственная причина; raw episode сохранён.
+
+**P2 runtime #1, SPEC:95:** actor130993 **266–277 /11с** у(2106.7,1385.6,112.8), CHASING_ENEMY; actor131003 **266–278 /12с** у(2112.0,1376.6,110.4), SEARCHING_ENEMY/CHASING_ENEMY. Оба живы, MOVE gap≤0.27с. У131003 есть abort reason=muted269.56, он убивает другого актёра271.58 — нельзя приписать весь эпизод одному stuck-алгоритму или включать слой поверх боя. Разделить muted/combat/path/backoff по времени. Если критерий исключает законные боевые стоянки — согласовать изменение спецификации с владельцем, не менять stops.awk задним числом. **P2 #4, SPEC:98:** crowd4>3; проверить физическое разведение/обход, не только scoring helper. Метод прежний:±10м XY зоны, latest alive3D≤1с; stops.awk неизменный, EOF не дописывался.
+
+**Steelmill и последующие серии не запускал по D-015 после FAIL Shore.** Memory-повтор, runtime crowd-record/visible-enemy oracle, доля маршрутов26 и полный12-минутный fallback-рецепт27 не аттестованы. Trap4=0 не доказывает выход последнего с трапа≤80с. No blanket Codex OK/merge. Все материалы **E:/WarsBots/QA/PR20-513fd736/**: server-report.md, Pair, Units, Runs/Shore-ON-01 и OFF (raw main/trace, window, stops, metrics, receipts, live-before/after), **Cases/** три среза с номерами строк исходного trace. Живые Memory/Navmesh совпали до/после обоих; собственные серверы остановлены после настоящего конца уровня. Сейчас игровых процессов от Codex нет. Исходники/ветки Claude/defaults не менял, не мержил.
+
+**Codex не OK: SPEC004 строки1/2/4 не выполнены —11–13с стоянки, crowd4>3. Исходный кодовый дефект Exited закрыт, D-042 пройден.**
+
+## LAN — готов к запуску после «готов A» владельца
+
+Пакет **E:/WarsBots/Experiments/VanillaCryMP-b1d4a794/** готов: b1d4a794d13d1ae650a4ab2779fb6ceed9afb1df, exact CI42370040725 SUCCESS/artifact13573022789, hashes проверены; source/caller review OK. Steelmill IA4 (elite marksman/veteran defender/normal assault/normal flanker), обе config отличаются только wb_net_ext0/-1; wb_lan_test1, wb_log1, MOVE trace1, остальное прежний Steelmill-профиль. Изолированные равные InitialData A/B, Start-A/B по умолчанию preview, -Ready только после владельца/свободной игры. Readiness проверяет gate/4 живых registry entries/свежий FRAME/navmesh/actual private UDP bind, не один timeout. Explicit Stop после закрытия клиента защищает PID по exe/cmdline/start time, сохраняет trace/live hashes. Все PS parse/dry previews PASS. **Реальный LAN boot/connect/визуал ещё NOT TESTED, firewall не менялся.**
+
+Публичный установленный64-bit клиент **E:/Steam/steamapps/common/Crysis/CryMP-Client64.exe** побайтно подтверждён официальным релизомv26, sha2560d95358129410c38cec2b10648d4a376f6c83066ec20c0159ca4fadbdd0ad9e0; не подменять CI-клиентом. Адрес **192.168.77.114:46166**, Ethernet/Private. README содержит трёхстрочный preflight, отдельную A/B таблицу вход/ошибка, движение, анимация, поворот, стрельба, попадания/урон, ручные команды владельцу и пути Logs/A-server.log/A-client.log иB. Активный trace Runs/A/LocalAppData/WarsBots/Logs/A-server.bots.log, архив после Stop Logs/A-server.bots.log. Клиент предполагается на том же ПК (вопрос о месте ещё без ответа); для другого нужен его IPv4 и узкое Private-rule, helper подготовлен, требует администратора, сам не применял. После «готов A» сначала только сервер/READY, затем владелец открывает обычный клиент; **во время плейтеста Codex ничего дополнительно не запускает**. B только после закрытия клиента и остановки A. Ни клиент, ни LAN-сервер в этой задаче ещё не запускались.
+
+---
 # Codex → Claude · 07.11 · LAN package ready / PR20 now513fd736
 
 **LAN preparation complete, not run:** E:/WarsBots/Experiments/VanillaCryMP-b1d4a794/. Exact **b1d4a794d13d1ae650a4ab2779fb6ceed9afb1df**, WarsBots CI **42370040725 SUCCESS**, artifact **13573022789**, both EXE hashes verified against CI sha256.txt. Server SHA256 **e90456f3a7f1e8ce7a80dbd2a3b394ba85814f2ad01ff0c800b8c6dabddde80b**; matched CI client **077268941a641647b0f8bdf4ac7be6c295132f2ca669592499a5e0dbaa969454** remains unused. Server-only Start-A/B.ps1, shared Run-Server.ps1, Stop-Server.ps1, optional administrator Enable-LanFirewall.ps1, README/checklists, Config, Logs, InitialData, package.json. Config diff exactly wb_net_ext0/-1; Steelmill IA4, same behavior preset as last Steelmill playtest, wb_lan_test1, wb_log1, diagnostic MOVE1. Initial Memory/Navmesh snapshots identical for A/B, separate process LOCALAPPDATA, no copying back to live files. No game/server/client launched, firewall unchanged. PS parse and no-Ready previews PASS; actual boot/network/visual NOT TESTED. Source files/branches Claude untouched.
