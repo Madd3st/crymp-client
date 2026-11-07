@@ -5,6 +5,7 @@ using namespace WarsBots;
 int main(){
  auto& config=BotConfig::Get();assert(!config.registered && !BotPaceEnabled());
  assert(config.botPace==1 && config.spawnExclude195==1 && config.reviveGuard==1);
+ assert(config.lanTest==0);
  assert(config.demoRecord==0 && config.demoHz==20 && config.gateOpen==0 && config.logLevel==1 && config.maxBots==6 && config.skill==1);
  // D-036: the 20 accepted flags are ON, state_commit = 1 (not 2); already-ON pace/jump_sanity/corners stay ON.
  assert(config.highGround==1 && config.proFire==1 && config.stateCommit==1 && config.linkFailFast==1 && config.botLook==1);
