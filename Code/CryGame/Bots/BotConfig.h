@@ -5,6 +5,7 @@ namespace WarsBots {
 struct BotConfig {
  bool registered=false;
  int gateOpen=0;
+ int vehicleTargets=0; // owner playtest 07.11: wb_bot_vehicle_targets - an enemy in a vehicle is a target (BotVehicleTarget.h), default OFF
  int lanTest=0;        // owner 06.11: wb_lan_test - the local gate also accepts a private LAN bind, default OFF
  int cloakExperimental=0;
  int maxBots=6;

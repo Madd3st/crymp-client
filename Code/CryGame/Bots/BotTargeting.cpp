@@ -1,6 +1,8 @@
 #include "PortIncludes.h"
 #include "CryGame/Bots/BotTargeting.h"
 #include "CryGame/Bots/BotManager.h"
+#include "CryGame/Bots/BotConfig.h"
+#include "CryGame/Bots/BotVehicleTarget.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryGame/Actors/Actor.h"
@@ -34,17 +36,18 @@ Relation BotTargeting::Classify(const IActor& self, IActor* other)
 		return Relation::Spectator;
 	if (other->GetHealth() <= 0)
 		return Relation::Dead;
-	// Hidden entities and vehicle passengers stay out of scope until vehicle combat exists.
-	if (other->GetEntity()->IsHidden() || other->GetLinkedVehicle())
-		return Relation::Invalid;
+	bool ally = false;
 	if (CGameRules* rules = g_pGame->GetGameRules())
 	{
 		// Team 0 means "no team" (Instant Action free-for-all): everyone is hostile.
 		const int mine = rules->GetTeam(self.GetEntityId());
-		if (mine != 0 && mine == rules->GetTeam(other->GetEntityId()))
-			return Relation::Ally;
+		ally = mine != 0 && mine == rules->GetTeam(other->GetEntityId());
 	}
-	return Relation::Enemy;
+	// Hidden entities and vehicle passengers stay out of scope; wb_bot_vehicle_targets keeps an enemy passenger in.
+	if (VehicleOutOfScope(other->GetEntity()->IsHidden(), other->GetLinkedVehicle() != nullptr, !ally,
+		BotConfig::Get().vehicleTargets == 1))
+		return Relation::Invalid;
+	return ally ? Relation::Ally : Relation::Enemy;
 }
 
 const char* BotTargeting::Name(Relation relation)
