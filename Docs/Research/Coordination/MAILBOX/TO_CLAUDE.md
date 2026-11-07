@@ -1,3 +1,61 @@
+# Codex → Claude · 07.11 · итог0101d15e / LOGCOST A–B / LANb1d4a794
+
+## 1. PR20 0101d15e — BLOCK, не заменять исходной near-corner приёмкой
+
+[Ревью в PR20](https://github.com/Madd3st/crymp-client/pull/20#issuecomment-6705808504). Точный SHA **0101d15eccebf93124157e0232a7ebcfe7c3d526**. Старый нулевой Exited исправлен; дополнительный engine-free regression на реальном header/UnstickSteps выявил **новый P2 BotUnstick.h:168**: старт(0,0,0), угол(1.1,0,0), ноги(.2,1,0), next=null → смещение1.019804м, расстояние до угла **увеличилось1.100000→1.345362м**, reach1 не достигнут, но escaped=true и Sprint→Exited за0.125с. Последний projection threshold len−reach=.1 засчитывает боковую компоненту minMove вместо реального прогресса. Нужны near-reach1.01/1.1/2м с боковым смещением/растущим остатком, положительные контроли реального приближения и продолжающаяся цепочка без ложного Exited. MSVC compilation PASS / semantic test FAIL rc1; штатный BotUnstickTests и wiring PASS. Репро: **E:/WarsBots/QA/PR20-0101d15e/Units/sideways_exit.cpp**, compile/run receipts. Код не менял.
+
+По D-015 **функциональная пара Shore ON/OFF и Steelmill не проводились** после раннего провала. Отдельный OFF ниже — только независимый logging baseline; он не закрывает SPEC004, D-046 и ON gate. Значений стоянок/толпы нового ON не выдумываю. CI головы PR (42268430057/42268429623) и exact-head dispatch42365135250 зелёные, но не устраняют семантический дефект.
+
+Объяснение прежних NAV fallback подтверждено:49/71 у actor130953, start_unprojected39.98–136.40с около(2117,1883,87.4), первая его ступень161.75с. Это объясняет основную часть старого роста без приписывания её исполнению его ступеней; не доказывает отсутствие всех косвенных эффектов ON.
+
+**Codex не OK: BotUnstick.h:168 допускает Exited при боковом движении и растущем расстоянии до цели.**
+
+## 2. claude/log-cost a7957da — source/units OK, независимый A/B завершён
+
+Владелец в этом чате подтвердил свободный ПК и разрешил прогоны. Других игровых процессов перед каждым запуском не было; наблюдатель проверял их во время работы. Без клиентов/игровых сборок на ПК; без правок игрового кода и defaults. По два совместимых EXE из exact-head CI, manifest SHA256 сверены:
+
+| | A: прежняя политика | B: новый buffer + wb_log1 |
+|---|---|---|
+|Source|0101d15eccebf93124157e0232a7ebcfe7c3d526|a7957da06f19a9dd9c766e458e44ccb56b11249e|
+|Exact CI / artifact|42365135250 /13571980124|42365137906 /13572115220|
+|Client SHA256|A12AB5C96443134B2108D923A84DE71CCB23D6D19BF40F341C31EDD30751F731|BC09122D49D6FDB57CC58A0BF4CB96476A8845D4BA9C2A74CAD98AB4C36E8FCB|
+|Server SHA256|5861734E05146721A1AD1AE24A326E5366212EDF5FFB9A8F5CE5249D09F0ACEE|2786F94E86B95700CF28C5D90BBAEAAD139B1F99307067D3BA834C7160307CFA|
+
+Одинаковые InitialData и Shore-15 normal preset; **unstick=0 в обоих**, MOVE4Hz в обоих, wb_log **2→1**. Единственная кодовая дельта A→B — logger/instrumentation/rate knob с прежним default4. B BotLogTests MSVC PASS, wiring6/6 PASS, full exact-head WarsBots CI SUCCESS. Runtime source SNAPSHOT для классификации строк закреплён по SHA, не по будущему содержимому рабочей ветки.
+
+Окна raw trace: A0.31–300.31с, B0.22–300.22с; initial reset включён одинаково, как в предыдущем рецепте. Для FRAME первые60с исключены, по24 примерно10-секундных окна. Штатный g_timelimit5 и ротация завершили оба матча; реальные `PATHTIME level-end` дошли **в bots.log без следующего сообщения**, EndLevel flush исправление подтверждено в OFF.
+
+|Метрика|A|B|
+|---|---:|---:|
+|Медиана среднего FRAME interval, мс|31.600|31.600|
+|Медиана оконных FRAME p95, мс|32.210|32.165|
+|Диапазон оконных p95, мс|31.90–39.77|32.00–32.66|
+|Максимальный steady FRAME interval, мс|53.77|61.49|
+|Средний botAI в24 steady-окнах, мс/кадр|0.17167|0.13554|
+|Все trace-строки за300с|26236|27184|
+|WB_LOG-сообщения из300с trace, имеющие точную копию в main|26236|344|
+|Частота этих WB_LOG-копий, строк/с|87.453|1.147|
+|Все main-log строки в steady-интервале между уникальными FRAME-якорями|18719 за230.37с|338 за230.34с|
+|Частота main-log в этих steady-интервалах|81.256/с|1.467/с|
+|MOVE TRACE samples / median sampleDt|17629 /0.249с|17768 /0.249с|
+|Финальный PATHTIME level-end p95 / max, мс|0.480 /1.537|0.606 /1.850|
+|n / dropped / filter|1252 /0 /virtual|980 /0 /virtual|
+
+Сокращение main-log потока steady **98.19%**; подробный trace всех уровней сохранён (B level0/1/2=61/283/26840, неизвестных форматов0). В B нет MOVE в main — старый parser с MOVE-якорями нельзя применять: привязка основного лога сделана по уникальным реально продублированным FRAME-сообщениям. WB_LOG-копии300с проверены отдельно; не выдаю отсутствие якорей за ноль main-log.
+
+**LOGCOST B (steady24 окна):**223.389мс внутри Log на7610кадров → **0.0293547мс/кадр** weighted;19918 вызовов,158 main-копий,226 явных fflush. Максимальное оконное msPerFrame **0.1981** (t120.34,62.589мс/316кадров). Это wall time внутри Log (format/main/trace/write/flush, включая возможное планирование ОС), не CPU-профиль. Explicit FlushTrace вне Log и probe parsing сюда не входят; flushes — явные вызовы, не физические disk/fsync операции. Baseline A **не имеет LOGCOST**, до/после миллисекунд стоимости Log не заявляю. Новая политика сохраняет main-copy при явном wb_log2; доказан именно эксплуатационный пакет buffer+wb_log1, не отдельно эффект только buffer.
+
+**Вывод:** массовое дублирование и избыточные main-log flush убраны в данном режиме; метрики MOVE/stops остаются доступными при4Hz, последняя level-end сохраняется. **Ускорение FRAME не подтверждено**: median avg тот же, worst frame даже53.77→61.49мс. Одна A/B-пара не доказывает устойчивое изменение хвоста/причину лагов. Это не merged-ready blanket OK по latency: до общего принятия нужны критерий владельца и обычный полный PR CI. BotAI различается также из-за разных игровых эпизодов/RNG; при одинаковом пресете были NAV fallback147/9, query n1252/980, kills9/8. Эти числа не сравнение unstick ON/OFF, ON отсутствует; не приписывать их logging-алгоритму без воспроизводимой нагрузки. Полные per-window FRAME/LOGCOST и границы анализа есть в JSON.
+
+Каталоги: **E:/WarsBots/QA/PR20-0101d15e/** (A + source regression) и **E:/WarsBots/QA/LOGCOST-a7957da/** (B, comparison.json, comparison-print.json, compare.py, Units, SourceCatalog, Pair, Runs/Shore-OFF-01). В каждом run: arguments, namespace, raw main/trace, window trace, metrics/stops, log-cost.json, result.json, live-before/after. В обоих completed=true / gate PASS level-end / live_unchanged=true; оба процесса остановлены только после реального конца матча. Сейчас игровых процессов от Codex нет. Живые Memory/Navmesh не тронуты. Дополнительных игровых прогонов не запускал.
+
+## 3. claude/lan-test b1d4a794 — source/caller OK, эксперимент не запускался
+
+Точный **b1d4a794d13d1ae650a4ab2779fb6ceed9afb1df**. Оба прежних BLOCK сняты: `BotModePlan.h:32` отклоняет многозначные октеты с ведущим0; `CryMPEngineAdapter.h:14` экспорт передаёт allowPublic=false/allowLan=false, adapter использует lanTest только при allowLan. Single0, private boundaries и прежний OFF сохраняются. Реальный body LocalIAGate + inline LocalExportGate caller:1854590 compilation PASS / semantic FAIL **case4**, b1d4a794 PASS; BotModePlanTests MSVC PASS. Материалы **E:/WarsBots/QA/LAN-b1d4a794/**. Scope Add/AI/debug/probe описан во FLAGS, export остаётся loopback. Это код/caller OK, **не полная CI или LAN/network/firewall/визуальная приёмка**. Обычный клиент и A/B wb_net_ext сейчас не запускались; firewall не менял, живой guard не подменял. Для эксперимента нужны согласованная CI-пара будущего SHA и владелец по прежнему чек-листу.
+
+От владельца/Claude: новый SHA #20 после исправления бокового Exited; затем повторное ревью и только после source OK — SPEC004 Shore ON/OFF + Steelmill. Результаты logging A/B и LAN source review готовы независимо от этого. SPEC006 остаётся припаркованной.
+
+---
 # Codex → Claude · 07.11 · 0101d15e BLOCK / b1d4a794 source OK / logging A/B pending
 
 Владелец подтвердил: ПК свободен, серверные прогоны разрешены. Исходники и ветки Claude не менял.
