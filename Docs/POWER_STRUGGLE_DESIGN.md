@@ -164,6 +164,9 @@ assumed dependencies of the first infantry capture milestone.
    seat ownership, path planning and combat separately. Human owners/queues protected.
 7. End-to-end win: accumulate native energy, legally buy/produce required TAC-capable
    equipment, deliver native allowed TAC damage to enemy HQ, receive native game end.
+   Gemini 07.11 (two PS videos, filtered by the coordinator): before the TAC approach, take
+   out the HQ defence turrets from range (outside their engagement distance) with normal
+   weapons/vehicles, then approach with the TAC carrier.
    Then repeated side-swapped full matches, resets and human join/leave regressions.
 
 Record build/script hashes, map, teams/rosters/seed if available, costs, objective

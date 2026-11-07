@@ -1268,7 +1268,7 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 				[&](const TVec& p){
 					const float q[3]={p.x,p.y,p.z};
 					return (!mesh || mesh->Reachable(from,q)) && !EyeRayClear(actor,Vec3(p.x,p.y,p.z+1.6f),chest);
-				}, 8.0f, 6, BotConfig::Get().withdrawFull==1?1u:0u) : -1;
+				}, 8.0f) : -1;
 			if (i>=0) { m_withdrawCover=Vec3(spots[i].p.x,spots[i].p.y,spots[i].p.z); m_withdrawCoverValid=true; m_nextWithdrawPick=m_now+0.5f; }
 			else { m_withdrawUntil=0; }
 		}
@@ -1279,23 +1279,6 @@ void BotBrain::UpdateCombat(BotInstance& bot,CPlayer& actor,float decisionTime)
 	}
 	if (m_now<m_withdrawUntil)
 	{
-		// DS-049: the threat moves during the 1.4 s approach; re-pick full cover on the live threat, abort if none.
-		if (BotConfig::Get().withdrawFull==1 && m_now>=m_nextWithdrawPick)
-		{
-			m_nextWithdrawPick=m_now+0.5f;
-			int n2=0; const CoverCandidate* s2=CurrentCover(n2);
-			const Vec3 b2=actor.GetEntity()->GetWorldPos(); const Vec3 chest2=destination+Vec3(0,0,1.3f);
-			NavMeshCore* mesh2=CurrentNavMesh(); const float from2[3]={b2.x,b2.y,b2.z};
-			const int j=s2 ? PickCover(s2,n2,TVec{b2.x,b2.y,b2.z},TVec{destination.x,destination.y,destination.z},desiredRange,
-				[&](const TVec& p){ const float q[3]={p.x,p.y,p.z}; return (!mesh2 || mesh2->Reachable(from2,q)) && !EyeRayClear(actor,Vec3(p.x,p.y,p.z+1.6f),chest2); }, 8.0f, 6, 1u) : -1;
-			if (j>=0)
-			{
-				const Vec3 np(s2[j].p.x,s2[j].p.y,s2[j].p.z);
-				if (!m_withdrawCoverValid || (np-m_withdrawCover).GetLength()>1.5f) m_withdrawCover=np;
-				m_withdrawCoverValid=true;
-			}
-			else { m_withdrawCoverValid=false; m_withdrawUntil=0; return; }
-		}
 		if (BotConfig::Get().withdrawCover==1 && m_withdrawCoverValid)
 		{
 			const Vec3 feet=actor.GetEntity()->GetWorldPos();
@@ -1484,8 +1467,6 @@ void BotBrain::UpdateChasing(CPlayer& actor,const Vec3& destination,const Vec3& 
 			WBI(gait,m_profile.useSpeed && distance>(m_blackboard.mode==NANOMODE_SPEED?m_profile.sprintChaseRange-2.0f:m_profile.sprintChaseRange) && m_now-m_stateTime>0.4f && m_blackboard.energy>(m_blackboard.mode==NANOMODE_SPEED?50.0f:100.0f)?BotGait::Sprint:BotGait::Run);
 			if (m_intent.gait==BotGait::Sprint) WBI(suitMode,NANOMODE_SPEED);
 		}
-		if (!visible && distance>12.0f && distance<30.0f && BotSuit::CloakEnabled() && m_blackboard.energy>120.0f)
-		{ WBI(suitMode,NANOMODE_CLOAK); WBI(gait,BotGait::Walk); }
 
 
 }
@@ -2301,7 +2282,7 @@ void BotBrain::ApplySuitPolicy(CPlayer& actor)
 	in.travelDistance=travel;
 	in.firing=m_intent.combat==BotCombatIntent::Fire;
 	in.stealthStyle=m_profile.style==BotStyle::Flanker || m_profile.style==BotStyle::Hunter || m_profile.cloakApproach;
-	in.cloakAllowed=BotSuit::CloakEnabled() || m_profile.cloakApproach;
+	in.cloakAllowed=m_profile.cloakApproach;
 	in.canUseSpeed=m_profile.skill!=BotSkill::Beginner || m_profile.useSpeed;
 	const SuitDecision d=m_suitPolicy.Update(in);
 	switch (d.mode)
