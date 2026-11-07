@@ -119,6 +119,9 @@ jobs:
           & python Tests/test_bot_unstick_wiring.py *> units/BotUnstickWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotUnstickWiring-run.log; throw 'UNIT FAIL: SPEC-004 unstick wiring guard' }
           'UNIT PASS SPEC-004 unstick wiring guard'
+          & python Tests/test_bot_lan_gate_caller.py *> units/BotLanGateCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotLanGateCaller-run.log; throw 'UNIT FAIL: actual LAN gate caller' }
+          'UNIT PASS actual LAN gate caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:
