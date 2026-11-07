@@ -144,7 +144,7 @@ enum class UnstickEvent { None = 0, Started, Exited, Failed };
 // held at once and the steps exited with no movement at all (310 exits, actor 130953 at (2117,1880), 131018 at (2108,1384)).
 // So: target = the corner, or the next point when the corner was in reach at the start (no next: no exit, the chain runs
 // on to back-off); at least minMove of XY displacement from s; height within maxDz of the straight line s -> target
-// (close XY on another floor or under a ledge does not count); then the target reached or `advance` made toward it.
+// (close XY on another floor or under a ledge does not count); then the target reached or its distance cut by `advance`.
 inline bool UnstickEscaped(const float s[3], const float c[3], const float* next, const float f[3],
 	float advance = 2.5f, float reach = 1.f, float minMove = 1.f, float maxDz = 1.f)
 {
@@ -165,7 +165,10 @@ inline bool UnstickEscaped(const float s[3], const float c[3], const float* next
 	const float zLine = s[2] + (target[2] - s[2]) * k;
 	if (std::fabs(f[2] - zLine) > maxDz) return false;
 	if (d2(f, target) <= reach * reach) return true;
-	return along >= (advance < len - reach ? advance : len - reach);
+	// Codex 07.11 (0101d15e): a projection counts sideways movement while the distance grows (s=0, c=(1.1,0), f=(0.2,1)).
+	// The exit is a real drop of the distance to the target: `advance`, or all the way into reach on a short leg.
+	const float drop = len - std::sqrt(d2(f, target));
+	return drop >= (advance < len - reach ? advance : len - reach);
 }
 
 // Back-off target: of the candidates (previous corner, both sides, straight back) the one farthest from allies within

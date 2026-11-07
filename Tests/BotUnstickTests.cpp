@@ -309,7 +309,13 @@ int main()
 		assert(!esc(0, 0, 10, 0, 1.3f, 0));
 		assert(!esc(0, 0, 10, 0, -3.f, 0));
 		assert(!esc(0, 0, 10, 0, 0, 3.f));
-		assert(esc(0, 0, 10, 0, 2.5f, 0.5f));
+		assert(esc(0, 0, 10, 0, 2.6f, 0.5f));                          // distance 10 -> 7.42
+		assert(!esc(0, 0, 10, 0, 2.5f, 0.5f));                         // 10 -> 7.52: 2.48 m closer, not 2.5
+		// Codex 07.11 repro: sideways 1 m, the distance grows 1.1 -> 1.35 (projection 0.2 m "toward" the corner)
+		assert(!esc(0, 0, 1.1f, 0, 0.2f, 1.f));
+		assert(!esc(0, 0, 4, 0, 0.3f, 2.f) && !esc(0, 0, 4, 0, 1.f, 3.f));   // sideways / diagonal away: no exit
+		{ const float s[3] = {0, 0, 0}, c[3] = {.6f, 0, 0}, n[3] = {3, 0, 0}, side[3] = {.5f, 1.5f, 0};
+		  assert(!UnstickEscaped(s, c, n, side)); }                     // next point: the same rule
 		assert(esc(0, 0, 2.2f, 0, 1.2f, 0));                          // short leg: within 1 m of the corner after 1.2 m
 		// Codex 06.11 (f9d33a47): the corner already in reach at the start is no exit; zero movement is no exit
 		assert(!esc(0, 0, .5f, 0, 0, 0));
