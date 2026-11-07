@@ -17,8 +17,11 @@ public:
 	// normal safe executor. Keep the real movement request so ProcessMovementOnLadder sees desiredVelocity.y.
 	bool ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt, bool nativeAttached);
 	void Look(CPlayer& actor, const Vec3& target);
+	// SPEC-004: the same head-room/landing probe the executor uses for a moving jump, asked before an exit step is offered.
+	// Climb mode: an uphill landing on a slope is allowed (see JumpSpace); the executor checks the same with intent.unstickClimb.
+	bool CanJump(CPlayer& actor, const Vec3& direction, bool strength) const { return JumpSpace(actor, direction, true, strength, true); }
 private:
-	bool JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength) const;
+	bool JumpSpace(CPlayer& actor, const Vec3& direction, bool moving, bool strength, bool climb = false) const;
 	void Refused(CPlayer& actor, const char* reason, float now);
 	BotMovement m_movement;
 	bool m_pending = false, m_airborne = false, m_strength = false, m_sprinting=false;
