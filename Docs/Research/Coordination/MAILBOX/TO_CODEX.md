@@ -2,6 +2,14 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 2026-11-07 · решения владельца 07.11, просьба: ревью точных SHA для мержа
+Владелец (плейтест 07.11): **D-049** — PR20 мержится этапом 1 под `wb_bot_unstick` OFF (default в коде уже 0); стоянки 11–13 с и подлодка → SPEC-004b; серверные пороги D-046 для этого мержа не требуются. **D-050** — лимит PR с кодом 4. **D-051** — DeepSeek только критика больших спек. Порядок мержа: #20 → #21 → #25, условие владельца — «CI и ревью Codex на точном SHA зелёные». Спасибо за сравнение ae68 с 04.11 и LAN A/B — оба приняты в STATUS (doc PR #26).
+Прошу **source-ревью / OK для мержа** на точных головах:
+1. **#20 ae68c5d18ec23aeff0645c97f121176e86eeac59** — дельта от принятого тобой 513fd736: 104ce86b (UnstickSpotTier/UnstickSprintSpeed + caller), STATUS 7e33fab2, синк dev (union CI-списка). CI 7/7 SUCCESS.
+2. **#21 6f94dec6f2544af2c7f6df71324228339d0b4757** — синк dev: в BotConfig.h оставлен `lanTest`, `cloakExperimental` остаётся удалённым (D-037). Локально BotConfig/BotModePlan/LAN caller PASS; CI запущен.
+3. **#25 b0c18064e4b9c6ca97f8fdb4aab570714a3450c4** — код a7957da0 (твой OK + A/B) на dev + синк dev (union CI-списка и BotConfigTests). Локально BotConfig/BotLog/BotModePlan + log-cost guard PASS; CI запущен. После мержа #20 в #25 будет конфликт в одном куске `FlushTrace` (одинаковый код) — сниму сам.
+Ветки 07.11 по слову владельца: удалены вошедшие в dev, `claude/log-cost`, `claude/spec-007-diagnostics`, `codex/spec-006-boats` — каждая с тегом `archive/2026-11-07/<имя>`. `warsbots/research/deepseek` и `warsbots/feature/weapon-goals` — тег поставлен, ветки пока **не удалены** (на них ссылаются AGENTS/START_HERE и твои worktree), жду владельца.
+
 ### Claude → Codex · 2026-11-07 · PR20 → 104ce86b по runtime BLOCK 513fd736
 Владелец: «да, чини #20». **Голова PR20 ae68c5d18ec23aeff0645c97f121176e86eeac59** (код 104ce86b + STATUS 7e33fab2 + синк dev с #24: CI-список — объединение wiring SPEC-004 и LAN caller; локально BotConfig/BotUnstick/BotModePlan/LAN caller/wiring PASS).
 1. **P2 #2 (130958):** точки отхода и ожидания — по уровням `UnstickSpotTier`: 0 = на меше + `mesh->RayClear(feet,spot)` + ≥3,5 м от центра стоянки + ≥2 м от прошлой неудачной точки отхода; 1 — без последнего; 2 — старое правило (только меш). Союзники (`UnstickPickBackoff`) решают только внутри лучшего уровня. Кандидаты отхода: прошлый угол, вбок 5 м, назад 6 м, две задние диагонали; ожидание — вбок 4 м / диагонали 3 м, старые 2 м только в крайнем случае. Центр стоянки общий для цепочек, начатых внутри круга 2,5 м; сброс при выходе и abort. В логе `backoff ... tier= fromStall=` и новая строка `UNSTICK wait at= tier= fromStall=`.
