@@ -119,6 +119,9 @@ jobs:
           & python Tests/test_bot_unstick_wiring.py *> units/BotUnstickWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotUnstickWiring-run.log; throw 'UNIT FAIL: SPEC-004 unstick wiring guard' }
           'UNIT PASS SPEC-004 unstick wiring guard'
+          & python Tests/test_bot_nav_fallback_reason.py *> units/BotNavFallbackReason-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotNavFallbackReason-run.log; throw 'UNIT FAIL: SPEC-006a NAV fallback reasons' }
+          'UNIT PASS SPEC-006a NAV fallback reasons'
           & python Tests/test_bot_sub_exit_wiring.py *> units/BotSubExitWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotSubExitWiring-run.log; throw 'UNIT FAIL: SPEC-006a sub exit wiring guard' }
           'UNIT PASS SPEC-006a sub exit wiring guard'
