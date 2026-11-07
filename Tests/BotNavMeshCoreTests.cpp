@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <chrono>
 using namespace WarsBots;
 
 int main(int argc, char** argv)
@@ -166,6 +167,61 @@ int main(int argc, char** argv)
 		L.SetLinkMask(0); assert(L.Components() == walkParts);
 		std::printf("links=%d walkParts=%d paths=%d withLinks=%d drop=%d jump=%d strength=%d\n", L.Links(), walkParts, total, withLinks,
 			kindCount[0], kindCount[1], kindCount[2]);
+	}
+	// SPEC-004 cost layer (wb_bot_unstick): inert without a context, multiplies with one, never loses a route.
+	{
+#ifdef DT_VIRTUAL_QUERYFILTER
+		assert(NavMeshCore::CostLayerAvailable());
+#endif
+		const float a[3] = {0, 0, 0}, flat[3] = {10, 0, 0}, up45[3] = {10, 0, 10};
+		assert(m.SegmentCostMultiplier(a, up45, 1) == 1.f);                  // no context: plain Detour cost
+		NavCostContext ctx; ctx.noise = 0.f;
+		m.SetCostContext(&ctx);
+		assert(m.SegmentCostMultiplier(a, flat, 1) == 1.f);
+		assert(std::fabs(m.SegmentCostMultiplier(a, up45, 1) - 3.f) < 0.01f);
+		assert(m.SegmentCostMultiplier(up45, a, 1) == 1.f);                  // downhill: base
+		assert(m.SegmentCostMultiplier(a, up45, 1, true) == 1.f);            // off-mesh link: own executor
+		NavCostBlock blk; blk.from[0] = 0; blk.from[1] = 0; blk.from[2] = 0; blk.to[0] = 10; blk.to[1] = 0; blk.to[2] = 2; blk.until = 5.f;
+		ctx.blocks = &blk; ctx.blockCount = 1; ctx.climb = false;
+		const float up10[3] = {10, 0, 1.7f};
+		assert(m.SegmentCostMultiplier(a, up10, 1) == 10.f && m.SegmentCostMultiplier(up10, a, 1) == 1.f);
+		ctx.blockNow = 5.f; assert(m.SegmentCostMultiplier(a, up10, 1) == 1.f);     // the 30 s back-off ban expired
+		ctx.blocks = nullptr; ctx.blockCount = 0; ctx.climb = true; ctx.noise = 0.15f; ctx.botSeed = 3;
+		std::vector<float> p0, p1; std::vector<NavPathLink> l0, l1; const char* w = nullptr;
+		m.SetCostContext(nullptr);
+		assert(m.FindPathLinks(s289, s176, p0, l0, &w));
+		const auto t0 = std::chrono::steady_clock::now();
+		for (int i = 0; i < 100; ++i) m.FindPathLinks(s289, s176, p0, l0, &w);
+		const auto t1 = std::chrono::steady_clock::now();
+		m.SetCostContext(&ctx);
+		assert(m.FindPathLinks(s289, s176, p1, l1, &w));
+		for (int i = 0; i < 100; ++i) m.FindPathLinks(s289, s176, p1, l1, &w);
+		const auto t2 = std::chrono::steady_clock::now();
+		// a crowd point on the middle corner of the plain path: the route still exists
+		const size_t mid = (p0.size() / 6) * 3;
+		NavCostPoint pt; pt.p[0] = p0[mid]; pt.p[1] = p0[mid + 1]; pt.p[2] = p0[mid + 2]; pt.mult = 50.f;
+		ctx.points = &pt; ctx.pointCount = 1;
+		assert(m.FindPathLinks(s289, s176, p1, l1, &w));
+		// memory resolved to real polygons around a remembered transition
+		TransitionMemory mem; mem.Record(s289[0], s289[1], s289[2], s289[0] - 3.f, s289[1], s289[2], 0.f);
+		m.SetTransitionMemory(mem, 0.f); assert(m.PenaltyPolys() >= 1);
+		m.SetTransitionMemory(mem, 1800.f * 10); assert(m.PenaltyPolys() == 0);   // decayed below 2 %
+		{   // Codex review 96a09959: the penalty decays per query by the memory clock, without a new record or a rebuild
+			TransitionMemory up; up.Record(s289[0], s289[1], s289[2], s289[0] - 3.f, s289[1], s289[2] + 1.f, 0.f);
+			m.SetTransitionMemory(up, 0.f);
+			NavCostContext mc; mc.climb = false; mc.noise = 0.f; mc.memoryClock = 0.f;
+			m.SetCostContext(&mc);
+			const unsigned long long cur = m.PolyAt(s289);
+			const float b2[3] = {s289[0] - 2.f, s289[1], s289[2] + 0.5f};
+			assert(cur && std::fabs(m.SegmentCostMultiplier(s289, b2, cur) - 2.f) < 0.01f);
+			mc.memoryClock = 1800.f; assert(std::fabs(m.SegmentCostMultiplier(s289, b2, cur) - 1.5f) < 0.01f);
+			mc.memoryClock = 3600.f; assert(std::fabs(m.SegmentCostMultiplier(s289, b2, cur) - 1.25f) < 0.01f);
+			assert(m.SegmentCostMultiplier(b2, s289, cur) == 1.f);                 // downhill: no penalty
+			m.SetCostContext(nullptr);
+		}
+		m.SetCostContext(nullptr);
+		std::printf("cost layer: plain %.3f ms, layered %.3f ms per FindPathLinks\n",
+			std::chrono::duration<double, std::milli>(t1 - t0).count() / 100, std::chrono::duration<double, std::milli>(t2 - t1).count() / 100);
 	}
 	std::printf("BotNavMeshCoreTests OK polys=%d parts=%d corners=%zu length=%.1f m\n", m.Polys(), m.Components(), n, len);
 	return 0;

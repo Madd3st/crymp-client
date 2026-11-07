@@ -1255,6 +1255,8 @@ if(WARSBOTS_EXPERIMENTAL_SPAWNER)
     )
     # recastnavigation v1.6.0 (MIT, ThirdParty/recastnavigation/License.txt): Detour runtime only, meshes baked offline.
     target_include_directories(CryGame PRIVATE ThirdParty/recastnavigation/Detour/Include)
+    # SPEC-004 / D-042: virtual dtQueryFilter so BotNavMeshCore's derived filter can price climbs and remembered transitions.
+    target_compile_definitions(CryGame PRIVATE DT_VIRTUAL_QUERYFILTER)
     target_compile_definitions(Base PUBLIC WARSBOTS_EXPERIMENTAL_SPAWNER)
 endif()
 
