@@ -5,6 +5,7 @@
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotCorners.h"
 #include "CryGame/Bots/BotSniperReach.h"
+#include "CryGame/Bots/BotLadder.h"
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -121,6 +122,26 @@ int main(int argc, char** argv)
 			std::string rev; for (size_t r = rows.size(); r-- > 0;) rev += rows[r];
 			NavMeshCore R; assert(R.LoadFile(argv[2], &err));
 			assert(R.LoadLinkKinds(rev.c_str()) == kinds && R.LinkMismatches() > 0);   // same set, any order
+		}
+		{   // SPEC-006a (Codex #38): a slow ladder from links.txt, then the same core reloaded without links keeps nothing
+			std::string t(txt.data()), out; size_t p0 = 0, p1; bool made = false; float la[3] = {0, 0, 0};
+			while ((p1 = t.find('\n', p0)) != std::string::npos)
+			{
+				std::string row = t.substr(p0, p1 - p0 + 1); p0 = p1 + 1;
+				std::istringstream ls(row); float a3[3], b3[3]; int bidir = 0; std::string kind;
+				if (!made && (ls >> a3[0] >> a3[1] >> a3[2] >> b3[0] >> b3[1] >> b3[2] >> bidir >> kind) && kind == "drop" &&
+					SlowLadderLink(true, a3, b3))
+				{ const size_t k = row.find(" drop"); row.replace(k, 5, " ladder"); made = true; la[0] = a3[0]; la[1] = a3[1]; la[2] = a3[2]; }
+				out += row;
+			}
+			assert(made);
+			NavMeshCore Q; assert(Q.LoadFile(argv[2], &err));
+			Q.LoadLinkKinds(out.c_str());
+			assert(Q.SlowLadders() == 1 && Q.NearSlowLadderStart(la));
+			Q.SetLadderMemoryFilter(true);
+			assert(Q.LoadFile(argv[2], &err));                    // LoadMemory -> Reset, no links.txt this time
+			assert(Q.SlowLadders() == 0 && !Q.NearSlowLadderStart(la) && !Q.LadderMemoryFilter());
+			std::printf("slow ladder metadata reset on reload: PASS\n");
 		}
 		const int walkParts = L.Components();
 		std::vector<float> p2; std::vector<NavPathLink> links;

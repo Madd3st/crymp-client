@@ -132,6 +132,7 @@ void NavMeshCore::Reset()
 	if (m_mesh) { dtFreeNavMesh(m_mesh); m_mesh = nullptr; }
 	delete static_cast<NavCostFilter*>(m_filter); m_filter = nullptr; m_penalty.clear(); m_cost = nullptr;
 	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0; m_linkFails.clear(); m_linkMismatch = 0;
+	m_slowLadderStarts.clear(); m_ladderMemoryFilter = false;   // SPEC-006a: never inherit another mesh's ladders (Codex #38)
 }
 
 bool NavMeshCore::LoadMemory(const unsigned char* data, size_t size, std::string* error)

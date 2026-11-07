@@ -345,7 +345,7 @@ void BotBrain::ResetLife()
 {
 	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_unstickSensor.Reset(); m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickPoints.clear(); m_unstickPointsUntil=0;   // SPEC-004
-	m_subQueueRef=0; m_subQueueCooldown=0; m_subQueueSlot=-1; m_subQueueStanding=false;   // SPEC-006a
+	m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueCooldown=0; m_subQueueSlot=-1; m_subQueueStanding=false;   // SPEC-006a
 	m_unstickHasStall=false; m_unstickBackTried=false;
 	m_unstickBlocks.erase(std::remove_if(m_unstickBlocks.begin(),m_unstickBlocks.end(),[this](const NavCostBlock& b){return b.until>=0.f && m_now>=b.until;}),m_unstickBlocks.end());
 	m_locomotion.Reset();
@@ -1499,7 +1499,7 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
 void BotBrain::UpdateUnstick(CPlayer& actor)
 {
 	BotManager& manager=g_pGame->GetBotManager();
-	if (BotConfig::Get().unstick!=1 || !gEnv->bServer || !manager.Owns(actor.GetEntityId()) || !manager.CanRunLocalIA())
+	if (BotConfig::Get().unstick!=1 || !gEnv->bServer || !manager.Owns(actor.GetEntityId()) || !manager.CanRunLocalIA() || LadderQueued())
 	{ m_unstickSteps.Reset(); m_unstickSensor.Reset(); m_unstickStuck=false; m_unstickHasStall=false; m_unstickBackTried=false; return; }
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	const float world=gEnv->pTimer->GetCurrTime();
@@ -1722,6 +1722,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	m_blackboard.obstacleJump=BotJump::None;
 	m_intent.linkJump=false; m_intent.unstickStrength=false; m_intent.unstickClimb=false;
 	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
+	if (BotConfig::Get().ladder!=1) CancelLadderQueue("ladder_off");
 	if (BotConfig::Get().ladder==1 && ApplyLadderExecutor(actor)) return; // DS-107: immediate/exclusive ownership
 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
 	UpdateUnstick(actor); // SPEC-004, wb_bot_unstick (default OFF)
@@ -1819,12 +1820,13 @@ bool BotBrain::YieldLadderTo(unsigned long long ref, const Vec3& a, float myDist
 
 bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 {
-	if (m_ladder.Active()) return true;
-	if (m_link.Active()) return false; // an existing jump/drop keeps ownership until its own completion
+	if (BotConfig::Get().subExit!=1) CancelLadderQueue("flag_off");
+	if (m_ladder.Active()) { CancelLadderQueue("climbing"); return true; }
+	if (m_link.Active()) { CancelLadderQueue("link"); return false; } // an existing jump/drop keeps ownership until its own completion
 	NavMeshCore* mesh=CurrentNavMesh();
-	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return false;
+	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) { CancelLadderQueue(m_intent.combat==BotCombatIntent::Fire?"combat":"path"); return false; }
 	const NavPathLink* l=LinkAtCorner(m_pathIndex);
-	if (!l || l->kind!=NavLinkLadder) { m_subQueueRef=0; return false; }
+	if (!l || l->kind!=NavLinkLadder) { CancelLadderQueue("path"); return false; }
 	const Vec3 a(l->a[0],l->a[1],l->a[2]);
 	const Vec3 feet=m_blackboard.position;
 	const float dist2=(a-feet).GetLengthSquared2D();
@@ -1857,14 +1859,18 @@ bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 bool BotBrain::UpdateLadderQueue(CPlayer& actor,const NavPathLink& l,const Vec3& a,const Vec3& feet,float dist2)
 {
 	if (!SlowLadderLink(true,l.a,l.b) || dist2>7.0f*7.0f || fabs_tpl(a.z-feet.z)>2.0f || m_now<m_subQueueCooldown || !g_pGame)
-	{ m_subQueueRef=0; return false; }
+	{ CancelLadderQueue("out_of_queue"); return false; }
 	const int ahead=g_pGame->GetBotManager().LadderQueueAhead(l.ref,a,dist2,m_number);
-	if (ahead<=0) { m_subQueueRef=0; return false; }   // nobody ahead: the normal gate/yield path decides
-	if (m_subQueueRef!=l.ref) { m_subQueueRef=l.ref; m_subQueueSince=m_now; m_subQueueSlot=-1; }
+	if (ahead<=0) { CancelLadderQueue("front"); return false; }   // nobody ahead: the normal gate/yield path decides
+	if (m_subQueueRef!=l.ref) { CancelLadderQueue("other_ladder"); m_subQueueRef=l.ref; m_subQueueSince=m_now; m_subQueueSlot=-1; }
+	m_subQueueAt=m_now;
+	// Codex #38: the queue owns the bot - an UNSTICK chain already running (jump/strength/back-off) ends here, its intent too.
+	m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickHasStall=false; m_unstickBackTried=false;
+	m_intent.jump=BotJump::None; m_intent.unstickStrength=false; m_intent.unstickClimb=false;
 	if (LadderQueueTimedOut(m_subQueueSince,m_now))
 	{
 		WB_LOG(1,"[WarsBots] #%d SUB QUEUE timeout ladder=%llu waited=%.1f actor=%u.",m_number,l.ref,m_now-m_subQueueSince,actor.GetEntityId());
-		m_subQueueRef=0; m_subQueueCooldown=m_now+10.0f; m_nextRepath=m_minRepath=0;
+		m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueCooldown=m_now+10.0f; m_nextRepath=m_minRepath=0;
 		return false;
 	}
 	Vec3 dir=feet-a; dir.z=0;
@@ -1895,11 +1901,22 @@ bool BotBrain::UnstickAtSlowLadder(const NavMeshCore* mesh) const
 	return mesh->NearSlowLadderStart(to);
 }
 
+bool BotBrain::LadderQueued() const
+{ return m_subQueueRef != 0 && BotConfig::Get().subExit == 1 && m_now - m_subQueueAt <= 0.5f; }
+
+// The one way out of a queue (flag OFF, climbing, link, combat, path change, front of the queue, other ladder, reset).
+void BotBrain::CancelLadderQueue(const char* why)
+{
+	if (!m_subQueueRef) return;
+	WB_LOG(2,"[WarsBots] #%d SUB QUEUE cancel reason=%s ladder=%llu waited=%.1f.",m_number,why,m_subQueueRef,m_now-m_subQueueSince);
+	m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueSlot=-1; m_subQueueStanding=false;
+}
+
 bool BotBrain::LadderQueuedAhead(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const
 {
 	if (!m_running || m_number == myNumber || m_blackboard.health <= 0 || m_blackboard.swimming) return false;
 	if (m_ladder.Active()) return m_ladderNow.ref == ref;
-	const bool queued = m_subQueueRef == ref;
+	const bool queued = LadderQueued() && m_subQueueRef == ref;
 	if (!queued && !YieldLadderTo(ref, a, 1e9f, myNumber)) return false;   // climbing or waiting at the 2 m gate
 	const float d2 = (a - m_blackboard.position).GetLengthSquared2D();
 	return d2 + 0.01f < myDist2 || (std::fabs(d2 - myDist2) <= 0.01f && m_number < myNumber);

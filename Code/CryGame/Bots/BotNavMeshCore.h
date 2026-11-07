@@ -128,6 +128,7 @@ public:
 	// 3 m of one are ignored when read (SetTransitionMemory); the memory file itself is never rewritten.
 	bool NearSlowLadderStart(const float* p, float r = 3.f) const;
 	void SetLadderMemoryFilter(bool on) { m_ladderMemoryFilter = on; }
+	bool LadderMemoryFilter() const { return m_ladderMemoryFilter; }
 	int SlowLadders() const { return int(m_slowLadderStarts.size() / 3); }
 	size_t PenaltyPolys() const { return m_penalty.size(); }
 	// Cost factor of walking a -> b (Crysis frame) inside polygon `cur` under the current context (1 without one).
