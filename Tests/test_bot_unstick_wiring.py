@@ -82,6 +82,15 @@ def main():
     steps = code(body(unstick, 'class UnstickSteps'))
     check('trying && in.escaped' in steps, 'no exit inside back-off or wait')
     check('UnstickPickBackoff(' in upd and 'WBI_MOVETO(m_unstickBack' in upd, 'back-off target picked away from allies')
+    # Codex 07.11 (513fd736, actor 130958): back-off and wait leave the stall circle on a straight mesh walk
+    check(upd.count('UnstickSpotTier(onMesh,onMesh && mesh->RayClear(p,q),(o-stall).GetLength2D(),') == 2,
+          'back-off and wait spots ranked by UnstickSpotTier with a real straight-walk probe from the stall circle')
+    check('if (t<tier) { tier=t; n=0; }' in upd and 'm_unstickBackTried?(o-m_unstickBack).GetLength2D():1e9f' in upd,
+          'only the best tier is scored by allies, the failed back-off spot is avoided')
+    check("m_unstickStall=feet; m_unstickHasStall=true;" in upd and upd.count('m_unstickHasStall=false;') >= 3,
+          'stall anchor kept across chains in the circle, cleared on exit and abort')
+    check('UnstickSprintSpeed(m_blackboard.energy,!m_unstickSteps.StrengthUsed(in.transition))' in upd and 'm_blackboard.energy>50.0f' not in upd,
+          'sprint keeps the energy for the strength step')
     check('JumpSpace(actor,direction,intent.move,strength,intent.unstickClimb)' in loco and 'm_intent.unstickClimb=true' in upd, 'exit jumps use the slope-aware probe in the executor too')
     check('return JumpSpace(actor, direction, true, strength, true);' in loco_h, 'CanJump asks the same climb probe')
 

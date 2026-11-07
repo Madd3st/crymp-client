@@ -341,6 +341,7 @@ void BotBrain::ResetLife()
 {
 	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_unstickSensor.Reset(); m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickPoints.clear(); m_unstickPointsUntil=0;   // SPEC-004
+	m_unstickHasStall=false; m_unstickBackTried=false;
 	m_unstickBlocks.erase(std::remove_if(m_unstickBlocks.begin(),m_unstickBlocks.end(),[this](const NavCostBlock& b){return b.until>=0.f && m_now>=b.until;}),m_unstickBlocks.end());
 	m_locomotion.Reset();
 	m_suit.Reset(); m_blackboard=BotBlackboard(); m_intent=BotIntent();
@@ -1513,7 +1514,7 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 {
 	BotManager& manager=g_pGame->GetBotManager();
 	if (BotConfig::Get().unstick!=1 || !gEnv->bServer || !manager.Owns(actor.GetEntityId()) || !manager.CanRunLocalIA())
-	{ m_unstickSteps.Reset(); m_unstickSensor.Reset(); m_unstickStuck=false; return; }
+	{ m_unstickSteps.Reset(); m_unstickSensor.Reset(); m_unstickStuck=false; m_unstickHasStall=false; m_unstickBackTried=false; return; }
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	const float world=gEnv->pTimer->GetCurrTime();
 	NavMeshCore* mesh=CurrentNavMesh();
@@ -1540,7 +1541,7 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	{
 		if (m_unstickSteps.Step()!=UnstickStep::None)
 			WB_LOG(2,"[WarsBots] #%d UNSTICK abort step=%s reason=muted actor=%u.",m_number,UnstickStepName(m_unstickSteps.Step()),actor.GetEntityId());
-		m_unstickSteps.Reset(); m_unstickStuck=false;
+		m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickHasStall=false; m_unstickBackTried=false;
 		return;
 	}
 	std::vector<Vec3> standing;
@@ -1590,6 +1591,9 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 			m_unstickFrom=feet; m_unstickTo=corner;
 			const size_t ni=min(m_pathIndex,m_path.size()-1)+1;
 			m_unstickHasNext=ni<m_path.size(); m_unstickNext=m_unstickHasNext?m_path[ni]:corner;
+			// one stall circle across the chains that restart inside it (back-off and wait are measured from it)
+			if (!m_unstickHasStall || (feet-m_unstickStall).GetLength2D()>UnstickTuning().placeRadius)
+			{ m_unstickStall=feet; m_unstickHasStall=true; m_unstickBackTried=false; }
 		}
 		m_unstickJumped=false;
 		WB_LOG(1,"[WarsBots] #%d UNSTICK step=%s pos=(%.1f,%.1f,%.1f) corner=(%.1f,%.1f,%.1f) remaining=%.1f stuckFor=%.1f energy=%.0f allies5m=%d actor=%u.",
@@ -1597,23 +1601,31 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 			m_blackboard.energy,stuckNear,actor.GetEntityId());
 		if (step==UnstickStep::Backoff)
 		{
-			// back off where the allies are not: previous corner, either side, straight back (on the mesh only)
-			Vec3 c[4]; int n=0;
+			// back off where the allies are not: previous corner, either side, straight back, both back diagonals. Only the
+			// best tier (UnstickSpotTier): on the mesh, straight walk clear, out of the stall circle, not the spot that failed.
+			Vec3 c[6]; int n=0, tier=3;
 			const Vec3 side(-forward.y,forward.x,0);
 			const Vec3 prev=m_pathIndex>0 && m_pathIndex-1<m_path.size()?m_path[m_pathIndex-1]:m_pathStart;
-			const Vec3 opts[4]={prev,feet+side*4.0f,feet-side*4.0f,feet-forward*5.0f};
+			const Vec3 opts[6]={prev,feet+side*5.0f,feet-side*5.0f,feet-forward*6.0f,feet+(side-forward)*3.5f,feet-(side+forward)*3.5f};
+			const Vec3 stall=m_unstickHasStall?m_unstickStall:feet;
+			const float p[3]={feet.x,feet.y,feet.z};
 			for (const Vec3& o:opts)
 			{
 				if ((o-feet).GetLength2D()<2.0f) continue;
 				const float q[3]={o.x,o.y,o.z};
-				if (mesh->PolyAt(q)) c[n++]=o;
+				const bool onMesh=mesh->PolyAt(q)!=0;
+				const int t=UnstickSpotTier(onMesh,onMesh && mesh->RayClear(p,q),(o-stall).GetLength2D(),
+					m_unstickBackTried?(o-m_unstickBack).GetLength2D():1e9f);
+				if (t>=3) continue;
+				if (t<tier) { tier=t; n=0; }
+				if (t==tier) c[n++]=o;
 			}
 			std::vector<Vec3> alliesNear;
 			manager.UnstickAllies(feet,12.0f,actor.GetEntityId(),nullptr,&alliesNear);
 			const int pick=n?UnstickPickBackoff(c,n,alliesNear.empty()?nullptr:alliesNear.data(),int(alliesNear.size())):-1;
-			m_unstickBack=pick>=0?c[pick]:feet-forward*5.0f;
-			WB_LOG(2,"[WarsBots] #%d UNSTICK backoff to=(%.1f,%.1f,%.1f) choices=%d allies12m=%u actor=%u.",m_number,
-				m_unstickBack.x,m_unstickBack.y,m_unstickBack.z,n,unsigned(alliesNear.size()),actor.GetEntityId());
+			m_unstickBack=pick>=0?c[pick]:feet-forward*5.0f; m_unstickBackTried=true;
+			WB_LOG(2,"[WarsBots] #%d UNSTICK backoff to=(%.1f,%.1f,%.1f) choices=%d tier=%d fromStall=%.1f allies12m=%u actor=%u.",m_number,
+				m_unstickBack.x,m_unstickBack.y,m_unstickBack.z,n,tier,(m_unstickBack-stall).GetLength2D(),unsigned(alliesNear.size()),actor.GetEntityId());
 			NavCostBlock b;
 			b.from[0]=m_unstickFrom.x; b.from[1]=m_unstickFrom.y; b.from[2]=m_unstickFrom.z;
 			b.to[0]=m_unstickTo.x; b.to[1]=m_unstickTo.y; b.to[2]=m_unstickTo.z;
@@ -1625,6 +1637,7 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	case UnstickEvent::Exited:
 	{
 		const bool strength=m_unstickSteps.LastExitByStrength();
+		m_unstickHasStall=false; m_unstickBackTried=false;
 		WB_LOG(1,"[WarsBots] #%d UNSTICK exit strength=%d pos=(%.1f,%.1f,%.1f) remaining=%.1f actor=%u.",m_number,strength?1:0,feet.x,feet.y,feet.z,rem,actor.GetEntityId());
 		if (UnstickShouldRecord(strength,stuckNear,combat))
 		{ const float f[3]={m_unstickFrom.x,m_unstickFrom.y,m_unstickFrom.z}, t[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z}; UnstickRecord(f,t,world); }
@@ -1637,7 +1650,24 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 		{ const float f[3]={m_unstickFrom.x,m_unstickFrom.y,m_unstickFrom.z}, t[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z}; UnstickRecord(f,t,world); }
 		m_nextRepath=m_minRepath=0;   // replan now: the cost context carries this bot's new block
 		m_unstickSensor.Reset();
-		if (step==UnstickStep::Wait) m_unstickWait=feet+Vec3(-forward.y,forward.x,0)*(m_number%2?2.0f:-2.0f);   // wait aside, not in the lane
+		if (step==UnstickStep::Wait)
+		{   // wait aside, not in the lane, and out of the stall circle (UnstickSpotTier); the old 2 m aside only as the last resort
+			const Vec3 side=Vec3(-forward.y,forward.x,0)*(m_number%2?1.0f:-1.0f);
+			const Vec3 stall=m_unstickHasStall?m_unstickStall:feet;
+			const Vec3 opts[4]={feet+side*4.0f,feet-side*4.0f,feet+(side-forward)*3.0f,feet-(side+forward)*3.0f};
+			const float p[3]={feet.x,feet.y,feet.z};
+			int best=3; m_unstickWait=feet+side*2.0f;
+			for (const Vec3& o:opts)
+			{
+				const float q[3]={o.x,o.y,o.z};
+				const bool onMesh=mesh->PolyAt(q)!=0;
+				const int t=UnstickSpotTier(onMesh,onMesh && mesh->RayClear(p,q),(o-stall).GetLength2D(),
+					m_unstickBackTried?(o-m_unstickBack).GetLength2D():1e9f);
+				if (t<best) { best=t; m_unstickWait=o; }
+			}
+			WB_LOG(2,"[WarsBots] #%d UNSTICK wait at=(%.1f,%.1f,%.1f) tier=%d fromStall=%.1f actor=%u.",m_number,
+				m_unstickWait.x,m_unstickWait.y,m_unstickWait.z,best,(m_unstickWait-stall).GetLength2D(),actor.GetEntityId());
+		}
 		break;
 	}
 	default: break;
@@ -1646,7 +1676,8 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	{
 	case UnstickStep::Sprint:
 		WBI(gait,BotGait::Sprint); m_cornerSlow=false;
-		if (m_blackboard.energy>50.0f) WBI(suitMode,NANOMODE_SPEED);
+		// keep the energy for the strength step while it is still ahead on this transition (UnstickSprintSpeed)
+		if (UnstickSprintSpeed(m_blackboard.energy,!m_unstickSteps.StrengthUsed(in.transition))) WBI(suitMode,NANOMODE_SPEED);
 		break;
 	case UnstickStep::Jump:
 		WBI(gait,BotGait::Run); WBI(suitMode,NANOMODE_DEFENSE); m_intent.unstickClimb=true;

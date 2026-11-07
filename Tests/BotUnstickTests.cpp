@@ -420,6 +420,31 @@ int main()
 		assert(UnstickPickBackoff(c, 4, allies, 3) == 1);              // the left side is free
 		assert(UnstickPickBackoff(c, 4, (const Q*)nullptr, 0) == 0);   // no allies: the previous corner, as before
 	}
+	{   // Codex 07.11 (513fd736, actor 130958, 141-154 s): back-off and wait spots must leave the 2.5 m stall circle
+		const float sx = 1984.4f, sy = 1236.8f;
+		auto dist = [&](float x, float y) { return std::sqrt((x - sx) * (x - sx) + (y - sy) * (y - sy)); };
+		// the two real back-off targets and the old 2 m wait: inside the circle, only tier 2 (the old choice)
+		assert(UnstickSpotTier(true, true, dist(1984.2f, 1236.8f), 1e9f) == 2);
+		assert(UnstickSpotTier(true, true, dist(1985.6f, 1237.5f), 1e9f) == 2);
+		assert(UnstickSpotTier(true, true, 2.0f, 1e9f) == 2);
+		assert(UnstickSpotTier(true, true, 2.5f, 1e9f) == 2);       // on the circle edge still counts as standing
+		assert(UnstickSpotTier(true, true, 3.5f, 1e9f) == 0);       // out of the circle with 1 m margin
+		assert(UnstickSpotTier(true, false, 5.0f, 1e9f) == 2);      // far, but the straight walk is blocked
+		assert(UnstickSpotTier(true, true, 5.0f, 1.0f) == 1);       // the spot that already failed: only next tier
+		assert(UnstickSpotTier(false, true, 6.0f, 1e9f) == 3);      // off the mesh: never
+		// tier order beats the ally score: a clear spot near allies wins over a free spot inside the circle
+		const int tiers[3] = {UnstickSpotTier(true, true, 1.9f, 1e9f), UnstickSpotTier(true, true, 4.6f, 1e9f),
+			UnstickSpotTier(true, true, 5.0f, 0.5f)};
+		assert(tiers[0] == 2 && tiers[1] == 0 && tiers[2] == 1);
+	}
+	{   // same run: the sprint in speed mode took 170 -> 109, below the strength threshold 130, strength was skipped
+		assert(!UnstickSprintSpeed(170.f, true));
+		assert(UnstickSprintSpeed(200.f, true));                    // full suit: 200 - 70 still leaves 130
+		assert(UnstickSprintSpeed(170.f, false));                   // strength spent on this transition: speed as before
+		assert(!UnstickSprintSpeed(40.f, false));
+		assert(UnstickJumpInput(true, true, true, 170.f, false).canStrength);   // kept 170 -> strength is still possible
+		assert(!UnstickJumpInput(true, true, true, 109.f, false).canStrength);
+	}
 	std::puts("BotUnstick OK");
 	return 0;
 }

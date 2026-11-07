@@ -128,7 +128,8 @@ private:
     std::vector<NavCostBlock> m_unstickBlocks;   // this bot's uphill blocks (back-off 30 s, failed Strength: permanent)
     std::vector<NavCostPoint> m_unstickPoints;   // standing/stuck allies on the path ahead, for the next repath
     Vec3 m_unstickFrom=Vec3(0,0,0), m_unstickTo=Vec3(0,0,0), m_unstickWait=Vec3(0,0,0), m_unstickBack=Vec3(0,0,0);
-    Vec3 m_unstickNext=Vec3(0,0,0); bool m_unstickHasNext=false;   // the path point after m_unstickTo (UnstickEscaped)
+    Vec3 m_unstickNext=Vec3(0,0,0); bool m_unstickHasNext=false;
+    Vec3 m_unstickStall=Vec3(0,0,0); bool m_unstickHasStall=false, m_unstickBackTried=false;   // stall circle, a back-off spot used   // the path point after m_unstickTo (UnstickEscaped)
     float m_unstickLast=-100.f, m_unstickMuteUntil=0, m_unstickNextTrodden=0, m_unstickNextAlly=0, m_unstickPointsUntil=0;
     bool m_unstickJumped=false, m_unstickStuck=false;
     std::string m_unstickHash;

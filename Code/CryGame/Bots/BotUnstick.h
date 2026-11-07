@@ -191,6 +191,24 @@ int UnstickPickBackoff(const P* c, int n, const P* allies, int allyCount)
 	return best;
 }
 
+// Back-off and wait spots must physically leave the stall circle. Server run 513fd736 (Codex 07.11, actor 130958,
+// 141-154 s at (1984.4,1236.8)): a candidate 2 m from the feet was enough, so both back-offs and the 5 s wait aside
+// (2 m) stayed inside the 2.5 m circle and the bot stood 13 s. Tier of a candidate, lower is better:
+// 0 on the mesh, straight walk clear, `clear` from the stall anchor and `avoidR` from the spot that already failed;
+// 1 the same without the failed-spot rule; 2 only on the mesh (the old choice); 3 off the mesh (never picked).
+inline int UnstickSpotTier(bool onMesh, bool straight, float distStall, float distFailed, float clear = 3.5f, float avoidR = 2.f)
+{
+	if (!onMesh) return 3;
+	if (straight && distStall >= clear) return distFailed >= avoidR ? 0 : 1;
+	return 2;
+}
+
+// Speed mode on the sprint step spends the energy the strength step needs (>= 130). Same run, actor 130958: the second
+// sprint started at 170, the chain reached strength at 109, strength was skipped and the bot went straight to back-off.
+// While strength is still ahead for this transition the sprint keeps a full 70 above the strength threshold.
+inline bool UnstickSprintSpeed(float energy, bool strengthAhead, float strengthNeed = 130.f, float sprintCost = 70.f)
+{ return strengthAhead ? energy >= strengthNeed + sprintCost : energy > 50.f; }
+
 class UnstickSteps {
 public:
 	// 4 s to notice + 1.5 + 1.5 + 2 s of attempts: the back-off starts before the 10 s stall limit (server run 3ba5119c:
