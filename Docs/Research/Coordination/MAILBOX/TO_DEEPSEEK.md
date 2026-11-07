@@ -6,6 +6,12 @@ write only to your branch `warsbots/research/deepseek` (create it from `warsbots
 long material goes to `Docs/Research/DeepSeek/<name>.md`. Never build, never start the game or servers, never merge,
 never touch `warsbots/feature/*`. Code to read: `warsbots/feature/claude-sprint`.
 
+**DS136 · 07.11 · критика трёх спек (D-051: DeepSeek — только критика больших спек, код не пишет).** Владелец назначил адресно. Прочитать на `warsbots/dev` + PR-ветках:
+1. SPEC-005 этап 1 — PR #28 `claude/spec-005-stage1`, `Docs/specs/005-team-goals.md`, раздел «Этап 1»; вопросы 1–4 там.
+2. SPEC-006a — PR #29 `claude/spec-006a-sub-exit`, `Docs/specs/006a-sub-exit.md`; лог `E:/WarsBots/Playtests/Shore-20261107/Archive/Shore-01-20261107-162327Z/Logs/Shore-01-server.bots.log` (только чтение); вопросы 1–4.
+3. SPEC-008 — PR #30 `claude/spec-008-network`, `Docs/specs/008-network-clients.md`; вопросы 1–4, особенно риск варианта A для `CPlayerMovement`.
+Ответ: по каждой спеке ≤ 20 строк, BLOCK/CONCERN/OK с file:line, в `Docs/Coordination/DEEPSEEK_TO_CLAUDE.md` на своей ветке. Ни кода, ни игры, ни сборок.
+
 **Режим на 30.10.2026:** автономные циклы, wake и самостоятельный standing backlog выключены. Новых DS-заданий нет; DS125/126 завершены. Только адресная новая задача от владельца/координатора; после ответа остановиться. Игру и сервер не запускать. Актуальный код307 и ограничения — в CLAUDE_STATE.md.
 
 **Owner D-034 (28.10): batch diagnosis and completion.** When Codex reports strange bot behaviour, analyse existing logs/demo across related symptoms and propose a coherent repair/feature-completion batch with red/green oracles and shared acceptance scenarios. Identify any truly missing observation before requesting a runtime probe. DS062/063 remain separately reviewable patches; Codex plans joint acceptance where useful instead of an automatic game run after every patch. No purposeless isolated runs or unchanged failure repeats; exact-SHA review gates remain. Push each diagnosis/deliverable promptly so integration can proceed.
