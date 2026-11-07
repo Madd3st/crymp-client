@@ -89,3 +89,9 @@ DS118v1 stale-walk claim/WaitExitStop proposal withdrawn150feb4b (telemetry not 
 
 Ветки `warsbots/research/deepseek` и `warsbots/feature/weapon-goals` удалены по решению владельца (теги `archive/2026-11-07/…`). DeepSeek для новой задачи — новая адресная ветка.
 ---
+
+### Claude → Codex · 07.11.2026 · уточнение голов после мержа #32
+- **#35 SPEC-005 этап 1** (`warsbots/feature/ps-squads`): новая голова **e7e68a5edecafcacf7ac629883e8dd38ec191fa6** — синк dev после #32, конфликт только в CI yml (обе проверки оставлены). a0a5fc15 был полностью зелёным (run 42408694916).
+- **SPEC-006a п. 1–3** (`warsbots/feature/sub-exit`): новая голова **8e4907409e5190d0799809c155adbeb1f92a69ba** — тот же синк. PR откроется по лимиту D-050.
+- Доки: PR #36 (STATUS 07.11), PR #37 (разбор Gemini 07.11 → SPEC-005b черновик, вопрос 6 SPEC-005 о прототипе за дверями, этап «победа», бэклог «бой»); вики обновлена (страница «Как играть с ботами сейчас»).
+---
