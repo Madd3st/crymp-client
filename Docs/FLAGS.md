@@ -84,6 +84,6 @@ Cvar из того же `BotConfig.cpp` без префикса `wb_bot_`: в т
 | `wb_move_trace` | OFF | все | Трасса позиций |
 | `wb_demo_record`, `wb_demo_hz` | OFF, 20 | 3 Shore | Запись демо |
 | `wb_fire_diagnostics`, `wb_physics_diagnostics`, `wb_ps_events` | OFF | 3 Shore | Диагностика |
-| `wb_probe_runner`, `wb_qa_socom_only`, `wb_move_trace_hz`, `wb_skill` | OFF, OFF, 4, 1 | нет | Сценарии и QA |
+| `wb_probe_runner`, `wb_qa_socom_only`, `wb_move_trace_hz`, `wb_move_trace_server_hz`, `wb_skill` | OFF, OFF, 4, 4, 1 | нет | Сценарии и QA |
 
 `wb_add`, `wb_remove`, `wb_select`, `wb_list`, `wb_status`, `wb_watch`, `wb_mark`, `wb_debug`, `wb_rules_info`, `wb_revive_at` в лаунчерах — команды, не флаги.
