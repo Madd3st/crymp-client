@@ -52,7 +52,7 @@ struct TeamOrder
 
 // Events of one plan, highest priority first (SPEC-005 p. 5). The caller passes the strongest one seen since the
 // last plan; respawn is per bot (TeamBot::respawned).
-enum class TeamEvent { None = 0, Lost = 1, Captured = 2, Unreachable = 3, PrototypeReady = 4, Roster = 5 };
+enum class TeamEvent { None = 0, Lost = 1, Captured = 2, Unreachable = 3, Roster = 5 };
 
 inline const char* TeamEventName(TeamEvent e)
 {
@@ -61,7 +61,6 @@ inline const char* TeamEventName(TeamEvent e)
 	case TeamEvent::Lost: return "lost";
 	case TeamEvent::Captured: return "captured";
 	case TeamEvent::Unreachable: return "unreachable";
-	case TeamEvent::PrototypeReady: return "prototype_ready";
 	case TeamEvent::Roster: return "roster";
 	default: return "rebalance";
 	}
@@ -84,6 +83,7 @@ inline bool CombatOver(float now, float lastSeen, float lastHit, float quiet = 5
 struct TeamPlanConfig
 {
 	int defendFrom = 5;        // D-054: a defender on every taken point from 5 bots in the team
+	int prototypeFrom = 4;     // owner 08.11: from 4 bots one pair goes to the prototype from the first plan (no energy gate)
 	float quietChange = 20.f;  // a task changes without an event at most once per 20 s
 };
 
@@ -112,16 +112,16 @@ inline const TeamOrder* FindPrev(const std::vector<TeamOrder>& prev, unsigned bo
 
 } // namespace TeamOrdersDetail
 
-// Free targets in commander order: prototype first when the team energy is full (it is then a goal of its own, not a
-// sort position), then bunkers and energy before factories, each by cached path length, id as the tie-break.
-inline std::vector<TeamTarget> FreeTargets(const std::vector<TeamTarget>& targets, int team, bool energyFull)
+// Free targets in commander order: the prototype first when `prototypeFirst` (owner 08.11: from 4 bots, from the first
+// plan, no energy precondition), then bunkers and energy before factories, each by cached path length, id as tie-break.
+inline std::vector<TeamTarget> FreeTargets(const std::vector<TeamTarget>& targets, int team, bool prototypeFirst)
 {
 	std::vector<TeamTarget> out;
 	for (const TeamTarget& t : targets)
 		if (t.kind != PsKind::Spawn && t.owner != team && t.reachable) out.push_back(t);
-	std::sort(out.begin(), out.end(), [energyFull](const TeamTarget& a, const TeamTarget& b)
+	std::sort(out.begin(), out.end(), [prototypeFirst](const TeamTarget& a, const TeamTarget& b)
 	{
-		const bool pa = energyFull && a.kind == PsKind::Prototype, pb = energyFull && b.kind == PsKind::Prototype;
+		const bool pa = prototypeFirst && a.kind == PsKind::Prototype, pb = prototypeFirst && b.kind == PsKind::Prototype;
 		if (pa != pb) return pa;
 		const int ra = TeamOrdersDetail::Rank(a.kind), rb = TeamOrdersDetail::Rank(b.kind);
 		if (ra != rb) return ra < rb;
@@ -156,13 +156,17 @@ inline std::vector<std::vector<TeamBot>> MakePairs(std::vector<TeamBot> bots)
 
 // One plan for one team. `prev` are the orders of the last plan (for the 20 s rule and to keep defenders in place).
 inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targets, const std::vector<TeamBot>& bots,
-	int team, bool energyFull, float now, TeamEvent event, const std::vector<TeamOrder>& prev,
+	int team, float now, TeamEvent event, const std::vector<TeamOrder>& prev,
 	const TeamPlanConfig& cfg = TeamPlanConfig())
 {
 	using namespace TeamOrdersDetail;
 	std::vector<TeamOrder> desired;
 	if (bots.empty()) return desired;
-	const std::vector<TeamTarget> freeT = FreeTargets(targets, team, energyFull);
+	const bool prototypeFirst = int(bots.size()) >= cfg.prototypeFrom;
+	const std::vector<TeamTarget> freeT = FreeTargets(targets, team, prototypeFirst);
+	// extra pairs (more pairs than free targets) go to the most valuable target that is not the prototype: one pair there
+	size_t extra = 0;
+	while (extra + 1 < freeT.size() && freeT[extra].kind == PsKind::Prototype) ++extra;
 	std::vector<TeamTarget> owned;
 	for (const TeamTarget& t : targets) if (t.kind != PsKind::Spawn && t.owner == team && t.reachable) owned.push_back(t);
 	std::sort(owned.begin(), owned.end(), [](const TeamTarget& a, const TeamTarget& b)
@@ -225,7 +229,7 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 		for (size_t p = 0; p < pairs.size(); ++p)
 		{
 			const bool attack = !freeT.empty();
-			const TeamTarget* t = attack ? &freeT[p < freeT.size() ? p : 0] : (owned.empty() ? nullptr : &owned[p % owned.size()]);
+			const TeamTarget* t = attack ? &freeT[p < freeT.size() ? p : extra] : (owned.empty() ? nullptr : &owned[p % owned.size()]);
 			for (const TeamBot& b : pairs[p])
 			{
 				TeamOrder o = order(b, t, !attack, attack ? int(p) + 1 : 0);
@@ -266,7 +270,6 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 		else if (!valid) o.reason = event != TeamEvent::None ? TeamEventName(event) : "invalid";
 		else if (event != TeamEvent::None) o.reason = TeamEventName(event);
 		else o.reason = "rebalance";
-		if (energyFull && o.kind == PsKind::Prototype && !o.hold) o.reason = "prototype_ready";
 		out.push_back(o);
 	}
 	return out;

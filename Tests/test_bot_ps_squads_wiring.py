@@ -38,7 +38,7 @@ check('PS ORDER unreachable once per state change', 'reason=unreachable.' in cap
 check('PS ORDER cache with time', re.search(r'PS ORDER cache targets=%d .* ms=%\.1f', cap))
 check('PS OWN fields', re.search(r'PS OWN team=%d target=%d kind=%s owned=%\.0f lost=%d recaptured=%d', cap))
 check('PS FIGHT over (combat-over definition)', 'PS FIGHT over' in sq and 'CombatOver(' in sq)
-check('team energy from the HUD synched key', 'TSynchedKey(300 + team)' in cap)
+check('owner 08.11: no energy gate for the prototype', 'TeamEnergy' not in cap and 'prototypeFrom = 4' in orders)
 check('path cache built once, not per plan', cap.count('BuildCache(c, *mesh, points, rules);') == 1)
 
 for name, ok in checks: print(('PASS ' if ok else 'FAIL ') + name)

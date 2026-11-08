@@ -259,7 +259,6 @@ struct TeamRuntime
 	std::vector<TeamOrder> orders;
 	float nextPlan = 0.f, nextCheck = 0.f;
 	TeamEvent pending = TeamEvent::None;
-	bool energyFull = false;
 	std::set<unsigned> roster;
 	std::map<unsigned, bool> alive;
 	std::map<int, bool> reach;           // last logged reachability per target (PS ORDER reason=unreachable once)
@@ -322,15 +321,6 @@ void BuildCache(Commander& c, NavMeshCore& mesh, const std::vector<PsCapturePoin
 	WB_LOG(0, "[WarsBots] PS ORDER cache targets=%d bases=%d paths=%d found=%d ms=%.1f.", int(points.size()), found, paths, ok, ms);
 	// Base teams are set by the rules at match start; retry a few times if one base was not found yet.
 	c.cacheBuilt = found == 2 || ++c.cacheTries >= 6;
-}
-
-float TeamEnergy(CGameRules& rules, int team)
-{
-	// Same synched value the HUD shows (HUDPowerStruggle.cpp GetTeamStatus; PowerStruggle:GetTeamPower = key 300+team).
-	float power = 0.f;
-	if (rules.GetSynchedGlobalValueType(TSynchedKey(300 + team)) == SynchedValueType::Int) { int p = 0; rules.GetSynchedGlobalValue(TSynchedKey(300 + team), p); power = float(p); }
-	else rules.GetSynchedGlobalValue(TSynchedKey(300 + team), power);
-	return power;
 }
 
 void Tick(Commander& c, CGameRules& rules, float now)
@@ -410,9 +400,6 @@ void Tick(Commander& c, CGameRules& rules, float now)
 			}
 			targets.push_back(t);
 		}
-		const bool full = TeamEnergy(rules, team) >= 99.5f;
-		if (full && !tr.energyFull) tr.pending = StrongerEvent(tr.pending, TeamEvent::PrototypeReady);
-		tr.energyFull = full;
 		// the team's bots: alive, AI running; respawn and roster events
 		std::vector<TeamBot> bots; std::set<unsigned> roster;
 		g_pGame->GetBotManager().ForEachBot([&](const BotInstance& inst)
@@ -433,7 +420,7 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		tr.roster = roster;
 		if (now < tr.nextPlan && tr.pending == TeamEvent::None && !anyRespawn) continue;
 		tr.nextPlan = now + 5.f;
-		std::vector<TeamOrder> next = PlanTeamOrders(targets, bots, team, full, now, tr.pending, tr.orders);
+		std::vector<TeamOrder> next = PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders);
 		for (const TeamOrder& o : next)
 		{
 			if (o.since != now) continue;   // unchanged task: no line
