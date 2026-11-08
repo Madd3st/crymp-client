@@ -28,6 +28,7 @@ void BotLocomotion::Stop(CPlayer& actor)
 {
 	m_movement.Stop(actor);
 	actor.SetWarsBotActions(false,false,STANCE_STAND);
+	actor.SetWarsBotSwimDown(false);   // Codex #41: a stopped bot never keeps the native swim descent
 	const float nextLog=m_nextLog; Reset(); m_nextLog=nextLog;
 }
 void BotLocomotion::Refused(CPlayer& actor, const char* reason, float now)

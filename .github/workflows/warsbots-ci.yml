@@ -131,6 +131,9 @@ jobs:
           & python Tests/test_bot_sub_exit_queue_caller.py *> units/BotSubExitQueueCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotSubExitQueueCaller-run.log; throw 'UNIT FAIL: SPEC-006a actual queue caller' }
           'UNIT PASS SPEC-006a actual queue caller'
+          & python Tests/test_bot_sub_swim_caller.py *> units/BotSubSwimCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotSubSwimCaller-run.log; throw 'UNIT FAIL: SPEC-006a actual swim-out caller' }
+          'UNIT PASS SPEC-006a actual swim-out caller'
           & python Tests/test_bot_lan_gate_caller.py *> units/BotLanGateCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLanGateCaller-run.log; throw 'UNIT FAIL: actual LAN gate caller' }
           'UNIT PASS actual LAN gate caller'

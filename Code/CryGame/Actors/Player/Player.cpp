@@ -5023,7 +5023,9 @@ void CPlayer::SetWarsBotActions(bool sprint, bool moving, EStance stance)
 void CPlayer::SetWarsBotSwimDown(bool down)
 {
 	if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
-	if (down) m_actions|=ACTION_CROUCH; else m_actions&=~ACTION_CROUCH;
+	// Codex #41: clear only the bit this method set (never a crouch from another source)
+	if (down) { m_actions|=ACTION_CROUCH; m_warsBotSwimDown=true; }
+	else if (m_warsBotSwimDown) { m_actions&=~ACTION_CROUCH; m_warsBotSwimDown=false; }
 }
 void CPlayer::PublishWarsBotJump(bool strength)
 {
