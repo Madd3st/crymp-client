@@ -51,7 +51,7 @@ jobs:
           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotWeaponGoal','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotDoorPath','BotFireLane','BotLootClaim','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy','BotRoamFallback',
-                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotLog','BotUnstick','BotVehicleTarget')
+                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotLog','BotUnstick','BotVehicleTarget','BotTeamOrders')
           $failed = @()
           foreach ($t in $tests) {
             $src = "Tests/${t}Tests.cpp"
@@ -125,6 +125,9 @@ jobs:
           & python Tests/test_bot_log_cost.py *> units/BotLogCost-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLogCost-run.log; throw 'UNIT FAIL: SPEC-007 log cost wiring guard' }
           'UNIT PASS SPEC-007 log cost wiring guard'
+          & python Tests/test_bot_ps_squads_wiring.py *> units/BotPsSquadsWiring-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotPsSquadsWiring-run.log; throw 'UNIT FAIL: SPEC-005 squads wiring guard' }
+          'UNIT PASS SPEC-005 squads wiring guard'
           & python Tests/test_bot_lan_gate_caller.py *> units/BotLanGateCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLanGateCaller-run.log; throw 'UNIT FAIL: actual LAN gate caller' }
           'UNIT PASS actual LAN gate caller'
