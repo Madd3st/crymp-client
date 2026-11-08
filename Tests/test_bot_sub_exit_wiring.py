@@ -10,6 +10,7 @@ rd = lambda p: (root / p).read_text(encoding='utf-8-sig')
 cfg_h, cfg_c, brain, nav, core = (rd('Code/CryGame/Bots/BotConfig.h'), rd('Code/CryGame/Bots/BotConfig.cpp'),
     rd('Code/CryGame/Bots/BotBrain.cpp'), rd('Code/CryGame/Bots/BotNavMesh.cpp'), rd('Code/CryGame/Bots/BotNavMeshCore.cpp'))
 mgr = rd('Code/CryGame/Bots/BotManager.cpp')
+loco, player, intent_h = rd('Code/CryGame/Bots/BotLocomotion.cpp'), rd('Code/CryGame/Actors/Player/Player.cpp'), rd('Code/CryGame/Bots/BotIntent.h')
 checks = []
 def check(name, ok): checks.append((name, bool(ok)))
 def body(src, sig):
@@ -44,6 +45,21 @@ sw = body(brain, 'Vec3 BotBrain::SubSwimStep(')
 check('swim ends on flag OFF / leaving water / 30 s with a replan and cooldown', 'BotConfig::Get().subExit != 1' in sw and '!m_blackboard.swimming' in sw and 'm_now - m_subSwimSince > 30.f' in sw and 'm_subSwimCooldown = m_now + 30.f' in sw)
 check('no SetPos/impulse in the swim', not re.search(r'SetPos|AddImpulse|SetWorldTM', sw))
 check('swim target comes from the navmesh, no coordinates', not re.search(r'21[01]\d\.|18[89]\d\.', sw + st[st.find('SUB SWIM start')-400:st.find('SUB SWIM start')]))
+check('swim descent is the native ACTION_CROUCH, not a pitched aim/target',
+      'm_subSwimDown = mesh->SolidAbove(p);' in sw and 'return Vec3(m_subSwimTarget.x, m_subSwimTarget.y, feet.z);' in sw and '-2.3f' not in sw)
+check('descent requested only while swimming out, flag ON',
+      'm_intent.swimDown = m_subSwim && m_subSwimDown && m_blackboard.swimming && BotConfig::Get().subExit == 1;' in brain
+      and 'subExit == 1;\n\tif (BotConfig::Get().botTurnCap==1)' in brain)
+check('descent default off in the intent', 'bool swimDown = false;' in intent_h)
+check('locomotion sets/clears the descent every tick, only in water, before the canMove refusal',
+      'actor.SetWarsBotSwimDown(intent.swimDown && state.waterMovement);' in loco
+      and loco.index('SetWarsBotSwimDown(intent.swimDown') < loco.index('if (!state.canMove)')
+      and 'actor.SetWarsBotSwimDown(false);' in body(loco, 'bool BotLocomotion::ExecuteLadder('))
+sd = body(player, 'void CPlayer::SetWarsBotSwimDown(')
+check('SetWarsBotSwimDown is server-side and owned-bot only, touches only ACTION_CROUCH',
+      "if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;" in sd
+      and 'm_actions|=ACTION_CROUCH' in sd and 'm_actions&=~ACTION_CROUCH' in sd and not re.search(r'SetPos|AddImpulse|Physics|m_stance', sd))
+check('descent cleared on swim end and reset', brain.count('m_subSwimDown = false') >= 2 and 'm_subSwim=false; m_subSwimDown=false;' in brain)
 for name, ok in checks: print(('PASS ' if ok else 'FAIL ') + name)
 print('%d/%d' % (sum(ok for _, ok in checks), len(checks)))
 raise SystemExit(0 if all(ok for _, ok in checks) else 1)

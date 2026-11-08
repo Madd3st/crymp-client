@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdio>
 #include <string>
+#include <vector>
 
 using namespace WarsBots;
 
@@ -27,6 +28,22 @@ int main(int argc, char** argv)
 	CHECK(std::fabs(w[2] - 99.5f) < 0.2f);                        // the sea surface
 	CHECK(!m.SolidAbove(w));                                       // open sky over the target
 	CHECK(!(w[0] > 2103.f && w[0] < 2138.f && w[1] > 1877.f && w[1] < 1892.f));   // outside the hull box
+	// Codex 59c1391 fact: start (2116.75,1882.61,87.60) -> detour_reason=start_off_mesh. The bounded water start box
+	// reaches at most 2.8 m up (WaterQueryBounds) and the lowest polygon over that point is the deck at 93.4: no start
+	// polygon, whatever the native water plane is. This is why the path never starts there.
+	{
+		const float start[3] = {2116.75f, 1882.61f, 87.60f};
+		for (float lift : {1.5f, 6.f, 11.9f})
+		{
+			const NavQueryBounds b = WaterQueryBounds(lift);
+			CHECK(b.up <= 2.8f);
+			std::vector<float> xyz; std::vector<NavPathLink> links; const char* why = "";
+			CHECK(!m.FindPathLinks(start, w, xyz, links, &why, &b));
+			std::printf("start lift %.1f -> %s\n", lift, why);
+			CHECK(std::string(why) == "start_off_mesh");
+		}
+		CHECK(m.SolidAbove(start));
+	}
 	// out in the open sea: nothing overhead
 	const float sea[3] = {2118.6f, 1898.3f, 98.5f};
 	CHECK(!m.SolidAbove(sea));

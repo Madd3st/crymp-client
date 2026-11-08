@@ -55,7 +55,7 @@ public:
 	bool LadderQueued() const;
 	void CancelLadderQueue(const char* why);
 	Vec3 SubSwimStep(const Vec3& feet);   // SPEC-006a p. 4
-	bool m_subSwim=false; float m_subSwimSince=0, m_subSwimCooldown=0; Vec3 m_subSwimTarget=Vec3(0,0,0);
+	bool m_subSwim=false, m_subSwimDown=false; float m_subSwimSince=0, m_subSwimCooldown=0; Vec3 m_subSwimTarget=Vec3(0,0,0);
 	bool UnstickAtSlowLadder(const NavMeshCore* mesh) const; // SPEC-006a
     // Read-only diagnostic snapshot, consumed after this instance's decision tick.
     unsigned DecisionSerial()const{return m_decisionSerial;}

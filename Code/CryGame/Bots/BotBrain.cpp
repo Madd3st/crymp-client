@@ -251,7 +251,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		if (found && m_subSwim)
 		{   // SPEC-006a p. 4: physical success - the path start projects on the mesh again (no timer, no SetPos)
 			WB_LOG(1, "[WarsBots] #%d SUB SWIM done t=%.1f pos=(%.1f,%.1f,%.1f) actor=%u.", m_number, m_now - m_subSwimSince, feet.x, feet.y, feet.z, m_actorId);
-			m_subSwim = false;
+			m_subSwim = false; m_subSwimDown = false;
 		}
 		if (!found && mesh && BotConfig::Get().subExit == 1 && !m_subSwim && m_now >= m_subSwimCooldown && m_blackboard.swimming &&
 			!std::strncmp(detourReason, "start_", 6))
@@ -259,7 +259,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 			const float p[3] = {feet.x, feet.y, feet.z}; float w[3];
 			if (mesh->SolidAbove(p) && mesh->NearestOpenWater(p, 40.f, w))
 			{   // under a deck/hull in water: swim out to the nearest open water (D-058); target from the baked mesh
-				m_subSwim = true; m_subSwimSince = m_now; m_subSwimTarget = Vec3(w[0], w[1], w[2]);
+				m_subSwim = true; m_subSwimDown = true; m_subSwimSince = m_now; m_subSwimTarget = Vec3(w[0], w[1], w[2]);
 				WB_LOG(1, "[WarsBots] #%d SUB SWIM start pos=(%.1f,%.1f,%.1f) target=(%.1f,%.1f,%.1f) reason=%s actor=%u.", m_number,
 					feet.x, feet.y, feet.z, w[0], w[1], w[2], detourReason, m_actorId);
 			}
@@ -364,7 +364,7 @@ void BotBrain::ResetLife()
 	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_unstickSensor.Reset(); m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickPoints.clear(); m_unstickPointsUntil=0;   // SPEC-004
 	m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueCooldown=0; m_subQueueSlot=-1; m_subQueueStanding=false;   // SPEC-006a
-	m_subSwim=false; m_subSwimCooldown=0;   // SPEC-006a p. 4
+	m_subSwim=false; m_subSwimDown=false; m_subSwimCooldown=0;   // SPEC-006a p. 4
 	m_unstickHasStall=false; m_unstickBackTried=false;
 	m_unstickBlocks.erase(std::remove_if(m_unstickBlocks.begin(),m_unstickBlocks.end(),[this](const NavCostBlock& b){return b.until>=0.f && m_now>=b.until;}),m_unstickBlocks.end());
 	m_locomotion.Reset();
@@ -1783,6 +1783,8 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
         if(BotPaceEnabled() && m_intent.jump==BotJump::None){m_speedTravel=false;WBI(suitMode,NANOMODE_DEFENSE);m_suit.Apply(actor,NANOMODE_DEFENSE,m_blackboard,m_now);}
         else WBI(gait,BotGait::Run);
     }
+	// SPEC-006a p. 4: native swim descent only during the swim-out under a hull (flag-gated through m_subSwim)
+	m_intent.swimDown = m_subSwim && m_subSwimDown && m_blackboard.swimming && BotConfig::Get().subExit == 1;
 	if (BotConfig::Get().botTurnCap==1)
 	{
 		BotIntent capped=m_intent; capped.aim=CappedLook(actor); // C-044: the decision tick never snaps the view
@@ -1920,9 +1922,11 @@ bool BotBrain::UnstickAtSlowLadder(const NavMeshCore* mesh) const
 	return mesh->NearSlowLadderStart(to);
 }
 
-// SPEC-006a p. 4 (D-058): course to the open-water target; while a deck/hull is overhead look ~30 deg down (native
-// swimming follows the view: dive under the hull), with open sky look at the surface target. Ends on the physical
-// success in Steer, on leaving the water, flag OFF, or after 30 s (then the ladder queue stays the backup).
+// SPEC-006a p. 4 (D-058): course to the open-water target by XY. The bot view is yaw-only (Player.cpp
+// UpdateWarsBotMotion) and BotMovement drops direction.z, so pitching the aim would not dive; the descent is the native
+// swim control instead: ACTION_CROUCH while a deck/hull is overhead (ProcessSwimming, world-space down, only after
+// 0.5 s in water), released with open sky so buoyancy brings the bot up. Ends on the physical success in Steer, on
+// leaving the water, flag OFF, or after 30 s (then the ladder queue stays the backup).
 Vec3 BotBrain::SubSwimStep(const Vec3& feet)
 {
 	NavMeshCore* mesh = CurrentNavMesh();
@@ -1930,15 +1934,12 @@ Vec3 BotBrain::SubSwimStep(const Vec3& feet)
 	{
 		const char* why = BotConfig::Get().subExit != 1 ? "flag_off" : !mesh ? "no_mesh" : !m_blackboard.swimming ? "left_water" : "timeout";
 		WB_LOG(1, "[WarsBots] #%d SUB SWIM failed reason=%s t=%.1f pos=(%.1f,%.1f,%.1f) actor=%u.", m_number, why, m_now - m_subSwimSince, feet.x, feet.y, feet.z, m_actorId);
-		m_subSwim = false; m_subSwimCooldown = m_now + 30.f; m_nextRepath = m_minRepath = 0;
+		m_subSwim = false; m_subSwimDown = false; m_subSwimCooldown = m_now + 30.f; m_nextRepath = m_minRepath = 0;
 		return m_pathGoal;
 	}
 	const float p[3] = {feet.x, feet.y, feet.z};
-	Vec3 flat = m_subSwimTarget - feet; flat.z = 0;
-	const float d = flat.GetLength();
-	if (d > 0.01f) flat /= d;
-	if (mesh->SolidAbove(p)) return feet + flat * 4.0f + Vec3(0, 0, -2.3f - 1.2f);   // aim ~30 deg below the horizon
-	return m_subSwimTarget - Vec3(0, 0, 1.2f);                                    // open sky: head for the surface target
+	m_subSwimDown = mesh->SolidAbove(p);   // under the deck/hull: descend; open sky: let the native buoyancy lift
+	return Vec3(m_subSwimTarget.x, m_subSwimTarget.y, feet.z);
 }
 
 bool BotBrain::LadderQueued() const
@@ -2083,7 +2084,7 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 		WBI(gait,BotGait::Walk);
 		WBI(suitMode,NANOMODE_DEFENSE);
 		m_intent.combat=BotCombatIntent::None; m_intent.jump=BotJump::None; m_intent.linkJump=false;
-		m_intent.meshPath=false; m_intent.arrive=0.5f;
+		m_intent.meshPath=false; m_intent.arrive=0.5f; m_intent.swimDown=false;
 		m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
 	}
 	if (m_verbose) WB_LOG(2,"[WarsBots] #%d LADDER phase=%d grab=%d climb=%d settle=%d nativeOn=%d exiting=%d grounded=%d vz=%.2f pos=(%.2f,%.2f,%.2f) actor=%u.",

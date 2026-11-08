@@ -632,6 +632,7 @@ public:
 	bool IsWarsBotActor() const { return m_warsBotActor && GetChannelId()==0; }
 	void EnsureWarsBotSuit();
 	void SetWarsBotActions(bool sprint, bool moving, EStance stance);
+	void SetWarsBotSwimDown(bool down);   // SPEC-006a p. 4
 	void PublishWarsBotJump(bool strength);
 	bool PrepareWarsBotLadderGraph();
 	void RestoreWarsBotLadderGraph();
