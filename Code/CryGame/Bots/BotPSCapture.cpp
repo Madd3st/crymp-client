@@ -19,6 +19,8 @@
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryCommon/CryAction/ILevelSystem.h"
+#include "CryCommon/CryAction/IActorSystem.h"
+#include "CryCommon/CryAction/IItemSystem.h"
 #include "CryCommon/CryEntitySystem/IEntityProxy.h"
 #include "CryCommon/CryEntitySystem/IEntitySystem.h"
 #include "CryCommon/CryScriptSystem/IScriptSystem.h"
@@ -30,6 +32,7 @@
 #include <set>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <string>
 #include <vector>
 
@@ -264,12 +267,18 @@ struct TeamRuntime
 	std::map<int, bool> reach;           // last logged reachability per target (PS ORDER reason=unreachable once)
 	std::map<int, float> ownedSec;       // PS OWN
 	std::map<int, int> lost, recaptured;
+	bool tac = false;                    // SPEC-005b p. 8: a living team member had a TACGun (sticky for the level)
+	std::map<unsigned, Vec3> holdPos;    // SPEC-005b p. 3: defender positions
 };
 
 struct Commander
 {
 	std::string level; NavMeshCore* mesh = nullptr; bool cacheBuilt = false; int cacheTries = 0; float nextCacheTry = 0.f;
 	bool baseFound[3] = {false, false, false};
+	Vec3 basePos[3];                                   // SPEC-005b: the team base (approach fallback)
+	std::vector<PsCapturePoint> points;                // last snapshot (SPEC-005b approach/contested)
+	std::map<int, int> contested;                      // target -> team with a living enemy inside its area (SPEC-005b)
+	float nextHoldScan = 0.f;
 	std::map<int, float> fromBase[3];                  // target -> path length from the team base (absent: no path)
 	std::map<std::pair<int, int>, float> between;      // (from target, to target) -> path length (absent: no path)
 	std::map<int, int> owner;                          // last seen owner per target
@@ -294,7 +303,7 @@ void BuildCache(Commander& c, NavMeshCore& mesh, const std::vector<PsCapturePoin
 		if (capturable || team < 1 || team > 2 || c.baseFound[team]) continue;   // the team's own non-capturable base
 		const Vec3 p = e->GetWorldPos(); const float q[3] = {p.x, p.y, p.z}; float snapped[3];
 		if (!mesh.Project(q, snapped, 8.f, 3.f, 10.f)) { WB_LOG(0, "[WarsBots] PS ORDER cache team=%d base=%u pos=(%.1f,%.1f,%.1f) off_mesh.", team, unsigned(e->GetId()), p.x, p.y, p.z); continue; }
-		base[team] = Vec3(snapped[0], snapped[1], snapped[2]); c.baseFound[team] = true; ++found;
+		base[team] = Vec3(snapped[0], snapped[1], snapped[2]); c.baseFound[team] = true; c.basePos[team] = base[team]; ++found;
 		WB_LOG(0, "[WarsBots] PS ORDER cache team=%d base=%u pos=(%.1f,%.1f,%.1f) snapped=(%.1f,%.1f,%.1f).", team, unsigned(e->GetId()), p.x, p.y, p.z, snapped[0], snapped[1], snapped[2]);
 	}
 	int paths = 0, ok = 0;
@@ -323,6 +332,41 @@ void BuildCache(Commander& c, NavMeshCore& mesh, const std::vector<PsCapturePoin
 	c.cacheBuilt = found == 2 || ++c.cacheTries >= 6;
 }
 
+// SPEC-005b (wb_bot_ps_hold 1), 2 Hz: TAC per team (a living member with a TACGun, sticky for the level, PS HOLD tac) and
+// which owned points have a living enemy inside their native capture area (p. 7, the native capture needs presence).
+void HoldScan(Commander& c, CGameRules& rules, float now)
+{
+	c.nextHoldScan = now + 0.5f;
+	c.contested.clear();
+	IActorSystem* actors = g_pGame->GetIGameFramework()->GetIActorSystem();
+	if (!actors) return;
+	struct Live { unsigned id; int team; Vec3 p; };
+	std::vector<Live> live;
+	IActorIteratorPtr it = actors->CreateActorIterator();
+	while (IActor* a = it->Next())
+	{
+		if (!a || a->GetHealth() <= 0 || !a->GetEntity()) continue;
+		const int team = rules.GetTeam(a->GetEntityId());
+		if (team < 1 || team > 2) continue;
+		live.push_back(Live{unsigned(a->GetEntityId()), team, a->GetEntity()->GetWorldPos()});
+		IInventory* inv = a->GetInventory();
+		if (!c.teams[team].tac && inv && inv->GetCountOfClass("TACGun") > 0)
+		{
+			c.teams[team].tac = true;
+			WB_LOG(1, "[WarsBots] PS HOLD tac team=%d by=%u t=%.1f.", team, unsigned(a->GetEntityId()), now);
+		}
+	}
+	for (const PsCapturePoint& p : c.points)
+	{
+		if (p.ownerTeam < 1 || p.ownerTeam > 2 || !p.areaId) continue;
+		IEntity* area = gEnv->pEntitySystem->GetEntity(EntityId(p.areaId));
+		IEntityAreaProxy* proxy = area ? static_cast<IEntityAreaProxy*>(area->GetProxy(ENTITY_PROXY_AREA)) : nullptr;
+		if (!proxy) continue;
+		for (const Live& l : live)
+			if (l.team != p.ownerTeam && proxy->IsPointWithin(l.p)) { c.contested[p.id] = p.ownerTeam; break; }
+	}
+}
+
 void Tick(Commander& c, CGameRules& rules, float now)
 {
 	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
@@ -345,6 +389,9 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		c.between.clear();
 		BuildCache(c, *mesh, points, rules);
 	}
+
+	c.points = points;
+	if (BotConfig::Get().psHold == 1 && now >= c.nextHoldScan) HoldScan(c, rules, now);
 
 	// ownership events and PS OWN bookkeeping
 	for (const PsCapturePoint& p : points)
@@ -418,9 +465,12 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		bool anyRespawn = false; for (const TeamBot& b : bots) anyRespawn |= b.respawned;
 		if (roster != tr.roster && !tr.roster.empty()) tr.pending = StrongerEvent(tr.pending, TeamEvent::Roster);
 		tr.roster = roster;
+		for (auto h = tr.holdPos.begin(); h != tr.holdPos.end();) h = roster.count(h->first) ? std::next(h) : tr.holdPos.erase(h);
 		if (now < tr.nextPlan && tr.pending == TeamEvent::None && !anyRespawn) continue;
 		tr.nextPlan = now + 5.f;
-		std::vector<TeamOrder> next = PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders);
+		TeamPlanConfig cfg;
+		if (BotConfig::Get().psHold == 1 && !tr.tac) cfg.prototypeHoldFrom = 4;   // SPEC-005b p. 8, until TAC
+		std::vector<TeamOrder> next = PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders, cfg);
 		for (const TeamOrder& o : next)
 		{
 			if (o.since != now) continue;   // unchanged task: no line
@@ -441,6 +491,43 @@ const TeamOrder* PSTeamOrder(unsigned actor, int team, CGameRules& rules)
 	Tick(c, rules, gEnv->pTimer->GetCurrTime());
 	for (const TeamOrder& o : c.teams[team].orders) if (o.bot == actor) return &o;
 	return nullptr;
+}
+
+bool PSHoldInfo(int team, int target, PsHoldInfo& out)
+{
+	out = PsHoldInfo();
+	if (team < 1 || team > 2) return false;
+	Commander& c = Cmd();
+	const PsCapturePoint* self = nullptr;
+	for (const PsCapturePoint& p : c.points) if (p.id == target) { self = &p; break; }
+	if (!self) return false;
+	const int enemy = 3 - team;
+	float best = 1e9f;
+	for (const PsCapturePoint& p : c.points)   // nearest enemy point by cached path
+	{
+		if (p.id == target || p.ownerTeam != enemy || !p.hasDestination) continue;
+		auto w = c.between.find(std::make_pair(target, p.id));
+		if (w != c.between.end() && w->second < best) { best = w->second; out.approach = true; out.ax = p.x; out.ay = p.y; out.az = p.z; }
+	}
+	if (!out.approach && c.baseFound[enemy]) { out.approach = true; out.ax = c.basePos[enemy].x; out.ay = c.basePos[enemy].y; out.az = c.basePos[enemy].z; }
+	auto k = c.contested.find(target);
+	out.contested = k != c.contested.end() && k->second == team;
+	return true;
+}
+
+void PSHoldClaim(int team, unsigned bot, const float* pos)
+{
+	if (team < 1 || team > 2) return;
+	std::map<unsigned, Vec3>& m = Cmd().teams[team].holdPos;
+	if (pos) m[bot] = Vec3(pos[0], pos[1], pos[2]); else m.erase(bot);
+}
+
+void PSHoldOthers(int team, unsigned bot, std::vector<float>& xyz)
+{
+	xyz.clear();
+	if (team < 1 || team > 2) return;
+	for (const auto& h : Cmd().teams[team].holdPos)
+		if (h.first != bot) { xyz.push_back(h.second.x); xyz.push_back(h.second.y); xyz.push_back(h.second.z); }
 }
 
 } // namespace WarsBots

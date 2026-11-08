@@ -228,6 +228,41 @@ int main()
 			const auto o2 = PlanTeamOrders(t, rev, 1, 0.f, TeamEvent::None, none);
 			for (const TeamOrder& x : o) { const TeamOrder* y = Of(o2, x.bot); CHECK(y && y->target == x.target && y->hold == x.hold); }
 		}
+	// SPEC-005b p. 8 (wb_bot_ps_hold): a taken prototype keeps one defender from 4 bots until TAC; off = as before.
+	{
+		TeamPlanConfig hold; hold.prototypeHoldFrom = 4;
+		for (int nb = 3; nb <= 16; ++nb)
+		{
+			const std::vector<TeamTarget> t = Shore(1, 344);   // the team owns the prototype, the rest is free
+			const auto off = PlanTeamOrders(t, Bots(nb), 1, 0.f, TeamEvent::None, none);
+			const auto on = PlanTeamOrders(t, Bots(nb), 1, 0.f, TeamEvent::None, none, hold);
+			const int defOn = CountOn(on, 344, true), defOff = CountOn(off, 344, true);
+			if (nb < 4) CHECK(defOn == 0);
+			else CHECK(defOn == 1);
+			CHECK(defOff == (nb >= 5 ? 1 : 0));                 // flag OFF: D-054 as before
+			int attackers = 0; for (const TeamOrder& x : on) attackers += !x.hold;
+			if (nb == 4) CHECK(attackers == 3);                  // 4 bots: the defender and one triple attacking
+			if (nb >= 4) CHECK(attackers >= 2);                  // at least one pair keeps attacking
+			// after TAC the caller passes 0: the plan is exactly the stage-1 plan
+			const auto tac = PlanTeamOrders(t, Bots(nb), 1, 0.f, TeamEvent::None, none, TeamPlanConfig());
+			CHECK(tac.size() == off.size());
+			for (const TeamOrder& x : off) { const TeamOrder* y = Of(tac, x.bot); CHECK(y && y->target == x.target && y->hold == x.hold); }
+			// with >= 5 bots the rule changes nothing (the prototype is already defended first)
+			if (nb >= 5) for (const TeamOrder& x : off) { const TeamOrder* y = Of(on, x.bot); CHECK(y && y->target == x.target && y->hold == x.hold); }
+			// the defender stays on the prototype across an event re-plan
+			const auto again = PlanTeamOrders(t, Bots(nb), 1, 30.f, TeamEvent::Captured, on, hold);
+			if (nb >= 4) CHECK(CountOn(again, 344, true) == 1);
+			for (const TeamOrder& x : on)
+				if (x.hold && x.target == 344) { const TeamOrder* y = Of(again, x.bot); CHECK(y && y->target == 344 && y->hold); }
+		}
+		// a non-prototype own point below 5 bots gets no defender even with the rule on
+		const auto o = PlanTeamOrders(Shore(1, 96), Bots(4), 1, 0.f, TeamEvent::None, none, hold);
+		CHECK(CountOn(o, 96, true) == 0);
+		// prototype and a bunker owned, 4 bots: only the prototype is defended
+		std::vector<TeamTarget> two = Shore(1, 344); for (TeamTarget& x : two) if (x.id == 96) x.owner = 1;
+		const auto o2 = PlanTeamOrders(two, Bots(4), 1, 0.f, TeamEvent::None, none, hold);
+		CHECK(CountOn(o2, 344, true) == 1 && CountOn(o2, 96, true) == 0);
+	}
 	std::printf(failures ? "BotTeamOrdersTests FAIL %d\n" : "BotTeamOrdersTests PASS\n", failures);
 	return failures ? 1 : 0;
 }
