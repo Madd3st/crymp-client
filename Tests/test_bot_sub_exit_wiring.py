@@ -34,6 +34,16 @@ check('memory filter is read-only and follows the flag', nav.count('SetLadderMem
 check('filter applied when reading memory', 'm_ladderMemoryFilter && NearSlowLadderStart(to)' in core)
 check('spread ignores allies in a ladder queue', 'if (brain.LadderQueued()) continue;' in mgr)
 
+# SPEC-006a p. 4 (D-058): swim-out under the hull
+st = body(brain, 'Vec3 BotBrain::Steer(')
+check('swim starts only with the flag, swimming, a Detour start failure, solid above and open water found',
+      "BotConfig::Get().subExit == 1 && !m_subSwim" in st and 'm_blackboard.swimming' in st and '!std::strncmp(detourReason, "start_", 6)' in st
+      and 'mesh->SolidAbove(p) && mesh->NearestOpenWater(p, 40.f, w)' in st)
+check('swim success is the path found again (physical), not a timer', 'if (found && m_subSwim)' in st and 'SUB SWIM done' in st)
+sw = body(brain, 'Vec3 BotBrain::SubSwimStep(')
+check('swim ends on flag OFF / leaving water / 30 s with a replan and cooldown', 'BotConfig::Get().subExit != 1' in sw and '!m_blackboard.swimming' in sw and 'm_now - m_subSwimSince > 30.f' in sw and 'm_subSwimCooldown = m_now + 30.f' in sw)
+check('no SetPos/impulse in the swim', not re.search(r'SetPos|AddImpulse|SetWorldTM', sw))
+check('swim target comes from the navmesh, no coordinates', not re.search(r'21[01]\d\.|18[89]\d\.', sw + st[st.find('SUB SWIM start')-400:st.find('SUB SWIM start')]))
 for name, ok in checks: print(('PASS ' if ok else 'FAIL ') + name)
 print('%d/%d' % (sum(ok for _, ok in checks), len(checks)))
 raise SystemExit(0 if all(ok for _, ok in checks) else 1)

@@ -1,5 +1,6 @@
 #include "PortIncludes.h"
 #include <algorithm>
+#include <cstring>
 #include <chrono>
 #include "BotConfig.h"
 #include "CryGame/Bots/BotDifficulty.h"
@@ -247,6 +248,22 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 		m_pathIndex = 0; m_cornerFor = size_t(-1); m_pathStart = feet;
 		m_pathGoal = goal;
 		m_nextRepath = m_now + (found ? 5.0f : 2.0f);
+		if (found && m_subSwim)
+		{   // SPEC-006a p. 4: physical success - the path start projects on the mesh again (no timer, no SetPos)
+			WB_LOG(1, "[WarsBots] #%d SUB SWIM done t=%.1f pos=(%.1f,%.1f,%.1f) actor=%u.", m_number, m_now - m_subSwimSince, feet.x, feet.y, feet.z, m_actorId);
+			m_subSwim = false;
+		}
+		if (!found && mesh && BotConfig::Get().subExit == 1 && !m_subSwim && m_now >= m_subSwimCooldown && m_blackboard.swimming &&
+			!std::strncmp(detourReason, "start_", 6))
+		{
+			const float p[3] = {feet.x, feet.y, feet.z}; float w[3];
+			if (mesh->SolidAbove(p) && mesh->NearestOpenWater(p, 40.f, w))
+			{   // under a deck/hull in water: swim out to the nearest open water (D-058); target from the baked mesh
+				m_subSwim = true; m_subSwimSince = m_now; m_subSwimTarget = Vec3(w[0], w[1], w[2]);
+				WB_LOG(1, "[WarsBots] #%d SUB SWIM start pos=(%.1f,%.1f,%.1f) target=(%.1f,%.1f,%.1f) reason=%s actor=%u.", m_number,
+					feet.x, feet.y, feet.z, w[0], w[1], w[2], detourReason, m_actorId);
+			}
+		}
 		if (!found)
 		{
 			m_path.clear();
@@ -255,6 +272,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
                 m_actorId,trace.reason,trace.from,trace.to,trace.expanded,detourReason,fallbackReason);
 		}
 	}
+	if (m_path.empty() && m_subSwim) { m_meshPathActive = false; return SubSwimStep(feet); }   // SPEC-006a p. 4
 	if (m_path.empty()) { m_meshPathActive = false; return goal; } // Sparse graph can miss a physically reachable item.
 	m_intent.meshPath = m_meshPathActive; // stairs on the corner path are walkable (BotMovement knee ray off)
 	// C-074: BotMovement::Move stops 0.8 m short of its destination; corners v2 passes a corner only within 0.35 m, so
@@ -346,6 +364,7 @@ void BotBrain::ResetLife()
 	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_unstickSensor.Reset(); m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickPoints.clear(); m_unstickPointsUntil=0;   // SPEC-004
 	m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueCooldown=0; m_subQueueSlot=-1; m_subQueueStanding=false;   // SPEC-006a
+	m_subSwim=false; m_subSwimCooldown=0;   // SPEC-006a p. 4
 	m_unstickHasStall=false; m_unstickBackTried=false;
 	m_unstickBlocks.erase(std::remove_if(m_unstickBlocks.begin(),m_unstickBlocks.end(),[this](const NavCostBlock& b){return b.until>=0.f && m_now>=b.until;}),m_unstickBlocks.end());
 	m_locomotion.Reset();
@@ -1899,6 +1918,27 @@ bool BotBrain::UnstickAtSlowLadder(const NavMeshCore* mesh) const
 	if (BotConfig::Get().subExit!=1 || !mesh) return false;
 	const float to[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z};
 	return mesh->NearSlowLadderStart(to);
+}
+
+// SPEC-006a p. 4 (D-058): course to the open-water target; while a deck/hull is overhead look ~30 deg down (native
+// swimming follows the view: dive under the hull), with open sky look at the surface target. Ends on the physical
+// success in Steer, on leaving the water, flag OFF, or after 30 s (then the ladder queue stays the backup).
+Vec3 BotBrain::SubSwimStep(const Vec3& feet)
+{
+	NavMeshCore* mesh = CurrentNavMesh();
+	if (BotConfig::Get().subExit != 1 || !mesh || !m_blackboard.swimming || m_now - m_subSwimSince > 30.f)
+	{
+		const char* why = BotConfig::Get().subExit != 1 ? "flag_off" : !mesh ? "no_mesh" : !m_blackboard.swimming ? "left_water" : "timeout";
+		WB_LOG(1, "[WarsBots] #%d SUB SWIM failed reason=%s t=%.1f pos=(%.1f,%.1f,%.1f) actor=%u.", m_number, why, m_now - m_subSwimSince, feet.x, feet.y, feet.z, m_actorId);
+		m_subSwim = false; m_subSwimCooldown = m_now + 30.f; m_nextRepath = m_minRepath = 0;
+		return m_pathGoal;
+	}
+	const float p[3] = {feet.x, feet.y, feet.z};
+	Vec3 flat = m_subSwimTarget - feet; flat.z = 0;
+	const float d = flat.GetLength();
+	if (d > 0.01f) flat /= d;
+	if (mesh->SolidAbove(p)) return feet + flat * 4.0f + Vec3(0, 0, -2.3f - 1.2f);   // aim ~30 deg below the horizon
+	return m_subSwimTarget - Vec3(0, 0, 1.2f);                                    // open sky: head for the surface target
 }
 
 bool BotBrain::LadderQueued() const

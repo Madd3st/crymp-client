@@ -127,6 +127,11 @@ public:
 	// SPEC-006a: starts of ladder links longer than 2 s (LoadLinkKinds). With the filter on, memory records ending within
 	// 3 m of one are ignored when read (SetTransitionMemory); the memory file itself is never rewritten.
 	bool NearSlowLadderStart(const float* p, float r = 3.f) const;
+	// SPEC-006a p. 4 (D-058): a non-water ground polygon above p within `side` m (XY) and up to `up` m higher - the point
+	// is under a deck/hull. Read from the baked mesh only, no level coordinates.
+	bool SolidAbove(const float* p, float side = 0.6f, float up = 15.f) const;
+	// Centre of the nearest open-water polygon (area kWaterArea with nothing solid above it) within `radius` m (XY).
+	bool NearestOpenWater(const float* p, float radius, float* out) const;
 	void SetLadderMemoryFilter(bool on) { m_ladderMemoryFilter = on; }
 	bool LadderMemoryFilter() const { return m_ladderMemoryFilter; }
 	int SlowLadders() const { return int(m_slowLadderStarts.size() / 3); }
