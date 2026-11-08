@@ -124,6 +124,12 @@ public:
 	const NavCostContext* CostContext() const { return m_cost; }
 	// Remembered directed transitions, resolved to the polygons at their start, middle and end. `clock` decays them.
 	void SetTransitionMemory(const TransitionMemory& memory, float clock);
+	// SPEC-006a: starts of ladder links longer than 2 s (LoadLinkKinds). With the filter on, memory records ending within
+	// 3 m of one are ignored when read (SetTransitionMemory); the memory file itself is never rewritten.
+	bool NearSlowLadderStart(const float* p, float r = 3.f) const;
+	void SetLadderMemoryFilter(bool on) { m_ladderMemoryFilter = on; }
+	bool LadderMemoryFilter() const { return m_ladderMemoryFilter; }
+	int SlowLadders() const { return int(m_slowLadderStarts.size() / 3); }
 	size_t PenaltyPolys() const { return m_penalty.size(); }
 	// Cost factor of walking a -> b (Crysis frame) inside polygon `cur` under the current context (1 without one).
 	float SegmentCostMultiplier(const float* a, const float* b, unsigned long long cur, bool offMesh = false) const;
@@ -152,6 +158,8 @@ private:
 	struct PolyPenalty { TransitionPenalty t; float value; };   // value: decayed at resolve time (fallback)
 	float m_penaltyHalfLife = 1800.f;
 	std::unordered_map<unsigned long long, std::vector<PolyPenalty>> m_penalty;
+	std::vector<float> m_slowLadderStarts;   // x,y,z triples (SPEC-006a)
+	bool m_ladderMemoryFilter = false;
 };
 
 } // namespace WarsBots

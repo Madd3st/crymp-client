@@ -41,6 +41,24 @@ inline bool LadderApproachInvalid(LadderPhase phase, bool onLadder, bool exiting
 	return !std::isfinite(feetZ) || !std::isfinite(baseZ) || std::fabs(feetZ - baseZ) > maxDz;
 }
 
+// SPEC-006a (wb_bot_sub_exit): queue for a slow ladder. A ladder link is "slow" when its traversal takes longer than
+// `minSeconds` at the native climb speed (Shore submarine: 9.5 m in 11.7 s); jumps and short links stay as they are.
+inline bool SlowLadderLink(bool isLadder, const float* a, const float* b, float minSeconds = 2.f, float climbSpeed = 0.8f)
+{
+	if (!isLadder || !a || !b) return false;
+	const float x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2];
+	return std::sqrt(x * x + y * y + z * z) > minSeconds * climbSpeed;
+}
+// p within r (XY) and dz (height) of a link start.
+inline bool NearLinkStart(const float* p, const float* a, float r = 3.f, float dz = 2.f)
+{
+	const float x = p[0] - a[0], y = p[1] - a[1];
+	return x * x + y * y <= r * r && std::fabs(p[2] - a[2]) <= dz;
+}
+// Queue slot distance from the ladder base by the number of bots ahead (1 = someone is climbing or at the gate).
+inline float LadderQueueOffset(int ahead) { return ahead <= 1 ? 2.5f : ahead == 2 ? 4.f : 5.5f; }
+inline bool LadderQueueTimedOut(float since, float now, float timeout = 25.f) { return now - since >= timeout; }
+
 // One bot owns a ladder link at a time. While a teammate is climbing `ref` (or waiting closer to its base inside
 // the 2 m gate), hold outside the grab zone instead of starting a parallel 3 s grab timer into an occupied shaft.
 inline bool ShouldYieldLadderStart(unsigned long long ref, float myDist2, int myNumber,
