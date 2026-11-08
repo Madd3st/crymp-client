@@ -29,6 +29,7 @@
 | `wb_bot_tactics` | Fragmovie patterns: a target that broke line of sight is held from a nearby cover spot tha… | ON (D-036) | accepted | accepted | Во всех лаунчерах, аудит держал на испытании |
 | `wb_bot_path_progress` | A weapon goal counts as progressing while the remaining navmesh path shrinks (not the stra… | OFF | trial | trial | Нужен для снайперов, приёмки сценарием ещё нет |
 | `wb_bot_jump_sanity` | Owner playtest 25.10 (364 Strength jumps, 58 on baked links): no random Strength hop while… | ON | accepted | accepted | Решение владельца принято, уже ON, убрать флаг |
+| `wb_bot_vehicle_targets` | Owner playtest 07.11 (bots never shot at the player in a TAC tank): an enemy in a vehicle stays a target… | OFF | trial | trial | Новый, D-050: свой флаг OFF, проверка в общей сборке плейтеста |
 | `wb_bot_threat_scan` | Owner 25.10 (camped roofs with a sniper rifle, no bot ever looked up): without a visible t… | ON (D-036) | accepted | accepted | Во всех лаунчерах, аудит советует включить |
 | `wb_bot_spectator_aim` | DS-013 / owner 25.10 (bot aim late and crooked in first-person spectator): the spectator c… | ON (D-036) | accepted | accepted | Во всех лаунчерах, аудит советует включить |
 | `wb_bot_difficulty` | DS-014 / owner 25.10 (difficulties felt the same): one table per skill sets reaction (0.9/… | ON (D-036) | accepted | accepted | Плейтест владельца прошёл, аудит советует включить |
