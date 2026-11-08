@@ -8,6 +8,7 @@
 #include "CryGame/Bots/BotDifficulty.h"
 #include "CryGame/Bots/BotTargeting.h"
 #include "CryGame/Bots/BotFireLane.h"
+#include "CryGame/Bots/BotVehicleTarget.h"
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Actors/Player/Player.h"
 #include "CryGame/Bots/BotConfig.h"
@@ -64,6 +65,10 @@ bool ClearRay(CActor& actor, IActor& target, const Vec3& origin, const Vec3& end
 	IEntity* entity = gEnv->pEntitySystem->GetEntityFromPhysics(hit.pCollider);
 	// Living-body and character/part physics can differ while belonging to one Player.
 	if (entity && entity->GetId() == target.GetEntityId()) return true;
+	// wb_bot_vehicle_targets: the ray stopped on the target's own vehicle - the hull is what the shot hits
+	IVehicle* vehicle = target.GetLinkedVehicle();
+	if (entity && VehicleRayReaches(entity->GetId(), vehicle && vehicle->GetEntity() ? vehicle->GetEntity()->GetId() : 0, BotConfig::Get().vehicleTargets == 1))
+		return true;
 	obstruction = entity ? entity->GetId() : 0; // 0 includes static level geometry.
 	IItem* item = entity ? g_pGame->GetIGameFramework()->GetIItemSystem()->GetItem(entity->GetId()) : nullptr;
 	return item && item->GetOwnerId() == target.GetEntityId() && target.GetCurrentItem() == item;
@@ -153,6 +158,14 @@ void BotCombat::TraceFriendlyHit(CActor& shooter, IActor& ally, EntityId target,
 }
 Vec3 BotCombat::AimPoint(IActor& target)
 {
+	// wb_bot_vehicle_targets: a passenger hidden by a closed hull is aimed at through the hull centre (local bounds)
+	if (IVehicle* vehicle = target.GetLinkedVehicle())
+		if (VehicleAimAtHull(true, target.GetEntity()->IsHidden(), BotConfig::Get().vehicleTargets == 1))
+		{
+			IEntity* hull = vehicle->GetEntity();
+			AABB box; hull->GetLocalBounds(box);
+			if (box.min.x < box.max.x) return hull->GetWorldTM() * box.GetCenter();
+		}
 	const Vec3 feet = target.GetEntity()->GetWorldPos();
 	return feet + (Eyes(target)-feet) * 0.75f;
 }
