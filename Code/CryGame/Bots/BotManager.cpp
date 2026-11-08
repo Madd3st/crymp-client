@@ -214,6 +214,14 @@ bool BotManager::AIEnabled(EntityId id) const
 	return bot && bot->AIEnabled();
 }
 
+int BotManager::LadderQueueAhead(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const
+{
+	int ahead = 0;
+	for (const auto& entry : m_bots)
+		if (entry.second && entry.second->AIEnabled() && entry.second->Brain().LadderQueuedAhead(ref, a, myDist2, myNumber)) ++ahead;
+	return ahead;
+}
+
 bool BotManager::ShouldYieldLadder(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const
 {
 	for (const auto& entry : m_bots)
@@ -236,6 +244,7 @@ int BotManager::UnstickAllies(const Vec3& p, float radius, EntityId me, std::vec
 		if (!actor || actor->GetEntityId() == me || actor->GetHealth() <= 0) continue;
 		if (!UnstickAlly(myTeam, rules->GetTeam(actor->GetEntityId()))) continue;
 		const BotBrain& brain = bot->Brain();
+		if (brain.LadderQueued()) continue;   // SPEC-006a: a queue at a ladder is not a crowd to steer around
 		const Vec3 q = brain.FeetPosition();
 		if ((q - p).GetLengthSquared() > radius * radius) continue;
 		if (all) all->push_back(q);

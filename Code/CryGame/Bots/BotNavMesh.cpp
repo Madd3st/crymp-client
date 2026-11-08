@@ -82,6 +82,7 @@ void LoadUnstickMemory(State& s)
 	if (FILE* f = _wfopen(path.c_str(), L"rb")) { char c[4096]; size_t n; while ((n = fread(c, 1, sizeof c, f)) > 0) text.append(c, n); fclose(f); }
 	const float clock = text.empty() ? -1.f : s.memory.Load(text, s.hash);
 	s.clock.Start(clock > 0.f ? clock : 0.f);
+	s.mesh.SetLadderMemoryFilter(BotConfig::Get().subExit == 1);   // SPEC-006a: read filter only, the file stays as it is
 	s.mesh.SetTransitionMemory(s.memory, s.clock.Last());
 	if (!text.empty() && clock < 0.f)
 		WB_LOG(0, "[WarsBots] UNSTICK MEMORY %ls belongs to another navmesh (want %s); starting fresh.", path.c_str(), s.hash.c_str());
@@ -164,6 +165,7 @@ NavMeshCore* CurrentNavMesh()
 				if (!text.empty() && !ManifestOk(leaf, "links", text)) text.clear();   // links of another bake: walk only
 				s.kinds = text.empty() ? 0 : s.mesh.LoadLinkKinds(text.c_str());
 				if (s.mesh.LinkMismatches()) WB_LOG(0, "[WarsBots] NAVMESH %d links matched by end points (links.txt order differs from the bake).", s.mesh.LinkMismatches());
+				if (s.mesh.SlowLadders()) WB_LOG(0, "[WarsBots] NAVMESH %d slow ladder links (> 2 s, SPEC-006a).", s.mesh.SlowLadders());
 				WB_LOG(0, "[WarsBots] NAVMESH link kinds %d/%d from %ls.", s.kinds, s.mesh.Links(), links.c_str());
 			}
 		}
@@ -224,6 +226,7 @@ void UnstickRecord(const float* from, const float* to, float now)
 	const float clock = UnstickClock(now);
 	s.memory.Record(from[0], from[1], from[2], to[0], to[1], to[2], clock);
 	SaveUnstickMemory(s, clock);
+	s.mesh.SetLadderMemoryFilter(BotConfig::Get().subExit == 1);
 	s.mesh.SetTransitionMemory(s.memory, clock);
 	WB_LOG(1, "[WarsBots] UNSTICK MEMORY record from=(%.1f,%.1f,%.1f) to=(%.1f,%.1f,%.1f) transitions=%u polygons=%u clock=%.0f.",
 		from[0], from[1], from[2], to[0], to[1], to[2], unsigned(s.memory.Size()), unsigned(s.mesh.PenaltyPolys()), clock);

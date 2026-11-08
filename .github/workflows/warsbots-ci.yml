@@ -128,6 +128,12 @@ jobs:
           & python Tests/test_bot_ps_squads_wiring.py *> units/BotPsSquadsWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotPsSquadsWiring-run.log; throw 'UNIT FAIL: SPEC-005 squads wiring guard' }
           'UNIT PASS SPEC-005 squads wiring guard'
+          & python Tests/test_bot_sub_exit_wiring.py *> units/BotSubExitWiring-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotSubExitWiring-run.log; throw 'UNIT FAIL: SPEC-006a sub exit wiring guard' }
+          'UNIT PASS SPEC-006a sub exit wiring guard'
+          & python Tests/test_bot_sub_exit_queue_caller.py *> units/BotSubExitQueueCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotSubExitQueueCaller-run.log; throw 'UNIT FAIL: SPEC-006a actual queue caller' }
+          'UNIT PASS SPEC-006a actual queue caller'
           & python Tests/test_bot_lan_gate_caller.py *> units/BotLanGateCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLanGateCaller-run.log; throw 'UNIT FAIL: actual LAN gate caller' }
           'UNIT PASS actual LAN gate caller'
