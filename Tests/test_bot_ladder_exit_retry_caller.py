@@ -165,6 +165,7 @@ struct CPlayer
 	float GetStanceMaxSpeed(EStance) const { return 4.0f; }
 	void RequestLeaveLadder(ELadderActionType) { ++leaves; st.isOnLadder = false; st.isExitingLadder = false; }
 	void SetWarsBotActions(bool, bool, int) {}
+	void SetWarsBotSwimDown(bool) {}   // SPEC-006a p. 4
 	bool UpdateLadderAnimation(ELadderState, ELadderDirection) { return false; }
 @RETRY@
 @RESET@

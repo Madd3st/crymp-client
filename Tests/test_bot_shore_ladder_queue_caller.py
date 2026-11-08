@@ -137,6 +137,7 @@ struct CPlayer {
     void RestoreWarsBotLadderGraph() {}
     void SetWarsBotLadderExitTarget(const Vec3& t) { exitTarget = t; }
     void SetWarsBotActions(bool, bool move, int) { if (!move) ++stopActions; }
+    void SetWarsBotSwimDown(bool) {}   // SPEC-006a p. 4
 };
 
 struct NavQueryBounds { float side = 1.5f, up = 1.0f, down = 3.0f; };
@@ -180,6 +181,7 @@ struct BotCombat {
 
 struct BotIntent {
     bool move = false;
+    bool swimDown = false;   // SPEC-006a p. 4
     Vec3 destination, aim;
     BotGait gait = BotGait::Run;
     BotJump jump = BotJump::None;
