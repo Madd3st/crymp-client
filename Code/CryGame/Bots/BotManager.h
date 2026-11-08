@@ -42,6 +42,7 @@ public:
 	BotInstance* Find(EntityId id) const;
 	bool AIEnabled(EntityId id) const;
 	bool ShouldYieldLadder(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const;
+	int LadderQueueAhead(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const; // SPEC-006a
 	// SPEC-004: other live bots within `radius` of p of the same non-zero team (none in IA). Returns how many are stuck; fills
 	// `standing` with the positions of those stuck or standing while asking to move.
 	int UnstickAllies(const Vec3& p, float radius, EntityId me, std::vector<Vec3>* standing, std::vector<Vec3>* all = nullptr) const;

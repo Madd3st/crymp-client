@@ -345,6 +345,7 @@ void BotBrain::ResetLife()
 {
 	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_unstickSensor.Reset(); m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickPoints.clear(); m_unstickPointsUntil=0;   // SPEC-004
+	m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueCooldown=0; m_subQueueSlot=-1; m_subQueueStanding=false;   // SPEC-006a
 	m_unstickHasStall=false; m_unstickBackTried=false;
 	m_unstickBlocks.erase(std::remove_if(m_unstickBlocks.begin(),m_unstickBlocks.end(),[this](const NavCostBlock& b){return b.until>=0.f && m_now>=b.until;}),m_unstickBlocks.end());
 	m_locomotion.Reset();
@@ -1498,7 +1499,7 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
 void BotBrain::UpdateUnstick(CPlayer& actor)
 {
 	BotManager& manager=g_pGame->GetBotManager();
-	if (BotConfig::Get().unstick!=1 || !gEnv->bServer || !manager.Owns(actor.GetEntityId()) || !manager.CanRunLocalIA())
+	if (BotConfig::Get().unstick!=1 || !gEnv->bServer || !manager.Owns(actor.GetEntityId()) || !manager.CanRunLocalIA() || LadderQueued())
 	{ m_unstickSteps.Reset(); m_unstickSensor.Reset(); m_unstickStuck=false; m_unstickHasStall=false; m_unstickBackTried=false; return; }
 	const Vec3 feet=actor.GetEntity()->GetWorldPos();
 	const float world=gEnv->pTimer->GetCurrTime();
@@ -1611,6 +1612,7 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 			m_unstickBack=pick>=0?c[pick]:feet-forward*5.0f; m_unstickBackTried=true;
 			WB_LOG(2,"[WarsBots] #%d UNSTICK backoff to=(%.1f,%.1f,%.1f) choices=%d tier=%d fromStall=%.1f allies12m=%u actor=%u.",m_number,
 				m_unstickBack.x,m_unstickBack.y,m_unstickBack.z,n,tier,(m_unstickBack-stall).GetLength2D(),unsigned(alliesNear.size()),actor.GetEntityId());
+			if (UnstickAtSlowLadder(mesh)) { WB_LOG(1,"[WarsBots] #%d UNSTICK ladder_start no_ban to=(%.1f,%.1f,%.1f) actor=%u.",m_number,m_unstickTo.x,m_unstickTo.y,m_unstickTo.z,actor.GetEntityId()); break; }
 			NavCostBlock b;
 			b.from[0]=m_unstickFrom.x; b.from[1]=m_unstickFrom.y; b.from[2]=m_unstickFrom.z;
 			b.to[0]=m_unstickTo.x; b.to[1]=m_unstickTo.y; b.to[2]=m_unstickTo.z;
@@ -1624,14 +1626,14 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 		const bool strength=m_unstickSteps.LastExitByStrength();
 		m_unstickHasStall=false; m_unstickBackTried=false;
 		WB_LOG(1,"[WarsBots] #%d UNSTICK exit strength=%d pos=(%.1f,%.1f,%.1f) remaining=%.1f actor=%u.",m_number,strength?1:0,feet.x,feet.y,feet.z,rem,actor.GetEntityId());
-		if (UnstickShouldRecord(strength,stuckNear,combat))
+		if (UnstickShouldRecord(strength,stuckNear,combat) && !UnstickAtSlowLadder(mesh))
 		{ const float f[3]={m_unstickFrom.x,m_unstickFrom.y,m_unstickFrom.z}, t[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z}; UnstickRecord(f,t,world); }
 		break;
 	}
 	case UnstickEvent::Failed:
 	{
 		WB_LOG(1,"[WarsBots] #%d UNSTICK failed next=%s pos=(%.1f,%.1f,%.1f) allies5m=%d actor=%u.",m_number,UnstickStepName(step),feet.x,feet.y,feet.z,stuckNear,actor.GetEntityId());
-		if (UnstickShouldRecord(true,stuckNear,combat))
+		if (UnstickShouldRecord(true,stuckNear,combat) && !UnstickAtSlowLadder(mesh))
 		{ const float f[3]={m_unstickFrom.x,m_unstickFrom.y,m_unstickFrom.z}, t[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z}; UnstickRecord(f,t,world); }
 		m_nextRepath=m_minRepath=0;   // replan now: the cost context carries this bot's new block
 		m_unstickSensor.Reset();
@@ -1720,6 +1722,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
 	m_blackboard.obstacleJump=BotJump::None;
 	m_intent.linkJump=false; m_intent.unstickStrength=false; m_intent.unstickClimb=false;
 	m_link.SetBlockedFailFast(BotConfig::Get().linkFailFast==1); // DS-048, default OFF
+	if (BotConfig::Get().ladder!=1) CancelLadderQueue("ladder_off");
 	if (BotConfig::Get().ladder==1 && ApplyLadderExecutor(actor)) return; // DS-107: immediate/exclusive ownership
 	if (BotConfig::Get().jumpLinks==1) ApplyLinkExecutor(actor); else m_link.Reset(); // C-036
 	UpdateUnstick(actor); // SPEC-004, wb_bot_unstick (default OFF)
@@ -1817,15 +1820,17 @@ bool BotBrain::YieldLadderTo(unsigned long long ref, const Vec3& a, float myDist
 
 bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 {
-	if (m_ladder.Active()) return true;
-	if (m_link.Active()) return false; // an existing jump/drop keeps ownership until its own completion
+	if (BotConfig::Get().subExit!=1) CancelLadderQueue("flag_off");
+	if (m_ladder.Active()) { CancelLadderQueue("climbing"); return true; }
+	if (m_link.Active()) { CancelLadderQueue("link"); return false; } // an existing jump/drop keeps ownership until its own completion
 	NavMeshCore* mesh=CurrentNavMesh();
-	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) return false;
+	if (!mesh || !m_meshPathActive || !m_intent.move || m_intent.combat==BotCombatIntent::Fire) { CancelLadderQueue(m_intent.combat==BotCombatIntent::Fire?"combat":"path"); return false; }
 	const NavPathLink* l=LinkAtCorner(m_pathIndex);
-	if (!l || l->kind!=NavLinkLadder) return false;
+	if (!l || l->kind!=NavLinkLadder) { CancelLadderQueue("path"); return false; }
 	const Vec3 a(l->a[0],l->a[1],l->a[2]);
 	const Vec3 feet=m_blackboard.position;
 	const float dist2=(a-feet).GetLengthSquared2D();
+	if (BotConfig::Get().subExit==1 && UpdateLadderQueue(actor,*l,a,feet,dist2)) return m_subQueueStanding; // walking to the slot: the normal intent runs
 	if (dist2>4.0f || fabs_tpl(a.z-feet.z)>2.0f) return false;
 	if (l->ref && g_pGame && g_pGame->GetBotManager().ShouldYieldLadder(l->ref,a,dist2,m_number))
 	{
@@ -1844,6 +1849,77 @@ bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 	WB_LOG(2,"[WarsBots] #%d LADDER start a=(%.2f,%.2f,%.2f) b=(%.2f,%.2f,%.2f) actor=%u.",m_number,
 		l->a[0],l->a[1],l->a[2],l->b[0],l->b[1],l->b[2],actor.GetEntityId());
 	return true;
+}
+
+// SPEC-006a p. 1: a bot heading to a slow ladder that someone else is climbing or waiting at closer to the base stands
+// in a queue slot on its own approach line (2.5 / 4 / 5.5 m from the base). The SPEC-004 sensor is muted there (a queue
+// is not a stall); after 25 s the bot leaves the slot and replans, and queues again only after 10 s. Normal movement
+// to the slot, no SetPos or impulse. True while the bot is queued; m_subQueueStanding says whether it stands in its slot
+// (stopped here like the gate yield) or walks to it (the normal intent of this frame carries the walk).
+bool BotBrain::UpdateLadderQueue(CPlayer& actor,const NavPathLink& l,const Vec3& a,const Vec3& feet,float dist2)
+{
+	if (!SlowLadderLink(true,l.a,l.b) || dist2>7.0f*7.0f || fabs_tpl(a.z-feet.z)>2.0f || m_now<m_subQueueCooldown || !g_pGame)
+	{ CancelLadderQueue("out_of_queue"); return false; }
+	const int ahead=g_pGame->GetBotManager().LadderQueueAhead(l.ref,a,dist2,m_number);
+	if (ahead<=0) { CancelLadderQueue("front"); return false; }   // nobody ahead: the normal gate/yield path decides
+	if (m_subQueueRef!=l.ref) { CancelLadderQueue("other_ladder"); m_subQueueRef=l.ref; m_subQueueSince=m_now; m_subQueueSlot=-1; }
+	m_subQueueAt=m_now;
+	// Codex #38: the queue owns the bot - an UNSTICK chain already running (jump/strength/back-off) ends here, its intent too.
+	m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickHasStall=false; m_unstickBackTried=false;
+	m_intent.jump=BotJump::None; m_intent.unstickStrength=false; m_intent.unstickClimb=false;
+	if (LadderQueueTimedOut(m_subQueueSince,m_now))
+	{
+		WB_LOG(1,"[WarsBots] #%d SUB QUEUE timeout ladder=%llu waited=%.1f actor=%u.",m_number,l.ref,m_now-m_subQueueSince,actor.GetEntityId());
+		m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueCooldown=m_now+10.0f; m_nextRepath=m_minRepath=0;
+		return false;
+	}
+	Vec3 dir=feet-a; dir.z=0;
+	if (dir.GetLengthSquared()<0.01f) dir=Vec3(1,0,0);
+	dir.Normalize();
+	const Vec3 slot=a+dir*LadderQueueOffset(ahead);
+	if (m_subQueueSlot!=ahead)
+	{
+		m_subQueueSlot=ahead;
+		WB_LOG(1,"[WarsBots] #%d SUB QUEUE slot=%.1f ladder=%llu ahead=%d waited=%.1f actor=%u.",m_number,LadderQueueOffset(ahead),l.ref,ahead,m_now-m_subQueueSince,actor.GetEntityId());
+	}
+	m_unstickSensor.Reset(); m_trap.Reset(); m_trapStepUntil=0;   // waiting in a queue is not a stall
+	m_subQueueStanding=(slot-feet).GetLengthSquared2D()<=0.6f*0.6f;
+	if (!m_subQueueStanding) { WBI_MOVETO(slot,Vec3(a.x,a.y,a.z+1.2f)); WBI(gait,BotGait::Walk); return true; }
+	m_combat.StopFire();
+	m_intent=BotIntent();
+	WBI(aim,Vec3(a.x,a.y,a.z+1.2f));
+	m_locomotion.Stop(actor);
+	actor.SetWarsBotActions(false,false,STANCE_STAND);
+	return true;
+}
+
+// SPEC-006a p. 2: the stalled transition ends within 3 m of a slow ladder start: neither a back-off ban nor memory.
+bool BotBrain::UnstickAtSlowLadder(const NavMeshCore* mesh) const
+{
+	if (BotConfig::Get().subExit!=1 || !mesh) return false;
+	const float to[3]={m_unstickTo.x,m_unstickTo.y,m_unstickTo.z};
+	return mesh->NearSlowLadderStart(to);
+}
+
+bool BotBrain::LadderQueued() const
+{ return m_subQueueRef != 0 && BotConfig::Get().subExit == 1 && m_now - m_subQueueAt <= 0.5f; }
+
+// The one way out of a queue (flag OFF, climbing, link, combat, path change, front of the queue, other ladder, reset).
+void BotBrain::CancelLadderQueue(const char* why)
+{
+	if (!m_subQueueRef) return;
+	WB_LOG(2,"[WarsBots] #%d SUB QUEUE cancel reason=%s ladder=%llu waited=%.1f.",m_number,why,m_subQueueRef,m_now-m_subQueueSince);
+	m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueSlot=-1; m_subQueueStanding=false;
+}
+
+bool BotBrain::LadderQueuedAhead(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const
+{
+	if (!m_running || m_number == myNumber || m_blackboard.health <= 0 || m_blackboard.swimming) return false;
+	if (m_ladder.Active()) return m_ladderNow.ref == ref;
+	const bool queued = LadderQueued() && m_subQueueRef == ref;
+	if (!queued && !YieldLadderTo(ref, a, 1e9f, myNumber)) return false;   // climbing or waiting at the 2 m gate
+	const float d2 = (a - m_blackboard.position).GetLengthSquared2D();
+	return d2 + 0.01f < myDist2 || (std::fabs(d2 - myDist2) <= 0.01f && m_number < myNumber);
 }
 
 // One cancellation path for fail / flag-OFF / death / stop / reset. It clears native ladder mode as a FAILURE

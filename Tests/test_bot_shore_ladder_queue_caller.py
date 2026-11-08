@@ -157,6 +157,7 @@ struct NavMeshCore {
 namespace WarsBots {
 struct BotConfig {
     int ladder = 1;
+    int subExit = 0;   // SPEC-006a queue OFF here: this regression covers the existing gate/yield path
     static BotConfig& Get() { static BotConfig c; return c; }
 };
 }
@@ -268,6 +269,9 @@ struct BotBrain {
     }
 
     bool YieldLadderTo(unsigned long long ref, const Vec3& a, float myDist2, int myNumber) const;
+    unsigned long long m_subQueueRef = 0; bool m_subQueueStanding = false;   // SPEC-006a (flag OFF in this test)
+    bool UpdateLadderQueue(CPlayer&, const NavPathLink&, const Vec3&, const Vec3&, float) { return false; }
+    void CancelLadderQueue(const char*) { m_subQueueRef = 0; }
     bool ApplyLadderExecutor(CPlayer& actor);
     void CancelLadderBody(CPlayer& actor, const char* why, bool ban);
     void CancelLadder(CPlayer& actor, const char* why, bool ban) {

@@ -137,6 +137,20 @@ int main()
 	assert(!LadderApproachInvalid(LadderPhase::Climb, true, false, false, 95.00f, 90.16f));
 	assert(!LadderApproachInvalid(LadderPhase::Settle, false, false, false, 99.76f, 90.16f));
 
+	// SPEC-006a: slow ladder (Shore submarine 9.5 m, 11.7 s) vs short links; link-start radius; queue slots; timeout.
+	{
+		const float a[3] = {2116.1f, 1880.6f, 90.25f}, b[3] = {2117.5f, 1880.6f, 99.77f}, hop[3] = {2116.1f, 1880.6f, 91.5f};
+		assert(SlowLadderLink(true, a, b));
+		assert(!SlowLadderLink(false, a, b));          // jumps/strength links never
+		assert(!SlowLadderLink(true, a, hop));         // 1.25 m: under 2 s
+		const float corner[3] = {2116.5f, 1879.7f, 90.2f}, far[3] = {2110.0f, 1880.6f, 90.2f}, deck[3] = {2116.5f, 1879.7f, 99.8f};
+		assert(NearLinkStart(corner, a));             // the 07.11 memory record "to=(2116.5,1879.7,90.2)"
+		assert(!NearLinkStart(far, a));
+		assert(!NearLinkStart(deck, a));              // the deck above is another floor
+		assert(LadderQueueOffset(1) == 2.5f && LadderQueueOffset(2) == 4.f && LadderQueueOffset(3) == 5.5f && LadderQueueOffset(7) == 5.5f);
+		assert(!LadderQueueTimedOut(10.f, 34.9f) && LadderQueueTimedOut(10.f, 35.f));
+	}
+
 	std::printf("BotLadder native-frame, exit and settle tests PASS\n");
 	return 0;
 }
