@@ -167,6 +167,9 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 	// extra pairs (more pairs than free targets) go to the most valuable target that is not the prototype: one pair there
 	size_t extra = 0;
 	while (extra + 1 < freeT.size() && freeT[extra].kind == PsKind::Prototype) ++extra;
+	// Codex #35 BLOCK: the prototype is the only free target - one pair there, the extra pairs hold the spawn as a reserve
+	// (reason=reserve; own points keep their single D-054 defender), never a second pair on the prototype (D-057).
+	const bool reserveOnly = !freeT.empty() && freeT[extra].kind == PsKind::Prototype;
 	std::vector<TeamTarget> owned;
 	for (const TeamTarget& t : targets) if (t.kind != PsKind::Spawn && t.owner == team && t.reachable) owned.push_back(t);
 	std::sort(owned.begin(), owned.end(), [](const TeamTarget& a, const TeamTarget& b)
@@ -228,12 +231,14 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 		const std::vector<std::vector<TeamBot>> pairs = MakePairs(pool);
 		for (size_t p = 0; p < pairs.size(); ++p)
 		{
-			const bool attack = !freeT.empty();
-			const TeamTarget* t = attack ? &freeT[p < freeT.size() ? p : extra] : (owned.empty() ? nullptr : &owned[p % owned.size()]);
+			const bool reserve = reserveOnly && p >= freeT.size();
+			const bool attack = !freeT.empty() && !reserve;
+			const TeamTarget* t = attack ? &freeT[p < freeT.size() ? p : extra] : (reserve || owned.empty() ? nullptr : &owned[p % owned.size()]);
 			for (const TeamBot& b : pairs[p])
 			{
 				TeamOrder o = order(b, t, !attack, attack ? int(p) + 1 : 0);
-				if (!t) o.reason = "unreachable";
+				if (reserve && !t) o.reason = "reserve";
+				else if (!t) o.reason = "unreachable";
 				desired.push_back(o);
 			}
 		}
@@ -243,7 +248,7 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 	// while the old task is still valid (target known, reachable, and capture/hold still matches its owner).
 	auto stillValid = [&](const TeamOrder& o)
 	{
-		if (o.kind == PsKind::Spawn) return freeT.empty() && owned.empty();
+		if (o.kind == PsKind::Spawn) return (freeT.empty() && owned.empty()) || reserveOnly;
 		for (const TeamTarget& t : targets)
 			if (t.id == o.target) return t.reachable && (o.hold ? t.owner == team : t.owner != team);
 		return false;
@@ -264,7 +269,8 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 			out.push_back(*p); continue;   // a quiet change waits for the 20 s rule
 		}
 		o.since = now;
-		if (o.kind == PsKind::Spawn || (o.reason && o.reason[0] == 'u')) o.reason = "unreachable";
+		if (o.kind == PsKind::Spawn && o.reason && o.reason[0] == 'r') o.reason = "reserve";   // sole-prototype reserve
+		else if (o.kind == PsKind::Spawn || (o.reason && o.reason[0] == 'u')) o.reason = "unreachable";
 		else if (!p) o.reason = "start";
 		else if (respawned) o.reason = "respawn";
 		else if (!valid) o.reason = event != TeamEvent::None ? TeamEventName(event) : "invalid";

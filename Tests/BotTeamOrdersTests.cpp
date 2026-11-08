@@ -131,6 +131,27 @@ int main()
 		std::vector<TeamTarget> two = {T(344, PsKind::Prototype, 0, true, 500), T(96, PsKind::Bunker, 0, true, 200)};
 		auto o8 = PlanTeamOrders(two, Bots(8), 2, 0.f, TeamEvent::None, none);   // 4 pairs, 2 targets
 		CHECK(CountOn(o8, 344, false) == 2 && CountOn(o8, 96, false) == 6);
+		// Codex #35 BLOCK: the prototype is the only free reachable target - one pair, the rest is a reserve
+		for (int nb : {4, 7, 8})
+		{
+			std::vector<TeamTarget> sole = {T(344, PsKind::Prototype, 0, true, 520)};
+			auto os = PlanTeamOrders(sole, Bots(nb), 2, 0.f, TeamEvent::None, none);
+			const int onP = CountOn(os, 344, false);
+			CHECK(onP >= 2 && onP <= 3 && onP * 2 <= nb + 2);
+			int reserve = 0; for (const TeamOrder& x : os) if (x.kind == PsKind::Spawn) { CHECK(x.hold && std::strcmp(x.reason, "reserve") == 0); ++reserve; }
+			CHECK(reserve == nb - onP);
+			auto again = PlanTeamOrders(sole, Bots(nb), 2, 5.f, TeamEvent::None, os);   // stable: the reserve stays a reserve
+			CHECK(CountOn(again, 344, false) == onP);
+			// with another own point and an unreachable bunker: one pair on 344, one D-054 defender from 5 bots, rest reserve
+			std::vector<TeamTarget> mix = {T(344, PsKind::Prototype, 0, true, 520), T(96, PsKind::Bunker, 2, true, 200), T(211, PsKind::Bunker, 0, false, 350)};
+			auto om = PlanTeamOrders(mix, Bots(nb), 2, 0.f, TeamEvent::None, none);
+			const int onPm = CountOn(om, 344, false);
+			CHECK(onPm >= 2 && onPm <= 3);
+			CHECK(CountOn(om, 211, false) == 0 && CountOn(om, 211, true) == 0);
+			CHECK(CountOn(om, 96, true) == (nb >= 5 ? 1 : 0));
+			int reserveM = 0; for (const TeamOrder& x : om) if (x.kind == PsKind::Spawn && std::strcmp(x.reason, "reserve") == 0) ++reserveM;
+			CHECK(reserveM == nb - onPm - (nb >= 5 ? 1 : 0));
+		}
 		std::vector<TeamOrder> prev = PlanTeamOrders(Shore(1), Bots(4), 1, 0.f, TeamEvent::None, none);
 		std::vector<TeamTarget> t = Shore(1, prev[0].target);           // the first pair's target was just taken
 		auto o = PlanTeamOrders(t, Bots(4), 1, 3.f, TeamEvent::None, prev);
@@ -163,7 +184,13 @@ int main()
 			for (const TeamTarget& x : t) if (x.reachable) (x.owner == 1 ? ownedReach : freeReach)++;
 			for (const TeamOrder& x : o)
 			{
-				if (x.kind == PsKind::Spawn) { CHECK(ownedReach == 0 && freeReach == 0); continue; }
+				if (x.kind == PsKind::Spawn)
+				{   // spawn hold: nothing reachable, or the sole-prototype reserve (Codex #35)
+					bool onlyProto = freeReach > 0;
+					for (const TeamTarget& y : t) if (y.reachable && y.owner != 1 && y.kind != PsKind::Prototype) onlyProto = false;
+					CHECK((ownedReach == 0 && freeReach == 0) || (onlyProto && std::strcmp(x.reason, "reserve") == 0));
+					continue;
+				}
 				const TeamTarget* tt = byId[x.target];
 				CHECK(tt && tt->reachable);
 				if (tt) CHECK(x.hold ? tt->owner == 1 : tt->owner != 1);
@@ -193,6 +220,7 @@ int main()
 				int onProto = 0; std::set<int> protoPairs;
 				for (const TeamOrder& x : o) if (!x.hold && x.kind == PsKind::Prototype) { ++onProto; protoPairs.insert(x.pair); }
 				if (n >= 4 && protoFree && attackers >= 2 && freeReach > 1) CHECK(protoPairs.size() == 1 && onProto >= 2 && onProto <= 3);
+				if (protoFree) CHECK(protoPairs.size() <= 1 && onProto <= 3);   // never a second pair, also when it is the sole target
 				if (n < 4 && freeReach > 1) CHECK(protoPairs.size() <= 1);
 			}
 			// input order does not change the result
