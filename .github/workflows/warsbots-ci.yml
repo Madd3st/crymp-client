@@ -131,6 +131,9 @@ jobs:
           & python Tests/test_bot_ps_hold_wiring.py *> units/BotPsHoldWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotPsHoldWiring-run.log; throw 'UNIT FAIL: SPEC-005b hold wiring guard' }
           'UNIT PASS SPEC-005b hold wiring guard'
+          & python Tests/test_bot_ps_hold_arrival_caller.py *> units/BotPsHoldArrivalCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotPsHoldArrivalCaller-run.log; throw 'UNIT FAIL: SPEC-005b actual hold arrival caller' }
+          'UNIT PASS SPEC-005b actual hold arrival caller'
           & python Tests/test_bot_sub_exit_wiring.py *> units/BotSubExitWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotSubExitWiring-run.log; throw 'UNIT FAIL: SPEC-006a sub exit wiring guard' }
           'UNIT PASS SPEC-006a sub exit wiring guard'

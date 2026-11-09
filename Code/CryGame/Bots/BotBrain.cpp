@@ -895,8 +895,8 @@ bool BotBrain::UpdatePSHold(CPlayer& actor,const PsCapturePoint& point,int team,
 		}
 	}
 	if(!m_psHoldHas)return false;
-	const Vec3 off(m_psHoldPos.x-feet.x,m_psHoldPos.y-feet.y,0);
-	if(off.GetLength()>1.2f)
+	const Vec3 off(m_psHoldPos.x-feet.x,m_psHoldPos.y-feet.y,m_psHoldPos.z-feet.z);
+	if(!HoldArrived(off.x,off.y,off.z))   // Codex #44: the upper floor is only reached at its height, keep the path
 	{
 		const Vec3 step=Steer(feet,m_psHoldPos);
 		WBI_MOVETO(step,step+Vec3(0,0,1.2f));

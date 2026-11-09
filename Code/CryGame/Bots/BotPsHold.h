@@ -124,6 +124,14 @@ inline const char* HoldReasonName(HoldReason r)
 	}
 }
 
+// Codex #44 BLOCK: arrival on the hold position is 3D. XY within 1.2 m alone took the floor under a roof/platform for
+// the chosen upper position (energy rule: >= 2 m above), so the bot stood below and never climbed. The navmesh-snapped
+// position and the feet differ by well under 1 m on one floor; floors are >= 2 m apart.
+inline bool HoldArrived(float dx, float dy, float dz, float xy = 1.2f, float up = 1.0f)
+{
+	return dx * dx + dy * dy <= xy * xy && std::fabs(dz) <= up;
+}
+
 // Per-defender timing state: when to pick a new position. A hit re-picks at once (p. 5); otherwise the period runs.
 struct HoldTimer
 {

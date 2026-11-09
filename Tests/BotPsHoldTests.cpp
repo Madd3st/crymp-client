@@ -105,6 +105,14 @@ int main()
 		CHECK(bad == 0);
 	}
 	CHECK(std::string(HoldReasonName(HoldReason::Capture)) == "capture");
+	// Codex #44: arrival is 3D - same XY 3 m below/above is not on the position; one floor with a snap offset is
+	{
+		CHECK(!HoldArrived(0.f, 0.f, 3.f));
+		CHECK(!HoldArrived(0.f, 0.f, -3.f));
+		CHECK(!HoldArrived(1.3f, 0.f, 0.f));
+		CHECK(HoldArrived(0.5f, 0.6f, 0.4f));
+		CHECK(HoldArrived(0.f, 0.f, -0.9f));
+	}
 	std::printf(failures ? "BotPsHoldTests FAIL %d\n" : "BotPsHoldTests PASS\n", failures);
 	return failures ? 1 : 0;
 }

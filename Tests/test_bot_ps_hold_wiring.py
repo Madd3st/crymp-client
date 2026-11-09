@@ -48,6 +48,9 @@ check('PS HOLD tac log', 'PS HOLD tac team=%d by=%u' in cap)
 check('back after combat over', 'm_psHoldBack=true;' in sq)
 check('declared in BotBrain.h', 'bool UpdatePSHold(CPlayer& actor,const PsCapturePoint& point,int team,const Vec3& feet);' in brain_h)
 
+# Codex #44 BLOCK: arrival on the hold position includes the height (upper floor / platform)
+check('hold arrival is 3D (HoldArrived), XY-only arrival gone', 'if(!HoldArrived(off.x,off.y,off.z))' in brain and 'const Vec3 off(m_psHoldPos.x-feet.x,m_psHoldPos.y-feet.y,m_psHoldPos.z-feet.z);' in brain and 'm_psHoldPos.y-feet.y,0);' not in brain)
+
 for name, ok in checks: print(('PASS ' if ok else 'FAIL ') + name)
 print('%d/%d' % (sum(ok for _, ok in checks), len(checks)))
 raise SystemExit(0 if all(ok for _, ok in checks) else 1)
