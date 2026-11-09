@@ -85,6 +85,9 @@ struct TeamPlanConfig
 	int defendFrom = 5;        // D-054: a defender on every taken point from 5 bots in the team
 	int prototypeFrom = 4;     // owner 08.11: from 4 bots one pair goes to the prototype from the first plan (no energy gate)
 	float quietChange = 20.f;  // a task changes without an event at most once per 20 s
+	// SPEC-005b p. 8 (wb_bot_ps_hold, owner ok 09.11): a taken prototype keeps one defender from this many bots until
+	// the team has TAC; 0 = off (the caller passes 0 with the flag OFF or once the team has TAC).
+	int prototypeHoldFrom = 0;
 };
 
 namespace TeamOrdersDetail {
@@ -198,9 +201,12 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 
 	// D-054 defenders: one per taken point from `defendFrom` bots; with free targets left at least one pair attacks.
 	const int n = int(bots.size());
-	if (!pool.empty() && !owned.empty() && n >= cfg.defendFrom)
+	// SPEC-005b p. 8: below `defendFrom` only the prototype (DefenceRank 0 sorts it first) gets its defender.
+	const bool protoHold = cfg.prototypeHoldFrom > 0 && n >= cfg.prototypeHoldFrom && !owned.empty() && owned[0].kind == PsKind::Prototype;
+	if (!pool.empty() && !owned.empty() && (n >= cfg.defendFrom || protoHold))
 	{
-		const int maxDef = freeT.empty() ? int(owned.size()) : std::max(0, std::min(int(owned.size()), n - 2));
+		// with >= defendFrom bots maxDef >= 1 already, so the prototype (first) is never taken off for an attacking pair
+		const int maxDef = n < cfg.defendFrom ? 1 : (freeT.empty() ? int(owned.size()) : std::max(0, std::min(int(owned.size()), n - 2)));
 		for (int d = 0; d < maxDef && !pool.empty(); ++d)
 		{
 			const TeamTarget& t = owned[size_t(d)];
