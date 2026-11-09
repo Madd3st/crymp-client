@@ -24,6 +24,7 @@
 #include "CryGame/Bots/BotNavMeshCore.h"
 #include "CryGame/Bots/BotRoamFallback.h"
 #include "CryGame/Bots/BotPSCaptureRuntime.h"
+#include "CryGame/Bots/BotTeamOrders.h"
 #include "CryGame/Bots/BotPSBuy.h"
 #include "CryCommon/CryScriptSystem/IScriptSystem.h"
 #include "CryCommon/CryEntitySystem/IEntityProxy.h"
@@ -362,7 +363,7 @@ void BotBrain::ResetLife()
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
-	m_psCapture.Reset(); m_psTarget=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_lifeStartedAt=m_now; m_nextAliveBuy=0; m_doorUsed.clear();
+	m_psCapture.Reset(); m_psTarget=0; m_psOrderKind=-1; m_psFight=false; m_psSeenMark=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_lifeStartedAt=m_now; m_nextAliveBuy=0; m_doorUsed.clear();
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	ReleaseClaims(); // death or a new level: the item is free for the others at once
@@ -728,6 +729,7 @@ bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTim
 		const bool waterStart = WaterStartBounds(m_blackboard, feet.z, water);
 		PSCaptureSnapshot(m_psPoints,*rules,from, waterStart?&water:nullptr);
 	}
+	if (BotConfig::Get().psSquads==1) return UpdatePSSquad(actor,decisionTime,*rules,team,feet);
 	// DS-072: hold on native area membership of the current target, not a 6 m sphere around the entity pivot.
 	bool inside=false;
 	if (m_psTarget)
@@ -759,6 +761,50 @@ bool BotBrain::UpdatePSCapture(BotInstance& bot,CPlayer& actor,float decisionTim
 	else
 	{
 		const Vec3 goal(plan.x,plan.y,plan.z);
+		const Vec3 step=Steer(feet,goal);
+		WBI_MOVETO(step,step+Vec3(0,0,1.2f));
+		TravelGait((goal-feet).GetLength());
+	}
+	ExecuteIntent(actor,decisionTime);
+	return true;
+}
+// SPEC-005 stage 1: the task comes from the team commander (BotTeamOrders.h via PSTeamOrder). Capture and hold both
+// stand inside the native capture area (stage 1; cover and positions are SPEC-005b). Nothing reachable: hold the spawn.
+bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules,int team,const Vec3& feet)
+{
+	const TeamOrder* found=PSTeamOrder(unsigned(actor.GetEntityId()),team,rules);
+	if(!found)return false;
+	const TeamOrder order=*found;   // the commander may replace its vector on the next tick
+	// SPEC-005 p. 6: log the end of a fight once, for the row-5 exclusions ("combat over" + 10 s).
+	if(m_combat.LastSeen()>m_psSeenMark){m_psSeenMark=m_combat.LastSeen();m_psFight=true;}
+	if(m_psFight&&CombatOver(m_now,m_combat.LastSeen(),m_blackboard.damagedUntil-3.0f))
+	{
+		m_psFight=false;
+		WB_LOG(1,"[WarsBots] #%d PS FIGHT over target=%d actor=%u.",m_number,order.target,actor.GetEntityId());
+	}
+	Change(State::SEARCHING_ENEMY);
+	const PsCapturePoint* point=nullptr;
+	for(const PsCapturePoint& p:m_psPoints) if(p.id==order.target){point=&p;break;}
+	const bool reachable=order.kind!=PsKind::Spawn&&point&&point->hasDestination;
+	if(m_psTarget!=order.target||m_psOrderKind!=int(order.kind))
+	{
+		m_psTarget=order.target; m_psOrderKind=int(order.kind);
+		if(order.kind!=PsKind::Spawn&&!reachable)   // the cache says reachable, this bot's own start does not
+			WB_LOG(1,"[WarsBots] #%d PS ORDER bot=%u target=%d reason=bot_unreachable.",m_number,actor.GetEntityId(),order.target);
+	}
+	bool inside=false;
+	if(reachable&&point->areaId)
+		if(IEntity* area=gEnv->pEntitySystem->GetEntity(EntityId(point->areaId)))
+			if(IEntityAreaProxy* proxy=static_cast<IEntityAreaProxy*>(area->GetProxy(ENTITY_PROXY_AREA)))
+				inside=proxy->IsPointWithin(feet);
+	if(!reachable||inside)
+	{
+		WBI(move,false);   // no ping-pong: stand (spawn hold, or inside the zone until captured / the commander moves it)
+		if(reachable)WBI(aim,Vec3(point->x,point->y,point->z+1.5f));
+	}
+	else
+	{
+		const Vec3 goal(point->x,point->y,point->z);
 		const Vec3 step=Steer(feet,goal);
 		WBI_MOVETO(step,step+Vec3(0,0,1.2f));
 		TravelGait((goal-feet).GetLength());
