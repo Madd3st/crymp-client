@@ -59,8 +59,9 @@ public:
 	bool SubSwimRescue(CPlayer& actor, float decisionTime, const Vec3& feet);   // own dispatch before every task
 	void CancelSubSwim(CPlayer& actor, const char* why, const Vec3& feet);      // the single cancel (native bit cleared)
 	bool SubSwimDescending() const;
+	bool SubSwimAscending() const;   // Codex #41 re-review: controlled ascent with open sky
 	bool m_subSwimClear=false; float m_subSwimProbeAt=0;
-	bool m_subSwim=false, m_subSwimDown=false; float m_subSwimSince=0, m_subSwimCooldown=0; Vec3 m_subSwimTarget=Vec3(0,0,0);
+	bool m_subSwim=false, m_subSwimDown=false, m_subSwimUp=false; float m_subSwimSince=0, m_subSwimCooldown=0; Vec3 m_subSwimTarget=Vec3(0,0,0);
 	bool UnstickAtSlowLadder(const NavMeshCore* mesh) const; // SPEC-006a
     // Read-only diagnostic snapshot, consumed after this instance's decision tick.
     unsigned DecisionSerial()const{return m_decisionSerial;}

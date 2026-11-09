@@ -5022,10 +5022,17 @@ void CPlayer::SetWarsBotActions(bool sprint, bool moving, EStance stance)
 // down velocity only after 0.5 s in water (PlayerMovement.cpp). Server-side bot actions only, like the sprint/move bits.
 void CPlayer::SetWarsBotSwimDown(bool down)
 {
+	SetWarsBotSwimVertical(down ? -1 : 0);
+}
+// Codex #41 re-review: -1 ACTION_CROUCH (descend), +1 ACTION_JUMP (the native controlled ascent under water), 0 none.
+// Only the bit this method set is ever cleared (never a crouch/jump from another source).
+void CPlayer::SetWarsBotSwimVertical(int vertical)
+{
 	if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
-	// Codex #41: clear only the bit this method set (never a crouch from another source)
-	if (down) { m_actions|=ACTION_CROUCH; m_warsBotSwimDown=true; }
-	else if (m_warsBotSwimDown) { m_actions&=~ACTION_CROUCH; m_warsBotSwimDown=false; }
+	const int want = vertical < 0 ? int(ACTION_CROUCH) : vertical > 0 ? int(ACTION_JUMP) : 0;
+	m_actions &= ~(m_warsBotSwimBits & ~want);
+	m_actions |= want;
+	m_warsBotSwimBits = want;
 }
 void CPlayer::PublishWarsBotJump(bool strength)
 {

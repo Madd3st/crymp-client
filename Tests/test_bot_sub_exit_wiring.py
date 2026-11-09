@@ -43,8 +43,8 @@ check('swim starts only with the flag, swimming, a Detour start failure, solid a
 check('swim success is the path found again (physical), not a timer', 'if (found && m_subSwim)' in st and 'SUB SWIM done' in st)
 sw = body(brain, 'Vec3 BotBrain::SubSwimStep(')
 tk, cn, rs = body(brain, 'void BotBrain::TickSubSwim('), body(brain, 'void BotBrain::CancelSubSwim('), body(brain, 'bool BotBrain::SubSwimRescue(')
-check('swim ends on flag OFF / leaving water / 30 s every tick (TickSubSwim), single cancel with replan and cooldown',
-      'BotConfig::Get().subExit != 1' in tk and '!m_blackboard.swimming' in tk and 'm_now - m_subSwimSince > 30.f' in tk
+check('swim ends on flag OFF / leaving water / 45 s every tick (TickSubSwim), single cancel with replan and cooldown',
+      'BotConfig::Get().subExit != 1' in tk and '!m_blackboard.swimming' in tk and 'm_now - m_subSwimSince > 45.f' in tk
       and 'm_subSwimCooldown = m_now + 30.f' in cn and 'actor.SetWarsBotSwimDown(false);' in cn)
 up = body(brain, 'void BotBrain::Update(')
 check('Codex #41: own swim dispatch every decision tick before weapon/PS/roam/combat',
@@ -58,23 +58,33 @@ check('Codex #41: rescue starts only with the flag, swimming, solid above, open 
       "if (BotConfig::Get().subExit != 1 || !m_blackboard.swimming) return false;" in rs and '!mesh->SolidAbove(p) || !mesh->NearestOpenWater(p, 40.f, w)' in rs
       and 'if (mesh->Reachable(p, w, 2.6f, waterStart ? &water : nullptr)) return false;' in rs and 'SUB SWIM done' in rs and 'ExecuteIntent(actor, decisionTime);' in rs)
 check('Codex #41: Stop clears the native bit', 'actor.SetWarsBotSwimDown(false);' in body(loco, 'void BotLocomotion::Stop(')
-      and 'm_subSwim=false; m_subSwimDown=false; m_subSwimClear=false;' in body(brain, 'void BotBrain::Stop('))
+      and 'm_subSwim=false; m_subSwimDown=false; m_subSwimUp=false; m_subSwimClear=false;' in body(brain, 'void BotBrain::Stop('))
 check('no SetPos/impulse in the swim', not re.search(r'SetPos|AddImpulse|SetWorldTM', sw + tk + cn + rs))
 check('swim target comes from the navmesh, no coordinates', not re.search(r'21[01]\d\.|18[89]\d\.', sw + st[st.find('SUB SWIM start')-400:st.find('SUB SWIM start')]))
+subswim_h = rd('Code/CryGame/Bots/BotSubSwim.h')
+check('Codex #41 re-review: vertical control from the pure SubSwimVertical (descend under a solid, ascend with open sky to 1.5 m under the surface)',
+      'const int vertical = SubSwimVertical(mesh->SolidAbove(p), surface, feet.z);' in sw and 'm_subSwimDown = vertical < 0; m_subSwimUp = vertical > 0;' in sw
+      and 'if (solidAbove) return -1;' in subswim_h and 'return surfaceZ - feetZ > surfaceGap ? 1 : 0;' in subswim_h and 'float surfaceGap = 1.5f' in subswim_h
+      and 'm_blackboard.waterValid ? m_blackboard.waterZ : m_subSwimTarget.z' in sw and 'SUB SWIM ascend t=%.1f pos=(%.1f,%.1f,%.1f) surface=%.1f' in sw)
+check('ascent requested only while swimming out, flag ON, never together with the descent',
+      'm_intent.swimUp = SubSwimAscending();' in brain and 'return m_subSwim && m_subSwimUp && !m_subSwimDown && m_blackboard.swimming && BotConfig::Get().subExit == 1;' in body(brain, 'bool BotBrain::SubSwimAscending(')
+      and 'bool swimUp = false;' in intent_h)
 check('swim descent is the native ACTION_CROUCH, not a pitched aim/target',
-      'm_subSwimDown = mesh->SolidAbove(p);' in sw and 'return Vec3(m_subSwimTarget.x, m_subSwimTarget.y, feet.z);' in sw and '-2.3f' not in sw)
+      'm_subSwimDown = vertical < 0;' in sw and 'return Vec3(m_subSwimTarget.x, m_subSwimTarget.y, feet.z);' in sw and '-2.3f' not in sw)
 check('descent requested only while swimming out, flag ON',
       'm_intent.swimDown = SubSwimDescending();' in brain and 'return m_subSwim && m_subSwimDown && m_blackboard.swimming && BotConfig::Get().subExit == 1;' in body(brain, 'bool BotBrain::SubSwimDescending(')
-      and 'm_intent.swimDown = SubSwimDescending();\n\tif (BotConfig::Get().botTurnCap==1)' in brain)
+      and 'm_intent.swimDown = SubSwimDescending();\n\tm_intent.swimUp = SubSwimAscending();\n\tif (BotConfig::Get().botTurnCap==1)' in brain)
 check('descent default off in the intent', 'bool swimDown = false;' in intent_h)
 check('locomotion sets/clears the descent every tick, only in water, before the canMove refusal',
-      'actor.SetWarsBotSwimDown(intent.swimDown && state.waterMovement);' in loco
-      and loco.index('SetWarsBotSwimDown(intent.swimDown') < loco.index('if (!state.canMove)')
+      'actor.SetWarsBotSwimVertical(state.waterMovement ? (intent.swimDown ? -1 : intent.swimUp ? 1 : 0) : 0);' in loco
+      and loco.index('SetWarsBotSwimVertical(state.waterMovement') < loco.index('if (!state.canMove)')
       and 'actor.SetWarsBotSwimDown(false);' in body(loco, 'bool BotLocomotion::ExecuteLadder('))
-sd = body(player, 'void CPlayer::SetWarsBotSwimDown(')
-check('SetWarsBotSwimDown is server-side and owned-bot only, touches only ACTION_CROUCH',
+sd = body(player, 'void CPlayer::SetWarsBotSwimVertical(')
+check('SetWarsBotSwimVertical is server-side and owned-bot only, touches only its own ACTION_CROUCH/ACTION_JUMP bit',
       "if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;" in sd
-      and 'm_actions|=ACTION_CROUCH; m_warsBotSwimDown=true;' in sd and 'else if (m_warsBotSwimDown) { m_actions&=~ACTION_CROUCH;' in sd and not re.search(r'SetPos|AddImpulse|Physics|m_stance', sd))
+      and 'const int want = vertical < 0 ? int(ACTION_CROUCH) : vertical > 0 ? int(ACTION_JUMP) : 0;' in sd
+      and 'm_actions &= ~(m_warsBotSwimBits & ~want);' in sd and not re.search(r'SetPos|AddImpulse|Physics|m_stance|m_velocity', sd)
+      and 'SetWarsBotSwimVertical(down ? -1 : 0);' in body(player, 'void CPlayer::SetWarsBotSwimDown('))
 check('descent cleared on swim end and reset', brain.count('m_subSwimDown = false') >= 2 and 'm_subSwim=false; m_subSwimDown=false;' in brain)
 for name, ok in checks: print(('PASS ' if ok else 'FAIL ') + name)
 print('%d/%d' % (sum(ok for _, ok in checks), len(checks)))

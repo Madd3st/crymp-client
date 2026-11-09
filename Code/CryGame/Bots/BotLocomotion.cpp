@@ -113,7 +113,8 @@ bool BotLocomotion::JumpSpace(CPlayer& actor, const Vec3& direction, bool moving
 bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboard& state, float now, float dt)
 {
 	const bool pace=BotPaceEnabled();
-	actor.SetWarsBotSwimDown(intent.swimDown && state.waterMovement);   // SPEC-006a p. 4; cleared on every other tick
+	// SPEC-006a p. 4; cleared on every other tick
+	actor.SetWarsBotSwimVertical(state.waterMovement ? (intent.swimDown ? -1 : intent.swimUp ? 1 : 0) : 0);
     if (!state.canMove) { Stop(actor); Refused(actor,"movement_state",now); return false; }
 	const Vec3 direction=(intent.destination-state.position).GetNormalizedSafe(actor.GetBaseQuat().GetColumn1());
 	const bool strength=intent.jump==BotJump::Strength;

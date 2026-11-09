@@ -2,6 +2,7 @@
 // Under the submarine deck the bot is below solid ground polygons and the nearest open water lies 15-19 m away at the
 // hull side; out in the open sea nothing is overhead. Run from the repository root (CI does). No engine.
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotSubSwim.h"
 #include <cmath>
 #include <cstdio>
 #include <string>
@@ -43,6 +44,28 @@ int main(int argc, char** argv)
 			CHECK(std::string(why) == "start_off_mesh");
 		}
 		CHECK(m.SolidAbove(start));
+	}
+	// Codex #41 re-review 1bae48b5: both real swim-outs timed out deep under open sky - owner (2118.8,1898.0,78.7),
+	// server B (2118.6,1898.1,78.1), surface 99.5. There nothing is overhead (SubSwimVertical asks the native ascent),
+	// the deep start does not reach the open-water target, and a start near the surface over the same point does: that
+	// reach is the physical success of the swim-out, so only the ascent can end it.
+	{
+		const float deep[2][3] = {{2118.8f, 1898.0f, 78.7f}, {2118.6f, 1898.1f, 78.1f}};
+		for (const auto& d : deep)
+		{
+			CHECK(!m.SolidAbove(d));
+			CHECK(SubSwimVertical(m.SolidAbove(d), 99.5f, d[2]) == 1);
+			const NavQueryBounds low = WaterQueryBounds(99.5f - d[2]);
+			const bool deepReach = m.Reachable(d, w, 2.6f, &low);
+			const float top[3] = {d[0], d[1], 98.2f};
+			const NavQueryBounds near = WaterQueryBounds(99.5f - top[2]);
+			const bool topReach = m.Reachable(top, w, 2.6f, &near);
+			std::printf("deep (%.1f,%.1f,%.1f) reach=%d, surface 98.2 reach=%d\n", d[0], d[1], d[2], deepReach ? 1 : 0, topReach ? 1 : 0);
+			CHECK(!deepReach);
+			CHECK(topReach);
+			CHECK(SubSwimVertical(m.SolidAbove(top), 99.5f, top[2]) == 0);   // released 1.3 m under the surface
+		}
+		CHECK(SubSwimVertical(m.SolidAbove(pit), 99.5f, pit[2]) == -1);       // under the deck: descend
 	}
 	// out in the open sea: nothing overhead
 	const float sea[3] = {2118.6f, 1898.3f, 98.5f};

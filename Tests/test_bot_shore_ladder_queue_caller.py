@@ -181,7 +181,7 @@ struct BotCombat {
 
 struct BotIntent {
     bool move = false;
-    bool swimDown = false;   // SPEC-006a p. 4
+    bool swimDown = false, swimUp = false;   // SPEC-006a p. 4
     Vec3 destination, aim;
     BotGait gait = BotGait::Run;
     BotJump jump = BotJump::None;

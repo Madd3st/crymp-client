@@ -23,6 +23,7 @@
 #include "CryGame/Bots/BotAuditFixes.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotSubSwim.h"
 #include "CryGame/Bots/BotRoamFallback.h"
 #include "CryGame/Bots/BotPSCaptureRuntime.h"
 #include "CryGame/Bots/BotPSBuy.h"
@@ -433,7 +434,7 @@ void BotBrain::Stop(BotInstance& bot)
 		m_blackboard.Sample(static_cast<CPlayer&>(*actor),m_now);
 		if (m_blackboard.canMove && m_blackboard.suitActive)
 			m_suit.Apply(static_cast<CPlayer&>(*actor),NANOMODE_DEFENSE,m_blackboard,m_now);
-		m_subSwim=false; m_subSwimDown=false; m_subSwimClear=false;   // SPEC-006a p. 4; the bit: BotLocomotion::Stop
+		m_subSwim=false; m_subSwimDown=false; m_subSwimUp=false; m_subSwimClear=false;   // SPEC-006a p. 4; the bit: BotLocomotion::Stop
 		m_locomotion.Stop(static_cast<CPlayer&>(*actor));
 		m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
 		m_testStrafe=0;
@@ -1794,6 +1795,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
     }
 	// SPEC-006a p. 4: native swim descent only during the swim-out under a hull (flag-gated through m_subSwim)
 	m_intent.swimDown = SubSwimDescending();
+	m_intent.swimUp = SubSwimAscending();
 	if (BotConfig::Get().botTurnCap==1)
 	{
 		BotIntent capped=m_intent; capped.aim=CappedLook(actor); // C-044: the decision tick never snaps the view
@@ -1934,20 +1936,30 @@ bool BotBrain::UnstickAtSlowLadder(const NavMeshCore* mesh) const
 // SPEC-006a p. 4 (D-058): course to the open-water target by XY. The bot view is yaw-only (Player.cpp
 // UpdateWarsBotMotion) and BotMovement drops direction.z, so pitching the aim would not dive; the descent is the native
 // swim control instead: ACTION_CROUCH while a deck/hull is overhead (ProcessSwimming, world-space down, only after
-// 0.5 s in water), released with open sky so buoyancy brings the bot up. Ends on the physical success in Steer, on
-// leaving the water, flag OFF, or after 30 s (then the ladder queue stays the backup).
+// 0.5 s in water); with open sky ACTION_JUMP, the native controlled ascent, up to 1.5 m under the surface
+// (SubSwimVertical; Codex #41 re-review: there is no native auto float-up). Ends on the physical success (the start
+// reaches the open water on the mesh again), on leaving the water, flag OFF, or after 45 s (ladder queue = backup).
 Vec3 BotBrain::SubSwimStep(const Vec3& feet)
 {
 	NavMeshCore* mesh = CurrentNavMesh();
 	if (!m_subSwim || !mesh) return m_pathGoal;   // TickSubSwim cancels at the start of the tick (single cancel path)
 	const float p[3] = {feet.x, feet.y, feet.z};
-	m_subSwimDown = mesh->SolidAbove(p);   // under the deck/hull: descend; open sky: let the native buoyancy lift
+	const float surface = m_blackboard.waterValid ? m_blackboard.waterZ : m_subSwimTarget.z;   // native plane, else target
+	const int vertical = SubSwimVertical(mesh->SolidAbove(p), surface, feet.z);
+	if (vertical > 0 && !m_subSwimUp)
+		WB_LOG(1, "[WarsBots] #%d SUB SWIM ascend t=%.1f pos=(%.1f,%.1f,%.1f) surface=%.1f actor=%u.", m_number, m_now - m_subSwimSince, feet.x, feet.y, feet.z, surface, m_actorId);
+	m_subSwimDown = vertical < 0; m_subSwimUp = vertical > 0;
 	return Vec3(m_subSwimTarget.x, m_subSwimTarget.y, feet.z);
 }
 
 bool BotBrain::SubSwimDescending() const
 {
 	return m_subSwim && m_subSwimDown && m_blackboard.swimming && BotConfig::Get().subExit == 1;
+}
+
+bool BotBrain::SubSwimAscending() const
+{
+	return m_subSwim && m_subSwimUp && !m_subSwimDown && m_blackboard.swimming && BotConfig::Get().subExit == 1;
 }
 
 void BotBrain::CancelSubSwim(CPlayer& actor, const char* why, const Vec3& feet)
@@ -1957,7 +1969,7 @@ void BotBrain::CancelSubSwim(CPlayer& actor, const char* why, const Vec3& feet)
 		WB_LOG(1, "[WarsBots] #%d SUB SWIM failed reason=%s t=%.1f pos=(%.1f,%.1f,%.1f) actor=%u.", m_number, why, m_now - m_subSwimSince, feet.x, feet.y, feet.z, m_actorId);
 		m_subSwimCooldown = m_now + 30.f; m_nextRepath = m_minRepath = 0;
 	}
-	m_subSwim = false; m_subSwimDown = false; m_subSwimClear = false; m_intent.swimDown = false;
+	m_subSwim = false; m_subSwimDown = false; m_subSwimUp = false; m_subSwimClear = false; m_intent.swimDown = false; m_intent.swimUp = false;
 	actor.SetWarsBotSwimDown(false);
 }
 
@@ -1968,7 +1980,7 @@ void BotBrain::TickSubSwim(CPlayer& actor, const Vec3& feet)
 	if (BotConfig::Get().subExit != 1) CancelSubSwim(actor, "flag_off", feet);
 	else if (!CurrentNavMesh()) CancelSubSwim(actor, "no_mesh", feet);
 	else if (!m_blackboard.swimming) CancelSubSwim(actor, "left_water", feet);
-	else if (m_now - m_subSwimSince > 30.f) CancelSubSwim(actor, "timeout", feet);
+	else if (m_now - m_subSwimSince > 45.f) CancelSubSwim(actor, "timeout", feet);   // 30 s descent/traverse + ~20 m ascent
 }
 
 // SPEC-006a p. 4 (Codex #41): own dispatch. A bot swimming under a deck/hull whose start does not reach the open water
@@ -2000,7 +2012,7 @@ bool BotBrain::SubSwimRescue(CPlayer& actor, float decisionTime, const Vec3& fee
 		if (mesh->Reachable(p, w, 2.6f, waterStart ? &water : nullptr))
 		{   // physical success: the start reaches the open water on the mesh again
 			WB_LOG(1, "[WarsBots] #%d SUB SWIM done t=%.1f pos=(%.1f,%.1f,%.1f) actor=%u.", m_number, m_now - m_subSwimSince, feet.x, feet.y, feet.z, m_actorId);
-			m_subSwim = false; m_subSwimDown = false; m_nextRepath = m_minRepath = 0;
+			m_subSwim = false; m_subSwimDown = false; m_subSwimUp = false; m_nextRepath = m_minRepath = 0;
 			actor.SetWarsBotSwimDown(false);
 			return false;
 		}
@@ -2153,7 +2165,7 @@ void BotBrain::UpdateLadder(CPlayer& actor, float dt)
 		WBI(gait,BotGait::Walk);
 		WBI(suitMode,NANOMODE_DEFENSE);
 		m_intent.combat=BotCombatIntent::None; m_intent.jump=BotJump::None; m_intent.linkJump=false;
-		m_intent.meshPath=false; m_intent.arrive=0.5f; m_intent.swimDown=false;
+		m_intent.meshPath=false; m_intent.arrive=0.5f; m_intent.swimDown=false; m_intent.swimUp=false;
 		m_locomotion.Execute(actor,m_intent,m_blackboard,m_now,dt);
 	}
 	if (m_verbose) WB_LOG(2,"[WarsBots] #%d LADDER phase=%d grab=%d climb=%d settle=%d nativeOn=%d exiting=%d grounded=%d vz=%.2f pos=(%.2f,%.2f,%.2f) actor=%u.",
