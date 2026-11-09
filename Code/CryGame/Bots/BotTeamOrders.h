@@ -30,6 +30,7 @@ struct TeamTarget
 	int owner = 0;            // 0 neutral, else team id
 	bool reachable = false;   // a navmesh path from the team base or from one of the team's own points (cache)
 	float path = 1e9f;        // shortest cached path length to it, metres
+	float quiet = 1e9f;       // D-059: seconds since an enemy was within 40 m of it (engine; capture counts as a contact)
 };
 
 struct TeamBot
@@ -82,9 +83,13 @@ inline bool CombatOver(float now, float lastSeen, float lastHit, float quiet = 5
 
 struct TeamPlanConfig
 {
-	int defendFrom = 5;        // D-054: a defender on every taken point from 5 bots in the team
-	int prototypeFrom = 4;     // owner 08.11: from 4 bots one pair goes to the prototype from the first plan (no energy gate)
+	int defendFrom = 5;        // defenders only from 5 bots in the team (D-054 threshold; D-059 sets how many)
+	int prototypeFrom = 4;     // owner 08.11: from 4 bots one pair goes to the prototype from the first plan (no energy gate);
+	                           // D-059/SPEC-005b: from 4 bots the taken prototype keeps one defender until the team has TAC
 	float quietChange = 20.f;  // a task changes without an event at most once per 20 s
+	int maxDefenders = 2;      // D-059 (owner 09.11): no neutral point left -> at most 2 defenders per team (prototype apart)
+	float releaseAfter = 45.f; // D-059: a point with no enemy within 40 m for 45 s loses its defender, who attacks
+	bool teamHasTac = false;   // per call: the team got TAC from the prototype (no detection in this PR -> always false)
 };
 
 namespace TeamOrdersDetail {
@@ -196,14 +201,39 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 		pool.clear();
 	}
 
-	// D-054 defenders: one per taken point from `defendFrom` bots; with free targets left at least one pair attacks.
+	// D-059 (owner 09.11, replaces D-054 "a defender on every taken point"): while a neutral reachable point is left, a
+	// taken point keeps no defender (capture and go on); with no neutral point left at most `maxDefenders` per team, only
+	// on points an enemy came within 40 m of in the last `releaseAfter` s. Exception: the taken prototype keeps one
+	// defender from `prototypeFrom` bots until the team has TAC, outside the limit. With free targets one pair attacks.
 	const int n = int(bots.size());
-	if (!pool.empty() && !owned.empty() && n >= cfg.defendFrom)
+	bool neutralLeft = false;
+	for (const TeamTarget& t : targets) if (t.kind != PsKind::Spawn && t.owner == 0 && t.reachable) neutralLeft = true;
+	std::vector<const TeamTarget*> guard;
+	if (!pool.empty() && n >= cfg.prototypeFrom && !cfg.teamHasTac)
+		for (const TeamTarget& t : owned) if (t.kind == PsKind::Prototype) { guard.push_back(&t); break; }
+	const int protoGuards = int(guard.size());
+	if (!pool.empty() && n >= cfg.defendFrom && !neutralLeft)
 	{
-		const int maxDef = freeT.empty() ? int(owned.size()) : std::max(0, std::min(int(owned.size()), n - 2));
-		for (int d = 0; d < maxDef && !pool.empty(); ++d)
+		const int cap = freeT.empty() ? cfg.maxDefenders : std::max(0, std::min(cfg.maxDefenders, n - 2 - protoGuards));
+		int count = 0;
+		for (const TeamTarget& t : owned)
 		{
-			const TeamTarget& t = owned[size_t(d)];
+			if (count >= cap) break;
+			if (protoGuards && t.id == guard[0]->id) continue;
+			if (t.quiet >= cfg.releaseAfter) continue;   // no enemy near for 45 s: no defender, the bot attacks
+			guard.push_back(&t); ++count;
+		}
+	}
+	auto released = [&](int id)
+	{
+		for (const TeamTarget& t : owned)
+			if (t.id == id) { for (const TeamTarget* g : guard) if (g->id == id) return false; return true; }
+		return false;
+	};
+	{
+		for (size_t d = 0; d < guard.size() && !pool.empty(); ++d)
+		{
+			const TeamTarget& t = *guard[d];
 			size_t pick = pool.size();
 			for (size_t i = 0; i < pool.size(); ++i)
 			{
@@ -257,6 +287,9 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 	for (TeamOrder o : desired)
 	{
 		const TeamOrder* p = FindPrev(prev, o.bot);
+		// D-059: a defender whose point lost its defender slot (quiet 45 s, a neutral point again, over the limit)
+		// leaves at once, not after the 20 s quiet-change rule
+		const bool freed = p && p->hold && p->kind != PsKind::Spawn && !(o.hold && o.target == p->target) && released(p->target);
 		bool respawned = false;
 		for (const TeamBot& b : bots) if (b.id == o.bot) respawned = b.respawned;
 		if (p && p->target == o.target && p->hold == o.hold && p->kind == o.kind)
@@ -264,7 +297,7 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 			TeamOrder keep = o; keep.since = p->since; keep.reason = p->reason; out.push_back(keep); continue;
 		}
 		const bool valid = p && stillValid(*p);
-		if (p && valid && !respawned && event == TeamEvent::None && now - p->since < cfg.quietChange)
+		if (p && valid && !freed && !respawned && event == TeamEvent::None && now - p->since < cfg.quietChange)
 		{
 			out.push_back(*p); continue;   // a quiet change waits for the 20 s rule
 		}
@@ -273,6 +306,7 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 		else if (o.kind == PsKind::Spawn || (o.reason && o.reason[0] == 'u')) o.reason = "unreachable";
 		else if (!p) o.reason = "start";
 		else if (respawned) o.reason = "respawn";
+		else if (freed) o.reason = "quiet";
 		else if (!valid) o.reason = event != TeamEvent::None ? TeamEventName(event) : "invalid";
 		else if (event != TeamEvent::None) o.reason = TeamEventName(event);
 		else o.reason = "rebalance";

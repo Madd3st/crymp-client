@@ -18,6 +18,7 @@
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
+#include "CryCommon/CryAction/IActorSystem.h"
 #include "CryCommon/CryAction/ILevelSystem.h"
 #include "CryCommon/CryEntitySystem/IEntityProxy.h"
 #include "CryCommon/CryEntitySystem/IEntitySystem.h"
@@ -264,6 +265,7 @@ struct TeamRuntime
 	std::map<int, bool> reach;           // last logged reachability per target (PS ORDER reason=unreachable once)
 	std::map<int, float> ownedSec;       // PS OWN
 	std::map<int, int> lost, recaptured;
+	std::map<int, float> lastEnemy;      // D-059: last time an enemy was within 40 m of the team's point (capture counts)
 };
 
 struct Commander
@@ -355,7 +357,7 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		{
 			for (int team = 1; team <= 2; ++team)
 			{
-				if (p.ownerTeam == team) { c.teams[team].pending = StrongerEvent(c.teams[team].pending, TeamEvent::Captured); if (c.teams[team].lost[p.id] > 0) ++c.teams[team].recaptured[p.id]; }
+				if (p.ownerTeam == team) { c.teams[team].pending = StrongerEvent(c.teams[team].pending, TeamEvent::Captured); if (c.teams[team].lost[p.id] > 0) ++c.teams[team].recaptured[p.id]; c.teams[team].lastEnemy[p.id] = now; }
 				if (was == team) { c.teams[team].pending = StrongerEvent(c.teams[team].pending, TeamEvent::Lost); ++c.teams[team].lost[p.id]; }
 			}
 		}
@@ -372,6 +374,25 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		c.nextOwnLog = now + 60.f;
 	}
 
+	// D-059: an enemy (bot or player, alive, team 1/2) within 40 m of a team's point at this 4 Hz tick
+	{
+		std::vector<std::pair<int, Vec3>> alive;
+		IActorIteratorPtr actors = g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
+		while (IActor* a = actors->Next())
+		{
+			if (a->GetHealth() <= 0 || !a->GetEntity()) continue;
+			const int t = rules.GetTeam(a->GetEntityId());
+			if (t == 1 || t == 2) alive.push_back(std::make_pair(t, a->GetEntity()->GetWorldPos()));
+		}
+		for (const PsCapturePoint& p : points)
+		{
+			if (p.ownerTeam < 1 || p.ownerTeam > 2 || !p.hasDestination) continue;
+			const Vec3 at(p.x, p.y, p.z);
+			for (const auto& a : alive)
+				if (a.first != p.ownerTeam && (a.second - at).GetLengthSquared() < 40.f * 40.f) { c.teams[p.ownerTeam].lastEnemy[p.id] = now; break; }
+		}
+	}
+
 	for (int team = 1; team <= 2; ++team)
 	{
 		TeamRuntime& tr = c.teams[team];
@@ -382,6 +403,7 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		for (const PsCapturePoint& p : points)
 		{
 			TeamTarget t; t.id = p.id; t.kind = PsKind(p.kind); t.owner = p.ownerTeam;
+			{ auto e = tr.lastEnemy.find(p.id); if (e != tr.lastEnemy.end()) t.quiet = now - e->second; }   // D-059
 			auto b = c.fromBase[team].find(p.id);
 			if (p.hasDestination && b != c.fromBase[team].end()) { t.reachable = true; t.path = b->second; }
 			for (const PsCapturePoint& own : points)

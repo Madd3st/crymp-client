@@ -47,6 +47,14 @@ check('PS FIGHT over (combat-over definition)', 'PS FIGHT over' in sq and 'Comba
 check('owner 08.11: no energy gate for the prototype', 'TeamEnergy' not in cap and 'prototypeFrom = 4' in orders)
 check('path cache built once, not per plan', cap.count('BuildCache(c, *mesh, points, rules);') == 1)
 
+# D-059 (owner 09.11): defenders only when no neutral point is left, at most 2, released after 45 s without an enemy
+check('D-059 config: at most 2 defenders, release after 45 s, TAC not detected here',
+      'int maxDefenders = 2;' in orders and 'float releaseAfter = 45.f;' in orders and 'bool teamHasTac = false;' in orders)
+check('D-059: neutral point left -> no defender except the prototype', 'n >= cfg.defendFrom && !neutralLeft' in orders and 'n >= cfg.prototypeFrom && !cfg.teamHasTac' in orders)
+check('D-059: a quiet defender leaves at once with reason=quiet', 'o.reason = "quiet";' in orders and '!freed &&' in orders)
+check('D-059 runtime: enemy within 40 m of an owned point, capture counts as contact',
+      '40.f * 40.f' in cap and 'c.teams[team].lastEnemy[p.id] = now;' in cap and 't.quiet = now - e->second;' in cap)
+
 for name, ok in checks: print(('PASS ' if ok else 'FAIL ') + name)
 print('%d/%d' % (sum(ok for _, ok in checks), len(checks)))
 raise SystemExit(0 if all(ok for _, ok in checks) else 1)
