@@ -363,7 +363,7 @@ void BotBrain::ResetLife()
 	m_hold.Reset(); m_lastFightTarget = 0; m_lootUntil = 0;
 	m_upgradeTracked = 0; m_upgradeBest = 1e9f; m_upgradeBestAt = m_now;   // DS-005
 	m_withdrawUntil=m_nextWithdraw=0; m_withdrawCoverValid=false;
-	m_psCapture.Reset(); m_psTarget=0; m_psOrderKind=-1; m_psFight=false; m_psSeenMark=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_lifeStartedAt=m_now; m_nextAliveBuy=0; m_doorUsed.clear();
+	m_psCapture.Reset(); m_psHoldTarget=0; m_psHoldTimer.Reset(); m_psHoldHas=m_psHoldCapture=m_psHoldBack=false; m_psTarget=0; m_psOrderKind=-1; m_psFight=false; m_psSeenMark=0; m_nextPsCapture=0; m_psPoints.clear(); m_psBought=false; m_psBuys=0; m_lifeStartedAt=m_now; m_nextAliveBuy=0; m_doorUsed.clear();
 	m_speedTravel = false; m_nextTravelJump = m_now + 3.0f; m_nextDodge = 0; m_lastHitSeen = 0;
 	m_upgradeTarget = 0; m_nextUpgradeSearch = 0; m_stuckReported = false; m_upgradeSince = 0;
 	ReleaseClaims(); // death or a new level: the item is free for the others at once
@@ -779,7 +779,7 @@ bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules
 	if(m_combat.LastSeen()>m_psSeenMark){m_psSeenMark=m_combat.LastSeen();m_psFight=true;}
 	if(m_psFight&&CombatOver(m_now,m_combat.LastSeen(),m_blackboard.damagedUntil-3.0f))
 	{
-		m_psFight=false;
+		m_psFight=false; m_psHoldBack=true;   // SPEC-005b p. 5: back on the position (PS HOLD reason=back)
 		WB_LOG(1,"[WarsBots] #%d PS FIGHT over target=%d actor=%u.",m_number,order.target,actor.GetEntityId());
 	}
 	Change(State::SEARCHING_ENEMY);
@@ -797,6 +797,10 @@ bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules
 		if(IEntity* area=gEnv->pEntitySystem->GetEntity(EntityId(point->areaId)))
 			if(IEntityAreaProxy* proxy=static_cast<IEntityAreaProxy*>(area->GetProxy(ENTITY_PROXY_AREA)))
 				inside=proxy->IsPointWithin(feet);
+	// SPEC-005b (wb_bot_ps_hold 1): a defender of an own point stands on the 15-20 m ring in cover facing the approach.
+	const bool holdPath=BotConfig::Get().psHold==1&&reachable&&order.hold&&point->ownerTeam==team;
+	if(!holdPath&&m_psHoldTarget)ResetPSHold(team);
+	if(holdPath&&UpdatePSHold(actor,*point,team,feet)){ExecuteIntent(actor,decisionTime);return true;}
 	if(!reachable||inside)
 	{
 		WBI(move,false);   // no ping-pong: stand (spawn hold, or inside the zone until captured / the commander moves it)
@@ -810,6 +814,100 @@ bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules
 		TravelGait((goal-feet).GetLength());
 	}
 	ExecuteIntent(actor,decisionTime);
+	return true;
+}
+void BotBrain::ResetPSHold(int team)
+{
+	if(m_psHoldTarget)PSHoldClaim(team,unsigned(m_actorId),nullptr);
+	m_psHoldTarget=0; m_psHoldTimer.Reset(); m_psHoldHas=false; m_psHoldCapture=false; m_psHoldBack=false;
+}
+// SPEC-005b: pick (on start, every 20-40 s, after a hit) and keep a defender position; false = stage-1 behaviour this
+// tick (an enemy inside the zone: p. 7 go in and fight; no candidate passed: stand inside the zone as before).
+bool BotBrain::UpdatePSHold(CPlayer& actor,const PsCapturePoint& point,int team,const Vec3& feet)
+{
+	const unsigned self=unsigned(actor.GetEntityId());
+	if(m_psHoldTarget!=point.id){ResetPSHold(team);m_psHoldTarget=point.id;}
+	PsHoldInfo info; PSHoldInfo(team,point.id,info);
+	if(info.contested)
+	{
+		if(!m_psHoldCapture)WB_LOG(1,"[WarsBots] #%d PS HOLD bot=%u target=%d pos=(%.1f,%.1f,%.1f) reason=capture t=%.1f.",m_number,self,point.id,point.x,point.y,point.z,m_now);
+		m_psHoldCapture=true;
+		return false;
+	}
+	const HoldConfig cfg;
+	const float hitAt=m_blackboard.damagedUntil>0.0f?m_blackboard.damagedUntil-3.0f:-1e9f;   // damagedUntil = hit + 3 s
+	HoldReason why=m_psHoldTimer.Due(m_now,hitAt);
+	if(m_psHoldCapture){m_psHoldCapture=false;why=HoldReason::Back;}
+	else if(why==HoldReason::None&&m_psHoldBack&&m_psHoldHas){m_psHoldBack=false;
+		WB_LOG(1,"[WarsBots] #%d PS HOLD bot=%u target=%d pos=(%.1f,%.1f,%.1f) reason=back t=%.1f.",m_number,self,point.id,m_psHoldPos.x,m_psHoldPos.y,m_psHoldPos.z,m_now);}
+	if(why!=HoldReason::None)
+	{
+		m_psHoldBack=false;
+		NavMeshCore* mesh=CurrentNavMesh();
+		const Vec3 c(point.x,point.y,point.z);
+		const HoldApproach ap=info.approach?MakeApproach(c.x,c.y,info.ax,info.ay):HoldApproach();
+		std::vector<HoldCandidate> cands;
+		const float c0[3]={c.x,c.y,c.z}; float cs[3]={c.x,c.y,c.z};
+		const bool centerOn=mesh&&mesh->Ready()&&mesh->Project(c0,cs,2.0f,2.0f,4.0f);
+		if(centerOn)
+			for(float ang:SectorDirections(ap,cfg.sectorDeg))
+				for(float r:{cfg.ringMin,(cfg.ringMin+cfg.ringMax)*0.5f,cfg.ringMax})
+				{
+					const float q[3]={c.x+std::cos(ang)*r,c.y+std::sin(ang)*r,c.z};
+					float s[3]; HoldCandidate h;
+					if(!mesh->Project(q,s,1.5f,6.0f,6.0f))continue;
+					h.onMesh=true; h.x=s[0]; h.y=s[1]; h.z=s[2];
+					std::vector<float> xyz;
+					if(mesh->FindPath(cs,s,xyz))
+					{
+						float len=0.0f; Vec3 prev(cs[0],cs[1],cs[2]);
+						for(size_t i=0;i+2<xyz.size();i+=3){const Vec3 p(xyz[i],xyz[i+1],xyz[i+2]);len+=(p-prev).GetLength();prev=p;}
+						h.path=len;
+					}
+					if(h.path>cfg.pathMax)continue;
+					const Vec3 p(s[0],s[1],s[2]);
+					Vec3 d=ap.valid?Vec3(ap.x,ap.y,0):Vec3(p.x-c.x,p.y-c.y,0); d.NormalizeSafe(Vec3(1,0,0));
+					const bool lowBlocked=!EyeRayClear(actor,p+Vec3(0,0,0.8f),p+Vec3(0,0,0.8f)+d*3.0f);
+					const bool highFree=EyeRayClear(actor,p+Vec3(0,0,1.6f),p+Vec3(0,0,1.6f)+d*30.0f);
+					h.cover=lowBlocked&&highFree;
+					h.seesCenter=EyeRayClear(actor,p+Vec3(0,0,1.6f),c+Vec3(0,0,1.0f));
+					cands.push_back(h);
+				}
+		std::vector<float> flat; PSHoldOthers(team,self,flat);
+		std::vector<HoldPos> others;
+		for(size_t i=0;i+2<flat.size();i+=3)others.push_back(HoldPos{flat[i],flat[i+1],flat[i+2]});
+		const int pick=PickHold(cands,c.x,c.y,c.z,ap,point.kind==int(PsKind::Energy),others,cfg);
+		m_psHoldTimer.Assign(m_now,HoldPeriod(Rand01(),cfg));
+		if(pick<0)
+		{
+			if(m_psHoldHas||why==HoldReason::Start)
+				WB_LOG(1,"[WarsBots] #%d PS HOLD bot=%u target=%d pos=none candidates=%d sector=%d reason=%s t=%.1f.",m_number,self,point.id,int(cands.size()),ap.valid?1:0,HoldReasonName(why),m_now);
+			m_psHoldHas=false; PSHoldClaim(team,self,nullptr);
+		}
+		else
+		{
+			const HoldCandidate& h=cands[size_t(pick)];
+			m_psHoldPos=Vec3(h.x,h.y,h.z); m_psHoldHas=true;
+			m_psHoldDir[0]=ap.valid?ap.x:(h.x-c.x); m_psHoldDir[1]=ap.valid?ap.y:(h.y-c.y);
+			const float pos[3]={h.x,h.y,h.z}; PSHoldClaim(team,self,pos);
+			WB_LOG(1,"[WarsBots] #%d PS HOLD bot=%u target=%d pos=(%.1f,%.1f,%.1f) score=%d cover=%d up=%.1f sector=%d reason=%s t=%.1f.",
+				m_number,self,point.id,h.x,h.y,h.z,HoldScore(h,c.z),h.cover?1:0,h.z-c.z,ap.valid?1:0,HoldReasonName(why),m_now);
+		}
+	}
+	if(!m_psHoldHas)return false;
+	const Vec3 off(m_psHoldPos.x-feet.x,m_psHoldPos.y-feet.y,m_psHoldPos.z-feet.z);
+	if(!HoldArrived(off.x,off.y,off.z))   // Codex #44: the upper floor is only reached at its height, keep the path
+	{
+		const Vec3 step=Steer(feet,m_psHoldPos);
+		WBI_MOVETO(step,step+Vec3(0,0,1.2f));
+		TravelGait(off.GetLength());
+	}
+	else
+	{
+		WBI(move,false);   // on the position: watch the approach at eye height (p. 6)
+		Vec3 d(m_psHoldDir[0],m_psHoldDir[1],0); d.NormalizeSafe(Vec3(1,0,0));
+		WBI(aim,m_psHoldPos+d*20.0f+Vec3(0,0,1.5f));
+	}
 	return true;
 }
 bool BotBrain::UpdateTest(CPlayer& actor,float decisionTime)
