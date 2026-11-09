@@ -16,6 +16,7 @@ struct PsCapturePoint
     int captureSeconds = 15; // informational
     bool capturable = true;
     bool power = false;      // AlienEnergyPoint: power is the first objective
+    int kind = 1;            // SPEC-005 PsKind: 0 energy, 1 factory, 2 prototype, 3 bunker (BotTeamOrders.h)
     bool hasDestination = false; // DS-072: x/y/z is an interior area destination, not the entity pivot
     float x = 0, y = 0, z = 0;
 };
