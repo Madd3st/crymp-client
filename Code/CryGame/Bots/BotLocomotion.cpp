@@ -28,6 +28,7 @@ void BotLocomotion::Stop(CPlayer& actor)
 {
 	m_movement.Stop(actor);
 	actor.SetWarsBotActions(false,false,STANCE_STAND);
+	actor.SetWarsBotSwimDown(false);   // Codex #41: a stopped bot never keeps the native swim descent
 	const float nextLog=m_nextLog; Reset(); m_nextLog=nextLog;
 }
 void BotLocomotion::Refused(CPlayer& actor, const char* reason, float now)
@@ -112,6 +113,7 @@ bool BotLocomotion::JumpSpace(CPlayer& actor, const Vec3& direction, bool moving
 bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboard& state, float now, float dt)
 {
 	const bool pace=BotPaceEnabled();
+	actor.SetWarsBotSwimDown(intent.swimDown && state.waterMovement);   // SPEC-006a p. 4; cleared on every other tick
     if (!state.canMove) { Stop(actor); Refused(actor,"movement_state",now); return false; }
 	const Vec3 direction=(intent.destination-state.position).GetNormalizedSafe(actor.GetBaseQuat().GetColumn1());
 	const bool strength=intent.jump==BotJump::Strength;
@@ -161,6 +163,7 @@ bool BotLocomotion::Execute(CPlayer& actor, const BotIntent& intent, BotBlackboa
 bool BotLocomotion::ExecuteLadder(CPlayer& actor, const Vec3& moveTo, const Vec3& aim, float dt, bool nativeAttached)
 {
 	const SPlayerStats* stats=actor.GetPlayerStats();
+	actor.SetWarsBotSwimDown(false);
 	if (!nativeAttached || !stats || !stats->isOnLadder.Value() || stats->isExitingLadder) return false;
 	// The SafeStep exception exists only while the native ladder is attached. Approach and post-exit settle call
 	// the ordinary safe executor instead.
