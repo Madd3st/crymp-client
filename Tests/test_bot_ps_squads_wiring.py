@@ -41,6 +41,16 @@ check('PS FIGHT over (combat-over definition)', 'PS FIGHT over' in sq and 'Comba
 check('owner 08.11: no energy gate for the prototype', 'TeamEnergy' not in cap and 'prototypeFrom = 4' in orders)
 check('path cache built once, not per plan', cap.count('BuildCache(c, *mesh, points, rules);') == 1)
 
+# playtest 09.11: reachable zone destination (wb_bot_ps_reach_dest, OFF), prototype 344
+area_h = rd('Code/CryGame/Bots/BotCaptureArea.h')
+check('reach_dest flag default OFF', re.search(r'int psReachDest=0;', cfg_h) and '{"wb_bot_ps_reach_dest",&BotConfig::psReachDest,' in cfg_c)
+check('reach_dest: anchors only with the flag', 'if (reachDest && mesh && mesh->Ready())' in cap and 'std::vector<Vec3> anchors;' in cap)
+check('reach_dest: base cache keyed by the flag', 'reachDest==cachedReach' in cap)
+check('reach_dest: chooses through the pure helper, fallback keeps the old best',
+      'PickReachableCandidate(candXyz.data()' in cap and '*reach = "interior_fallback";' in cap and 'template<class Reach>' in area_h)
+check('reach_dest: logs reach= in PS CAPTURE dest', 'reach=%s tests=%d.' in cap)
+check('reach_dest: no coordinates or entity ids in code', not re.search(r'2133|2134|344', cap.split('bool AreaDestination(')[1].split('const std::vector<PsCapturePoint>& BasePoints()')[0]))
+
 for name, ok in checks: print(('PASS ' if ok else 'FAIL ') + name)
 print('%d/%d' % (sum(ok for _, ok in checks), len(checks)))
 raise SystemExit(0 if all(ok for _, ok in checks) else 1)

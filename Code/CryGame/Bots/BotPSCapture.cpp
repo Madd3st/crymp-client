@@ -77,8 +77,14 @@ const std::vector<AreaShapeInfo>& LevelAreaShapes()
 // DS-072: pick a destination inside one of the shapes bound to this capturable entity. The capturable pivot can sit
 // outside the area (Shore 579 is 13.3 m away), so every sample is checked against the live native area and the world
 // polygon; the most interior sample wins and a navmesh landing is preferred. No map-specific coordinates.
-bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEntityId, const char** why)
+// wb_bot_ps_reach_dest 1 (playtest 09.11): 'anchors' are the snapped team bases; the destination is then the most
+// interior sample with a path from every anchor (PickReachableCandidate), else the old most interior one. *reach says
+// which: "off" (flag OFF or no anchors), "bases" or "interior_fallback".
+bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEntityId, const char** why,
+	const std::vector<Vec3>& anchors, const char** reach, int* rank)
 {
+	*reach = "off"; *rank = 0;
+	std::vector<float> candXyz, candEdge; std::vector<int> candEntity;   // only filled when anchors are given
 	*why = "no_binding";
 	const std::vector<AreaShapeInfo>& shapes = LevelAreaShapes();
 	NavMeshCore* mesh = CurrentNavMesh();
@@ -141,6 +147,8 @@ bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEnti
 			}
 			const float edge = CaptureAreaEdgeDistance(shape, p.x, p.y);
 			if (edge > bestEdge) { bestEdge = edge; best = p; bestEntity = s.entityId; }
+			if (!anchors.empty() && candEdge.size() < 20000)
+			{ candXyz.push_back(p.x); candXyz.push_back(p.y); candXyz.push_back(p.z); candEdge.push_back(edge); candEntity.push_back(s.entityId); }
 		}
 	}
 	if (!matched) return false;
@@ -148,6 +156,18 @@ bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEnti
 	if (bestEdge < 0.25f) { *why = "thin_area"; return false; }
 	out = best;
 	areaEntityId = bestEntity;
+	if (!anchors.empty())
+	{
+		int tests = 0;
+		const int pick = PickReachableCandidate(candXyz.data(), candEdge.data(), int(candEdge.size()), 0.25f, 32, 1.0f,
+			[&](float x, float y, float z) {
+				++tests; const float goal[3] = { x, y, z };
+				for (const Vec3& a : anchors) { const float start[3] = { a.x, a.y, a.z }; if (!mesh->Reachable(start, goal)) return false; }
+				return true; });
+		*rank = tests;
+		if (pick >= 0) { out = Vec3(candXyz[pick * 3], candXyz[pick * 3 + 1], candXyz[pick * 3 + 2]); areaEntityId = candEntity[pick]; *reach = "bases"; }
+		else *reach = "interior_fallback";
+	}
 	return true;
 }
 
@@ -157,14 +177,16 @@ const std::vector<PsCapturePoint>& BasePoints()
 	static std::vector<PsCapturePoint> points;
 	static NavMeshCore* cachedMesh=nullptr;
 	static int cachedSquads=-1;   // SPEC-005: bunkers join the targets only with wb_bot_ps_squads 1
+	static int cachedReach=-1;    // wb_bot_ps_reach_dest: destinations change with the flag
 	if (!g_pGame || !g_pGame->GetIGameFramework()) return points;
 	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
 	const char* name = level && level->GetLevelInfo() ? level->GetLevelInfo()->GetName() : nullptr;
 	const std::string current = name ? name : "";
 	NavMeshCore* mesh=CurrentNavMesh();
 	const int squads=BotConfig::Get().psSquads==1?1:0;
-	if (current == levelName && mesh==cachedMesh && squads==cachedSquads && !points.empty()) return points;
-	cachedMesh=mesh; cachedSquads=squads;
+	const int reachDest=BotConfig::Get().psReachDest==1?1:0;
+	if (current == levelName && mesh==cachedMesh && squads==cachedSquads && reachDest==cachedReach && !points.empty()) return points;
+	cachedMesh=mesh; cachedSquads=squads; cachedReach=reachDest;
 	levelName = current;
 	points.clear();
 	if (!gEnv || !gEnv->pEntitySystem) return points;
@@ -172,6 +194,25 @@ const std::vector<PsCapturePoint>& BasePoints()
 	IEntityClass* energy = gEnv->pEntitySystem->GetClassRegistry()->FindClass("AlienEnergyPoint");
 	IEntityClass* factory = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Factory");
 	IEntityClass* spawnGroup = squads ? gEnv->pEntitySystem->GetClassRegistry()->FindClass("SpawnGroup") : nullptr;
+	// wb_bot_ps_reach_dest 1: the non-capturable SpawnGroups (team bases) snapped like BuildCache does; the team id is
+	// not needed here, so this works before the rules hand out the bases.
+	std::vector<Vec3> anchors;
+	if (reachDest && mesh && mesh->Ready())
+	{
+		IEntityClass* groupClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("SpawnGroup");
+		IEntityItPtr bases = gEnv->pEntitySystem->GetEntityIterator();
+		while (IEntity* e = bases->Next())
+		{
+			if (!groupClass || e->GetClass() != groupClass) continue;
+			IScriptTable* table = e->GetScriptTable(); SmartScriptTable props; int capturable = 0;
+			if (!table || !table->GetValue("Properties", props)) continue;
+			props->GetValue("bCapturable", capturable);
+			if (capturable) continue;
+			const Vec3 p = e->GetWorldPos(); const float q[3] = { p.x, p.y, p.z }; float snapped[3];
+			if (mesh->Project(q, snapped, 8.f, 3.f, 10.f)) anchors.push_back(Vec3(snapped[0], snapped[1], snapped[2]));
+		}
+		WB_LOG(0, "[WarsBots] PS CAPTURE reach_dest bases=%d.", int(anchors.size()));
+	}
 	IEntityItPtr it = gEnv->pEntitySystem->GetEntityIterator();
 	while (IEntity* entity = it->Next())
 	{
@@ -196,7 +237,8 @@ const std::vector<PsCapturePoint>& BasePoints()
 		Vec3 destination(0,0,0);
 		int areaEntityId = 0;
 		const char* why = "no_area_id";
-		const bool validDestination=localAreaId && AreaDestination(int(entity->GetId()), localAreaId, destination, areaEntityId, &why);
+		const char* reach = "off"; int reachTests = 0;
+		const bool validDestination=localAreaId && AreaDestination(int(entity->GetId()), localAreaId, destination, areaEntityId, &why, anchors, &reach, &reachTests);
 		if (!validDestination)
 		{
 			WB_LOG(0, "[WarsBots] PS CAPTURE skip id=%u area=%d reason=%s.", unsigned(entity->GetId()), localAreaId, why);
@@ -217,8 +259,8 @@ const std::vector<PsCapturePoint>& BasePoints()
 			if (props->GetValue("szName", label) && label && !_stricmp(label, "prototype")) point.kind = int(PsKind::Prototype);
 		}
 		point.x = destination.x; point.y = destination.y; point.z = destination.z;
-		if(validDestination) WB_LOG(0, "[WarsBots] PS CAPTURE dest id=%u area=%d shape=%d pos=(%.2f,%.2f,%.2f).",
-			unsigned(entity->GetId()), localAreaId, areaEntityId, destination.x, destination.y, destination.z);
+		if(validDestination) WB_LOG(0, "[WarsBots] PS CAPTURE dest id=%u area=%d shape=%d pos=(%.2f,%.2f,%.2f) reach=%s tests=%d.",
+			unsigned(entity->GetId()), localAreaId, areaEntityId, destination.x, destination.y, destination.z, reach, reachTests);
 		points.push_back(point);
 	}
 	WB_LOG(0, "[WarsBots] PS CAPTURE %d capturable points for %s.", int(points.size()), current.c_str());

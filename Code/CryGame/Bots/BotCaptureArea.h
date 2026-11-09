@@ -4,6 +4,7 @@
 #pragma once
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 namespace WarsBots
 {
@@ -67,5 +68,35 @@ inline bool CaptureShapeBinds(const CaptureShapeBinding& s, int capturableId, in
 	for (int i = 0; i < s.targetCount; ++i)
 		if (s.targets[i] == capturableId) return true;
 	return false;
+}
+
+// Playtest 09.11 (Shore prototype 344): the most interior navmesh sample of a zone can sit on a navmesh piece that is
+// cut off from both bases while another sample of the same zone 1.4 m away is on the main piece. Candidates are tried
+// from the most interior one; a candidate within 'skip' metres of one that already failed is not tried again (samples
+// of one cell snap to the same polygon). Returns the first index the reach test accepts, or -1 (no test passed or
+// maxTests used up): the caller then keeps its old most-interior choice. Engine-free; the adapter supplies the test.
+template<class Reach>
+inline int PickReachableCandidate(const float* xyz, const float* edge, int count, float minEdge, int maxTests, float skip, Reach reach)
+{
+	if (!xyz || !edge || count <= 0 || maxTests <= 0) return -1;
+	std::vector<int> order;
+	for (int i = 0; i < count; ++i) if (edge[i] >= minEdge) order.push_back(i);
+	std::stable_sort(order.begin(), order.end(), [edge](int a, int b) { return edge[a] > edge[b]; });
+	std::vector<int> failed;
+	int tests = 0;
+	for (int i : order)
+	{
+		bool near = false;
+		for (int f : failed)
+		{
+			const float dx = xyz[i * 3] - xyz[f * 3], dy = xyz[i * 3 + 1] - xyz[f * 3 + 1], dz = xyz[i * 3 + 2] - xyz[f * 3 + 2];
+			if (dx * dx + dy * dy + dz * dz < skip * skip) { near = true; break; }
+		}
+		if (near) continue;
+		if (tests++ >= maxTests) return -1;
+		if (reach(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2])) return i;
+		failed.push_back(i);
+	}
+	return -1;
 }
 }
