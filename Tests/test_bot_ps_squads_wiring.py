@@ -32,6 +32,12 @@ sq = sq[:sq.index('\nbool BotBrain::', 10)]
 check('order copied (commander vector may change)', 'const TeamOrder order=*found;' in sq)
 check('stage 1 stands inside the native area', 'IsPointWithin(feet)' in sq and 'WBI(move,false);' in sq)
 check('no SetPos/impulse in the squad path', not re.search(r'SetPos|AddImpulse|SetWorldTM', sq))
+# playtest 09.11: a bot without its own path must not stand for the whole match (US sub lower deck, KNDR pit)
+i_fb = sq.find('if(order.kind!=PsKind::Spawn&&!reachable)return false;')
+check('no own path: back to the usual chain (unstick/roam/swim), not a stand',
+      i_fb > 0 and 'reason=bot_unreachable fallback=roam.' in sq
+      and i_fb < sq.find('bool inside=false;') < sq.find('WBI(move,false);'))
+check('stand only for the team spawn hold or inside the zone', 'if(!reachable||inside)' in sq)
 # logs
 check('PS ORDER fields', re.search(r'PS ORDER team=%d bot=%u target=%d kind=%s role=%s pair=%d reason=%s', cap))
 check('PS ORDER unreachable once per state change', 'reason=unreachable.' in cap and 'r->second != t.reachable' in cap)

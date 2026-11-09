@@ -790,8 +790,13 @@ bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules
 	{
 		m_psTarget=order.target; m_psOrderKind=int(order.kind);
 		if(order.kind!=PsKind::Spawn&&!reachable)   // the cache says reachable, this bot's own start does not
-			WB_LOG(1,"[WarsBots] #%d PS ORDER bot=%u target=%d reason=bot_unreachable.",m_number,actor.GetEntityId(),order.target);
+			WB_LOG(1,"[WarsBots] #%d PS ORDER bot=%u target=%d reason=bot_unreachable fallback=roam.",m_number,actor.GetEntityId(),order.target);
 	}
+	// Playtest 09.11: standing here froze bots in a separate navmesh piece for the whole match (US on the dry lower deck
+	// of the submarine, KNDR in the pit at (1995,1239): Detour other_component). No own path: hand the bot back to the
+	// usual chain (unstick, trap recovery, roam, swim-out) exactly as with wb_bot_ps_squads 0; the 2 s snapshot from its
+	// own position gives the order back once a path exists.
+	if(order.kind!=PsKind::Spawn&&!reachable)return false;
 	bool inside=false;
 	if(reachable&&point->areaId)
 		if(IEntity* area=gEnv->pEntitySystem->GetEntity(EntityId(point->areaId)))
@@ -799,7 +804,7 @@ bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules
 				inside=proxy->IsPointWithin(feet);
 	if(!reachable||inside)
 	{
-		WBI(move,false);   // no ping-pong: stand (spawn hold, or inside the zone until captured / the commander moves it)
+		WBI(move,false);   // no ping-pong: stand (team spawn hold, or inside the zone until captured / the commander moves it)
 		if(reachable)WBI(aim,Vec3(point->x,point->y,point->z+1.5f));
 	}
 	else
