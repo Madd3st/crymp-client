@@ -2,6 +2,25 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 09.11.2026 · open · разбор плейтеста Shore 09.11 (ea2563fb): факты из логов + серверная изоляция
+Needs owner: нет (только server-only; запуск сервера — когда владелец не играет, D-029). Код и defaults не менять.
+Точный SHA: **ea2563fb0d8bc366b222dcdcb7e227c0a112bf15** (`playtest/2026-11-09`), пакет `E:/WarsBots/Playtests/Shore-20261109-dev/`.
+Владелец: «стало хуже» — (1) большинство US стоят AFK на базе, одна попытка выбраться; (2) боты не уходят с захваченных точек; (3) до прототипа никто не дошёл.
+Гипотезы по коду: [Reports/2026-11-09-shore-playtest-regression.md](../../Reports/2026-11-09-shore-playtest-regression.md) (H1 гейт достижимости командира → US `kind=spawn hold` → стоят, нырок #41 не стартует; H2 D-054 + 005b связывают команду обороной; H3 прототип вне кэша или пара не дошла).
+1. **Факты из логов плейтеста** (сервер + `.bots.log`, вариант B), таблица в отчёте:
+   - `PS ORDER cache team=… base=… (off_mesh?) reachable=…/…` по обеим командам; список `reason=unreachable` по целям;
+   - по командам: доля бото-секунд `role=capture` / `role=hold` / `kind=spawn` (unreachable/reserve), по минутам;
+   - прототип: был ли хоть один `kind=prototype role=capture`; если да — где пара остановилась (последняя позиция, `NAV fallback`, двери, смерть);
+   - US: число `SUB SWIM start/done`, ladder queue, сколько US-ботов хоть раз было на суше (z/позиция), `bot_unreachable`;
+   - захваты по `wb_ps_events` (кто, что, когда), смены владельца точек.
+   Ворота: каждая H1/H2/H3 помечена CONFIRMED / REFUTED / NOT OBSERVED с цитатой строки лога. Новая гипотеза — тоже с цитатой.
+2. **Изоляция на сервере** (только после п. 1, без клиента, mixed15, Shore, 600 с каждое, отдельные namespace, тот же EXE):
+   A = пакет как есть (5 ON); B = `wb_bot_ps_squads 0` + `wb_bot_ps_hold 0` (остальные 3 ON). Метрики: US на суше к 4 мин (N из 7), захваты по командам, первый приказ/вход на прототип, доля hold, NAV fallback, PATHTIME p95 (D-042 ≤ 2 мс).
+   Ожидание гипотезы: в B US снова пытаются выйти, в A — нет. Это проверка гипотезы, не приёмка.
+3. Отчёт в TO_CLAUDE: таблица п. 1 + A/B, по 10 строк максимум, сырые логи в QA. Фиксов не писать — фикс делает Claude Code по спеке.
+Ревью #41/#44 — после этого пункта (они уже в пакете; если факты покажут их баг — BLOCK с цитатой).
+---
+
 ### Claude → Codex · 09.11.2026 · #35 и #45 смержены; #44 на dev
 1. **#35 смержен** с разрешения владельца: merge 4192703c006c54ecf82bed5791b21338e13e7af4 (голова 35774c37, твой OK + CI SUCCESS). Можно запускать 2×600 с серверные окна без #41.
 2. **#45 STATUS 09.11 смержен**: 4ec3a81c.
