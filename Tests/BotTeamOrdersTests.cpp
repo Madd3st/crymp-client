@@ -1,4 +1,5 @@
 // SPEC-005 stage 1: team commander tests (engine-free). Unit cases plus the property test N = 3..16.
+// Cases 1-11 are stage 1 unchanged (wb_bot_ps_hold 0 must plan exactly as before); 12-13 are D-059 (wb_bot_ps_hold 1).
 #include "CryGame/Bots/BotTeamOrders.h"
 #include <cstdio>
 #include <cstring>
@@ -67,57 +68,28 @@ int main()
 		CHECK(targets.size() == 3);
 		CHECK(CountOn(o, 344, false) >= 2 && CountOn(o, 96, false) >= 2 && CountOn(o, 64, false) >= 2);   // owner 08.11: prototype pair first
 	}
-	// 4. D-059: neutral points left -> no defender on the taken point, all 5 attack (was D-054: one defender).
+	// 4. D-054: >= 5 bots -> exactly one defender on the taken point; the rest attack.
 	{
-		std::vector<TeamTarget> t = Shore(1, 96); for (TeamTarget& x : t) x.quiet = 0.f;   // even with an enemy near
-		const auto o = PlanTeamOrders(t, Bots(5), 1, 0.f, TeamEvent::Captured, none);
-		CHECK(CountOn(o, 96, true) == 0);
+		const auto o = PlanTeamOrders(Shore(1, 96), Bots(5), 1, 0.f, TeamEvent::Captured, none);
+		CHECK(CountOn(o, 96, true) == 1);
 		int attackers = 0; for (const TeamOrder& x : o) if (!x.hold) { ++attackers; CHECK(x.target != 96); }
-		CHECK(attackers == 5);
-	}
-	// 4b. D-059: no neutral point left -> at most 2 defenders, only where an enemy was near in the last 45 s; the
-	//     prototype keeps one defender until TAC outside the limit; a defender of a quiet point leaves at once (reason=quiet).
-	{
-		std::vector<TeamTarget> t = Shore(1);
-		for (TeamTarget& x : t) { x.owner = (x.id == 579 || x.id == 243) ? 2 : 1; x.quiet = 10.f; }   // 7 own, 2 enemy, none neutral
-		auto o = PlanTeamOrders(t, Bots(8), 1, 0.f, TeamEvent::Captured, none);
-		int def = 0; for (const TeamOrder& x : o) if (x.hold) ++def;
-		CHECK(def == 3 && CountOn(o, 344, true) == 1);                     // 2 + the prototype
-		CHECK(CountOn(o, 579, false) + CountOn(o, 243, false) == 5);
-		// TAC: the prototype is an ordinary point then
-		TeamPlanConfig tac; tac.teamHasTac = true;
-		auto ot = PlanTeamOrders(t, Bots(8), 1, 0.f, TeamEvent::Captured, none, tac);
-		def = 0; for (const TeamOrder& x : ot) if (x.hold) ++def;
-		CHECK(def == 2);
-		// quiet for 45 s: the two defenders go, the prototype defender stays (no 20 s wait, reason=quiet)
-		std::vector<TeamTarget> q = t; for (TeamTarget& x : q) x.quiet = 50.f;
-		auto oq = PlanTeamOrders(q, Bots(8), 1, 5.f, TeamEvent::None, o);
-		def = 0; for (const TeamOrder& x : oq) if (x.hold) ++def;
-		CHECK(def == 1 && CountOn(oq, 344, true) == 1);
-		int quietReason = 0;
-		for (const TeamOrder& x : oq) { const TeamOrder* w = Of(o, x.bot); if (w && w->hold && w->kind != PsKind::Prototype) { CHECK(!x.hold && x.since == 5.f && std::strcmp(x.reason, "quiet") == 0); ++quietReason; } }
-		CHECK(quietReason == 2);
-		// the prototype is kept even with neutral points left and a quiet zone (from 4 bots)
-		std::vector<TeamTarget> pn = Shore(1, 344); for (TeamTarget& x : pn) x.quiet = 1e9f;
-		CHECK(CountOn(PlanTeamOrders(pn, Bots(4), 1, 0.f, TeamEvent::Captured, none), 344, true) == 1);
-		CHECK(CountOn(PlanTeamOrders(pn, Bots(3), 1, 0.f, TeamEvent::Captured, none), 344, true) == 0);
+		CHECK(attackers == 4);
 	}
 	// 5. < 5 bots: no defender while free targets remain.
 	{
 		const auto o = PlanTeamOrders(Shore(1, 96), Bots(4), 1, 0.f, TeamEvent::Captured, none);
 		for (const TeamOrder& x : o) CHECK(!x.hold);
 	}
-	// 6. Many own points, one enemy point (no neutral): prototype + 2 defenders, bunkers before energy; the rest attacks.
+	// 6. Many own points: at least one pair keeps attacking (owner ok 07.11); energy near the base loses its defender first.
 	{
 		std::vector<TeamTarget> t = Shore(1);
-		for (TeamTarget& x : t) { x.owner = x.id == 579 ? 2 : 1; x.quiet = 0.f; }   // 8 own, 1 enemy
+		for (TeamTarget& x : t) if (x.id != 579) x.owner = 1;               // 8 own, 1 free
 		const auto o = PlanTeamOrders(t, Bots(6), 1, 0.f, TeamEvent::Captured, none);
 		int def = 0, att = 0; for (const TeamOrder& x : o) (x.hold ? def : att)++;
-		CHECK(def == 3 && att == 3);
-		CHECK(CountOn(o, 344, true) == 1);                                  // prototype until TAC
-		CHECK(CountOn(o, 96, true) == 1 && CountOn(o, 211, true) == 1);    // bunkers by path next
+		CHECK(def == 4 && att == 2);
+		CHECK(CountOn(o, 344, true) == 1);                                  // prototype defended first
 		CHECK(CountOn(o, 64, true) == 0 && CountOn(o, 316, true) == 0);     // energy left without a defender
-		CHECK(CountOn(o, 579, false) == 3);
+		CHECK(CountOn(o, 579, false) == 2);
 	}
 	// 7. Reachability gate: no task on an unreachable target; nothing reachable -> hold the spawn, reason=unreachable.
 	{
@@ -171,30 +143,20 @@ int main()
 			CHECK(reserve == nb - onP);
 			auto again = PlanTeamOrders(sole, Bots(nb), 2, 5.f, TeamEvent::None, os);   // stable: the reserve stays a reserve
 			CHECK(CountOn(again, 344, false) == onP);
-			// with another own point and an unreachable bunker: one pair on 344, no defender (D-059: 344 is still neutral), rest reserve
+			// with another own point and an unreachable bunker: one pair on 344, one D-054 defender from 5 bots, rest reserve
 			std::vector<TeamTarget> mix = {T(344, PsKind::Prototype, 0, true, 520), T(96, PsKind::Bunker, 2, true, 200), T(211, PsKind::Bunker, 0, false, 350)};
 			auto om = PlanTeamOrders(mix, Bots(nb), 2, 0.f, TeamEvent::None, none);
 			const int onPm = CountOn(om, 344, false);
 			CHECK(onPm >= 2 && onPm <= 3);
 			CHECK(CountOn(om, 211, false) == 0 && CountOn(om, 211, true) == 0);
-			CHECK(CountOn(om, 96, true) == 0);
+			CHECK(CountOn(om, 96, true) == (nb >= 5 ? 1 : 0));
 			int reserveM = 0; for (const TeamOrder& x : om) if (x.kind == PsKind::Spawn && std::strcmp(x.reason, "reserve") == 0) ++reserveM;
-			CHECK(reserveM == nb - onPm);
+			CHECK(reserveM == nb - onPm - (nb >= 5 ? 1 : 0));
 		}
 		std::vector<TeamOrder> prev = PlanTeamOrders(Shore(1), Bots(4), 1, 0.f, TeamEvent::None, none);
 		std::vector<TeamTarget> t = Shore(1, prev[0].target);           // the first pair's target was just taken
 		auto o = PlanTeamOrders(t, Bots(4), 1, 3.f, TeamEvent::None, prev);
-		// the first pair took the prototype (from 4 bots it leads): one of the pair stays on it until TAC (D-059),
-		// the other one changes at once to a new target (an invalid old task does not wait 20 s)
-		CHECK(prev[0].kind == PsKind::Prototype);
-		const TeamOrder* a = Of(o, prev[0].bot); const TeamOrder* b = Of(o, prev[1].bot);
-		CHECK(prev[1].target == prev[0].target && a && b);
-		if (a && b)
-		{
-			CHECK(a->hold != b->hold);
-			const TeamOrder* mover = a->hold ? b : a; const TeamOrder* keeper = a->hold ? a : b;
-			CHECK(keeper->target == prev[0].target && mover->target != prev[0].target && mover->since == 3.f);
-		}
+		CHECK(o[0].target != prev[0].target && o[0].since == 3.f);
 	}
 	// 10. Event priority and combat-over definition.
 	{
@@ -211,7 +173,7 @@ int main()
 			int smax = 0, smin = 3;
 			for (int i = 0; i < n; ++i) { const int s = int(Rnd() % 4); smax = std::max(smax, s); smin = std::min(smin, s); bots.push_back(B(1000u + unsigned(i), s)); }
 			std::vector<TeamTarget> t = Shore(1);
-			for (TeamTarget& x : t) { const unsigned r = Rnd() % 10; x.owner = r < 3 ? 1 : r < 5 ? 2 : r < 7 ? 0 : (Rnd() % 2 ? 1 : 2); x.reachable = Rnd() % 8 != 0; x.quiet = Rnd() % 2 ? 10.f : 60.f; }
+			for (TeamTarget& x : t) { const unsigned r = Rnd() % 10; x.owner = r < 3 ? 1 : r < 5 ? 2 : 0; x.reachable = Rnd() % 8 != 0; }
 			const auto o = PlanTeamOrders(t, bots, 1, 0.f, TeamEvent::None, none);
 			// every bot exactly one task
 			CHECK(int(o.size()) == n);
@@ -247,25 +209,11 @@ int main()
 			}
 			if (attackers > 1) CHECK(triples == (attackers & 1));
 			if (hi >= 0) CHECK(hi - lo <= smax - smin);
-			// D-059: with free targets at most one defender per own point; neutral left -> only the prototype (until TAC,
-			// from 4 bots); no neutral -> prototype + at most 2 on points with an enemy near in the last 45 s
+			// D-054: >= 5 bots -> at most one defender per own point, exactly one while bots allow it
 			std::map<int, int> def; for (const TeamOrder& x : o) if (x.hold && x.kind != PsKind::Spawn && freeReach) def[x.target]++;
 			for (const auto& d : def) CHECK(d.second == 1);
-			if (freeReach)
-			{
-				bool neutral = false, protoOwn = false; int hot = 0;
-				for (const TeamTarget& x : t)
-				{
-					if (!x.reachable) continue;
-					if (x.owner == 0) neutral = true;
-					if (x.owner == 1 && x.kind == PsKind::Prototype) protoOwn = true;
-					else if (x.owner == 1 && x.quiet < 45.f) ++hot;
-				}
-				const int proto = (protoOwn && n >= 4) ? 1 : 0;
-				const int rest = (neutral || n < 5) ? 0 : std::min(hot, std::max(0, std::min(2, n - 2 - proto)));
-				CHECK(int(def.size()) == proto + rest);
-				for (const auto& d : def) { const TeamTarget* tt = byId[d.first]; CHECK(tt && (tt->kind == PsKind::Prototype || (!neutral && tt->quiet < 45.f))); }
-			}
+			if (n >= 5 && freeReach) CHECK(int(def.size()) == std::min(ownedReach, n - 2));
+			if (n < 5 && freeReach) CHECK(def.empty());
 			if (freeReach) CHECK(attackers >= 2 || n < 2);
 			// owner 08.11: from 4 bots and a free reachable prototype exactly one pair (2-3 bots) attacks it
 			{
@@ -279,6 +227,151 @@ int main()
 			// input order does not change the result
 			std::vector<TeamBot> rev(bots.rbegin(), bots.rend());
 			const auto o2 = PlanTeamOrders(t, rev, 1, 0.f, TeamEvent::None, none);
+			for (const TeamOrder& x : o) { const TeamOrder* y = Of(o2, x.bot); CHECK(y && y->target == x.target && y->hold == x.hold); }
+		}
+	// ---- D-059 (owner 09.11, wb_bot_ps_hold 1) ----
+	TeamPlanConfig D59; D59.d059 = true;
+	auto holds = [](const std::vector<TeamOrder>& o) { int c = 0; for (const TeamOrder& x : o) if (x.hold) ++c; return c; };
+	auto roams = [](const std::vector<TeamOrder>& o)
+	{ int c = 0; for (const TeamOrder& x : o) if (x.kind == PsKind::Spawn && !x.hold && x.target == 0 && std::strcmp(x.reason, "roam") == 0) ++c; return c; };
+	// 12a. neutral points left -> no defender on the taken point, all 5 attack (stage 1: one defender, case 4).
+	{
+		std::vector<TeamTarget> t = Shore(1, 96); for (TeamTarget& x : t) x.quiet = 0.f;   // even with an enemy near
+		const auto o = PlanTeamOrders(t, Bots(5), 1, 0.f, TeamEvent::Captured, none, D59);
+		CHECK(CountOn(o, 96, true) == 0);
+		int attackers = 0; for (const TeamOrder& x : o) if (!x.hold) { ++attackers; CHECK(x.target != 96); }
+		CHECK(attackers == 5);
+	}
+	// 12b. no neutral point left -> at most 2 defenders, only where an enemy was near in the last 45 s; the prototype
+	//      keeps one defender until TAC outside the limit; a defender of a quiet point leaves at once (reason=quiet).
+	{
+		std::vector<TeamTarget> t = Shore(1);
+		for (TeamTarget& x : t) { x.owner = (x.id == 579 || x.id == 243) ? 2 : 1; x.quiet = 10.f; }   // 7 own, 2 enemy, none neutral
+		auto o = PlanTeamOrders(t, Bots(8), 1, 0.f, TeamEvent::Captured, none, D59);
+		CHECK(holds(o) == 3 && CountOn(o, 344, true) == 1);                // 2 + the prototype
+		CHECK(CountOn(o, 579, false) + CountOn(o, 243, false) == 5);
+		TeamPlanConfig tac = D59; tac.teamHasTac = true;                     // TAC: the prototype is an ordinary point then
+		CHECK(holds(PlanTeamOrders(t, Bots(8), 1, 0.f, TeamEvent::Captured, none, tac)) == 2);
+		std::vector<TeamTarget> q = t; for (TeamTarget& x : q) x.quiet = 50.f;
+		auto oq = PlanTeamOrders(q, Bots(8), 1, 5.f, TeamEvent::None, o, D59);
+		CHECK(holds(oq) == 1 && CountOn(oq, 344, true) == 1);
+		int quietReason = 0;
+		for (const TeamOrder& x : oq) { const TeamOrder* w = Of(o, x.bot); if (w && w->hold && w->kind != PsKind::Prototype) { CHECK(!x.hold && x.since == 5.f && std::strcmp(x.reason, "quiet") == 0); ++quietReason; } }
+		CHECK(quietReason == 2);
+		std::vector<TeamTarget> pn = Shore(1, 344); for (TeamTarget& x : pn) x.quiet = 1e9f;   // prototype kept with neutral left
+		CHECK(CountOn(PlanTeamOrders(pn, Bots(4), 1, 0.f, TeamEvent::Captured, none, D59), 344, true) == 1);
+		CHECK(CountOn(PlanTeamOrders(pn, Bots(3), 1, 0.f, TeamEvent::Captured, none, D59), 344, true) == 0);
+		// many own points, one enemy point: prototype + 2 bunkers by path, energy without a defender, the rest attacks
+		std::vector<TeamTarget> m = Shore(1);
+		for (TeamTarget& x : m) { x.owner = x.id == 579 ? 2 : 1; x.quiet = 0.f; }
+		const auto om = PlanTeamOrders(m, Bots(6), 1, 0.f, TeamEvent::Captured, none, D59);
+		CHECK(holds(om) == 3 && CountOn(om, 344, true) == 1 && CountOn(om, 96, true) == 1 && CountOn(om, 211, true) == 1);
+		CHECK(CountOn(om, 64, true) == 0 && CountOn(om, 316, true) == 0 && CountOn(om, 579, false) == 3);
+	}
+	// 12c. Codex BLOCK 1588030a (defence-edges.cpp): no free target - the rest are never handed out as holds past the
+	//      limit. 8 bots, one own bunker: quiet 100 -> 0 holds, 8 roam; enemy near -> 1 hold, 7 roam; a quiet bunker with
+	//      8 old holders frees them all at once (reason=quiet); many own points -> at most 2 (+ prototype) hold.
+	{
+		std::vector<TeamTarget> one = {T(96, PsKind::Bunker, 1, true, 200)};
+		one[0].quiet = 100.f;
+		auto o = PlanTeamOrders(one, Bots(8), 1, 0.f, TeamEvent::Captured, none, D59);
+		CHECK(o.size() == 8 && holds(o) == 0 && roams(o) == 8);
+		one[0].quiet = 10.f;
+		auto h = PlanTeamOrders(one, Bots(8), 1, 0.f, TeamEvent::Captured, none, D59);
+		CHECK(holds(h) == 1 && CountOn(h, 96, true) == 1 && roams(h) == 7);
+		std::vector<TeamOrder> eight; for (const TeamBot& b : Bots(8)) { TeamOrder x; x.bot = b.id; x.target = 96; x.kind = PsKind::Bunker; x.hold = true; x.reason = "captured"; eight.push_back(x); }
+		one[0].quiet = 100.f;
+		auto f = PlanTeamOrders(one, Bots(8), 1, 3.f, TeamEvent::None, eight, D59);
+		CHECK(holds(f) == 0);
+		for (const TeamOrder& x : f) CHECK(x.kind == PsKind::Spawn && !x.hold && x.since == 3.f && std::strcmp(x.reason, "quiet") == 0);
+		auto again = PlanTeamOrders(one, Bots(8), 1, 8.f, TeamEvent::None, f, D59);   // roam stays roam, no new line
+		for (const TeamOrder& x : again) CHECK(!x.hold && x.since == 3.f);
+		std::vector<TeamTarget> all = Shore(1); for (TeamTarget& x : all) { x.owner = 1; x.quiet = 0.f; }
+		for (int nb : {5, 8, 15})
+		{
+			auto a = PlanTeamOrders(all, Bots(nb), 1, 0.f, TeamEvent::Captured, none, D59);
+			CHECK(holds(a) == 3 && CountOn(a, 344, true) == 1 && roams(a) == nb - 3);
+		}
+		// stage 1 for the same case keeps D-054 (every bot holds an own point) - the OFF behaviour is untouched
+		CHECK(holds(PlanTeamOrders(one, Bots(8), 1, 0.f, TeamEvent::Captured, none)) == 8);
+	}
+	// 12d. Codex BLOCK 1588030a: "neutral points on the map" counts every neutral point, reachable or not. An
+	//      unreachable neutral prototype 344 + an own bunker with an enemy near + a reachable enemy target -> 0 defenders.
+	{
+		std::vector<TeamTarget> t = {T(344, PsKind::Prototype, 0, false, 520), T(96, PsKind::Bunker, 1, true, 200), T(211, PsKind::Bunker, 2, true, 350)};
+		t[1].quiet = 0.f;
+		auto o = PlanTeamOrders(t, Bots(8), 1, 0.f, TeamEvent::Captured, none, D59);
+		CHECK(holds(o) == 0 && CountOn(o, 211, false) == 8 && CountOn(o, 344, false) == 0);
+		t[0].owner = 2;                                                       // no neutral left: the bunker gets its defender
+		auto o2 = PlanTeamOrders(t, Bots(8), 1, 0.f, TeamEvent::Captured, none, D59);
+		CHECK(holds(o2) == 1 && CountOn(o2, 96, true) == 1);
+	}
+	// 12e. the prototype pair: one of the pair stays on the taken prototype until TAC, the other moves at once.
+	{
+		std::vector<TeamOrder> prev = PlanTeamOrders(Shore(1), Bots(4), 1, 0.f, TeamEvent::None, none, D59);
+		std::vector<TeamTarget> t = Shore(1, prev[0].target);
+		auto o = PlanTeamOrders(t, Bots(4), 1, 3.f, TeamEvent::None, prev, D59);
+		CHECK(prev[0].kind == PsKind::Prototype);
+		const TeamOrder* a = Of(o, prev[0].bot); const TeamOrder* b = Of(o, prev[1].bot);
+		CHECK(prev[1].target == prev[0].target && a && b);
+		if (a && b)
+		{
+			CHECK(a->hold != b->hold);
+			const TeamOrder* mover = a->hold ? b : a; const TeamOrder* keeper = a->hold ? a : b;
+			CHECK(keeper->target == prev[0].target && mover->target != prev[0].target && mover->since == 3.f);
+		}
+		TeamPlanConfig tac = D59; tac.teamHasTac = true;                     // with TAC (and neutral left) nobody stays
+		CHECK(holds(PlanTeamOrders(t, Bots(4), 1, 3.f, TeamEvent::None, prev, tac)) == 0);
+	}
+	// 13. D-059 property test: N = 3..16, 1000 random sets per N, random ownership/reachability/contact/TAC.
+	for (int n = 3; n <= 16; ++n)
+		for (int rep = 0; rep < 1000; ++rep)
+		{
+			std::vector<TeamBot> bots;
+			for (int i = 0; i < n; ++i) bots.push_back(B(1000u + unsigned(i), int(Rnd() % 4)));
+			std::vector<TeamTarget> t = Shore(1);
+			for (TeamTarget& x : t) { const unsigned r = Rnd() % 10; x.owner = r < 3 ? 1 : r < 5 ? 2 : r < 7 ? 0 : (Rnd() % 2 ? 1 : 2); x.reachable = Rnd() % 8 != 0; x.quiet = Rnd() % 2 ? 10.f : 60.f; }
+			TeamPlanConfig cfg = D59; cfg.teamHasTac = Rnd() % 4 == 0;
+			const auto o = PlanTeamOrders(t, bots, 1, 0.f, TeamEvent::None, none, cfg);
+			CHECK(int(o.size()) == n);
+			std::set<unsigned> seen; for (const TeamOrder& x : o) seen.insert(x.bot);
+			CHECK(int(seen.size()) == n);
+			std::map<int, const TeamTarget*> byId; for (const TeamTarget& x : t) byId[x.id] = &x;
+			int ownedReach = 0, freeReach = 0; bool neutral = false, protoOwn = false, protoHot = false; int hot = 0;
+			for (const TeamTarget& x : t)
+			{
+				if (x.owner == 0) neutral = true;                                  // reachable or not
+				if (!x.reachable) continue;
+				(x.owner == 1 ? ownedReach : freeReach)++;
+				if (x.owner == 1 && x.kind == PsKind::Prototype) { protoOwn = true; protoHot = x.quiet < 45.f; }
+				else if (x.owner == 1 && x.quiet < 45.f) ++hot;
+			}
+			bool onlyProto = freeReach > 0;
+			for (const TeamTarget& y : t) if (y.reachable && y.owner != 1 && y.kind != PsKind::Prototype) onlyProto = false;
+			std::map<int, int> def; int holdsN = 0;
+			for (const TeamOrder& x : o)
+			{
+				if (x.kind == PsKind::Spawn)
+				{
+					if (!x.hold) { CHECK(freeReach == 0 && ownedReach > 0 && std::strcmp(x.reason, "roam") == 0); continue; }
+					CHECK((ownedReach == 0 && freeReach == 0) || (onlyProto && std::strcmp(x.reason, "reserve") == 0));
+					continue;
+				}
+				const TeamTarget* tt = byId[x.target];
+				CHECK(tt && tt->reachable);
+				if (tt) CHECK(x.hold ? tt->owner == 1 : tt->owner != 1);
+				if (x.hold) { def[x.target]++; ++holdsN; }
+			}
+			// the budget: never more than one per point, the prototype (from 4 bots, until TAC) + at most 2 others,
+			// none while a neutral point is on the map, only on points with an enemy near in the last 45 s
+			for (const auto& d : def) CHECK(d.second == 1);
+			const int proto = (protoOwn && n >= 4 && !cfg.teamHasTac) ? 1 : 0;
+			const int cap = freeReach ? std::max(0, std::min(2, n - 2 - proto)) : 2;
+			const int rest = (neutral || n < 5) ? 0 : std::min(hot + (proto ? 0 : int(protoHot)), cap);
+			if (ownedReach) CHECK(holdsN == proto + rest);
+			for (const auto& d : def) { const TeamTarget* tt = byId[d.first]; CHECK(tt && ((tt->kind == PsKind::Prototype && proto) || (!neutral && tt->quiet < 45.f))); }
+			std::vector<TeamBot> rev(bots.rbegin(), bots.rend());
+			const auto o2 = PlanTeamOrders(t, rev, 1, 0.f, TeamEvent::None, none, cfg);
 			for (const TeamOrder& x : o) { const TeamOrder* y = Of(o2, x.bot); CHECK(y && y->target == x.target && y->hold == x.hold); }
 		}
 	std::printf(failures ? "BotTeamOrdersTests FAIL %d\n" : "BotTeamOrdersTests PASS\n", failures);

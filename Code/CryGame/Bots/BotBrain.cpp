@@ -797,6 +797,8 @@ bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules
 	// usual chain (unstick, trap recovery, roam, swim-out) exactly as with wb_bot_ps_squads 0; the 2 s snapshot from its
 	// own position gives the order back once a path exists.
 	if(order.kind!=PsKind::Spawn&&!reachable)return false;
+	// D-059 (wb_bot_ps_hold 1): no free target and no defender slot - roam: the usual chain (fight, roam), not a stand.
+	if(order.kind==PsKind::Spawn&&!order.hold)return false;
 	bool inside=false;
 	if(reachable&&point->areaId)
 		if(IEntity* area=gEnv->pEntitySystem->GetEntity(EntityId(point->areaId)))

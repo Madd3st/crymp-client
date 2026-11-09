@@ -19,6 +19,7 @@
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
 #include "CryCommon/CryAction/IActorSystem.h"
+#include "CryCommon/CryAction/IItemSystem.h"
 #include "CryCommon/CryAction/ILevelSystem.h"
 #include "CryCommon/CryEntitySystem/IEntityProxy.h"
 #include "CryCommon/CryEntitySystem/IEntitySystem.h"
@@ -266,6 +267,7 @@ struct TeamRuntime
 	std::map<int, float> ownedSec;       // PS OWN
 	std::map<int, int> lost, recaptured;
 	std::map<int, float> lastEnemy;      // D-059: last time an enemy was within 40 m of the team's point (capture counts)
+	bool tac = false;                    // D-059: a living team member has had a TACGun (native inventory, sticky for the level)
 };
 
 struct Commander
@@ -325,6 +327,44 @@ void BuildCache(Commander& c, NavMeshCore& mesh, const std::vector<PsCapturePoin
 	c.cacheBuilt = found == 2 || ++c.cacheTries >= 6;
 }
 
+// D-059 (wb_bot_ps_hold 1), 4 Hz: an enemy (bot or player, alive, team 1/2) within 40 m of a team's point, and the
+// native TAC signal - a living team member with a TACGun in the inventory (bought at the prototype or picked up),
+// sticky for the level (TeamRuntime is reset with the level).
+void D059Scan(Commander& c, CGameRules& rules, const std::vector<PsCapturePoint>& points, float now)
+{
+	std::vector<std::pair<int, Vec3>> alive;
+	IActorIteratorPtr actors = g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
+	while (IActor* a = actors->Next())
+	{
+		if (a->GetHealth() <= 0 || !a->GetEntity()) continue;
+		const int t = rules.GetTeam(a->GetEntityId());
+		if (t != 1 && t != 2) continue;
+		alive.push_back(std::make_pair(t, a->GetEntity()->GetWorldPos()));
+		IInventory* inv = a->GetInventory();
+		if (!c.teams[t].tac && inv && inv->GetCountOfClass("TACGun") > 0)
+		{
+			c.teams[t].tac = true;
+			WB_LOG(1, "[WarsBots] PS ORDER tac team=%d by=%u t=%.1f.", t, unsigned(a->GetEntityId()), now);
+		}
+	}
+	for (const PsCapturePoint& p : points)
+	{
+		if (p.ownerTeam < 1 || p.ownerTeam > 2 || !p.hasDestination) continue;
+		const Vec3 at(p.x, p.y, p.z);
+		for (const auto& a : alive)
+			if (a.first != p.ownerTeam && (a.second - at).GetLengthSquared() < 40.f * 40.f) { c.teams[p.ownerTeam].lastEnemy[p.id] = now; break; }
+	}
+}
+
+// The commander config of one team plan: D-059 only with wb_bot_ps_hold 1 (OFF: stage 1), TAC from D059Scan.
+TeamPlanConfig PlanConfig(const TeamRuntime& tr, int psHold)
+{
+	TeamPlanConfig cfg;
+	cfg.d059 = psHold == 1;
+	cfg.teamHasTac = cfg.d059 && tr.tac;
+	return cfg;
+}
+
 void Tick(Commander& c, CGameRules& rules, float now)
 {
 	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
@@ -374,24 +414,8 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		c.nextOwnLog = now + 60.f;
 	}
 
-	// D-059: an enemy (bot or player, alive, team 1/2) within 40 m of a team's point at this 4 Hz tick
-	{
-		std::vector<std::pair<int, Vec3>> alive;
-		IActorIteratorPtr actors = g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
-		while (IActor* a = actors->Next())
-		{
-			if (a->GetHealth() <= 0 || !a->GetEntity()) continue;
-			const int t = rules.GetTeam(a->GetEntityId());
-			if (t == 1 || t == 2) alive.push_back(std::make_pair(t, a->GetEntity()->GetWorldPos()));
-		}
-		for (const PsCapturePoint& p : points)
-		{
-			if (p.ownerTeam < 1 || p.ownerTeam > 2 || !p.hasDestination) continue;
-			const Vec3 at(p.x, p.y, p.z);
-			for (const auto& a : alive)
-				if (a.first != p.ownerTeam && (a.second - at).GetLengthSquared() < 40.f * 40.f) { c.teams[p.ownerTeam].lastEnemy[p.id] = now; break; }
-		}
-	}
+	const int psHold = BotConfig::Get().psHold == 1 ? 1 : 0;
+	if (psHold) D059Scan(c, rules, points, now);
 
 	for (int team = 1; team <= 2; ++team)
 	{
@@ -442,7 +466,7 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		tr.roster = roster;
 		if (now < tr.nextPlan && tr.pending == TeamEvent::None && !anyRespawn) continue;
 		tr.nextPlan = now + 5.f;
-		std::vector<TeamOrder> next = PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders);
+		std::vector<TeamOrder> next = PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders, PlanConfig(tr, psHold));
 		for (const TeamOrder& o : next)
 		{
 			if (o.since != now) continue;   // unchanged task: no line
