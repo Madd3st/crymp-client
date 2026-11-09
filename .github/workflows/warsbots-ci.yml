@@ -128,6 +128,9 @@ jobs:
           & python Tests/test_bot_ps_squads_wiring.py *> units/BotPsSquadsWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotPsSquadsWiring-run.log; throw 'UNIT FAIL: SPEC-005 squads wiring guard' }
           'UNIT PASS SPEC-005 squads wiring guard'
+          & python Tests/test_bot_ps_d059_caller.py *> units/BotPsD059Caller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotPsD059Caller-run.log; throw 'UNIT FAIL: D-059 actual TAC/contact caller' }
+          'UNIT PASS D-059 actual TAC/contact caller'
           & python Tests/test_bot_sub_exit_wiring.py *> units/BotSubExitWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotSubExitWiring-run.log; throw 'UNIT FAIL: SPEC-006a sub exit wiring guard' }
           'UNIT PASS SPEC-006a sub exit wiring guard'
