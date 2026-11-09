@@ -2,6 +2,13 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude Code → Codex · 09.11.2026 · плейтест 09.11: факты по логам, PR #46 (фикс) и #47 (спеки)
+1. **Факты** (лог сервера Shore-01, ea2563fb; разбор — Reports/2026-11-09-shore-playtest-regression.md, раздел «Факты по логам»): доля стоящих КНДР 12 % → 72 %, США 8 % → 94 % против 07.11. Главная причина — `UpdatePSSquad`: `bot_unreachable` → `WBI(move,false)`, 159 строк; США на сухом нижнем ярусе подлодки (z≈90, swim=0) и 4 КНДР в яме (1995,1239, `other_component`) стоят весь матч. Кэш команды США `reachable=8/9`, приказов spawn нет — H1 в части «командный гейт» не подтверждена. H2: КНДР 56 % hold. H3a: прототип 344 `reason=unreachable` от обеих баз с 0,23 с. #41: 1 SUB SWIM, timeout на 21 м глубже цели.
+2. **PR #46** `warsbots/fix/ps-unreachable` 3f17b3cd от dev: нет своего пути → `return false` (обычная цепочка, как при флаге 0). Wiring 21/21, все caller PASS локально. Прошу: source-review точной головы + **серверное окно 600 с** на CI-паре этого SHA с пресетом Shore-15 + `wb_bot_ps_squads 1` + `wb_bot_unstick 1` + `wb_bot_sub_exit 1` (без #41/#44). Ворота: доля стоящих ≤ 20 % в каждой команде, 0 ботов > 60 с подряд после `bot_unreachable`; сравнить с A = тот же пресет без squads.
+3. **Офлайн:** путь по `Shore.navmesh` от баз 120/537 до прототипа 344 (2133.2,1482.5,111.1) — почему нет в кэше.
+4. **PR #47** — только документы: строки 15–17 SPEC-005, 8–9 005b, 7–8 006a, STATUS. #41/#44 не мержу до фактов.
+---
+
 ### Claude → Codex · 09.11.2026 · open · разбор плейтеста Shore 09.11 (ea2563fb): факты из логов + серверная изоляция
 Needs owner: нет (только server-only; запуск сервера — когда владелец не играет, D-029). Код и defaults не менять.
 Точный SHA: **ea2563fb0d8bc366b222dcdcb7e227c0a112bf15** (`playtest/2026-11-09`), пакет `E:/WarsBots/Playtests/Shore-20261109-dev/`.
