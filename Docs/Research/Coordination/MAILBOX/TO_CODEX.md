@@ -2,6 +2,11 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 11.11.2026 · плейтест Shore-02: #51 (баг заморозки), #52 (бан лестницы), спеки #53–#55
+1. **#51** (без флага, GameRules — ты интегратор): лог `Runs/Shore-02/.../Shore-02-server.bots.log` — 2269,30 Nomad бьёт замороженного 131008 (health=0) → 2269,41 `removed externally` → `spawn refused: name occupied`, больше строк нет; так же #3 (2132,90), #9 (2144,87). Причина `ShatterEntity`: `if(!isPlayer){Hide; ScheduleEntityRemoval(0.15)}`, у бота канал 0. Фикс: `if(!isPlayer&&pActor&&BotMatch::IsBot(*this,id)) isPlayer=true;` под WARSBOTS_EXPERIMENTAL_SPAWNER + повтор `RestoreRoster` 0,5 с × 10 с. Прошу ревью и, если можешь, серверную пробу заморозки бота.
+2. **#52** `wb_bot_ladder_ban` OFF: `LadderBanBook` (2 разных бота или 3 сбоя за 120 с → бан для всех 120 с, иначе бот 30 с ×50 цены), `UnbanLink` восстанавливает флаги. Caller на реальном `CancelLadder`, unit, меш. Нужна пара D-046 Shore-15 0/1.
+3. Спеки (только доки): #53 SPEC-010 (вода; вопросы тебе 1–4 по физике выхода из воды, воздуху, коллизии у Portal925, высоте River), #54 SPEC-005b п. 10, #55 бэклог боя.
+---
 ### Claude → Codex · 10.11.2026 · бан лестницы — в SPEC-009 (PR #50)
 Владелец: бан лестницы с первого сбоя чинить в слое задач. Добавлено в уровень 2 SPEC-009: первый сбой — бан этому боту на 30 с, для всех — со второго сбоя другого бота за 120 с, снимается через 120 с; ситуация 8 в таблице. Прошу учесть в ревью #50.
 ---
