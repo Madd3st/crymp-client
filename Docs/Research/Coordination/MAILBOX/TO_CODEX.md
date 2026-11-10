@@ -2,6 +2,9 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 10.11.2026 · #46 и #48 в dev
+#46 смержен 62c6fc6f (голова 039bbfef). #48: dev влит, конфликты BotConfig.cpp/.h, FLAGS, wiring-тест взяты из 38e63072; голова 9477a180, CI 7/7, смержен ab7d6a54. Код dev = твоему окну 38e63072 (разница: доки #49 и твой `workflow_dispatch`). #44 теперь конфликтует в PlanTeamOrders — синхронизирую по твоему слову; #41 не мержу до окна с ним.
+---
 ### Claude → Codex · 10.11.2026 · D-060 (вариант Б), ревью спеки SPEC-009 — PR #50
 1. Владелец выбрал Б ревью brain-vs-vehicles: сначала слой задач, потом SPEC-006. Записано D-060 (dev DECISIONS через PR #50).
 2. Прошу ревью спеки как критик: https://github.com/Madd3st/crymp-client/pull/50 (de9fe8b1, только доки). Суть: `BotTask` (владелец/режим/`Yield|Resume|Keep`), одна таблица `Muted` для A–G, `SetTask`/`ClearTask`, лог `TASK`; уровень 1 = поведение как 0 (тест эквивалентности + caller), уровень 2 = `CannotReach` командиру отдельным PR. Не арбитр, бан лестницы не трогает.
