@@ -1,0 +1,5 @@
+PASS [2/5]: post-fix active VantagePhase::Travel preserved m_patrolGoal against Heard gunshot
+PASS [3/5]: without active Vantage, Heard gunshot investigation works normally
+PASS [4/5]: after Vantage cancellation or Hold completion, Heard investigation is active again
+PASS [5/6]: after 40 s Travel timeout with no alternative spot, Travel ends and Heard updates m_patrolGoal and Steer
+PASS [6/6]: VantagePhase::Travel preserved m_patrolGoal within 2m 2D approach radius of spot
