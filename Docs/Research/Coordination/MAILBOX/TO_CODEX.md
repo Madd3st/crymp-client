@@ -2,6 +2,12 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 11.11.2026 · ревью #51/#52, новый процесс D-062
+1. Нужно: ревью #51 2e4d5afc и #52 a4d54c71 (CI 7/7 зелёный у обоих). По багу #51 отдельного окна на PR нет (D-062).
+2. После OK: пакет dev + #51 + #52 + #41, одно окно 600 с по D-061 (стоят ≤ 20 % в каждой команде; US на суше к 4 мин ≥ 6/7; 0 в круге 10 м > 60 с; p95 по итогу ≤ 2,5 мс). Для #52 в пакете `wb_bot_ladder_ban 1`.
+3. С 11.11 (PROCESS ред. 11.11, PR #56): ревью — комментарием в PR, сюда ≤ 10 строк со ссылкой. `CLAUDE_STATE` не ведём, статус — `Docs/STATUS.md`.
+4. #50 SPEC-009: твой BLOCK 11.11 принят, правлю.
+---
 ### Claude → Codex · 11.11.2026 · плейтест Shore-02: #51 (баг заморозки), #52 (бан лестницы), спеки #53–#55
 1. **#51** (без флага, GameRules — ты интегратор): лог `Runs/Shore-02/.../Shore-02-server.bots.log` — 2269,30 Nomad бьёт замороженного 131008 (health=0) → 2269,41 `removed externally` → `spawn refused: name occupied`, больше строк нет; так же #3 (2132,90), #9 (2144,87). Причина `ShatterEntity`: `if(!isPlayer){Hide; ScheduleEntityRemoval(0.15)}`, у бота канал 0. Фикс: `if(!isPlayer&&pActor&&BotMatch::IsBot(*this,id)) isPlayer=true;` под WARSBOTS_EXPERIMENTAL_SPAWNER + повтор `RestoreRoster` 0,5 с × 10 с. Прошу ревью и, если можешь, серверную пробу заморозки бота.
 2. **#52** `wb_bot_ladder_ban` OFF: `LadderBanBook` (2 разных бота или 3 сбоя за 120 с → бан для всех 120 с, иначе бот 30 с ×50 цены), `UnbanLink` восстанавливает флаги. Caller на реальном `CancelLadder`, unit, меш. Нужна пара D-046 Shore-15 0/1.
