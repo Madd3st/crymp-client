@@ -53,6 +53,7 @@ def prefix_to(text: str, signature: str, stop: str) -> str:
 CPP = r'''
 #define WARSBOTS_EXPERIMENTAL_SPAWNER 1
 #include "CryGame/Bots/BotLadder.h"
+#include "CryGame/Bots/BotLadderBan.h"
 #include <cstdio>
 #include <cstring>
 #include <cmath>
@@ -128,7 +129,7 @@ struct NavPathLink { int corner=0, kind=0; float a[3]={},b[3]={}; unsigned long 
 enum NavLinkKind { NavLinkDrop=0, NavLinkJump, NavLinkStrength, NavLinkLift, NavLinkLadder };
 inline const char* NavLinkName(int k){static const char* n[]={"drop","jump","strength","lift","ladder"};return n[k];}
 struct NavMeshCore { int bans=0, notes=0; bool BanLink(unsigned long long){++bans;return true;} bool NoteLinkFailure(unsigned long long){++notes;return true;} };
-namespace WarsBots { struct BotConfig { int ladder=1, jumpLinks=1, navKneeFix=0; static BotConfig& Get(){static BotConfig c;return c;} }; }
+namespace WarsBots { struct BotConfig { int ladder=1, jumpLinks=1, navKneeFix=0, ladderBan=0; static BotConfig& Get(){static BotConfig c;return c;} }; }
 using WarsBots::BotConfig;
 struct CGameRules { using TPlayers=std::vector<int>; };
 struct MockNav { int audit=-1, resets=0; void StartAudit(int v){audit=v;} void Reset(){++resets;} };
@@ -145,8 +146,10 @@ struct MockManager {
 using BotManager = MockManager;
 MockManager* MockManager::self=nullptr;
 MockManager& MockGame::GetBotManager(){return *mgr;}
-struct MockEnv { bool bServer=true; bool bClient=false; } g_env;
+struct MockTimer { float t=0.f; float GetCurrTime() const { return t; } } g_timer;
+struct MockEnv { bool bServer=true; bool bClient=false; MockTimer* pTimer=&g_timer; } g_env;
 MockEnv* gEnv=&g_env;
+static WarsBots::LadderBanBook& LadderBans() { static WarsBots::LadderBanBook b; return b; }   // SPEC-009 (wb_bot_ladder_ban OFF here)
 MockGame g_game; MockGame* g_pGame=&g_game;
 static bool ParseInt(const char* s,int& v){return s && std::sscanf(s,"%d",&v)==1;}
 
@@ -188,6 +191,7 @@ struct MockLink { bool active=false; int starts=0; LinkMove move=LinkMove::Drop;
  void Reset(){active=false;} void Start(float,LinkMove m,JVec,JVec){++starts;move=m;active=true;} };
 struct MockBrain {
  BotLadder m_ladder; NavPathLink m_ladderNow, m_linkNow; bool m_ladderNativeLocked=false, m_ladderCancelPending=false;
+ unsigned long long m_ladderAvoidRef=0; float m_ladderAvoidUntil=0.f;   // SPEC-009
  std::vector<Vec3> m_path; std::vector<NavPathLink> m_pathLinks; size_t m_pathIndex=0, m_cornerFor=size_t(-1);
  float m_nextRepath=0,m_minRepath=0,m_now=0,m_number=1; bool m_meshPathActive=true,m_verbose=false,m_running=true;
  BotIntent m_intent; BotBlackboard m_blackboard; MockLoco m_locomotion; BotCombat m_combat; MockLink m_link;
@@ -361,6 +365,10 @@ def build_harness(repo: Path, rev: str, out: Path) -> Path:
     move = show('Code/CryGame/Actors/Player/PlayerMovement.cpp')
     manager = show('Code/CryGame/Bots/BotManager.cpp')
     ladder_h = show('Code/CryGame/Bots/BotLadder.h')
+    try:
+        ban_h = show('Code/CryGame/Bots/BotLadderBan.h')
+    except (OSError, subprocess.CalledProcessError):   # older revisions: no SPEC-009 header
+        ban_h = '#pragma once\nnamespace WarsBots { struct LadderBanBook {}; }\n'
 
     cancel = method(brain, 'void BotBrain::CancelLadder(').replace('void BotBrain::CancelLadder(', 'void CancelLadderBody(')
     execute = method(loco, 'bool BotLocomotion::ExecuteLadder(').replace('bool BotLocomotion::ExecuteLadder(', 'bool ExecuteLadder(')
@@ -401,6 +409,7 @@ def build_harness(repo: Path, rev: str, out: Path) -> Path:
     header = out / 'include/CryGame/Bots/BotLadder.h'
     header.parent.mkdir(parents=True, exist_ok=True)
     header.write_text(ladder_h, encoding='utf-8')
+    (header.parent / 'BotLadderBan.h').write_text(ban_h, encoding='utf-8')
     return unit
 
 
