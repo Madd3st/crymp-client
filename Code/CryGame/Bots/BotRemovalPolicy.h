@@ -31,4 +31,14 @@ inline bool ShouldRosterForReset(bool removalPending, bool expired, bool already
 {
 	return !removalPending && !expired && !alreadyQueued;
 }
+
+// Playtest 11.11: re-creation right after an external DONE failed because the deleted entity still held the bot's
+// name ("spawn refused: entity name ... is occupied"), the roster was cleared and the bot was gone for the match.
+// A failed entry is kept and retried until `window` seconds after its first failure.
+constexpr float kRestoreRetryWindow = 10.f;  // s after the first failure
+constexpr float kRestoreRetryStep = 0.5f;    // s between retries (bounds the "spawn refused" log)
+inline bool KeepRosterForRetry(float firstFailAt, float now, float window)
+{
+	return firstFailAt >= 0.f && now >= firstFailAt && now - firstFailAt < window;
+}
 }

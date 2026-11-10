@@ -169,7 +169,8 @@ private:
 	BotInstance* m_spawning = nullptr;
 	// Game-rules restart (PreGame -> InGame) resets entities: bots are re-created with the
 	// same numbers/profiles after eAE_resetEnd instead of silently disappearing.
-	struct RosterEntry { int number; BotProfile profile; bool ai; };
+	struct RosterEntry { int number; BotProfile profile; bool ai; float firstFail = -1.f; };
+	float m_nextRestoreAt = 0.f;   // retry pacing for entries whose re-creation failed (KeepRosterForRetry)
 	std::vector<RosterEntry> m_roster;
 	bool m_restorePending = false;
 	std::unordered_map<EntityId, std::unique_ptr<BotInstance>> m_bots;

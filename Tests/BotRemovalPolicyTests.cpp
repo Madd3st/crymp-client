@@ -30,6 +30,14 @@ int main()
 	assert(!ShouldRosterForReset(false, true, false));
 	assert(!ShouldRosterForReset(false, false, true));
 
+	// Playtest 11.11: a failed re-creation (name still held by the deleted entity) is retried inside the window, not lost.
+	assert(!KeepRosterForRetry(-1.f, 5.f, kRestoreRetryWindow));          // never failed: nothing to keep
+	assert(KeepRosterForRetry(100.f, 100.f, kRestoreRetryWindow));         // same frame as the DONE (observed case)
+	assert(KeepRosterForRetry(100.f, 109.9f, kRestoreRetryWindow));
+	assert(!KeepRosterForRetry(100.f, 110.f, kRestoreRetryWindow));        // window over: give up, log it
+	assert(!KeepRosterForRetry(100.f, 99.f, kRestoreRetryWindow));         // clock went back (new level): drop
+	assert(kRestoreRetryStep > 0.f && kRestoreRetryStep < kRestoreRetryWindow);
+
 	std::puts("BotRemovalPolicyTests OK");
 	return 0;
 }

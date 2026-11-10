@@ -552,7 +552,7 @@ void BotManager::OnPostUpdate(float dt)
     m_moveTrace.Update(m_framework,*this);
 	UpdateProbe(); // DS-047: runs even when the bot roster is empty (dummy/goal scenarios)
 	// Restore outside the action-event callback, once the reset level is usable again.
-	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
+	if (m_restorePending && m_levelReady && CanRunLocalIA() && gEnv->pTimer->GetCurrTime() >= m_nextRestoreAt) { Sweep(); RestoreRoster(); }
     if(m_nav.AuditOnly()){if(CanRunLocalIA()){m_nav.Begin();m_nav.Step(2.f);}m_demo.Update(m_config.demoRecord==1,m_config.demoHz);return;}
 	if (m_bots.empty()){m_demo.Update(m_config.demoRecord==1,m_config.demoHz);return;}
 	// Navigation graph is built lazily once bots exist, a few ms per frame; geometry survives
@@ -629,11 +629,20 @@ void BotManager::OnActionEvent(const SActionEvent& event)
 void BotManager::RestoreRoster()
 {
 	m_restorePending = false;
+	const float now = gEnv->pTimer->GetCurrTime();
 	int restored = 0;
-	for (const RosterEntry& entry : m_roster)
-		if (AddWith(nullptr, entry.profile, entry.number, entry.ai)) ++restored;
-	WB_LOG(0, "[WarsBots] Game reset: restored %d/%d bots.", restored, int(m_roster.size()));
-	m_roster.clear();
+	std::vector<RosterEntry> retry;
+	for (RosterEntry entry : m_roster)
+	{
+		if (AddWith(nullptr, entry.profile, entry.number, entry.ai)) { ++restored; continue; }
+		if (entry.firstFail < 0.f) entry.firstFail = now;
+		if (KeepRosterForRetry(entry.firstFail, now, kRestoreRetryWindow)) retry.push_back(entry);
+		else WB_LOG(0, "[WarsBots] #%d restore gave up after %.1f s.", entry.number, now - entry.firstFail);
+	}
+	WB_LOG(0, "[WarsBots] Game reset: restored %d/%d bots%s.", restored, int(m_roster.size()), retry.empty() ? "" : ", retrying the rest");
+	m_roster.swap(retry);
+	m_restorePending = !m_roster.empty();
+	m_nextRestoreAt = now + kRestoreRetryStep;
 }
 
 // ---------------------------------------------------------------- reporting
