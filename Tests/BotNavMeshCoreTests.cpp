@@ -182,8 +182,22 @@ int main(int argc, char** argv)
 		// banning a used link removes it from later paths
 		if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why) && !links.empty())
 		{
-			const unsigned long long r = links[0].ref; L.BanLink(r);
+			const unsigned long long r = links[0].ref; const int partsBefore = L.Components(); L.BanLink(r);
 			if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why)) for (const NavPathLink& k : links) assert(k.ref != r);
+			// SPEC-009 (wb_bot_ladder_ban): a lifted ban restores the link and the connected parts
+			L.UnbanLink(r); assert(L.Components() == partsBefore);
+			bool again = false;
+			if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why)) for (const NavPathLink& k : links) again |= k.ref == r;
+			assert(again);
+			L.UnbanLink(r); assert(L.Components() == partsBefore);   // unbanning twice is a no-op
+			// SPEC-009: one bot's avoided link costs avoidMult for that query only, also off-mesh; other polys unchanged
+			NavCostContext avoid; avoid.climb = false; avoid.noise = 0.f; avoid.avoidLink = r; avoid.avoidMult = 50.f;
+			const float sa[3] = {0, 0, 0}, sb[3] = {1, 0, 0};
+			L.SetCostContext(&avoid);
+			assert(L.SegmentCostMultiplier(sa, sb, r, true) == 50.f);
+			assert(L.SegmentCostMultiplier(sa, sb, r + 1, true) == 1.f);
+			L.SetCostContext(nullptr);
+			assert(L.SegmentCostMultiplier(sa, sb, r, true) == 1.f);
 		}
 		L.SetLinkMask(0); assert(L.Components() == walkParts);
 		std::printf("links=%d walkParts=%d paths=%d withLinks=%d drop=%d jump=%d strength=%d\n", L.Links(), walkParts, total, withLinks,

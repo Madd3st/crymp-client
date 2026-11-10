@@ -68,6 +68,7 @@ public:
     const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_unstickSteps.Step()!=UnstickStep::None?"unstick":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
 	// wb_bot_tactics level boundary: drop every bot's loot claim (BotManager::EndLevel; the game timer may not go back).
 	static void ClearAllClaims();
+	static void ClearLadderBans();   // SPEC-009 (wb_bot_ladder_ban): no failure/ban survives the level
 
 private:
     unsigned m_lookDiagnostics=0;float m_nextLookDiagnostic=0; // <=128 rows per instance, opt-in MOVE TRACE only
@@ -182,6 +183,9 @@ private:
 	// DS-107: native ladder edge (wb_bot_ladder). The policy is pure; the adapter performs the native calls.
 	BotLadder m_ladder;
 	NavPathLink m_ladderNow;
+	unsigned long long m_ladderAvoidRef = 0; float m_ladderAvoidUntil = 0.f;   // SPEC-009: personal avoidance after a failure
+	bool LadderAvoidActive() const;
+	void ReleaseLadderBans();
 	bool m_ladderNativeLocked = false;
 	bool m_ladderCancelPending = false; // ResetLife saw an active climb; next Update clears native mode
 	bool ApplyLadderExecutor(CPlayer& actor);

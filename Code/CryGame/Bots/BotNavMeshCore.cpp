@@ -92,6 +92,7 @@ float NavMeshCore::SegmentCostMultiplier(const float* a, const float* b, unsigne
 			if (SameDirectedTransition(t, a[0], a[1], a[2], b[0], b[1], b[2])) m *= k.mult;
 		}
 	}
+	if (c->avoidLink && cur == c->avoidLink) m *= c->avoidMult;   // SPEC-009: also on links (off-mesh)
 	for (int i = 0; i < c->pointCount; ++i)
 		if (SegPointDist2D(a, b, c->points[i].p) <= c->points[i].radius) m *= c->points[i].mult;
 	if (c->trodden) m *= 1.f + c->trodden->Extra(cur, c->now);
@@ -131,7 +132,7 @@ void NavMeshCore::Reset()
 	if (m_query) { dtFreeNavMeshQuery(m_query); m_query = nullptr; }
 	if (m_mesh) { dtFreeNavMesh(m_mesh); m_mesh = nullptr; }
 	delete static_cast<NavCostFilter*>(m_filter); m_filter = nullptr; m_penalty.clear(); m_cost = nullptr;
-	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0; m_linkFails.clear(); m_linkMismatch = 0;
+	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0; m_linkFails.clear(); m_bannedFlags.clear(); m_linkMismatch = 0;
 	m_slowLadderStarts.clear(); m_ladderMemoryFilter = false;   // SPEC-006a: never inherit another mesh's ladders (Codex #38)
 }
 
@@ -446,7 +447,18 @@ void NavMeshCore::SetLinkMask(unsigned short mask)
 void NavMeshCore::BanLink(unsigned long long ref)
 {
 	if (!m_mesh || !ref) return;
+	unsigned short old = 0;
+	if (dtStatusSucceed(m_mesh->getPolyFlags(dtPolyRef(ref), &old)) && old) m_bannedFlags.emplace(ref, old);
 	m_mesh->setPolyFlags(dtPolyRef(ref), 0);
+	BuildComponents();
+}
+
+void NavMeshCore::UnbanLink(unsigned long long ref)
+{
+	auto it = m_bannedFlags.find(ref);
+	if (!m_mesh || it == m_bannedFlags.end()) return;
+	m_mesh->setPolyFlags(dtPolyRef(ref), it->second);
+	m_bannedFlags.erase(it);
 	BuildComponents();
 }
 
