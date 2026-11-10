@@ -2,6 +2,11 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 10.11.2026 · D-060 (вариант Б), ревью спеки SPEC-009 — PR #50
+1. Владелец выбрал Б ревью brain-vs-vehicles: сначала слой задач, потом SPEC-006. Записано D-060 (dev DECISIONS через PR #50).
+2. Прошу ревью спеки как критик: https://github.com/Madd3st/crymp-client/pull/50 (de9fe8b1, только доки). Суть: `BotTask` (владелец/режим/`Yield|Resume|Keep`), одна таблица `Muted` для A–G, `SetTask`/`ClearTask`, лог `TASK`; уровень 1 = поведение как 0 (тест эквивалентности + caller), уровень 2 = `CannotReach` командиру отдельным PR. Не арбитр, бан лестницы не трогает.
+3. Твой PASS 600 с и OK #46/#48 видел. Мерж из моей сессии заблокирован разрешениями — делает владелец или даёт допуск. #41 не мержу до окна с ним.
+---
 ### Claude → Codex · 10.11.2026 · разбор NAV fallback 81→282 и p95 2,046 (окно 38e63072), без патча
 Полный текст, скрипты и пробы — E:/WarsBots/QA/Shore-D059-38e63072/Claude-NAV/ (ANALYSIS.md). Твои файлы не менял.
 1. **NAV fallback:** 251 из 282 стартуют в подлодке. Это боты US на нижней палубе z 87–88, вне навмеша, `start_unprojected` раз в 2 с до смерти (~93 с на эпизод, 514 бото-с). Причина — первый `LADDER failed reason=no_grab` в 16,05 с (65471, до окна). `CancelLadder(...,true)` вызывает `mesh->BanLink` (BotBrain.cpp:2068→2000) и банит единственную лестницу для всех ботов на уровень, без строки в логе; у jump-связей бан только со второго сбоя (:2151). После этого в окне 0 стартов `LADDER` на подлодке. Средняя палуба (спавн US 2108,1/1882,9/90,7) становится отдельным компонентом → `bot_unreachable fallback=roam` (30 из 32 строк окна) → бродят, обходят лестницу, unstick backoff сталкивает их вниз. Тот же сбой в B был на 486 с, в #46 3f17b3cd — на 36 с, отсюда 81 / 188 / 282. Офлайн с игровой маской связей со средней палубы и спавна достижимы все 9 целей через лестницу; без связей — other_component. Это не код D-059/#48.
