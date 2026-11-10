@@ -32,6 +32,12 @@ sq = sq[:sq.index('\nbool BotBrain::', 10)]
 check('order copied (commander vector may change)', 'const TeamOrder order=*found;' in sq)
 check('stage 1 stands inside the native area', 'IsPointWithin(feet)' in sq and 'WBI(move,false);' in sq)
 check('no SetPos/impulse in the squad path', not re.search(r'SetPos|AddImpulse|SetWorldTM', sq))
+# playtest 09.11: a bot without its own path must not stand for the whole match (US sub lower deck, KNDR pit)
+i_fb = sq.find('if(order.kind!=PsKind::Spawn&&!reachable)return false;')
+check('no own path: back to the usual chain (unstick/roam/swim), not a stand',
+      i_fb > 0 and 'reason=bot_unreachable fallback=roam.' in sq
+      and i_fb < sq.find('bool inside=false;') < sq.find('WBI(move,false);'))
+check('stand only for the team spawn hold or inside the zone', 'if(!reachable||inside)' in sq)
 # logs
 check('PS ORDER fields', re.search(r'PS ORDER team=%d bot=%u target=%d kind=%s role=%s pair=%d reason=%s', cap))
 check('PS ORDER unreachable once per state change', 'reason=unreachable.' in cap and 'r->second != t.reachable' in cap)
@@ -40,6 +46,29 @@ check('PS OWN fields', re.search(r'PS OWN team=%d target=%d kind=%s owned=%\.0f 
 check('PS FIGHT over (combat-over definition)', 'PS FIGHT over' in sq and 'CombatOver(' in sq)
 check('owner 08.11: no energy gate for the prototype', 'TeamEnergy' not in cap and 'prototypeFrom = 4' in orders)
 check('path cache built once, not per plan', cap.count('BuildCache(c, *mesh, points, rules);') == 1)
+
+# D-059 (owner 09.11): defenders only when no neutral point is left, at most 2, released after 45 s without an enemy
+check('D-059 config: at most 2 defenders, release after 45 s, OFF by default in the pure config',
+      'int maxDefenders = 2;' in orders and 'float releaseAfter = 45.f;' in orders and 'bool d059 = false;' in orders)
+check('D-059: neutral point left -> no defender except the prototype', 'n >= cfg.defendFrom && !neutralLeft' in orders and 'n >= cfg.prototypeFrom && !cfg.teamHasTac' in orders)
+# Codex BLOCK 1588030a
+check('D-059 under wb_bot_ps_hold, default OFF, cvar bound', 'int psHold=0;' in cfg_h and '{"wb_bot_ps_hold",&BotConfig::psHold,' in cfg_c)
+check('OFF keeps the D-054 loop verbatim', 'const int maxDef = freeT.empty() ? int(owned.size()) : std::max(0, std::min(int(owned.size()), n - 2));' in orders
+      and 'if (!cfg.d059)' in orders)
+check('neutral on the map counts unreachable points too',
+      "if (t.kind != PsKind::Spawn && t.owner == 0) neutralLeft = true;" in orders and 't.owner == 0 && t.reachable) neutralLeft' not in orders)
+check('no free target with D-059: roam orders, no holds past the limit', 'if (cfg.d059 && freeT.empty())' in orders and 'o.reason = "roam";' in orders)
+check('brain: a roam order goes to the usual chain', 'if(order.kind==PsKind::Spawn&&!order.hold)return false;' in sq
+      and sq.find('if(order.kind==PsKind::Spawn&&!order.hold)return false;') < sq.find('WBI(move,false);'))
+check('TAC: native TACGun of a living member, sticky, logged', 'inv->GetCountOfClass("TACGun") > 0' in cap and 'c.teams[t].tac = true;' in cap
+      and 'PS ORDER tac team=%d' in cap and 'a->GetHealth() <= 0' in cap)
+check('the scan runs only with wb_bot_ps_hold 1', 'if (psHold) D059Scan(c, rules, points, now);' in cap
+      and "const int psHold = BotConfig::Get().psHold == 1 ? 1 : 0;" in cap)
+check('the plan gets the real config (flag + TAC)', 'PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders, PlanConfig(tr, psHold));' in cap
+      and 'cfg.teamHasTac = cfg.d059 && tr.tac;' in cap)
+check('D-059: a quiet defender leaves at once with reason=quiet', 'o.reason = "quiet";' in orders and '!freed &&' in orders)
+check('D-059 runtime: enemy within 40 m of an owned point, capture counts as contact',
+      '40.f * 40.f' in cap and 'c.teams[team].lastEnemy[p.id] = now;' in cap and 't.quiet = now - e->second;' in cap)
 
 for name, ok in checks: print(('PASS ' if ok else 'FAIL ') + name)
 print('%d/%d' % (sum(ok for _, ok in checks), len(checks)))
