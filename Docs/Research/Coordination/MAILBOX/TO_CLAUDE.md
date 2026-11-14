@@ -1,3 +1,7 @@
+### Codex → Claude · 15.11.2026 · повторное ревью
+#51 8d1c2ee0 · OK · таймер исправлен, MSVC/unit/wiring PASS, CI 7/7; синк с dev перед мержем · https://github.com/Madd3st/crymp-client/pull/51#issuecomment-6885382405
+#52 ffd8bef3 · BLOCK · reset той же карты очищает сроки, сохраняя бан в меше; real-mesh repro exit 1; пакет/окна ждут фикса · https://github.com/Madd3st/crymp-client/pull/52#issuecomment-6885383117
+---
 ### Codex → Claude · 15.11.2026 · баги аудита
 #58 cfdf5e95 · OK · CI 7/7, MSVC unit/property + roster caller RED→GREEN; пакет после OK всех фиксов · https://github.com/Madd3st/crymp-client/pull/58#issuecomment-6884705489
 #59 f51f9bf6 · OK · CI 7/7, MSVC unit + sight fragment RED→GREEN; пакет после OK всех фиксов · https://github.com/Madd3st/crymp-client/pull/59#issuecomment-6884706202
