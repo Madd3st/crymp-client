@@ -56,6 +56,7 @@ CPP_TEMPLATE = r'''
 #define WARSBOTS_EXPERIMENTAL_SPAWNER 1
 #include "CryGame/Bots/BotLadder.h"
 #include "CryGame/Bots/BotCorners.h"
+#include "CryGame/Bots/BotLadderBan.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -158,9 +159,16 @@ namespace WarsBots {
 struct BotConfig {
     int ladder = 1;
     int subExit = 0;   // SPEC-006a queue OFF here: this regression covers the existing gate/yield path
+    int ladderBan = 0; // SPEC-009: 0 = ban on the first failure (the regressions below), 1 = soft ban scenario
     static BotConfig& Get() { static BotConfig c; return c; }
 };
 }
+struct MockTimer { float t = 0.f; float GetCurrTime() const { return t; } };
+struct MockEnv { MockTimer* pTimer; };
+static MockTimer g_timer;
+static MockEnv g_env{ &g_timer };
+static MockEnv* gEnv = &g_env;
+static LadderBanBook& LadderBans() { static LadderBanBook book; return book; }
 
 struct BotBlackboard {
     int health = 100;
@@ -239,6 +247,7 @@ static NavMeshCore* CurrentNavMesh() { return &g_mesh; }
 struct BotBrain {
     BotLadder m_ladder;
     NavPathLink m_ladderNow;
+    unsigned long long m_ladderAvoidRef = 0; float m_ladderAvoidUntil = 0.f;   // SPEC-009
     bool m_ladderNativeLocked = false;
     bool m_ladderCancelPending = false;
     bool m_ladderWaiting = false;
@@ -454,6 +463,28 @@ int main(int argc, char** argv) {
         }
     }
 
+    // SPEC-009 (wb_bot_ladder_ban 1, window 38e63072): the first no_grab no longer bans the only submarine ladder for
+    // everyone; that bot avoids it for 30 s. A second bot failing inside 120 s bans it for all.
+    if (expectNew && LADDER_BAN_SOURCE) {
+        WarsBots::BotConfig::Get().ladderBan = 1;
+        LadderBans().Clear();
+        const int bansBefore = g_mesh.bans;
+        CPlayer a4, a7; BotBrain b4, b7; b4.m_number = 4; b7.m_number = 7;
+        g_timer.t = 16.05f;
+        b4.m_ladderNow.ref = 4693115ull;
+        b4.CancelLadder(a4, "no_grab", true);
+        check(g_mesh.bans == bansBefore, "first no_grab with wb_bot_ladder_ban 1: no level ban");
+        check(b4.m_ladderAvoidRef == 4693115ull && std::fabs(b4.m_ladderAvoidUntil - 46.05f) < 1e-3f, "the failing bot avoids the ladder for 30 s");
+        check(b4.m_ladderNow.ref == 0, "the ladder state still resets");
+        g_timer.t = 60.f;
+        b7.m_ladderNow.ref = 4693115ull;
+        b7.CancelLadder(a7, "no_grab", true);
+        check(g_mesh.bans == bansBefore + 1 && g_mesh.lastBannedRef == 4693115ull, "a second bot inside 120 s: level ban");
+        check(b7.m_ladderAvoidRef == 0, "a level ban needs no personal avoidance");
+        WarsBots::BotConfig::Get().ladderBan = 0;
+        g_timer.t = 0.f;
+    }
+
     if (fails) {
         std::printf("Shore ladder queue caller controls FAILED (%d)\n", fails);
         return 1;
@@ -469,6 +500,10 @@ def build_and_run(repo: Path, rev: str, expect: str, out: Path) -> int:
     manager = read_source(repo, rev, 'Code/CryGame/Bots/BotManager.cpp')
     ladder_h = read_source(repo, rev, 'Code/CryGame/Bots/BotLadder.h')
     corners_h = read_source(repo, rev, 'Code/CryGame/Bots/BotCorners.h')
+    try:
+        ban_h = read_source(repo, rev, 'Code/CryGame/Bots/BotLadderBan.h')
+    except (OSError, subprocess.CalledProcessError):   # older revisions: no SPEC-009 header
+        ban_h = '#pragma once\nnamespace WarsBots { struct LadderBanBook { void Clear() {} }; }\n'
 
     apply_ladder = method(brain, 'bool BotBrain::ApplyLadderExecutor(')
     cancel_ladder = method(brain, 'void BotBrain::CancelLadder(').replace(
@@ -488,6 +523,7 @@ def build_and_run(repo: Path, rev: str, expect: str, out: Path) -> int:
         should_yield = 'bool BotManager::ShouldYieldLadder(unsigned long long, const Vec3&, float, int) const { return false; }'
 
     cpp = CPP_TEMPLATE
+    cpp = cpp.replace('LADDER_BAN_SOURCE', '1' if 'LadderBans().Fail(' in cancel_ladder else '0')
     cpp = cpp.replace('@YIELD_LADDER_TO@', yield_ladder)
     cpp = cpp.replace('@MANAGER_METHODS@', ai_enabled + '\n' + should_yield)
     cpp = cpp.replace('@APPLY_LADDER_EXECUTOR@', apply_ladder)
@@ -500,6 +536,7 @@ def build_and_run(repo: Path, rev: str, expect: str, out: Path) -> int:
     inc_dir.mkdir(parents=True, exist_ok=True)
     (inc_dir / 'BotLadder.h').write_text(ladder_h, encoding='utf-8')
     (inc_dir / 'BotCorners.h').write_text(corners_h, encoding='utf-8')
+    (inc_dir / 'BotLadderBan.h').write_text(ban_h, encoding='utf-8')
 
     unit = out / 'shore_ladder_queue_caller.cpp'
     exe = out / 'shore_ladder_queue_caller.exe'

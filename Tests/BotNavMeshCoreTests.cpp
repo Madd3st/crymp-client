@@ -3,6 +3,7 @@
 #include <cstring>
 #include <algorithm>
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotLadderBan.h"
 #include "CryGame/Bots/BotCorners.h"
 #include "CryGame/Bots/BotSniperReach.h"
 #include "CryGame/Bots/BotLadder.h"
@@ -179,11 +180,80 @@ int main(int argc, char** argv)
 			const float impossibleLedge36[3] = {1160.89f, 1350.00f, 144.14f};
 			assert(!L.Reachable(s289, impossibleLedge36) && !L.FindPathLinks(s289, impossibleLedge36, p2, links, &why));
 		}
+		// Codex 15.11 #52 on the SAME mesh instance: a link failed by two different bots is banned for 120 s; a
+		// commander-style reachability cache keyed on TopologyVersion follows reachable -> banned -> restored, and the
+		// path uses the link again after the expiry. The pair is found on the real mesh: a link whose ban cuts the goal off.
+		{
+			const float* from = nullptr; const float* to = nullptr; unsigned long long cut = 0;
+			for (auto& a : spawns) for (auto& b : spawns)
+			{
+				if (cut || &a == &b || !L.FindPathLinks(a, b, p2, links, &why)) continue;
+				const std::vector<NavPathLink> used = links;
+				for (const NavPathLink& k : used)
+				{
+					L.BanLink(k.ref); const bool still = L.Reachable(a, b); L.UnbanLink(k.ref);
+					if (!still) { from = a; to = b; cut = k.ref; break; }
+				}
+			}
+			std::printf("ban cut search: %s ref=%llu\n", cut ? "found" : "none", cut);
+			assert(cut);
+			struct CommanderCache   // mirrors BotPSCapture Tick: rebuild when c.topology != mesh->TopologyVersion()
+			{
+				unsigned topology = 0; bool built = false, reach = false; int builds = 0;
+				void Tick(const NavMeshCore& m, const float* a, const float* b)
+				{
+					if (built && topology == m.TopologyVersion()) return;
+					topology = m.TopologyVersion(); built = true; ++builds; reach = m.Reachable(a, b);
+				}
+			} cmd;
+			cmd.Tick(L, from, to); assert(cmd.reach && cmd.builds == 1);
+			cmd.Tick(L, from, to); assert(cmd.builds == 1);                        // unchanged mesh: cached
+			LadderBanBook book;
+			assert(book.Fail(cut, 4, 10.f).scope == LadderBanScope::Bot);         // one bot, repeated: no mesh ban
+			assert(book.Fail(cut, 4, 20.f).scope == LadderBanScope::Bot);
+			assert(book.Fail(cut, 4, 25.f).scope == LadderBanScope::Bot);
+			cmd.Tick(L, from, to); assert(cmd.builds == 1 && cmd.reach);
+			const unsigned v0 = L.TopologyVersion();
+			assert(book.Fail(cut, 7, 30.f).scope == LadderBanScope::Level);       // second distinct bot
+			L.BanLink(cut); assert(L.TopologyVersion() != v0);
+			cmd.Tick(L, from, to);
+			assert(cmd.builds == 2 && !cmd.reach);                                  // stale "reachable" dropped
+			// a stale cache (the old Tick) would still say reachable here
+			assert(book.TakeExpired(149.9f).empty());
+			const auto lifted = book.TakeExpired(150.f);
+			assert(lifted.size() == 1 && lifted[0] == cut);
+			const unsigned v1 = L.TopologyVersion();
+			L.UnbanLink(cut); assert(L.TopologyVersion() != v1);
+			cmd.Tick(L, from, to); assert(cmd.builds == 3 && cmd.reach);
+			bool uses = false;
+			assert(L.FindPathLinks(from, to, p2, links, &why));
+			for (const NavPathLink& k : links) uses |= k.ref == cut;
+			assert(uses);                                                           // the restored link is used again
+			std::printf("commander cache reachable -> banned -> restored: PASS\n");
+		}
 		// banning a used link removes it from later paths
 		if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why) && !links.empty())
 		{
-			const unsigned long long r = links[0].ref; L.BanLink(r);
+			const unsigned long long r = links[0].ref; const int partsBefore = L.Components(); L.BanLink(r);
 			if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why)) for (const NavPathLink& k : links) assert(k.ref != r);
+			// SPEC-009 (wb_bot_ladder_ban): a lifted ban restores the link and the connected parts
+			L.UnbanLink(r); assert(L.Components() == partsBefore);
+			bool again = false;
+			if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why)) for (const NavPathLink& k : links) again |= k.ref == r;
+			assert(again);
+			L.UnbanLink(r); assert(L.Components() == partsBefore);   // unbanning twice is a no-op
+			// SPEC-009: one bot's avoided link costs avoidMult for that query only, also off-mesh; other polys unchanged
+			NavCostContext avoid; avoid.climb = false; avoid.noise = 0.f; avoid.avoidLinks[0] = r; avoid.avoidMult = 50.f;
+			const float sa[3] = {0, 0, 0}, sb[3] = {1, 0, 0};
+			L.SetCostContext(&avoid);
+			assert(L.SegmentCostMultiplier(sa, sb, r, true) == 50.f);
+			assert(L.SegmentCostMultiplier(sa, sb, r + 1, true) == 1.f);
+			L.SetCostContext(nullptr);
+			assert(L.SegmentCostMultiplier(sa, sb, r, true) == 1.f);
+			// Codex 15.11 #52: the jump slot is honoured the same way (ladder + jump avoided together)
+			avoid.avoidLinks[0] = 0; avoid.avoidLinks[1] = r; L.SetCostContext(&avoid);
+			assert(L.SegmentCostMultiplier(sa, sb, r, true) == 50.f);
+			L.SetCostContext(nullptr);
 		}
 		L.SetLinkMask(0); assert(L.Components() == walkParts);
 		std::printf("links=%d walkParts=%d paths=%d withLinks=%d drop=%d jump=%d strength=%d\n", L.Links(), walkParts, total, withLinks,

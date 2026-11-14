@@ -148,6 +148,7 @@ def build(repo: Path, out: Path) -> int:
     inc = out / 'include' / 'CryGame' / 'Bots'; inc.mkdir(parents=True, exist_ok=True)
     (inc / 'BotLadder.h').write_text(rd('Code/CryGame/Bots/BotLadder.h'), encoding='utf-8')
     (inc / 'BotCorners.h').write_text(rd('Code/CryGame/Bots/BotCorners.h'), encoding='utf-8')
+    (inc / 'BotLadderBan.h').write_text(rd('Code/CryGame/Bots/BotLadderBan.h'), encoding='utf-8')
     unit, exe = out / 'sub_exit_queue_caller.cpp', out / 'sub_exit_queue_caller.exe'
     unit.write_text(t, encoding='utf-8')
     comp = subprocess.run(['cl', '/nologo', '/std:c++17', '/EHsc', '/I', str(out / 'include'), str(unit),
