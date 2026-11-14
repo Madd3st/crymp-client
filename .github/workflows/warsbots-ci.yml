@@ -145,6 +145,9 @@ jobs:
           & python Tests/test_bot_ladder_ban_wiring.py *> units/BotLadderBanWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLadderBanWiring-run.log; throw 'UNIT FAIL: ladder ban wiring guard' }
           'UNIT PASS vehicle target wiring guard'
+          & python Tests/test_bot_stale_visible_caller.py *> units/BotStaleVisibleCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotStaleVisibleCaller-run.log; throw 'UNIT FAIL: audit 14.11 p. 5 stale sight caller' }
+          'UNIT PASS audit 14.11 p. 5 stale sight caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:
