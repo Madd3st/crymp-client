@@ -142,6 +142,8 @@ jobs:
           'UNIT PASS actual LAN gate caller'
           & python Tests/test_bot_vehicle_target_wiring.py *> units/BotVehicleTargetWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotVehicleTargetWiring-run.log; throw 'UNIT FAIL: vehicle target wiring guard' }
+          & python Tests/test_bot_frozen_shatter_wiring.py *> units/BotFrozenShatterWiring-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotFrozenShatterWiring-run.log; throw 'UNIT FAIL: frozen shatter wiring guard' }
           'UNIT PASS vehicle target wiring guard'
       - if: always()
         uses: actions/upload-artifact@v7

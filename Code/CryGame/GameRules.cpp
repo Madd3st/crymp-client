@@ -2263,6 +2263,13 @@ void CGameRules::ShatterEntity(EntityId entityId, const Vec3& pos, const Vec3& i
 
 	IActor* pActor = m_pActorSystem->GetActor(entityId);
 	bool isPlayer = (pActor && pActor->IsPlayer());
+#if defined(WARSBOTS_EXPERIMENTAL_SPAWNER)
+	// Playtest 11.11 (Shore-02): a frozen WarsBot (channel 0, so IsPlayer()==false) was hidden and scheduled for removal
+	// 0.15 s after the shatter like an AI NPC, and never came back. Local to the shatter only (IsPlayer stays stock):
+	// the bot takes the player path - PreShatter hides it, the revive wave brings it back.
+	if (!isPlayer && pActor && WarsBots::BotMatch::IsBot(*this, entityId))
+		isPlayer = true;
+#endif
 
 	if (gEnv->bServer && !m_pGameFramework->IsEditing())
 	{

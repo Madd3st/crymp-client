@@ -552,7 +552,7 @@ void BotManager::OnPostUpdate(float dt)
     m_moveTrace.Update(m_framework,*this);
 	UpdateProbe(); // DS-047: runs even when the bot roster is empty (dummy/goal scenarios)
 	// Restore outside the action-event callback, once the reset level is usable again.
-	if (m_restorePending && m_levelReady && CanRunLocalIA()) { Sweep(); RestoreRoster(); }
+	if (m_restorePending && m_levelReady && CanRunLocalIA() && RestoreDue(m_restoreSchedule, gEnv->pTimer->GetCurrTime())) { Sweep(); RestoreRoster(); }
     if(m_nav.AuditOnly()){if(CanRunLocalIA()){m_nav.Begin();m_nav.Step(2.f);}m_demo.Update(m_config.demoRecord==1,m_config.demoHz);return;}
 	if (m_bots.empty()){m_demo.Update(m_config.demoRecord==1,m_config.demoHz);return;}
 	// Navigation graph is built lazily once bots exist, a few ms per frame; geometry survives
@@ -589,8 +589,8 @@ void BotManager::OnPostUpdate(float dt)
     m_demo.Update(m_config.demoRecord==1,m_config.demoHz);
 }
 
-void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); }
-void BotManager::OnLoadingStart(ILevelInfo*) { m_restorePending = false; m_roster.clear(); EndLevel(); m_nav.Reset(); m_moveTrace.Reset(); }
+void BotManager::OnLevelNotFound(const char*) { m_restorePending = false; m_roster.clear(); ResetRestoreSchedule(m_restoreSchedule); EndLevel(); m_nav.Reset(); }
+void BotManager::OnLoadingStart(ILevelInfo*) { m_restorePending = false; m_roster.clear(); ResetRestoreSchedule(m_restoreSchedule); EndLevel(); m_nav.Reset(); m_moveTrace.Reset(); }
 void BotManager::OnLoadingComplete(ILevel*) { m_spawnExcludeLogged=false; m_levelReady = true; g_fireBudget=20000; }
 void BotManager::OnLoadingError(ILevelInfo*, const char*) { EndLevel(); m_nav.Reset(); }
 void BotManager::OnLoadGame(ILoadGame*) { EndLevel(); m_nav.Reset(); }
@@ -613,6 +613,7 @@ void BotManager::OnActionEvent(const SActionEvent& event)
 		if (!m_roster.empty())
 			WB_LOG(0, "[WarsBots] Game reset: removing %d bots, will restore after reset.", int(m_roster.size()));
 		EndLevel();
+		ResetRestoreSchedule(m_restoreSchedule); // queued bots stay, the old deadline does not
 		m_restorePending = !m_roster.empty();
 	}
 	else if (event.m_event == eAE_disconnected)
@@ -620,6 +621,7 @@ void BotManager::OnActionEvent(const SActionEvent& event)
 		m_nav.Reset();
 		m_roster.clear();
 		m_restorePending = false;
+		ResetRestoreSchedule(m_restoreSchedule);
 		EndLevel();
 	}
 	else if (event.m_event == eAE_resetEnd && m_framework)
@@ -629,11 +631,13 @@ void BotManager::OnActionEvent(const SActionEvent& event)
 void BotManager::RestoreRoster()
 {
 	m_restorePending = false;
-	int restored = 0;
-	for (const RosterEntry& entry : m_roster)
-		if (AddWith(nullptr, entry.profile, entry.number, entry.ai)) ++restored;
-	WB_LOG(0, "[WarsBots] Game reset: restored %d/%d bots.", restored, int(m_roster.size()));
-	m_roster.clear();
+	const float now = gEnv->pTimer->GetCurrTime();
+	const int total = int(m_roster.size());
+	const int restored = RunRestorePass(m_roster, m_restoreSchedule, now,
+		[this](const RosterEntry& entry) { return AddWith(nullptr, entry.profile, entry.number, entry.ai) != nullptr; },
+		[](const RosterEntry& entry, float waited) { WB_LOG(0, "[WarsBots] #%d restore gave up after %.1f s.", entry.number, waited); });
+	WB_LOG(0, "[WarsBots] Game reset: restored %d/%d bots%s.", restored, total, m_roster.empty() ? "" : ", retrying the rest");
+	m_restorePending = !m_roster.empty();
 }
 
 // ---------------------------------------------------------------- reporting
