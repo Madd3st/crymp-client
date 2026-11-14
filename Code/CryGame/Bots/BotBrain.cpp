@@ -455,6 +455,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
 
 	m_intent=BotIntent();
+	BeginTickSight(m_blackboard.visible,m_blackboard.distance); // audit 14.11 p. 5: no stale sight on ticks the fight does not own
 	WBI(aim,actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f));
 	// DS-107: a gate turned OFF mid-climb must still clean the native mode; when ON the ladder owns the tick.
 	if (BotConfig::Get().ladder!=1 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"gate_off",false);
@@ -1563,7 +1564,7 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	if (m_now-m_unstickLast>0.75f) m_unstickMuteUntil=max(m_unstickMuteUntil,m_now+1.5f);
 	m_unstickLast=m_now;
 	if (m_link.Active() || m_ladder.Active() || m_ladderNativeLocked) m_unstickMuteUntil=max(m_unstickMuteUntil,m_now+2.0f);
-	const bool combat=m_blackboard.visible || m_state==State::ATTACKING || m_intent.combat!=BotCombatIntent::None;
+	const bool combat=UnstickCombatMute(m_blackboard.visible,m_state==State::ATTACKING,m_intent.combat!=BotCombatIntent::None);
 	const bool water=m_blackboard.waterMovement || m_blackboard.swimming;
 	const bool muted=!mesh || !m_meshPathActive || m_path.empty() || !m_intent.move || combat || water || !m_blackboard.canMove || m_now<m_unstickMuteUntil;
 	const float rem=m_path.empty()?0.f:PathRemaining(m_path,m_pathIndex,feet);
@@ -1805,7 +1806,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
     if (BotConfig::Get().suitPolicy==1 && !m_link.Active() && !m_intent.unstickStrength) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     // DS-040 (wb_bot_pro_fire): a visible enemy inside the hold range must not sprint. Native fire is blocked while
     // sprinting; C-112 had 12 visible combat gaps / 116.5 s at 60-89 % sprint. After the suit policy on purpose.
-    if (BotConfig::Get().proFire==1 && m_blackboard.visible && m_blackboard.distance<=m_profile.holdRange && m_intent.jump==BotJump::None && m_intent.gait==BotGait::Sprint)
+    if (ProFireBlocksSprint(BotConfig::Get().proFire==1,m_blackboard.visible,m_blackboard.distance,m_profile.holdRange,m_intent.jump!=BotJump::None,m_intent.gait==BotGait::Sprint))
     { WBI(gait,BotGait::Run); m_speedTravel=false; if (m_intent.suitMode==NANOMODE_SPEED) WBI(suitMode,NANOMODE_DEFENSE); } // DS-043 (c): no Speed suit in the fight either
     if (m_cornerSlow && !m_link.Active() && m_intent.jump==BotJump::None)
     { // wb_bot_corners: no sprint / Speed into a sharp turn; after the suit policy on purpose (c071: 6.3 m/s down the 1 m Steelmill stair, overshoot)
