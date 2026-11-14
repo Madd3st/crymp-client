@@ -31,11 +31,31 @@ int main()
 	}
 	{
 		LadderBanBook book;
-		// the same bot failing again: personal avoidance, until the third failure in the window
-		assert(book.Fail(sub, 4, 10.f).scope == LadderBanScope::Bot);
-		assert(book.Fail(sub, 4, 50.f).scope == LadderBanScope::Bot);
-		const LadderBanDecision d = book.Fail(sub, 4, 90.f);
-		assert(d.scope == LadderBanScope::Level && d.fails == kLadderBanLevelFails && d.bots == 1);
+		// Codex 15.11 #52 repro (link=1, bot=4, t=10/20/30): one bot can never close the link for everyone,
+		// however often it fails; its personal avoidance just moves on.
+		for (float t : {10.f, 20.f, 30.f, 40.f, 50.f})
+		{
+			const LadderBanDecision d = book.Fail(1, 4, t);
+			assert(d.scope == LadderBanScope::Bot && d.bots == 1 && d.until == t + kLadderBotAvoidFor);
+		}
+		assert(!book.LevelBanned(1) && book.TakeExpired(1e6f).empty());
+		// the second DISTINCT bot inside the window -> shared ban for 120 s
+		const LadderBanDecision d = book.Fail(1, 7, 60.f);
+		assert(d.scope == LadderBanScope::Level && d.bots == 2 && d.until == 60.f + kLadderLevelBanFor && book.LevelBanned(1));
+	}
+	{
+		// Codex 15.11 #52: jump/strength/drop links use the same book (BotBrain::ApplyLinkExecutor) - no permanent jump ban.
+		LadderBanBook book;
+		const unsigned long long jump = 0x3000;
+		assert(book.Fail(jump, 2, 5.f).scope == LadderBanScope::Bot);     // first bot: personal avoidance only
+		assert(book.Fail(jump, 2, 6.f).scope == LadderBanScope::Bot);     // the same bot again: still personal
+		const LadderBanDecision d = book.Fail(jump, 9, 7.f);              // a second bot: everyone, 120 s
+		assert(d.scope == LadderBanScope::Level && d.until == 7.f + 120.f);
+		assert(book.TakeExpired(126.9f).empty() && book.LevelBanned(jump));
+		const auto lifted = book.TakeExpired(127.f);
+		assert(lifted.size() == 1 && lifted[0] == jump && !book.LevelBanned(jump));
+		// after the expiry the old failures are out of the window: a retry failure is personal again
+		assert(book.Fail(jump, 2, 128.f).scope == LadderBanScope::Bot);
 	}
 	{
 		LadderBanBook book;
@@ -60,6 +80,7 @@ int main()
 	}
 	static_assert(kLadderBotAvoidFor < kLadderBanWindow, "personal avoidance ends inside the counting window");
 	static_assert(kLadderAvoidCost > 1.f, "avoidance raises the cost");
+	static_assert(kLadderLevelBanFor == 120.f, "owner rule: shared ban lasts 120 s (ladder and jump)");
 	std::puts("BotLadderBanTests OK");
 	return 0;
 }

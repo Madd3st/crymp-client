@@ -184,6 +184,8 @@ private:
 	BotLadder m_ladder;
 	NavPathLink m_ladderNow;
 	unsigned long long m_ladderAvoidRef = 0; float m_ladderAvoidUntil = 0.f;   // SPEC-009: personal avoidance after a failure
+	unsigned long long m_jumpAvoidRef = 0; float m_jumpAvoidUntil = 0.f;       // Codex 15.11 #52: same rule for jump links
+	unsigned m_navTopology = 0;   // mesh TopologyVersion this bot's path was planned on (replan after a ban/unban)
 	bool LadderAvoidActive() const;
 	void ReleaseLadderBans();
 	bool m_ladderNativeLocked = false;

@@ -92,7 +92,7 @@ float NavMeshCore::SegmentCostMultiplier(const float* a, const float* b, unsigne
 			if (SameDirectedTransition(t, a[0], a[1], a[2], b[0], b[1], b[2])) m *= k.mult;
 		}
 	}
-	if (c->avoidLink && cur == c->avoidLink) m *= c->avoidMult;   // SPEC-009: also on links (off-mesh)
+	for (const unsigned long long avoid : c->avoidLinks) if (avoid && cur == avoid) m *= c->avoidMult;   // SPEC-009: also on links (off-mesh)
 	for (int i = 0; i < c->pointCount; ++i)
 		if (SegPointDist2D(a, b, c->points[i].p) <= c->points[i].radius) m *= c->points[i].mult;
 	if (c->trodden) m *= 1.f + c->trodden->Extra(cur, c->now);
@@ -192,6 +192,7 @@ void NavMeshCore::BuildComponents()
 	// over outgoing links was seed-order dependent, weak parts were optimistic across drops (nav fallbacks 115 -> 689).
 	const unsigned short include = m_filter ? m_filter->getIncludeFlags() : 0xffff;
 	auto Pass = [include](const dtPoly* p) { return (p->flags & include) != 0; };
+	++m_topology;   // Codex 15.11 #52: reachability caches key on this
 	m_comp.clear(); m_components = 0; m_reach.clear();
 	const dtNavMesh* mesh = m_mesh;
 	std::vector<dtPolyRef> refs;

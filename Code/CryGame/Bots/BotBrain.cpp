@@ -225,7 +225,7 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 			// SPEC-004 (wb_bot_unstick): climb/memory/trodden/noise cost and this bot's blocks for this one query.
 			NavCostContext cost;
 			const bool layered = BotConfig::Get().unstick == 1;
-			const bool avoid = LadderAvoidActive();   // SPEC-009: this bot's failed ladder costs x50 for 30 s
+			const bool avoid = LadderAvoidActive();   // SPEC-009: this bot's failed ladder/jump link costs x50 for 30 s
 			if (layered)
 			{
 				cost.botSeed = unsigned(m_number) * 2654435761u; cost.trodden = CurrentTrodden(); cost.now = gEnv->pTimer->GetCurrTime(); cost.blockNow = m_now;
@@ -234,7 +234,13 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 				if (m_now < m_unstickPointsUntil && !m_unstickPoints.empty()) { cost.points = m_unstickPoints.data(); cost.pointCount = int(m_unstickPoints.size()); }
 			}
 			else if (avoid) { cost.climb = false; cost.noise = 0.f; }   // only the avoided link, no SPEC-004 costs
-			if (avoid) { cost.avoidLink = m_ladderAvoidRef; cost.avoidMult = kLadderAvoidCost; }
+			if (avoid)
+			{
+				const float t = gEnv->pTimer->GetCurrTime();
+				cost.avoidLinks[0] = t < m_ladderAvoidUntil ? m_ladderAvoidRef : 0;
+				cost.avoidLinks[1] = t < m_jumpAvoidUntil ? m_jumpAvoidRef : 0;
+				cost.avoidMult = kLadderAvoidCost;
+			}
 			if (layered || avoid) mesh->SetCostContext(&cost);
 			const auto queryStart = std::chrono::steady_clock::now();
 			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why, waterStart ? &water : nullptr);
@@ -940,7 +946,9 @@ void BotBrain::ClearAllClaims() { LootClaims().Clear(); }
 void BotBrain::ClearLadderBans() { LadderBans().Clear(); }
 bool BotBrain::LadderAvoidActive() const
 {
-	return BotConfig::Get().ladderBan==1 && m_ladderAvoidRef && gEnv->pTimer->GetCurrTime()<m_ladderAvoidUntil;
+	if (BotConfig::Get().ladderBan!=1) return false;
+	const float t=gEnv->pTimer->GetCurrTime();
+	return (m_ladderAvoidRef && t<m_ladderAvoidUntil) || (m_jumpAvoidRef && t<m_jumpAvoidUntil);
 }
 void BotBrain::ReleaseLadderBans()
 {
@@ -951,6 +959,14 @@ void BotBrain::ReleaseLadderBans()
 	{
 		mesh->UnbanLink(ref);
 		WB_LOG(1,"[WarsBots] #%d LADDER unban link=%llu scope=level.",m_number,ref);
+	}
+	// Codex 15.11 #52: a ban or unban (by any bot) changed the mesh connectivity -> replan, so a restored link is used
+	// again and a banned one is dropped. Never mid-link/mid-ladder: the executor owns movement there; retried next update.
+	const unsigned topology=mesh->TopologyVersion();
+	if (topology!=m_navTopology && !m_link.Active() && !m_ladder.Active())
+	{
+		m_navTopology=topology;
+		m_nextRepath=m_minRepath=0;
 	}
 }
 
@@ -2180,8 +2196,20 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> fail noted",actor.GetEntityId());
 		// O-027: one failure can be timing (hit, cooldown, short run-up) -> ban a link only on its second failure.
 		// DS-046: a link above the jump rise is impossible; ban it at once, do not waste two probes.
-		if (o.fail==LinkFail::TooHigh) mesh->BanLink(m_linkNow.ref);
-		else if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
+		if (BotConfig::Get().ladderBan!=1)
+		{
+			if (o.fail==LinkFail::TooHigh) mesh->BanLink(m_linkNow.ref);
+			else if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
+		}
+		else if (o.fail!=LinkFail::NoEnergy)
+		{   // Codex 15.11 #52 (wb_bot_ladder_ban 1): jump links follow the ladder rule - this bot avoids the link for 30 s;
+			// a shared ban only after failures by two different bots, for 120 s, then lifted (ReleaseLadderBans).
+			const LadderBanDecision d=LadderBans().Fail(m_linkNow.ref,m_number,gEnv->pTimer->GetCurrTime());
+			if (d.scope==LadderBanScope::Level) mesh->BanLink(m_linkNow.ref);
+			else { m_jumpAvoidRef=m_linkNow.ref; m_jumpAvoidUntil=d.until; }
+			WB_LOG(1,"[WarsBots] #%d LINK ban link=%llu kind=%s scope=%s until=%.1f fails=%d bots=%d actor=%u.",m_number,m_linkNow.ref,
+				NavLinkName(m_linkNow.kind),d.scope==LadderBanScope::Level?"level":"bot",d.until,d.fails,d.bots,actor.GetEntityId());
+		}
 		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0;
 		return;
 	}

@@ -60,7 +60,7 @@ struct NavCostContext {
 	float now = 0.f;                       // trodden clock (world time, shared by all bots)
 	float blockNow = 0.f;                  // the bot's own clock for its block expiry
 	float memoryClock = -1.f;              // memory clock (UnstickClock): penalties decay per query; <0 = value at resolve
-	unsigned long long avoidLink = 0; float avoidMult = 1.f;   // SPEC-009: this bot avoids one link (wb_bot_ladder_ban)
+	unsigned long long avoidLinks[2] = {0, 0}; float avoidMult = 1.f;   // SPEC-009: this bot's avoided ladder + jump link (wb_bot_ladder_ban)
 	const NavCostBlock* blocks = nullptr; int blockCount = 0;
 	const NavCostPoint* points = nullptr; int pointCount = 0;
 };
@@ -106,6 +106,9 @@ public:
 	void SetLinkMask(unsigned short mask);
 	unsigned short LinkMask() const { return m_linkMask; }
 	int Links() const { return m_links; }
+	// Codex 15.11 #52: bumped by every connectivity rebuild (SetLinkMask, BanLink, UnbanLink, load). Caches built from
+	// Reachable/FindPath on this mesh (PS commander, capture destinations) rebuild when it changes; monotonic across Reset.
+	unsigned TopologyVersion() const { return m_topology; }
 	int LinkMismatches() const { return m_linkMismatch; }   // links whose user id line did not match by end points
 	// A link failed in the game: never use it again on this level.
 	void BanLink(unsigned long long ref);
@@ -158,6 +161,7 @@ private:
 	std::unordered_map<unsigned long long, int> m_linkFails;
 	std::unordered_map<unsigned long long, unsigned short> m_bannedFlags;   // original flags of banned links
 	int m_linkMismatch = 0;
+	unsigned m_topology = 0;
 	const NavCostContext* m_cost = nullptr;
 	struct PolyPenalty { TransitionPenalty t; float value; };   // value: decayed at resolve time (fallback)
 	float m_penaltyHalfLife = 1800.f;

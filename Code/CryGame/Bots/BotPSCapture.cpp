@@ -178,6 +178,7 @@ const std::vector<PsCapturePoint>& BasePoints()
 	static std::string levelName;
 	static std::vector<PsCapturePoint> points;
 	static NavMeshCore* cachedMesh=nullptr;
+	static unsigned cachedTopology=0;   // Codex 15.11 #52: Reachable destinations follow link bans/unbans
 	static int cachedSquads=-1;   // SPEC-005: bunkers join the targets only with wb_bot_ps_squads 1
 	static int cachedReach=-1;    // wb_bot_ps_reach_dest: destinations change with the flag
 	if (!g_pGame || !g_pGame->GetIGameFramework()) return points;
@@ -187,8 +188,9 @@ const std::vector<PsCapturePoint>& BasePoints()
 	NavMeshCore* mesh=CurrentNavMesh();
 	const int squads=BotConfig::Get().psSquads==1?1:0;
 	const int reachDest=BotConfig::Get().psReachDest==1?1:0;
-	if (current == levelName && mesh==cachedMesh && squads==cachedSquads && reachDest==cachedReach && !points.empty()) return points;
-	cachedMesh=mesh; cachedSquads=squads; cachedReach=reachDest;
+	const unsigned topology=mesh?mesh->TopologyVersion():0u;
+	if (current == levelName && mesh==cachedMesh && topology==cachedTopology && squads==cachedSquads && reachDest==cachedReach && !points.empty()) return points;
+	cachedMesh=mesh; cachedTopology=topology; cachedSquads=squads; cachedReach=reachDest;
 	levelName = current;
 	points.clear();
 	if (!gEnv || !gEnv->pEntitySystem) return points;
@@ -315,6 +317,7 @@ struct TeamRuntime
 struct Commander
 {
 	std::string level; NavMeshCore* mesh = nullptr; bool cacheBuilt = false; int cacheTries = 0; float nextCacheTry = 0.f;
+	unsigned topology = 0;   // mesh TopologyVersion the cache was built on (Codex 15.11 #52)
 	bool baseFound[3] = {false, false, false};
 	std::map<int, float> fromBase[3];                  // target -> path length from the team base (absent: no path)
 	std::map<std::pair<int, int>, float> between;      // (from target, to target) -> path length (absent: no path)
@@ -422,9 +425,15 @@ void Tick(Commander& c, CGameRules& rules, float now)
 	std::vector<PsCapturePoint> points;
 	PSCaptureSnapshot(points, rules, nullptr);
 	if (!mesh || !mesh->Ready()) return;
+	if (c.cacheBuilt && c.topology != mesh->TopologyVersion())
+	{   // Codex 15.11 #52: a link ban/unban on the same mesh changed reachability; the old fromBase/between are stale
+		WB_LOG(0, "[WarsBots] PS ORDER cache topology %u -> %u, rebuild.", c.topology, mesh->TopologyVersion());
+		c.cacheBuilt = false; c.cacheTries = 0; c.nextCacheTry = now;
+	}
 	if (!c.cacheBuilt && now >= c.nextCacheTry)
 	{
 		c.nextCacheTry = now + 10.f;
+		c.topology = mesh->TopologyVersion();
 		for (int team = 0; team < 3; ++team) { c.baseFound[team] = false; c.fromBase[team].clear(); }
 		c.between.clear();
 		BuildCache(c, *mesh, points, rules);

@@ -46,14 +46,25 @@ def main():
     check('CancelLadder(actor,why[int(o.fail)],true);' in fail_site[:900], 'a ladder failure still cancels with ban=true')
 
     check('const bool avoid = LadderAvoidActive();' in brain
-          and 'if (avoid) { cost.avoidLink = m_ladderAvoidRef; cost.avoidMult = kLadderAvoidCost; }' in brain
+          and 'cost.avoidLinks[0] = t < m_ladderAvoidUntil ? m_ladderAvoidRef : 0;' in brain
+          and 'cost.avoidLinks[1] = t < m_jumpAvoidUntil ? m_jumpAvoidRef : 0;' in brain
           and 'if (layered || avoid) mesh->SetCostContext(&cost);' in brain
           and 'if (layered || avoid) mesh->SetCostContext(nullptr);' in brain, 'the path query carries the avoided link')
     check('else if (avoid) { cost.climb = false; cost.noise = 0.f; }' in brain, 'without wb_bot_unstick only the avoided link costs more')
     active = body(brain, 'bool BotBrain::LadderAvoidActive() const')
-    check('BotConfig::Get().ladderBan==1' in active and 'gEnv->pTimer->GetCurrTime()<m_ladderAvoidUntil' in active, 'avoidance is flag-gated and times out')
+    check('BotConfig::Get().ladderBan!=1) return false;' in active and 't<m_ladderAvoidUntil' in active and 't<m_jumpAvoidUntil' in active,
+          'avoidance (ladder and jump) is flag-gated and times out')
     release = body(brain, 'void BotBrain::ReleaseLadderBans()')
     check('BotConfig::Get().ladderBan!=1' in release and 'mesh->UnbanLink(ref);' in release and 'TakeExpired(' in release, 'expired level bans are lifted')
+    check('mesh->TopologyVersion()' in release and 'm_nextRepath=m_minRepath=0;' in release
+          and '!m_link.Active() && !m_ladder.Active()' in release, 'a ban/unban makes every bot replan (not mid-link)')
+    link = body(brain, 'void BotBrain::ApplyLinkExecutor(')
+    fail = link[link.index('if (o.phase==LinkPhase::Failed)'):]
+    check('if (BotConfig::Get().ladderBan!=1)' in fail and 'mesh->NoteLinkFailure(m_linkNow.ref)' in fail, 'jump: flag OFF keeps the old rule')
+    check('LadderBans().Fail(m_linkNow.ref,m_number,gEnv->pTimer->GetCurrTime())' in fail
+          and 'if (d.scope==LadderBanScope::Level) mesh->BanLink(m_linkNow.ref);' in fail
+          and 'm_jumpAvoidRef=m_linkNow.ref; m_jumpAvoidUntil=d.until;' in fail, 'jump: flag ON uses the shared book (120 s, distinct bots)')
+    check(fail.count('mesh->BanLink(') == 3, 'jump: no other ban path')
     upd = brain[brain.index('if (m_ladderCancelPending) CancelLadder(actor,"reset",false);'):]
     check('ReleaseLadderBans();' in upd[:200], 'lifting runs every update')
 
@@ -65,8 +76,18 @@ def main():
           'm_mesh->setPolyFlags(dtPolyRef(ref), it->second);' in body(core, 'void NavMeshCore::UnbanLink('), 'unban restores the original flags')
     check('m_bannedFlags.clear();' in body(core, 'void NavMeshCore::Reset()'), 'mesh reset forgets bans')
     seg = body(core, 'float NavMeshCore::SegmentCostMultiplier(')
-    check('if (c->avoidLink && cur == c->avoidLink) m *= c->avoidMult;' in seg
-          and seg.index('if (c->avoidLink') > seg.index('if (!offMesh)'), 'the avoided link costs more also off-mesh')
+    check('for (const unsigned long long avoid : c->avoidLinks) if (avoid && cur == avoid) m *= c->avoidMult;' in seg
+          and seg.index('c->avoidLinks') > seg.index('if (!offMesh)'), 'the avoided links cost more also off-mesh')
+    check('++m_topology;' in body(core, 'void NavMeshCore::BuildComponents()'), 'every connectivity rebuild bumps the topology version')
+    ban_h = code('Code/CryGame/Bots/BotLadderBan.h')
+    check('const bool level = d.bots >= 2;' in ban_h and 'kLadderBanLevelFails' not in ban_h, 'shared ban only after two distinct bots')
+
+    cap = code('Code/CryGame/Bots/BotPSCapture.cpp')
+    tick = body(cap, 'void Tick(Commander& c, CGameRules& rules, float now)')
+    check('if (c.cacheBuilt && c.topology != mesh->TopologyVersion())' in tick and 'c.cacheBuilt = false;' in tick
+          and 'c.topology = mesh->TopologyVersion();' in tick, 'commander cache rebuilds after a ban/unban (same mesh)')
+    check(tick.index('c.topology != mesh->TopologyVersion()') < tick.index('BuildCache(c, *mesh, points, rules);'), 'invalidation before the build')
+    check('topology==cachedTopology' in cap, 'capture destinations (Reachable) follow the topology too')
 
     hdr = code('Code/CryGame/Bots/BotConfig.h')
     cfg = code('Code/CryGame/Bots/BotConfig.cpp')
