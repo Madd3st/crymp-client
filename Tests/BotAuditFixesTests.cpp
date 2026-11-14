@@ -43,6 +43,33 @@ int main()
         CHECK(none < 0); // no cover within 8 m -> abort the withdraw and fight
     }
 
+    // Audit 14.11 p. 5: sight is cleared at the start of every tick. A fight tick writes it; the next ticks belong to
+    // the weapon goal (nobody writes): unstick must not stay muted and the sprint must not stay blocked.
+    {
+        bool visible = false; float distance = 0.0f;
+        const float holdRange = 40.0f;
+        // fight tick: begin, then the fight writes what it sees
+        BeginTickSight(visible, distance); visible = true; distance = 12.0f;
+        CHECK(UnstickCombatMute(visible, true, true));
+        CHECK(ProFireBlocksSprint(true, visible, distance, holdRange, false, true));
+        // the bug: the fight is over, the tick goes to the weapon goal and nothing clears the fields
+        CHECK(UnstickCombatMute(visible, false, false));
+        CHECK(ProFireBlocksSprint(true, visible, distance, holdRange, false, true));
+        // the fix: the same weapon-goal tick after BeginTickSight - unstick listens again, the sprint is allowed
+        BeginTickSight(visible, distance);
+        CHECK(!visible && distance == 0.0f);
+        CHECK(!UnstickCombatMute(visible, false, false));
+        CHECK(!ProFireBlocksSprint(true, visible, distance, holdRange, false, true));
+        // a real fight still mutes and still blocks; the state and the intent mute on their own
+        BeginTickSight(visible, distance); visible = true; distance = 39.0f;
+        CHECK(UnstickCombatMute(visible, false, false) && ProFireBlocksSprint(true, visible, distance, holdRange, false, true));
+        CHECK(!ProFireBlocksSprint(true, visible, 41.0f, holdRange, false, true));   // beyond the hold range: sprint
+        CHECK(!ProFireBlocksSprint(false, visible, distance, holdRange, false, true));
+        CHECK(!ProFireBlocksSprint(true, visible, distance, holdRange, true, true));
+        CHECK(!ProFireBlocksSprint(true, visible, distance, holdRange, false, false));
+        CHECK(UnstickCombatMute(false, true, false) && UnstickCombatMute(false, false, true));
+    }
+
     if (failures) { std::printf("audit_fixes: %d FAILURES\n", failures); return 1; }
     std::printf("audit_fixes: all tests passed\n");
     return 0;
