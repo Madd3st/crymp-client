@@ -15,7 +15,7 @@ int main()
 		LadderBanDecision d = book.Fail(sub, 4, 16.05f);
 		assert(d.scope == LadderBanScope::Bot && d.fails == 1 && d.bots == 1);
 		assert(d.until == 16.05f + kLadderBotAvoidFor);
-		assert(!book.LevelBanned(sub) && book.TakeExpired(1000.f).empty());
+		assert(!book.LevelBanned(sub) && book.TakeExpired(16.05f).empty());   // a personal avoidance is never a level ban
 		// a failure on another ladder is counted apart
 		d = book.Fail(other, 5, 20.f);
 		assert(d.scope == LadderBanScope::Bot && d.fails == 1);
@@ -38,7 +38,7 @@ int main()
 			const LadderBanDecision d = book.Fail(1, 4, t);
 			assert(d.scope == LadderBanScope::Bot && d.bots == 1 && d.until == t + kLadderBotAvoidFor);
 		}
-		assert(!book.LevelBanned(1) && book.TakeExpired(1e6f).empty());
+		assert(!book.LevelBanned(1) && book.TakeExpired(50.f).empty());
 		// the second DISTINCT bot inside the window -> shared ban for 120 s
 		const LadderBanDecision d = book.Fail(1, 7, 60.f);
 		assert(d.scope == LadderBanScope::Level && d.bots == 2 && d.until == 60.f + kLadderLevelBanFor && book.LevelBanned(1));
@@ -79,6 +79,28 @@ int main()
 		assert(!book.LevelBanned(sub) && book.TakeExpired(1e6f).empty() && book.Fail(sub, 4, 302.f).fails == 1);
 	}
 	static_assert(kLadderBotAvoidFor < kLadderBanWindow, "personal avoidance ends inside the counting window");
+	{
+		// Codex 15.11 #52 re-review: a clock rollback (same-map reset) makes an active shared ban due at once
+		LadderBanBook book;
+		book.Fail(5, 1, 900.f); assert(book.Fail(5, 2, 901.f).scope == LadderBanScope::Level);   // until 1021
+		assert(book.TakeExpired(950.f).empty());
+		const auto lifted = book.TakeExpired(3.f);                                               // clock back to 3 s
+		assert(lifted.size() == 1 && lifted[0] == 5 && !book.LevelBanned(5));
+		assert(book.Fail(5, 1, 4.f).scope == LadderBanScope::Bot);                              // old failures forgotten
+		// rollback seen first by Fail: the old ban becomes due, the next TakeExpired lifts it
+		LadderBanBook b2;
+		b2.Fail(6, 1, 500.f); b2.Fail(6, 2, 501.f);
+		assert(b2.Fail(7, 3, 10.f).scope == LadderBanScope::Bot);
+		const auto l2 = b2.TakeExpired(10.f);
+		assert(l2.size() == 1 && l2[0] == 6);
+		// level end: TakeAll hands every shared ban to the caller and empties the book
+		LadderBanBook b3;
+		b3.Fail(8, 1, 1.f); b3.Fail(8, 2, 2.f); b3.Fail(9, 1, 3.f); b3.Fail(9, 3, 4.f);
+		const auto all = b3.TakeAll();
+		assert(all.size() == 2 && !b3.LevelBanned(8) && !b3.LevelBanned(9) && b3.TakeExpired(1e6f).empty());
+		// Revoke: a shared ban that was not applied is forgotten
+		LadderBanBook b4; b4.Fail(10, 1, 1.f); b4.Fail(10, 2, 2.f); b4.Revoke(10); assert(!b4.LevelBanned(10));
+	}
 	static_assert(kLadderAvoidCost > 1.f, "avoidance raises the cost");
 	static_assert(kLadderLevelBanFor == 120.f, "owner rule: shared ban lasts 120 s (ladder and jump)");
 	std::puts("BotLadderBanTests OK");

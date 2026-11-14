@@ -114,6 +114,11 @@ public:
 	void BanLink(unsigned long long ref);
 	// SPEC-009 (wb_bot_ladder_ban): lift a ban set by BanLink, restoring the link's original flags.
 	void UnbanLink(unsigned long long ref);
+	// Owner 15.11 #52: BanLink only if every start (xyz triples) that reaches at least one goal now still reaches one
+	// with the link banned. Otherwise (the only exit) the mesh and TopologyVersion stay as they were; returns false.
+	bool BanLinkKeepingExits(unsigned long long ref, const float* starts, int startCount, const float* goals, int goalCount,
+		int* stranded = nullptr);
+	bool LinkBanned(unsigned long long ref) const { return m_bannedFlags.count(ref) != 0; }
 	// Counts in-game failures of a link; true from the second failure on (then the caller bans it).
 	bool NoteLinkFailure(unsigned long long ref) { return ++m_linkFails[ref] >= 2; }
 	// FindPath + the links on the returned corners. `startBounds` is the optional water-aware start box; the core

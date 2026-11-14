@@ -66,7 +66,7 @@ jobs:
             & cl /nologo /std:c++17 /EHsc /I . /I Code $src @more /Fo:units/ "/Fe:units/$t.exe" *> "units/$t-compile.log"
             if ($LASTEXITCODE) { Get-Content "units/$t-compile.log" -Tail 40; $failed += "$t (compile)"; continue }
             if ($t -eq 'BotNavMeshCore') {
-              & "units/$t.exe" Tools/RecastBake/meshes/Steelmill.navmesh Tools/RecastBake/meshes/Steelmill.navmesh Tools/RecastBake/meshes/Steelmill.links.txt *> "units/$t-run.log"
+              & "units/$t.exe" Tools/RecastBake/meshes/Steelmill.navmesh Tools/RecastBake/meshes/Steelmill.navmesh Tools/RecastBake/meshes/Steelmill.links.txt Tools/RecastBake/meshes/Shore.navmesh Tools/RecastBake/meshes/Shore.links.txt *> "units/$t-run.log"
             } else { & "units/$t.exe" *> "units/$t-run.log" }
             if ($LASTEXITCODE) { Get-Content "units/$t-run.log" -Tail 40; $failed += "$t (run)"; continue }
             "UNIT PASS $t"

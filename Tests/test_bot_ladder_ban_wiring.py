@@ -37,11 +37,20 @@ def main():
     brain = code('Code/CryGame/Bots/BotBrain.cpp')
     cancel = body(brain, 'void BotBrain::CancelLadder(')
     check('if (BotConfig::Get().ladderBan!=1) mesh->BanLink(m_ladderNow.ref);' in cancel, 'flag OFF: ban on the first failure as before')
-    check('LadderBans().Fail(m_ladderNow.ref,m_number,gEnv->pTimer->GetCurrTime())' in cancel, 'flag ON: the shared book decides')
-    check('if (d.scope==LadderBanScope::Level) mesh->BanLink(m_ladderNow.ref);' in cancel
-          and 'm_ladderAvoidRef=m_ladderNow.ref; m_ladderAvoidUntil=d.until;' in cancel, 'level -> mesh ban, bot -> personal avoidance')
-    check('LADDER ban link=%llu scope=%s' in cancel, 'the ban is logged')
-    check(cancel.index('LadderBans().Fail(') < cancel.index('m_ladderNow=NavPathLink();'), 'the link is read before the ladder state resets')
+    check('SharedLinkFailure(*mesh,m_ladderNow.ref)' in cancel, 'flag ON: the shared book decides (only-exit check)')
+    check('if (d.scope!=LadderBanScope::Level) { m_ladderAvoidRef=m_ladderNow.ref; m_ladderAvoidUntil=d.until; }' in cancel
+          and cancel.count('mesh->BanLink(') == 1, 'level -> mesh ban inside ApplyLinkFailure, bot -> personal avoidance')
+    check('LADDER ban link=%llu scope=%s' in cancel and 'kept_exit=%d' in cancel, 'the ban is logged')
+    check(cancel.index('SharedLinkFailure(') < cancel.index('m_ladderNow=NavPathLink();'), 'the link is read before the ladder state resets')
+    shared = body(brain, 'LadderBanDecision BotBrain::SharedLinkFailure(')
+    check('ApplyLinkFailure(LadderBans(),mesh,ref,m_number,now,' in shared and 'LiveBots()' in shared
+          and 'PSCaptureSnapshot(points,*rules,nullptr);' in shared and 'p.hasDestination' in shared
+          and 'LadderBanMesh()=&mesh;' in shared, 'owner 15.11: live bots x capture points decide the only exit')
+    upd0 = brain[brain.index('ReleaseLadderBans();   '):]
+    check('NoteLiveBot(m_number,actor.GetHealth()>0,actor.GetEntity()->GetWorldPos(),' in upd0[:400], 'live bot positions every update')
+    clear = body(brain, 'void BotBrain::ClearLadderBans()')
+    check('LiftAllBans(LadderBans(), LadderBanMesh())' in clear and 'LadderBans().Clear()' not in clear,
+          'Codex 15.11: level end lifts every shared ban on the surviving mesh before the book is emptied')
     fail_site = brain[brain.index('if (o.phase==LadderPhase::Failed)'):]
     check('CancelLadder(actor,why[int(o.fail)],true);' in fail_site[:900], 'a ladder failure still cancels with ban=true')
 
@@ -55,16 +64,16 @@ def main():
     check('BotConfig::Get().ladderBan!=1) return false;' in active and 't<m_ladderAvoidUntil' in active and 't<m_jumpAvoidUntil' in active,
           'avoidance (ladder and jump) is flag-gated and times out')
     release = body(brain, 'void BotBrain::ReleaseLadderBans()')
-    check('BotConfig::Get().ladderBan!=1' in release and 'mesh->UnbanLink(ref);' in release and 'TakeExpired(' in release, 'expired level bans are lifted')
+    check('BotConfig::Get().ladderBan!=1' in release and 'LiftExpiredBans(LadderBans(),*mesh,' in release, 'expired level bans are lifted (and all after a clock rollback)')
     check('mesh->TopologyVersion()' in release and 'm_nextRepath=m_minRepath=0;' in release
           and '!m_link.Active() && !m_ladder.Active()' in release, 'a ban/unban makes every bot replan (not mid-link)')
     link = body(brain, 'void BotBrain::ApplyLinkExecutor(')
     fail = link[link.index('if (o.phase==LinkPhase::Failed)'):]
     check('if (BotConfig::Get().ladderBan!=1)' in fail and 'mesh->NoteLinkFailure(m_linkNow.ref)' in fail, 'jump: flag OFF keeps the old rule')
-    check('LadderBans().Fail(m_linkNow.ref,m_number,gEnv->pTimer->GetCurrTime())' in fail
-          and 'if (d.scope==LadderBanScope::Level) mesh->BanLink(m_linkNow.ref);' in fail
-          and 'm_jumpAvoidRef=m_linkNow.ref; m_jumpAvoidUntil=d.until;' in fail, 'jump: flag ON uses the shared book (120 s, distinct bots)')
-    check(fail.count('mesh->BanLink(') == 3, 'jump: no other ban path')
+    check('SharedLinkFailure(*mesh,m_linkNow.ref)' in fail
+          and 'if (d.scope!=LadderBanScope::Level) { m_jumpAvoidRef=m_linkNow.ref; m_jumpAvoidUntil=d.until; }' in fail,
+          'jump: flag ON uses the shared book (120 s, distinct bots, only-exit check)')
+    check(fail.count('mesh->BanLink(') == 2, 'jump: no other ban path')
     upd = brain[brain.index('if (m_ladderCancelPending) CancelLadder(actor,"reset",false);'):]
     check('ReleaseLadderBans();' in upd[:200], 'lifting runs every update')
 
@@ -81,6 +90,10 @@ def main():
     check('++m_topology;' in body(core, 'void NavMeshCore::BuildComponents()'), 'every connectivity rebuild bumps the topology version')
     ban_h = code('Code/CryGame/Bots/BotLadderBan.h')
     check('const bool level = d.bots >= 2;' in ban_h and 'kLadderBanLevelFails' not in ban_h, 'shared ban only after two distinct bots')
+    check('mesh.BanLinkKeepingExits(link, starts, startCount, goals, goalCount)' in ban_h and 'book.Revoke(link);' in ban_h,
+          'owner 15.11: no shared ban that strands a live bot')
+    keep = body(core, 'bool NavMeshCore::BanLinkKeepingExits(')
+    check('UnbanLink(ref);' in keep and 'm_topology = topology;' in keep, 'a refused ban leaves the mesh and topology as they were')
 
     cap = code('Code/CryGame/Bots/BotPSCapture.cpp')
     tick = body(cap, 'void Tick(Commander& c, CGameRules& rules, float now)')

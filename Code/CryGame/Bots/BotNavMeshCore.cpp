@@ -463,6 +463,31 @@ void NavMeshCore::UnbanLink(unsigned long long ref)
 	BuildComponents();
 }
 
+bool NavMeshCore::BanLinkKeepingExits(unsigned long long ref, const float* starts, int startCount, const float* goals,
+	int goalCount, int* stranded)
+{
+	if (!m_mesh || !ref) return false;
+	if (LinkBanned(ref)) return true;   // already banned: nothing to test, nothing to undo
+	auto reachesAny = [&](int i)
+	{
+		for (int g = 0; g < goalCount; ++g) if (Reachable(starts + 3 * i, goals + 3 * g)) return true;
+		return false;
+	};
+	std::vector<char> had(size_t(startCount > 0 ? startCount : 0), 0);
+	for (int i = 0; i < startCount; ++i) had[size_t(i)] = reachesAny(i) ? 1 : 0;
+	const unsigned topology = m_topology;
+	BanLink(ref);
+	for (int i = 0; i < startCount; ++i)
+		if (had[size_t(i)] && !reachesAny(i))
+		{
+			if (stranded) *stranded = i;
+			UnbanLink(ref);
+			m_topology = topology;   // the connectivity is exactly what it was: no cache needs a rebuild
+			return false;
+		}
+	return true;
+}
+
 bool NavMeshCore::FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,
 	const char** reason, const NavQueryBounds* startBounds) const
 {

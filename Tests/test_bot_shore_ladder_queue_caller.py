@@ -148,6 +148,9 @@ struct NavMeshCore {
     int bans = 0;
     unsigned long long lastBannedRef = 0;
     void BanLink(unsigned long long ref) { ++bans; lastBannedRef = ref; }
+    // owner 15.11 #52: the only-exit check is covered on the real Shore mesh (BotNavMeshCoreTests); here it bans
+    bool BanLinkKeepingExits(unsigned long long ref, const float*, int, const float*, int) { BanLink(ref); return true; }
+    void UnbanLink(unsigned long long) {}
     bool Project(const float* q, float* s, float = 0.2f, float = 0.6f, float = 0.6f) const {
         s[0] = q[0]; s[1] = q[1]; s[2] = q[2];
         return true;
@@ -248,6 +251,9 @@ struct BotBrain {
     BotLadder m_ladder;
     NavPathLink m_ladderNow;
     unsigned long long m_ladderAvoidRef = 0; float m_ladderAvoidUntil = 0.f;   // SPEC-009
+    // BotBrain::SharedLinkFailure without the engine: no live-bot/capture-point lists -> plain ApplyLinkFailure
+    template <class M> auto SharedLinkFailure(M& mesh, unsigned long long ref)
+    { return ApplyLinkFailure(LadderBans(), mesh, ref, m_number, gEnv->pTimer->GetCurrTime(), nullptr, 0, nullptr, 0); }
     bool m_ladderNativeLocked = false;
     bool m_ladderCancelPending = false;
     bool m_ladderWaiting = false;
@@ -523,7 +529,7 @@ def build_and_run(repo: Path, rev: str, expect: str, out: Path) -> int:
         should_yield = 'bool BotManager::ShouldYieldLadder(unsigned long long, const Vec3&, float, int) const { return false; }'
 
     cpp = CPP_TEMPLATE
-    cpp = cpp.replace('LADDER_BAN_SOURCE', '1' if 'LadderBans().Fail(' in cancel_ladder else '0')
+    cpp = cpp.replace('LADDER_BAN_SOURCE', '1' if ('LadderBans().Fail(' in cancel_ladder or 'SharedLinkFailure(' in cancel_ladder) else '0')
     cpp = cpp.replace('@YIELD_LADDER_TO@', yield_ladder)
     cpp = cpp.replace('@MANAGER_METHODS@', ai_enabled + '\n' + should_yield)
     cpp = cpp.replace('@APPLY_LADDER_EXECUTOR@', apply_ladder)

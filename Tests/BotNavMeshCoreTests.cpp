@@ -1,5 +1,6 @@
 // Offline test of the Detour runtime on a real baked mesh (Tools/RecastBake output, MSET v1).
-// Usage: BotNavMeshCoreTests <Steelmill.navmesh>   (skips with exit 0 when no file is given)
+// Usage: BotNavMeshCoreTests <Steelmill.navmesh> [<Steelmill.navmesh> <Steelmill.links.txt> [<Shore.navmesh> <Shore.links.txt>]]
+//        (skips with exit 0 when no file is given)
 #include <cstring>
 #include <algorithm>
 #include "CryGame/Bots/BotNavMeshCore.h"
@@ -230,6 +231,22 @@ int main(int argc, char** argv)
 			for (const NavPathLink& k : links) uses |= k.ref == cut;
 			assert(uses);                                                           // the restored link is used again
 			std::printf("commander cache reachable -> banned -> restored: PASS\n");
+			// Codex 15.11 #52 re-review repro: shared ban -> same-map reset (BotManager::EndLevel ->
+			// BotBrain::ClearLadderBans = LiftAllBans on the surviving mesh) -> the link is usable again.
+			assert(book.Fail(cut, 4, 200.f).scope == LadderBanScope::Bot);
+			const LadderBanDecision rd = ApplyLinkFailure(book, L, cut, 7, 201.f, nullptr, 0, nullptr, 0);
+			assert(rd.scope == LadderBanScope::Level && L.LinkBanned(cut) && !L.Reachable(from, to));
+			cmd.Tick(L, from, to); assert(!cmd.reach);
+			assert(LiftAllBans(book, &L) == 1 && !L.LinkBanned(cut) && L.Reachable(from, to));
+			assert(book.TakeExpired(1000.f).empty());                    // nothing left to expire, nothing lost
+			cmd.Tick(L, from, to); assert(cmd.reach);
+			uses = false; assert(L.FindPathLinks(from, to, p2, links, &why)); for (const NavPathLink& k : links) uses |= k.ref == cut; assert(uses);
+			// ... and a clock rollback with an active shared ban (timer reset): lifted at once, not at the old time
+			assert(book.Fail(cut, 4, 300.f).scope == LadderBanScope::Bot);
+			ApplyLinkFailure(book, L, cut, 7, 301.f, nullptr, 0, nullptr, 0);
+			assert(L.LinkBanned(cut) && !L.Reachable(from, to));
+			assert(LiftExpiredBans(book, L, 5.f) == 1 && !L.LinkBanned(cut) && L.Reachable(from, to));
+			cmd.Tick(L, from, to); assert(cmd.reach);
 		}
 		// banning a used link removes it from later paths
 		if (L.FindPathLinks(spawns[4], spawns[3], p2, links, &why) && !links.empty())
@@ -313,6 +330,55 @@ int main(int argc, char** argv)
 		m.SetCostContext(nullptr);
 		std::printf("cost layer: plain %.3f ms, layered %.3f ms per FindPathLinks\n",
 			std::chrono::duration<double, std::milli>(t1 - t0).count() / 100, std::chrono::duration<double, std::milli>(t2 - t1).count() / 100);
+	}
+	// Owner 15.11 #52: no shared ban on the only exit. Real Shore mesh + links: the submarine ladder
+	// (2116.1, 1880.6, 90.25) -> deck is the only way out of the lower bay; banning it would leave a bot there with no
+	// capture point, so the two-bot failure stays a cost for the failing bot. A link with another way round is banned.
+	if (argc >= 6)
+	{
+		NavMeshCore S; assert(S.LoadFile(argv[4], &err));
+		std::vector<char> txt; if (FILE* f = std::fopen(argv[5], "rb")) { int c; while ((c = std::fgetc(f)) != EOF) txt.push_back(char(c)); std::fclose(f); }
+		txt.push_back(0);
+		assert(S.LoadLinkKinds(txt.data()) > 0);
+		unsigned short all = 0; for (int k = 0; k < NavLinkKinds; ++k) if (k != NavLinkLift) all |= NavLinkFlag(k);
+		S.SetLinkMask(all);
+		// PS CAPTURE dest of Shore (playtest log, wb_bot_ps_reach_dest): 64, 316, 344 prototype, 579, 654
+		const float points[] = {1960.98f, 1387.64f, 110.31f, 2082.12f, 1284.04f, 124.56f, 2133.21f, 1482.51f, 111.11f,
+			2216.32f, 1334.99f, 124.51f, 1794.54f, 1690.64f, 101.53f};
+		const int pointCount = 5;
+		const float bay[3] = {2116.1f, 1880.6f, 90.25f}, top[3] = {2117.50f, 1880.60f, 99.77f};
+		std::vector<float> p; std::vector<NavPathLink> links; const char* why = nullptr;
+		assert(S.FindPathLinks(bay, top, p, links, &why));
+		unsigned long long ladder = 0;
+		for (const NavPathLink& l : links) if (l.kind == NavLinkLadder) ladder = l.ref;
+		assert(ladder);
+		int reached = 0; for (int i = 0; i < pointCount; ++i) reached += S.Reachable(bay, points + 3 * i) ? 1 : 0;
+		assert(reached > 0);
+		// a second live bot on the deck: it reaches the points either way
+		float deck[3] = {0, 0, 0}; { assert(p.size() >= 3); deck[0] = p[p.size() - 3]; deck[1] = p[p.size() - 2]; deck[2] = p[p.size() - 1]; }
+		const float starts[6] = {bay[0], bay[1], bay[2], deck[0], deck[1], deck[2]};
+		const unsigned v0 = S.TopologyVersion();
+		LadderBanBook book;
+		assert(ApplyLinkFailure(book, S, ladder, 2, 10.f, starts, 2, points, pointCount).scope == LadderBanScope::Bot);
+		const LadderBanDecision d = ApplyLinkFailure(book, S, ladder, 6, 12.f, starts, 2, points, pointCount);
+		assert(d.scope == LadderBanScope::Bot && d.keptExit && d.bots == 2 && d.until == 12.f + kLadderBotAvoidFor);
+		assert(!S.LinkBanned(ladder) && !book.LevelBanned(ladder) && S.TopologyVersion() == v0);
+		int still = 0; for (int i = 0; i < pointCount; ++i) still += S.Reachable(bay, points + 3 * i) ? 1 : 0;
+		assert(still == reached && S.FindPathLinks(bay, top, p, links, &why));   // the ladder is still on the path
+		// the old rule would have stranded the bay: banning it by hand leaves no capture point from there
+		{
+			NavMeshCore T; assert(T.LoadFile(argv[4], &err)); T.LoadLinkKinds(txt.data()); T.SetLinkMask(all);
+			T.BanLink(ladder);
+			int left = 0; for (int i = 0; i < pointCount; ++i) left += T.Reachable(bay, points + 3 * i) ? 1 : 0;
+			assert(left == 0);
+		}
+		// nobody in the bay (only the deck bot is live): the ban strands nobody -> shared ban as usual, lifted at expiry
+		LadderBanBook b2;
+		ApplyLinkFailure(b2, S, ladder, 2, 20.f, deck, 1, points, pointCount);
+		const LadderBanDecision d2 = ApplyLinkFailure(b2, S, ladder, 6, 21.f, deck, 1, points, pointCount);
+		assert(d2.scope == LadderBanScope::Level && !d2.keptExit && S.LinkBanned(ladder) && S.TopologyVersion() != v0);
+		assert(LiftExpiredBans(b2, S, 21.f + kLadderLevelBanFor) == 1 && !S.LinkBanned(ladder));
+		std::printf("Shore only-exit: ladder=%llu points from bay=%d kept\n", ladder, reached);
 	}
 	std::printf("BotNavMeshCoreTests OK polys=%d parts=%d corners=%zu length=%.1f m\n", m.Polys(), m.Components(), n, len);
 	return 0;
