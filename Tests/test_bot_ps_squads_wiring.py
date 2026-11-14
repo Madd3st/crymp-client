@@ -64,6 +64,12 @@ check('TAC: native TACGun of a living member, sticky, logged', 'inv->GetCountOfC
       and 'PS ORDER tac team=%d' in cap and 'a->GetHealth() <= 0' in cap)
 check('the scan runs only with wb_bot_ps_hold 1', 'if (psHold) D059Scan(c, rules, points, now);' in cap
       and "const int psHold = BotConfig::Get().psHold == 1 ? 1 : 0;" in cap)
+# audit 14.11 p. 2: a death is not a roster change, the dead bot stays in the plan
+bots_blk = cap[cap.index('std::vector<TeamBot> bots; std::set<unsigned> roster;'):cap.index('tr.roster = roster;')]
+check('audit p.2: dead bots stay in the roster and in the plan', 'if (!isAlive) return;' not in bots_blk and 'b.alive = isAlive;' in bots_blk
+      and bots_blk.index('roster.insert(id);') < bots_blk.index('bots.push_back(b);'))
+check('audit p.2: planner freezes the dead bot, respawn gives a new order', 'if (p && !alive) { out.push_back(*p); continue; }' in orders
+      and 'if (!respawned && p && p->target == o.target' in orders)
 check('the plan gets the real config (flag + TAC)', 'PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders, PlanConfig(tr, psHold));' in cap
       and 'cfg.teamHasTac = cfg.d059 && tr.tac;' in cap)
 check('D-059: a quiet defender leaves at once with reason=quiet', 'o.reason = "quiet";' in orders and '!freed &&' in orders)
