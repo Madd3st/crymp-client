@@ -26,6 +26,8 @@ struct BotIntent
 	bool unstickStrength = false; // SPEC-004 Strength exit step: keep the Strength suit (no policy override); JumpSpace still checked
 	bool unstickClimb = false;    // SPEC-004 Jump/Strength exit steps: JumpSpace accepts an uphill landing on a slope
 	bool meshPath = false;
+	bool swimDown = false;        // SPEC-006a p. 4: native swim descent (ACTION_CROUCH) while swimming out under a hull
+	bool swimUp = false;          // SPEC-006a p. 4 (Codex #41): native controlled ascent (ACTION_JUMP) once the sky is open
 	float arrive = 0.8f; // BotMovement stops this close to destination; corner following (wb_bot_corners) owns arrival
 	// T-1: source line (BotBrain.cpp) of the last write per channel this tick; 0 = default
 	struct Why { short suitMode = 0, jump = 0, gait = 0, aim = 0, move = 0; } why; // destination is a Detour corner (wb_bot_navmesh): stairs are walkable, skip the knee ray

@@ -632,6 +632,10 @@ public:
 	bool IsWarsBotActor() const { return m_warsBotActor && GetChannelId()==0; }
 	void EnsureWarsBotSuit();
 	void SetWarsBotActions(bool sprint, bool moving, EStance stance);
+	void SetWarsBotSwimDown(bool down);   // SPEC-006a p. 4
+	void SetWarsBotSwimVertical(int vertical);   // SPEC-006a p. 4: -1 descend, +1 ascend (ACTION_JUMP), 0 none
+	bool WarsBotSwimDown() const { return (m_warsBotSwimBits & ACTION_CROUCH) != 0; }
+	int m_warsBotSwimBits = 0;            // SPEC-006a p. 4: ACTION_CROUCH/ACTION_JUMP set by SetWarsBotSwimVertical
 	void PublishWarsBotJump(bool strength);
 	bool PrepareWarsBotLadderGraph();
 	void RestoreWarsBotLadderGraph();

@@ -7,6 +7,8 @@
 #include "DetourAlloc.h"
 #include <cstdio>
 #include <cstring>
+#include <algorithm>
+#include <vector>
 #include <cmath>
 #include <cstdlib>
 #include <sstream>
@@ -426,6 +428,59 @@ int NavMeshCore::LoadLinkKinds(const char* text)
 	}
 	SetLinkMask(m_linkMask);
 	return set;
+}
+
+namespace {
+// Ground polygons whose bounds touch the box (Crysis frame) - every flag, because a deck can be a banned/unknown link area.
+int QueryBox(const dtNavMeshQuery* q, const float* centreCrysis, float side, float halfUp, dtPolyRef* out, int max)
+{
+	float c[3]; ToRecast(centreCrysis, c);
+	const float ext[3] = {side, halfUp, side};
+	dtQueryFilter all; all.setIncludeFlags(0xffff); all.setExcludeFlags(0);
+	int n = 0;
+	if (dtStatusFailed(q->queryPolygons(c, ext, &all, out, &n, max))) return 0;
+	return n;
+}
+}
+
+bool NavMeshCore::SolidAbove(const float* p, float side, float up) const
+{
+	if (!m_query || !m_mesh) return false;
+	const float mid[3] = {p[0], p[1], p[2] + up * 0.5f};
+	dtPolyRef polys[128];
+	const int n = QueryBox(m_query, mid, side, up * 0.5f, polys, 128);
+	for (int i = 0; i < n; ++i)
+	{
+		const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
+		if (dtStatusFailed(m_mesh->getTileAndPolyByRef(polys[i], &tile, &poly)) || !poly) continue;
+		if (poly->getType() != DT_POLYTYPE_GROUND || poly->getArea() == kWaterArea) continue;
+		float top = -1e9f;
+		for (int k = 0; k < poly->vertCount; ++k) top = std::max(top, tile->verts[poly->verts[k] * 3 + 1]);   // Recast y = Crysis z
+		if (top > p[2] + 0.5f) return true;
+	}
+	return false;
+}
+
+bool NavMeshCore::NearestOpenWater(const float* p, float radius, float* out) const
+{
+	if (!m_query || !m_mesh) return false;
+	std::vector<dtPolyRef> polys(4096);
+	const int n = QueryBox(m_query, p, radius, 20.f, polys.data(), int(polys.size()));
+	float best = radius * radius + 1.f; bool found = false;
+	for (int i = 0; i < n; ++i)
+	{
+		const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
+		if (dtStatusFailed(m_mesh->getTileAndPolyByRef(polys[i], &tile, &poly)) || !poly) continue;
+		if (poly->getType() != DT_POLYTYPE_GROUND || poly->getArea() != kWaterArea || !poly->vertCount) continue;
+		float r[3] = {0, 0, 0};
+		for (int k = 0; k < poly->vertCount; ++k) for (int a = 0; a < 3; ++a) r[a] += tile->verts[poly->verts[k] * 3 + a];
+		for (int a = 0; a < 3; ++a) r[a] /= float(poly->vertCount);
+		float c[3]; ToCrysis(r, c);
+		const float d2 = (c[0] - p[0]) * (c[0] - p[0]) + (c[1] - p[1]) * (c[1] - p[1]);
+		if (d2 >= best || SolidAbove(c, 0.6f, 15.f)) continue;
+		best = d2; out[0] = c[0]; out[1] = c[1]; out[2] = c[2]; found = true;
+	}
+	return found;
 }
 
 bool NavMeshCore::NearSlowLadderStart(const float* p, float r) const
