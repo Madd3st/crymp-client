@@ -1,5 +1,6 @@
 // SPEC-005 stage 1: team commander tests (engine-free). Unit cases plus the property test N = 3..16.
-// Cases 1-11 are stage 1 unchanged (wb_bot_ps_hold 0 must plan exactly as before); 12-13 are D-059 (wb_bot_ps_hold 1).
+// Cases 1-11 are stage 1 unchanged (wb_bot_ps_hold 0 must plan exactly as before); 12-13 are D-059 (wb_bot_ps_hold 1);
+// 14-15 are the audit 14.11 p. 2 fix: a death or a respawn replans that bot only.
 #include "CryGame/Bots/BotTeamOrders.h"
 #include <cstdio>
 #include <cstring>
@@ -373,6 +374,85 @@ int main()
 			std::vector<TeamBot> rev(bots.rbegin(), bots.rend());
 			const auto o2 = PlanTeamOrders(t, rev, 1, 0.f, TeamEvent::None, none, cfg);
 			for (const TeamOrder& x : o) { const TeamOrder* y = Of(o2, x.bot); CHECK(y && y->target == x.target && y->hold == x.hold); }
+		}
+	// 14. Audit 14.11 p. 2 (order leapfrog): one of 8 dies -> the 7 others keep target/kind/since, inside and past the
+	//     20 s rule; the dead bot keeps its slot and gets a new order on its respawn. Both planners (D-054 and D-059).
+	{
+		auto same = [](const TeamOrder& a, const TeamOrder* b)
+		{ return b && a.target == b->target && a.kind == b->kind && a.hold == b->hold && a.pair == b->pair && a.since == b->since; };
+		for (int mode = 0; mode < 2; ++mode)
+		{
+			const TeamPlanConfig cfg = mode ? D59 : TeamPlanConfig();
+			const std::vector<TeamTarget> t = Shore(1, 96);
+			const auto prev = PlanTeamOrders(t, Bots(8), 1, 0.f, TeamEvent::Captured, none, cfg);
+			CHECK(prev.size() == 8);
+			int oldChurn = 0;
+			for (unsigned victim = 100u; victim < 108u; ++victim)
+			{
+				// the bug as it was: the dead bot leaves the list and the caller raises Roster - other bots are re-paired
+				std::vector<TeamBot> gone;
+				for (const TeamBot& b : Bots(8)) if (b.id != victim) gone.push_back(b);
+				const auto old = PlanTeamOrders(t, gone, 1, 12.f, TeamEvent::Roster, prev, cfg);
+				for (const TeamOrder& x : old) if (!same(x, Of(prev, x.bot))) ++oldChurn;
+				// the fix: the dead bot stays in the plan with alive = false, no event
+				std::vector<TeamBot> dead = Bots(8);
+				for (TeamBot& b : dead) if (b.id == victim) b.alive = false;
+				const float times[2] = {12.f, 40.f};
+				for (float now : times)
+				{
+					const auto o = PlanTeamOrders(t, dead, 1, now, TeamEvent::None, prev, cfg);
+					CHECK(o.size() == 8);
+					for (const TeamOrder& x : prev) CHECK(same(x, Of(o, x.bot)));           // nobody replanned, the dead one frozen
+					std::vector<TeamBot> back = Bots(8);
+					for (TeamBot& b : back) if (b.id == victim) b.respawned = true;
+					const auto r = PlanTeamOrders(t, back, 1, now + 8.f, TeamEvent::None, o, cfg);
+					CHECK(r.size() == 8);
+					for (const TeamOrder& x : prev)
+					{
+						const TeamOrder* y = Of(r, x.bot);
+						if (x.bot != victim) { CHECK(same(x, y)); continue; }
+						CHECK(y && y->since == now + 8.f && std::strcmp(y->reason, "respawn") == 0);   // a new order for it only
+					}
+				}
+			}
+			CHECK(oldChurn > 0);
+		}
+	}
+	// 15. Property test for the same rule: N = 3..16, 300 random sets per N (skills, ownership, reachability, contact,
+	//     TAC, planner, victim). A death and a respawn never change the task of another bot; the respawned bot gets one.
+	for (int n = 3; n <= 16; ++n)
+		for (int rep = 0; rep < 300; ++rep)
+		{
+			std::vector<TeamBot> bots;
+			for (int i = 0; i < n; ++i) bots.push_back(B(1000u + unsigned(i), int(Rnd() % 4)));
+			std::vector<TeamTarget> t = Shore(1);
+			for (TeamTarget& x : t) { const unsigned r = Rnd() % 10; x.owner = r < 3 ? 1 : r < 5 ? 2 : 0; x.reachable = Rnd() % 8 != 0; x.quiet = Rnd() % 2 ? 10.f : 60.f; }
+			TeamPlanConfig cfg; cfg.d059 = Rnd() % 2 == 0; cfg.teamHasTac = Rnd() % 4 == 0;
+			const unsigned victim = 1000u + unsigned(Rnd() % unsigned(n));
+			const auto prev = PlanTeamOrders(t, bots, 1, 0.f, TeamEvent::None, none, cfg);
+			auto same = [](const TeamOrder& a, const TeamOrder* b)
+			{ return b && a.target == b->target && a.kind == b->kind && a.hold == b->hold && a.since == b->since; };
+			std::vector<TeamBot> dead = bots;
+			for (TeamBot& b : dead) if (b.id == victim) b.alive = false;
+			const float now = Rnd() % 2 ? 5.f : 40.f;                                    // inside and past the 20 s rule
+			// control: the same plan with nobody dead. The death must change nothing for the other bots.
+			const auto calm = PlanTeamOrders(t, bots, 1, now, TeamEvent::None, prev, cfg);
+			const auto o = PlanTeamOrders(t, dead, 1, now, TeamEvent::None, prev, cfg);
+			CHECK(int(o.size()) == n);
+			for (const TeamOrder& x : calm) if (x.bot != victim) CHECK(same(x, Of(o, x.bot)));
+			{ const TeamOrder* was = Of(prev, victim); const TeamOrder* is = Of(o, victim); CHECK(was && same(*was, is)); }   // frozen
+			std::vector<TeamBot> back = bots;
+			for (TeamBot& b : back) if (b.id == victim) b.respawned = true;
+			const auto calm2 = PlanTeamOrders(t, bots, 1, now + 8.f, TeamEvent::None, o, cfg);   // control: no respawn
+			const auto r = PlanTeamOrders(t, back, 1, now + 8.f, TeamEvent::None, o, cfg);
+			CHECK(int(r.size()) == n);
+			for (const TeamOrder& x : calm2)
+			{
+				const TeamOrder* y = Of(r, x.bot);
+				if (x.bot != victim) { CHECK(same(x, y)); continue; }
+				CHECK(y && y->since == now + 8.f);
+				if (y && y->kind != PsKind::Spawn) CHECK(std::strcmp(y->reason, "respawn") == 0);
+			}
 		}
 	std::printf(failures ? "BotTeamOrdersTests FAIL %d\n" : "BotTeamOrdersTests PASS\n", failures);
 	return failures ? 1 : 0;

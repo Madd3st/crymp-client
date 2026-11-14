@@ -488,7 +488,7 @@ void Tick(Commander& c, CGameRules& rules, float now)
 			}
 			targets.push_back(t);
 		}
-		// the team's bots: alive, AI running; respawn and roster events
+		// the team's bots: AI running, alive or waiting for the respawn; respawn and roster events
 		std::vector<TeamBot> bots; std::set<unsigned> roster;
 		g_pGame->GetBotManager().ForEachBot([&](const BotInstance& inst)
 		{
@@ -499,9 +499,10 @@ void Tick(Commander& c, CGameRules& rules, float now)
 			const auto was = tr.alive.find(id);
 			const bool respawned = isAlive && was != tr.alive.end() && !was->second;
 			tr.alive[id] = isAlive;
-			if (!isAlive) return;
+			// audit 14.11 p. 2: the roster is the team's members, alive or dead. A death is no Roster event and the dead
+			// bot keeps its slot in the plan, so only that bot is replanned (on its respawn)
 			roster.insert(id);
-			TeamBot b; b.id = id; b.skill = int(inst.Profile().skill); b.respawned = respawned; bots.push_back(b);
+			TeamBot b; b.id = id; b.skill = int(inst.Profile().skill); b.respawned = respawned; b.alive = isAlive; bots.push_back(b);
 		});
 		bool anyRespawn = false; for (const TeamBot& b : bots) anyRespawn |= b.respawned;
 		if (roster != tr.roster && !tr.roster.empty()) tr.pending = StrongerEvent(tr.pending, TeamEvent::Roster);

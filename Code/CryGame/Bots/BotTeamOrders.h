@@ -38,6 +38,7 @@ struct TeamBot
 	unsigned id = 0;          // actor entity id
 	int skill = 1;            // BotSkill: 0 beginner .. 3 elite
 	bool respawned = false;   // event: came back to life since the last plan
+	bool alive = true;        // false: dead, waiting for the respawn. It stays a member of the plan (audit 14.11 p. 2)
 };
 
 struct TeamOrder
@@ -52,7 +53,8 @@ struct TeamOrder
 };
 
 // Events of one plan, highest priority first (SPEC-005 p. 5). The caller passes the strongest one seen since the
-// last plan; respawn is per bot (TeamBot::respawned).
+// last plan; respawn is per bot (TeamBot::respawned). Roster = a bot joined or left the team; a death is not a roster
+// change (audit 14.11 p. 2): the dead bot stays in `bots` with alive = false and keeps its slot until it respawns.
 enum class TeamEvent { None = 0, Lost = 1, Captured = 2, Unreachable = 3, Roster = 5 };
 
 inline const char* TeamEventName(TeamEvent e)
@@ -318,9 +320,12 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 		// D-059: a defender whose point lost its defender slot (quiet 45 s, a neutral point again, over the limit)
 		// leaves at once, not after the 20 s quiet-change rule
 		const bool freed = cfg.d059 && p && p->hold && p->kind != PsKind::Spawn && !(o.hold && o.target == p->target) && released(p->target);
-		bool respawned = false;
-		for (const TeamBot& b : bots) if (b.id == o.bot) respawned = b.respawned;
-		if (p && p->target == o.target && p->hold == o.hold && p->kind == o.kind)
+		bool respawned = false, alive = true;
+		for (const TeamBot& b : bots) if (b.id == o.bot) { respawned = b.respawned; alive = b.alive; }
+		// Audit 14.11 p. 2 (order leapfrog): a death or a respawn replans that bot only. The dead bot keeps its slot, so
+		// the pairs of the others are not rebuilt; its own task is frozen while it is dead and given anew on the respawn.
+		if (p && !alive) { out.push_back(*p); continue; }
+		if (!respawned && p && p->target == o.target && p->hold == o.hold && p->kind == o.kind)
 		{
 			TeamOrder keep = o; keep.since = p->since; keep.reason = p->reason; out.push_back(keep); continue;
 		}
