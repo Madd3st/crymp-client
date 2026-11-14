@@ -128,7 +128,8 @@ struct CPlayer : CActor {
 struct NavPathLink { int corner=0, kind=0; float a[3]={},b[3]={}; unsigned long long ref=0; };
 enum NavLinkKind { NavLinkDrop=0, NavLinkJump, NavLinkStrength, NavLinkLift, NavLinkLadder };
 inline const char* NavLinkName(int k){static const char* n[]={"drop","jump","strength","lift","ladder"};return n[k];}
-struct NavMeshCore { int bans=0, notes=0; bool BanLink(unsigned long long){++bans;return true;} bool NoteLinkFailure(unsigned long long){++notes;return true;} };
+struct NavMeshCore { int bans=0, notes=0; bool BanLink(unsigned long long){++bans;return true;} bool NoteLinkFailure(unsigned long long){++notes;return true;}
+    bool BanLinkKeepingExits(unsigned long long r,const float*,int,const float*,int){BanLink(r);return true;} void UnbanLink(unsigned long long){} };   // owner 15.11 #52
 namespace WarsBots { struct BotConfig { int ladder=1, jumpLinks=1, navKneeFix=0, ladderBan=0; static BotConfig& Get(){static BotConfig c;return c;} }; }
 using WarsBots::BotConfig;
 struct CGameRules { using TPlayers=std::vector<int>; };
@@ -192,6 +193,8 @@ struct MockLink { bool active=false; int starts=0; LinkMove move=LinkMove::Drop;
 struct MockBrain {
  BotLadder m_ladder; NavPathLink m_ladderNow, m_linkNow; bool m_ladderNativeLocked=false, m_ladderCancelPending=false;
  unsigned long long m_ladderAvoidRef=0; float m_ladderAvoidUntil=0.f;   // SPEC-009
+ template <class M> auto SharedLinkFailure(M& mesh, unsigned long long ref)   // BotBrain::SharedLinkFailure, no engine lists
+ { return WarsBots::ApplyLinkFailure(LadderBans(), mesh, ref, m_number, gEnv->pTimer->GetCurrTime(), nullptr, 0, nullptr, 0); }
  std::vector<Vec3> m_path; std::vector<NavPathLink> m_pathLinks; size_t m_pathIndex=0, m_cornerFor=size_t(-1);
  float m_nextRepath=0,m_minRepath=0,m_now=0,m_number=1; bool m_meshPathActive=true,m_verbose=false,m_running=true;
  BotIntent m_intent; BotBlackboard m_blackboard; MockLoco m_locomotion; BotCombat m_combat; MockLink m_link;
