@@ -49,14 +49,23 @@ def main():
 
     mgr = code('Code/CryGame/Bots/BotManager.cpp')
     restore = body(mgr, 'void BotManager::RestoreRoster()')
-    check('KeepRosterForRetry(entry.firstFail, now, kRestoreRetryWindow)' in restore, 'failed restore is kept for retry')
-    check('m_roster.swap(retry);' in restore and 'm_restorePending = !m_roster.empty();' in restore
-          and 'm_roster.clear();' not in restore, 'roster keeps only the retries, restore stays pending')
-    check('gEnv->pTimer->GetCurrTime() >= m_nextRestoreAt' in mgr and 'm_nextRestoreAt = now + kRestoreRetryStep;' in restore,
-          'retries are paced')
+    check('RunRestorePass(m_roster, m_restoreSchedule, now,' in restore and 'AddWith(nullptr, entry.profile, entry.number, entry.ai)' in restore,
+          'RestoreRoster runs the tested pass (BotRemovalPolicyTests FakeManager) with the real AddWith')
+    check('m_restorePending = !m_roster.empty();' in restore and 'm_roster.clear();' not in restore,
+          'roster keeps only the retries, restore stays pending')
+    post = body(mgr, 'void BotManager::OnPostUpdate(')
+    check('RestoreDue(m_restoreSchedule, gEnv->pTimer->GetCurrTime())' in post and 'm_nextRestoreAt' not in mgr,
+          'OnPostUpdate gate is the tested RestoreDue (rebases on clock rollback)')
     check('restore gave up after' in restore, 'giving up is logged')
+    for head in ('void BotManager::OnLevelNotFound(', 'void BotManager::OnLoadingStart('):
+        check('ResetRestoreSchedule(m_restoreSchedule);' in body(mgr, head), head + ' resets the schedule')
+    act = body(mgr, 'void BotManager::OnActionEvent(')
+    check(act.count('ResetRestoreSchedule(m_restoreSchedule);') == 2, 'resetBegin and disconnect reset the schedule')
+    reset = act[act.index('eAE_resetBegin'):act.index('eAE_disconnected')]
+    check('m_roster.clear()' not in reset, 'resetBegin keeps queued bots')
     hdr = code('Code/CryGame/Bots/BotManager.h')
     check('struct RosterEntry { int number; BotProfile profile; bool ai; float firstFail = -1.f; };' in hdr, 'roster entry remembers the first failure')
+    check('RestoreSchedule m_restoreSchedule;' in hdr, 'manager owns a RestoreSchedule')
     return 1 if fails else 0
 
 

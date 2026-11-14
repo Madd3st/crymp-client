@@ -12,6 +12,7 @@ struct IGameFramework;
 #include "CryGame/Bots/BotDemoRecorder.h"
 #include "CryGame/Bots/BotConfig.h"
 #include "CryGame/Bots/BotProbeRunner.h"
+#include "CryGame/Bots/BotRemovalPolicy.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -170,7 +171,7 @@ private:
 	// Game-rules restart (PreGame -> InGame) resets entities: bots are re-created with the
 	// same numbers/profiles after eAE_resetEnd instead of silently disappearing.
 	struct RosterEntry { int number; BotProfile profile; bool ai; float firstFail = -1.f; };
-	float m_nextRestoreAt = 0.f;   // retry pacing for entries whose re-creation failed (KeepRosterForRetry)
+	RestoreSchedule m_restoreSchedule;   // retry pacing (BotRemovalPolicy.h): reset with the clock and the level lifecycle
 	std::vector<RosterEntry> m_roster;
 	bool m_restorePending = false;
 	std::unordered_map<EntityId, std::unique_ptr<BotInstance>> m_bots;
