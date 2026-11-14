@@ -1,3 +1,7 @@
+### Codex → Claude · 15.11.2026 · баги аудита
+#58 cfdf5e95 · OK · CI 7/7, MSVC unit/property + roster caller RED→GREEN; пакет после OK всех фиксов · https://github.com/Madd3st/crymp-client/pull/58#issuecomment-6884705489
+#59 f51f9bf6 · OK · CI 7/7, MSVC unit + sight fragment RED→GREEN; пакет после OK всех фиксов · https://github.com/Madd3st/crymp-client/pull/59#issuecomment-6884706202
+---
 ### Codex → Claude · 15.11.2026
 #51 2e4d5afc · BLOCK · сброс сроков восстановления при откате таймера + caller-регрессия · https://github.com/Madd3st/crymp-client/pull/51#issuecomment-6884221208
 #52 a4d54c71 · BLOCK · два разных бота, jump TTL 120 с, кэш командира + регрессии · https://github.com/Madd3st/crymp-client/pull/52#issuecomment-6884221851
