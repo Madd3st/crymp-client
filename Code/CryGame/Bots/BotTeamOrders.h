@@ -314,6 +314,7 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 		return false;
 	};
 	std::vector<TeamOrder> out;
+	std::vector<int> freshPairs;   // attacking pairs given a new task by a captured/lost event (retargeted below)
 	for (TeamOrder o : desired)
 	{
 		const TeamOrder* p = FindPrev(prev, o.bot);
@@ -330,7 +331,12 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 			TeamOrder keep = o; keep.since = p->since; keep.reason = p->reason; out.push_back(keep); continue;
 		}
 		const bool valid = p && stillValid(*p);
-		if (p && valid && !freed && !respawned && event == TeamEvent::None && now - p->since < cfg.quietChange)
+		// Codex 15.11 (package adb16bb8, NK 364 / US 288 event replans): a point captured/lost replans at once only the
+		// bots whose own task it ended (capture of a now own point, hold of a now lost one = invalid). A bot whose task
+		// is still valid waits for the 20 s rule, as with no event. Unreachable and Roster still replan everybody.
+		const bool pointEvent = event == TeamEvent::Captured || event == TeamEvent::Lost;
+		const bool eventNow = event != TeamEvent::None && !(pointEvent && valid);
+		if (p && valid && !freed && !respawned && !eventNow && now - p->since < cfg.quietChange)
 		{
 			out.push_back(*p); continue;   // a quiet change waits for the 20 s rule
 		}
@@ -342,9 +348,36 @@ inline std::vector<TeamOrder> PlanTeamOrders(const std::vector<TeamTarget>& targ
 		else if (respawned) o.reason = "respawn";
 		else if (freed) o.reason = "quiet";
 		else if (!valid) o.reason = event != TeamEvent::None ? TeamEventName(event) : "invalid";
-		else if (event != TeamEvent::None) o.reason = TeamEventName(event);
+		else if (eventNow) o.reason = TeamEventName(event);
 		else o.reason = "rebalance";
 		out.push_back(o);
+		if (pointEvent && p && !valid && !o.hold && o.kind != PsKind::Spawn && o.pair > 0) freshPairs.push_back(o.pair);
+	}
+	// The bots that kept their task under the 20 s rule still hold their old targets, while the desired plan shifted the
+	// pairs along the free targets. A pair freed by the event therefore takes the first free target nobody else attacks
+	// (so it does not double a kept pair while another target stays empty); with none left it keeps the desired one.
+	for (size_t f = 0; f < freshPairs.size(); ++f)
+	{
+		const int pair = freshPairs[f];
+		bool seenBefore = false;
+		for (size_t g = 0; g < f; ++g) seenBefore |= freshPairs[g] == pair;
+		if (seenBefore) continue;
+		// members: the bots of this pair given their task by this plan (a kept bot may carry an old, equal pair number)
+		auto member = [&](const TeamOrder& x) { return x.pair == pair && x.since == now && !x.hold && x.kind != PsKind::Spawn; };
+		auto taken = [&](int id)
+		{
+			for (const TeamOrder& x : out) if (!member(x) && !x.hold && x.kind != PsKind::Spawn && x.target == id) return true;
+			return false;
+		};
+		int cur = 0;
+		for (const TeamOrder& x : out) if (member(x)) cur = x.target;
+		if (!cur || !taken(cur)) continue;
+		for (const TeamTarget& t : freeT)
+		{
+			if (taken(t.id)) continue;
+			for (TeamOrder& x : out) if (member(x)) { x.target = t.id; x.kind = t.kind; }
+			break;
+		}
 	}
 	return out;
 }

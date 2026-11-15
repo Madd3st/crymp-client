@@ -116,9 +116,15 @@ int main()
 		o = PlanTeamOrders(t, Bots(4), 2, 21.f, TeamEvent::None, prev);
 		bool changed = false; for (const TeamOrder& x : o) if (x.since == 21.f) { changed = true; CHECK(std::strcmp(x.reason, "rebalance") == 0); }
 		CHECK(changed);
+		// Codex 15.11: a captured event that ends nobody's task changes nothing inside the 20 s rule
+		o = PlanTeamOrders(t, Bots(4), 2, 10.f, TeamEvent::Captured, prev);
+		for (const TeamOrder& x : o) CHECK(x.since == 0.f);
+		// the team took `was`: the bots that attacked it get a new task at once, reason=captured
+		for (TeamTarget& x : t) if (x.id == was) x.owner = 2;
 		o = PlanTeamOrders(t, Bots(4), 2, 10.f, TeamEvent::Captured, prev);
 		changed = false; for (const TeamOrder& x : o) if (x.since == 10.f) { changed = true; CHECK(std::strcmp(x.reason, "captured") == 0); }
-		CHECK(changed);
+		CHECK(changed && Of(o, bot)->since == 10.f);
+		for (TeamTarget& x : t) if (x.id == was) x.owner = 0;
 		std::vector<TeamBot> rb = Bots(4); for (TeamBot& b : rb) b.respawned = true;
 		o = PlanTeamOrders(t, rb, 2, 10.f, TeamEvent::None, prev);
 		for (const TeamOrder& x : o) if (x.since == 10.f) CHECK(std::strcmp(x.reason, "respawn") == 0);
@@ -452,6 +458,92 @@ int main()
 				if (x.bot != victim) { CHECK(same(x, y)); continue; }
 				CHECK(y && y->since == now + 8.f);
 				if (y && y->kind != PsKind::Spawn) CHECK(std::strcmp(y->reason, "respawn") == 0);
+			}
+		}
+	// 16. Codex 15.11 (package adb16bb8: NK 364 / US 288 captured/lost replans with roster 0): a captured or lost point
+	//     replans only the bots whose task it ended; the others keep target/kind/hold/since inside the 20 s rule. The
+	//     freed attacker goes to a free target no kept bot attacks. Both planners (D-054 and D-059).
+	{
+		auto same = [](const TeamOrder& a, const TeamOrder* b)
+		{ return b && a.target == b->target && a.kind == b->kind && a.hold == b->hold && a.since == b->since; };
+		for (int mode = 0; mode < 2; ++mode)
+		{
+			const TeamPlanConfig cfg = mode ? D59 : TeamPlanConfig();
+			std::vector<TeamTarget> t = Shore(1);
+			const auto prev = PlanTeamOrders(t, Bots(8), 1, 0.f, TeamEvent::None, none, cfg);   // 4 pairs, 4 targets
+			std::set<int> attacked; for (const TeamOrder& x : prev) attacked.insert(x.target);
+			CHECK(attacked.size() == 4);
+			const int took = prev[0].target;
+			for (TeamTarget& x : t) if (x.id == took) x.owner = 1;
+			// an event that replans everybody (Roster; before the fix also captured/lost) re-pairs the team: churn
+			int oldChurn = 0;
+			for (const TeamOrder& x : PlanTeamOrders(t, Bots(8), 1, 12.f, TeamEvent::Roster, prev, cfg)) if (!same(x, Of(prev, x.bot))) ++oldChurn;
+			CHECK(oldChurn > 2);
+			const auto o = PlanTeamOrders(t, Bots(8), 1, 12.f, TeamEvent::Captured, prev, cfg);
+			CHECK(o.size() == 8);
+			int replanned = 0;
+			for (const TeamOrder& x : prev)
+			{
+				const TeamOrder* y = Of(o, x.bot);
+				if (x.target != took) { CHECK(same(x, y)); continue; }                       // untouched by the event
+				++replanned;
+				CHECK(y && y->since == 12.f && std::strcmp(y->reason, "captured") == 0);
+				CHECK(y && (y->hold ? y->target == took : y->target != took));
+				if (y && !y->hold)   // free targets remain: never onto a target a kept bot attacks
+					for (const TeamOrder& z : o) if (z.since != 12.f && !z.hold) CHECK(z.target != y->target);
+			}
+			CHECK(replanned >= 2);
+			// lost: the defender of the lost point is replanned at once, nobody else
+			std::vector<TeamTarget> l = Shore(1, 96);
+			for (TeamTarget& x : l) { x.quiet = 10.f; if (x.id != 96) x.owner = 2; }        // no neutral point: D-059 keeps defenders
+			const auto lp = PlanTeamOrders(l, Bots(8), 1, 0.f, TeamEvent::None, none, cfg);
+			unsigned def = 0; for (const TeamOrder& x : lp) if (x.hold && x.target == 96) def = x.bot;
+			CHECK(def != 0);
+			for (TeamTarget& x : l) if (x.id == 96) x.owner = 2;
+			const auto lo = PlanTeamOrders(l, Bots(8), 1, 12.f, TeamEvent::Lost, lp, cfg);
+			for (const TeamOrder& x : lp)
+			{
+				const TeamOrder* y = Of(lo, x.bot);
+				if (x.bot == def) { CHECK(y && y->since == 12.f && std::strcmp(y->reason, "lost") == 0); continue; }
+				CHECK(same(x, y));
+			}
+			// past the 20 s rule the others may follow the new plan - as a quiet change (reason=rebalance), not the event
+			const auto late = PlanTeamOrders(t, Bots(8), 1, 25.f, TeamEvent::Captured, prev, cfg);
+			for (const TeamOrder& x : late) if (x.since == 25.f && Of(prev, x.bot)->target != took) CHECK(std::strcmp(x.reason, "rebalance") == 0);
+		}
+	}
+	// 17. Property for the same rule: N = 3..16, 300 random sets per N (skills, ownership, reachability, contact, TAC,
+	//     planner); one random point changes owner (captured or lost), the plan runs inside the 20 s rule. Every bot whose
+	//     old task is still valid gets exactly what the control plan without the event gives it; every other bot a valid
+	//     task now.
+	for (int n = 3; n <= 16; ++n)
+		for (int rep = 0; rep < 300; ++rep)
+		{
+			std::vector<TeamBot> bots;
+			for (int i = 0; i < n; ++i) bots.push_back(B(1000u + unsigned(i), int(Rnd() % 4)));
+			std::vector<TeamTarget> t = Shore(1);
+			for (TeamTarget& x : t) { const unsigned r = Rnd() % 10; x.owner = r < 3 ? 1 : r < 5 ? 2 : 0; x.reachable = Rnd() % 8 != 0; x.quiet = Rnd() % 2 ? 10.f : 60.f; }
+			TeamPlanConfig cfg; cfg.d059 = Rnd() % 2 == 0; cfg.teamHasTac = Rnd() % 4 == 0;
+			const auto prev = PlanTeamOrders(t, bots, 1, 0.f, TeamEvent::None, none, cfg);
+			TeamTarget& flip = t[Rnd() % t.size()];
+			const TeamEvent ev = flip.owner == 1 ? TeamEvent::Lost : TeamEvent::Captured;
+			flip.owner = flip.owner == 1 ? 2 : 1;
+			const float now = Rnd() % 2 ? 5.f : 12.f;
+			const auto calm = PlanTeamOrders(t, bots, 1, now, TeamEvent::None, prev, cfg);
+			const auto o = PlanTeamOrders(t, bots, 1, now, ev, prev, cfg);
+			CHECK(int(o.size()) == n);
+			std::map<int, const TeamTarget*> byId; for (const TeamTarget& x : t) byId[x.id] = &x;
+			for (const TeamOrder& x : prev)
+			{
+				const TeamOrder* y = Of(o, x.bot);
+				const TeamOrder* c = Of(calm, x.bot);
+				CHECK(y && c);
+				if (!y || !c || x.kind == PsKind::Spawn) continue;
+				const TeamTarget* tt = byId[x.target];
+				const bool valid = tt && tt->reachable && (x.hold ? tt->owner == 1 : tt->owner != 1);
+				if (valid) { CHECK(y->target == c->target && y->hold == c->hold && y->since == c->since && y->pair == c->pair); continue; }
+				CHECK(y->since == now);
+				if (y->kind != PsKind::Spawn) { const TeamTarget* nt = byId[y->target]; CHECK(nt && nt->reachable && (y->hold ? nt->owner == 1 : nt->owner != 1)); }
 			}
 		}
 	std::printf(failures ? "BotTeamOrdersTests FAIL %d\n" : "BotTeamOrdersTests PASS\n", failures);
