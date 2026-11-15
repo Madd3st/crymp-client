@@ -272,7 +272,7 @@ struct BotBrain {
     BotBlackboard m_blackboard;
     MockLoco m_locomotion;
     BotCombat m_combat;
-    MockTrap m_trap;
+    MockTrap m_trap; MockTrap m_trapResort;   // D-064: the TRAP4 series is reset with the watchdog
     std::string lastCancelReason;
     bool lastCancelBan = false;
     int cancelCount = 0;

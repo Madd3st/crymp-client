@@ -198,7 +198,7 @@ struct MockBrain {
  std::vector<Vec3> m_path; std::vector<NavPathLink> m_pathLinks; size_t m_pathIndex=0, m_cornerFor=size_t(-1);
  float m_nextRepath=0,m_minRepath=0,m_now=0,m_number=1; bool m_meshPathActive=true,m_verbose=false,m_running=true;
  BotIntent m_intent; BotBlackboard m_blackboard; MockLoco m_locomotion; BotCombat m_combat; MockLink m_link;
- Trap m_trap; float m_trapStepUntil=0; NavMeshCore mesh; NavPathLink cornerLink;
+ Trap m_trap; Trap m_trapResort; float m_trapStepUntil=0; NavMeshCore mesh; NavPathLink cornerLink;
  int cancelRunningSeen=-1; bool lastCancelBan=false; int cancels=0;
  NavMeshCore* CurrentNavMesh(){return &mesh;}
  const NavPathLink* LinkAtCorner(size_t c){return c==0?&cornerLink:nullptr;}

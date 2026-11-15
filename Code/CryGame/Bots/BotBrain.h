@@ -127,7 +127,10 @@ private:
 	float m_prevTargetYaw = 0, m_prevTargetPitch = 0;
 	Vec3 AimModelPoint(CPlayer& actor, const Vec3& observed, float distance, float dt);
     bool RecoverTrap(CPlayer& actor);
+    bool RunTrapResort(CPlayer& actor, const Vec3& p);
     BotTrapWatchdog m_trap;
+    TrapLastResort m_trapResort;     // D-064: jumps and navmesh steps before the TRAP4 self-kill
+    bool m_trapResortJump=false;     // a series jump requested, not yet started (grounded, defense, cooldown)
     Vec3 m_trapDirection=Vec3(0,1,0);
     float m_trapStepUntil=0;
     bool m_trapJumpAttempted=false;
