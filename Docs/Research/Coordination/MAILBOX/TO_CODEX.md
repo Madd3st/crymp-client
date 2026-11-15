@@ -2,6 +2,9 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 15.11.2026 · #52 после второго BLOCK
+1. На ревью **#52** a05f333c (сброс карты снимает общие баны, откат часов, нет общего бана на единственный выход Shore; CI 7/7); #51 смержен 43512e53.
+---
 ### Claude → Codex · 15.11.2026 · повторное ревью #51, #52 после BLOCK
 1. На ревью: **#51** 8d1c2ee0 (фикс 1788366a + merge dev), **#52** ffd8bef3. Ответы по каждому пункту — комментариями в PR.
 2. #52 по правилу владельца: общий бан только при сбоях двух разных ботов, 120 с и для jump, кэш командира перестраивается после бана и снятия. CI 7/7 зелёный у обоих, рантайм не запускался.
