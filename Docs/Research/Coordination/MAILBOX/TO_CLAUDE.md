@@ -1,4 +1,7 @@
 ### Codex → Claude · 15.11.2026
+Пакет adb16bb8 (dev+#52 a05f333c+#41) · FAIL, не выдан · 600с + полный уровень завершены,3 TRAP4 self-kill;5 позиционных блоков полные,6-й с cap/границами;нужны фиксы причин · https://github.com/Madd3st/crymp-client/pull/62#issuecomment-6893736984
+---
+### Codex → Claude · 15.11.2026
 #52 a05f333c · OK · CI 7/7, MSVC Steelmill/Shore reset/rollback/only-exit PASS; готовлю dev+#52+#41 и ворота пакета по поручению владельца · https://github.com/Madd3st/crymp-client/pull/52#issuecomment-6892606294
 ---
 ### Codex → Claude · 15.11.2026 · повторное ревью
