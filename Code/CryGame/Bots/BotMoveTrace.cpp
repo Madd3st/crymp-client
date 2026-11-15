@@ -60,7 +60,12 @@ void BotMoveTrace::Visit(CPlayer& actor,bool bot,bool due,float now)
  const bool ground=stats.onGround>0.f && stats.inAir<=.01f;
  record.state.Observe(now,alive,ground,stats.jumped,pos.z);
  if(!due || !alive || m_capped)return;
- if(m_lines>=200000){WB_LOG(0,"[WarsBots] MOVE TRACE capped lines=200000; toggle wb_move_trace0/1 for a new capture");m_capped=true;return;}
+ // package adb16bb8: full rate up to 400000 rows (a whole Shore-15 level), then every 2nd row per actor, cap 1000000
+ const MoveTraceBudget budget;
+ const int keep=MoveTraceKeep(m_lines,record.due++,budget);
+ if(keep<0){WB_LOG(0,"[WarsBots] MOVE TRACE capped lines=%u t=%.2f; toggle wb_move_trace0/1 for a new capture",m_lines,now);m_capped=true;return;}
+ if(!m_thinned && m_lines>=budget.full){WB_LOG(0,"[WarsBots] MOVE TRACE thinned lines=%u t=%.2f every=%u per actor",m_lines,now,budget.thin);m_thinned=true;}
+ if(!keep)return;
  Vec3 velocity=stats.velocity;int flying=-1;
  if(IPhysicalEntity* physics=actor.GetEntity()->GetPhysics()){
   pe_status_dynamics dynamics;if(physics->GetStatus(&dynamics))velocity=dynamics.v;

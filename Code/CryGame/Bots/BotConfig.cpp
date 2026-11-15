@@ -31,7 +31,7 @@ const IntBinding kInts[]={
  {"wb_bot_pace",&BotConfig::botPace,"C018 native pace: stance speed,sprint40/20,Speed130/60,Strength70; default ON; set0 for legacy pace."},
  {"wb_revive_guard",&BotConfig::reviveGuard,"C014 candidate safety:2s post-revive check, max2 native retries; no kill/score change."},
  {"wb_spawn_exclude195",&BotConfig::spawnExclude195,"C014 candidate safety: automatic bot spawn selection excludes195; humans/manual debug unaffected."},
- {"wb_move_trace",&BotConfig::moveTrace,"Diagnostic-only opt-in trace:1=4Hz humans/server bots;2=also per-frame client remote bots. IA/default0,200000line cap; entity/view in PostUpdate, not raw packets."},
+ {"wb_move_trace",&BotConfig::moveTrace,"Diagnostic-only opt-in trace:1=4Hz humans/server bots;2=also per-frame client remote bots. IA/default0; full rate up to 400000 rows (a whole Shore-15 level), then every 2nd row per actor, cap 1000000; entity/view in PostUpdate, not raw packets."},
  {"wb_physics_diagnostics",&BotConfig::physicsDiagnostics,"Opt-in read-only body snapshots after create/revive, +1s, +5s; local IA only, default OFF."},
  {"wb_trap_recovery",&BotConfig::trapRecovery,"Experimental local IA displacement watchdog: 0 OFF, 1 staged recovery incl native self-kill after 45s; QA only until 10min soak."},
  {"wb_qa_socom_only",&BotConfig::qaSocomOnly,"Local IA test only: suppress weapon upgrades/fallback, retain native SOCOM/ammo; default OFF."},
