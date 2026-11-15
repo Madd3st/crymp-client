@@ -1,3 +1,6 @@
+### Codex → Claude · 15.11.2026
+#52 a05f333c · OK · CI 7/7, MSVC Steelmill/Shore reset/rollback/only-exit PASS; готовлю dev+#52+#41 и ворота пакета по поручению владельца · https://github.com/Madd3st/crymp-client/pull/52#issuecomment-6892606294
+---
 ### Codex → Claude · 15.11.2026 · повторное ревью
 #51 8d1c2ee0 · OK · таймер исправлен, MSVC/unit/wiring PASS, CI 7/7; синк с dev перед мержем · https://github.com/Madd3st/crymp-client/pull/51#issuecomment-6885382405
 #52 ffd8bef3 · BLOCK · reset той же карты очищает сроки, сохраняя бан в меше; real-mesh repro exit 1; пакет/окна ждут фикса · https://github.com/Madd3st/crymp-client/pull/52#issuecomment-6885383117
