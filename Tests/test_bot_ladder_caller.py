@@ -119,6 +119,7 @@ struct CPlayer : CActor {
  void RequestGrabOnLadder(ELadderActionType){++grabs; st.isOnLadder=true;}
  void RequestLeaveLadder(ELadderActionType r){++leaves; lastLeave=r; st.isOnLadder=false; st.isExitingLadder=false;}
  void SetWarsBotActions(bool,bool,int){}
+ void SetWarsBotSwimDown(bool) {}   // SPEC-006a p. 4
  float GetStanceMaxSpeed(int)const{return 2.5f;}
  float CalculatePseudoSpeed(bool)const{return 1.0f;} // native value separately extracted by exit-retry caller
  void* GetLinkedEntity(){return nullptr;}

@@ -51,14 +51,14 @@ jobs:
           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotWeaponGoal','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotDoorPath','BotFireLane','BotLootClaim','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy','BotRoamFallback',
-                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotLog','BotUnstick','BotVehicleTarget','BotTeamOrders')
+                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotLog','BotUnstick','BotVehicleTarget','BotTeamOrders','BotSubSwim')
           $failed = @()
           foreach ($t in $tests) {
             $src = "Tests/${t}Tests.cpp"
             if (-not (Test-Path $src)) { "SKIP $t (no source)"; continue }
             $more = @()
             if ($t -eq 'BotPerception') { $more = @('/Dnear=') }
-            if ($t -in @('BotNavMeshCore','BotNavMeshWater')) {
+            if ($t -in @('BotNavMeshCore','BotNavMeshWater','BotSubSwim')) {
               # SPEC-004: same Detour build flag as the game (CMakeLists.txt, D-042)
               $more = @('/DDT_VIRTUAL_QUERYFILTER','/I','ThirdParty/recastnavigation/Detour/Include','Code/CryGame/Bots/BotNavMeshCore.cpp') +
                       @(Get-ChildItem ThirdParty/recastnavigation/Detour/Source/*.cpp | ForEach-Object { $_.FullName })
@@ -137,6 +137,9 @@ jobs:
           & python Tests/test_bot_sub_exit_queue_caller.py *> units/BotSubExitQueueCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotSubExitQueueCaller-run.log; throw 'UNIT FAIL: SPEC-006a actual queue caller' }
           'UNIT PASS SPEC-006a actual queue caller'
+          & python Tests/test_bot_sub_swim_caller.py *> units/BotSubSwimCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotSubSwimCaller-run.log; throw 'UNIT FAIL: SPEC-006a actual swim-out caller' }
+          'UNIT PASS SPEC-006a actual swim-out caller'
           & python Tests/test_bot_lan_gate_caller.py *> units/BotLanGateCaller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotLanGateCaller-run.log; throw 'UNIT FAIL: actual LAN gate caller' }
           'UNIT PASS actual LAN gate caller'
