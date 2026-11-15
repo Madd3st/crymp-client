@@ -7,6 +7,8 @@
 #include "DetourAlloc.h"
 #include <cstdio>
 #include <cstring>
+#include <algorithm>
+#include <vector>
 #include <cmath>
 #include <cstdlib>
 #include <sstream>
@@ -92,6 +94,7 @@ float NavMeshCore::SegmentCostMultiplier(const float* a, const float* b, unsigne
 			if (SameDirectedTransition(t, a[0], a[1], a[2], b[0], b[1], b[2])) m *= k.mult;
 		}
 	}
+	for (const unsigned long long avoid : c->avoidLinks) if (avoid && cur == avoid) m *= c->avoidMult;   // SPEC-009: also on links (off-mesh)
 	for (int i = 0; i < c->pointCount; ++i)
 		if (SegPointDist2D(a, b, c->points[i].p) <= c->points[i].radius) m *= c->points[i].mult;
 	if (c->trodden) m *= 1.f + c->trodden->Extra(cur, c->now);
@@ -131,7 +134,7 @@ void NavMeshCore::Reset()
 	if (m_query) { dtFreeNavMeshQuery(m_query); m_query = nullptr; }
 	if (m_mesh) { dtFreeNavMesh(m_mesh); m_mesh = nullptr; }
 	delete static_cast<NavCostFilter*>(m_filter); m_filter = nullptr; m_penalty.clear(); m_cost = nullptr;
-	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0; m_linkFails.clear(); m_linkMismatch = 0;
+	m_comp.clear(); m_components = 0; m_linkMask = 0; m_links = 0; m_reach.clear(); m_words = 0; m_linkFails.clear(); m_bannedFlags.clear(); m_linkMismatch = 0;
 	m_slowLadderStarts.clear(); m_ladderMemoryFilter = false;   // SPEC-006a: never inherit another mesh's ladders (Codex #38)
 }
 
@@ -191,6 +194,7 @@ void NavMeshCore::BuildComponents()
 	// over outgoing links was seed-order dependent, weak parts were optimistic across drops (nav fallbacks 115 -> 689).
 	const unsigned short include = m_filter ? m_filter->getIncludeFlags() : 0xffff;
 	auto Pass = [include](const dtPoly* p) { return (p->flags & include) != 0; };
+	++m_topology;   // Codex 15.11 #52: reachability caches key on this
 	m_comp.clear(); m_components = 0; m_reach.clear();
 	const dtNavMesh* mesh = m_mesh;
 	std::vector<dtPolyRef> refs;
@@ -428,6 +432,59 @@ int NavMeshCore::LoadLinkKinds(const char* text)
 	return set;
 }
 
+namespace {
+// Ground polygons whose bounds touch the box (Crysis frame) - every flag, because a deck can be a banned/unknown link area.
+int QueryBox(const dtNavMeshQuery* q, const float* centreCrysis, float side, float halfUp, dtPolyRef* out, int max)
+{
+	float c[3]; ToRecast(centreCrysis, c);
+	const float ext[3] = {side, halfUp, side};
+	dtQueryFilter all; all.setIncludeFlags(0xffff); all.setExcludeFlags(0);
+	int n = 0;
+	if (dtStatusFailed(q->queryPolygons(c, ext, &all, out, &n, max))) return 0;
+	return n;
+}
+}
+
+bool NavMeshCore::SolidAbove(const float* p, float side, float up) const
+{
+	if (!m_query || !m_mesh) return false;
+	const float mid[3] = {p[0], p[1], p[2] + up * 0.5f};
+	dtPolyRef polys[128];
+	const int n = QueryBox(m_query, mid, side, up * 0.5f, polys, 128);
+	for (int i = 0; i < n; ++i)
+	{
+		const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
+		if (dtStatusFailed(m_mesh->getTileAndPolyByRef(polys[i], &tile, &poly)) || !poly) continue;
+		if (poly->getType() != DT_POLYTYPE_GROUND || poly->getArea() == kWaterArea) continue;
+		float top = -1e9f;
+		for (int k = 0; k < poly->vertCount; ++k) top = std::max(top, tile->verts[poly->verts[k] * 3 + 1]);   // Recast y = Crysis z
+		if (top > p[2] + 0.5f) return true;
+	}
+	return false;
+}
+
+bool NavMeshCore::NearestOpenWater(const float* p, float radius, float* out) const
+{
+	if (!m_query || !m_mesh) return false;
+	std::vector<dtPolyRef> polys(4096);
+	const int n = QueryBox(m_query, p, radius, 20.f, polys.data(), int(polys.size()));
+	float best = radius * radius + 1.f; bool found = false;
+	for (int i = 0; i < n; ++i)
+	{
+		const dtMeshTile* tile = nullptr; const dtPoly* poly = nullptr;
+		if (dtStatusFailed(m_mesh->getTileAndPolyByRef(polys[i], &tile, &poly)) || !poly) continue;
+		if (poly->getType() != DT_POLYTYPE_GROUND || poly->getArea() != kWaterArea || !poly->vertCount) continue;
+		float r[3] = {0, 0, 0};
+		for (int k = 0; k < poly->vertCount; ++k) for (int a = 0; a < 3; ++a) r[a] += tile->verts[poly->verts[k] * 3 + a];
+		for (int a = 0; a < 3; ++a) r[a] /= float(poly->vertCount);
+		float c[3]; ToCrysis(r, c);
+		const float d2 = (c[0] - p[0]) * (c[0] - p[0]) + (c[1] - p[1]) * (c[1] - p[1]);
+		if (d2 >= best || SolidAbove(c, 0.6f, 15.f)) continue;
+		best = d2; out[0] = c[0]; out[1] = c[1]; out[2] = c[2]; found = true;
+	}
+	return found;
+}
+
 bool NavMeshCore::NearSlowLadderStart(const float* p, float r) const
 {
 	for (size_t i = 0; i + 2 < m_slowLadderStarts.size(); i += 3)
@@ -446,8 +503,44 @@ void NavMeshCore::SetLinkMask(unsigned short mask)
 void NavMeshCore::BanLink(unsigned long long ref)
 {
 	if (!m_mesh || !ref) return;
+	unsigned short old = 0;
+	if (dtStatusSucceed(m_mesh->getPolyFlags(dtPolyRef(ref), &old)) && old) m_bannedFlags.emplace(ref, old);
 	m_mesh->setPolyFlags(dtPolyRef(ref), 0);
 	BuildComponents();
+}
+
+void NavMeshCore::UnbanLink(unsigned long long ref)
+{
+	auto it = m_bannedFlags.find(ref);
+	if (!m_mesh || it == m_bannedFlags.end()) return;
+	m_mesh->setPolyFlags(dtPolyRef(ref), it->second);
+	m_bannedFlags.erase(it);
+	BuildComponents();
+}
+
+bool NavMeshCore::BanLinkKeepingExits(unsigned long long ref, const float* starts, int startCount, const float* goals,
+	int goalCount, int* stranded)
+{
+	if (!m_mesh || !ref) return false;
+	if (LinkBanned(ref)) return true;   // already banned: nothing to test, nothing to undo
+	auto reachesAny = [&](int i)
+	{
+		for (int g = 0; g < goalCount; ++g) if (Reachable(starts + 3 * i, goals + 3 * g)) return true;
+		return false;
+	};
+	std::vector<char> had(size_t(startCount > 0 ? startCount : 0), 0);
+	for (int i = 0; i < startCount; ++i) had[size_t(i)] = reachesAny(i) ? 1 : 0;
+	const unsigned topology = m_topology;
+	BanLink(ref);
+	for (int i = 0; i < startCount; ++i)
+		if (had[size_t(i)] && !reachesAny(i))
+		{
+			if (stranded) *stranded = i;
+			UnbanLink(ref);
+			m_topology = topology;   // the connectivity is exactly what it was: no cache needs a rebuild
+			return false;
+		}
+	return true;
 }
 
 bool NavMeshCore::FindPathLinks(const float* start, const float* goal, std::vector<float>& xyz, std::vector<NavPathLink>& links,

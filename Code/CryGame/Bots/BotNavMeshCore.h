@@ -60,6 +60,7 @@ struct NavCostContext {
 	float now = 0.f;                       // trodden clock (world time, shared by all bots)
 	float blockNow = 0.f;                  // the bot's own clock for its block expiry
 	float memoryClock = -1.f;              // memory clock (UnstickClock): penalties decay per query; <0 = value at resolve
+	unsigned long long avoidLinks[2] = {0, 0}; float avoidMult = 1.f;   // SPEC-009: this bot's avoided ladder + jump link (wb_bot_ladder_ban)
 	const NavCostBlock* blocks = nullptr; int blockCount = 0;
 	const NavCostPoint* points = nullptr; int pointCount = 0;
 };
@@ -105,9 +106,19 @@ public:
 	void SetLinkMask(unsigned short mask);
 	unsigned short LinkMask() const { return m_linkMask; }
 	int Links() const { return m_links; }
+	// Codex 15.11 #52: bumped by every connectivity rebuild (SetLinkMask, BanLink, UnbanLink, load). Caches built from
+	// Reachable/FindPath on this mesh (PS commander, capture destinations) rebuild when it changes; monotonic across Reset.
+	unsigned TopologyVersion() const { return m_topology; }
 	int LinkMismatches() const { return m_linkMismatch; }   // links whose user id line did not match by end points
 	// A link failed in the game: never use it again on this level.
 	void BanLink(unsigned long long ref);
+	// SPEC-009 (wb_bot_ladder_ban): lift a ban set by BanLink, restoring the link's original flags.
+	void UnbanLink(unsigned long long ref);
+	// Owner 15.11 #52: BanLink only if every start (xyz triples) that reaches at least one goal now still reaches one
+	// with the link banned. Otherwise (the only exit) the mesh and TopologyVersion stay as they were; returns false.
+	bool BanLinkKeepingExits(unsigned long long ref, const float* starts, int startCount, const float* goals, int goalCount,
+		int* stranded = nullptr);
+	bool LinkBanned(unsigned long long ref) const { return m_bannedFlags.count(ref) != 0; }
 	// Counts in-game failures of a link; true from the second failure on (then the caller bans it).
 	bool NoteLinkFailure(unsigned long long ref) { return ++m_linkFails[ref] >= 2; }
 	// FindPath + the links on the returned corners. `startBounds` is the optional water-aware start box; the core
@@ -127,6 +138,11 @@ public:
 	// SPEC-006a: starts of ladder links longer than 2 s (LoadLinkKinds). With the filter on, memory records ending within
 	// 3 m of one are ignored when read (SetTransitionMemory); the memory file itself is never rewritten.
 	bool NearSlowLadderStart(const float* p, float r = 3.f) const;
+	// SPEC-006a p. 4 (D-058): a non-water ground polygon above p within `side` m (XY) and up to `up` m higher - the point
+	// is under a deck/hull. Read from the baked mesh only, no level coordinates.
+	bool SolidAbove(const float* p, float side = 0.6f, float up = 15.f) const;
+	// Centre of the nearest open-water polygon (area kWaterArea with nothing solid above it) within `radius` m (XY).
+	bool NearestOpenWater(const float* p, float radius, float* out) const;
 	void SetLadderMemoryFilter(bool on) { m_ladderMemoryFilter = on; }
 	bool LadderMemoryFilter() const { return m_ladderMemoryFilter; }
 	int SlowLadders() const { return int(m_slowLadderStarts.size() / 3); }
@@ -153,7 +169,9 @@ private:
 	unsigned short m_linkMask = 0;
 	int m_links = 0;
 	std::unordered_map<unsigned long long, int> m_linkFails;
+	std::unordered_map<unsigned long long, unsigned short> m_bannedFlags;   // original flags of banned links
 	int m_linkMismatch = 0;
+	unsigned m_topology = 0;
 	const NavCostContext* m_cost = nullptr;
 	struct PolyPenalty { TransitionPenalty t; float value; };   // value: decayed at resolve time (fallback)
 	float m_penaltyHalfLife = 1800.f;

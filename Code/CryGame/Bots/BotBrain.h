@@ -16,6 +16,7 @@
 #include "CryGame/Bots/BotTactics.h"
 #include "CryGame/Bots/BotTraits.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotLadderBan.h"
 #include "CryGame/Bots/BotUnstick.h"
 #include <string>
 #include "CryGame/Bots/BotCorners.h"
@@ -55,6 +56,14 @@ public:
 	// ON->OFF or an interruption must not hide the bot from spread or count it ahead).
 	bool LadderQueued() const;
 	void CancelLadderQueue(const char* why);
+	Vec3 SubSwimStep(const Vec3& feet);   // SPEC-006a p. 4
+	void TickSubSwim(CPlayer& actor, const Vec3& feet);   // every decision tick: flag OFF / left water / timeout -> cancel
+	bool SubSwimRescue(CPlayer& actor, float decisionTime, const Vec3& feet);   // own dispatch before every task
+	void CancelSubSwim(CPlayer& actor, const char* why, const Vec3& feet);      // the single cancel (native bit cleared)
+	bool SubSwimDescending() const;
+	bool SubSwimAscending() const;   // Codex #41 re-review: controlled ascent with open sky
+	bool m_subSwimClear=false; float m_subSwimProbeAt=0;
+	bool m_subSwim=false, m_subSwimDown=false, m_subSwimUp=false; float m_subSwimSince=0, m_subSwimCooldown=0; Vec3 m_subSwimTarget=Vec3(0,0,0);
 	bool UnstickAtSlowLadder(const NavMeshCore* mesh) const; // SPEC-006a
     // Read-only diagnostic snapshot, consumed after this instance's decision tick.
     unsigned DecisionSerial()const{return m_decisionSerial;}
@@ -68,6 +77,7 @@ public:
     const char* DecisionReason()const{return m_now<m_testUntil?"manual_ability":m_unstickSteps.Step()!=UnstickStep::None?"unstick":m_now<m_trapStepUntil?"trap_recovery":m_now<m_escapeUntil?"escape":m_now<m_withdrawUntil?"withdraw":StateName();}
 	// wb_bot_tactics level boundary: drop every bot's loot claim (BotManager::EndLevel; the game timer may not go back).
 	static void ClearAllClaims();
+	static void ClearLadderBans();   // SPEC-009 (wb_bot_ladder_ban): no failure/ban survives the level; shared bans are lifted
 
 private:
     unsigned m_lookDiagnostics=0;float m_nextLookDiagnostic=0; // <=128 rows per instance, opt-in MOVE TRACE only
@@ -182,6 +192,12 @@ private:
 	// DS-107: native ladder edge (wb_bot_ladder). The policy is pure; the adapter performs the native calls.
 	BotLadder m_ladder;
 	NavPathLink m_ladderNow;
+	unsigned long long m_ladderAvoidRef = 0; float m_ladderAvoidUntil = 0.f;   // SPEC-009: personal avoidance after a failure
+	unsigned long long m_jumpAvoidRef = 0; float m_jumpAvoidUntil = 0.f;       // Codex 15.11 #52: same rule for jump links
+	unsigned m_navTopology = 0;   // mesh TopologyVersion this bot's path was planned on (replan after a ban/unban)
+	bool LadderAvoidActive() const;
+	LadderBanDecision SharedLinkFailure(NavMeshCore& mesh, unsigned long long ref);   // owner 15.11: keeps the only exit
+	void ReleaseLadderBans();
 	bool m_ladderNativeLocked = false;
 	bool m_ladderCancelPending = false; // ResetLife saw an active climb; next Update clears native mode
 	bool ApplyLadderExecutor(CPlayer& actor);
