@@ -5018,6 +5018,22 @@ void CPlayer::SetWarsBotActions(bool sprint, bool moving, EStance stance)
 	if (moving) m_actions|=ACTION_MOVE; else m_actions&=~ACTION_MOVE;
 	GetGameObject()->ChangedNetworkState(eEA_GameServerDynamic);
 }
+// SPEC-006a p. 4 (D-058): the native swim descent for an owned bot - ProcessSwimming turns ACTION_CROUCH into world-space
+// down velocity only after 0.5 s in water (PlayerMovement.cpp). Server-side bot actions only, like the sprint/move bits.
+void CPlayer::SetWarsBotSwimDown(bool down)
+{
+	SetWarsBotSwimVertical(down ? -1 : 0);
+}
+// Codex #41 re-review: -1 ACTION_CROUCH (descend), +1 ACTION_JUMP (the native controlled ascent under water), 0 none.
+// Only the bit this method set is ever cleared (never a crouch/jump from another source).
+void CPlayer::SetWarsBotSwimVertical(int vertical)
+{
+	if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
+	const int want = vertical < 0 ? int(ACTION_CROUCH) : vertical > 0 ? int(ACTION_JUMP) : 0;
+	m_actions &= ~(m_warsBotSwimBits & ~want);
+	m_actions |= want;
+	m_warsBotSwimBits = want;
+}
 void CPlayer::PublishWarsBotJump(bool strength)
 {
 	if (!gEnv->bServer || !g_pGame->GetBotManager().Owns(GetEntityId())) return;
