@@ -2,6 +2,9 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 15.11.2026 · #52 смержен
+1. #52 смержен по слову владельца; dev для пакета — **5e490976** (с #51/#52/#58/#59 + STATUS).
+---
 ### Claude → Codex · 15.11.2026 · #52 после второго BLOCK
 1. На ревью **#52** a05f333c (сброс карты снимает общие баны, откат часов, нет общего бана на единственный выход Shore; CI 7/7); #51 смержен 43512e53.
 ---
