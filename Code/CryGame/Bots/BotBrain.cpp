@@ -367,7 +367,7 @@ void BotBrain::Configure(const BotProfile& profile, int number)
 
 void BotBrain::ResetLife()
 {
-	m_trap.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
+	m_trap.Reset(); m_trapResort.Reset(); m_trapStepUntil=0; m_trapJumpAttempted=false; m_escapeUntil=0; m_trackedTarget=0; m_trackedSelection=-1;
 	m_unstickSensor.Reset(); m_unstickSteps.Reset(); m_unstickStuck=false; m_unstickPoints.clear(); m_unstickPointsUntil=0;   // SPEC-004
 	m_subQueueRef=0; m_subQueueAt=-1e9f; m_subQueueCooldown=0; m_subQueueSlot=-1; m_subQueueStanding=false;   // SPEC-006a
 	m_unstickHasStall=false; m_unstickBackTried=false;
@@ -427,7 +427,7 @@ void BotBrain::Stop(BotInstance& bot)
 	ReleaseClaims(); // stop/removal: before the running check, a stopped bot must never keep an item (PR #17 review)
 	if (!m_running) return;
 	m_running = false; // Cancel respawn/re-entry before any native ladder, entity or weapon callback.
-	m_trap.Reset(); m_trapStepUntil=0;
+	m_trap.Reset(); m_trapResort.Reset(); m_trapStepUntil=0;
 	// DS-107: one owned cancellation path clears native ladder mode as a failure (never route success).
 	if (CActor* actor = bot.GetActor()) CancelLadder(static_cast<CPlayer&>(*actor), "stop", false);
 	else { m_ladder.Reset(); m_ladderNativeLocked = false; }
@@ -564,7 +564,7 @@ bool BotBrain::UpdateDead(BotInstance& bot,CPlayer& actor,float dt)
 {
 	if (actor.GetHealth() <= 0)
 	{
-		m_trap.Reset(); m_trapStepUntil=0;
+		m_trap.Reset(); m_trapResort.Reset(); m_trapStepUntil=0;
 		m_combat.StopFire();
 		m_locomotion.Stop(actor);
 		m_testJump=BotJump::None; m_testGait=m_testMode=-1; m_testUntil=m_testModeUntil=m_testJumpAt=0;
@@ -1572,8 +1572,10 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
     const int& enabled=BotConfig::Get().trapRecovery;
     if (enabled!=1 || !gEnv->bServer ||
         !g_pGame->GetBotManager().Owns(actor.GetEntityId()) || !g_pGame->GetBotManager().CanRunLocalIA())
-    { m_trap.Reset(); m_trapStepUntil=0; return false; }
+    { m_trap.Reset(); m_trapResort.Reset(); m_trapStepUntil=0; return false; }
     const Vec3 p=actor.GetEntity()->GetWorldPos();
+    if (m_trapResort.Active())
+        return RunTrapResort(actor,p);
     // DS-070: a gated swimmer making no progress is not a land trap; the same policy disables the watchdog here.
     const int level=m_trap.Update(p.x,p.y,p.z,m_now,m_intent.move,m_blackboard.canMove && !m_blackboard.waterMovement,false);
     // SPEC-004: with wb_bot_unstick the exit steps replace levels 1-3; the native self-kill (level 4) stays the last resort.
@@ -1599,13 +1601,10 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
         }
         else if (level==4)
         {
-            // Native IA suicide -> ProcessDeath/OnPlayerKilled -> GameRules::KillPlayer.
-            // Keeps score penalties, native death broadcasts and the existing same-actor respawn.
-            m_combat.StopFire();m_locomotion.Stop(actor);
-            CGameRules* rules=g_pGame->GetGameRules();
-            const bool called=rules && Script::CallMethod(rules->GetEntity()->GetScriptTable(),"KillPlayer",actor.GetEntity()->GetScriptTable());
-            WB_LOG(1,"[WarsBots] TRAP RECOVERY level=4 actor=%u nativeSelfKill=%d health=%d.",actor.GetEntityId(),called?1:0,actor.GetHealth());
-            return true;
+            // D-064: the self-kill is the last resort - first jumps and short navmesh steps aside (TrapLastResort)
+            m_trapResort.Begin(p.x,p.y,m_now);
+            m_trapResortJump=false;
+            return RunTrapResort(actor,p);
         }
     }
     if (!m_trap.Level()) m_trapStepUntil=0;
@@ -1619,6 +1618,75 @@ bool BotBrain::RecoverTrap(CPlayer& actor)
             m_blackboard.mode==NANOMODE_DEFENSE && m_now>=m_blackboard.nextJump)
         { WBI(jump,BotJump::Normal);m_trapJumpAttempted=true; } // Executor still requires JumpSpace.
     }
+    return false;
+}
+
+// D-064 TRAP4 series: jump, step left, jump, step right, jump, step back (2 s each), then the native self-kill only if
+// none of them moved the bot 2 m away from where it stood. Steps go to a point on the navmesh with a clear straight
+// walk (PolyAt + RayClear, as the unstick back-off); movement requests only, no SetPos, no impulse.
+bool BotBrain::RunTrapResort(CPlayer& actor,const Vec3& p)
+{
+    if (!m_blackboard.canMove || m_blackboard.waterMovement)
+    {   // something else owns the bot now (ladder, swim, death): drop the series, the watchdog starts over
+        m_trap.Reset(); m_trapResort.Reset(); m_trapStepUntil=0; m_trapResortJump=false; return false;
+    }
+    const TrapResortAction act=m_trapResort.Update(p.x,p.y,m_blackboard.grounded,m_now);
+    if (m_trapResort.Freed())
+    {
+        WB_LOG(1,"[WarsBots] TRAP4 freed actor=%u attempts=%d moved=%.1f pos=(%.2f,%.2f,%.2f).",
+            actor.GetEntityId(),m_trapResort.Attempt(),m_trapResort.Moved(p.x,p.y),p.x,p.y,p.z);
+        m_trap.Reset(); m_trapResort.Reset(); m_trapStepUntil=0; m_trapResortJump=false;
+        m_path.clear();m_pathIndex=0;m_cornerFor=size_t(-1);m_nextRepath=m_minRepath=0;m_pathLinks.clear();m_link.Reset();
+        return false;
+    }
+    if (act==TrapResortAction::Kill)
+    {
+        // Native IA suicide -> ProcessDeath/OnPlayerKilled -> GameRules::KillPlayer.
+        // Keeps score penalties, native death broadcasts and the existing same-actor respawn.
+        m_combat.StopFire();m_locomotion.Stop(actor);
+        CGameRules* rules=g_pGame->GetGameRules();
+        const bool called=rules && Script::CallMethod(rules->GetEntity()->GetScriptTable(),"KillPlayer",actor.GetEntity()->GetScriptTable());
+        WB_LOG(1,"[WarsBots] TRAP4 kill actor=%u attempts=%d moved=%.1f pos=(%.2f,%.2f,%.2f).",
+            actor.GetEntityId(),m_trapResort.attempts,m_trapResort.Moved(p.x,p.y),p.x,p.y,p.z);
+        WB_LOG(1,"[WarsBots] TRAP RECOVERY level=4 actor=%u nativeSelfKill=%d health=%d.",actor.GetEntityId(),called?1:0,actor.GetHealth());
+        m_trapResort.Reset(); m_trapStepUntil=0; m_trapResortJump=false;
+        return true;
+    }
+    Vec3 forward=m_intent.destination-p;forward.z=0;forward.NormalizeSafe(actor.GetBaseQuat().GetColumn1());
+    const Vec3 side(-forward.y,forward.x,0);
+    if (act==TrapResortAction::Jump)
+    {
+        m_trapResortJump=true; m_trapDirection=forward; m_trapStepUntil=m_now+m_trapResort.attemptTime;
+        WB_LOG(1,"[WarsBots] TRAP4 jump actor=%u attempt=%d pos=(%.2f,%.2f,%.2f).",actor.GetEntityId(),m_trapResort.Attempt(),p.x,p.y,p.z);
+    }
+    else if (act!=TrapResortAction::None)
+    {
+        const Vec3 dir=act==TrapResortAction::StepLeft?side:act==TrapResortAction::StepRight?-side:-forward;
+        NavMeshCore* mesh=CurrentNavMesh();
+        const float a[3]={p.x,p.y,p.z};
+        float dist=0.f;
+        for (float d:{3.f,1.5f})
+        {
+            const Vec3 q3=p+dir*d;
+            const float q[3]={q3.x,q3.y,q3.z};
+            if (mesh && mesh->PolyAt(q)!=0 && mesh->RayClear(a,q)) { dist=d; break; }
+        }
+        m_trapResortJump=false;
+        m_trapDirection=dist>0.f?dir*(dist/3.f):Vec3(0,0,0);
+        m_trapStepUntil=dist>0.f?m_now+m_trapResort.attemptTime:0.f;
+        WB_LOG(1,"[WarsBots] TRAP4 step actor=%u attempt=%d dir=%s dist=%.1f to=(%.2f,%.2f,%.2f) pos=(%.2f,%.2f,%.2f).",
+            actor.GetEntityId(),m_trapResort.Attempt(),TrapResortName(act),dist,p.x+dir.x*dist,p.y+dir.y*dist,p.z,p.x,p.y,p.z);
+    }
+    // the request of the running attempt (held until the attempt's time is over)
+    m_combat.StopFire();m_intent.combat=BotCombatIntent::None;
+    if (m_now<m_trapStepUntil && m_trapDirection.GetLength2D()>0.01f && !m_trapResortJump)
+        WBI_MOVETO(p+m_trapDirection*3.f,m_intent.aim);
+    else
+        WBI_MOVETO(p,m_intent.aim);
+    m_intent.strafe=false;WBI(gait,BotGait::Run);WBI(suitMode,NANOMODE_DEFENSE);
+    WBI(jump,BotJump::None);
+    if (m_trapResortJump && m_blackboard.grounded && m_blackboard.mode==NANOMODE_DEFENSE && m_now>=m_blackboard.nextJump)
+    { WBI(jump,BotJump::Normal);m_trapResortJump=false; } // Executor still requires JumpSpace.
     return false;
 }
 
@@ -1964,7 +2032,7 @@ bool BotBrain::ApplyLadderExecutor(CPlayer& actor)
 	if (l->ref && g_pGame && g_pGame->GetBotManager().ShouldYieldLadder(l->ref,a,dist2,m_number))
 	{
 		m_nextRepath=max(m_nextRepath,m_now+1.0f);
-		m_trap.Reset(); m_trapStepUntil=0;
+		m_trap.Reset(); m_trapResort.Reset(); m_trapStepUntil=0;
 		m_combat.StopFire();
 		m_intent=BotIntent();
 		WBI(aim,Vec3(a.x,a.y,a.z+1.2f));
@@ -2011,7 +2079,7 @@ bool BotBrain::UpdateLadderQueue(CPlayer& actor,const NavPathLink& l,const Vec3&
 		m_subQueueSlot=ahead;
 		WB_LOG(1,"[WarsBots] #%d SUB QUEUE slot=%.1f ladder=%llu ahead=%d waited=%.1f actor=%u.",m_number,LadderQueueOffset(ahead),l.ref,ahead,m_now-m_subQueueSince,actor.GetEntityId());
 	}
-	m_unstickSensor.Reset(); m_trap.Reset(); m_trapStepUntil=0;   // waiting in a queue is not a stall
+	m_unstickSensor.Reset(); m_trap.Reset(); m_trapResort.Reset(); m_trapStepUntil=0;   // waiting in a queue is not a stall
 	m_subQueueStanding=(slot-feet).GetLengthSquared2D()<=0.6f*0.6f;
 	if (!m_subQueueStanding) { WBI_MOVETO(slot,Vec3(a.x,a.y,a.z+1.2f)); WBI(gait,BotGait::Walk); return true; }
 	m_combat.StopFire();
