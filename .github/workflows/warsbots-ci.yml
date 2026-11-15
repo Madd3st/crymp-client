@@ -128,6 +128,9 @@ jobs:
           & python Tests/test_bot_ps_squads_wiring.py *> units/BotPsSquadsWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotPsSquadsWiring-run.log; throw 'UNIT FAIL: SPEC-005 squads wiring guard' }
           'UNIT PASS SPEC-005 squads wiring guard'
+          & python Tests/test_bot_ps_d059_caller.py *> units/BotPsD059Caller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotPsD059Caller-run.log; throw 'UNIT FAIL: D-059 actual TAC/contact caller' }
+          'UNIT PASS D-059 actual TAC/contact caller'
           & python Tests/test_bot_sub_exit_wiring.py *> units/BotSubExitWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotSubExitWiring-run.log; throw 'UNIT FAIL: SPEC-006a sub exit wiring guard' }
           'UNIT PASS SPEC-006a sub exit wiring guard'
@@ -139,7 +142,12 @@ jobs:
           'UNIT PASS actual LAN gate caller'
           & python Tests/test_bot_vehicle_target_wiring.py *> units/BotVehicleTargetWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotVehicleTargetWiring-run.log; throw 'UNIT FAIL: vehicle target wiring guard' }
+          & python Tests/test_bot_frozen_shatter_wiring.py *> units/BotFrozenShatterWiring-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotFrozenShatterWiring-run.log; throw 'UNIT FAIL: frozen shatter wiring guard' }
           'UNIT PASS vehicle target wiring guard'
+          & python Tests/test_bot_stale_visible_caller.py *> units/BotStaleVisibleCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotStaleVisibleCaller-run.log; throw 'UNIT FAIL: audit 14.11 p. 5 stale sight caller' }
+          'UNIT PASS audit 14.11 p. 5 stale sight caller'
       - if: always()
         uses: actions/upload-artifact@v7
         with:

@@ -18,6 +18,8 @@
 #include "CryGame/Actors/Actor.h"
 #include "CryGame/Game.h"
 #include "CryGame/GameRules.h"
+#include "CryCommon/CryAction/IActorSystem.h"
+#include "CryCommon/CryAction/IItemSystem.h"
 #include "CryCommon/CryAction/ILevelSystem.h"
 #include "CryCommon/CryEntitySystem/IEntityProxy.h"
 #include "CryCommon/CryEntitySystem/IEntitySystem.h"
@@ -77,8 +79,14 @@ const std::vector<AreaShapeInfo>& LevelAreaShapes()
 // DS-072: pick a destination inside one of the shapes bound to this capturable entity. The capturable pivot can sit
 // outside the area (Shore 579 is 13.3 m away), so every sample is checked against the live native area and the world
 // polygon; the most interior sample wins and a navmesh landing is preferred. No map-specific coordinates.
-bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEntityId, const char** why)
+// wb_bot_ps_reach_dest 1 (playtest 09.11): 'anchors' are the snapped team bases; the destination is then the most
+// interior sample with a path from every anchor (PickReachableCandidate), else the old most interior one. *reach says
+// which: "off" (flag OFF or no anchors), "bases" or "interior_fallback".
+bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEntityId, const char** why,
+	const std::vector<Vec3>& anchors, const char** reach, int* rank)
 {
+	*reach = "off"; *rank = 0;
+	std::vector<float> candXyz, candEdge; std::vector<int> candEntity;   // only filled when anchors are given
 	*why = "no_binding";
 	const std::vector<AreaShapeInfo>& shapes = LevelAreaShapes();
 	NavMeshCore* mesh = CurrentNavMesh();
@@ -141,6 +149,8 @@ bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEnti
 			}
 			const float edge = CaptureAreaEdgeDistance(shape, p.x, p.y);
 			if (edge > bestEdge) { bestEdge = edge; best = p; bestEntity = s.entityId; }
+			if (!anchors.empty() && candEdge.size() < 20000)
+			{ candXyz.push_back(p.x); candXyz.push_back(p.y); candXyz.push_back(p.z); candEdge.push_back(edge); candEntity.push_back(s.entityId); }
 		}
 	}
 	if (!matched) return false;
@@ -148,6 +158,18 @@ bool AreaDestination(int capturableId, int localAreaId, Vec3& out, int& areaEnti
 	if (bestEdge < 0.25f) { *why = "thin_area"; return false; }
 	out = best;
 	areaEntityId = bestEntity;
+	if (!anchors.empty())
+	{
+		int tests = 0;
+		const int pick = PickReachableCandidate(candXyz.data(), candEdge.data(), int(candEdge.size()), 0.25f, 32, 1.0f,
+			[&](float x, float y, float z) {
+				++tests; const float goal[3] = { x, y, z };
+				for (const Vec3& a : anchors) { const float start[3] = { a.x, a.y, a.z }; if (!mesh->Reachable(start, goal)) return false; }
+				return true; });
+		*rank = tests;
+		if (pick >= 0) { out = Vec3(candXyz[pick * 3], candXyz[pick * 3 + 1], candXyz[pick * 3 + 2]); areaEntityId = candEntity[pick]; *reach = "bases"; }
+		else *reach = "interior_fallback";
+	}
 	return true;
 }
 
@@ -157,14 +179,16 @@ const std::vector<PsCapturePoint>& BasePoints()
 	static std::vector<PsCapturePoint> points;
 	static NavMeshCore* cachedMesh=nullptr;
 	static int cachedSquads=-1;   // SPEC-005: bunkers join the targets only with wb_bot_ps_squads 1
+	static int cachedReach=-1;    // wb_bot_ps_reach_dest: destinations change with the flag
 	if (!g_pGame || !g_pGame->GetIGameFramework()) return points;
 	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
 	const char* name = level && level->GetLevelInfo() ? level->GetLevelInfo()->GetName() : nullptr;
 	const std::string current = name ? name : "";
 	NavMeshCore* mesh=CurrentNavMesh();
 	const int squads=BotConfig::Get().psSquads==1?1:0;
-	if (current == levelName && mesh==cachedMesh && squads==cachedSquads && !points.empty()) return points;
-	cachedMesh=mesh; cachedSquads=squads;
+	const int reachDest=BotConfig::Get().psReachDest==1?1:0;
+	if (current == levelName && mesh==cachedMesh && squads==cachedSquads && reachDest==cachedReach && !points.empty()) return points;
+	cachedMesh=mesh; cachedSquads=squads; cachedReach=reachDest;
 	levelName = current;
 	points.clear();
 	if (!gEnv || !gEnv->pEntitySystem) return points;
@@ -172,6 +196,25 @@ const std::vector<PsCapturePoint>& BasePoints()
 	IEntityClass* energy = gEnv->pEntitySystem->GetClassRegistry()->FindClass("AlienEnergyPoint");
 	IEntityClass* factory = gEnv->pEntitySystem->GetClassRegistry()->FindClass("Factory");
 	IEntityClass* spawnGroup = squads ? gEnv->pEntitySystem->GetClassRegistry()->FindClass("SpawnGroup") : nullptr;
+	// wb_bot_ps_reach_dest 1: the non-capturable SpawnGroups (team bases) snapped like BuildCache does; the team id is
+	// not needed here, so this works before the rules hand out the bases.
+	std::vector<Vec3> anchors;
+	if (reachDest && mesh && mesh->Ready())
+	{
+		IEntityClass* groupClass = gEnv->pEntitySystem->GetClassRegistry()->FindClass("SpawnGroup");
+		IEntityItPtr bases = gEnv->pEntitySystem->GetEntityIterator();
+		while (IEntity* e = bases->Next())
+		{
+			if (!groupClass || e->GetClass() != groupClass) continue;
+			IScriptTable* table = e->GetScriptTable(); SmartScriptTable props; int capturable = 0;
+			if (!table || !table->GetValue("Properties", props)) continue;
+			props->GetValue("bCapturable", capturable);
+			if (capturable) continue;
+			const Vec3 p = e->GetWorldPos(); const float q[3] = { p.x, p.y, p.z }; float snapped[3];
+			if (mesh->Project(q, snapped, 8.f, 3.f, 10.f)) anchors.push_back(Vec3(snapped[0], snapped[1], snapped[2]));
+		}
+		WB_LOG(0, "[WarsBots] PS CAPTURE reach_dest bases=%d.", int(anchors.size()));
+	}
 	IEntityItPtr it = gEnv->pEntitySystem->GetEntityIterator();
 	while (IEntity* entity = it->Next())
 	{
@@ -196,7 +239,8 @@ const std::vector<PsCapturePoint>& BasePoints()
 		Vec3 destination(0,0,0);
 		int areaEntityId = 0;
 		const char* why = "no_area_id";
-		const bool validDestination=localAreaId && AreaDestination(int(entity->GetId()), localAreaId, destination, areaEntityId, &why);
+		const char* reach = "off"; int reachTests = 0;
+		const bool validDestination=localAreaId && AreaDestination(int(entity->GetId()), localAreaId, destination, areaEntityId, &why, anchors, &reach, &reachTests);
 		if (!validDestination)
 		{
 			WB_LOG(0, "[WarsBots] PS CAPTURE skip id=%u area=%d reason=%s.", unsigned(entity->GetId()), localAreaId, why);
@@ -217,8 +261,8 @@ const std::vector<PsCapturePoint>& BasePoints()
 			if (props->GetValue("szName", label) && label && !_stricmp(label, "prototype")) point.kind = int(PsKind::Prototype);
 		}
 		point.x = destination.x; point.y = destination.y; point.z = destination.z;
-		if(validDestination) WB_LOG(0, "[WarsBots] PS CAPTURE dest id=%u area=%d shape=%d pos=(%.2f,%.2f,%.2f).",
-			unsigned(entity->GetId()), localAreaId, areaEntityId, destination.x, destination.y, destination.z);
+		if(validDestination) WB_LOG(0, "[WarsBots] PS CAPTURE dest id=%u area=%d shape=%d pos=(%.2f,%.2f,%.2f) reach=%s tests=%d.",
+			unsigned(entity->GetId()), localAreaId, areaEntityId, destination.x, destination.y, destination.z, reach, reachTests);
 		points.push_back(point);
 	}
 	WB_LOG(0, "[WarsBots] PS CAPTURE %d capturable points for %s.", int(points.size()), current.c_str());
@@ -264,6 +308,8 @@ struct TeamRuntime
 	std::map<int, bool> reach;           // last logged reachability per target (PS ORDER reason=unreachable once)
 	std::map<int, float> ownedSec;       // PS OWN
 	std::map<int, int> lost, recaptured;
+	std::map<int, float> lastEnemy;      // D-059: last time an enemy was within 40 m of the team's point (capture counts)
+	bool tac = false;                    // D-059: a living team member has had a TACGun (native inventory, sticky for the level)
 };
 
 struct Commander
@@ -323,6 +369,44 @@ void BuildCache(Commander& c, NavMeshCore& mesh, const std::vector<PsCapturePoin
 	c.cacheBuilt = found == 2 || ++c.cacheTries >= 6;
 }
 
+// D-059 (wb_bot_ps_hold 1), 4 Hz: an enemy (bot or player, alive, team 1/2) within 40 m of a team's point, and the
+// native TAC signal - a living team member with a TACGun in the inventory (bought at the prototype or picked up),
+// sticky for the level (TeamRuntime is reset with the level).
+void D059Scan(Commander& c, CGameRules& rules, const std::vector<PsCapturePoint>& points, float now)
+{
+	std::vector<std::pair<int, Vec3>> alive;
+	IActorIteratorPtr actors = g_pGame->GetIGameFramework()->GetIActorSystem()->CreateActorIterator();
+	while (IActor* a = actors->Next())
+	{
+		if (a->GetHealth() <= 0 || !a->GetEntity()) continue;
+		const int t = rules.GetTeam(a->GetEntityId());
+		if (t != 1 && t != 2) continue;
+		alive.push_back(std::make_pair(t, a->GetEntity()->GetWorldPos()));
+		IInventory* inv = a->GetInventory();
+		if (!c.teams[t].tac && inv && inv->GetCountOfClass("TACGun") > 0)
+		{
+			c.teams[t].tac = true;
+			WB_LOG(1, "[WarsBots] PS ORDER tac team=%d by=%u t=%.1f.", t, unsigned(a->GetEntityId()), now);
+		}
+	}
+	for (const PsCapturePoint& p : points)
+	{
+		if (p.ownerTeam < 1 || p.ownerTeam > 2 || !p.hasDestination) continue;
+		const Vec3 at(p.x, p.y, p.z);
+		for (const auto& a : alive)
+			if (a.first != p.ownerTeam && (a.second - at).GetLengthSquared() < 40.f * 40.f) { c.teams[p.ownerTeam].lastEnemy[p.id] = now; break; }
+	}
+}
+
+// The commander config of one team plan: D-059 only with wb_bot_ps_hold 1 (OFF: stage 1), TAC from D059Scan.
+TeamPlanConfig PlanConfig(const TeamRuntime& tr, int psHold)
+{
+	TeamPlanConfig cfg;
+	cfg.d059 = psHold == 1;
+	cfg.teamHasTac = cfg.d059 && tr.tac;
+	return cfg;
+}
+
 void Tick(Commander& c, CGameRules& rules, float now)
 {
 	ILevel* level = g_pGame->GetIGameFramework()->GetILevelSystem()->GetCurrentLevel();
@@ -355,7 +439,7 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		{
 			for (int team = 1; team <= 2; ++team)
 			{
-				if (p.ownerTeam == team) { c.teams[team].pending = StrongerEvent(c.teams[team].pending, TeamEvent::Captured); if (c.teams[team].lost[p.id] > 0) ++c.teams[team].recaptured[p.id]; }
+				if (p.ownerTeam == team) { c.teams[team].pending = StrongerEvent(c.teams[team].pending, TeamEvent::Captured); if (c.teams[team].lost[p.id] > 0) ++c.teams[team].recaptured[p.id]; c.teams[team].lastEnemy[p.id] = now; }
 				if (was == team) { c.teams[team].pending = StrongerEvent(c.teams[team].pending, TeamEvent::Lost); ++c.teams[team].lost[p.id]; }
 			}
 		}
@@ -372,6 +456,9 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		c.nextOwnLog = now + 60.f;
 	}
 
+	const int psHold = BotConfig::Get().psHold == 1 ? 1 : 0;
+	if (psHold) D059Scan(c, rules, points, now);
+
 	for (int team = 1; team <= 2; ++team)
 	{
 		TeamRuntime& tr = c.teams[team];
@@ -382,6 +469,7 @@ void Tick(Commander& c, CGameRules& rules, float now)
 		for (const PsCapturePoint& p : points)
 		{
 			TeamTarget t; t.id = p.id; t.kind = PsKind(p.kind); t.owner = p.ownerTeam;
+			{ auto e = tr.lastEnemy.find(p.id); if (e != tr.lastEnemy.end()) t.quiet = now - e->second; }   // D-059
 			auto b = c.fromBase[team].find(p.id);
 			if (p.hasDestination && b != c.fromBase[team].end()) { t.reachable = true; t.path = b->second; }
 			for (const PsCapturePoint& own : points)
@@ -400,7 +488,7 @@ void Tick(Commander& c, CGameRules& rules, float now)
 			}
 			targets.push_back(t);
 		}
-		// the team's bots: alive, AI running; respawn and roster events
+		// the team's bots: AI running, alive or waiting for the respawn; respawn and roster events
 		std::vector<TeamBot> bots; std::set<unsigned> roster;
 		g_pGame->GetBotManager().ForEachBot([&](const BotInstance& inst)
 		{
@@ -411,16 +499,17 @@ void Tick(Commander& c, CGameRules& rules, float now)
 			const auto was = tr.alive.find(id);
 			const bool respawned = isAlive && was != tr.alive.end() && !was->second;
 			tr.alive[id] = isAlive;
-			if (!isAlive) return;
+			// audit 14.11 p. 2: the roster is the team's members, alive or dead. A death is no Roster event and the dead
+			// bot keeps its slot in the plan, so only that bot is replanned (on its respawn)
 			roster.insert(id);
-			TeamBot b; b.id = id; b.skill = int(inst.Profile().skill); b.respawned = respawned; bots.push_back(b);
+			TeamBot b; b.id = id; b.skill = int(inst.Profile().skill); b.respawned = respawned; b.alive = isAlive; bots.push_back(b);
 		});
 		bool anyRespawn = false; for (const TeamBot& b : bots) anyRespawn |= b.respawned;
 		if (roster != tr.roster && !tr.roster.empty()) tr.pending = StrongerEvent(tr.pending, TeamEvent::Roster);
 		tr.roster = roster;
 		if (now < tr.nextPlan && tr.pending == TeamEvent::None && !anyRespawn) continue;
 		tr.nextPlan = now + 5.f;
-		std::vector<TeamOrder> next = PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders);
+		std::vector<TeamOrder> next = PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders, PlanConfig(tr, psHold));
 		for (const TeamOrder& o : next)
 		{
 			if (o.since != now) continue;   // unchanged task: no line
