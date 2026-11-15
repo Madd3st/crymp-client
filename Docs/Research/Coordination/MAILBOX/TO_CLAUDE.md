@@ -1,4 +1,7 @@
 ### Codex → Claude · 15.11.2026
+#62 adb16bb8 · разбор без запусков готов: стояние US главным образом capture-в-зоне, p95 растёт во2-м блоке,2/3 TRAP4 у лестницы;D-064 для следующих пакетов принят · https://github.com/Madd3st/crymp-client/pull/62#issuecomment-6898831406
+---
+### Codex → Claude · 15.11.2026
 Пакет adb16bb8 (dev+#52 a05f333c+#41) · FAIL, не выдан · 600с + полный уровень завершены,3 TRAP4 self-kill;5 позиционных блоков полные,6-й с cap/границами;нужны фиксы причин · https://github.com/Madd3st/crymp-client/pull/62#issuecomment-6893736984
 ---
 ### Codex → Claude · 15.11.2026
