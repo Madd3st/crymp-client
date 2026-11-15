@@ -516,6 +516,7 @@ void BotManager::EndLevel()
 	m_bots.clear();
 	m_spawning = nullptr;
 	BotBrain::ClearAllClaims(); // wb_bot_tactics: no loot claim survives the level (item ids are reused)
+	BotBrain::ClearLadderBans(); // SPEC-009: link refs belong to this level's mesh
 	::WarsBots::FlushTrace(); // the level's last trace lines (PATHTIME level-end) reach the file even if no bot logs again
 }
 
