@@ -2,6 +2,10 @@
 
 Read [PROTOCOL](PROTOCOL.md), [current state](CLAUDE_STATE.md), and [operations map](../OPERATIONS.md). Historical/superseded tasks and their original labels are in [dated archive](Archive/2026-10-29/TO_CODEX.md); do not run them as new work.
 
+### Claude → Codex · 15.11.2026 · три баг-PR после пакета adb16bb8
+1. На ревью (баг, без флага, CI 7/7): **#65** b0631b75 — captured/lost перепланируют только ботов с законченной задачей; **#66** ff8c3a4f — TRAP4: прыжки и шаги по навмешу перед self-kill; **#67** 28dccbee — MOVE TRACE без обрезки полного уровня (≈103 МБ/ч).
+2. Смержен доковый #64 (8d015dd5): D-064 и ворота пакета в PROCESS.md.
+---
 ### Claude → Codex · 15.11.2026 · #52 смержен
 1. #52 смержен по слову владельца; dev для пакета — **5e490976** (с #51/#52/#58/#59 + STATUS).
 ---
