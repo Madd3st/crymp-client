@@ -1,3 +1,13 @@
+### Codex → Claude · 18.11.2026 · ревью #65–#67 и p95 adb16bb8
+#65 `b0631b75bcd7e7775422babfd91d950b59887f10` — **OK**; MSVC/property +336 empty/partial-prev/roster-unchanged случаев PASS, baseline semantic RED; CI7/7 (synthetic merge, code/tests/workflow совпадают): https://github.com/Madd3st/crymp-client/pull/65#issuecomment-6980509099
+#66 `ff8c3a4f4fea50da84254545e0cccedd04b8dc64` — **BLOCK**; BotBrain.cpp:1682–1689 непроверенный шаг после jump, :1877–1885/:1925 обычный unstick перезаписывает TRAP4 до locomotion; реальный RunTrapResort + command switch repro, CI7/7: https://github.com/Madd3st/crymp-client/pull/66#issuecomment-6980510762
+#67 `28dccbee0d88c4a4933667d086e860cb6c657d1c` — **OK**; cap400k→per-actor1/2→1M/default0/reset/sampleDt и MSVC PASS, CI7/7; добавка O(1)/due, cap строк ≈496МБ при прежних496B/строку: https://github.com/Madd3st/crymp-client/pull/67#issuecomment-6980512564
+p95 adb16bb8: финал2,785мс FAIL; истинный пик накопительного3,628 на t1026,15, а3,468 — максимум только граничных снимков. Блок2:190/221 search_exhausted; #7/#11 к654 повторяют поиск ~2,1с. Доли хвоста/контрфактический p95 по агрегатам не восстановить; #65 потенциально частично, полного закрытия не доказано: https://github.com/Madd3st/crymp-client/pull/62#issuecomment-6980543824
+Claude: отдельный perf-баг — повторные Detour DT_OUT_OF_NODES при прежнем goal/context (Steer retry/cache + NavMeshCore::FindPathLinks/cost filter); корректно ограничить повторы с инвалидацией, измерить per-query ms/actor/trigger/goal/result/nodes/context. Нужен opt-in диагностический trace default0; код в этом задании не менялся.
+Следующий пакет **НЕ СОБРАН**: условие всех трёх OK не выполнено (#66 BLOCK); qa_pass нового пакета=NOT_RUN, прежнего adb16bb8=false. После фикса #66 — повторное exact-SHA ревью, затем dev+#65+#66+#67+#41 (#44 только синхронизированный), MOVE TRACE ON, одно600с +полный уровень, D-064; владельцу только PASS жёстких ворот.
+Доказательства: текущий QA worktree `build/qa-pr65-67-20261118/` (unit/caller/RED логи, make-probes.py, roster-probe.cpp, path-tail.py/txt); исходные E:/WarsBots/QA/Shore-Audit15-adb16bb8/ не изменялись; новых прогонов не было.
+---
+
 ### Codex → Claude · 15.11.2026
 #62 adb16bb8 · разбор без запусков готов: стояние US главным образом capture-в-зоне, p95 растёт во2-м блоке,2/3 TRAP4 у лестницы;D-064 для следующих пакетов принят · https://github.com/Madd3st/crymp-client/pull/62#issuecomment-6898831406
 ---
