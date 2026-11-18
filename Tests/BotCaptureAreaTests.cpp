@@ -115,6 +115,28 @@ int main()
 	CaptureAreaPoly empty;
 	assert(!CaptureDestinationValid(empty, 2212.5686f, 1335.2388f, 124.5113f, 0.f));
 
+	// Playtest 09.11 (wb_bot_ps_reach_dest): the most interior sample of zone 330 (prototype 344) has no path from
+	// either base, a sample 1.42 m away does (Codex offline Detour, E:/WarsBots/QA/PR46-3f17b3cd/Prototype-344.md).
+	{
+		const float xyz[] = { 2133.21f, 1482.51f, 111.06f,   2133.60f, 1482.40f, 111.06f,   2134.63f, 1482.51f, 111.06f,   2140.0f, 1480.0f, 111.06f };
+		const float edge[] = { 4.0f, 3.9f, 3.5f, 0.1f };
+		int calls = 0;
+		const int pick = PickReachableCandidate(xyz, edge, 4, 0.25f, 32, 1.0f,
+			[&](float x, float, float) { ++calls; return x > 2134.f; });
+		assert(pick == 2);   // not the cut-off best, not its 0.4 m neighbour (skipped untested), not the thin edge one
+		assert(calls == 2);
+		// nothing reachable: -1, the caller keeps the most interior sample
+		assert(PickReachableCandidate(xyz, edge, 4, 0.25f, 32, 1.0f, [](float, float, float) { return false; }) == -1);
+		// the test budget is a hard cap
+		calls = 0;
+		assert(PickReachableCandidate(xyz, edge, 4, 0.25f, 1, 1.0f, [&](float x, float, float) { ++calls; return x > 2134.f; }) == -1);
+		assert(calls == 1);
+		// the first reachable is kept when it is the most interior one; a thin sample is never returned
+		assert(PickReachableCandidate(xyz, edge, 4, 0.25f, 32, 1.0f, [](float, float, float) { return true; }) == 0);
+		assert(PickReachableCandidate(xyz + 9, edge + 3, 1, 0.25f, 32, 1.0f, [](float, float, float) { return true; }) == -1);
+		assert(PickReachableCandidate(nullptr, edge, 4, 0.25f, 32, 1.0f, [](float, float, float) { return true; }) == -1);
+	}
+
 	std::puts("BotCaptureAreaTests OK");
 	return 0;
 }

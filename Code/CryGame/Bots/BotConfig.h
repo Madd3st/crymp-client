@@ -55,8 +55,10 @@ struct BotConfig {
  int sniperReach=0;    // DS-046: sniper-mind upgrade searches the roof (32 m vertical box) and only DSG1/Gauss first, default OFF
  int probeRunner=0;    // DS-047: engine adapter for BotProbeRunner.h (wb_probe_load/start/...), default OFF
  int linkFailFast=1;   // DS-048: blocked jump link fails fast + goal does not age while a link runs, default ON (D-036)
- int psHold=0;         // SPEC-005b: defender on the 15-20 m ring in cover facing the approach, prototype held until TAC, default OFF
+ int psHold=0;         // SPEC-005b/D-059: commander defender budget + prototype until TAC + SPEC-005b ring positions (needs psSquads), default OFF
+ int psReachDest=0;    // playtest 09.11: PS zone destination = most interior sample with a navmesh path from both team bases, default OFF
  int psSquads=0;       // SPEC-005 stage 1: team commander (pairs, bunkers/prototype, defender, reachability gate), default OFF
+ int ladderBan=0;      // SPEC-009 (owner 11.11): wb_bot_ladder_ban - first ladder failure avoids the link for that bot only (BotLadderBan.h), default OFF
  int subExit=0;        // SPEC-006a: ladder queue + no unstick penalty at slow ladder starts, default OFF
  int psCapture=0;      // DS-048: PS-1 capture goal (nearest uncaptured point, hold, next), default OFF
  int psBuy=0;         // DS-049: PS-2 revive buy (one primary by style/range, cheap ammo) via server-side Lua, default OFF

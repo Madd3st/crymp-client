@@ -21,9 +21,10 @@ check('flag default OFF', re.search(r'int psHold=0;', cfg_h))
 check('cvar wb_bot_ps_hold bound', '{"wb_bot_ps_hold",&BotConfig::psHold,' in cfg_c)
 check('flag in FLAGS.md as OFF', '| `wb_bot_ps_hold` | OFF |' in flags)
 check('BotPsHold.h is engine-free', not re.search(r'#include\s+"', hold) and 'gEnv' not in hold)
-check('planner rule off by default', 'int prototypeHoldFrom = 0;' in orders)
-check('planner rule only with the flag and before TAC', "if (BotConfig::Get().psHold == 1 && !tr.tac) cfg.prototypeHoldFrom = 4;" in cap)
-check('planner gets the cfg', 'PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders, cfg);' in cap)
+# sync with dev (D-059): the prototype-until-TAC rule is the D-059 planner under the same flag, the SPEC-005b p. 8
+# prototypeHoldFrom duplicate is gone
+check('no duplicate p. 8 planner rule (D-059 owns it)', 'prototypeHoldFrom' not in orders and 'prototypeHoldFrom' not in cap)
+check('planner gets the D-059 cfg (flag + TAC)', 'PlanTeamOrders(targets, bots, team, now, tr.pending, tr.orders, PlanConfig(tr, psHold));' in cap)
 check('hold scan only with the flag', 'if (BotConfig::Get().psHold == 1 && now >= c.nextHoldScan) HoldScan(c, rules, now);' in cap)
 check('TAC from the stock inventory class', 'GetCountOfClass("TACGun")' in cap)
 check('claims dropped for bots off the roster', 'tr.holdPos.erase(h)' in cap)
@@ -44,7 +45,7 @@ check('no SetPos/impulse in the hold path', not re.search(r'SetPos|AddImpulse|Se
 check('no level coordinates in the hold code', not re.search(r'\b(19|20|21|22)\d\d\.\d', hp + hold))
 check('PS HOLD fields', re.search(r'PS HOLD bot=%u target=%d pos=\(%\.1f,%\.1f,%\.1f\) score=%d cover=%d up=%\.1f sector=%d reason=%s', hp))
 check('PS HOLD reasons capture/back', 'reason=capture' in hp and 'reason=back' in hp)
-check('PS HOLD tac log', 'PS HOLD tac team=%d by=%u' in cap)
+check('one TAC source: D059Scan (PS ORDER tac), HoldScan only marks contested', 'PS HOLD tac' not in cap and 'PS ORDER tac team=%d by=%u' in cap)
 check('back after combat over', 'm_psHoldBack=true;' in sq)
 check('declared in BotBrain.h', 'bool UpdatePSHold(CPlayer& actor,const PsCapturePoint& point,int team,const Vec3& feet);' in brain_h)
 

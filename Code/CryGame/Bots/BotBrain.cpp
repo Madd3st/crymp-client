@@ -22,6 +22,7 @@
 #include "CryGame/Bots/BotAuditFixes.h"
 #include "CryGame/Bots/BotNavMesh.h"
 #include "CryGame/Bots/BotNavMeshCore.h"
+#include "CryGame/Bots/BotLadderBan.h"
 #include "CryGame/Bots/BotRoamFallback.h"
 #include "CryGame/Bots/BotPSCaptureRuntime.h"
 #include "CryGame/Bots/BotTeamOrders.h"
@@ -48,6 +49,19 @@ namespace
 {
 // Shared by every bot on this server (main thread only), keyed by bot number.
 BotLootClaims& LootClaims() { static BotLootClaims claims; return claims; }
+LadderBanBook& LadderBans() { static LadderBanBook book; return book; }   // SPEC-009: shared by all bots of the level
+// Codex 15.11 #52: the mesh the shared bans were set on. It is the static level mesh (CurrentNavMesh), never freed;
+// after a level change its Reset forgets every ban, so UnbanLink there is a no-op.
+NavMeshCore*& LadderBanMesh() { static NavMeshCore* mesh = nullptr; return mesh; }
+// Owner 15.11: where the live bots are (feet), for the "only exit" check before a shared ban.
+struct LiveBotPos { int number; float p[3]; float at; };
+std::vector<LiveBotPos>& LiveBots() { static std::vector<LiveBotPos> bots; return bots; }
+void NoteLiveBot(int number, bool alive, const Vec3& feet, float now)
+{
+	std::vector<LiveBotPos>& bots = LiveBots();
+	bots.erase(std::remove_if(bots.begin(), bots.end(), [number](const LiveBotPos& b) { return b.number == number; }), bots.end());
+	if (alive) bots.push_back({number, {feet.x, feet.y, feet.z}, now});
+}
 const char* NameOf(BotBrain::State state)
 {
 	switch (state)
@@ -223,19 +237,28 @@ Vec3 BotBrain::Steer(const Vec3& feet, const Vec3& goal)
 			// SPEC-004 (wb_bot_unstick): climb/memory/trodden/noise cost and this bot's blocks for this one query.
 			NavCostContext cost;
 			const bool layered = BotConfig::Get().unstick == 1;
+			const bool avoid = LadderAvoidActive();   // SPEC-009: this bot's failed ladder/jump link costs x50 for 30 s
 			if (layered)
 			{
 				cost.botSeed = unsigned(m_number) * 2654435761u; cost.trodden = CurrentTrodden(); cost.now = gEnv->pTimer->GetCurrTime(); cost.blockNow = m_now;
 				cost.memoryClock = UnstickClock(cost.now);
 				cost.blocks = m_unstickBlocks.empty() ? nullptr : m_unstickBlocks.data(); cost.blockCount = int(m_unstickBlocks.size());
 				if (m_now < m_unstickPointsUntil && !m_unstickPoints.empty()) { cost.points = m_unstickPoints.data(); cost.pointCount = int(m_unstickPoints.size()); }
-				mesh->SetCostContext(&cost);
 			}
+			else if (avoid) { cost.climb = false; cost.noise = 0.f; }   // only the avoided link, no SPEC-004 costs
+			if (avoid)
+			{
+				const float t = gEnv->pTimer->GetCurrTime();
+				cost.avoidLinks[0] = t < m_ladderAvoidUntil ? m_ladderAvoidRef : 0;
+				cost.avoidLinks[1] = t < m_jumpAvoidUntil ? m_jumpAvoidRef : 0;
+				cost.avoidMult = kLadderAvoidCost;
+			}
+			if (layered || avoid) mesh->SetCostContext(&cost);
 			const auto queryStart = std::chrono::steady_clock::now();
 			found = mesh->FindPathLinks(a, b, xyz, m_pathLinks, &why, waterStart ? &water : nullptr);
 			PathQueryTimed(std::chrono::duration<float, std::milli>(std::chrono::steady_clock::now() - queryStart).count(),
 				gEnv->pTimer->GetCurrTime());   // D-042 gate: measured with the layer ON and OFF alike
-			if (layered) mesh->SetCostContext(nullptr);
+			if (layered || avoid) mesh->SetCostContext(nullptr);
 			if (!found) m_pathLinks.clear();
 			m_meshPathActive = found;
 			m_path.clear();
@@ -441,6 +464,8 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	m_locomotion.Observe(actor,m_blackboard,m_now);
     // DS-107: ResetLife cannot touch the actor; perform its native-ladder cleanup on the next owned update.
     if (m_ladderCancelPending) CancelLadder(actor,"reset",false);
+    ReleaseLadderBans();   // SPEC-009: lift level bans whose time is over (wb_bot_ladder_ban 1)
+    NoteLiveBot(m_number,actor.GetHealth()>0,actor.GetEntity()->GetWorldPos(),gEnv->pTimer->GetCurrTime());
     UpdateTelemetry(actor);
     // DS-107: death/stop must clear the native ladder mode through the single cancellation path.
     if (actor.GetHealth()<=0 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"death",false);
@@ -455,6 +480,7 @@ void BotBrain::Update(BotInstance& bot, float dt)
 	if (m_state == State::DEAD || m_state == State::RESPAWNING) { ResetLife(); Change(State::SEEKING_WEAPON); }
 
 	m_intent=BotIntent();
+	BeginTickSight(m_blackboard.visible,m_blackboard.distance); // audit 14.11 p. 5: no stale sight on ticks the fight does not own
 	WBI(aim,actor.GetEntity()->GetWorldPos()+actor.GetBaseQuat().GetColumn1()*10.0f+Vec3(0,0,1.4f));
 	// DS-107: a gate turned OFF mid-climb must still clean the native mode; when ON the ladder owns the tick.
 	if (BotConfig::Get().ladder!=1 && (m_ladder.Active() || m_ladderNativeLocked)) CancelLadder(actor,"gate_off",false);
@@ -790,8 +816,15 @@ bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules
 	{
 		m_psTarget=order.target; m_psOrderKind=int(order.kind);
 		if(order.kind!=PsKind::Spawn&&!reachable)   // the cache says reachable, this bot's own start does not
-			WB_LOG(1,"[WarsBots] #%d PS ORDER bot=%u target=%d reason=bot_unreachable.",m_number,actor.GetEntityId(),order.target);
+			WB_LOG(1,"[WarsBots] #%d PS ORDER bot=%u target=%d reason=bot_unreachable fallback=roam.",m_number,actor.GetEntityId(),order.target);
 	}
+	// Playtest 09.11: standing here froze bots in a separate navmesh piece for the whole match (US on the dry lower deck
+	// of the submarine, KNDR in the pit at (1995,1239): Detour other_component). No own path: hand the bot back to the
+	// usual chain (unstick, trap recovery, roam, swim-out) exactly as with wb_bot_ps_squads 0; the 2 s snapshot from its
+	// own position gives the order back once a path exists.
+	if(order.kind!=PsKind::Spawn&&!reachable)return false;
+	// D-059 (wb_bot_ps_hold 1): no free target and no defender slot - roam: the usual chain (fight, roam), not a stand.
+	if(order.kind==PsKind::Spawn&&!order.hold)return false;
 	bool inside=false;
 	if(reachable&&point->areaId)
 		if(IEntity* area=gEnv->pEntitySystem->GetEntity(EntityId(point->areaId)))
@@ -803,7 +836,7 @@ bool BotBrain::UpdatePSSquad(CPlayer& actor,float decisionTime,CGameRules& rules
 	if(holdPath&&UpdatePSHold(actor,*point,team,feet)){ExecuteIntent(actor,decisionTime);return true;}
 	if(!reachable||inside)
 	{
-		WBI(move,false);   // no ping-pong: stand (spawn hold, or inside the zone until captured / the commander moves it)
+		WBI(move,false);   // no ping-pong: stand (team spawn hold, or inside the zone until captured / the commander moves it)
 		if(reachable)WBI(aim,Vec3(point->x,point->y,point->z+1.5f));
 	}
 	else
@@ -1022,6 +1055,56 @@ bool BotBrain::ClaimUpgrade(EntityId id)
 void BotBrain::ReleaseClaims() { LootClaims().Release(unsigned(m_number)); }
 // Level boundary (BotManager::EndLevel): the game timer may not go back, so an old claim could block a reused item id.
 void BotBrain::ClearAllClaims() { LootClaims().Clear(); }
+void BotBrain::ClearLadderBans()
+{   // Codex 15.11 #52: a same-map reset keeps the mesh, so a shared ban must be lifted before its record is dropped
+	const int lifted = LiftAllBans(LadderBans(), LadderBanMesh());
+	if (lifted) WB_LOG(1,"[WarsBots] LADDER unban all=%d reason=level_end.",lifted);
+	LadderBanMesh() = nullptr;
+	LiveBots().clear();
+}
+LadderBanDecision BotBrain::SharedLinkFailure(NavMeshCore& mesh, unsigned long long ref)
+{
+	const float now=gEnv->pTimer->GetCurrTime();
+	std::vector<float> starts, goals;
+	for (const LiveBotPos& b : LiveBots())
+		if (std::fabs(now-b.at)<2.f) starts.insert(starts.end(), b.p, b.p+3);
+	CGameRules* rules=g_pGame?g_pGame->GetGameRules():nullptr;
+	if (rules && BotMatch::IsPowerStruggle(*rules))
+	{
+		std::vector<PsCapturePoint> points;
+		PSCaptureSnapshot(points,*rules,nullptr);
+		for (const PsCapturePoint& p : points) if (p.hasDestination) { goals.push_back(p.x); goals.push_back(p.y); goals.push_back(p.z); }
+	}
+	LadderBanMesh()=&mesh;
+	const LadderBanDecision d=ApplyLinkFailure(LadderBans(),mesh,ref,m_number,now,starts.data(),int(starts.size()/3),
+		goals.data(),int(goals.size()/3));
+	if (d.keptExit) WB_LOG(1,"[WarsBots] #%d LINK keep link=%llu reason=only_exit starts=%d goals=%d.",m_number,ref,
+		int(starts.size()/3),int(goals.size()/3));
+	return d;
+}
+bool BotBrain::LadderAvoidActive() const
+{
+	if (BotConfig::Get().ladderBan!=1) return false;
+	const float t=gEnv->pTimer->GetCurrTime();
+	return (m_ladderAvoidRef && t<m_ladderAvoidUntil) || (m_jumpAvoidRef && t<m_jumpAvoidUntil);
+}
+void BotBrain::ReleaseLadderBans()
+{
+	if (BotConfig::Get().ladderBan!=1) return;
+	NavMeshCore* mesh=CurrentNavMesh();
+	if (!mesh) return;
+	std::vector<unsigned long long> lifted;
+	LiftExpiredBans(LadderBans(),*mesh,gEnv->pTimer->GetCurrTime(),&lifted);   // also every ban after a clock rollback
+	for (unsigned long long ref : lifted) WB_LOG(1,"[WarsBots] #%d LADDER unban link=%llu scope=level.",m_number,ref);
+	// Codex 15.11 #52: a ban or unban (by any bot) changed the mesh connectivity -> replan, so a restored link is used
+	// again and a banned one is dropped. Never mid-link/mid-ladder: the executor owns movement there; retried next update.
+	const unsigned topology=mesh->TopologyVersion();
+	if (topology!=m_navTopology && !m_link.Active() && !m_ladder.Active())
+	{
+		m_navTopology=topology;
+		m_nextRepath=m_minRepath=0;
+	}
+}
 
 // DS-097: the only place that creates a weapon goal (was BotBrain.cpp:788-792 unconditional + :1761-1762 in the arbiter).
 // Active pursuit is held; unchosen candidates refresh on the same throttle. Empty scans are throttled too.
@@ -1654,7 +1737,7 @@ void BotBrain::UpdateUnstick(CPlayer& actor)
 	if (m_now-m_unstickLast>0.75f) m_unstickMuteUntil=max(m_unstickMuteUntil,m_now+1.5f);
 	m_unstickLast=m_now;
 	if (m_link.Active() || m_ladder.Active() || m_ladderNativeLocked) m_unstickMuteUntil=max(m_unstickMuteUntil,m_now+2.0f);
-	const bool combat=m_blackboard.visible || m_state==State::ATTACKING || m_intent.combat!=BotCombatIntent::None;
+	const bool combat=UnstickCombatMute(m_blackboard.visible,m_state==State::ATTACKING,m_intent.combat!=BotCombatIntent::None);
 	const bool water=m_blackboard.waterMovement || m_blackboard.swimming;
 	const bool muted=!mesh || !m_meshPathActive || m_path.empty() || !m_intent.move || combat || water || !m_blackboard.canMove || m_now<m_unstickMuteUntil;
 	const float rem=m_path.empty()?0.f:PathRemaining(m_path,m_pathIndex,feet);
@@ -1896,7 +1979,7 @@ void BotBrain::ExecuteIntent(CPlayer& actor, float dt)
     if (BotConfig::Get().suitPolicy==1 && !m_link.Active() && !m_intent.unstickStrength) ApplySuitPolicy(actor); // roadmap 12: the last word on the suit mode
     // DS-040 (wb_bot_pro_fire): a visible enemy inside the hold range must not sprint. Native fire is blocked while
     // sprinting; C-112 had 12 visible combat gaps / 116.5 s at 60-89 % sprint. After the suit policy on purpose.
-    if (BotConfig::Get().proFire==1 && m_blackboard.visible && m_blackboard.distance<=m_profile.holdRange && m_intent.jump==BotJump::None && m_intent.gait==BotGait::Sprint)
+    if (ProFireBlocksSprint(BotConfig::Get().proFire==1,m_blackboard.visible,m_blackboard.distance,m_profile.holdRange,m_intent.jump!=BotJump::None,m_intent.gait==BotGait::Sprint))
     { WBI(gait,BotGait::Run); m_speedTravel=false; if (m_intent.suitMode==NANOMODE_SPEED) WBI(suitMode,NANOMODE_DEFENSE); } // DS-043 (c): no Speed suit in the fight either
     if (m_cornerSlow && !m_link.Active() && m_intent.jump==BotJump::None)
     { // wb_bot_corners: no sprint / Speed into a sharp turn; after the suit policy on purpose (c071: 6.3 m/s down the 1 m Steelmill stair, overshoot)
@@ -2088,7 +2171,17 @@ void BotBrain::CancelLadder(CPlayer& actor, const char* why, bool ban)
 	if (ban)
 	{
 		NavMeshCore* mesh=CurrentNavMesh();
-		if (mesh && m_ladderNow.ref) mesh->BanLink(m_ladderNow.ref);
+		if (mesh && m_ladderNow.ref)
+		{
+			if (BotConfig::Get().ladderBan!=1) mesh->BanLink(m_ladderNow.ref);   // 0: the whole level, first failure
+			else
+			{   // SPEC-009: one failure -> this bot avoids the link; several bots / repeats -> everyone, for a while
+				const LadderBanDecision d=SharedLinkFailure(*mesh,m_ladderNow.ref);   // bans the mesh only if no bot is stranded
+				if (d.scope!=LadderBanScope::Level) { m_ladderAvoidRef=m_ladderNow.ref; m_ladderAvoidUntil=d.until; }
+				WB_LOG(1,"[WarsBots] #%d LADDER ban link=%llu scope=%s until=%.1f fails=%d bots=%d kept_exit=%d actor=%u.",m_number,
+					m_ladderNow.ref,d.scope==LadderBanScope::Level?"level":"bot",d.until,d.fails,d.bots,int(d.keptExit),actor.GetEntityId());
+			}
+		}
 	}
 	m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0; m_meshPathActive=false;
 	m_ladder.Reset(); m_ladderNativeLocked=false; m_ladderNow=NavPathLink();
@@ -2238,8 +2331,19 @@ void BotBrain::ApplyLinkExecutor(CPlayer& actor)
 			why[int(o.fail)],feet.x,feet.y,feet.z,o.fail==LinkFail::NoEnergy?"":" -> fail noted",actor.GetEntityId());
 		// O-027: one failure can be timing (hit, cooldown, short run-up) -> ban a link only on its second failure.
 		// DS-046: a link above the jump rise is impossible; ban it at once, do not waste two probes.
-		if (o.fail==LinkFail::TooHigh) mesh->BanLink(m_linkNow.ref);
-		else if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
+		if (BotConfig::Get().ladderBan!=1)
+		{
+			if (o.fail==LinkFail::TooHigh) mesh->BanLink(m_linkNow.ref);
+			else if (o.fail!=LinkFail::NoEnergy && mesh->NoteLinkFailure(m_linkNow.ref)) mesh->BanLink(m_linkNow.ref);
+		}
+		else if (o.fail!=LinkFail::NoEnergy)
+		{   // Codex 15.11 #52 (wb_bot_ladder_ban 1): jump links follow the ladder rule - this bot avoids the link for 30 s;
+			// a shared ban only after failures by two different bots, for 120 s, then lifted (ReleaseLadderBans).
+			const LadderBanDecision d=SharedLinkFailure(*mesh,m_linkNow.ref);   // bans the mesh only if no bot is stranded
+			if (d.scope!=LadderBanScope::Level) { m_jumpAvoidRef=m_linkNow.ref; m_jumpAvoidUntil=d.until; }
+			WB_LOG(1,"[WarsBots] #%d LINK ban link=%llu kind=%s scope=%s until=%.1f fails=%d bots=%d actor=%u.",m_number,m_linkNow.ref,
+				NavLinkName(m_linkNow.kind),d.scope==LadderBanScope::Level?"level":"bot",d.until,d.fails,d.bots,actor.GetEntityId());
+		}
 		m_link.Reset(); m_path.clear(); m_pathLinks.clear(); m_pathIndex=0; m_cornerFor=size_t(-1); m_nextRepath=m_minRepath=0;
 		return;
 	}
