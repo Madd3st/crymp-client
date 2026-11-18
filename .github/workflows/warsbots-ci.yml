@@ -51,7 +51,7 @@ jobs:
           # (BotAimControl, BotProfile, ...) stay in Codex's full build.
           $tests = @('BotBoatDriver','BotModePlan','BotTeamPlan','BotUpgradeGate','BotWeaponGoal','BotDecisionCommit','BotAuditFixes','BotProbeRunner','BotSniperReach','BotPSCapture','BotPSBuy','BotDoorPath','BotFireLane','BotLootClaim','BotGameMode','BotAimInterp','BotNetCompat','BotGoalArbiter','BotLookPolicy','BotWeaponRank','BotPerception','BotAimModel','BotSuitPolicy','BotWaterPolicy','BotCaptureArea',
                      'BotWeaponHandling','BotVantage','BotTactics','BotTraits','BotConfig','BotMoveTrace','BotMoveTraceEligibility','BotRemovalPolicy','BotRoamFallback',
-                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotLog','BotUnstick','BotVehicleTarget','BotTeamOrders','BotLadderBan')
+                     'BotReplicaSmooth','BotJumpLink','BotLadder','BotNavMeshCore','BotNavMeshWater','BotCorners','BotDifficulty','BotThreatScan','BotLog','BotUnstick','BotVehicleTarget','BotTeamOrders','BotLadderBan','BotPsHold')
           $failed = @()
           foreach ($t in $tests) {
             $src = "Tests/${t}Tests.cpp"
@@ -131,6 +131,12 @@ jobs:
           & python Tests/test_bot_ps_d059_caller.py *> units/BotPsD059Caller-run.log
           if ($LASTEXITCODE) { Get-Content units/BotPsD059Caller-run.log; throw 'UNIT FAIL: D-059 actual TAC/contact caller' }
           'UNIT PASS D-059 actual TAC/contact caller'
+          & python Tests/test_bot_ps_hold_wiring.py *> units/BotPsHoldWiring-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotPsHoldWiring-run.log; throw 'UNIT FAIL: SPEC-005b hold wiring guard' }
+          'UNIT PASS SPEC-005b hold wiring guard'
+          & python Tests/test_bot_ps_hold_arrival_caller.py *> units/BotPsHoldArrivalCaller-run.log
+          if ($LASTEXITCODE) { Get-Content units/BotPsHoldArrivalCaller-run.log; throw 'UNIT FAIL: SPEC-005b actual hold arrival caller' }
+          'UNIT PASS SPEC-005b actual hold arrival caller'
           & python Tests/test_bot_sub_exit_wiring.py *> units/BotSubExitWiring-run.log
           if ($LASTEXITCODE) { Get-Content units/BotSubExitWiring-run.log; throw 'UNIT FAIL: SPEC-006a sub exit wiring guard' }
           'UNIT PASS SPEC-006a sub exit wiring guard'
